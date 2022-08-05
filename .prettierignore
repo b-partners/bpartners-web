@@ -1,1 +1,5 @@
+# Ignore artifacts:
+build
+coverage
+public
 src/aws-exports.js
