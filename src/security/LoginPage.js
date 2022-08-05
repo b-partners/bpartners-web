@@ -26,7 +26,7 @@ const aCard = (title, subtitle, description1, description2, course) => {
         </Typography>
         <Typography variant="h8" color="initial">
           <p>
-            Cours :{' '}
+            Cours : &nbsp;
             <a href={syllabus} style={{ color: '#000000' }}>
               {course}
             </a>
@@ -37,11 +37,17 @@ const aCard = (title, subtitle, description1, description2, course) => {
   );
 };
 
-const HaLoginPage = () => {
+function HaLoginPage() {
   const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)');
-  const ResponsiveLogin = () => <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
-  const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
-  const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />);
+  function ResponsiveLogin() {
+    return <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
+  }
+  function ResponsiveCompletePassword() {
+    return <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
+  }
+  function PasswordChangeableLogin() {
+    return authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />;
+  }
 
   return (
     <div
@@ -63,7 +69,8 @@ const HaLoginPage = () => {
             </Typography>
             <Typography variant="h7" align="center">
               <div style={{ color: '#ffffff' }}>Une scolarité qui passe à l'échelle</div>
-            </Typography>{' '}
+            </Typography>
+            &nbsp;
             <PasswordChangeableLogin />
           </Grid>
           <Grid item xs={8}>
@@ -92,6 +99,6 @@ const HaLoginPage = () => {
       )}
     </div>
   );
-};
+}
 
 export default HaLoginPage;

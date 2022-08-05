@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import authProvider from '../providers/authProvider';
 import { makeStyles } from '@material-ui/core/styles';
+import authProvider from '../providers/authProvider';
 
 const useStyles = makeStyles({
   textInput: {
@@ -51,29 +51,32 @@ const useStyles = makeStyles({
   },
 });
 
-const CustomLabel = (text) => {
+function CustomLabel(text) {
   return <label style={{ textAlign: 'left', color: '#BDBDBD' }}>{text}</label>;
-};
+}
 
-const CompletePasswordForm = () => {
+function CompletePasswordForm() {
   const classes = useStyles();
   const [password, setPassword] = useState();
   const matchCognitoPassword = (password) => {
-    var format = /[!@#$%^&*()_+\-=]/;
+    const format = /[!@#$%^&*()_+\-=]/;
     if (password.length < 8) {
       return false;
-    } else if (!format.test(password)) {
+    }
+    if (!format.test(password)) {
       return false;
-    } else if (!/\d/.test(password)) {
+    }
+    if (!/\d/.test(password)) {
       return false;
-    } else if (!/[A-Z]/.test(password)) {
+    }
+    if (!/[A-Z]/.test(password)) {
       return false;
     }
     return true;
   };
   const handleSubmit = (event) => {
     event.preventDefault();
-    var passwordValue = document.getElementById('password').value;
+    const passwordValue = document.getElementById('password').value;
     if (passwordValue === '') {
       alert('Le mot de passe ne peut pas être vide.');
     } else if (passwordValue !== document.getElementById('confirm-password').value) {
@@ -89,7 +92,16 @@ const CompletePasswordForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div className={classes.formWrapper}>
-        <div style={{ color: '#000000', textAlign: 'center', fontWeight: 'bold', fontSize: '1.4em' }}>Première connexion ?</div>
+        <div
+          style={{
+            color: '#000000',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.4em',
+          }}
+        >
+          Première connexion ?
+        </div>
         <hr />
         <div className={classes.formGroup}>
           {CustomLabel('Entrez votre nouveau mot de passe')}
@@ -105,12 +117,12 @@ const CompletePasswordForm = () => {
       </div>
     </form>
   );
-};
-const CompletePasswordPage = () => {
+}
+function CompletePasswordPage() {
   return (
     <center style={{ paddingTop: '10%' }}>
       <CompletePasswordForm />
     </center>
   );
-};
+}
 export default CompletePasswordPage;
