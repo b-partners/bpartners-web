@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1659975549716" clover="3.2.0">
-  <project timestamp="1659975549716" name="All files">
-    <metrics statements="925" coveredstatements="173" conditionals="369" coveredconditionals="21" methods="298" coveredmethods="32" elements="1592" coveredelements="226" complexity="0" loc="925" ncloc="925" packages="12" files="48" classes="48"/>
+<coverage generated="1660026749198" clover="3.2.0">
+  <project timestamp="1660026749198" name="All files">
+    <metrics statements="915" coveredstatements="167" conditionals="369" coveredconditionals="21" methods="296" coveredmethods="32" elements="1580" coveredelements="220" complexity="0" loc="915" ncloc="915" packages="12" files="48" classes="48"/>
     <package name="src">
       <metrics statements="18" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="5"/>
       <file name="App.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/App.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
-        <line num="25" count="61" type="stmt"/>
-        <line num="26" count="142" type="stmt"/>
-        <line num="30" count="142" type="stmt"/>
+        <line num="25" count="4" type="stmt"/>
+        <line num="26" count="8" type="stmt"/>
+        <line num="30" count="8" type="stmt"/>
       </file>
       <file name="HaAppBar.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/HaAppBar.js">
         <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="2"/>
-        <line num="7" count="61" type="stmt"/>
-        <line num="8" count="23121" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="8" count="30" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
-        <line num="12" count="23121" type="stmt"/>
-        <line num="21" count="23121" type="stmt"/>
+        <line num="12" count="30" type="stmt"/>
+        <line num="21" count="30" type="stmt"/>
       </file>
       <file name="HaLayout.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/HaLayout.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="7" count="61" type="stmt"/>
-        <line num="8" count="23159" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="8" count="34" type="stmt"/>
       </file>
       <file name="conf.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/conf.js">
         <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="61" type="stmt"/>
-        <line num="3" count="61" type="stmt"/>
-        <line num="5" count="61" type="stmt"/>
-        <line num="18" count="61" type="stmt"/>
-        <line num="23" count="61" type="stmt"/>
-        <line num="30" count="61" type="stmt"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="18" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
       </file>
       <file name="haTheme.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/haTheme.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.gen.haClient">
       <metrics statements="567" coveredstatements="64" conditionals="262" coveredconditionals="19" methods="170" coveredmethods="14"/>
       <file name="api.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/gen/haClient/api.ts">
         <metrics statements="512" coveredstatements="32" conditionals="206" coveredconditionals="4" methods="156" coveredmethods="6"/>
-        <line num="910" count="61" type="stmt"/>
+        <line num="910" count="4" type="stmt"/>
         <line num="911" count="0" type="stmt"/>
         <line num="921" count="0" type="stmt"/>
         <line num="922" count="0" type="stmt"/>
@@ -171,7 +171,7 @@
         <line num="1248" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="1249" count="0" type="stmt"/>
         <line num="1251" count="0" type="stmt"/>
-        <line num="1263" count="61" type="stmt"/>
+        <line num="1263" count="4" type="stmt"/>
         <line num="1264" count="0" type="stmt"/>
         <line num="1265" count="0" type="stmt"/>
         <line num="1277" count="0" type="stmt"/>
@@ -190,7 +190,7 @@
         <line num="1374" count="0" type="stmt"/>
         <line num="1393" count="0" type="stmt"/>
         <line num="1394" count="0" type="stmt"/>
-        <line num="1403" count="61" type="stmt"/>
+        <line num="1403" count="4" type="stmt"/>
         <line num="1404" count="0" type="stmt"/>
         <line num="1405" count="0" type="stmt"/>
         <line num="1414" count="0" type="stmt"/>
@@ -217,7 +217,7 @@
         <line num="1608" count="0" type="stmt"/>
         <line num="1623" count="0" type="stmt"/>
         <line num="1625" count="0" type="stmt"/>
-        <line num="1633" count="61" type="stmt"/>
+        <line num="1633" count="4" type="stmt"/>
         <line num="1634" count="0" type="stmt"/>
         <line num="1642" count="0" type="stmt"/>
         <line num="1644" count="0" type="stmt"/>
@@ -243,14 +243,14 @@
         <line num="1691" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="1692" count="0" type="stmt"/>
         <line num="1694" count="0" type="stmt"/>
-        <line num="1706" count="61" type="stmt"/>
+        <line num="1706" count="4" type="stmt"/>
         <line num="1707" count="0" type="stmt"/>
         <line num="1708" count="0" type="stmt"/>
         <line num="1716" count="0" type="stmt"/>
         <line num="1717" count="0" type="stmt"/>
         <line num="1726" count="0" type="stmt"/>
         <line num="1727" count="0" type="stmt"/>
-        <line num="1736" count="61" type="stmt"/>
+        <line num="1736" count="4" type="stmt"/>
         <line num="1737" count="0" type="stmt"/>
         <line num="1738" count="0" type="stmt"/>
         <line num="1746" count="0" type="stmt"/>
@@ -259,7 +259,7 @@
         <line num="1777" count="0" type="stmt"/>
         <line num="1788" count="0" type="stmt"/>
         <line num="1790" count="0" type="stmt"/>
-        <line num="1798" count="61" type="stmt"/>
+        <line num="1798" count="4" type="stmt"/>
         <line num="1799" count="0" type="stmt"/>
         <line num="1809" count="0" type="stmt"/>
         <line num="1810" count="0" type="stmt"/>
@@ -341,7 +341,7 @@
         <line num="2002" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="2003" count="0" type="stmt"/>
         <line num="2005" count="0" type="stmt"/>
-        <line num="2017" count="61" type="stmt"/>
+        <line num="2017" count="4" type="stmt"/>
         <line num="2018" count="0" type="stmt"/>
         <line num="2019" count="0" type="stmt"/>
         <line num="2028" count="0" type="stmt"/>
@@ -356,7 +356,7 @@
         <line num="2075" count="0" type="stmt"/>
         <line num="2084" count="0" type="stmt"/>
         <line num="2085" count="0" type="stmt"/>
-        <line num="2094" count="61" type="stmt"/>
+        <line num="2094" count="4" type="stmt"/>
         <line num="2095" count="0" type="stmt"/>
         <line num="2096" count="0" type="stmt"/>
         <line num="2105" count="0" type="stmt"/>
@@ -377,8 +377,8 @@
         <line num="2231" count="0" type="stmt"/>
         <line num="2242" count="0" type="stmt"/>
         <line num="2244" count="0" type="stmt"/>
-        <line num="2252" count="61" type="stmt"/>
-        <line num="2253" count="11377" type="stmt"/>
+        <line num="2252" count="4" type="stmt"/>
+        <line num="2253" count="6" type="stmt"/>
         <line num="2263" count="0" type="stmt"/>
         <line num="2264" count="0" type="stmt"/>
         <line num="2266" count="0" type="stmt"/>
@@ -409,19 +409,19 @@
         <line num="2322" count="0" type="stmt"/>
         <line num="2323" count="0" type="stmt"/>
         <line num="2325" count="0" type="stmt"/>
-        <line num="2339" count="11377" type="stmt"/>
-        <line num="2340" count="11377" type="stmt"/>
-        <line num="2342" count="11377" type="stmt"/>
-        <line num="2344" count="11377" type="cond" truecount="1" falsecount="1"/>
-        <line num="2345" count="11377" type="stmt"/>
-        <line num="2348" count="11377" type="stmt"/>
-        <line num="2349" count="11377" type="stmt"/>
-        <line num="2350" count="11377" type="stmt"/>
-        <line num="2354" count="11377" type="stmt"/>
-        <line num="2356" count="11377" type="stmt"/>
-        <line num="2357" count="11377" type="cond" truecount="2" falsecount="2"/>
-        <line num="2358" count="11377" type="stmt"/>
-        <line num="2360" count="11377" type="stmt"/>
+        <line num="2339" count="6" type="stmt"/>
+        <line num="2340" count="6" type="stmt"/>
+        <line num="2342" count="6" type="stmt"/>
+        <line num="2344" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="2345" count="6" type="stmt"/>
+        <line num="2348" count="6" type="stmt"/>
+        <line num="2349" count="6" type="stmt"/>
+        <line num="2350" count="6" type="stmt"/>
+        <line num="2354" count="6" type="stmt"/>
+        <line num="2356" count="6" type="stmt"/>
+        <line num="2357" count="6" type="cond" truecount="2" falsecount="2"/>
+        <line num="2358" count="6" type="stmt"/>
+        <line num="2360" count="6" type="stmt"/>
         <line num="2374" count="0" type="stmt"/>
         <line num="2376" count="0" type="stmt"/>
         <line num="2378" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -508,15 +508,15 @@
         <line num="2597" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="2598" count="0" type="stmt"/>
         <line num="2600" count="0" type="stmt"/>
-        <line num="2612" count="61" type="stmt"/>
-        <line num="2613" count="11377" type="stmt"/>
-        <line num="2614" count="11377" type="stmt"/>
+        <line num="2612" count="4" type="stmt"/>
+        <line num="2613" count="6" type="stmt"/>
+        <line num="2614" count="6" type="stmt"/>
         <line num="2626" count="0" type="stmt"/>
         <line num="2627" count="0" type="stmt"/>
         <line num="2640" count="0" type="stmt"/>
         <line num="2641" count="0" type="stmt"/>
-        <line num="2651" count="11377" type="stmt"/>
-        <line num="2652" count="11377" type="stmt"/>
+        <line num="2651" count="6" type="stmt"/>
+        <line num="2652" count="6" type="stmt"/>
         <line num="2667" count="0" type="stmt"/>
         <line num="2668" count="0" type="stmt"/>
         <line num="2678" count="0" type="stmt"/>
@@ -527,7 +527,7 @@
         <line num="2712" count="0" type="stmt"/>
         <line num="2733" count="0" type="stmt"/>
         <line num="2734" count="0" type="stmt"/>
-        <line num="2743" count="61" type="stmt"/>
+        <line num="2743" count="4" type="stmt"/>
         <line num="2744" count="0" type="stmt"/>
         <line num="2745" count="0" type="stmt"/>
         <line num="2754" count="0" type="stmt"/>
@@ -542,8 +542,8 @@
         <line num="2856" count="0" type="stmt"/>
         <line num="2868" count="0" type="stmt"/>
         <line num="2870" count="0" type="stmt"/>
-        <line num="2882" count="11377" type="stmt"/>
-        <line num="2884" count="11377" type="stmt"/>
+        <line num="2882" count="6" type="stmt"/>
+        <line num="2884" count="6" type="stmt"/>
         <line num="2897" count="0" type="stmt"/>
         <line num="2899" count="0" type="stmt"/>
         <line num="2911" count="0" type="stmt"/>
@@ -557,65 +557,65 @@
       </file>
       <file name="base.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/gen/haClient/base.ts">
         <metrics statements="7" coveredstatements="5" conditionals="8" coveredconditionals="6" methods="2" coveredmethods="1"/>
-        <line num="20" count="61" type="cond" truecount="1" falsecount="1"/>
-        <line num="26" count="61" type="stmt"/>
-        <line num="52" count="11377" type="cond" truecount="1" falsecount="1"/>
-        <line num="53" count="11377" type="stmt"/>
-        <line num="54" count="11377" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="26" count="4" type="stmt"/>
+        <line num="52" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="53" count="6" type="stmt"/>
+        <line num="54" count="6" type="cond" truecount="2" falsecount="0"/>
         <line num="66" count="0" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
       </file>
       <file name="common.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/gen/haClient/common.ts">
         <metrics statements="39" coveredstatements="20" conditionals="44" coveredconditionals="8" methods="10" coveredmethods="6"/>
-        <line num="23" count="61" type="stmt"/>
-        <line num="30" count="61" type="stmt"/>
-        <line num="31" count="11377" type="cond" truecount="3" falsecount="1"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="31" count="6" type="cond" truecount="3" falsecount="1"/>
         <line num="32" count="0" type="stmt"/>
-        <line num="40" count="61" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
         <line num="41" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="42" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="43" count="0" type="stmt"/>
-        <line num="51" count="61" type="stmt"/>
+        <line num="51" count="4" type="stmt"/>
         <line num="52" count="0" type="cond" truecount="0" falsecount="5"/>
         <line num="53" count="0" type="stmt"/>
-        <line num="61" count="61" type="stmt"/>
-        <line num="62" count="11377" type="cond" truecount="3" falsecount="1"/>
+        <line num="61" count="4" type="stmt"/>
+        <line num="62" count="6" type="cond" truecount="3" falsecount="1"/>
         <line num="63" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="64" count="0" type="stmt"/>
-        <line num="72" count="61" type="stmt"/>
+        <line num="72" count="4" type="stmt"/>
         <line num="73" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="75" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="76" count="0" type="stmt"/>
-        <line num="84" count="61" type="stmt"/>
-        <line num="85" count="11377" type="stmt"/>
-        <line num="86" count="11377" type="stmt"/>
-        <line num="87" count="11377" type="stmt"/>
+        <line num="84" count="4" type="stmt"/>
+        <line num="85" count="6" type="stmt"/>
+        <line num="86" count="6" type="stmt"/>
+        <line num="87" count="6" type="stmt"/>
         <line num="88" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="89" count="0" type="stmt"/>
         <line num="90" count="0" type="stmt"/>
         <line num="91" count="0" type="stmt"/>
         <line num="94" count="0" type="stmt"/>
-        <line num="98" count="11377" type="stmt"/>
-        <line num="105" count="61" type="stmt"/>
+        <line num="98" count="6" type="stmt"/>
+        <line num="105" count="4" type="stmt"/>
         <line num="106" count="0" type="stmt"/>
         <line num="108" count="0" type="cond" truecount="0" falsecount="5"/>
         <line num="109" count="0" type="cond" truecount="0" falsecount="6"/>
-        <line num="116" count="61" type="stmt"/>
-        <line num="117" count="11377" type="stmt"/>
-        <line num="124" count="61" type="stmt"/>
-        <line num="125" count="11377" type="cond" truecount="0" falsecount="2"/>
-        <line num="126" count="11377" type="cond" truecount="2" falsecount="0"/>
-        <line num="127" count="11377" type="stmt"/>
+        <line num="116" count="4" type="stmt"/>
+        <line num="117" count="6" type="stmt"/>
+        <line num="124" count="4" type="stmt"/>
+        <line num="125" count="6" type="cond" truecount="0" falsecount="2"/>
+        <line num="126" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="127" count="6" type="stmt"/>
       </file>
       <file name="configuration.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/gen/haClient/configuration.ts">
         <metrics statements="9" coveredstatements="7" conditionals="4" coveredconditionals="1" methods="2" coveredmethods="1"/>
-        <line num="77" count="11377" type="stmt"/>
-        <line num="78" count="11377" type="stmt"/>
-        <line num="79" count="11377" type="stmt"/>
-        <line num="80" count="11377" type="stmt"/>
-        <line num="81" count="11377" type="stmt"/>
-        <line num="82" count="11377" type="stmt"/>
-        <line num="83" count="11377" type="stmt"/>
+        <line num="77" count="6" type="stmt"/>
+        <line num="78" count="6" type="stmt"/>
+        <line num="79" count="6" type="stmt"/>
+        <line num="80" count="6" type="stmt"/>
+        <line num="81" count="6" type="stmt"/>
+        <line num="82" count="6" type="stmt"/>
+        <line num="83" count="6" type="stmt"/>
         <line num="97" count="0" type="stmt"/>
         <line num="98" count="0" type="cond" truecount="0" falsecount="3"/>
       </file>
@@ -627,20 +627,20 @@
       <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="HaMenu.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/menu/HaMenu.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="3" count="61" type="stmt"/>
-        <line num="4" count="23017" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="4" count="26" type="stmt"/>
       </file>
       <file name="ManagerMenu.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/menu/ManagerMenu.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="10" count="61" type="stmt"/>
-        <line num="11" count="23017" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
+        <line num="11" count="26" type="stmt"/>
       </file>
     </package>
     <package name="src.operations.fees">
       <metrics statements="92" coveredstatements="12" conditionals="30" coveredconditionals="0" methods="33" coveredmethods="0"/>
       <file name="ByStatusFeeList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/ByStatusFeeList.js">
         <metrics statements="5" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="8" count="61" type="stmt"/>
+        <line num="8" count="4" type="stmt"/>
         <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="10" count="0" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
@@ -648,9 +648,9 @@
       </file>
       <file name="FeeList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/FeeList.js">
         <metrics statements="15" coveredstatements="2" conditionals="2" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="12" count="61" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
-        <line num="18" count="61" type="stmt"/>
+        <line num="18" count="4" type="stmt"/>
         <line num="19" count="0" type="stmt"/>
         <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="21" count="0" type="stmt"/>
@@ -666,7 +666,7 @@
       </file>
       <file name="FeeShow.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/FeeShow.js">
         <metrics statements="21" coveredstatements="2" conditionals="6" coveredconditionals="0" methods="7" coveredmethods="0"/>
-        <line num="14" count="61" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -675,7 +675,7 @@
         <line num="21" count="0" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
         <line num="27" count="0" type="stmt"/>
-        <line num="36" count="61" type="stmt"/>
+        <line num="36" count="4" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
@@ -690,17 +690,17 @@
       </file>
       <file name="FeesCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/FeesCreate.js">
         <metrics statements="47" coveredstatements="5" conditionals="16" coveredconditionals="0" methods="16" coveredmethods="0"/>
-        <line num="20" count="61" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
         <line num="25" count="0" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
-        <line num="30" count="61" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
-        <line num="39" count="61" type="stmt"/>
+        <line num="39" count="4" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="48" count="61" type="stmt"/>
+        <line num="48" count="4" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
         <line num="50" count="0" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
@@ -728,7 +728,7 @@
         <line num="102" count="0" type="stmt"/>
         <line num="110" count="0" type="stmt"/>
         <line num="124" count="0" type="stmt"/>
-        <line num="136" count="61" type="stmt"/>
+        <line num="136" count="4" type="stmt"/>
         <line num="137" count="0" type="stmt"/>
         <line num="138" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="139" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -740,20 +740,20 @@
       </file>
       <file name="byStatusRowStyle.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/byStatusRowStyle.js">
         <metrics statements="3" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="3" count="61" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
         <line num="4" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="5" count="0" type="stmt"/>
       </file>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/index.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="7" count="61" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.operations.payments">
       <metrics statements="22" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="0"/>
       <file name="PaymentCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/payments/PaymentCreate.js">
         <metrics statements="16" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="9" count="61" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
         <line num="12" count="0" type="stmt"/>
@@ -772,79 +772,79 @@
       </file>
       <file name="PaymentList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/payments/PaymentList.js">
         <metrics statements="5" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="6" count="61" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
-        <line num="12" count="61" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
       </file>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/payments/index.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.operations.profile">
       <metrics statements="18" coveredstatements="10" conditionals="8" coveredconditionals="0" methods="6" coveredmethods="2"/>
       <file name="ProfileEdit.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/profile/ProfileEdit.js">
         <metrics statements="4" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
-        <line num="16" count="61" type="stmt"/>
+        <line num="16" count="4" type="stmt"/>
         <line num="17" count="0" type="stmt"/>
       </file>
       <file name="ProfileShow.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/profile/ProfileShow.js">
         <metrics statements="12" coveredstatements="6" conditionals="8" coveredconditionals="0" methods="4" coveredmethods="2"/>
-        <line num="5" count="61" type="stmt"/>
-        <line num="6" count="104" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
         <line num="7" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="8" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="9" count="0" type="stmt"/>
-        <line num="11" count="104" type="stmt"/>
+        <line num="11" count="4" type="stmt"/>
         <line num="12" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="13" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="14" count="0" type="stmt"/>
-        <line num="16" count="104" type="stmt"/>
-        <line num="32" count="61" type="stmt"/>
-        <line num="33" count="142" type="stmt"/>
+        <line num="16" count="4" type="stmt"/>
+        <line num="32" count="4" type="stmt"/>
+        <line num="33" count="8" type="stmt"/>
       </file>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/profile/index.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
-        <line num="10" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.operations.studentGrades">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/studentGrades/index.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.operations.students">
       <metrics statements="13" coveredstatements="5" conditionals="6" coveredconditionals="0" methods="5" coveredmethods="0"/>
       <file name="StudentCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/students/StudentCreate.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
         <line num="5" count="0" type="stmt"/>
       </file>
       <file name="StudentList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/students/StudentList.js">
         <metrics statements="3" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="9" count="61" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
       </file>
       <file name="StudentShow.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/students/StudentShow.js">
         <metrics statements="6" coveredstatements="2" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="8" count="61" type="stmt"/>
+        <line num="8" count="4" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
-        <line num="22" count="61" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
       </file>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/students/index.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="7" count="61" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
       </file>
     </package>
@@ -852,24 +852,24 @@
       <metrics statements="10" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
       <file name="TeacherCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/teachers/TeacherCreate.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
         <line num="5" count="0" type="stmt"/>
       </file>
       <file name="TeacherList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/teachers/TeacherList.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="7" count="61" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
       </file>
       <file name="TeacherShow.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/teachers/TeacherShow.js">
         <metrics statements="4" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
-        <line num="13" count="61" type="stmt"/>
+        <line num="13" count="4" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
       </file>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/teachers/index.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="7" count="61" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
       </file>
     </package>
@@ -877,16 +877,16 @@
       <metrics statements="29" coveredstatements="9" conditionals="17" coveredconditionals="0" methods="8" coveredmethods="1"/>
       <file name="EditToolBar.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/EditToolBar.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="3" count="61" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
         <line num="4" count="0" type="stmt"/>
       </file>
       <file name="PrevNextPagination.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/PrevNextPagination.js">
         <metrics statements="20" coveredstatements="3" conditionals="17" coveredconditionals="0" methods="4" coveredmethods="0"/>
-        <line num="8" count="61" type="stmt"/>
-        <line num="10" count="61" type="stmt"/>
+        <line num="8" count="4" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
         <line num="12" count="0" type="stmt"/>
-        <line num="15" count="61" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="17" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
@@ -905,65 +905,55 @@
       </file>
       <file name="SexRadioButton.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/SexRadioButton.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="3" count="61" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
         <line num="4" count="0" type="stmt"/>
       </file>
       <file name="money.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/money.ts">
         <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="1" count="61" type="stmt"/>
-        <line num="3" count="61" type="stmt"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
         <line num="4" count="0" type="stmt"/>
       </file>
       <file name="typography.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/typography.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="1" count="61" type="stmt"/>
-        <line num="2" count="61" type="stmt"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
       </file>
     </package>
     <package name="src.providers">
-      <metrics statements="111" coveredstatements="37" conditionals="28" coveredconditionals="2" methods="43" coveredmethods="8"/>
+      <metrics statements="101" coveredstatements="31" conditionals="28" coveredconditionals="2" methods="41" coveredmethods="8"/>
       <file name="api.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/api.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
-        <line num="4" count="11377" type="stmt"/>
-        <line num="5" count="61" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
       </file>
       <file name="authProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/authProvider.ts">
-        <metrics statements="23" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="4"/>
-        <line num="3" count="61" type="stmt"/>
-        <line num="4" count="61" type="stmt"/>
-        <line num="5" count="61" type="stmt"/>
-        <line num="6" count="61" type="stmt"/>
-        <line num="7" count="61" type="stmt"/>
-        <line num="8" count="61" type="stmt"/>
-        <line num="10" count="61" type="stmt"/>
-        <line num="12" count="61" type="stmt"/>
-        <line num="14" count="61" type="stmt"/>
-        <line num="15" count="11377" type="stmt"/>
-        <line num="16" count="11377" type="stmt"/>
-        <line num="17" count="11377" type="stmt"/>
-        <line num="20" count="61" type="stmt"/>
-        <line num="33" count="11339" type="stmt"/>
-        <line num="37" count="104" type="stmt"/>
+        <metrics statements="13" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="4"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
         <line num="42" count="0" type="stmt"/>
         <line num="43" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="49" count="0" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
         <line num="52" count="0" type="stmt"/>
       </file>
       <file name="dataProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/dataProvider.ts">
         <metrics statements="31" coveredstatements="6" conditionals="18" coveredconditionals="1" methods="6" coveredmethods="2"/>
-        <line num="9" count="61" type="stmt"/>
-        <line num="11" count="61" type="stmt"/>
-        <line num="12" count="11377" type="cond" truecount="1" falsecount="1"/>
+        <line num="9" count="4" type="stmt"/>
+        <line num="11" count="4" type="stmt"/>
+        <line num="12" count="6" type="cond" truecount="1" falsecount="1"/>
         <line num="13" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="14" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="17" count="0" type="stmt"/>
-        <line num="20" count="61" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
         <line num="23" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="24" count="0" type="stmt"/>
@@ -973,13 +963,13 @@
         <line num="30" count="0" type="stmt"/>
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
-        <line num="35" count="11377" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
         <line num="43" count="0" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
-        <line num="50" count="61" type="stmt"/>
+        <line num="50" count="4" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
         <line num="52" count="0" type="stmt"/>
         <line num="53" count="0" type="stmt"/>
@@ -989,13 +979,13 @@
       </file>
       <file name="feeProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/feeProvider.ts">
         <metrics statements="19" coveredstatements="5" conditionals="6" coveredconditionals="0" methods="8" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
-        <line num="5" count="61" type="stmt"/>
-        <line num="6" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
-        <line num="10" count="61" type="stmt"/>
-        <line num="12" count="61" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
         <line num="14" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="17" count="0" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
@@ -1011,9 +1001,9 @@
       </file>
       <file name="paymentProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/paymentProvider.ts">
         <metrics statements="15" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="6" count="61" type="stmt"/>
-        <line num="7" count="61" type="stmt"/>
-        <line num="9" count="61" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
         <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
@@ -1029,17 +1019,17 @@
       </file>
       <file name="profileProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/profileProvider.ts">
         <metrics statements="7" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="4" coveredmethods="1"/>
-        <line num="4" count="61" type="stmt"/>
-        <line num="6" count="11377" type="stmt"/>
-        <line num="7" count="11377" type="cond" truecount="1" falsecount="1"/>
-        <line num="8" count="11377" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="7" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="8" count="6" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
         <line num="17" count="0" type="stmt"/>
       </file>
       <file name="studentProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/studentProvider.ts">
         <metrics statements="7" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
@@ -1049,7 +1039,7 @@
       </file>
       <file name="teacherProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/teacherProvider.ts">
         <metrics statements="7" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="4" count="61" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
         <line num="7" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
@@ -1062,10 +1052,10 @@
       <metrics statements="40" coveredstatements="6" conditionals="18" coveredconditionals="0" methods="11" coveredmethods="0"/>
       <file name="CompletePasswordPage.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/security/CompletePasswordPage.js">
         <metrics statements="31" coveredstatements="4" conditionals="14" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="5" count="61" type="stmt"/>
-        <line num="54" count="61" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
         <line num="55" count="0" type="stmt"/>
-        <line num="58" count="61" type="stmt"/>
+        <line num="58" count="4" type="stmt"/>
         <line num="59" count="0" type="stmt"/>
         <line num="60" count="0" type="stmt"/>
         <line num="61" count="0" type="stmt"/>
@@ -1091,15 +1081,15 @@
         <line num="86" count="0" type="stmt"/>
         <line num="89" count="0" type="stmt"/>
         <line num="96" count="0" type="stmt"/>
-        <line num="109" count="61" type="stmt"/>
+        <line num="109" count="4" type="stmt"/>
         <line num="110" count="0" type="stmt"/>
       </file>
       <file name="LoginPage.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/security/LoginPage.js">
         <metrics statements="9" coveredstatements="2" conditionals="4" coveredconditionals="0" methods="5" coveredmethods="0"/>
-        <line num="11" count="61" type="stmt"/>
+        <line num="11" count="4" type="stmt"/>
         <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
-        <line num="40" count="61" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
         <line num="41" count="0" type="stmt"/>
         <line num="42" count="0" type="stmt"/>
         <line num="43" count="0" type="stmt"/>

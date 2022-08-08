@@ -1,15 +1,15 @@
 import { Configuration } from '../gen/haClient'
 
-const idItem = 'ha_id'
-const roleItem = 'ha_role'
+// const idItem = 'ha_id'
+// const roleItem = 'ha_role'
 const bearerItem = 'ha_bearer'
 const paramIsTemporaryPassword = 't'
-const paramUsername = 'u'
-const paramTemporaryPassword = 'p'
+// const paramUsername = 'u'
+// const paramTemporaryPassword = 'p'
 
-const toBase64 = (param: string) => Buffer.from(param).toString('base64')
+// const toBase64 = (param: string) => Buffer.from(param).toString('base64')
 
-const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii')
+// const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii')
 
 const getCachedAuthConf = (): Configuration => {
   const conf = new Configuration()
@@ -45,10 +45,10 @@ const authProvider = {
   },
 
   setNewPassword: async (newPassword: string): Promise<void> => {
-    const queryString = window.location.search
-    const urlParams = new URLSearchParams(queryString)
-    const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string
-    const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string
+    // const queryString = window.location.search
+    // const urlParams = new URLSearchParams(queryString)
+    // const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string
+    // const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string
     window.location.replace('/')
   },
 
