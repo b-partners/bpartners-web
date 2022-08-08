@@ -1,7 +1,5 @@
 import { DateField, EmailField, FunctionField, SimpleShowLayout, Show, TextField } from 'react-admin'
 
-import authProvider from '../../providers/authProvider'
-
 import { unexpectedValue } from '../utils/typography'
 
 export const ProfileLayout = () => {
@@ -32,9 +30,8 @@ export const ProfileLayout = () => {
 }
 
 const ProfileShow = () => {
-  const id = authProvider.getCachedWhoami().id
   return (
-    <Show id={id} resource='profile' basePath='/profile' title='Mon profil'>
+    <Show id={null} resource='profile' basePath='/profile' title='Mon profil'>
       <ProfileLayout />
     </Show>
   )
