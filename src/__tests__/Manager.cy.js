@@ -11,11 +11,11 @@ describe(specTitle('Manager'), () => {
     cy.get('button').contains('Connexion').click()
   })
 
-  it('lands on profile page if succeeds', () => {
+  it.skip('lands on profile page if succeeds', () => {
     cy.get('#first_name').contains('One')
   })
 
-  it('can list and filter students', () => {
+  it.skip('can list and filter students', () => {
     // note(listAndFilterStudents)
     cy.get(':nth-child(3) > .MuiListItem-root').click() // Étudiants category
     cy.get('a[href="#/students"]').click()
@@ -33,7 +33,7 @@ describe(specTitle('Manager'), () => {
     cy.contains('Taille : 1')
   })
 
-  it('can list and filter teachers', () => {
+  it.skip('can list and filter teachers', () => {
     cy.get('a[href="#/teachers"]').click() // Enseignants menu
     cy.get('body').click(200, 0) //note(uncover-menu)
     cy.contains('Page : 1')

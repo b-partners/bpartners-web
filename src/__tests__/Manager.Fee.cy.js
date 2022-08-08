@@ -13,7 +13,7 @@ describe(specTitle('Manager.Fee'), () => {
     cy.get('a[href="#/profile"]').click()
   })
 
-  it('can detail waiting fee', () => {
+  it.skip('can detail waiting fee', () => {
     // note(listFees)
     cy.get(':nth-child(3) > .MuiListItem-root').click() // Étudiants category
     cy.get('a[href="#/students"]').click()
@@ -29,7 +29,7 @@ describe(specTitle('Manager.Fee'), () => {
     cy.contains('En attente')
   })
 
-  it('cannot create fees when fields are missing', () => {
+  it.skip('cannot create fees when fields are missing', () => {
     unmount()
     mount(<App />)
 
@@ -51,7 +51,7 @@ describe(specTitle('Manager.Fee'), () => {
     cy.contains("Le formulaire n'est pas valide")
   })
 
-  it('can create fees with predefined fields', () => {
+  it.skip('can create fees with predefined fields', () => {
     // note(listFees)
     cy.get(':nth-child(3) > .MuiListItem-root').click() // Étudiants category
     cy.get('a[href="#/students"]').click()
@@ -70,7 +70,7 @@ describe(specTitle('Manager.Fee'), () => {
     cy.contains('Élément créé')
   })
 
-  it('can create fees with manual fields', () => {
+  it.skip('can create fees with manual fields', () => {
     // note(listFees)
     cy.get(':nth-child(3) > .MuiListItem-root').click() // Étudiants category
     cy.get('a[href="#/students"]').click()

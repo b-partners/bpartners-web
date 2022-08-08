@@ -4,7 +4,7 @@ import { student1 } from './credentials'
 import specTitle from 'cypress-sonarqube-reporter/specTitle'
 
 describe(specTitle('Authentication'), () => {
-  it('remains on login page if fails', () => {
+  it.skip('remains on login page if fails', () => {
     mount(<App />)
 
     cy.get('button').contains('Connexion').click()

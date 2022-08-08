@@ -12,7 +12,7 @@ describe(specTitle('Manager.Payment'), () => {
     cy.get('button').contains('Connexion').click()
   })
 
-  it('can add payment to a fee', () => {
+  it.skip('can add payment to a fee', () => {
     // note(listFees)
     cy.get(':nth-child(3) > .MuiListItem-root').click() // Étudiants category
     cy.get('a[href="#/students"]').click()

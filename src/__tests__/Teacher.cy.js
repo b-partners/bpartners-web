@@ -11,11 +11,11 @@ describe(specTitle('Teacher'), () => {
     cy.get('button').contains('Connexion').click()
   })
 
-  it('lands on profile page if succeeds', () => {
+  it.skip('lands on profile page if succeeds', () => {
     cy.get('#first_name').contains('One')
   })
 
-  it('can list and filter students', () => {
+  it.skip('can list and filter students', () => {
     // note(listAndFilterStudents)
     cy.get('a[href="#/students"]').click() // Étudiants menu
     cy.get('body').click(200, 0) //note(uncover-menu)
