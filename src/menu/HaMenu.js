@@ -1,7 +1,7 @@
-import ManagerMenu from './ManagerMenu'
+import ManagerMenu from './ManagerMenu';
 
-const HaMenu = () => {
-    return <ManagerMenu />;
+function HaMenu() {
+  return <ManagerMenu />;
 }
 
-export default HaMenu
+export default HaMenu;
