@@ -38,7 +38,7 @@
     "build": "react-scripts build",
     "test": "cypress run-ct",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix src/**/*js src/**/*jsx src/**/*ts"
+    "lint": "eslint --fix src/**/*js src/**/*ts"
   },
   "eslintConfig": {
     "extends": [
