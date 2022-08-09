@@ -7,6 +7,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { mainTheme } from '../haTheme';
 import CompletePasswordPage from './CompletePasswordPage';
 import authProvider from '../providers/authProvider';
+import React from 'react';
 
 const aCard = (title, subtitle, description1, description2, course) => {
   const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view';
