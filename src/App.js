@@ -1,26 +1,27 @@
-import { Admin } from '@react-admin/ra-enterprise'
-import { CustomRoutes } from 'react-admin'
-import { Resource } from '@react-admin/ra-rbac'
+import React from 'react';
+import { Admin } from '@react-admin/ra-enterprise';
+import { CustomRoutes } from 'react-admin';
+import { Resource } from '@react-admin/ra-rbac';
 
-import { Route } from 'react-router-dom'
+import { Route } from 'react-router-dom';
 
-import dataProvider from './providers/dataProvider'
-import authProvider from './providers/authProvider.ts'
+import dataProvider from './providers/dataProvider';
+import authProvider from './providers/authProvider.ts';
 
-import polyglotI18nProvider from 'ra-i18n-polyglot'
-import frenchMessages from 'ra-language-french'
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import frenchMessages from 'ra-language-french';
 
-import profile from './operations/profile'
-import students from './operations/students'
-import teachers from './operations/teachers'
+import profile from './operations/profile';
+import students from './operations/students';
+import teachers from './operations/teachers';
 
-import fees from './operations/fees'
-import payments from './operations/payments'
+import fees from './operations/fees';
+import payments from './operations/payments';
 
-import studentGrades from './operations/studentGrades'
+import studentGrades from './operations/studentGrades';
 
-import MyLayout from './HaLayout'
-import HaLoginPage from './security/LoginPage'
+import MyLayout from './HaLayout';
+import HaLoginPage from './security/LoginPage';
 
 const App = () => (
   <Admin
@@ -52,6 +53,6 @@ const App = () => (
       <Route exact path='/fees/:feeId/payments/create' element={<payments.create />} />
     </CustomRoutes>
   </Admin>
-)
+);
 
-export default App
+export default App;
