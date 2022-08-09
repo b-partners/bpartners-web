@@ -1,4 +1,5 @@
-import ManagerMenu from './ManagerMenu';
+import React from 'react';
+import { ManagerMenu } from './ManagerMenu';
 
 function HaMenu() {
   return <ManagerMenu />;
