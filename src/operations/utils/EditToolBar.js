@@ -1,8 +1,12 @@
-import { Toolbar, SaveButton } from 'react-admin'
+import React from 'react';
+import { Toolbar, SaveButton } from 'react-admin';
 
-const EditToolBar = props => (
-  <Toolbar {...props}>
-    <SaveButton disabled={props.pristine} />
-  </Toolbar>
-)
-export default EditToolBar
+function EditToolBar(props) {
+  const { pristine } = props;
+  return (
+    <Toolbar {...props}>
+      <SaveButton disabled={pristine} />
+    </Toolbar>
+  );
+}
+export default EditToolBar;
