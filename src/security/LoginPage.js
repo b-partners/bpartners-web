@@ -7,7 +7,7 @@ import { Typography } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { mainTheme } from '../haTheme';
 import CompletePasswordPage from './CompletePasswordPage';
-import authProvider from '../providers/authProvider';
+import authProvider from '../providers/authProvider.ts';
 
 const aCard = (title, subtitle, description1, description2, course) => {
   const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view';
@@ -39,18 +39,18 @@ const aCard = (title, subtitle, description1, description2, course) => {
   );
 };
 
+function ResponsiveLogin() {
+  return <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
+}
+function ResponsiveCompletePassword() {
+  return <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
+}
+function PasswordChangeableLogin() {
+  return authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />;
+}
+
 function HaLoginPage() {
   const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)');
-  function ResponsiveLogin() {
-    return <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
-  }
-  function ResponsiveCompletePassword() {
-    return <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
-  }
-  function PasswordChangeableLogin() {
-    return authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />;
-  }
-
   return (
     <div
       style={{
@@ -88,7 +88,13 @@ function HaLoginPage() {
 
               <Grid item xs={1} />
               <Grid item xs={5}>
-                {aCard('250,000,000', 'Utilisateurs', 'Onboarder tout Madagascar ?', 'Dix fois sans problème.', 'DONNEES-2')}
+                {aCard(
+                  '250,000,000',
+                  'Utilisateurs',
+                  'Onboarder tout Madagascar ?',
+                  'Dix fois sans problème.',
+                  'DONNEES-2',
+                )}
               </Grid>
               <Grid item xs={4}>
                 {aCard('1', 'Seconde', 'Pire réponse de notre API', 'au percentile 97.', 'PROG-2')}
