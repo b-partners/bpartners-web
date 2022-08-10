@@ -29,6 +29,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "prettier": "^2.7.1",
     "prop-types": "^15.7.2",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "4.0.3",
     "ts-jest": "^26.5.4",
     "typescript": "^4.5.4"
@@ -38,7 +39,7 @@
     "build": "react-scripts build",
     "test": "cypress run-ct",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix src/**/*js src/**/*ts"
+    "lint": "eslint --fix src/**/*js src/**/*jsx"
   },
   "eslintConfig": {
     "extends": [
