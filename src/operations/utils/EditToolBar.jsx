@@ -9,4 +9,5 @@ function EditToolBar(props) {
     </Toolbar>
   );
 }
+
 export default EditToolBar;
