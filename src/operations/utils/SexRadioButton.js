@@ -1,14 +1,17 @@
-import { RadioButtonGroupInput } from 'react-admin'
+import React from 'react';
+import { RadioButtonGroupInput } from 'react-admin';
 
-const SexRadioButton = () => (
-  <RadioButtonGroupInput
-    source='sex'
-    label='Sexe'
-    choices={[
-      { id: 'M', name: 'Homme' },
-      { id: 'F', name: 'Femme' }
-    ]}
-  />
-)
+function SexRadioButton() {
+  return (
+    <RadioButtonGroupInput
+      source="Sexe"
+      label="Sexe"
+      choices={[
+        { id: 'M', name: 'Homme' },
+        { id: 'F', name: 'Femme' },
+      ]}
+    />
+  );
+}
 
-export default SexRadioButton
+export default SexRadioButton;
