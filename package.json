@@ -13,6 +13,7 @@
     "react-admin": "^4.2.0",
     "react-dom": "^18.2.0",
     "react-router-redux": "^4.0.8",
+    "prop-types": "^15.8.1",
     "typeface-quicksand": "^1.1.13"
   },
   "devDependencies": {
