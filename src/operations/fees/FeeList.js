@@ -3,20 +3,24 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { List } from '@react-admin/ra-rbac';
-import { TextField, Datagrid, DateField, FunctionField, ShowButton, useDataProvider, TopToolbar, CreateButton } from 'react-admin';
+import {
+  TextField, Datagrid, DateField, FunctionField, ShowButton, useDataProvider, TopToolbar, CreateButton,
+} from 'react-admin';
 
 import rowStyle from './byStatusRowStyle';
-import { prettyPrintMoney } from '../utils/money';
+import { prettyPrintMoney } from '../utils/money.ts';
 
-import { maxPageSize } from '../../providers/dataProvider';
+import { maxPageSize } from '../../providers/dataProvider.ts';
 
-const Actions = ({ basePath, resource }) => (
-  <TopToolbar disableGutters>
-    <CreateButton to={basePath + '/create'} resource={resource} />
-  </TopToolbar>
-);
+function Actions({ basePath, resource }) {
+  return (
+    <TopToolbar disableGutters>
+      <CreateButton to={basePath + '/create'} resource={resource} />
+    </TopToolbar>
+  );
+}
 
-const FeeList = ({ studentId }) => {
+function FeeList({ studentId }) {
   const params = useParams();
   const definedStudentId = studentId ? studentId : params.studentId;
   const [studentRef, setStudentRef] = useState('...');
@@ -40,15 +44,19 @@ const FeeList = ({ studentId }) => {
       pagination={false}
       perPage={maxPageSize}
     >
-      <Datagrid rowClick={id => `/fees/${id}/show`} rowStyle={rowStyle}>
+      <Datagrid rowClick={(id) => `/fees/${id}/show`} rowStyle={rowStyle}>
         <DateField source="due_datetime" label="Date limite" />
         <TextField source="comment" label="Commentaire" />
-        <FunctionField label="Reste à payer" render={record => prettyPrintMoney(record.remaining_amount)} textAlign="right" />
+        <FunctionField
+          label="Reste à payer"
+          render={(record) => prettyPrintMoney(record.remaining_amount)}
+          textAlign="right"
+        />
         <DateField source="creation_datetime" label="Date de création" />
         <ShowButton basePath="/fees" />
       </Datagrid>
     </List>
   );
-};
+}
 
 export default FeeList;
