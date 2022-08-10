@@ -1,21 +1,23 @@
-import { Show, TopToolbar, EditButton } from 'react-admin'
+import React from 'react';
+import { Show, TopToolbar, EditButton } from 'react-admin';
 
-import { ProfileLayout } from '../profile/ProfileShow'
+import { ProfileLayout } from '../profile/ProfileShow';
 
-const ActionsOnShow = ({ basePath, data, resource }) => {
+function ActionsOnShow(props) {
+  const { basePath, data, resource } = props;
   return (
     <TopToolbar disableGutters>
       <EditButton basePath={basePath} resource={resource} record={data} />
     </TopToolbar>
-  )
+  );
 }
 
-const TeacherShow = () => {
+function TeacherShow() {
   return (
-    <Show title='Enseignants' actions={<ActionsOnShow />}>
+    <Show title="Enseignants" actions={<ActionsOnShow />}>
       <ProfileLayout />
     </Show>
-  )
+  );
 }
 
-export default TeacherShow
+export default TeacherShow;
