@@ -9,7 +9,7 @@ module.exports = {
         ecmaFeatures: {
             jsx: true,
         },
-        ecmaVersion: 'latest',
+        ecmaVersion: 6,
         sourceType: 'module',
     },
     plugins: ['react'],
@@ -18,4 +18,12 @@ module.exports = {
         'react/no-unescaped-entities': 'off',
         'max-len': ['error', { 'code': 120 }],
     },
+    settings: {
+        'import/resolver': {
+            node: {
+                extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                moduleDirectory: ['node_modules', 'src/'],
+            },
+        },
+    }
 };
