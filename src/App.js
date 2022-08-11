@@ -11,13 +11,6 @@ import polyglotI18nProvider from 'ra-i18n-polyglot'
 import frenchMessages from 'ra-language-french'
 
 import profile from './operations/profile'
-import students from './operations/students'
-import teachers from './operations/teachers'
-
-import fees from './operations/fees'
-import payments from './operations/payments'
-
-import studentGrades from './operations/studentGrades'
 
 import MyLayout from './HaLayout'
 import HaLoginPage from './security/LoginPage'
@@ -32,24 +25,8 @@ const App = () => (
     layout={MyLayout}
   >
     <Resource name='profile' />
-    <Resource name='students' {...students} />
-    <Resource name='teachers' {...teachers} />
-
-    <Resource name='fees' {...fees} />
-    <Resource name='payments' {...payments} />
-
-    <Resource name='student-grades' {...studentGrades} />
-
     <CustomRoutes>
       <Route exact path='/profile' element={<profile.show />} />
-
-      <Route exact path='/students/:studentId/fees' element={<fees.list />} />
-      <Route exact path='/students/:studentId/fees/create' element={<fees.create />} />
-      <Route exact path='/fees/:feeId/show' element={<fees.show />} />
-      <Route exact path='/fees' element={<fees.listByStatus />} />
-
-      <Route exact path='/fees/:feeId/payments' element={<payments.list />} />
-      <Route exact path='/fees/:feeId/payments/create' element={<payments.create />} />
     </CustomRoutes>
   </Admin>
 )
