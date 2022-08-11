@@ -17,6 +17,8 @@ module.exports = {
         'import/prefer-default-export': 'off',
         'react/no-unescaped-entities': 'off',
         'max-len': ['error', { 'code': 120 }],
+        "react/jsx-props-no-spreading": "off",
+        "react/prop-types": "off"
     },
     settings: {
         'import/resolver': {
