@@ -1,4 +1,6 @@
-import { MultiLevelMenu, MenuItemCategory, MenuItemList, MenuItemNode } from '@react-admin/ra-navigation';
+import {
+  MultiLevelMenu, MenuItemCategory, MenuItemList, MenuItemNode,
+} from '@react-admin/ra-navigation';
 import { CardContent, Typography } from '@mui/material';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';

@@ -83,7 +83,7 @@ function CompletePasswordForm() {
       alert('Les mots de passe ne correspondent pas !');
     } else if (!matchCognitoPassword(passwordValue)) {
       alert(
-        'Le mot de passe doit : \n - avoir au moins 8 caractères \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre'
+        'Le mot de passe doit : \n - avoir au moins 8 caractères \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre',
       );
     } else {
       authProvider.setNewPassword(password);

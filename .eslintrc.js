@@ -4,7 +4,7 @@ module.exports = {
     es2021: true,
     jest: true,
   },
-  extends: ['plugin:react/recommended', 'prettier', 'airbnb'],
+  extends: ['plugin:react/recommended', 'airbnb','prettier', 'plugin:cypress/recommended', 'plugin:import/recommended'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -16,6 +16,9 @@ module.exports = {
   rules: {
     'import/prefer-default-export': 'off',
     'react/no-unescaped-entities': 'off',
-    'max-len': ['error', { 'code': 120 }],
+    'max-len': ['error', { 'code': 160 }],
+    'react/react-in-jsx-scope': 'off',
+    'import/no-unresolved': 'off',
+    'import/extensions': 'off'
   },
 };
