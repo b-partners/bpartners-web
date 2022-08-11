@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import authProvider from '../providers/authProvider'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState } from 'react';
+import authProvider from '../providers/authProvider';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   textInput: {
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     marginBottom: '5px',
     border: '0',
     outline: '0',
-    borderBottom: '1px solid #000000'
+    borderBottom: '1px solid #000000',
   },
   submitInput: {
     color: '#ffffff',
@@ -26,12 +26,12 @@ const useStyles = makeStyles({
     border: '0',
     borderRadius: '4px',
     '&:hover, &:focus': {
-      backgroundColor: '#303f9f'
+      backgroundColor: '#303f9f',
     },
     '&:active': {
       backgroundColor: '#e0e0e0',
-      color: '#878787'
-    }
+      color: '#878787',
+    },
   },
   formWrapper: {
     opacity: '0.9',
@@ -44,48 +44,48 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     justifyContent: 'center',
     justifyItems: 'center',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   formGroup: {
-    width: '100%'
-  }
-})
+    width: '100%',
+  },
+});
 
-const CustomLabel = text => {
-  return <label style={{ textAlign: 'left', color: '#BDBDBD' }}>{text}</label>
-}
+const CustomLabel = (text) => {
+  return <label style={{ textAlign: 'left', color: '#BDBDBD' }}>{text}</label>;
+};
 
 const CompletePasswordForm = () => {
-  const classes = useStyles()
-  const [password, setPassword] = useState()
-  const matchCognitoPassword = password => {
-    var format = /[!@#$%^&*()_+\-=]/
+  const classes = useStyles();
+  const [password, setPassword] = useState();
+  const matchCognitoPassword = (password) => {
+    var format = /[!@#$%^&*()_+\-=]/;
     if (password.length < 8) {
-      return false
+      return false;
     } else if (!format.test(password)) {
-      return false
+      return false;
     } else if (!/\d/.test(password)) {
-      return false
+      return false;
     } else if (!/[A-Z]/.test(password)) {
-      return false
+      return false;
     }
-    return true
-  }
-  const handleSubmit = event => {
-    event.preventDefault()
-    var passwordValue = document.getElementById('password').value
+    return true;
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    var passwordValue = document.getElementById('password').value;
     if (passwordValue === '') {
-      alert('Le mot de passe ne peut pas être vide.')
+      alert('Le mot de passe ne peut pas être vide.');
     } else if (passwordValue !== document.getElementById('confirm-password').value) {
-      alert('Les mots de passe ne correspondent pas !')
+      alert('Les mots de passe ne correspondent pas !');
     } else if (!matchCognitoPassword(passwordValue)) {
       alert(
         'Le mot de passe doit : \n - avoir au moins 8 caractères \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre'
-      )
+      );
     } else {
-      authProvider.setNewPassword(password)
+      authProvider.setNewPassword(password);
     }
-  }
+  };
   return (
     <form onSubmit={handleSubmit}>
       <div className={classes.formWrapper}>
@@ -93,24 +93,24 @@ const CompletePasswordForm = () => {
         <hr />
         <div className={classes.formGroup}>
           {CustomLabel('Entrez votre nouveau mot de passe')}
-          <input className={classes.textInput} type='password' onChange={e => setPassword(e.target.value)} id='password' />
+          <input className={classes.textInput} type="password" onChange={(e) => setPassword(e.target.value)} id="password" />
         </div>
         <div className={classes.formGroup}>
           {CustomLabel('Confirmez votre nouveau mot de passe')}
-          <input className={classes.textInput} type='password' id='confirm-password' />
+          <input className={classes.textInput} type="password" id="confirm-password" />
         </div>
         <div className={classes.formGroup}>
-          <input value='Enregistrer' type='submit' className={classes.submitInput} />
+          <input value="Enregistrer" type="submit" className={classes.submitInput} />
         </div>
       </div>
     </form>
-  )
-}
+  );
+};
 const CompletePasswordPage = () => {
   return (
     <center style={{ paddingTop: '10%' }}>
       <CompletePasswordForm />
     </center>
-  )
-}
-export default CompletePasswordPage
+  );
+};
+export default CompletePasswordPage;

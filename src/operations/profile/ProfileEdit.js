@@ -3,16 +3,16 @@ import EditToolbar from '../utils/EditToolBar'
 
 const StatusRadioButton = () => (
   <RadioButtonGroupInput
-    source='status'
-    label='Statut'
+    source="status"
+    label="Statut"
     choices={[
       { id: 'ENABLED', name: 'Actif·ve' },
-      { id: 'DISABLED', name: 'Inactif·ve' }
+      { id: 'DISABLED', name: 'Inactif·ve' },
     ]}
   />
-)
+);
 
-const ProfileEdit = props => (
+const ProfileEdit = (props) => (
   <Edit {...props}>
     <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source='first_name' label='Prénom·s' fullWidth={true} />
@@ -20,6 +20,6 @@ const ProfileEdit = props => (
       <TextInput source='email' fullWidth={true} />
     </SimpleForm>
   </Edit>
-)
+);
 
-export default ProfileEdit
+export default ProfileEdit;

@@ -1,12 +1,12 @@
-import Money from '@material-ui/icons/AttachMoney'
-import PaymentList from './PaymentList'
-import PaymentCreate from './PaymentCreate'
+import Money from '@material-ui/icons/AttachMoney';
+import PaymentList from './PaymentList';
+import PaymentCreate from './PaymentCreate';
 
 const payments = {
   list: PaymentList,
   create: PaymentCreate,
   icon: Money,
-  options: { label: 'Paiements' }
-}
+  options: { label: 'Paiements' },
+};
 
-export default payments
+export default payments;
