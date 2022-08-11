@@ -14,7 +14,9 @@
     "react-admin": "^4.2.0",
     "react-dom": "^18.2.0",
     "react-router-redux": "^4.0.8",
-    "typeface-quicksand": "^1.1.13"
+    "typeface-quicksand": "^1.1.13",
+    "react-hook-form": "^7.34.0",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
@@ -32,6 +34,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "prettier": "^2.7.1",
     "prop-types": "^15.8.1",
+    "react-hook-form": "^7.34.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "4.0.3",
     "ts-jest": "^26.5.4",
