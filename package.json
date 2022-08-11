@@ -4,6 +4,7 @@
   "dependencies": {
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
+    "@mui/material": "^5.10.0",
     "@react-admin/ra-enterprise": "^6.0.3",
     "@react-admin/ra-navigation": "^4.0.6",
     "@react-admin/ra-rbac": "^4.0.1",
@@ -13,10 +14,10 @@
     "react": "^18.2.0",
     "react-admin": "^4.2.0",
     "react-dom": "^18.2.0",
-    "react-router-redux": "^4.0.8",
-    "typeface-quicksand": "^1.1.13",
     "react-hook-form": "^7.34.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "react-router-redux": "^4.0.8",
+    "typeface-quicksand": "^1.1.13"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
