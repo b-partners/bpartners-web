@@ -7,7 +7,7 @@ import { Typography } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { mainTheme } from '../haTheme';
 import CompletePasswordPage from './CompletePasswordPage';
-import authProvider from '../providers/authProvider.ts';
+import authProvider from '../providers/authProvider';
 
 const aCard = (title, subtitle, description1, description2, course) => {
   const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view';
@@ -88,13 +88,15 @@ function HaLoginPage() {
 
               <Grid item xs={1} />
               <Grid item xs={5}>
-                {aCard(
-                  '250,000,000',
-                  'Utilisateurs',
-                  'Onboarder tout Madagascar ?',
-                  'Dix fois sans problème.',
-                  'DONNEES-2',
-                )}
+                {
+                  aCard(
+                    '250,000,000',
+                    'Utilisateurs',
+                    'Onboarder tout Madagascar ?',
+                    'Dix fois sans problème.',
+                    'DONNEES-2',
+                  )
+                }
               </Grid>
               <Grid item xs={4}>
                 {aCard('1', 'Seconde', 'Pire réponse de notre API', 'au percentile 97.', 'PROG-2')}
