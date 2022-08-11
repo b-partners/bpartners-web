@@ -5,8 +5,6 @@ import Receipt from '@material-ui/icons/Receipt'
 import AttachMoney from '@material-ui/icons/AttachMoney'
 import AccountCircle from '@material-ui/icons/AccountCircle'
 
-import authProvider from '../providers/authProvider'
-
 export const StudentMenu = () => {
   const notify = useNotify()
   const notifyNotImplemented = () => notify('En cours de développement. Ce qui présage quelques exercices pour vous 😉', { type: 'warning' })
