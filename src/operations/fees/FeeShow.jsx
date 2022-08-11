@@ -69,6 +69,6 @@ function FeeShow() {
       <FeeLayout feeId={feeId} />
     </Show>
   );
-};
+}
 
 export default FeeShow;
