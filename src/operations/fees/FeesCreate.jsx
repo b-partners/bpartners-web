@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect,
+} from 'react';
 
 import {
   BooleanInput,
@@ -16,7 +18,7 @@ import {
 import { useFormContext } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import {
-  currentYear, manualFeeTypes, predefinedFeeTypes, predefinedFirstDueDates,
+  manualFeeTypes, predefinedFeeTypes, predefinedFirstDueDates,
 } from '../../conf';
 
 function PredefinedFeeTypeRadioButton({ setFeesConf, ...props }) {
@@ -25,10 +27,7 @@ function PredefinedFeeTypeRadioButton({ setFeesConf, ...props }) {
       {...props}
       source="predefined_type"
       label="Type prédéfini"
-      choices={
-        Object.keys(predefinedFeeTypes)
-          .map((id) => ({ id, name: predefinedFeeTypes[id].name }))
-      }
+      choices={Object.keys(predefinedFeeTypes).map((id) => ({ id, name: predefinedFeeTypes[id].name }))}
       onChange={({ target: { value } }) => setFeesConf(predefinedFeeTypes[value])}
     />
   );
@@ -40,8 +39,7 @@ function ManualFeeTypeRadioButton(props) {
       {...props}
       source="manual_type"
       label="Type manuel"
-      choices={Object.keys(manualFeeTypes)
-        .map((id) => ({ id, name: manualFeeTypes[id].name }))}
+      choices={Object.keys(manualFeeTypes).map((id) => ({ id, name: manualFeeTypes[id].name }))}
     />
   );
 }
@@ -52,12 +50,10 @@ function PredefinedFirstDueDateRadioButton(props) {
       {...props}
       source="predefined_first_dueDate"
       label="Première date limite prédéfinie"
-      choices={
-        Object.keys(predefinedFirstDueDates)
-          .map((id) => ({
-            id, name: predefinedFirstDueDates[id].name,
-          }))
-      }
+      choices={Object.keys(predefinedFirstDueDates).map((id) => ({
+        id,
+        name: predefinedFirstDueDates[id].name,
+      }))}
     />
   );
 }
@@ -76,7 +72,7 @@ function FeesCreate(props) {
     // eslint-disable-next-line
   }, [studentRef]);
 
-  const defaultIsPredefinedType = "true";
+  const defaultIsPredefinedType = 'true';
   const [isPredefinedType, setIsPredefinedType] = useState(defaultIsPredefinedType);
 
   const [feesConf, setFeesConf] = useState({
@@ -85,46 +81,18 @@ function FeesCreate(props) {
     comment: null,
   });
 
-  const defaultIsPredefinedFirstDueDate = "true";
+  const defaultIsPredefinedFirstDueDate = 'true';
   const [isPredefinedFirstDueDate, setIsPredefinedFirstDueDate] = useState(defaultIsPredefinedFirstDueDate);
 
-  function feesConfToFeesApi(_feesConf) {
-    const fees = [];
-
-    const toDate = (str) => {
-      const parts = str.split('-');
-      return new Date(parts[0], parts[1] - 1 /* note(js-months) */, parts[2]);
-    };
-    const firstDueDate = _feesConf.is_predefined_first_dueDate
-      ? predefinedFirstDueDates[_feesConf.predefined_first_dueDate].value
-      : toDate(_feesConf.manual_first_duedate);
-
-    for (let i = 0; i < _feesConf.months_number; i += 1) {
-      fees.push({
-        total_amount: _feesConf.monthly_amount,
-        type: _feesConf.is_predefined_type
-          ? predefinedFeeTypes[_feesConf.predefined_type].type
-          : manualFeeTypes[_feesConf.manual_type].type,
-        student_id: studentId,
-        due_datetime: new Date(
-          firstDueDate.getFullYear(),
-          firstDueDate.getMonth() + i,
-          firstDueDate.getDate(),
-        ).toISOString(),
-        comment: `${_feesConf.comment} (${currentYear})`,
-      });
-    }
-    return fees;
-  }
   return (
     // https://marmelab.com/blog/2022/04/12/react-admin-v4-new-form-framework.html
     <Create
       {...props}
       title={`Frais de ${studentRef}`}
       resource="fees"
-      // may be parameters (_basePath, _id, _data)
       redirect={() => `students/${studentId}/fees`}
-      transform={feesConfToFeesApi}
+      // may be parameters (_basePath, _id, _data)
+      // transform={feesConfToFeesApi}
     >
       <SimpleForm>
         <BooleanInput
@@ -154,12 +122,13 @@ function FeesCreate(props) {
             source="manual_first_duedate"
             label="Première date limite manuelle"
             fullWidth="true"
-            validate={required()} />
+            validate={required()}
+          />
         )}
       </SimpleForm>
     </Create>
   );
-};
+}
 
 function FeesConfInput({ isPredefinedType, feesConf }) {
   const { setValue } = useFormContext();
