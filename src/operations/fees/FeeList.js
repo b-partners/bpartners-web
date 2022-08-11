@@ -1,33 +1,33 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { List } from '@react-admin/ra-rbac'
-import { TextField, Datagrid, DateField, FunctionField, ShowButton, useDataProvider, TopToolbar, CreateButton } from 'react-admin'
+import { List } from '@react-admin/ra-rbac';
+import { TextField, Datagrid, DateField, FunctionField, ShowButton, useDataProvider, TopToolbar, CreateButton } from 'react-admin';
 
-import rowStyle from './byStatusRowStyle'
-import { prettyPrintMoney } from '../utils/money'
+import rowStyle from './byStatusRowStyle';
+import { prettyPrintMoney } from '../utils/money';
 
-import { maxPageSize } from '../../providers/dataProvider'
+import { maxPageSize } from '../../providers/dataProvider';
 
 const Actions = ({ basePath, resource }) => (
   <TopToolbar disableGutters>
     <CreateButton to={basePath + '/create'} resource={resource} />
   </TopToolbar>
-)
+);
 
 const FeeList = ({ studentId }) => {
-  const params = useParams()
-  const definedStudentId = studentId ? studentId : params.studentId
-  const [studentRef, setStudentRef] = useState('...')
-  const dataProvider = useDataProvider()
+  const params = useParams();
+  const definedStudentId = studentId ? studentId : params.studentId;
+  const [studentRef, setStudentRef] = useState('...');
+  const dataProvider = useDataProvider();
   useEffect(() => {
     const doEffect = async () => {
-      const student = await dataProvider.getOne('students', { id: definedStudentId })
-      setStudentRef(student.data.ref)
-    }
-    doEffect()
+      const student = await dataProvider.getOne('students', { id: definedStudentId });
+      setStudentRef(student.data.ref);
+    };
+    doEffect();
     // eslint-disable-next-line
-  }, [definedStudentId])
+  }, [definedStudentId]);
 
   return (
     <List
@@ -47,7 +47,7 @@ const FeeList = ({ studentId }) => {
         <ShowButton basePath='/fees' />
       </Datagrid>
     </List>
-  )
-}
+  );
+};
 
-export default FeeList
+export default FeeList;

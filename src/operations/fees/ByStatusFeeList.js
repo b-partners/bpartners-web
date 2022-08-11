@@ -1,12 +1,12 @@
-import { List, Datagrid, TextField, DateField, FunctionField, ShowButton } from 'react-admin'
+import { List, Datagrid, TextField, DateField, FunctionField, ShowButton } from 'react-admin';
 
-import rowStyle from './byStatusRowStyle'
-import { prettyPrintMoney } from '../utils/money'
+import rowStyle from './byStatusRowStyle';
+import { prettyPrintMoney } from '../utils/money';
 
-import { maxPageSize } from '../../providers/dataProvider'
+import { maxPageSize } from '../../providers/dataProvider';
 
 const ByStatusFeeList = ({ status, ...props }) => {
-  status = status ? status : 'LATE'
+  status = status ? status : 'LATE';
   return (
     <List
       {...props}
@@ -28,7 +28,7 @@ const ByStatusFeeList = ({ status, ...props }) => {
         <ShowButton basePath='/fees' />
       </Datagrid>
     </List>
-  )
-}
+  );
+};
 
-export default ByStatusFeeList
+export default ByStatusFeeList;

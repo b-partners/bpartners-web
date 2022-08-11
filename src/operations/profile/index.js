@@ -1,14 +1,14 @@
-import ProfileShow from './ProfileShow'
-import { TextInput } from 'react-admin'
+import ProfileShow from './ProfileShow';
+import { TextInput } from 'react-admin';
 
 const profile = {
-  show: ProfileShow
-}
+  show: ProfileShow,
+};
 
-export default profile
+export default profile;
 
 export const profileFilters = [
   <TextInput label='Filtre par prénom·s' source='first_name' alwaysOn />,
   <TextInput label='Nom·s' source='last_name' />,
-  <TextInput label='Référence' source='ref' />
-]
+  <TextInput label='Référence' source='ref' />,
+];

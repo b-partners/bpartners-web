@@ -1,9 +1,9 @@
-import { Configuration } from '../gen/haClient'
+import { Configuration } from '../gen/haClient';
 
 // const idItem = 'ha_id'
 // const roleItem = 'ha_role'
-const bearerItem = 'ha_bearer'
-const paramIsTemporaryPassword = 't'
+const bearerItem = 'ha_bearer';
+const paramIsTemporaryPassword = 't';
 // const paramUsername = 'u'
 // const paramTemporaryPassword = 'p'
 
@@ -12,23 +12,20 @@ const paramIsTemporaryPassword = 't'
 // const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii')
 
 const getCachedAuthConf = (): Configuration => {
-  const conf = new Configuration()
-  conf.accessToken = sessionStorage.getItem(bearerItem) as string
-  return conf
-}
+  const conf = new Configuration();
+  conf.accessToken = sessionStorage.getItem(bearerItem) as string;
+  return conf;
+};
 
 const authProvider = {
   // --------------------- ra functions -------------------------------------------
   // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
 
-  login: async (): Promise<void> => {
-  },
+  login: async (): Promise<void> => {},
 
-  logout: async (): Promise<void> => {
-  },
+  logout: async (): Promise<void> => {},
 
-  checkAuth: async (): Promise<void> => {
-  },
+  checkAuth: async (): Promise<void> => {},
 
   checkError: async () => Promise.resolve(),
 
@@ -39,9 +36,9 @@ const authProvider = {
   // --------------------- non-ra functions ----------------------------------------
 
   isTemporaryPassword: (): boolean => {
-    const queryString = window.location.search
-    const urlParams = new URLSearchParams(queryString)
-    return urlParams.get(paramIsTemporaryPassword) === 'true'
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get(paramIsTemporaryPassword) === 'true';
   },
 
   setNewPassword: async (newPassword: string): Promise<void> => {
@@ -49,10 +46,10 @@ const authProvider = {
     // const urlParams = new URLSearchParams(queryString)
     // const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string
     // const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string
-    window.location.replace('/')
+    window.location.replace('/');
   },
 
-  getCachedAuthConf: getCachedAuthConf
-}
+  getCachedAuthConf: getCachedAuthConf,
+};
 
-export default authProvider
+export default authProvider;

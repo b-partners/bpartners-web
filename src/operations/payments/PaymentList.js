@@ -1,13 +1,13 @@
-import { List } from '@react-admin/ra-rbac'
-import { Datagrid, TextField, DateField, FunctionField, TopToolbar, CreateButton } from 'react-admin'
+import { List } from '@react-admin/ra-rbac';
+import { Datagrid, TextField, DateField, FunctionField, TopToolbar, CreateButton } from 'react-admin';
 
-import { prettyPrintMoney } from '../utils/money'
+import { prettyPrintMoney } from '../utils/money';
 
 const Actions = ({ basePath, resource }) => (
   <TopToolbar disableGutters>
     <CreateButton to={basePath + '/create'} resource={resource} />
   </TopToolbar>
-)
+);
 
 const PaymentList = ({ feeId }) => (
   <List
@@ -24,6 +24,6 @@ const PaymentList = ({ feeId }) => (
       <FunctionField label='Montant' render={record => prettyPrintMoney(record.amount)} textAlign='right' />
     </Datagrid>
   </List>
-)
+);
 
-export default PaymentList
+export default PaymentList;

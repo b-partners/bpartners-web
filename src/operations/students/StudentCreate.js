@@ -1,5 +1,5 @@
-import { Create, SimpleForm, TextInput, DateTimeInput, DateInput } from 'react-admin'
-import SexRadioButton from '../utils/SexRadioButton'
+import { Create, SimpleForm, TextInput, DateTimeInput, DateInput } from 'react-admin';
+import SexRadioButton from '../utils/SexRadioButton';
 
 const StudentCreate = props => (
   <Create {...props} title='Étudiants'>
@@ -15,6 +15,6 @@ const StudentCreate = props => (
       <DateTimeInput source='entrance_datetime' label="Date d'entrée chez HEI" fullWidth={true} />
     </SimpleForm>
   </Create>
-)
+);
 
-export default StudentCreate
+export default StudentCreate;

@@ -1,4 +1,4 @@
-import { EmailField, SimpleShowLayout, Show, TextField } from 'react-admin'
+import { EmailField, SimpleShowLayout, Show, TextField } from 'react-admin';
 
 export const ProfileLayout = () => {
   return (
@@ -8,8 +8,8 @@ export const ProfileLayout = () => {
       <EmailField source='email' label='Email' />
       <TextField source='phone_number' id='first_name' label='Téléphone' />
     </SimpleShowLayout>
-  )
-}
+  );
+};
 
 const ProfileShow = ({ id }) => {
   if (!id) {
@@ -19,7 +19,7 @@ const ProfileShow = ({ id }) => {
     <Show id={null} resource='profile' basePath='/profile' title='Mon profil'>
       <ProfileLayout />
     </Show>
-  )
-}
+  );
+};
 
-export default ProfileShow
+export default ProfileShow;

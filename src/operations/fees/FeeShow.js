@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
-import { DateField, FunctionField, SimpleShowLayout, Show, TextField, useDataProvider } from 'react-admin'
+import { DateField, FunctionField, SimpleShowLayout, Show, TextField, useDataProvider } from 'react-admin';
 
-import { prettyPrintMoney } from '../utils/money'
-import { withRedWarning, unexpectedValue } from '../utils/typography'
+import { prettyPrintMoney } from '../utils/money';
+import { withRedWarning, unexpectedValue } from '../utils/typography';
 
-import { Divider, Typography } from '@mui/material'
-import PaymentList from '../payments/PaymentList'
+import { Divider, Typography } from '@mui/material';
+import PaymentList from '../payments/PaymentList';
 
-import { studentIdFromRaId } from '../../providers/feeProvider'
-import { useParams } from 'react-router-dom'
+import { studentIdFromRaId } from '../../providers/feeProvider';
+import { useParams } from 'react-router-dom';
 
 export const FeeLayout = ({ feeId }) => {
   const statusRenderer = user => {
-    if (user.status === 'LATE') return withRedWarning('En retard')
-    if (user.status === 'PAID') return 'Payé'
-    if (user.status === 'UNPAID') return 'En attente'
-    return unexpectedValue
-  }
+    if (user.status === 'LATE') return withRedWarning('En retard');
+    if (user.status === 'PAID') return 'Payé';
+    if (user.status === 'UNPAID') return 'En attente';
+    return unexpectedValue;
+  };
   return (
     <SimpleShowLayout>
       <DateField source='creation_datetime' label='Date de création' />
@@ -30,29 +30,29 @@ export const FeeLayout = ({ feeId }) => {
       <Typography>Paiements</Typography>
       <PaymentList feeId={feeId} />
     </SimpleShowLayout>
-  )
-}
+  );
+};
 
 const FeeShow = props => {
-  const params = useParams()
-  const feeId = params.feeId
-  const studentId = studentIdFromRaId(feeId)
-  const [studentRef, setStudentRef] = useState('...')
-  const dataProvider = useDataProvider()
+  const params = useParams();
+  const feeId = params.feeId;
+  const studentId = studentIdFromRaId(feeId);
+  const [studentRef, setStudentRef] = useState('...');
+  const dataProvider = useDataProvider();
   useEffect(() => {
     const doEffect = async () => {
-      const student = await dataProvider.getOne('students', { id: studentId })
-      setStudentRef(student.data.ref)
-    }
-    doEffect()
+      const student = await dataProvider.getOne('students', { id: studentId });
+      setStudentRef(student.data.ref);
+    };
+    doEffect();
     // eslint-disable-next-line
-  }, [studentId])
+  }, [studentId]);
 
   return (
     <Show id={feeId} resource='fees' basePath={`/fees/${feeId}/show`} title={`Frais de ${studentRef}`}>
       <FeeLayout feeId={feeId} />
     </Show>
-  )
-}
+  );
+};
 
-export default FeeShow
+export default FeeShow;

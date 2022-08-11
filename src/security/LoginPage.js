@@ -1,15 +1,15 @@
-import { Login } from 'react-admin'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import Grid from '@material-ui/core/Grid'
-import { Typography } from '@material-ui/core'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
-import { mainTheme } from '../haTheme'
-import CompletePasswordPage from './CompletePasswordPage'
-import authProvider from '../providers/authProvider'
+import { Login } from 'react-admin';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { mainTheme } from '../haTheme';
+import CompletePasswordPage from './CompletePasswordPage';
+import authProvider from '../providers/authProvider';
 
 const aCard = (title, subtitle, description1, description2, course) => {
-  const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view'
+  const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view';
   return (
     <Card style={{ backgroundColor: '#ffffff', opacity: 0.9 }}>
       <CardContent>
@@ -34,14 +34,14 @@ const aCard = (title, subtitle, description1, description2, course) => {
         </Typography>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 const HaLoginPage = () => {
-  const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)')
-  const ResponsiveLogin = () => <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />
-  const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />
-  const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />)
+  const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)');
+  const ResponsiveLogin = () => <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
+  const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
+  const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />);
 
   return (
     <div
@@ -52,7 +52,7 @@ const HaLoginPage = () => {
         padding: '0',
         margin: '0',
         width: '100%',
-        height: '100%'
+        height: '100%',
       }}
     >
       {displayFull ? (
@@ -91,7 +91,7 @@ const HaLoginPage = () => {
         <PasswordChangeableLogin />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default HaLoginPage
+export default HaLoginPage;

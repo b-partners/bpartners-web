@@ -1,5 +1,5 @@
-import { SimpleForm, TextInput, Edit } from 'react-admin'
-import EditToolbar from '../utils/EditToolBar'
+import { SimpleForm, TextInput, Edit } from 'react-admin';
+import EditToolbar from '../utils/EditToolBar';
 
 const ProfileEdit = props => (
   <Edit {...props}>
@@ -11,6 +11,6 @@ const ProfileEdit = props => (
       <StatusRadioButton />
     </SimpleForm>
   </Edit>
-)
+);
 
-export default ProfileEdit
+export default ProfileEdit;

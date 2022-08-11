@@ -1,19 +1,19 @@
-import { Admin } from '@react-admin/ra-enterprise'
-import { CustomRoutes } from 'react-admin'
-import { Resource } from '@react-admin/ra-rbac'
+import { Admin } from '@react-admin/ra-enterprise';
+import { CustomRoutes } from 'react-admin';
+import { Resource } from '@react-admin/ra-rbac';
 
-import { Route } from 'react-router-dom'
+import { Route } from 'react-router-dom';
 
-import dataProvider from './providers/dataProvider'
-import authProvider from './providers/authProvider.ts'
+import dataProvider from './providers/dataProvider';
+import authProvider from './providers/authProvider.ts';
 
-import polyglotI18nProvider from 'ra-i18n-polyglot'
-import frenchMessages from 'ra-language-french'
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import frenchMessages from 'ra-language-french';
 
-import profile from './operations/profile'
+import profile from './operations/profile';
 
-import MyLayout from './HaLayout'
-import HaLoginPage from './security/LoginPage'
+import MyLayout from './HaLayout';
+import HaLoginPage from './security/LoginPage';
 
 const App = () => (
   <Admin
@@ -29,6 +29,6 @@ const App = () => (
       <Route exact path='/profile' element={<profile.show />} />
     </CustomRoutes>
   </Admin>
-)
+);
 
-export default App
+export default App;

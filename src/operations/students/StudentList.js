@@ -1,13 +1,13 @@
-import { List } from '@react-admin/ra-rbac'
-import { TextField, Datagrid, ShowButton, EditButton } from 'react-admin'
+import { List } from '@react-admin/ra-rbac';
+import { TextField, Datagrid, ShowButton, EditButton } from 'react-admin';
 
-import authProvider from '../../providers/authProvider'
+import authProvider from '../../providers/authProvider';
 
-import { profileFilters } from '../profile'
-import PrevNextPagination from '../utils/PrevNextPagination'
+import { profileFilters } from '../profile';
+import PrevNextPagination from '../utils/PrevNextPagination';
 
 const StudentList = props => {
-  const role = authProvider.getCachedRole()
+  const role = authProvider.getCachedRole();
   return (
     <List {...props} label='Étudiants' bulkActionButtons={false} filters={profileFilters} pagination={<PrevNextPagination />}>
       <Datagrid rowClick='show'>
@@ -17,7 +17,7 @@ const StudentList = props => {
         {role === 'MANAGER' ? <EditButton /> : <ShowButton />}
       </Datagrid>
     </List>
-  )
-}
+  );
+};
 
-export default StudentList
+export default StudentList;
