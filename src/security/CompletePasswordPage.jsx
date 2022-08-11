@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import authProvider from '../providers/authProvider.ts';
+import authProvider from '../providers/authProvider';
 
 const useStyles = makeStyles({
   textInput: {
