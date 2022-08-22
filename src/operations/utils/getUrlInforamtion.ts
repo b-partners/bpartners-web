@@ -1,10 +1,10 @@
-export interface urlInformation {
+export interface UrlInformation {
     code: string;
     scope: string;
     state: string;
 }
 
-export function getUrlInformation(): urlInformation {
+export function getUrlInformation(): UrlInformation {
     const url = window.location.href;
     const index: number[] = [
         url.indexOf('/?code='),
