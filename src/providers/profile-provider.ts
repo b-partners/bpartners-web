@@ -6,12 +6,12 @@ import {getUrlInformation} from "../operations/utils/getUrlInforamtion";
 const profileProvider: HaDataProviderType = {
     async getOne(id: string) {
         return axios.post("http://localhost:8080/token", {code: getUrlInformation().code})
-            .then((res1) => axios.get("http://localhost:8080/whoami", {
+            .then((bearerToken) => axios.get("http://localhost:8080/whoami", {
                 headers: {
-                    'Authorization': 'Bearer ' + res1.data.idToken
+                    'Authorization': 'Bearer ' + bearerToken.data.idToken
                 }
             })
-                .then((res2) => res2.data.user));
+                .then((userInformation) => userInformation.data.user));
         // const role = 'MANAGER';
         // if (role === 'MANAGER') {
         //   return usersApi()
