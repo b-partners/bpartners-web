@@ -5,13 +5,17 @@ import {getUrlInformation} from "../operations/utils/getUrlInforamtion";
 
 const profileProvider: HaDataProviderType = {
     async getOne(id: string) {
-        return axios.post("http://localhost:8080/token", {code: getUrlInformation().code})
-            .then((bearerToken) => axios.get("http://localhost:8080/whoami", {
+        try{
+            const bearerToken = await axios.post("http://localhost:8080/token", { code: getUrlInformation().code })
+            return await axios.get("http://localhost:8080/whoami", {
                 headers: {
                     'Authorization': 'Bearer ' + bearerToken.data.idToken
                 }
             })
-                .then((userInformation) => userInformation.data.user));
+        }catch{
+            throw new Error("Bad url");
+        }
+            
         // const role = 'MANAGER';
         // if (role === 'MANAGER') {
         //   return usersApi()
