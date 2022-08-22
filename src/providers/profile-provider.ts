@@ -1,7 +1,7 @@
 import {usersApi} from './api';
 import {HaDataProviderType} from './ha-data-provider-type';
 import axios from 'axios';
-import {getUrlInformation} from "../operations/utils/getUrlInforamtion";
+import {getUrlInformation} from "../operations/utils/getUrlInformation";
 
 const profileProvider: HaDataProviderType = {
     async getOne(id: string) {
