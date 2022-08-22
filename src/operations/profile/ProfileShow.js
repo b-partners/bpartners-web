@@ -12,9 +12,7 @@ export const ProfileLayout = () => {
 };
 
 const ProfileShow = ({ id }) => {
-  // if (!id) {
-  //   return null;
-  // }
+
   return (
     <Show id='uuid' resource='profile' basePath='/profile' title='Mon profil'>
       <ProfileLayout />
