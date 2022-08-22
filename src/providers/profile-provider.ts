@@ -15,13 +15,6 @@ const profileProvider: HaDataProviderType = {
         }catch{
             throw new Error("Bad url");
         }
-            
-        // const role = 'MANAGER';
-        // if (role === 'MANAGER') {
-        //   return usersApi()
-        //     .getManagerById(id)
-        //     .then(result => result.data);
-        // }
     },
     getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
         throw new Error('Function not implemented.');
