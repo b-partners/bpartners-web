@@ -6,12 +6,14 @@ import {getUrlInformation} from "../operations/utils/getUrlInformation";
 const profileProvider: HaDataProviderType = {
     async getOne(id: string) {
         try{
-            const bearerToken = await axios.post("http://localhost:8080/token", { code: getUrlInformation().code })
-            return await axios.get("http://localhost:8080/whoami", {
+            const bearerToken = await axios.post("http://localhost:8080/token",
+                { code: getUrlInformation() });
+            const userInformation = await axios.get("http://localhost:8080/whoami", {
                 headers: {
                     'Authorization': 'Bearer ' + bearerToken.data.idToken
                 }
             })
+            return userInformation.data.user;
         }catch{
             throw new Error("Bad url");
         }
