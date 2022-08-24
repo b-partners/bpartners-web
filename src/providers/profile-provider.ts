@@ -5,12 +5,13 @@ import {getUrlInformation} from "../operations/utils/getUrlInformation";
 
 const profileProvider: HaDataProviderType = {
     async getOne(id: string) {
+        const apiUrl: string = process.env.REACT_APP_API_URL || '';
         try{
-            const bearerToken = await axios.post("http://localhost:8080/token",
+            const bearerToken = await axios.post(`${apiUrl}/token`,
                 { code: getUrlInformation() });
-            const userInformation = await axios.get("http://localhost:8080/whoami", {
+            const userInformation = await axios.get(`${apiUrl}/whoami`, {
                 headers: {
-                    'Authorization': 'Bearer ' + bearerToken.data.idToken
+                    'Authorization': `Bearer ${bearerToken.data.idToken}`,
                 }
             })
             return userInformation.data.user;
