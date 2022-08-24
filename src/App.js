@@ -19,7 +19,7 @@ import HaLoginPage from './security/LoginPage'
 
 const App = () => (
   <Admin
-    title='HEI Admin'
+    title='BPartners Dashboard'
     authProvider={authProvider}
     dataProvider={process.env.REACT_APP_ENV === 'mock' ? mockDataProvider : dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
