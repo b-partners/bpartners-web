@@ -5859,6 +5859,14 @@ extsprintf@1.3.0, extsprintf@^1.2.0:
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
   integrity sha512-11Ndz7Nv+mvAC1j0ktTa7fAb0vLyGGX+rMHNBYQviQDGU0Hw7lhctJANqbPhu9nV9/izT/IntTgZ7Im/9LJs9g==
 
+fakerest@^3.0.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/fakerest/-/fakerest-3.3.0.tgz#81f41d096fd7145825b058ee3d4b9d518f4ed92b"
+  integrity sha512-D1y6a13dh34n738YMztecCX36JRKI5kxPaNVQukXUXvUyK7eANWyB5zczy0SMoMUDXC/ceKfjkgwbc1AYqYYOQ==
+  dependencies:
+    babel-runtime "^6.26.0"
+    lodash "^4.17.21"
+
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -10716,6 +10724,13 @@ ra-core@^4.2.0:
     query-string "^7.1.1"
     react-is "^17.0.2"
     react-query "^3.32.1"
+
+ra-data-fakerest@^4.2.8:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/ra-data-fakerest/-/ra-data-fakerest-4.3.0.tgz#a7efec20b15d62841f9c377af081d3f54861f1ca"
+  integrity sha512-BsWZxbR6nmnHi1erVGH0m+hDolxiTMlwoMe4Mh4QRWp/USZtr53HVnBAZuDzKsDJX50Y4HkIY1JCehAIs7NzFQ==
+  dependencies:
+    fakerest "^3.0.0"
 
 ra-i18n-polyglot@^4.2.0:
   version "4.2.0"

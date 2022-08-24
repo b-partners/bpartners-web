@@ -8,7 +8,6 @@ const ProfileEdit = props => (
       <TextInput source='last_name' label='Noms' fullWidth={true} />
       <TextInput source='email' fullWidth={true} />
       <TextInput source='phone_number' label='Téléphone' fullWidth={true} />
-      <StatusRadioButton />
     </SimpleForm>
   </Edit>
 );
