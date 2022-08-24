@@ -1,5 +1,10 @@
-const currency: string = 'Ar';
+export enum Currency {
+  EUR = '€',
+  MGA = 'Ar',
+  USD = '$',
+  GBP = '£'
+} 
 
-export const prettyPrintMoney = (amount: number): string => {
-  return amount.toLocaleString() + ' ' + currency;
+export const prettyPrintMoney = (amount: number, currency: Currency): string => {
+  return currency + ' ' + amount.toLocaleString();
 };
