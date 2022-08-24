@@ -10725,6 +10725,22 @@ ra-core@^4.2.0:
     react-is "^17.0.2"
     react-query "^3.32.1"
 
+ra-core@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/ra-core/-/ra-core-4.3.0.tgz#5fc4486e907588c250a20d46cd23822ce49a912b"
+  integrity sha512-ewsZ7XFdOiJQidkKSQTmCa1xtwPNWmKufTHIMMHtq7E4RZz2VgkJVVAPyxR7JNif5SvaZums02HRbQdZSh2QMg==
+  dependencies:
+    clsx "^1.1.1"
+    date-fns "^2.19.0"
+    eventemitter3 "^4.0.7"
+    inflection "~1.12.0"
+    jsonexport "^3.2.0"
+    lodash "~4.17.5"
+    prop-types "^15.6.1"
+    query-string "^7.1.1"
+    react-is "^17.0.2"
+    react-query "^3.32.1"
+
 ra-data-fakerest@^4.2.8:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/ra-data-fakerest/-/ra-data-fakerest-4.3.0.tgz#a7efec20b15d62841f9c377af081d3f54861f1ca"
@@ -10739,6 +10755,14 @@ ra-i18n-polyglot@^4.2.0:
   dependencies:
     node-polyglot "^2.2.2"
     ra-core "^4.2.0"
+
+ra-i18n-polyglot@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/ra-i18n-polyglot/-/ra-i18n-polyglot-4.3.0.tgz#18d6212d6edbc8e7a0f7d1c39a0949dc2081ad70"
+  integrity sha512-6j6mK35a6tIciSMhsRaxBSkmdbliTKlXgl1Yj0iikLciA1qc3tiHtUqI2eN2Aogq6pWw/x5WvM3uvC2ixqL3iw==
+  dependencies:
+    node-polyglot "^2.2.2"
+    ra-core "^4.3.0"
 
 ra-language-english@^4.2.0:
   version "4.2.0"
