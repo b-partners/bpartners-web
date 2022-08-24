@@ -1,26 +1,25 @@
-import { Admin } from '@react-admin/ra-enterprise';
-import { CustomRoutes } from 'react-admin';
-import { Resource } from '@react-admin/ra-rbac';
+import { Admin } from '@react-admin/ra-enterprise'
+import { CustomRoutes } from 'react-admin'
+import { Resource } from '@react-admin/ra-rbac'
 
-import { Route } from 'react-router-dom';
-
+import { Route } from 'react-router-dom'
 import authProvider from './providers/auth-provider.ts';
+import dataProvider from './providers/data-provider';
+import polyglotI18nProvider from 'ra-i18n-polyglot'
+import frenchMessages from 'ra-language-french'
 
-import polyglotI18nProvider from 'ra-i18n-polyglot';
-import frenchMessages from 'ra-language-french';
+import { mockDataProvider } from './providers/mock-provider'
+import profile from './operations/profile'
+import transaction from './operations/transactions'
 
-import { mockDataProvider } from './providers/mock-provider';
-import profile from './operations/profile';
-import transaction from './operations/transactions';
-
-import MyLayout from './HaLayout';
-import HaLoginPage from './security/LoginPage';
+import MyLayout from './HaLayout'
+import HaLoginPage from './security/LoginPage'
 
 const App = () => (
   <Admin
-    title='HEI Admin'
+    title='BPartners Dashboard'
     authProvider={authProvider}
-    dataProvider={mockDataProvider}
+    dataProvider={process.env.REACT_APP_ENV === 'mock' ? mockDataProvider : dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
     loginPage={HaLoginPage}
     layout={MyLayout}
@@ -33,6 +32,6 @@ const App = () => (
       <Route exact path='/transactions' element={<transaction.list />} />
     </CustomRoutes>
   </Admin>
-);
+)
 
-export default App;
+export default App

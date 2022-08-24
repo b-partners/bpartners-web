@@ -4,4 +4,4 @@ import { TRANSACTIONS } from './transactions'
 export const mockDataProvider = fakeDataProvider({
   transactions: TRANSACTIONS,
   profile: []
-}, true)
+}, true) 
