@@ -2,7 +2,7 @@ import { AppBar } from '@react-admin/ra-enterprise';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
-import authProvider from './providers/authProvider';
+import authProvider from './providers/auth-provider';
 
 const UserMenu = () => {
   const logout = () => {

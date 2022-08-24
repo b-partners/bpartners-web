@@ -4,8 +4,8 @@ import { Resource } from '@react-admin/ra-rbac';
 
 import { Route } from 'react-router-dom';
 
-import dataProvider from './providers/dataProvider';
-import authProvider from './providers/authProvider.ts';
+import dataProvider from './providers/data-provider';
+import authProvider from './providers/auth-provider.ts';
 
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';

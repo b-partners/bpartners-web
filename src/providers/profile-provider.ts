@@ -1,5 +1,5 @@
 import { usersApi } from './api';
-import { HaDataProviderType } from './HaDataProviderType';
+import { HaDataProviderType } from './ha-data-provider-type';
 
 const profileProvider: HaDataProviderType = {
   async getOne(id: string) {

@@ -1,6 +1,6 @@
-import { HaDataProviderType } from './HaDataProviderType';
-import { RaDataProviderType } from './RaDataProviderType';
-import profileProvider from './profileProvider';
+import { HaDataProviderType } from './ha-data-provider-type';
+import { RaDataProviderType } from './ra-data-provider-type';
+import profileProvider from './profile-provider';
 
 export const maxPageSize = 500;
 

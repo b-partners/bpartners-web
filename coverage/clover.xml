@@ -927,7 +927,7 @@
         <line num="4" count="6" type="stmt"/>
         <line num="5" count="4" type="stmt"/>
       </file>
-      <file name="authProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/authProvider.ts">
+      <file name="auth-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/auth-provider.ts">
         <metrics statements="13" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="4"/>
         <line num="5" count="4" type="stmt"/>
         <line num="6" count="4" type="stmt"/>
@@ -943,7 +943,7 @@
         <line num="44" count="0" type="stmt"/>
         <line num="52" count="0" type="stmt"/>
       </file>
-      <file name="dataProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/dataProvider.ts">
+      <file name="data-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/data-provider.ts">
         <metrics statements="31" coveredstatements="6" conditionals="18" coveredconditionals="1" methods="6" coveredmethods="2"/>
         <line num="9" count="4" type="stmt"/>
         <line num="11" count="4" type="stmt"/>
@@ -1017,7 +1017,7 @@
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
       </file>
-      <file name="profileProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/profileProvider.ts">
+      <file name="profile-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/profile-provider.ts">
         <metrics statements="7" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="4" coveredmethods="1"/>
         <line num="4" count="4" type="stmt"/>
         <line num="6" count="6" type="stmt"/>
