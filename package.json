@@ -15,6 +15,7 @@
     "ra-language-french": "^4.2.0",
     "react": "^18.2.0",
     "react-admin": "^4.2.0",
+    "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-router-redux": "^4.0.8",
     "typeface-quicksand": "^1.1.13"
