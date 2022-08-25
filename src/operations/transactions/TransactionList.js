@@ -45,7 +45,7 @@ const TransactionList = props => {
         <TextField source='reference' label='reference' />
         <FunctionField source='amount' render={record => prettyPrintMoney(record.amount, Currency.EUR)} label='Amount' />
         <FunctionField source='category' render={record => record.label} label='category' />
-        <FunctionField source='paymentDatetime' render={record => new Date(record.updateDateTime).toLocaleDateString()} label='Last Modification' />
+        <FunctionField source='paymentDatetime' render={record => new Date(record.paymentDateTime).toLocaleDateString()} label='Last Modification' />
       </Datagrid>
     </List>
   );
