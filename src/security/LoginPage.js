@@ -38,60 +38,7 @@ const aCard = (title, subtitle, description1, description2, course) => {
 };
 
 const HaLoginPage = () => {
-  const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)');
-  const ResponsiveLogin = () => <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />;
-  const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
-  const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />);
-
-  return (
-    <div
-      style={{
-        backgroundImage: 'url(/login-bg100k.jpg)',
-        backgroundSize: 'cover',
-        position: 'fixed',
-        padding: '0',
-        margin: '0',
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {displayFull ? (
-        <Grid container spacing={2} style={{ paddingTop: '10%' }} theme={mainTheme}>
-          <Grid item xs={4}>
-            <Typography variant='h3' align='center'>
-              <div style={{ color: '#ffc107' }}>HEI</div>
-            </Typography>
-            <Typography variant='h7' align='center'>
-              <div style={{ color: '#ffffff' }}>Une scolarité qui passe à l'échelle</div>
-            </Typography>{' '}
-            <PasswordChangeableLogin />
-          </Grid>
-          <Grid item xs={8}>
-            <Grid container spacing={1}>
-              <Grid item xs={1} />
-              <Grid item xs={5}>
-                {aCard('0', "Coût à l'arrêt", 'Personne ne se connecte ?', 'Alors personne ne paie.', 'SYS-2')}
-              </Grid>
-              <Grid item xs={4}>
-                {aCard('0', 'Vulnérabilité', 'Crashtest nous scanne,', 'mais ne trouve rien !', 'WEB-2')}
-              </Grid>
-              <Grid item xs={2} />
-
-              <Grid item xs={1} />
-              <Grid item xs={5}>
-                {aCard('250,000,000', 'Utilisateurs', 'Onboarder tout Madagascar ?', 'Dix fois sans problème.', 'DONNEES-2')}
-              </Grid>
-              <Grid item xs={4}>
-                {aCard('1', 'Seconde', 'Pire réponse de notre API', 'au percentile 97.', 'PROG-2')}
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      ) : (
-        <PasswordChangeableLogin />
-      )}
-    </div>
-  );
+  return <p>Login</p>;
 };
 
 export default HaLoginPage;
