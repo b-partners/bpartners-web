@@ -1,5 +1,6 @@
-import { Datagrid, List, TextField, SavedQueriesList, FilterLiveSearch } from "react-admin";
+import { Datagrid, List, TextField, SavedQueriesList, FilterLiveSearch, FunctionField } from "react-admin";
 import { Card, CardContent } from '@mui/material';
+import { Currency, prettyPrintMoney } from '../utils/money';
 import { Box, CardHeader } from "@material-ui/core";
 
 const FilterSearch = () => (
@@ -38,12 +39,13 @@ const TransactionList = props => {
       aside={<FilterSidebar />}
       resource='transactions'
     >
-      <Datagrid rowClick="show" >
-        <TextField source='id' label='id'/>
-        <TextField source='amount' label='Montant' />
-        <TextField source='title' label='Libellé' />
-        <TextField source='paymentReqId' label='id du requête' />
-        <TextField source='updateDateTime' label='Dernière modification' />
+      <Datagrid rowClick="show">
+        <TextField source='label' label='label' />
+        <TextField source='swanTransactionId' label='transaction id' />
+        <TextField source='reference' label='reference' />
+        <FunctionField source='amount' render={record => prettyPrintMoney(record.amount, Currency.EUR)} label='Amount' />
+        <FunctionField source='category' render={record => record.label} label='category' />
+        <FunctionField source='paymentDatetime' render={record => new Date(record.updateDateTime).toLocaleDateString()} label='Last Modification' />
       </Datagrid>
     </List>
   );

@@ -1,13 +1,16 @@
 import React from 'react'
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { Show, SimpleShowLayout, TextField, FunctionField } from 'react-admin';
+import { Currency, prettyPrintMoney } from '../utils/money';
 
 export const TransactionLayout = () => {
     return (
         <SimpleShowLayout>
-            <TextField source='amount' label='Amount' />
-            <TextField source='title' label='Title' />
-            <TextField source='paymentReqId' label='Id' />
-            <TextField source='updateDateTime' label='Last Modification' />
+            <TextField source='label' label='label' />
+            <TextField source='swanTransactionId' label='transaction id' />
+            <TextField source='reference' label='reference' />
+            <FunctionField source='amount' render={record => prettyPrintMoney(record.amount, Currency.EUR)} label='Amount' />
+            <FunctionField source='category' render={record => record.label} label='category' />
+            <FunctionField source='paymentDatetime' render={record => new Date(record.updateDateTime).toLocaleDateString()} label='Last Modification' />
         </SimpleShowLayout>
     );
 };

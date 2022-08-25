@@ -1,9 +1,9 @@
 import WorkIcon from '@material-ui/icons/Work';
 import TransactionShow from './TransactionShow';
-import TransactionsList from './TransactionsList';
+import TransactionList from './TransactionList';
 
 const Transactions = {
-  list: TransactionsList,
+  list: TransactionList,
   show: TransactionShow,
   icon: WorkIcon,
   options: { label: 'Transactions' },
