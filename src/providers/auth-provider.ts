@@ -1,35 +1,15 @@
-import { Configuration } from '../gen/haClient'
 import getParams from '../operations/utils/getParams'
 import { Promise } from 'q'
 import httpClient from '../config/http-client'
-import axios from 'axios'
-
-// const idItem = 'ha_id'
-// const roleItem = 'ha_role'
-const bearerItem = 'ha_bearer'
-const paramIsTemporaryPassword = 't'
-// const paramUsername = 'u'
-// const paramTemporaryPassword = 'p'
-
-// const toBase64 = (param: string) => Buffer.from(param).toString('base64')
-
-// const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii')
-
-const getCachedAuthConf = (): Configuration => {
-  const conf = new Configuration()
-  conf.accessToken = sessionStorage.getItem(bearerItem) as string
-  return conf
-}
 
 const authProvider = {
-  // --------------------- ra functions -------------------------------------------
-  // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
   login: () => {
     return Promise(async (resolve, reject) => {
       const { search } = document.location
       const code = getParams(search, 'code')
       if (!code) {
         reject('Code not provided')
+        return
       }
       try {
         const { data: { accessToken, refreshToken } } = await httpClient.post('token', {
@@ -40,6 +20,7 @@ const authProvider = {
         localStorage.setItem('accessToken', accessToken)
         localStorage.setItem('refreshToken', refreshToken)
         resolve()
+        return
       } catch (e) {
         reject(e)
       }
@@ -53,7 +34,8 @@ const authProvider = {
 
   checkAuth: async () => {
     return Promise((resolve, reject) => {
-      if (localStorage.get('accessToken')) {
+      console.log('here')
+      if (localStorage.getItem('accessToken')) {
         resolve()
       }
       reject()
