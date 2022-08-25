@@ -11,6 +11,7 @@ import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 
 import profile from './operations/profile';
+import error from './operations/error';
 
 import MyLayout from './HaLayout';
 import HaLoginPage from './security/LoginPage';
@@ -27,6 +28,7 @@ const App = () => (
     <Resource name='profile' />
     <CustomRoutes>
       <Route exact path='/profile' element={<profile.show />} />
+      <Route exact path='/error' element={<error.show />} />
     </CustomRoutes>
   </Admin>
 );
