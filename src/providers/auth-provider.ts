@@ -12,13 +12,13 @@ const authProvider = {
         return
       }
       try {
-        const { data: { accessToken, refreshToken } } = await httpClient.post('token', {
+        const { data } = await httpClient.post('token', {
           code,
           successUrl: process.env.REACT_APP_SUCCESS_URL,
           failureUrl: process.env.REACT_APP_FAILURE_URL
         })
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
+        localStorage.setItem('accessToken', data.accessToken)
+        localStorage.setItem('refreshToken', data.refreshToken)
         resolve()
         return
       } catch (e) {
@@ -32,13 +32,14 @@ const authProvider = {
     resolve()
   }),
 
+
   checkAuth: async () => {
     return Promise((resolve, reject) => {
-      console.log('here')
-      if (localStorage.getItem('accessToken')) {
-        resolve()
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        resolve(accessToken)
       }
-      reject()
+      reject('Access token not found')
     })
   },
 
