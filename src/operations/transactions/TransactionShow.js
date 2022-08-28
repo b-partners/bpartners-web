@@ -10,15 +10,15 @@ export const TransactionLayout = () => {
       <TextField source='reference' label='Référence' />
       <FunctionField source='amount' render={record => prettyPrintMoney(record.amount, Currency.EUR)} label='Montant' />
       <FunctionField source='category' render={record => record.label} label='Catégorie' />
-      <FunctionField source='paymentDatetime' render={record => new Date(record.updateDateTime).toLocaleDateString()}
+      <FunctionField source='paymentDatetime' render={record => new Date(record.paymentDatetime).toLocaleDateString()}
                      label='Date de paiement' />
     </SimpleShowLayout>
   )
 }
 
-export const TransactionShow = props => {
+const TransactionShow = props => {
   return (
-    <Show id={props.paymentReqId} resource='transactions' title='Mes transactions' {...props}>
+    <Show title={props.label} {...props} resource="transactions">
       <TransactionLayout />
     </Show>
   )

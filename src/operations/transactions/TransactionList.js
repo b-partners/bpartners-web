@@ -2,6 +2,7 @@ import { Datagrid, List, TextField, SavedQueriesList, FilterLiveSearch, Function
 import { Card, CardContent } from '@mui/material';
 import { Currency, prettyPrintMoney } from '../utils/money';
 import { Box, CardHeader } from "@material-ui/core";
+import TransactionShow from "./TransactionShow";
 
 const FilterSearch = () => (
   <FilterLiveSearch margin='normal' />
@@ -11,11 +12,11 @@ const FilterSidebar = () => (
   <Box
     sx={{
       display: {
-        xs: 'none',
-        md: 'block',
+        sm: 'none',
+        xs: 'block',
       },
       order: -1,
-      width: '15em',
+      width: '18em',
       marginRight: '1em',
       marginTop: '4.2em'
     }}
@@ -39,7 +40,7 @@ const TransactionList = props => {
       aside={<FilterSidebar />}
       resource='transactions'
     >
-      <Datagrid rowClick="show">
+      <Datagrid rowClick="show" resource="transactions">
         <TextField source='label' label='label' />
         <TextField source='swanTransactionId' label='transaction id' />
         <TextField source='reference' label='reference' />

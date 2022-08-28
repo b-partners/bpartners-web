@@ -10,7 +10,7 @@ const UserMenu = () => {
     window.location.reload();
   };
   return (
-    <Tooltip title='Se déconnecter' onClick={logout}>
+    <Tooltip title='Se déconnecter' onClick={logout} color="primary">
       <IconButton color='inherit'>
         <LockIcon />
       </IconButton>
@@ -18,5 +18,17 @@ const UserMenu = () => {
   );
 };
 
-const HaAppBar = props => <AppBar {...props} languages={[]} color='transparent' elevation={0} userMenu={<UserMenu {...props} />} />;
+const appBarStyle = {
+  backgroundColor: '#6D213C',
+  color: '#fff'
+}
+
+const HaAppBar = props => (
+  <AppBar {...props}
+    sx={appBarStyle}
+    languages={[]}
+    elevation={0}
+    userMenu={<UserMenu {...props} />}
+  />
+);
 export default HaAppBar;

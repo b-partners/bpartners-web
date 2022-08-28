@@ -6,7 +6,7 @@ const Transactions = {
   list: TransactionList,
   show: TransactionShow,
   icon: WorkIcon,
-  options: { label: 'Transactions' },
+  // options: { label: 'Transactions' },
 };
 
 export default Transactions;
