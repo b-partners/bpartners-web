@@ -7,7 +7,7 @@ import HaMenu from './menu/HaMenu';
 const HaLayout = props => {
   return (
     <AppLocationContext>
-      <Layout {...props} appBar={HaAppBar} menu={HaMenu} />
+      <Layout {...props} appBar={HaAppBar} menu={HaMenu} breadcrumb={() => <></>} />
     </AppLocationContext>
   );
 };

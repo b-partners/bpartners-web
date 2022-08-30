@@ -1,19 +1,22 @@
 import { createTheme } from '@material-ui/core/styles';
-import amber from '@material-ui/core/colors/amber';
-import indigo from '@material-ui/core/colors/indigo';
+import { defaultTheme } from 'react-admin';
 
 export const mainTheme = createTheme({
+  ...defaultTheme,
+  sidebar: {
+    width: 175,
+  },
   palette: {
-    primary: {
-      main: indigo[800],
-    },
     secondary: {
-      main: amber[500],
+      main: '#F80',
     },
+    primary: {
+      main: '#069',
+    }
   },
   typography: {
-    fontFamily: ['Quicksand', 'sans-serif'].join(','),
-    fontSize: 15,
-  },
-  //shadows: Array(25).fill('none')
+    fontFamily: ['sans-serif'].join(','),
+    fontSize: 13,
+  }
+  // shadows: Array(25).fill('none')
 });

@@ -1,11 +1,17 @@
-import { MultiLevelMenu, MenuItemCategory } from '@react-admin/ra-navigation'
-import { AttachMoney, AccountCircle } from '@material-ui/icons'
+// in src/MyMenu.js
+import { Menu, DashboardMenuItem, MenuItemLink } from 'react-admin';
+
+import {
+  AttachMoney,
+  AccountCircle
+} from '@material-ui/icons';
 
 const HaMenu = () => (
-  <MultiLevelMenu variant='categories'>
-    <MenuItemCategory to='/profile' name='profile' label='Profil' icon={<AccountCircle />} />
-    <MenuItemCategory to='/transactions' name='transactions' label='Transactions' icon={<AttachMoney />} />
-  </MultiLevelMenu>
+  <Menu>
+    <MenuItemLink to="/profile" primaryText="profile" leftIcon={<AccountCircle />} />
+    <MenuItemLink to="/transactions" primaryText="transactions" leftIcon={<AttachMoney />} />
+  </Menu>
 );
+
 
 export default HaMenu;
