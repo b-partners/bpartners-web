@@ -3,11 +3,12 @@ import { Promise } from 'q'
 import httpClient from '../config/http-client'
 
 const authProvider = {
-  login: () => {
+  login: (navigate: (...args: any) => void) => {
     return Promise(async (resolve, reject) => {
       const { search } = document.location
       const code = getParams(search, 'code')
-      if (!code) {
+      const accessToken = localStorage.getItem('accessToken')
+      if (!code || (code && accessToken)) {
         reject('Code not provided')
         return
       }
@@ -17,11 +18,11 @@ const authProvider = {
           successUrl: process.env.REACT_APP_SUCCESS_URL || '',
           failureUrl: process.env.REACT_APP_FAILURE_URL || ''
         })
-        if (data.accessToken !== undefined){
-          localStorage.setItem('accessToken', data.accessToken);
+        if (data.accessToken !== undefined) {
+          localStorage.setItem('accessToken', data.accessToken)
           localStorage.setItem('refreshToken', data.refreshToken)
+          resolve()
         }
-        resolve()
         return
       } catch (e) {
         reject(e)
@@ -41,7 +42,7 @@ const authProvider = {
       if (accessToken) {
         resolve(accessToken)
       }
-      reject();
+      reject()
     })
   },
 
