@@ -3,9 +3,8 @@ import { EmailField, SimpleShowLayout, Show, TextField } from 'react-admin';
 export const ProfileLayout = () => {
   return (
     <SimpleShowLayout>
-      <TextField source='first_name' id='first_name' label='Prénom(s)' />
-      <TextField source='last_name' id='first_name' label='Nom(s)' />
-      <EmailField source='email' label='Email' />
+      <TextField source='firstName' id='firstName' label='Prénom(s)' />
+      <TextField source='lastName' id='lastName' label='Nom(s)' />
       <TextField source='mobilePhoneNumber' id='mobilePhoneNumber' label='Téléphone' />
     </SimpleShowLayout>
   );
