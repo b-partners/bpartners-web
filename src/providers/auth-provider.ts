@@ -12,13 +12,13 @@ const authProvider = {
         return
       }
       try {
-        const { data } = await httpClient.post('token', {
-          code,
-          successUrl: process.env.REACT_APP_SUCCESS_URL,
-          failureUrl: process.env.REACT_APP_FAILURE_URL
-        })
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
+        // const { data } = await httpClient.post('token', {
+        //   code,
+        //   successUrl: process.env.REACT_APP_SUCCESS_URL,
+        //   failureUrl: process.env.REACT_APP_FAILURE_URL
+        // })
+        // localStorage.setItem('accessToken', data.accessToken)
+        // localStorage.setItem('refreshToken', data.refreshToken)
         resolve()
         return
       } catch (e) {
