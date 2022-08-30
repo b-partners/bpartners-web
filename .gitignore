@@ -24,3 +24,6 @@ amplifytools.xcconfig
 **.log
 
 .env
+
+key.pem
+cert.pem
