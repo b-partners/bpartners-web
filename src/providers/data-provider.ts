@@ -1,11 +1,13 @@
-import { HaDataProviderType } from './ha-data-provider-type';
+import { BpDataProviderType } from './bp-data-provider-type';
 import { RaDataProviderType } from './ra-data-provider-type';
 import profileProvider from './profile-provider';
+import transactionProvider from './transaction-provider';
 
 export const maxPageSize = 500;
 
-const getProvider = (resourceType: string): HaDataProviderType => {
+const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'profile') return profileProvider;
+  if (resourceType === 'transactions') return transactionProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
@@ -32,21 +34,9 @@ const dataProvider: RaDataProviderType = {
     return { data: result[0] };
   },
   async create(resourceType: string, params: any) {
-    const result = await getProvider(resourceType).saveOrUpdate(
-      resourceType === 'students' || resourceType === 'teachers' ? toEnabledUsers([params.data]) : [params.data]
-    );
+    const result = await getProvider(resourceType).saveOrUpdate([params.data]);
     return { data: result[0] };
   },
-};
-
-const toEnabledUsers = (users: Array<any>): Array<any> => {
-  let enabledUsers = [];
-  for (const user of users) {
-    let enabledUser = Object.assign(user);
-    enabledUser.status = 'ENABLED';
-    enabledUsers.push(enabledUser);
-  }
-  return enabledUsers;
 };
 
 export default dataProvider;
