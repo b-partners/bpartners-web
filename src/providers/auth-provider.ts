@@ -1,87 +1,77 @@
-import getParams from '../operations/utils/getParams';
-import { Promise } from 'q';
-import httpClient from '../config/http-client';
+import { Configuration, Whoami } from '../gen/bpClient';
+import { securityApi } from './api';
+
+const idItem = 'bp_id';
+const accessTokenItem = 'bp_access_token';
+const refreshTokenItem = 'bp_refresh_token';
+
+const whoami = async (): Promise<Whoami> => {
+  const conf = new Configuration();
+  conf.accessToken = localStorage.getItem(accessTokenItem) as string;
+  return securityApi()
+    .whoami()
+    .then(({ data }) => data)
+    .catch(error => {
+      console.error(error);
+      return {};
+    });
+};
+
+const cacheWhoami = (whoami: Whoami): void => {
+  sessionStorage.setItem(idItem, whoami.user?.id as string);
+};
+
+const cacheTokens = (accessToken: string, refreshToken: string): void => {
+  //TODO: localStorage does not work on private browsing
+  localStorage.setItem(accessTokenItem, accessToken);
+  localStorage.setItem(refreshTokenItem, refreshToken);
+};
+
+const getCachedWhoami = () => ({ id: sessionStorage.getItem(idItem) });
+
+const getCachedAuthConf = (): Configuration => {
+  const conf = new Configuration();
+  conf.accessToken = sessionStorage.getItem(accessTokenItem) as string;
+  return conf;
+};
+
+const clearCache = () => {
+  localStorage.clear();
+  sessionStorage.clear();
+};
 
 const authProvider = {
-  login: () => {
-    return Promise(async (resolve, reject) => {
-      const { search } = document.location;
-      const code = getParams(search, 'code');
-      const accessToken =
-        /* TODO(token-caching)
-         * The fact that accessToken is retrieved from localStorage is super weird.
-         *
-         * 1. Where does it come from
-         *    Well, from data-provider apparently, but that's dirty: a data-provider just provides data, it does not cache!
-         *
-         * 2. localStorage does not work on private browsing
-         */
-        localStorage.getItem('accessToken');
-      if (!code || (code && accessToken)) {
-        reject('Code not provided');
-        return;
-      }
-      try {
-        const { data } = await httpClient.post('token', {
-          code,
-          successUrl: process.env.REACT_APP_SUCCESS_URL || '',
-          failureUrl: process.env.REACT_APP_FAILURE_URL || '',
-        });
-        if (data.accessToken !== undefined) {
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('refreshToken', data.refreshToken);
-          resolve();
-        }
-        return;
-      } catch (e) {
-        reject(e);
-      }
-    });
+  // --------------------- ra functions -------------------------------------------
+  // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
+
+  login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<void> =>
+    securityApi()
+      .createToken({
+        code: password,
+        redirectionStatusUrls: { successUrl: clientMetadata.successUrl, failureUrl: clientMetadata.failureUrl },
+      })
+      .then(({ accessToken, refreshToken, whoami }) => {
+        cacheWhoami(whoami);
+        cacheTokens(accessToken, refreshToken);
+      }),
+
+  logout: async (): Promise<void> => {
+    clearCache();
+    //TODO: invalidate token backend side
   },
 
-  logout: async () =>
-    Promise((resolve, reject) => {
-      localStorage.clear();
-      resolve();
-    }),
+  checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
-  checkAuth: async () => {
-    return Promise((resolve, reject) => {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        resolve(accessToken);
-      }
-      reject();
-    });
-  },
+  checkError: ({ status }: any): Promise<void> => (status === 200 ? Promise.resolve() : Promise.reject()),
 
-  checkError: (error: any) =>
-    Promise((resolve, reject) => {
-      const { status } = error;
-      if (status === 401 || status === 403) {
-        localStorage.clear();
-        reject();
-      }
-      resolve();
-    }),
+  getIdentity: async () => (await whoami()).user?.id,
 
-  getIdentity: async () =>
-    Promise(async (resolve, reject) => {
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
-        reject();
-      }
-      try {
-        const {
-          data: { user },
-        } = await httpClient.get('whoami', { headers: { Authorization: `Bearer ${accessToken}` } });
-        localStorage.setItem('user', JSON.stringify(user));
-      } catch (e) {
-        reject(e);
-      }
-    }),
+  getPermissions: async (): Promise<Array<string>> => Promise.resolve(['*']),
 
-  getPermissions: async () => Promise((resolve, reject) => resolve([])),
+  // --------------------- non-ra functions ----------------------------------------
+
+  getCachedWhoami: getCachedWhoami,
+  getCachedAuthConf: getCachedAuthConf,
 };
 
 export default authProvider;
