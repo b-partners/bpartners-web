@@ -3,7 +3,7 @@ import { Promise } from 'q'
 import httpClient from '../config/http-client'
 
 const authProvider = {
-  login: (navigate: (...args: any) => void) => {
+  login: () => {
     return Promise(async (resolve, reject) => {
       const { search } = document.location
       const code = getParams(search, 'code')
