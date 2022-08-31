@@ -83,4 +83,5 @@ const authProvider = {
 
   getPermissions: async () => Promise((resolve, reject) => resolve([])),
 };
+
 export default authProvider;

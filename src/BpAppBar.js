@@ -18,5 +18,5 @@ const UserMenu = () => {
   );
 };
 
-const HaAppBar = props => <AppBar {...props} languages={[]} color='transparent' elevation={0} userMenu={<UserMenu {...props} />} />;
-export default HaAppBar;
+const BpAppBar = props => <AppBar {...props} languages={[]} color='transparent' elevation={0} userMenu={<UserMenu {...props} />} />;
+export default BpAppBar;

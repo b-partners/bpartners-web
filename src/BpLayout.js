@@ -1,15 +1,15 @@
 import { Layout } from '@react-admin/ra-enterprise';
 import { AppLocationContext } from '@react-admin/ra-navigation';
 
-import HaAppBar from './HaAppBar';
-import HaMenu from './menu/HaMenu';
+import BpAppBar from './BpAppBar';
+import BpMenu from './menu/BpMenu';
 
-const HaLayout = props => {
+const BpLayout = props => {
   return (
     <AppLocationContext>
-      <Layout {...props} appBar={HaAppBar} menu={HaMenu} />
+      <Layout {...props} appBar={BpAppBar} menu={BpMenu} />
     </AppLocationContext>
   );
 };
 
-export default HaLayout;
+export default BpLayout;

@@ -2,7 +2,7 @@ import { MenuItemCategory, MultiLevelMenu } from '@react-admin/ra-navigation';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { AttachMoney } from '@material-ui/icons';
 
-const HaMenu = () => {
+const BpMenu = () => {
   return (
     <MultiLevelMenu variant='categories'>
       <MenuItemCategory to='/transactions' name='transactions' label='Mes transactions' icon={<AttachMoney />} />
@@ -11,4 +11,4 @@ const HaMenu = () => {
   );
 };
 
-export default HaMenu;
+export default BpMenu;
