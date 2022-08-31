@@ -1,5 +1,5 @@
 {
-  "name": "hei-admin-ui",
+  "name": "bpartners-web",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.4",
@@ -7,15 +7,9 @@
     "@react-admin/ra-enterprise": "^6.0.3",
     "@react-admin/ra-navigation": "^4.0.6",
     "@react-admin/ra-rbac": "^4.0.1",
-    "axios": "^0.27.2",
-    "global": "^4.4.0",
-    "prettier": "^2.7.1",
-    "ra-data-fakerest": "^4.2.8",
-    "ra-i18n-polyglot": "^4.3.0",
     "ra-language-french": "^4.2.0",
     "react": "^18.2.0",
     "react-admin": "^4.2.0",
-    "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-router-redux": "^4.0.8",
     "typeface-quicksand": "^1.1.13"
@@ -39,6 +33,7 @@
     "start": "export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "cypress run-ct",
+    "cy:open": "cypress open-ct",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
