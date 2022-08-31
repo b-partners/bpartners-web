@@ -1,14 +1,13 @@
+import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { userAccountsApi } from './api';
+import { payingApi } from './api';
 
 const profileProvider: BpDataProviderType = {
   async getOne(id: string) {
-    return userAccountsApi()
-      .getUserById(id)
-      .then(result => result.data);
+    throw new Error('Function not implemented.');
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
-    throw new Error('Function not implemented.');
+    return payingApi().getTransactions(authProvider.getCachedWhoami().id);
   },
   saveOrUpdate: function (resources: any[]): Promise<any[]> {
     throw new Error('Function not implemented.');

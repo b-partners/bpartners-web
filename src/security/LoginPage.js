@@ -13,4 +13,4 @@ const HaLoginPage = () => {
   </p>
 }
 
-export default HaLoginPage
+export default HaLoginPage;

@@ -1,11 +1,9 @@
-import { Datagrid, List, TextField, SavedQueriesList, FilterLiveSearch, FunctionField } from "react-admin";
+import { Datagrid, List, TextField, SavedQueriesList, FilterLiveSearch, FunctionField } from 'react-admin';
 import { Card, CardContent } from '@mui/material';
 import { Currency, prettyPrintMoney } from '../utils/money';
-import { Box, CardHeader } from "@material-ui/core";
+import { Box, CardHeader } from '@material-ui/core';
 
-const FilterSearch = () => (
-  <FilterLiveSearch margin='normal' />
-);
+const FilterSearch = () => <FilterLiveSearch margin='normal' />;
 
 const FilterSidebar = () => (
   <Box
@@ -17,12 +15,13 @@ const FilterSidebar = () => (
       order: -1,
       width: '15em',
       marginRight: '1em',
-      marginTop: '4.2em'
+      marginTop: '4.2em',
     }}
   >
-    <Card sx={{
-      px: 1.5
-    }}
+    <Card
+      sx={{
+        px: 1.5,
+      }}
     >
       <CardHeader component={FilterSearch} />
       <CardContent>
@@ -34,12 +33,8 @@ const FilterSidebar = () => (
 
 const TransactionList = props => {
   return (
-    <List
-      {...props}
-      aside={<FilterSidebar />}
-      resource='transactions'
-    >
-      <Datagrid rowClick="show">
+    <List {...props} aside={<FilterSidebar />} resource='transactions'>
+      <Datagrid rowClick='show'>
         <TextField source='label' label='label' />
         <TextField source='swanTransactionId' label='transaction id' />
         <TextField source='reference' label='reference' />
@@ -49,6 +44,6 @@ const TransactionList = props => {
       </Datagrid>
     </List>
   );
-}
+};
 
 export default TransactionList;

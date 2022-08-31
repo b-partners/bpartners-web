@@ -8,8 +8,8 @@ import dataProvider from './providers/data-provider';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 
-import profile from './operations/profile'
-import transaction from './operations/transactions'
+import profile from './operations/profile';
+import transaction from './operations/transactions';
 
 import MyLayout from './HaLayout';
 import HaLoginPage from './security/LoginPage';
