@@ -23,6 +23,9 @@ amplifytools.xcconfig
 .idea
 **.log
 
+coverage/
+.nyc_output/
+
 .env
 
 key.pem
