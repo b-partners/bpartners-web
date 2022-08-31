@@ -1,8 +1,215 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1660026749198" clover="3.2.0">
-  <project timestamp="1660026749198" name="All files">
-    <metrics statements="915" coveredstatements="167" conditionals="369" coveredconditionals="21" methods="296" coveredmethods="32" elements="1580" coveredelements="220" complexity="0" loc="915" ncloc="915" packages="12" files="48" classes="48"/>
-    <package name="src">
+<coverage generated="1661937254824" clover="3.2.0">
+  <project timestamp="1661937254824" name="All files">
+    <metrics statements="1041" coveredstatements="233" conditionals="410" coveredconditionals="35" methods="341" coveredmethods="56" elements="1792" coveredelements="324" complexity="0" loc="1041" ncloc="1041" packages="21" files="66" classes="66"/>
+    <package name="lou.bpartners.bpartners-web.src">
+      <metrics statements="11" coveredstatements="9" conditionals="2" coveredconditionals="1" methods="6" coveredmethods="5"/>
+      <file name="App.js" path="/Users/lou/bpartners/bpartners-web/src/App.js">
+        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+      </file>
+      <file name="HaAppBar.js" path="/Users/lou/bpartners/bpartners-web/src/HaAppBar.js">
+        <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="2"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="14" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="14" type="stmt"/>
+        <line num="21" count="14" type="stmt"/>
+      </file>
+      <file name="HaLayout.js" path="/Users/lou/bpartners/bpartners-web/src/HaLayout.js">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="16" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.config">
+      <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
+      <file name="http-client.js" path="/Users/lou/bpartners/bpartners-web/src/config/http-client.js">
+        <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.menu">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="HaMenu.js" path="/Users/lou/bpartners/bpartners-web/src/menu/HaMenu.js">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="12" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.operations.profile">
+      <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+      <file name="ProfileShow.js" path="/Users/lou/bpartners/bpartners-web/src/operations/profile/ProfileShow.js">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="15" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="17" count="2" type="stmt"/>
+      </file>
+      <file name="index.js" path="/Users/lou/bpartners/bpartners-web/src/operations/profile/index.js">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.operations.transactions">
+      <metrics statements="17" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="0"/>
+      <file name="TransactionList.js" path="/Users/lou/bpartners/bpartners-web/src/operations/transactions/TransactionList.js">
+        <metrics statements="9" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+      </file>
+      <file name="TransactionShow.js" path="/Users/lou/bpartners/bpartners-web/src/operations/transactions/TransactionShow.js">
+        <metrics statements="7" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+      </file>
+      <file name="index.js" path="/Users/lou/bpartners/bpartners-web/src/operations/transactions/index.js">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.operations.utils">
+      <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+      <file name="getParams.ts" path="/Users/lou/bpartners/bpartners-web/src/operations/utils/getParams.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="money.ts" path="/Users/lou/bpartners/bpartners-web/src/operations/utils/money.ts">
+        <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.providers">
+      <metrics statements="77" coveredstatements="31" conditionals="33" coveredconditionals="8" methods="21" coveredmethods="13"/>
+      <file name="auth-provider.ts" path="/Users/lou/bpartners/bpartners-web/src/providers/auth-provider.ts">
+        <metrics statements="39" coveredstatements="20" conditionals="19" coveredconditionals="6" methods="12" coveredmethods="10"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="cond" truecount="2" falsecount="3"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="21" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="41" count="4" type="stmt"/>
+        <line num="42" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="4" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="50" count="4" type="stmt"/>
+        <line num="51" count="4" type="cond" truecount="3" falsecount="1"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="72" count="2" type="stmt"/>
+      </file>
+      <file name="data-provider.ts" path="/Users/lou/bpartners/bpartners-web/src/providers/data-provider.ts">
+        <metrics statements="27" coveredstatements="7" conditionals="10" coveredconditionals="1" methods="6" coveredmethods="2"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="27" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+      </file>
+      <file name="profile-provider.ts" path="/Users/lou/bpartners/bpartners-web/src/providers/profile-provider.ts">
+        <metrics statements="11" coveredstatements="4" conditionals="4" coveredconditionals="1" methods="3" coveredmethods="1"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="7" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="8" count="4" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.providers.mock-provider">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="index.ts" path="/Users/lou/bpartners/bpartners-web/src/providers/mock-provider/index.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="4" count="2" type="stmt"/>
+      </file>
+      <file name="transactions.ts" path="/Users/lou/bpartners/bpartners-web/src/providers/mock-provider/transactions.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lou.bpartners.bpartners-web.src.security">
+      <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
+      <file name="LoginPage.js" path="/Users/lou/bpartners/bpartners-web/src/security/LoginPage.js">
+        <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="nyhasina.Works.bpartners.bpartners-web.src">
       <metrics statements="18" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="5"/>
       <file name="App.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/App.js">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
@@ -38,7 +245,7 @@
         <line num="5" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.gen.haClient">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.gen.haClient">
       <metrics statements="567" coveredstatements="64" conditionals="262" coveredconditionals="19" methods="170" coveredmethods="14"/>
       <file name="api.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/gen/haClient/api.ts">
         <metrics statements="512" coveredstatements="32" conditionals="206" coveredconditionals="4" methods="156" coveredmethods="6"/>
@@ -623,7 +830,7 @@
         <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       </file>
     </package>
-    <package name="src.menu">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.menu">
       <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="HaMenu.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/menu/HaMenu.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
@@ -636,7 +843,7 @@
         <line num="11" count="26" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.fees">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.fees">
       <metrics statements="92" coveredstatements="12" conditionals="30" coveredconditionals="0" methods="33" coveredmethods="0"/>
       <file name="ByStatusFeeList.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/fees/ByStatusFeeList.js">
         <metrics statements="5" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -749,7 +956,7 @@
         <line num="7" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.payments">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.payments">
       <metrics statements="22" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="0"/>
       <file name="PaymentCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/payments/PaymentCreate.js">
         <metrics statements="16" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
@@ -783,7 +990,7 @@
         <line num="5" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.profile">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.profile">
       <metrics statements="18" coveredstatements="10" conditionals="8" coveredconditionals="0" methods="6" coveredmethods="2"/>
       <file name="ProfileEdit.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/profile/ProfileEdit.js">
         <metrics statements="4" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
@@ -813,14 +1020,14 @@
         <line num="10" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.studentGrades">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.studentGrades">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="index.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/studentGrades/index.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="5" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.students">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.students">
       <metrics statements="13" coveredstatements="5" conditionals="6" coveredconditionals="0" methods="5" coveredmethods="0"/>
       <file name="StudentCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/students/StudentCreate.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -848,7 +1055,7 @@
         <line num="9" count="0" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.teachers">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.teachers">
       <metrics statements="10" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
       <file name="TeacherCreate.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/teachers/TeacherCreate.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -873,7 +1080,7 @@
         <line num="9" count="0" type="stmt"/>
       </file>
     </package>
-    <package name="src.operations.utils">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.operations.utils">
       <metrics statements="29" coveredstatements="9" conditionals="17" coveredconditionals="0" methods="8" coveredmethods="1"/>
       <file name="EditToolBar.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/operations/utils/EditToolBar.js">
         <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -920,14 +1127,14 @@
         <line num="2" count="4" type="stmt"/>
       </file>
     </package>
-    <package name="src.providers">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.providers">
       <metrics statements="101" coveredstatements="31" conditionals="28" coveredconditionals="2" methods="41" coveredmethods="8"/>
       <file name="api.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/api.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
         <line num="4" count="6" type="stmt"/>
         <line num="5" count="4" type="stmt"/>
       </file>
-      <file name="auth-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/auth-provider.ts">
+      <file name="authProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/authProvider.ts">
         <metrics statements="13" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="4"/>
         <line num="5" count="4" type="stmt"/>
         <line num="6" count="4" type="stmt"/>
@@ -943,7 +1150,7 @@
         <line num="44" count="0" type="stmt"/>
         <line num="52" count="0" type="stmt"/>
       </file>
-      <file name="data-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/data-provider.ts">
+      <file name="dataProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/dataProvider.ts">
         <metrics statements="31" coveredstatements="6" conditionals="18" coveredconditionals="1" methods="6" coveredmethods="2"/>
         <line num="9" count="4" type="stmt"/>
         <line num="11" count="4" type="stmt"/>
@@ -1017,7 +1224,7 @@
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
       </file>
-      <file name="profile-provider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/profile-provider.ts">
+      <file name="profileProvider.ts" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/providers/profileProvider.ts">
         <metrics statements="7" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="4" coveredmethods="1"/>
         <line num="4" count="4" type="stmt"/>
         <line num="6" count="6" type="stmt"/>
@@ -1048,7 +1255,7 @@
         <line num="15" count="0" type="stmt"/>
       </file>
     </package>
-    <package name="src.security">
+    <package name="nyhasina.Works.bpartners.bpartners-web.src.security">
       <metrics statements="40" coveredstatements="6" conditionals="18" coveredconditionals="0" methods="11" coveredmethods="0"/>
       <file name="CompletePasswordPage.js" path="/Users/nyhasina/Works/bpartners/bpartners-web/src/security/CompletePasswordPage.js">
         <metrics statements="31" coveredstatements="4" conditionals="14" coveredconditionals="0" methods="6" coveredmethods="0"/>
