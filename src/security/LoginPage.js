@@ -4,10 +4,9 @@ import { useNavigate } from 'react-router-dom'
 
 const HaLoginPage = () => {
   const login = useLogin()
-  const navigate = useNavigate()
 
   useEffect(() => {
-    login(navigate)
+    login()
   }, [])
   return <p>Merci de vous connecter sur <a
     href={process.env.REACT_APP_AUTH_URL || ''}>bpartners.app</a>
