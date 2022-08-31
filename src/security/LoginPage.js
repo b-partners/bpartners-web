@@ -1,16 +1,18 @@
-import { useLogin } from 'react-admin'
-import { useEffect } from 'react'
+import { useLogin } from 'react-admin';
+import { useEffect } from 'react';
 
-const HaLoginPage = () => {
-  const login = useLogin()
+const BpLoginPage = () => {
+  const login = useLogin();
 
   useEffect(() => {
-    login()
-  })
+    login();
+  });
 
-  return <p>Merci de vous connecter sur <a
-    href={process.env.REACT_APP_AUTH_URL || ''}>bpartners.app</a>
-  </p>
-}
+  return (
+    <p>
+      Merci de vous connecter sur <a href={process.env.REACT_APP_AUTH_URL || ''}>bpartners.app</a>
+    </p>
+  );
+};
 
 export default BpLoginPage;
