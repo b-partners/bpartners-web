@@ -1,4 +1,4 @@
-import { EmailField, SimpleShowLayout, Show, TextField } from 'react-admin';
+import { SimpleShowLayout, Show, TextField } from 'react-admin';
 
 export const ProfileLayout = () => {
   return (
@@ -13,7 +13,7 @@ export const ProfileLayout = () => {
 const ProfileShow = ({ id }) => {
 
   const userId = localStorage.getItem("userId") || '';
-  
+
   return (
     <Show id={userId} resource='profile' basePath='/profile' title='Mon profil'>
       <ProfileLayout />
