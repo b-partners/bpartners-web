@@ -10,7 +10,7 @@ const HaLoginPage = () => {
     login(navigate)
   }, [])
   return <p>Merci de vous connecter sur <a
-    href={process.env.REACT_APP_ENV === 'dev' ? 'https://dev.bpartners.app/' : 'https://bpartners.app'}>bpartners.app</a>
+    href={process.env.REACT_APP_AUTH_URL || ''}>bpartners.app</a>
   </p>
 }
 
