@@ -8,9 +8,8 @@ import dataProvider from './providers/data-provider';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 
-import { mockDataProvider } from './providers/mock-provider';
-import profile from './operations/profile';
-import transaction from './operations/transactions';
+import profile from './operations/profile'
+import transaction from './operations/transactions'
 
 import MyLayout from './HaLayout';
 import HaLoginPage from './security/LoginPage';
@@ -19,7 +18,7 @@ const App = () => (
   <Admin
     title='BPartners Dashboard'
     authProvider={authProvider}
-    dataProvider={process.env.REACT_APP_ENV === 'mock' ? mockDataProvider : dataProvider}
+    dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
     loginPage={HaLoginPage}
     layout={MyLayout}
