@@ -11,8 +11,8 @@ import frenchMessages from 'ra-language-french';
 import profile from './operations/profile';
 import transaction from './operations/transactions';
 
-import MyLayout from './HaLayout';
-import HaLoginPage from './security/LoginPage';
+import MyLayout from './BpLayout';
+import BpLoginPage from './security/LoginPage';
 
 const App = () => (
   <Admin
@@ -20,7 +20,7 @@ const App = () => (
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
-    loginPage={HaLoginPage}
+    loginPage={BpLoginPage}
     layout={MyLayout}
   >
     <Resource name='profile' />
