@@ -8,11 +8,7 @@ const BpLoginPage = () => {
     login();
   });
 
-  return (
-    <p>
-      Merci de vous connecter sur <a href={process.env.REACT_APP_AUTH_URL || ''}>bpartners.app</a>
-    </p>
-  );
+  return <p>C'est bien ici qu'on récupère les informations de connexion alors TODO</p>;
 };
 
 export default BpLoginPage;

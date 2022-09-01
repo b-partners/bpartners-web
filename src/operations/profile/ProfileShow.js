@@ -6,12 +6,12 @@ export const ProfileLayout = () => {
     <SimpleShowLayout>
       <TextField source='firstName' id='firstName' label='Prénom(s)' />
       <TextField source='lastName' id='lastName' label='Nom(s)' />
-      <TextField source='mobilePhoneNumber' id='mobilePhoneNumber' label='Téléphone' />
+      <TextField source='phone' id='phone' label='Téléphone' />
     </SimpleShowLayout>
   );
 };
 
-const ProfileShow = ({ id }) => {
+const ProfileShow = () => {
   const userId = authProvider.getCachedWhoami().id;
 
   return (
