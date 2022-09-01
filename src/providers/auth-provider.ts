@@ -10,15 +10,12 @@ const whoami = async (): Promise<Whoami> => {
   conf.accessToken = localStorage.getItem(accessTokenItem) as string;
   return securityApi()
     .whoami()
-    .then(({ data }) => data)
-    .catch(error => {
-      console.error(error);
-      return {};
-    });
+    .then(({ data }) => data);
 };
 
-const cacheWhoami = (whoami: Whoami): void => {
+const cacheWhoami = (whoami: Whoami): Whoami => {
   sessionStorage.setItem(idItem, whoami.user?.id as string);
+  return whoami;
 };
 
 const cacheTokens = (accessToken: string, refreshToken: string): void => {
@@ -40,6 +37,12 @@ const clearCache = () => {
   sessionStorage.clear();
 };
 
+type RaPermission = {
+  action: string;
+  resource: string;
+  record?: any;
+};
+
 const authProvider = {
   // --------------------- ra functions -------------------------------------------
   // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
@@ -48,9 +51,9 @@ const authProvider = {
     securityApi()
       .createToken({
         code: password,
-        redirectionStatusUrls: { successUrl: clientMetadata.successUrl, failureUrl: clientMetadata.failureUrl },
+        redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls,
       })
-      .then(({ accessToken, refreshToken, whoami }) => {
+      .then(({ data: { accessToken, refreshToken, whoami } }) => {
         cacheWhoami(whoami);
         cacheTokens(accessToken, refreshToken);
       }),
@@ -60,13 +63,13 @@ const authProvider = {
     //TODO: invalidate token backend side
   },
 
-  checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
+  checkAuth: async (): Promise<void> => (cacheWhoami(await whoami()) ? Promise.resolve() : Promise.reject()),
 
   checkError: ({ status }: any): Promise<void> => (status === 200 ? Promise.resolve() : Promise.reject()),
 
   getIdentity: async () => (await whoami()).user?.id,
 
-  getPermissions: async (): Promise<Array<string>> => Promise.resolve(['*']),
+  getPermissions: async (): Promise<Array<RaPermission>> => Promise.resolve([{ action: '*', resource: '*' }]),
 
   // --------------------- non-ra functions ----------------------------------------
 
