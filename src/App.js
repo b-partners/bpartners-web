@@ -9,10 +9,13 @@ import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 
 import profile from './operations/profile';
-import transaction from './operations/transactions';
+import transactions from './operations/transactions';
 
 import MyLayout from './BpLayout';
-import BpLoginPage from './security/LoginPage';
+
+import LoginPage from './security/LoginPage';
+import { loginSuccessRelUrl } from './security/login-redirection-urls';
+import LoginSuccessPage from './security/LoginSuccessPage';
 
 const App = () => (
   <Admin
@@ -20,15 +23,16 @@ const App = () => (
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
-    loginPage={BpLoginPage}
+    loginPage={LoginPage}
     layout={MyLayout}
   >
     <Resource name='profile' />
-    <Resource name='transactions' list={transaction.list} show={transaction.show} icon={transaction.icon} />
+    <Resource name='transactions' />
 
     <CustomRoutes>
+      <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
       <Route exact path='/profile' element={<profile.show />} />
-      <Route exact path='/transactions' element={<transaction.list />} />
+      <Route exact path='/transactions' element={<transactions.list />} />
     </CustomRoutes>
   </Admin>
 );
