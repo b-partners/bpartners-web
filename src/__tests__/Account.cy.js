@@ -6,7 +6,7 @@ import App from '../App';
 import authProvider from '../providers/auth-provider';
 import { whoami1, user1, token1 } from './mocks/responses/security-api';
 
-describe(specTitle('Profile'), () => {
+describe(specTitle('Account'), () => {
   beforeEach(() => {
     //note(login-user1)
     cy.intercept('POST', '/token', token1);
@@ -19,7 +19,9 @@ describe(specTitle('Profile'), () => {
     mount(<App />);
     cy.wait('@getUser1');
 
-    cy.contains('Mon profil');
+    cy.contains('Ma société');
+    cy.contains('Mon identité');
     cy.contains('First Name 1');
+    cy.contains('Mon abonnement');
   });
 });
