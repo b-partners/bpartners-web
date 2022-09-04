@@ -6,7 +6,7 @@ const BpMenu = () => {
   return (
     <MultiLevelMenu variant='categories'>
       <MenuItemCategory to='/transactions' name='transactions' label='Mes transactions' icon={<AttachMoney />} />
-      <MenuItemCategory to='/profile' name='profile' label='Mon profil' icon={<AccountCircleIcon />} />
+      <MenuItemCategory to='/account' name='account' label='Mon compte' icon={<AccountCircleIcon />} />
     </MultiLevelMenu>
   );
 };

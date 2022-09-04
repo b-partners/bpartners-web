@@ -1,10 +1,10 @@
-import { AppBar } from '@react-admin/ra-enterprise';
+import { Box } from '@mui/material';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import authProvider from './providers/auth-provider';
 
-const UserMenu = () => {
+const LogoutButton = () => {
   const logout = () => {
     authProvider.logout();
     window.location.reload();
@@ -18,5 +18,12 @@ const UserMenu = () => {
   );
 };
 
-const BpAppBar = props => <AppBar {...props} languages={[]} color='transparent' elevation={0} userMenu={<UserMenu {...props} />} />;
+const BpAppBar = props => (
+  <Box {...props} display='flex' justifyContent='flex-end' mt={-5}>
+    <Box>
+      Bonjour <b>Fonenantsoa{/*TODO*/}</b> !
+      <LogoutButton />
+    </Box>
+  </Box>
+);
 export default BpAppBar;

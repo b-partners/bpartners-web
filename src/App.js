@@ -8,7 +8,7 @@ import dataProvider from './providers/data-provider';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 
-import profile from './operations/profile';
+import account from './operations/account';
 import transactions from './operations/transactions';
 
 import MyLayout from './BpLayout';
@@ -19,20 +19,19 @@ import LoginSuccessPage from './security/LoginSuccessPage';
 
 const App = () => (
   <Admin
-    title='BPartners Dashboard'
+    title='BPartners'
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
     loginPage={LoginPage}
     layout={MyLayout}
   >
-    <Resource name='profile' />
-    <Resource name='transactions' />
+    <Resource name='account' />
+    <Resource name='transactions' {...transactions} />
 
     <CustomRoutes>
       <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
-      <Route exact path='/profile' element={<profile.show />} />
-      <Route exact path='/transactions' element={<transactions.list />} />
+      <Route exact path='/account' element={<account.show />} />
     </CustomRoutes>
   </Admin>
 );
