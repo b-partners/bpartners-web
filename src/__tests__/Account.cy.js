@@ -15,7 +15,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('is displayed on login', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1'); //TODO: ask backend to fix GET /users/id
     mount(<App />);
     cy.wait('@getUser1');
 

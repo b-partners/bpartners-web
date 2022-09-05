@@ -16,6 +16,7 @@ describe(specTitle('Login'), () => {
     mount(<LoginPage />);
     cy.get('#phone').type(phone1);
 
+    //TODO: ask backend to fix token.whoami
     cy.intercept('POST', '/authInitiation', { redirectionUrl: 'https://authUrl.com' }).as('createAuthInitiation');
     cy.get('#login').click();
     cy.wait('@createAuthInitiation');
