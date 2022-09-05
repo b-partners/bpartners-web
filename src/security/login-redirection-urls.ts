@@ -1,11 +1,11 @@
 import { RedirectionStatusUrls } from 'src/gen/bpClient';
 
 export const loginSuccessRelUrl = '/login/success';
-export const failureSuccessRelUrl = '/login/success';
+export const failureSuccessRelUrl = '/login/failure';
 
 const loginRedirectionUrls: RedirectionStatusUrls = {
-  successUrl: window.location.hostname + loginSuccessRelUrl,
-  failureUrl: window.location.hostname + failureSuccessRelUrl,
+  successUrl: window.location.origin + loginSuccessRelUrl,
+  failureUrl: window.location.origin + failureSuccessRelUrl,
 };
 
 export default loginRedirectionUrls;

@@ -8,9 +8,9 @@ import { getUrlParams } from '../utils/getParams';
 const LoginSuccessPage = () => {
   useEffect(() => {
     async function login() {
-      const code = getUrlParams(window.location.href, 'code');
+      const code = getUrlParams(window.location.search, 'code');
       await authProvider.login({ username: null, password: code, clientMetadata: { redirectionStatusUrls: loginRedirectionUrls } });
-      redirect('/');
+      redirect('https://localhost:3000/#/account');
     }
     login();
   }, []);

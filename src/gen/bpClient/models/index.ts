@@ -1,4 +1,5 @@
 export * from './account';
+export * from './account-holder';
 export * from './auth-initiation';
 export * from './bad-request-exception';
 export * from './create-pre-user';

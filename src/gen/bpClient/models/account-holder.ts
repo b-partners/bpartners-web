@@ -11,29 +11,46 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { RedirectionStatusUrls } from './redirection-status-urls';
 /**
  *
  * @export
- * @interface AuthInitiation
+ * @interface AccountHolder
  */
-export interface AuthInitiation {
+export interface AccountHolder {
   /**
    *
    * @type {string}
-   * @memberof AuthInitiation
+   * @memberof AccountHolder
    */
-  state?: string;
+  id?: string;
   /**
    *
    * @type {string}
-   * @memberof AuthInitiation
+   * @memberof AccountHolder
    */
-  phone?: string;
+  name?: string;
   /**
    *
-   * @type {RedirectionStatusUrls}
-   * @memberof AuthInitiation
+   * @type {string}
+   * @memberof AccountHolder
    */
-  redirectionStatusUrls?: RedirectionStatusUrls;
+  address?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AccountHolder
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AccountHolder
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AccountHolder
+   */
+  postalCode?: string;
 }
