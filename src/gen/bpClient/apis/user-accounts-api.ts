@@ -17,6 +17,7 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { Account } from '../models';
+import { AccountHolder } from '../models';
 import { BadRequestException } from '../models';
 import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
@@ -29,6 +30,54 @@ import { User } from '../models';
  */
 export const UserAccountsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     *
+     * @summary Get accountHolders of an account
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getAccountHolders: async (userId: string, accountId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      if (userId === null || userId === undefined) {
+        throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling getAccountHolders.');
+      }
+      // verify required parameter 'accountId' is not null or undefined
+      if (accountId === null || accountId === undefined) {
+        throw new RequiredError('accountId', 'Required parameter accountId was null or undefined when calling getAccountHolders.');
+      }
+      const localVarPath = `/users/{userId}/accounts/{accountId}/accountHolders`
+        .replace(`{${'userId'}}`, encodeURIComponent(String(userId)))
+        .replace(`{${'accountId'}}`, encodeURIComponent(String(accountId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
     /**
      *
      * @summary Get accounts of a user
@@ -122,6 +171,25 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Get accountHolders of an account
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getAccountHolders(
+      userId: string,
+      accountId: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<AccountHolder>>>> {
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).getAccountHolders(userId, accountId, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
      * @summary Get accounts of a user
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -162,6 +230,19 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
   return {
     /**
      *
+     * @summary Get accountHolders of an account
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getAccountHolders(userId: string, accountId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<AccountHolder>>> {
+      return UserAccountsApiFp(configuration)
+        .getAccountHolders(userId, accountId, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get accounts of a user
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -194,6 +275,20 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
  * @extends {BaseAPI}
  */
 export class UserAccountsApi extends BaseAPI {
+  /**
+   *
+   * @summary Get accountHolders of an account
+   * @param {string} userId
+   * @param {string} accountId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserAccountsApi
+   */
+  public async getAccountHolders(userId: string, accountId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<AccountHolder>>> {
+    return UserAccountsApiFp(this.configuration)
+      .getAccountHolders(userId, accountId, options)
+      .then(request => request(this.axios, this.basePath));
+  }
   /**
    *
    * @summary Get accounts of a user

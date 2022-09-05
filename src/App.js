@@ -1,5 +1,6 @@
 import { Admin } from '@react-admin/ra-enterprise';
 import { CustomRoutes } from 'react-admin';
+import { BrowserRouter, Routes } from 'react-router-dom';
 import { Resource } from '@react-admin/ra-rbac';
 
 import { Route } from 'react-router-dom';
@@ -17,7 +18,7 @@ import LoginPage from './security/LoginPage';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginSuccessPage from './security/LoginSuccessPage';
 
-const App = () => (
+const BpAdmin = () => (
   <Admin
     title='BPartners'
     authProvider={authProvider}
@@ -30,10 +31,18 @@ const App = () => (
     <Resource name='transactions' {...transactions} />
 
     <CustomRoutes>
-      <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
       <Route exact path='/account' element={<account.show />} />
     </CustomRoutes>
   </Admin>
+);
+
+const App = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+      <Route path='*' element={<BpAdmin />} />
+    </Routes>
+  </BrowserRouter>
 );
 
 export default App;

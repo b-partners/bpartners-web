@@ -5,6 +5,7 @@ import { useReducer, useState, useEffect } from 'react';
 import { securityApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../utils/redirect';
+import { v4 as uuidv4 } from 'uuid';
 
 const PhoneTextField = ({ formInput: { phone }, handleInput, isFirstAttempt }) => {
   const [isValidPhone, setIsValidPhone] = useState(true);
@@ -37,7 +38,13 @@ const BpLoginPage = () => {
 
   const [isFirstAttempt, setFirstAttempt] = useState(true);
   const initiateAuth = async () => {
-    const { data: redirectionUrl } = await securityApi().initiateAuth({ phone: formInput.phone, redirectionStatusUrl: loginRedirectionUrls });
+    const {
+      data: { redirectionUrl },
+    } = await securityApi().initiateAuth({
+      state: uuidv4(),
+      phone: formInput.phone,
+      redirectionStatusUrls: loginRedirectionUrls,
+    });
     redirect(redirectionUrl);
   };
   const onLogin = () => {

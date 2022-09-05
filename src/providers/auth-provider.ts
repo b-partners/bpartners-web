@@ -6,15 +6,13 @@ const accessTokenItem = 'bp_access_token';
 const refreshTokenItem = 'bp_refresh_token';
 
 const whoami = async (): Promise<Whoami> => {
-  const conf = new Configuration();
-  conf.accessToken = localStorage.getItem(accessTokenItem) as string;
   return securityApi()
     .whoami()
     .then(({ data }) => data);
 };
 
 const cacheWhoami = (whoami: Whoami): Whoami => {
-  sessionStorage.setItem(idItem, whoami.user?.id as string);
+  localStorage.setItem(idItem, whoami.user?.id as string);
   return whoami;
 };
 
@@ -24,11 +22,12 @@ const cacheTokens = (accessToken: string, refreshToken: string): void => {
   localStorage.setItem(refreshTokenItem, refreshToken);
 };
 
-const getCachedWhoami = () => ({ id: sessionStorage.getItem(idItem) });
+const getCachedWhoami = () => ({ id: localStorage.getItem(idItem) });
 
 const getCachedAuthConf = (): Configuration => {
   const conf = new Configuration();
-  conf.accessToken = sessionStorage.getItem(accessTokenItem) as string;
+  const accessToken = localStorage.getItem(accessTokenItem) as string;
+  conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
   return conf;
 };
 
@@ -53,9 +52,12 @@ const authProvider = {
         code: password,
         redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls,
       })
-      .then(({ data: { accessToken, refreshToken, whoami } }) => {
-        cacheWhoami(whoami);
+      .then(({ data: { accessToken, refreshToken } }) => {
         cacheTokens(accessToken, refreshToken);
+        return whoami();
+      })
+      .then(whoami => {
+        cacheWhoami(whoami);
       }),
 
   logout: async (): Promise<void> => {
