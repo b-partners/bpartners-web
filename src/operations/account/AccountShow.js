@@ -5,8 +5,13 @@ import authProvider from '../../providers/auth-provider';
 
 export const AccountHolderLayout = () => (
   <SimpleShowLayout>
-    {/*TODO: logo*/}
-    <TextField source='accountHolder.name' label='Raison sociale' />
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Avatar alt='Logo de la société' variant='square'>
+        N
+      </Avatar>{' '}
+      {/*TODO: logo*/}
+      <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
+    </Box>
     <TextField source='accountHolder.siren' label='SIREN' />
     <TextField source='accountHolder.address' label='Adresse' />
   </SimpleShowLayout>
@@ -23,16 +28,18 @@ const ProfileLayout = () => (
 
 const SubscriptionLayout = () => (
   <SimpleShowLayout>
-  {/*TODO: logo*/}
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Avatar variant="square" alt="subscription logo" src="https://dev.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png" />
-      <Typography ml={2} variant="body2">L'essentiel</Typography>
+    {/*TODO: logo*/}
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Avatar variant='square' alt='subscription logo' src='https://dev.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png' />
+      <Typography ml={2} variant='body2'>
+        L'essentiel
+      </Typography>
     </Box>
-    <Typography variant="h6">60k/an</Typography>
-    <Typography variant="body2">200€ de retraits gratuits par mois, puis 1% du montant.</Typography>
-    <Typography variant="body2">1500€ de plafond de retrait.</Typography>
-    <Typography variant="body2">2% pour les paiements hors zone euro.</Typography>
-    <Typography variant="body2">30 virements et prélèvements puis 0,50€ au delà.</Typography>
+    <Typography variant='h6'>60k/an</Typography>
+    <Typography variant='body2'>200€ de retraits gratuits par mois, puis 1% du montant.</Typography>
+    <Typography variant='body2'>1500€ de plafond de retrait.</Typography>
+    <Typography variant='body2'>2% pour les paiements hors zone euro.</Typography>
+    <Typography variant='body2'>30 virements et prélèvements puis 0,50€ au delà.</Typography>
   </SimpleShowLayout>
 );
 
