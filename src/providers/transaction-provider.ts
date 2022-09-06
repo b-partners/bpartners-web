@@ -6,9 +6,13 @@ const transactionProvider: BpDataProviderType = {
   async getOne(id: string) {
     throw new Error('Function not implemented.');
   },
-  getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
+  getList: async function (page: number, perPage: number, { categorized }: any): Promise<any[]> {
     const { data } = await payingApi().getTransactions(authProvider.getCachedWhoami().id);
-    return data;
+    return data.filter(
+      //TODO: following filter can be expressed in a single, well-known, logic operator. What is it?
+      //TODO(implement-backend)
+      ({ category }) => !categorized || category == null
+    );
   },
   saveOrUpdate: function (resources: any[]): Promise<any[]> {
     throw new Error('Function not implemented.');

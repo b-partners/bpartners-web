@@ -5,7 +5,7 @@ import { Button, Toolbar, Typography } from '@material-ui/core';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 
-const pageSize = 10;
+export const pageSize = 10;
 
 const haSetPerPage = (setPerPage, setPage, page) => {
   setPerPage(pageSize);

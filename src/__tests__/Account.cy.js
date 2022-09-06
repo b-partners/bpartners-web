@@ -14,12 +14,9 @@ describe(specTitle('Account'), () => {
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
   });
 
-  it(/*TODO: route is broken*/ 'is displayed on login', () => {
+  it('is displayed on login', () => {
     mount(<App />);
     cy.wait('@whoami'); //TODO: ask backend to fix GET /users/id
-
-    // note(test-redirect)
-    // i do prefer this one instead of processing window.location tedious configuration
     cy.get('[href="/account"]').click();
 
     cy.contains('Ma société');
