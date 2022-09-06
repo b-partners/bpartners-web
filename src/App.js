@@ -21,7 +21,6 @@ import LoginSuccessPage from './security/LoginSuccessPage';
 const BpAdmin = () => (
   <Admin
     title='BPartners'
-    basename='/'
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
