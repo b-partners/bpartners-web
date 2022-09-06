@@ -10,14 +10,13 @@ describe(specTitle('Account'), () => {
   beforeEach(() => {
     //note(login-user1)
     cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1);
+    cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
   });
 
   it('is displayed on login', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1'); //TODO: ask backend to fix GET /users/id
     mount(<App />);
-    cy.wait('@getUser1');
+    cy.wait('@whoami'); //TODO: ask backend to fix GET /users/id
 
     cy.contains('Ma société');
     cy.contains('Mon identité');

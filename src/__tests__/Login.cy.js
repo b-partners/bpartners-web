@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginPage from '../security/LoginPage';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
-import { phone1, token1 } from './mocks/responses/security-api';
+import { phone1, token1, whoami1 } from './mocks/responses/security-api';
 import * as Redirect from '../utils/redirect';
 
 describe(specTitle('Login'), () => {
@@ -25,8 +25,10 @@ describe(specTitle('Login'), () => {
 
   it('SuccessPage redirects to / on valid code', () => {
     cy.intercept('POST', '/token', token1).as('createToken');
+    cy.intercept('GET', '/whoami', whoami1).as('whoami');
     mount(<LoginSuccessPage />);
     cy.wait('@createToken');
+    cy.wait('@whoami'); //TODO: ask backend to fix token.whoami
     cy.get('@redirect').should('have.been.calledOnce');
   });
 });
