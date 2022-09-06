@@ -10,7 +10,7 @@ const LoginSuccessPage = () => {
     async function login() {
       const code = getUrlParams(window.location.search, 'code');
       await authProvider.login({ username: null, password: code, clientMetadata: { redirectionStatusUrls: loginRedirectionUrls } });
-      redirect('https://localhost:3000/#/account');
+      redirect(window.location.origin);
     }
     login();
   }, []);
