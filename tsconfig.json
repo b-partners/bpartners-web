@@ -19,5 +19,5 @@
     "strictNullChecks": false,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "src/security/LoginPage.js"]
+  "include": ["src/**/*.ts", "src/security/LoginPage.js", "src/operations/utils/money.js"]
 }
