@@ -23,16 +23,13 @@ const LogoutButton = () => {
   );
 };
 
-
 const BpAppBar = props => {
   const userId = authProvider.getCachedWhoami().id;
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
 
   // memoize the function to avoid creating this function all the time
   const getFirstName = useCallback(() => {
-    accountProvider
-      .getOne(userId)
-      .then((data) => setName(data.user.firstName));
+    accountProvider.getOne(userId).then(data => setName(data.user.firstName));
   }, []);
 
   useEffect(() => getFirstName(), []);
@@ -44,6 +41,6 @@ const BpAppBar = props => {
         <LogoutButton />
       </Box>
     </Box>
-  )
+  );
 };
 export default BpAppBar;

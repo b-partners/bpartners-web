@@ -3,7 +3,7 @@ import { CustomRoutes } from 'react-admin';
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { Resource } from '@react-admin/ra-rbac';
 
-import { Route } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import authProvider from './providers/auth-provider.ts';
 import dataProvider from './providers/data-provider';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
@@ -21,6 +21,7 @@ import LoginSuccessPage from './security/LoginSuccessPage';
 const BpAdmin = () => (
   <Admin
     title='BPartners'
+    basename='/'
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
@@ -31,7 +32,7 @@ const BpAdmin = () => (
     <Resource name='transactions' {...transactions} />
 
     <CustomRoutes>
-      <Route exact path='/account' element={<account.show />} />
+      <Route exact path='*' /*TODO*/ element={<account.show />} />
     </CustomRoutes>
   </Admin>
 );
