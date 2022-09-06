@@ -31,7 +31,7 @@ const BpAdmin = () => (
     <Resource name='transactions' {...transactions} />
 
     <CustomRoutes>
-      <Route exact path='*' /*TODO*/ element={<account.show />} />
+      <Route exact path='/account' element={<account.show />} />
     </CustomRoutes>
   </Admin>
 );
