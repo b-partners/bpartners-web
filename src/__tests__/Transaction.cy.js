@@ -17,7 +17,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-user-id1/transactions', transactions1).as('getTransactions1');
   });
 
-  it.only('are displayed', () => {
+  it('are displayed', () => {
     mount(<App />);
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
