@@ -24,10 +24,10 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains("Abonnement BPartners - L'essentiel");
     cy.contains('BP22002');
-    //cy.contains('€ -5'); //TODO: this is incorrect, should be € -0.05 //TODO(random-fail-ci): display MAY be locale dependent
-    //cy.contains('€ +500'); //TODO: this is incorrect, should be € +5.00 //TODO(random-fail-ci)
+    cy.contains('-0.05 €');
+    cy.contains('+5.00 €');
     cy.contains('TVA 20%');
-    //cy.contains('18/08/2022'); //TODO: time missing //TODO(random-fail-ci)
+    cy.contains('18/08/2022 05:34:20');
   });
 
   it('are filterable', () => {
@@ -39,7 +39,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('TVA 20%').not();
   });
 
-  it.only('can have document', () => {
+  it('can have document', () => {
     mount(<App />);
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
