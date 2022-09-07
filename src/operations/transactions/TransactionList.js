@@ -1,9 +1,8 @@
 import { useState } from 'react';
 
 import { Datagrid, List, TextField, FunctionField, SelectInput, BooleanInput } from 'react-admin';
-import { Currency, prettyPrintMoney } from '../utils/money';
+import { coloredMoney, Currency, normalizeAmount } from '../utils/money';
 
-import { red, green } from '@mui/material/colors';
 import { Chip, Card, CardContent, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import samplePdf from './testInvoice.pdf';
@@ -13,12 +12,9 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import PrevNextPagination from '../utils/PrevNextPagination';
 import { pageSize } from '../utils/PrevNextPagination';
 import { useListContext } from 'react-admin';
+import { formatDate } from '../utils/date';
 
-const coloredMoney = (amount, currency) => (
-  //TODO: move to utils/money
-  <b style={{ color: amount < 0 ? red[500] : green[500] }}>{prettyPrintMoney(amount, currency)}</b>
-);
-
+//TODO: should be elsewhere
 const statuses = {
   PENDING: { label: 'En attente', color: 'orange' },
   DONE: { label: 'Effectué', color: 'green' },
@@ -77,7 +73,7 @@ const TransactionList = props => {
     >
       <Datagrid bulkActionButtons={false}>
         <TextField source='reference' label='Référence' />
-        <FunctionField textAlign='right' render={record => coloredMoney(record.amount, Currency.EUR)} label='Montant' />
+        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
         <TextField source='label' label='Titre' />
         <FunctionField
           render={({ category }) =>
@@ -93,8 +89,8 @@ const TransactionList = props => {
           label='Catégorie'
         />
         {/*TODO: allow inline edition*/}
-        <FunctionField render={({ paymentDatetime }) => new Date(paymentDatetime).toLocaleDateString()} label='Date de paiement' />
         <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+        <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id }) => (
             <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
