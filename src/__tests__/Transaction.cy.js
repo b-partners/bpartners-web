@@ -17,7 +17,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-user-id1/transactions', transactions1).as('getTransactions1');
   });
 
-  it('are displayed', () => {
+  it.only('are displayed', () => {
     mount(<App />);
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
@@ -46,7 +46,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains('TVA 20%').click();
     cy.contains('Justificatif').should('exist');
-    cy.contains('Transaction : transaction1');
+    cy.contains('transaction1');
 
     cy.contains('TVA 20%').click();
     cy.contains('Justificatif').should('not.exist');
