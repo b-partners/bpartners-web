@@ -12,7 +12,11 @@ export const AccountHolderLayout = () => {
         <Avatar src={imgSrc} /*TODO: handle null case*/ title='Logo' variant='square' />
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
       </Box>
-      <TextField source='accountHolder.siren' label='SIREN' />
+      {/* TODO: backend should implement it  */}
+      {/* <TextField source='accountHolder.siren' label='SIREN' /> */}
+      <TextField ml={2} source='accountHolder.postalCode' label='Code postal' />
+      <TextField ml={2} source='accountHolder.city' label='Citée' />
+      <TextField ml={2} source='accountHolder.country' label='Pays' />
       <TextField source='accountHolder.address' label='Adresse' />
     </SimpleShowLayout>
   );
