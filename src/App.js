@@ -27,8 +27,8 @@ const BpAdmin = () => (
     loginPage={LoginPage}
     layout={MyLayout}
   >
-    <Resource name='account' />
     <Resource name='transactions' {...transactions} />
+    <Resource name='account' />
 
     <CustomRoutes>
       <Route exact path='/account' element={<account.show />} />
