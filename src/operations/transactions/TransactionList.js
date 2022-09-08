@@ -6,7 +6,7 @@ import { Currency, prettyPrintMoney } from '../utils/money';
 import { red, green } from '@mui/material/colors';
 import { Chip, Card, CardContent, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import samplePdf from './invoice.pdf';
+import samplePdf from './testInvoice.pdf';
 
 import PrevNextPagination from '../utils/PrevNextPagination';
 import { pageSize } from '../utils/PrevNextPagination';
