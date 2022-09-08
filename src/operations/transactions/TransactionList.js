@@ -7,6 +7,8 @@ import { red, green } from '@mui/material/colors';
 import { Chip, Card, CardContent, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import samplePdf from './testInvoice.pdf';
+import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 import PrevNextPagination from '../utils/PrevNextPagination';
 import { pageSize } from '../utils/PrevNextPagination';
@@ -46,7 +48,8 @@ const TransactionList = props => {
     setDocumentId(null);
     setShoudShowDocument(null);
   };
-  const onTransactionClicked = transactionId => {
+  const onDocumentIconClicked = transactionId => {
+    console.log(transactionId);
     if (shouldShowDocument && transactionId === documentId) {
       // close document if corresponding row was clicked
       resetDocument();
@@ -63,7 +66,7 @@ const TransactionList = props => {
       pagination={shouldPaginate ? null : <PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
       actions={null}
       filters={[
-        <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn />,
+        <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
         <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
       ]}
       hasCreate={false}
@@ -72,13 +75,35 @@ const TransactionList = props => {
       hasShow={false}
       aside={shouldShowDocument ? <Document transactionId={documentId} /> : null}
     >
-      <Datagrid bulkActionButtons={false} rowClick={onTransactionClicked}>
+      <Datagrid bulkActionButtons={false}>
         <TextField source='reference' label='Référence' />
-        <FunctionField render={record => coloredMoney(record.amount, Currency.EUR)} label='Montant' />
-        <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+        <FunctionField textAlign='right' render={record => coloredMoney(record.amount, Currency.EUR)} label='Montant' />
         <TextField source='label' label='Titre' />
-        <FunctionField render={record => (record.category != null ? record.category.label : null)} label='Catégorie' /> {/*TODO: allow inline edition*/}
-        <FunctionField render={record => new Date(record.paymentDatetime).toLocaleDateString()} label='Date de paiement' />
+        <FunctionField
+          render={({ category }) =>
+            category != null ? (
+              <div>
+                {category.label /*TODO: select from a mui.select when editbutton has been click*/}
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </div>
+            ) : null
+          }
+          label='Catégorie'
+        />
+        {/*TODO: allow inline edition*/}
+        <FunctionField render={({ paymentDatetime }) => new Date(paymentDatetime).toLocaleDateString()} label='Date de paiement' />
+        <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+        <FunctionField
+          render={({ id }) => (
+            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
+              <IconButton id={`document-button-${id}`}>
+                <AttachmentIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        />
       </Datagrid>
     </List>
   );

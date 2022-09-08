@@ -39,16 +39,16 @@ describe(specTitle('Transactions'), () => {
     cy.contains('TVA 20%').not();
   });
 
-  it('can have document', () => {
+  it.only('can have document', () => {
     mount(<App />);
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
 
-    cy.contains('TVA 20%').click();
-    cy.contains('Justificatif').should('exist');
-    cy.contains('transaction1');
+    cy.contains('TVA 20%');
+    cy.get('[id=document-button-transaction1]').click();
+    cy.contains('transaction1').should('exist');
 
-    cy.contains('TVA 20%').click();
-    cy.contains('Justificatif').should('not.exist');
+    cy.get('[id=document-button-transaction1]').click();
+    cy.contains('transaction1').should('not.exist');
   });
 });
