@@ -6,7 +6,7 @@ import App from '../App';
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1 } from './mocks/responses/security-api';
 import { transactions1 } from './mocks/responses/paying-api';
-
+import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
     //note(login-user1)
@@ -15,6 +15,8 @@ describe(specTitle('Transactions'), () => {
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
 
     cy.intercept('GET', '/accounts/mock-user-id1/transactions', transactions1).as('getTransactions1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
   });
 
   it('are displayed', () => {
