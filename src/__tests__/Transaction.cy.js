@@ -14,7 +14,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
 
-    cy.intercept('GET', '/accounts/mock-user-id1/transactions', transactions1).as('getTransactions1');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions', transactions1).as('getTransactions1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
   });

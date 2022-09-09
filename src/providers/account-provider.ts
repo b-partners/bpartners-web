@@ -1,24 +1,28 @@
 import { Account, AccountHolder } from 'src/gen/bpClient';
 
-import { verifyAccountsNumber } from 'src/utils/verifyAccountsNumber';
-
 import { userAccountsApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
 
-const accountGetter = async (userId: string): Promise<Account[]> => {
+export const singleAccountGetter = async (userId: string): Promise<Account> => {
+  const hasOnlyOneAccount = (accounts: Account[]) => {
+    if (accounts.length > 1) {
+      throw new Error("NotImplemented('Only 1 user with only 1 account and only 1 accountHolder is supported')");
+    }
+  };
+
   return userAccountsApi()
     .getAccountsByUserId(userId)
-    .then(accounts => accounts.data);
+    .then(({ data }) => {
+      hasOnlyOneAccount(data);
+      return data[0];
+    });
 };
 
 const accountHoldersGetter = async (userId: string): Promise<AccountHolder> => {
-  return accountGetter(userId)
-    .then(accounts => {
-      verifyAccountsNumber(accounts);
-      return userAccountsApi().getAccountHolders(userId, accounts[0].id);
-    })
+  return singleAccountGetter(userId)
+    .then(account => userAccountsApi().getAccountHolders(userId, account.id))
     .then(accountHolders => accountHolders.data[0]);
 };
 
