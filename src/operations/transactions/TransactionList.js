@@ -9,8 +9,7 @@ import samplePdf from './testInvoice.pdf';
 import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
 import { IconButton, Tooltip } from '@material-ui/core';
 
-import PrevNextPagination from '../utils/PrevNextPagination';
-import { pageSize } from '../utils/PrevNextPagination';
+import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
 import { useListContext } from 'react-admin';
 import { formatDate } from '../utils/date';
 

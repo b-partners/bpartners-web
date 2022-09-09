@@ -12,13 +12,14 @@ const whoami = async (): Promise<Whoami> => {
 };
 
 const cacheWhoami = (whoami: Whoami): Whoami => {
-  localStorage.setItem(idItem, whoami.user?.id as string);
+  localStorage.setItem(idItem, whoami.user.id || '');
   return whoami;
 };
 
 const cacheTokens = (accessToken: string, refreshToken: string): void => {
   //TODO: localStorage does not work on private browsing
   localStorage.setItem(accessTokenItem, accessToken);
+
   localStorage.setItem(refreshTokenItem, refreshToken);
 };
 
@@ -26,7 +27,7 @@ const getCachedWhoami = () => ({ id: localStorage.getItem(idItem) });
 
 const getCachedAuthConf = (): Configuration => {
   const conf = new Configuration();
-  const accessToken = localStorage.getItem(accessTokenItem) as string;
+  const accessToken = localStorage.getItem(accessTokenItem);
   conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
   return conf;
 };
