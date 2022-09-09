@@ -48,9 +48,9 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();
-    cy.contains('transaction1').should('exist');
+    cy.contains('BP22001').as('transaction1').should('exist');
 
-    cy.get('[id=document-button-transaction1]').click();
-    cy.contains('transaction1').should('not.exist');
+    cy.get('[id=document-button-transaction2]').click();
+    cy.get('.MuiTypography-h6').should('have.text', 'BP22002');
   });
 });
