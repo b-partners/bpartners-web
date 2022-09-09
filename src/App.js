@@ -1,9 +1,8 @@
 import { Admin } from '@react-admin/ra-enterprise';
 import { CustomRoutes } from 'react-admin';
-import { BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Resource } from '@react-admin/ra-rbac';
 
-import { Route } from 'react-router-dom';
 import authProvider from './providers/auth-provider.ts';
 import dataProvider from './providers/data-provider';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
