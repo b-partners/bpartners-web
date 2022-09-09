@@ -19,11 +19,11 @@ const statuses = {
   DONE: { label: 'Effectué', color: 'green' },
 };
 
-const Document = ({ transactionId }) => (
+const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
     <CardContent>
       <Typography variant='h4'>Justificatif</Typography>
-      <Typography variant='h6'>{transactionId /*TODO: use ref insted*/}</Typography>
+      <Typography variant='h6'>{transactionRef}</Typography>
       <Pdf file={samplePdf /*TODO: retrieve from FilesAPI*/}>
         <PdfPage pageNumber={1} />
       </Pdf>
@@ -37,20 +37,20 @@ const TransactionList = props => {
   const resourcesCount = data ? Object.keys(data).length : 0;
   const shouldPaginate = isLoading || resourcesCount < pageSize;
 
-  const [documentId, setDocumentId] = useState(null);
+  const [documentRef, setDocumentRef] = useState(null);
   const [shouldShowDocument, setShoudShowDocument] = useState(false);
   const resetDocument = () => {
-    setDocumentId(null);
+    setDocumentRef(null);
     setShoudShowDocument(null);
   };
-  const onDocumentIconClicked = transactionId => {
-    console.log(transactionId);
-    if (shouldShowDocument && transactionId === documentId) {
+  const onDocumentIconClicked = transactionRef => {
+    console.log(transactionRef);
+    if (shouldShowDocument && transactionRef === documentRef) {
       // close document if corresponding row was clicked
       resetDocument();
       return;
     }
-    setDocumentId(transactionId);
+    setDocumentRef(transactionRef);
     setShoudShowDocument(true);
   };
 
@@ -68,7 +68,7 @@ const TransactionList = props => {
       hasEdit={false}
       hasList={false}
       hasShow={false}
-      aside={shouldShowDocument ? <Document transactionId={documentId} /> : null}
+      aside={shouldShowDocument ? <Document transactionRef={documentRef} /> : null}
     >
       <Datagrid bulkActionButtons={false}>
         <TextField source='reference' label='Référence' />
@@ -91,8 +91,8 @@ const TransactionList = props => {
         <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
-          render={({ id }) => (
-            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
+          render={({ id, reference }) => (
+            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(reference)}>
               <IconButton id={`document-button-${id}`}>
                 <AttachmentIcon />
               </IconButton>
