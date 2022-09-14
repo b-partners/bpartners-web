@@ -28,7 +28,6 @@ describe(specTitle('Login'), () => {
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     mount(<LoginSuccessPage />);
     cy.wait('@createToken');
-    cy.wait('@whoami'); //TODO: ask backend to fix token.whoami
     cy.get('@redirect').should('have.been.calledOnce');
   });
 });

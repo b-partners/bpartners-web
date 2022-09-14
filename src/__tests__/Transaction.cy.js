@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import authProvider from '../providers/auth-provider';
-import { whoami1, token1 } from './mocks/responses/security-api';
+import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { transactions1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 describe(specTitle('Transactions'), () => {
@@ -17,10 +17,12 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/transactions', transactions1).as('getTransactions1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
   });
 
   it('are displayed', () => {
     mount(<App />);
+    cy.wait('@getUser1');
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
 
@@ -34,6 +36,7 @@ describe(specTitle('Transactions'), () => {
 
   it('are filterable', () => {
     mount(<App />);
+    cy.wait('@getUser1');
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
 
@@ -43,6 +46,7 @@ describe(specTitle('Transactions'), () => {
 
   it('can have document', () => {
     mount(<App />);
+    cy.wait('@getUser1');
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
 

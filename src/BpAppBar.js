@@ -19,7 +19,7 @@ const LogoutButton = () => {
 };
 
 const BpAppBar = props => {
-  const userId = authProvider.getCachedWhoami().id;
+  const userId = authProvider.getCachedWhoami().user.id;
   const [name, setName] = useState('');
 
   // memoize the function to avoid creating it all the time

@@ -8,7 +8,7 @@ const transactionProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, { categorized }: any): Promise<any[]> {
-    const userId = authProvider.getCachedWhoami().id;
+    const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
     const { data } = await payingApi().getTransactions(accountId);
     return data.filter(
