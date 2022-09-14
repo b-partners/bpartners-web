@@ -1,11 +1,11 @@
 import { BpDataProviderType } from './bp-data-provider-type';
-import { securityApi } from './api';
+import { userAccountsApi } from './api';
 
 const profileProvider: BpDataProviderType = {
   async getOne(id: string) {
-    return securityApi()
-      .whoami() //TODO: change when backend is not broken anymore
-      .then(result => result.data.user);
+    return userAccountsApi()
+      .getUserById(id)
+      .then(({ data }) => data);
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');

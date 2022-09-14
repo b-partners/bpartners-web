@@ -50,7 +50,7 @@ const SubscriptionLayout = () => (
 );
 
 const AccountShow = () => {
-  const userId = authProvider.getCachedWhoami().id;
+  const userId = authProvider.getCachedWhoami().user.id;
 
   return (
     <Show id={userId} resource='account' basePath='/account'>

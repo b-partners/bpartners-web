@@ -1,7 +1,7 @@
 import { Configuration, Whoami } from '../gen/bpClient';
 import { securityApi } from './api';
 
-const idItem = 'bp_id';
+const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';
 const refreshTokenItem = 'bp_refresh_token';
 
@@ -12,7 +12,7 @@ const whoami = async (): Promise<Whoami> => {
 };
 
 const cacheWhoami = (whoami: Whoami): Whoami => {
-  localStorage.setItem(idItem, whoami.user.id || '');
+  localStorage.setItem(whoamiItem, JSON.stringify(whoami));
   return whoami;
 };
 
@@ -23,7 +23,7 @@ const cacheTokens = (accessToken: string, refreshToken: string): void => {
   localStorage.setItem(refreshTokenItem, refreshToken);
 };
 
-const getCachedWhoami = () => ({ id: localStorage.getItem(idItem) });
+const getCachedWhoami = (): Whoami => JSON.parse(localStorage.getItem(whoamiItem));
 
 const getCachedAuthConf = (): Configuration => {
   const conf = new Configuration();
@@ -53,11 +53,8 @@ const authProvider = {
         code: password,
         redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls,
       })
-      .then(({ data: { accessToken, refreshToken } }) => {
+      .then(({ data: { accessToken, refreshToken, whoami } }) => {
         cacheTokens(accessToken, refreshToken);
-        return whoami();
-      })
-      .then(whoami => {
         cacheWhoami(whoami);
       }),
 
@@ -66,7 +63,7 @@ const authProvider = {
     //TODO: invalidate token backend side
   },
 
-  checkAuth: async (): Promise<void> => (cacheWhoami(await whoami()) ? Promise.resolve() : Promise.reject()),
+  checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
   checkError: ({ status }: any): Promise<void> => (status === 200 ? Promise.resolve() : Promise.reject()),
 

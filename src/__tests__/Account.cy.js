@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import authProvider from '../providers/auth-provider';
-import { whoami1, token1 } from './mocks/responses/security-api';
+import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Account'), () => {
@@ -14,6 +14,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
   });
 
   it('is displayed on login', () => {
@@ -21,7 +22,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     mount(<App />);
 
-    cy.wait('@whoami'); //TODO: ask backend to fix GET /users/id
+    cy.wait('@getUser1');
     cy.get('[href="/account"]').click();
 
     cy.get('[href="/account"]').click();
