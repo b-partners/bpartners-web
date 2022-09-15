@@ -11,23 +11,22 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CreateTransactionCategory } from './create-transaction-category';
 /**
  *
  * @export
- * @interface TransactionCategory
+ * @interface CreateTransactionCategory
  */
-export interface TransactionCategory extends CreateTransactionCategory {
+export interface CreateTransactionCategory {
   /**
    *
    * @type {string}
-   * @memberof TransactionCategory
+   * @memberof CreateTransactionCategory
    */
-  id?: string;
+  type?: string;
   /**
    *
-   * @type {boolean}
-   * @memberof TransactionCategory
+   * @type {number}
+   * @memberof CreateTransactionCategory
    */
-  userDefined?: boolean;
+  vat?: number;
 }

@@ -32,10 +32,10 @@ export interface Token {
   refreshToken?: string;
   /**
    *
-   * @type {Date}
+   * @type {number}
    * @memberof Token
    */
-  expiresAt?: Date;
+  expiresIn?: number;
   /**
    *
    * @type {Whoami}
