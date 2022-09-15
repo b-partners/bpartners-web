@@ -14,19 +14,19 @@
 /**
  * 
  * @export
- * @interface Exception
+ * @interface CreateTransactionCategory
  */
-export interface Exception {
+export interface CreateTransactionCategory {
     /**
      * 
      * @type {string}
-     * @memberof Exception
+     * @memberof CreateTransactionCategory
      */
     type?: string;
     /**
      * 
-     * @type {string}
-     * @memberof Exception
+     * @type {number}
+     * @memberof CreateTransactionCategory
      */
-    message?: string;
+    vat?: number;
 }

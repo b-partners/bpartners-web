@@ -11,22 +11,17 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CreateProduct } from './create-product';
 /**
  * 
  * @export
- * @interface Exception
+ * @interface Product
  */
-export interface Exception {
+export interface Product extends CreateProduct {
     /**
      * 
      * @type {string}
-     * @memberof Exception
+     * @memberof Product
      */
-    type?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Exception
-     */
-    message?: string;
+    id?: string;
 }

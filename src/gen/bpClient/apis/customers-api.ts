@@ -17,33 +17,33 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { BadRequestException } from '../models';
-import { CreatePreUser } from '../models';
+import { CreateCustomer } from '../models';
+import { Customer } from '../models';
 import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
-import { OnboardingInitiation } from '../models';
-import { PreUser } from '../models';
-import { Redirection } from '../models';
 import { ResourceNotFoundException } from '../models';
 import { TooManyRequestsException } from '../models';
 /**
- * OnboardingApi - axios parameter creator
+ * CustomersApi - axios parameter creator
  * @export
  */
-export const OnboardingApiAxiosParamCreator = function (configuration?: Configuration) {
+export const CustomersApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Pre-onboard users
-         * @param {Array<CreatePreUser>} body 
+         * @summary Create customers for an account
+         * @param {string} id 
+         * @param {Array<CreateCustomer>} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPreUsers: async (body: Array<CreatePreUser>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            if (body === null || body === undefined) {
-                throw new RequiredError('body','Required parameter body was null or undefined when calling createPreUsers.');
+        createCustomers: async (id: string, body?: Array<CreateCustomer>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            if (id === null || id === undefined) {
+                throw new RequiredError('id','Required parameter id was null or undefined when calling createCustomers.');
             }
-            const localVarPath = `/preUsers`;
+            const localVarPath = `/accounts/{id}/customers`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
             let baseOptions;
@@ -53,6 +53,8 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
             const localVarRequestOptions :AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -76,28 +78,29 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
         },
         /**
          * 
-         * @summary Initiate an onboarding process
-         * @param {OnboardingInitiation} body 
+         * @summary Get customers of an account
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        initiateOnboarding: async (body: OnboardingInitiation, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            if (body === null || body === undefined) {
-                throw new RequiredError('body','Required parameter body was null or undefined when calling initiateOnboarding.');
+        getCustomers: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            if (id === null || id === undefined) {
+                throw new RequiredError('id','Required parameter id was null or undefined when calling getCustomers.');
             }
-            const localVarPath = `/onboardingInitiation`;
+            const localVarPath = `/accounts/{id}/customers`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, 'https://example.com');
             let baseOptions;
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
-            const localVarRequestOptions :AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions :AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            localVarHeaderParameter['Content-Type'] = 'application/json';
+            // authentication BearerAuth required
 
             const query = new URLSearchParams(localVarUrlObj.search);
             for (const key in localVarQueryParameter) {
@@ -109,8 +112,6 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
             localVarUrlObj.search = (new URLSearchParams(query)).toString();
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            const needsSerialization = (typeof body !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-            localVarRequestOptions.data =  needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : (body || "");
 
             return {
                 url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
@@ -121,20 +122,21 @@ export const OnboardingApiAxiosParamCreator = function (configuration?: Configur
 };
 
 /**
- * OnboardingApi - functional programming interface
+ * CustomersApi - functional programming interface
  * @export
  */
-export const OnboardingApiFp = function(configuration?: Configuration) {
+export const CustomersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Pre-onboard users
-         * @param {Array<CreatePreUser>} body 
+         * @summary Create customers for an account
+         * @param {string} id 
+         * @param {Array<CreateCustomer>} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPreUsers(body: Array<CreatePreUser>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<PreUser>>>> {
-            const localVarAxiosArgs = await OnboardingApiAxiosParamCreator(configuration).createPreUsers(body, options);
+        async createCustomers(id: string, body?: Array<CreateCustomer>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Customer>>>> {
+            const localVarAxiosArgs = await CustomersApiAxiosParamCreator(configuration).createCustomers(id, body, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -142,13 +144,13 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Initiate an onboarding process
-         * @param {OnboardingInitiation} body 
+         * @summary Get customers of an account
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Redirection>>> {
-            const localVarAxiosArgs = await OnboardingApiAxiosParamCreator(configuration).initiateOnboarding(body, options);
+        async getCustomers(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Customer>>>> {
+            const localVarAxiosArgs = await CustomersApiAxiosParamCreator(configuration).getCustomers(id, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs :AxiosRequestConfig = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -158,61 +160,63 @@ export const OnboardingApiFp = function(configuration?: Configuration) {
 };
 
 /**
- * OnboardingApi - factory interface
+ * CustomersApi - factory interface
  * @export
  */
-export const OnboardingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+export const CustomersApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     return {
         /**
          * 
-         * @summary Pre-onboard users
-         * @param {Array<CreatePreUser>} body 
+         * @summary Create customers for an account
+         * @param {string} id 
+         * @param {Array<CreateCustomer>} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPreUsers(body: Array<CreatePreUser>, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<PreUser>>> {
-            return OnboardingApiFp(configuration).createPreUsers(body, options).then((request) => request(axios, basePath));
+        async createCustomers(id: string, body?: Array<CreateCustomer>, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Customer>>> {
+            return CustomersApiFp(configuration).createCustomers(id, body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Initiate an onboarding process
-         * @param {OnboardingInitiation} body 
+         * @summary Get customers of an account
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection>> {
-            return OnboardingApiFp(configuration).initiateOnboarding(body, options).then((request) => request(axios, basePath));
+        async getCustomers(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Customer>>> {
+            return CustomersApiFp(configuration).getCustomers(id, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * OnboardingApi - object-oriented interface
+ * CustomersApi - object-oriented interface
  * @export
- * @class OnboardingApi
+ * @class CustomersApi
  * @extends {BaseAPI}
  */
-export class OnboardingApi extends BaseAPI {
+export class CustomersApi extends BaseAPI {
     /**
      * 
-     * @summary Pre-onboard users
-     * @param {Array<CreatePreUser>} body 
+     * @summary Create customers for an account
+     * @param {string} id 
+     * @param {Array<CreateCustomer>} [body] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OnboardingApi
+     * @memberof CustomersApi
      */
-    public async createPreUsers(body: Array<CreatePreUser>, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<PreUser>>> {
-        return OnboardingApiFp(this.configuration).createPreUsers(body, options).then((request) => request(this.axios, this.basePath));
+    public async createCustomers(id: string, body?: Array<CreateCustomer>, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<Customer>>> {
+        return CustomersApiFp(this.configuration).createCustomers(id, body, options).then((request) => request(this.axios, this.basePath));
     }
     /**
      * 
-     * @summary Initiate an onboarding process
-     * @param {OnboardingInitiation} body 
+     * @summary Get customers of an account
+     * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OnboardingApi
+     * @memberof CustomersApi
      */
-    public async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig) : Promise<AxiosResponse<Redirection>> {
-        return OnboardingApiFp(this.configuration).initiateOnboarding(body, options).then((request) => request(this.axios, this.basePath));
+    public async getCustomers(id: string, options?: AxiosRequestConfig) : Promise<AxiosResponse<Array<Customer>>> {
+        return CustomersApiFp(this.configuration).getCustomers(id, options).then((request) => request(this.axios, this.basePath));
     }
 }

@@ -14,37 +14,43 @@
 /**
  * 
  * @export
- * @interface CreatePreUser
+ * @interface CreateProduct
  */
-export interface CreatePreUser {
+export interface CreateProduct {
     /**
      * 
      * @type {string}
-     * @memberof CreatePreUser
+     * @memberof CreateProduct
      */
-    firstName?: string;
+    description?: string;
     /**
      * 
-     * @type {string}
-     * @memberof CreatePreUser
+     * @type {number}
+     * @memberof CreateProduct
      */
-    lastName?: string;
+    quantity?: number;
     /**
      * 
-     * @type {string}
-     * @memberof CreatePreUser
+     * @type {number}
+     * @memberof CreateProduct
      */
-    society?: string;
+    unitPrice?: number;
     /**
      * 
-     * @type {string}
-     * @memberof CreatePreUser
+     * @type {number}
+     * @memberof CreateProduct
      */
-    email?: string;
+    vatPercent?: number;
     /**
      * 
-     * @type {string}
-     * @memberof CreatePreUser
+     * @type {number}
+     * @memberof CreateProduct
      */
-    phone?: string;
+    totalVat?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateProduct
+     */
+    totalPriceWithVat?: number;
 }
