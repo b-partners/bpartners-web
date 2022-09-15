@@ -14,19 +14,31 @@
 /**
  * 
  * @export
- * @interface Exception
+ * @interface CreateCustomer
  */
-export interface Exception {
+export interface CreateCustomer {
     /**
      * 
      * @type {string}
-     * @memberof Exception
+     * @memberof CreateCustomer
      */
-    type?: string;
+    name?: string;
     /**
      * 
      * @type {string}
-     * @memberof Exception
+     * @memberof CreateCustomer
      */
-    message?: string;
+    email?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateCustomer
+     */
+    phone?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateCustomer
+     */
+    address?: string;
 }
