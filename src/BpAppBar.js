@@ -19,12 +19,14 @@ const LogoutButton = () => {
 };
 
 const BpAppBar = props => {
-  const userId = authProvider.getCachedWhoami().user.id;
+  const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
 
   // memoize the function to avoid creating it all the time
   const getFirstName = useCallback(() => {
-    accountProvider.getOne(userId).then(data => setName(data.user.firstName));
+    // BUGFIX: since impl of getOne() requires userId not to be null
+    // we need to ensure that constraint before making any request
+    userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
   }, [userId]);
 
   useEffect(() => getFirstName(), [getFirstName]);
