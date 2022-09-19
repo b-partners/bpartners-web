@@ -32,7 +32,6 @@ describe(specTitle('Login'), () => {
     cy.get('@redirect').should('have.been.calledOnce');
   });
 
-  // BUGFIX
   it('should redirect to LoginPage when not connected', () => {
     mount(<App />);
     cy.contains('Se connecter');

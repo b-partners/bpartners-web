@@ -24,8 +24,6 @@ const BpAppBar = props => {
 
   // memoize the function to avoid creating it all the time
   const getFirstName = useCallback(() => {
-    // BUGFIX: since impl of getOne() requires userId not to be null
-    // we need to ensure that constraint before making any request
     userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
   }, [userId]);
 
