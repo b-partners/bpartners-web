@@ -27,7 +27,7 @@ jobs:
           workdir: ''
       - run: sh ./initAWS.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }} ${{ secrets.AWS_REGION }}
       - run: sh ./initNpmrc.sh ${{ secrets.NPM_REPOSITORY }} ${{ secrets.NPM_DOMAIN }} ${{ secrets.NPM_DOMAIN_OWNER }}
-      - run: npm set always-auth true
+      - run: npm config set always-auth true
       - run: npm install --legacy-peer-deps
       - name: Cypress dependencies
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
