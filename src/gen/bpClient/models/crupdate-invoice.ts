@@ -33,6 +33,12 @@ export interface CrupdateInvoice {
   title?: string;
   /**
    *
+   * @type {Customer}
+   * @memberof CrupdateInvoice
+   */
+  customer?: Customer;
+  /**
+   *
    * @type {InvoiceStatus}
    * @memberof CrupdateInvoice
    */
@@ -42,17 +48,17 @@ export interface CrupdateInvoice {
    * @type {number}
    * @memberof CrupdateInvoice
    */
-  amount?: number;
+  vat?: number;
   /**
    *
-   * @type {Customer}
+   * @type {string}
    * @memberof CrupdateInvoice
    */
-  customer?: Customer;
+  sendingDate?: string;
   /**
    *
-   * @type {Date}
+   * @type {string}
    * @memberof CrupdateInvoice
    */
-  toPayAt?: Date;
+  toPayAt?: string;
 }

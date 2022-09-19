@@ -14,6 +14,7 @@
 import { CrupdateInvoice } from './crupdate-invoice';
 import { Customer } from './customer';
 import { InvoiceStatus } from './invoice-status';
+import { Product } from './product';
 /**
  *
  * @export
@@ -28,6 +29,24 @@ export interface Invoice extends CrupdateInvoice {
   id?: string;
   /**
    *
+   * @type {Array<Product>}
+   * @memberof Invoice
+   */
+  products?: Array<Product>;
+  /**
+   *
+   * @type {number}
+   * @memberof Invoice
+   */
+  totalPriceWithoutVat?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Invoice
+   */
+  totalPriceWithVat?: number;
+  /**
+   *
    * @type {Date}
    * @memberof Invoice
    */
@@ -37,5 +56,5 @@ export interface Invoice extends CrupdateInvoice {
    * @type {string}
    * @memberof Invoice
    */
-  fileId?: string | null;
+  fileId?: string;
 }

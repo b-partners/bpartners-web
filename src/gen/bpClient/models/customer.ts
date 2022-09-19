@@ -11,34 +11,17 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CreateCustomer } from './create-customer';
 /**
  *
  * @export
  * @interface Customer
  */
-export interface Customer {
+export interface Customer extends CreateCustomer {
   /**
    *
    * @type {string}
    * @memberof Customer
    */
-  firstName?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Customer
-   */
-  lastName?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Customer
-   */
-  email?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Customer
-   */
-  phone?: string;
+  id?: string;
 }

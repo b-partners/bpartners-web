@@ -11,47 +11,46 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { TransactionCategory } from './transaction-category';
 /**
  *
  * @export
- * @interface Transaction
+ * @interface CreateProduct
  */
-export interface Transaction {
+export interface CreateProduct {
   /**
    *
    * @type {string}
-   * @memberof Transaction
+   * @memberof CreateProduct
    */
-  id?: string;
+  description?: string;
   /**
    *
    * @type {number}
-   * @memberof Transaction
+   * @memberof CreateProduct
    */
-  amount?: number;
+  quantity?: number;
   /**
    *
-   * @type {string}
-   * @memberof Transaction
+   * @type {number}
+   * @memberof CreateProduct
    */
-  label?: string;
+  unitPrice?: number;
   /**
    *
-   * @type {string}
-   * @memberof Transaction
+   * @type {number}
+   * @memberof CreateProduct
    */
-  reference?: string;
+  vatPercent?: number;
   /**
    *
-   * @type {Date}
-   * @memberof Transaction
+   * @type {number}
+   * @memberof CreateProduct
    */
-  paymentDatetime?: Date;
+  totalVat?: number;
   /**
    *
-   * @type {Array<TransactionCategory>}
-   * @memberof Transaction
+   * @type {number}
+   * @memberof CreateProduct
    */
-  category?: Array<TransactionCategory>;
+  totalPriceWithVat?: number;
 }
