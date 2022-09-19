@@ -6,6 +6,7 @@ import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import { phone1, token1, whoami1 } from './mocks/responses/security-api';
 import * as Redirect from '../utils/redirect';
+import App from 'src/App';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {
@@ -29,5 +30,11 @@ describe(specTitle('Login'), () => {
     mount(<LoginSuccessPage />);
     cy.wait('@createToken');
     cy.get('@redirect').should('have.been.calledOnce');
+  });
+
+  it('should redirect to LoginPage when not connected', () => {
+    mount(<App />);
+    cy.contains('Se connecter');
+    cy.contains('Bienvenue !');
   });
 });
