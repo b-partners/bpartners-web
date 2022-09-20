@@ -2,6 +2,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import { RaDataProviderType } from './ra-data-provider-type';
 import profileProvider from './profile-provider';
 import accountProvider from './account-provider';
+import customerProvider from './customer-provider';
 import transactionProvider from './transaction-provider';
 
 export const maxPageSize = 500;
@@ -10,6 +11,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'profile') return profileProvider;
   if (resourceType === 'account') return accountProvider;
   if (resourceType === 'transactions') return transactionProvider;
+  if (resourceType === 'customers') return customerProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 

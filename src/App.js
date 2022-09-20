@@ -10,6 +10,7 @@ import frenchMessages from 'ra-language-french';
 
 import account from './operations/account';
 import transactions from './operations/transactions';
+import { customers } from './operations/customers';
 
 import MyLayout from './BpLayout';
 
@@ -17,7 +18,7 @@ import LoginPage from './security/LoginPage';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginSuccessPage from './security/LoginSuccessPage';
 
-const BpAdmin = () => (
+export const BpAdmin = () => (
   <Admin
     title='BPartners'
     authProvider={authProvider}
@@ -27,6 +28,7 @@ const BpAdmin = () => (
     layout={MyLayout}
   >
     <Resource name='transactions' {...transactions} />
+    <Resource name='customers' {...customers} />
     <Resource name='account' />
 
     <CustomRoutes>
