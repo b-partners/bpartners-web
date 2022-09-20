@@ -31,8 +31,18 @@ describe(specTitle('Customers'), () => {
     cy.contains('22 22 22');
   });
 
-  it('is created with valid input', () => {
+  it('should validate input', () => {
     mount(<App />);
+    cy.wait('@getUser1');
+    cy.get(':nth-child(2) > .MuiListItem-root').click();
+    cy.wait('@getCustomers');
 
+    cy.get('[data-testid="AddIcon"]').click();
+
+    cy.get('#name').type('valid');
+
+    cy.get('[data-testid="SaveIcon"]').click();
+
+    cy.contains('Ce champ est requis');
   })
 });
