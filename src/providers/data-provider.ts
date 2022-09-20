@@ -1,7 +1,8 @@
 import { BpDataProviderType } from './bp-data-provider-type';
 import { RaDataProviderType } from './ra-data-provider-type';
 import profileProvider from './profile-provider';
-import accountProvider, { customerProvider } from './account-provider';
+import accountProvider from './account-provider';
+import customerProvider from './customer-provider';
 import transactionProvider from './transaction-provider';
 
 export const maxPageSize = 500;

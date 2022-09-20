@@ -1,7 +1,6 @@
 import { Account, AccountHolder } from 'src/gen/bpClient';
 
-import { customerApi, userAccountsApi } from './api';
-import authProvider from './auth-provider';
+import { userAccountsApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
@@ -42,20 +41,5 @@ const accountProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
 };
-
-export const customerProvider: BpDataProviderType = {
-  getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
-    const userId = authProvider.getCachedWhoami().user.id;
-    const accountId = (await singleAccountGetter(userId)).id;
-    const { data } = await customerApi().getCustomers(accountId);
-    return data;
-  },
-  getOne: function (id: string): Promise<any> {
-    throw new Error('Function not implemented.');
-  },
-  saveOrUpdate: function (resources: any[]): Promise<any[]> {
-    throw new Error('Function not implemented.');
-  }
-}
 
 export default accountProvider;
