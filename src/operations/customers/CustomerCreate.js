@@ -1,4 +1,4 @@
-import { Create, required, SimpleForm, TextInput } from 'react-admin'
+import { Create, required, SimpleForm, TextInput } from 'react-admin';
 
 const CustomerCreate = props => (
   <Create {...props} title='Clients'>

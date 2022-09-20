@@ -3,15 +3,7 @@ import PrevNextPagination from '../utils/PrevNextPagination';
 
 const CustomerList = props => {
   return (
-    <List
-      {...props}
-      resource='customers'
-      hasCreate={true}
-      hasEdit={false}
-      hasList={false}
-      hasShow={false}
-      pagination={<PrevNextPagination />}
-    >
+    <List {...props} resource='customers' hasCreate={true} hasEdit={false} hasList={false} hasShow={false} pagination={<PrevNextPagination />}>
       <Datagrid bulkActionButtons={false}>
         <TextField source='name' label='Nom' />
         <TextField source='email' label='Email' />
@@ -20,6 +12,6 @@ const CustomerList = props => {
       </Datagrid>
     </List>
   );
-}
+};
 
 export default CustomerList;

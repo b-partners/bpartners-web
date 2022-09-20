@@ -44,5 +44,5 @@ describe(specTitle('Customers'), () => {
     cy.get('[data-testid="SaveIcon"]').click();
 
     cy.contains('Ce champ est requis');
-  })
+  });
 });
