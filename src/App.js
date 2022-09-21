@@ -11,6 +11,7 @@ import frenchMessages from 'ra-language-french';
 import account from './operations/account';
 import transactions from './operations/transactions';
 import { customers } from './operations/customers';
+import products from './operations/products';
 
 import MyLayout from './BpLayout';
 
@@ -29,10 +30,13 @@ export const BpAdmin = () => (
   >
     <Resource name='transactions' {...transactions} />
     <Resource name='customers' {...customers} />
+    <Resource name='products' {...products} />
+    <Resource name='customers' {...customers} />
     <Resource name='account' />
 
     <CustomRoutes>
       <Route exact path='/account' element={<account.show />} />
+      <Route exact path='/products' element={<products.list />} />
     </CustomRoutes>
   </Admin>
 );
