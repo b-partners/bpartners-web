@@ -13,8 +13,11 @@ export const customerProvider: BpDataProviderType = {
   getOne: function (id: string): Promise<any> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: function (resources: any[]): Promise<any[]> {
-    throw new Error('Function not implemented.');
+  saveOrUpdate: async function (customers: any[]): Promise<any[]> {
+    const userId = authProvider.getCachedWhoami().user.id;
+    const accountId = (await singleAccountGetter(userId)).id;
+    const { data } = await customerApi().createCustomers(accountId, customers);
+    return data;
   },
 };
 
