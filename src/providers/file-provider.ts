@@ -1,5 +1,7 @@
 import { BpDataProviderType } from './bp-data-provider-type';
 import { FileApi } from './api';
+import { object, string } from 'prop-types';
+import authProvider from './auth-provider';
 
 export const filesProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -10,8 +12,11 @@ export const filesProvider: BpDataProviderType = {
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: function (resources: any[]): Promise<any[]> {
-    throw new Error('Function not implemented.');
+  async saveOrUpdate(resources: any[]): Promise<any[]> {
+    const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
+    return FileApi()
+      .uploadFile(resources[0], logoFiledId)
+      .then(data => [data]);
   },
 };
 

@@ -8,10 +8,15 @@ import { useEffect, useState } from 'react';
 export const AccountHolderLayout = () => {
   const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
   const [file, setFile] = useState("");
- 
+
   useEffect(() => {
     logoFiledId && filesProvider.getOne(logoFiledId).then(data => setFile(data.sha256));
-  },[logoFiledId])
+  }, [logoFiledId])
+
+  const handleUploadImage = (e) => {
+    const blob = new Blob(e.target.files, {type: "image/jpeg"});
+    blob && filesProvider.saveOrUpdate([blob]).then(data => setFile(data[0]));
+  }
 
   return (
     <SimpleShowLayout>
@@ -22,11 +27,9 @@ export const AccountHolderLayout = () => {
             id="upload-photo"
             name="upload-photo"
             type="file"
-            onChange={() => {
-              filesProvider.saveOrUpdate();
-            }}
+            onChange={handleUploadImage}
           />
-          {file && <Avatar alt="logo" src={file} /> }
+          {file && <Avatar alt="logo" src={file} />}
         </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
       </Box>
