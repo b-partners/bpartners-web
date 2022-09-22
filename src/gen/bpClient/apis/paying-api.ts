@@ -260,18 +260,15 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      *
      * @summary Get known products of the specified account
      * @param {string} id
-     * @param {boolean} unique If disabled, all products are given
+     * @param {boolean} [unique] If description is null, this parameter is required.
+     * @param {string} [description] Filter product by description
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getProducts: async (id: string, unique: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getProducts: async (id: string, unique?: boolean, description?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling getProducts.');
-      }
-      // verify required parameter 'unique' is not null or undefined
-      if (unique === null || unique === undefined) {
-        throw new RequiredError('unique', 'Required parameter unique was null or undefined when calling getProducts.');
       }
       const localVarPath = `/accounts/{id}/products`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -288,6 +285,10 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (unique !== undefined) {
         localVarQueryParameter['unique'] = unique;
+      }
+
+      if (description !== undefined) {
+        localVarQueryParameter['description'] = description;
       }
 
       const query = new URLSearchParams(localVarUrlObj.search);
@@ -547,16 +548,18 @@ export const PayingApiFp = function (configuration?: Configuration) {
      *
      * @summary Get known products of the specified account
      * @param {string} id
-     * @param {boolean} unique If disabled, all products are given
+     * @param {boolean} [unique] If description is null, this parameter is required.
+     * @param {string} [description] Filter product by description
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getProducts(
       id: string,
-      unique: boolean,
+      unique?: boolean,
+      description?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Product>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getProducts(id, unique, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getProducts(id, unique, description, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -692,13 +695,14 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      *
      * @summary Get known products of the specified account
      * @param {string} id
-     * @param {boolean} unique If disabled, all products are given
+     * @param {boolean} [unique] If description is null, this parameter is required.
+     * @param {string} [description] Filter product by description
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getProducts(id: string, unique: boolean, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
+    async getProducts(id: string, unique?: boolean, description?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
       return PayingApiFp(configuration)
-        .getProducts(id, unique, options)
+        .getProducts(id, unique, description, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -823,14 +827,15 @@ export class PayingApi extends BaseAPI {
    *
    * @summary Get known products of the specified account
    * @param {string} id
-   * @param {boolean} unique If disabled, all products are given
+   * @param {boolean} [unique] If description is null, this parameter is required.
+   * @param {string} [description] Filter product by description
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getProducts(id: string, unique: boolean, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
+  public async getProducts(id: string, unique?: boolean, description?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
     return PayingApiFp(this.configuration)
-      .getProducts(id, unique, options)
+      .getProducts(id, unique, description, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**

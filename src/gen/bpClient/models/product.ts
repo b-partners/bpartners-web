@@ -24,4 +24,16 @@ export interface Product extends CreateProduct {
    * @memberof Product
    */
   id?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Product
+   */
+  totalVat?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Product
+   */
+  totalPriceWithVat?: number;
 }
