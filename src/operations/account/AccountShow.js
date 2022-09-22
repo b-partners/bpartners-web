@@ -1,15 +1,33 @@
 import { Box, Typography, Avatar } from '@mui/material';
-
-import { Show, useRecordContext, SimpleShowLayout, TextField } from 'react-admin';
 import authProvider from '../../providers/auth-provider';
 
+import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { filesProvider } from 'src/providers/file-provider';
+import { useEffect, useState } from 'react';
+
 export const AccountHolderLayout = () => {
-  const record = useRecordContext();
-  const imgSrc = record != null ? record.accountHolder.logo : null;
+  const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
+  const [file, setFile] = useState("");
+ 
+  useEffect(() => {
+    logoFiledId && filesProvider.getOne(logoFiledId).then(data => setFile(data.sha256));
+  },[logoFiledId])
+
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar src={imgSrc} /*TODO: handle null case*/ title='Logo' variant='square' />
+        <label htmlFor="upload-photo">
+          <input
+            style={{ display: 'none' }}
+            id="upload-photo"
+            name="upload-photo"
+            type="file"
+            onChange={() => {
+              filesProvider.saveOrUpdate();
+            }}
+          />
+          {file && <Avatar alt="logo" src={file} /> }
+        </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
       </Box>
       {/* TODO: backend should implement it  */}

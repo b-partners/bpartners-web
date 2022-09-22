@@ -12,10 +12,6 @@ const ProductCreate = () => (
         <NumberInput min={0} sx={{ marginRight: 10 }} source='unitPrice' validate={[required()]} />
         <NumberInput min={0} sx={{ marginRight: 10 }} source='vatPercent' validate={[required()]} />
       </Box>
-      <Box sx={boxStyle}>
-        <NumberInput min={0} sx={{ marginRight: 10 }} source='totalVat' validate={[required()]} />
-        <NumberInput min={0} sx={{ marginRight: 10 }} source='totalPriceWithVat' validate={[required()]} />
-      </Box>
     </SimpleForm>
   </Create>
 );
