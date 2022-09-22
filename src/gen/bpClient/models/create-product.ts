@@ -41,16 +41,4 @@ export interface CreateProduct {
    * @memberof CreateProduct
    */
   vatPercent?: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProduct
-   */
-  totalVat?: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProduct
-   */
-  totalPriceWithVat?: number;
 }
