@@ -31,10 +31,10 @@ export interface ModelFile {
   uploadedAt?: Date;
   /**
    *
-   * @type {String}
+   * @type {Date}
    * @memberof ModelFile
    */
-  uploadedByUserId?: String;
+   uploadedByUserId?: Date;
   /**
    *
    * @type {number}

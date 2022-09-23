@@ -1,6 +1,5 @@
 import { BpDataProviderType } from './bp-data-provider-type';
 import { FileApi } from './api';
-import { object, string } from 'prop-types';
 import authProvider from './auth-provider';
 
 export const filesProvider: BpDataProviderType = {
@@ -15,7 +14,7 @@ export const filesProvider: BpDataProviderType = {
   async saveOrUpdate(resources: any[]): Promise<any[]> {
     const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
     return FileApi()
-      .uploadFile(resources[0], logoFiledId)
+      .uploadFile(resources, logoFiledId)
       .then(data => [data]);
   },
 };
