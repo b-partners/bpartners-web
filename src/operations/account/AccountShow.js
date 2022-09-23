@@ -1,22 +1,14 @@
-import { Box, Typography, Avatar } from '@mui/material';
+import { Box, Typography, Avatar, Badge } from '@mui/material';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { SmallAvatar } from '../utils/SmallAvatar';
 import authProvider from '../../providers/auth-provider';
 
 import { Show, SimpleShowLayout, TextField } from 'react-admin';
 import { filesProvider } from 'src/providers/file-provider';
-import { useEffect, useState } from 'react';
+import { FileToDataUri } from 'src/utils/FileToDataUri';
 
 export const AccountHolderLayout = () => {
   const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
-  const [file, setFile] = useState("");
-
-  useEffect(() => {
-    logoFiledId && filesProvider.getOne(logoFiledId).then(data => setFile(data.sha256));
-  }, [logoFiledId])
-
-  const handleUploadImage = (e) => {
-    const blob = new Blob(e.target.files, {type: "image/jpeg"});
-    blob && filesProvider.saveOrUpdate([blob]).then(data => setFile(data[0]));
-  }
 
   return (
     <SimpleShowLayout>
@@ -27,9 +19,23 @@ export const AccountHolderLayout = () => {
             id="upload-photo"
             name="upload-photo"
             type="file"
-            onChange={handleUploadImage}
+            onChange={(file) => {
+              FileToDataUri(file).then((dataUri) => {
+                filesProvider.saveOrUpdate(dataUri);
+              })
+            }}
           />
-          {file && <Avatar alt="logo" src={file} />}
+          <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            badgeContent={
+              <SmallAvatar alt="PhotoCamera" children={
+                <PhotoCameraIcon />
+              } />
+            }
+          >
+            <Avatar alt="company logo" src={`${process.env.REACT_APP_BPARTNERS_API_URL}/files/${logoFiledId}/raw?bearer=${authProvider.getCachedAuthConf()?.accessToken}`} />
+          </Badge>
         </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
       </Box>
