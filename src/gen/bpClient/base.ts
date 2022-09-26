@@ -18,7 +18,6 @@ import globalAxios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
 export const BASE_PATH = (process.env.REACT_APP_BPARTNERS_API_URL || '').replace(/\/+$/, '');
 
-
 /**
  *
  * @export
