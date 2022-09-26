@@ -7,7 +7,7 @@ import { Chip, Card, CardContent, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import samplePdf from './testInvoice.pdf';
 import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { Box, IconButton, Tooltip } from '@material-ui/core';
 
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
 import { useListContext } from 'react-admin';
@@ -77,12 +77,14 @@ const TransactionList = props => {
         <FunctionField
           render={({ category }) =>
             category != null ? (
-              <div>
-                {category.label /*TODO: select from a mui.select when editbutton has been click*/}
+              <Box sx={{ width: '15vw' }}>
+                {category.map(cat => (
+                  <Chip label={cat.type} variant='outlined' />
+                ))}
                 <IconButton>
                   <EditIcon />
                 </IconButton>
-              </div>
+              </Box>
             ) : null
           }
           label='Catégorie'
