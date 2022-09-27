@@ -34,7 +34,7 @@ export interface ModelFile {
    * @type {Date}
    * @memberof ModelFile
    */
-   uploadedByUserId?: Date;
+  uploadedByUserId?: Date;
   /**
    *
    * @type {number}
