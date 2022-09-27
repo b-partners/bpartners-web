@@ -13,28 +13,27 @@ export const AccountHolderLayout = () => {
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <label htmlFor="upload-photo">
+        <label htmlFor='upload-photo'>
           <input
             style={{ display: 'none' }}
-            id="upload-photo"
-            name="upload-photo"
-            type="file"
-            onChange={(file) => {
-              FileToDataUri(file).then((dataUri) => {
+            id='upload-photo'
+            name='upload-photo'
+            type='file'
+            onChange={file => {
+              FileToDataUri(file).then(dataUri => {
                 filesProvider.saveOrUpdate(dataUri);
-              })
+              });
             }}
           />
           <Badge
-            overlap="circular"
+            overlap='circular'
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={
-              <SmallAvatar alt="PhotoCamera" children={
-                <PhotoCameraIcon />
-              } />
-            }
+            badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon />} />}
           >
-            <Avatar alt="company logo" src={`${process.env.REACT_APP_BPARTNERS_API_URL}/files/${logoFiledId}/raw?bearer=${authProvider.getCachedAuthConf()?.accessToken}`} />
+            <Avatar
+              alt='company logo'
+              src={`${process.env.REACT_APP_BPARTNERS_API_URL}/files/${logoFiledId}/raw?bearer=${authProvider.getCachedAuthConf()?.accessToken}`}
+            />
           </Badge>
         </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />

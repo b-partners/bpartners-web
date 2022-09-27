@@ -18,4 +18,3 @@ export const filesProvider: BpDataProviderType = {
       .then(data => [data]);
   },
 };
-
