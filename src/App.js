@@ -18,6 +18,7 @@ import MyLayout from './BpLayout';
 import LoginPage from './security/LoginPage';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginSuccessPage from './security/LoginSuccessPage';
+import { Configuration } from './operations/configurations';
 import { marketplaces } from './operations/marketplaces';
 
 export const BpAdmin = () => (
@@ -39,6 +40,7 @@ export const BpAdmin = () => (
     <CustomRoutes>
       <Route exact path='/account' element={<account.show />} />
       <Route exact path='/products' element={<products.list />} />
+      <Route exact path='/configurations' element={<Configuration />} />
     </CustomRoutes>
   </Admin>
 );
