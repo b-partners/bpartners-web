@@ -1,14 +1,18 @@
-import { Box, Typography, Avatar, Badge } from '@mui/material';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { SmallAvatar } from '../utils/SmallAvatar';
-import authProvider from '../../providers/auth-provider';
+import { Box, Typography, Avatar, Badge } from '@mui/material'
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
+import { SmallAvatar } from '../utils/SmallAvatar'
+import authProvider from '../../providers/auth-provider'
 
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
-import { filesProvider } from 'src/providers/file-provider';
-import { FileToDataUri } from 'src/utils/FileToDataUri';
+import { Show, SimpleShowLayout, TextField } from 'react-admin'
+import { fileProvider } from 'src/providers/file-provider'
+import { toArrayBuffer } from 'src/utils/to-array-buffer'
 
 export const AccountHolderLayout = () => {
-  const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
+  const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || ''
+  const accessToken = authProvider.getCachedAuthConf()?.accessToken
+  const fileId = authProvider.getCachedWhoami()?.user.logoFileId
+
+  let src = fileId ? `${apiUrl}/files/${fileId}/raw?accessToken=${accessToken}` : ''
 
   return (
     <SimpleShowLayout>
@@ -19,10 +23,9 @@ export const AccountHolderLayout = () => {
             id='upload-photo'
             name='upload-photo'
             type='file'
-            onChange={file => {
-              FileToDataUri(file).then(dataUri => {
-                filesProvider.saveOrUpdate(dataUri);
-              });
+            onChange={async file => {
+              const buffer = await toArrayBuffer(file)
+              await fileProvider.saveOrUpdate(buffer)
             }}
           />
           <Badge
@@ -32,7 +35,7 @@ export const AccountHolderLayout = () => {
           >
             <Avatar
               alt='company logo'
-              src={`${process.env.REACT_APP_BPARTNERS_API_URL}/files/${logoFiledId}/raw?bearer=${authProvider.getCachedAuthConf()?.accessToken}`}
+              src={src}
             />
           </Badge>
         </label>
@@ -45,8 +48,8 @@ export const AccountHolderLayout = () => {
       <TextField ml={2} source='accountHolder.country' label='Pays' />
       <TextField source='accountHolder.address' label='Adresse' />
     </SimpleShowLayout>
-  );
-};
+  )
+}
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -55,12 +58,13 @@ const ProfileLayout = () => (
     <TextField source='user.phone' id='phone' label='Téléphone' />
     <TextField source='user.address' id='address' label='Adresse' />
   </SimpleShowLayout>
-);
+)
 
 const SubscriptionLayout = () => (
   <SimpleShowLayout>
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Avatar variant='square' alt='subscription logo' src='https://www.bpartners.app/static/media/ambitieux.4acee4dedf2cd21425bf.png' />
+      <Avatar variant='square' alt='subscription logo'
+              src='https://www.bpartners.app/static/media/ambitieux.4acee4dedf2cd21425bf.png' />
       <Typography ml={2} variant='h6'>
         L'ambitieux
       </Typography>
@@ -73,10 +77,10 @@ const SubscriptionLayout = () => (
       30 virements et prélèvements puis 0,50€ au delà
     </Typography>
   </SimpleShowLayout>
-);
+)
 
 const AccountShow = () => {
-  const userId = authProvider.getCachedWhoami().user.id;
+  const userId = authProvider.getCachedWhoami().user.id
 
   return (
     <Show id={userId} resource='account' basePath='/account'>
@@ -101,7 +105,7 @@ const AccountShow = () => {
         </Box>
       </Box>
     </Show>
-  );
-};
+  )
+}
 
-export default AccountShow;
+export default AccountShow
