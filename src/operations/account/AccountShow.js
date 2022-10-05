@@ -5,7 +5,6 @@ import authProvider from '../../providers/auth-provider'
 
 import { Show, SimpleShowLayout, TextField } from 'react-admin'
 import { fileProvider } from 'src/providers/file-provider'
-import { toArrayBuffer } from 'src/utils/to-array-buffer'
 
 export const AccountHolderLayout = () => {
   const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || ''
@@ -23,9 +22,8 @@ export const AccountHolderLayout = () => {
             id='upload-photo'
             name='upload-photo'
             type='file'
-            onChange={async file => {
-              const buffer = await toArrayBuffer(file)
-              await fileProvider.saveOrUpdate(buffer)
+            onChange={async files => {
+              await fileProvider.saveOrUpdate(files)
             }}
           />
           <Badge
