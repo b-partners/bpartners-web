@@ -1,20 +1,19 @@
-import { BpDataProviderType } from './bp-data-provider-type';
-import { FileApi } from './api';
-import authProvider from './auth-provider';
+import { BpDataProviderType } from './bp-data-provider-type'
+import { FileApi } from './api'
+import { v4 } from 'uuid'
 
-export const filesProvider: BpDataProviderType = {
+export const fileProvider: BpDataProviderType = {
   async getOne(id: string) {
     return FileApi()
       .getFileById(id)
-      .then(({ data }) => data);
+      .then(({ data }) => data)
   },
-  getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
-    throw new Error('Function not implemented.');
+  getList: function(page: number, perPage: number, filter: any): Promise<any[]> {
+    throw new Error('Function not implemented.')
   },
-  async saveOrUpdate(resources: any[]): Promise<any[]> {
-    const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
+  async saveOrUpdate(resources: any): Promise<any[]> {
     return FileApi()
-      .uploadFile(resources, logoFiledId)
-      .then(data => [data]);
-  },
-};
+      .uploadFile(resources, v4())
+      .then(data => [data])
+  }
+}
