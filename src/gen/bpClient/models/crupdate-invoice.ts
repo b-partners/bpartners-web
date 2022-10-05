@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 import { Customer } from './customer';
-import { InvoiceStatus } from './invoice-status';
+import { Product } from './product';
 /**
  *
  * @export
@@ -39,16 +39,10 @@ export interface CrupdateInvoice {
   customer?: Customer;
   /**
    *
-   * @type {InvoiceStatus}
+   * @type {Array<Product>}
    * @memberof CrupdateInvoice
    */
-  status?: InvoiceStatus;
-  /**
-   *
-   * @type {number}
-   * @memberof CrupdateInvoice
-   */
-  vat?: number;
+  products?: Array<Product>;
   /**
    *
    * @type {string}
