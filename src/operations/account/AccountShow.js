@@ -16,7 +16,7 @@ export const AccountHolderLayout = () => {
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <label htmlFor='upload-photo'>
+        <label htmlFor='upload-photo' id='upload-photo-label'>
           <input
             style={{ display: 'none' }}
             id='upload-photo'
