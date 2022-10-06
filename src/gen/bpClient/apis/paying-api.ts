@@ -11,27 +11,24 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import globalAxios, { AxiosResponse, AxiosInstance, AxiosRequestConfig } from 'axios';
+import globalAxios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
-import { BadRequestException } from '../models';
-import { CreateInvoiceRelaunch } from '../models';
-import { CreateProduct } from '../models';
-import { CreateTransactionCategory } from '../models';
-import { CrupdateInvoice } from '../models';
-import { InternalServerException } from '../models';
-import { Invoice } from '../models';
-import { InvoiceRelaunch } from '../models';
-import { NotAuthorizedException } from '../models';
-import { PaymentInitiation } from '../models';
-import { PaymentRedirection } from '../models';
-import { Product } from '../models';
-import { ResourceNotFoundException } from '../models';
-import { TooManyRequestsException } from '../models';
-import { Transaction } from '../models';
-import { TransactionCategory } from '../models';
+import { BaseAPI, BASE_PATH, RequestArgs, RequiredError } from '../base';
+import {
+  CreateInvoiceRelaunch,
+  CreateProduct,
+  CreateTransactionCategory,
+  CrupdateInvoice,
+  Invoice,
+  InvoiceRelaunch,
+  PaymentInitiation,
+  PaymentRedirection,
+  Product,
+  Transaction,
+  TransactionCategory,
+} from '../models';
 /**
  * PayingApi - axios parameter creator
  * @export
