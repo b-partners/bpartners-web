@@ -1,8 +1,9 @@
-import LockIcon from '@material-ui/icons/Lock';
+import { Lock, Settings } from '@material-ui/icons';
 import authProvider from './providers/auth-provider';
 import accountProvider from './providers/account-provider';
 import { IconButton, Tooltip, Box } from '@material-ui/core';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LogoutButton = () => {
   const logout = () => {
@@ -12,7 +13,20 @@ const LogoutButton = () => {
   return (
     <Tooltip title='Se déconnecter' onClick={logout}>
       <IconButton color='inherit'>
-        <LockIcon />
+        <Lock />
+      </IconButton>
+    </Tooltip>
+  );
+};
+
+const ConfigurationButton = () => {
+  const navigate = useNavigate();
+  const configuration = () => navigate('/configurations');
+
+  return (
+    <Tooltip title='Configuration' onClick={configuration}>
+      <IconButton color='inherit'>
+        <Settings />
       </IconButton>
     </Tooltip>
   );
@@ -33,6 +47,7 @@ const BpAppBar = props => {
     <Box {...props} display='flex' justifyContent='flex-end' mt={-5}>
       <Box>
         Bonjour <b>{name}</b> !
+        <ConfigurationButton />
         <LogoutButton />
       </Box>
     </Box>
