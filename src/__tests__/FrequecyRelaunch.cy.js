@@ -27,13 +27,13 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('[title="Configuration"] > .MuiIconButton-label > .MuiSvgIcon-root').click();
     cy.get('.MuiAccordionSummary-content > .MuiTypography-root').click();
     cy.wait('@getInvoiceRelaunch1');
-    
+
     cy.get('.MuiBox-root-3 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 10);
     cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 20);
 
     cy.get('.MuiBox-root-3 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type(1);
     cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type(1);
-    
+
     cy.get('.MuiButton-label').click();
     cy.wait('@getInvoiceRelaunch2');
 

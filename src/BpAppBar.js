@@ -20,11 +20,11 @@ const LogoutButton = () => {
 };
 
 const ConfigurationButton = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const configuration = () => navigate('/configurations');
 
   return (
-    <Tooltip title='Configuration' onClick={configuration} >
+    <Tooltip title='Configuration' onClick={configuration}>
       <IconButton color='inherit'>
         <Settings />
       </IconButton>
