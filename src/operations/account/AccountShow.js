@@ -4,25 +4,26 @@ import { SmallAvatar } from '../utils/SmallAvatar';
 import authProvider from '../../providers/auth-provider';
 
 import { Show, SimpleShowLayout, TextField } from 'react-admin';
-import { filesProvider } from 'src/providers/file-provider';
-import { FileToDataUri } from 'src/utils/FileToDataUri';
+import { fileProvider } from 'src/providers/file-provider';
 
 export const AccountHolderLayout = () => {
-  const logoFiledId = authProvider.getCachedWhoami()?.user.logoFileId;
+  const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
+  const accessToken = authProvider.getCachedAuthConf()?.accessToken;
+  const fileId = authProvider.getCachedWhoami()?.user.logoFileId;
+
+  let src = fileId ? `${apiUrl}/files/${fileId}/raw?accessToken=${accessToken}` : '';
 
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <label htmlFor='upload-photo'>
+        <label htmlFor='upload-photo' id='upload-photo-label'>
           <input
             style={{ display: 'none' }}
             id='upload-photo'
             name='upload-photo'
             type='file'
-            onChange={file => {
-              FileToDataUri(file).then(dataUri => {
-                filesProvider.saveOrUpdate(dataUri);
-              });
+            onChange={async files => {
+              await fileProvider.saveOrUpdate(files);
             }}
           />
           <Badge
@@ -30,10 +31,7 @@ export const AccountHolderLayout = () => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon />} />}
           >
-            <Avatar
-              alt='company logo'
-              src={`${process.env.REACT_APP_BPARTNERS_API_URL}/files/${logoFiledId}/raw?bearer=${authProvider.getCachedAuthConf()?.accessToken}`}
-            />
+            <Avatar alt='company logo' src={src} />
           </Badge>
         </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />

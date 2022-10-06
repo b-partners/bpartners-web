@@ -17,6 +17,7 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { BadRequestException } from '../models';
+import { FileInfo } from '../models';
 import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
 import { ResourceNotFoundException } from '../models';
@@ -30,16 +31,23 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Download a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    downloadFile: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    downloadFile: async (aId: string, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'aId' is not null or undefined
+      if (aId === null || aId === undefined) {
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling downloadFile.');
+      }
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling downloadFile.');
       }
-      const localVarPath = `/files/{id}/raw`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      const localVarPath = `/accounts/{aId}/files/{id}/raw`
+        .replace(`{${'aId'}}`, encodeURIComponent(String(aId)))
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -71,16 +79,23 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get information of a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFileById: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getFileById: async (aId: string, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'aId' is not null or undefined
+      if (aId === null || aId === undefined) {
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getFileById.');
+      }
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling getFileById.');
       }
-      const localVarPath = `/files/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      const localVarPath = `/accounts/{aId}/files/{id}`
+        .replace(`{${'aId'}}`, encodeURIComponent(String(aId)))
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -113,20 +128,27 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Upload a file. Fails if file already exists.
      * @param {Object} body
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    uploadFile: async (body: Object, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    uploadFile: async (body: Object, aId: string, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'body' is not null or undefined
       if (body === null || body === undefined) {
         throw new RequiredError('body', 'Required parameter body was null or undefined when calling uploadFile.');
+      }
+      // verify required parameter 'aId' is not null or undefined
+      if (aId === null || aId === undefined) {
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling uploadFile.');
       }
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling uploadFile.');
       }
-      const localVarPath = `/files/{id}/raw`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      const localVarPath = `/accounts/{aId}/files/{id}/raw`
+        .replace(`{${'aId'}}`, encodeURIComponent(String(aId)))
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -171,12 +193,17 @@ export const FilesApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Download a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async downloadFile(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Blob>>> {
-      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).downloadFile(id, options);
+    async downloadFile(
+      aId: string,
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Blob>>> {
+      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).downloadFile(aId, id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -185,12 +212,17 @@ export const FilesApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get information of a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getFileById(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<any>>> {
-      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).getFileById(id, options);
+    async getFileById(
+      aId: string,
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<FileInfo>>> {
+      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).getFileById(aId, id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -200,16 +232,18 @@ export const FilesApiFp = function (configuration?: Configuration) {
      *
      * @summary Upload a file. Fails if file already exists.
      * @param {Object} body
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async uploadFile(
       body: Object,
+      aId: string,
       id: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Blob>>> {
-      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).uploadFile(body, id, options);
+      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).uploadFile(body, aId, id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -227,38 +261,41 @@ export const FilesApiFactory = function (configuration?: Configuration, basePath
     /**
      *
      * @summary Download a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async downloadFile(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+    async downloadFile(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
       return FilesApiFp(configuration)
-        .downloadFile(id, options)
+        .downloadFile(aId, id, options)
         .then(request => request(axios, basePath));
     },
     /**
      *
      * @summary Get information of a file
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getFileById(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<any>> {
+    async getFileById(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<FileInfo>> {
       return FilesApiFp(configuration)
-        .getFileById(id, options)
+        .getFileById(aId, id, options)
         .then(request => request(axios, basePath));
     },
     /**
      *
      * @summary Upload a file. Fails if file already exists.
      * @param {Object} body
+     * @param {string} aId
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async uploadFile(body: Object, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+    async uploadFile(body: Object, aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
       return FilesApiFp(configuration)
-        .uploadFile(body, id, options)
+        .uploadFile(body, aId, id, options)
         .then(request => request(axios, basePath));
     },
   };
@@ -274,41 +311,44 @@ export class FilesApi extends BaseAPI {
   /**
    *
    * @summary Download a file
+   * @param {string} aId
    * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FilesApi
    */
-  public async downloadFile(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+  public async downloadFile(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return FilesApiFp(this.configuration)
-      .downloadFile(id, options)
+      .downloadFile(aId, id, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
    *
    * @summary Get information of a file
+   * @param {string} aId
    * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FilesApi
    */
-  public async getFileById(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<any>> {
+  public async getFileById(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<FileInfo>> {
     return FilesApiFp(this.configuration)
-      .getFileById(id, options)
+      .getFileById(aId, id, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
    *
    * @summary Upload a file. Fails if file already exists.
    * @param {Object} body
+   * @param {string} aId
    * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FilesApi
    */
-  public async uploadFile(body: Object, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+  public async uploadFile(body: Object, aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return FilesApiFp(this.configuration)
-      .uploadFile(body, id, options)
+      .uploadFile(body, aId, id, options)
       .then(request => request(this.axios, this.basePath));
   }
 }
