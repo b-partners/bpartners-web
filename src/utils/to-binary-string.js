@@ -4,8 +4,8 @@ export const toBinaryString = e =>
     const reader = new FileReader();
 
     reader.onload = event => {
-        resolve(event.target.result);
-    }
+      resolve(event.target.result);
+    };
 
     reader.onerror = () => reject(reader.error);
 
