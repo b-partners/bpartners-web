@@ -14,55 +14,43 @@
 /**
  *
  * @export
- * @interface CreateCustomer
+ * @interface Marketplace
  */
-export interface CreateCustomer {
+export interface Marketplace {
   /**
    *
    * @type {string}
-   * @memberof CreateCustomer
+   * @memberof Marketplace
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Marketplace
    */
   name?: string;
   /**
    *
    * @type {string}
-   * @memberof CreateCustomer
+   * @memberof Marketplace
    */
-  email?: string;
+  description?: string;
   /**
    *
    * @type {string}
-   * @memberof CreateCustomer
+   * @memberof Marketplace
    */
-  phone?: string;
+  phoneNumber?: string;
   /**
    *
    * @type {string}
-   * @memberof CreateCustomer
+   * @memberof Marketplace
    */
-  website?: string;
+  websiteUrl?: string;
   /**
    *
    * @type {string}
-   * @memberof CreateCustomer
+   * @memberof Marketplace
    */
-  address?: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateCustomer
-   */
-  zipCode?: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCustomer
-   */
-  city?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCustomer
-   */
-  country?: string;
+  logoUrl?: string;
 }

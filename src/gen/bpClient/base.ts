@@ -16,7 +16,7 @@ import { Configuration } from './configuration';
 // @ts-ignore
 import globalAxios, { AxiosRequestConfig, AxiosInstance } from 'axios';
 
-export const BASE_PATH = (process.env.REACT_APP_BPARTNERS_API_URL || '').replace(/\/+$/, '');
+export const BASE_PATH = 'https://api-dev.bpartners.app'.replace(/\/+$/, '');
 
 /**
  *

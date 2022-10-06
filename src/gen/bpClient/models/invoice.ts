@@ -29,10 +29,16 @@ export interface Invoice extends CrupdateInvoice {
   id?: string;
   /**
    *
-   * @type {Array<Product>}
+   * @type {string}
    * @memberof Invoice
    */
-  products?: Array<Product>;
+  paymentUrl?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Invoice
+   */
+  totalVat?: number;
   /**
    *
    * @type {number}
@@ -45,6 +51,12 @@ export interface Invoice extends CrupdateInvoice {
    * @memberof Invoice
    */
   totalPriceWithVat?: number;
+  /**
+   *
+   * @type {InvoiceStatus}
+   * @memberof Invoice
+   */
+  status?: InvoiceStatus;
   /**
    *
    * @type {Date}

@@ -18,6 +18,7 @@ import MyLayout from './BpLayout';
 import LoginPage from './security/LoginPage';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginSuccessPage from './security/LoginSuccessPage';
+import { marketplaces } from './operations/marketplaces';
 
 export const BpAdmin = () => (
   <Admin
@@ -32,6 +33,7 @@ export const BpAdmin = () => (
     <Resource name='customers' {...customers} />
     <Resource name='products' {...products} />
     <Resource name='customers' {...customers} />
+    <Resource name='marketplaces' {...marketplaces} />
     <Resource name='account' />
 
     <CustomRoutes>
