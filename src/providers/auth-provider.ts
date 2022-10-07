@@ -1,41 +1,41 @@
-import { Configuration, Whoami } from '../gen/bpClient'
-import { securityApi } from './api'
+import { Configuration, Whoami } from '../gen/bpClient';
+import { securityApi } from './api';
 
-const whoamiItem = 'bp_whoami'
-const accessTokenItem = 'bp_access_token'
-const refreshTokenItem = 'bp_refresh_token'
+const whoamiItem = 'bp_whoami';
+const accessTokenItem = 'bp_access_token';
+const refreshTokenItem = 'bp_refresh_token';
 
 const whoami = async (): Promise<Whoami> => {
   return securityApi()
     .whoami()
-    .then(({ data }) => data)
-}
+    .then(({ data }) => data);
+};
 
 const cacheWhoami = (whoami: Whoami): Whoami => {
-  localStorage.setItem(whoamiItem, JSON.stringify(whoami))
-  return whoami
-}
+  localStorage.setItem(whoamiItem, JSON.stringify(whoami));
+  return whoami;
+};
 
 const cacheTokens = (accessToken: string, refreshToken: string): void => {
   //TODO: localStorage does not work on private browsing
-  localStorage.setItem(accessTokenItem, accessToken)
+  localStorage.setItem(accessTokenItem, accessToken);
 
-  localStorage.setItem(refreshTokenItem, refreshToken)
-}
+  localStorage.setItem(refreshTokenItem, refreshToken);
+};
 
-const getCachedWhoami = (): Whoami => JSON.parse(localStorage.getItem(whoamiItem))
+const getCachedWhoami = (): Whoami => JSON.parse(localStorage.getItem(whoamiItem));
 
 const getCachedAuthConf = (): Configuration => {
-  const accessToken = localStorage.getItem(accessTokenItem)
-  const conf = new Configuration({ accessToken })
-  conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } }
-  return conf
-}
+  const accessToken = localStorage.getItem(accessTokenItem);
+  const conf = new Configuration({ accessToken });
+  conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
+  return conf;
+};
 
 const clearCache = () => {
-  localStorage.clear()
-  sessionStorage.clear()
-}
+  localStorage.clear();
+  sessionStorage.clear();
+};
 
 type RaPermission = {
   action: string;
@@ -51,15 +51,15 @@ const authProvider = {
     securityApi()
       .createToken({
         code: password,
-        redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls
+        redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls,
       })
       .then(({ data: { accessToken, refreshToken, whoami } }) => {
-        cacheTokens(accessToken, refreshToken)
-        cacheWhoami(whoami)
+        cacheTokens(accessToken, refreshToken);
+        cacheWhoami(whoami);
       }),
 
   logout: async (): Promise<void> => {
-    clearCache()
+    clearCache();
     //TODO: invalidate token backend side
   },
 
@@ -74,7 +74,7 @@ const authProvider = {
   // --------------------- non-ra functions ----------------------------------------
 
   getCachedWhoami: getCachedWhoami,
-  getCachedAuthConf: getCachedAuthConf
-}
+  getCachedAuthConf: getCachedAuthConf,
+};
 
-export default authProvider
+export default authProvider;
