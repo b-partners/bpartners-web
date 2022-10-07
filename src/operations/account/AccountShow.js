@@ -5,12 +5,24 @@ import authProvider from '../../providers/auth-provider'
 
 import { Show, SimpleShowLayout, TextField } from 'react-admin'
 import { fileProvider } from 'src/providers/file-provider'
+import { useEffect, useState } from 'react'
+import { singleAccountGetter } from '../../providers/account-provider'
 
 export const AccountHolderLayout = () => {
-  const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || ''
-  const accessToken = authProvider.getCachedAuthConf()?.accessToken
-  const fileId = 'logo.jpeg'
-  const src = fileId ? `${apiUrl}/files/${fileId}/raw?accessToken=${accessToken}` : ''
+  const [logoUrl, setLogoUrl] = useState('')
+
+  useEffect(() => {
+    async function getLogo() {
+      const { user: { id: userId } } = authProvider.getCachedWhoami()
+      const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || ''
+      const { accessToken } = authProvider.getCachedAuthConf()
+      const accountId = (await singleAccountGetter(userId)).id
+      const fileId = 'logo.jpeg'
+      setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}`)
+    }
+
+    getLogo()
+  })
 
   return (
     <SimpleShowLayout>
@@ -30,7 +42,7 @@ export const AccountHolderLayout = () => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon />} />}
           >
-            <Avatar alt='company logo' src={src} />
+            <Avatar alt='company logo' src={logoUrl} />
           </Badge>
         </label>
         <TextField ml={2} source='accountHolder.name' label='Raison sociale' />
