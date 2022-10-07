@@ -44,7 +44,6 @@ const TransactionList = props => {
     setShoudShowDocument(null);
   };
   const onDocumentIconClicked = transactionRef => {
-    console.log(transactionRef);
     if (shouldShowDocument && transactionRef === documentRef) {
       // close document if corresponding row was clicked
       resetDocument();

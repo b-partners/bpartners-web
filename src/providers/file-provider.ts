@@ -17,13 +17,13 @@ export const fileProvider: BpDataProviderType = {
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
-  async saveOrUpdate(resources: any[]): Promise<any[]> {
+  async saveOrUpdate(resources: any): Promise<any[]> {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
     const binaryFile = await toBinaryString(resources);
     const type = getMimeType(resources);
     return FileApi()
-      .uploadFile(binaryFile, accountId, uuid(), { headers: { 'Content-Type': type } })
+      .uploadFile(binaryFile, accountId, `logo.jpeg`, { headers: { 'Content-Type': type } })
       .then(data => [data]);
   },
 };

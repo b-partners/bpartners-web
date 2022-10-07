@@ -26,8 +26,8 @@ const cacheTokens = (accessToken: string, refreshToken: string): void => {
 const getCachedWhoami = (): Whoami => JSON.parse(localStorage.getItem(whoamiItem));
 
 const getCachedAuthConf = (): Configuration => {
-  const conf = new Configuration();
   const accessToken = localStorage.getItem(accessTokenItem);
+  const conf = new Configuration({ accessToken });
   conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
   return conf;
 };
