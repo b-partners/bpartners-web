@@ -1,10 +1,9 @@
-import { v4 as uuid } from 'uuid';
 import { singleAccountGetter } from './account-provider';
 import { FileApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { toBinaryString } from '../utils/to-binary-string';
 import { getMimeType } from '../utils/get-mime-type';
+import { toArrayBuffer } from '../utils/to-array-buffer';
 
 export const fileProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -20,8 +19,9 @@ export const fileProvider: BpDataProviderType = {
   async saveOrUpdate(resources: any): Promise<any[]> {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
-    const binaryFile = await toBinaryString(resources);
+    const binaryFile = await toArrayBuffer(resources);
     const type = getMimeType(resources);
+
     return FileApi()
       .uploadFile(binaryFile, accountId, `logo.jpeg`, { headers: { 'Content-Type': type } })
       .then(data => [data]);
