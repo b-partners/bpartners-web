@@ -12,6 +12,7 @@ import { Box, IconButton, Tooltip } from '@material-ui/core';
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
 import { useListContext } from 'react-admin';
 import { formatDate } from '../utils/date';
+import TransactionChart from './TransactionChart';
 
 //TODO: should be elsewhere
 const statuses = {
@@ -54,54 +55,57 @@ const TransactionList = props => {
   };
 
   return (
-    <List
-      {...props}
-      resource='transactions'
-      pagination={shouldPaginate ? null : <PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
-      actions={null}
-      filters={[
-        <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
-        <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
-      ]}
-      hasCreate={false}
-      hasEdit={false}
-      hasList={false}
-      hasShow={false}
-      aside={shouldShowDocument ? <Document transactionRef={documentRef} /> : null}
-    >
-      <Datagrid bulkActionButtons={false}>
-        <TextField source='reference' label='Référence' />
-        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
-        <TextField source='label' label='Titre' />
-        <FunctionField
-          render={({ category }) =>
-            category != null ? (
-              <Box sx={{ width: '15vw' }}>
-                {category.map(cat => (
-                  <Chip label={cat.type} variant='outlined' />
-                ))}
-                <IconButton>
-                  <EditIcon />
+    <>
+      <TransactionChart />
+      <List
+        {...props}
+        resource='transactions'
+        pagination={shouldPaginate ? null : <PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
+        actions={null}
+        filters={[
+          <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
+          <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
+        ]}
+        hasCreate={false}
+        hasEdit={false}
+        hasList={false}
+        hasShow={false}
+        aside={shouldShowDocument ? <Document transactionRef={documentRef} /> : null}
+      >
+        <Datagrid bulkActionButtons={false}>
+          <TextField source='reference' label='Référence' />
+          <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
+          <TextField source='label' label='Titre' />
+          <FunctionField
+            render={({ category }) =>
+              category != null ? (
+                <Box sx={{ width: '15vw' }}>
+                  {category.map(cat => (
+                    <Chip label={cat.type} variant='outlined' />
+                  ))}
+                  <IconButton>
+                    <EditIcon />
+                  </IconButton>
+                </Box>
+              ) : null
+            }
+            label='Catégorie'
+          />
+          {/*TODO: allow inline edition*/}
+          <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+          <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
+          <FunctionField
+            render={({ id, reference }) => (
+              <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(reference)}>
+                <IconButton id={`document-button-${id}`}>
+                  <AttachmentIcon />
                 </IconButton>
-              </Box>
-            ) : null
-          }
-          label='Catégorie'
-        />
-        {/*TODO: allow inline edition*/}
-        <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
-        <FunctionField
-          render={({ id, reference }) => (
-            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(reference)}>
-              <IconButton id={`document-button-${id}`}>
-                <AttachmentIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        />
-      </Datagrid>
-    </List>
+              </Tooltip>
+            )}
+          />
+        </Datagrid>
+      </List>
+    </>
   );
 };
 

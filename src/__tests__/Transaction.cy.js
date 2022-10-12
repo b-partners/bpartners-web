@@ -26,6 +26,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[href="/transactions"]').click();
     cy.wait('@getTransactions1');
 
+    cy.contains('Résumé Graphique');
     cy.contains("Abonnement BPartners - L'essentiel");
     cy.contains('BP22002');
     cy.contains('-0.05 €');
