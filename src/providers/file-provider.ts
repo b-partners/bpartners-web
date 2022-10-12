@@ -2,8 +2,8 @@ import { singleAccountGetter } from './account-provider';
 import { FileApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { getMimeType } from '../utils/get-mime-type';
 import { toArrayBuffer } from '../utils/to-array-buffer';
+import customFileApi from './custom-file-api';
 
 export const fileProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -20,10 +20,9 @@ export const fileProvider: BpDataProviderType = {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
     const binaryFile = await toArrayBuffer(resources);
-    const type = getMimeType(resources);
 
-    return FileApi()
-      .uploadFile(binaryFile, accountId, `logo.jpeg`, { headers: { 'Content-Type': type } })
-      .then(data => [data]);
+    return customFileApi()
+      .uploadFile(binaryFile, accountId, 'logo.jpeg')
+      .then(({ data }) => [data]);
   },
 };
