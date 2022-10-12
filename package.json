@@ -29,6 +29,7 @@
     "cypress-multi-reporters": "^1.5.0",
     "cypress-sonarqube-reporter": "^1.10.0",
     "eslint-plugin-cypress": "^2.12.1",
+    "husky": "^8.0.1",
     "prettier": "^2.7.1",
     "prop-types": "^15.7.2",
     "react-scripts": "4.0.3",
@@ -40,7 +41,10 @@
     "build": "react-scripts build",
     "test": "cypress run-ct",
     "cy:open": "cypress open-ct",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
+    "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
