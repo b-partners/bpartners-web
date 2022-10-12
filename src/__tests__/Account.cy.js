@@ -68,5 +68,6 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.png', { force: true });
+    cy.contains('Changement enregistrer');
   });
 });
