@@ -33,10 +33,11 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Download a file
      * @param {string} aId
      * @param {string} id
+     * @param {string} [accessToken]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    downloadFile: async (aId: string, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    downloadFile: async (aId: string, id: string, accessToken?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
         throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling downloadFile.');
@@ -59,6 +60,10 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
+
+      if (accessToken !== undefined) {
+        localVarQueryParameter['accessToken'] = accessToken;
+      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -195,15 +200,17 @@ export const FilesApiFp = function (configuration?: Configuration) {
      * @summary Download a file
      * @param {string} aId
      * @param {string} id
+     * @param {string} [accessToken]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async downloadFile(
       aId: string,
       id: string,
+      accessToken?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Blob>>> {
-      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).downloadFile(aId, id, options);
+      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).downloadFile(aId, id, accessToken, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -263,12 +270,13 @@ export const FilesApiFactory = function (configuration?: Configuration, basePath
      * @summary Download a file
      * @param {string} aId
      * @param {string} id
+     * @param {string} [accessToken]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async downloadFile(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+    async downloadFile(aId: string, id: string, accessToken?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
       return FilesApiFp(configuration)
-        .downloadFile(aId, id, options)
+        .downloadFile(aId, id, accessToken, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -313,13 +321,14 @@ export class FilesApi extends BaseAPI {
    * @summary Download a file
    * @param {string} aId
    * @param {string} id
+   * @param {string} [accessToken]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FilesApi
    */
-  public async downloadFile(aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+  public async downloadFile(aId: string, id: string, accessToken?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return FilesApiFp(this.configuration)
-      .downloadFile(aId, id, options)
+      .downloadFile(aId, id, accessToken, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
