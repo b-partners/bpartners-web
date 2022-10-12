@@ -1,4 +1,4 @@
-import { InvoiceRelaunch, CreateInvoiceRelaunch } from 'src/gen/bpClient';
+import { InvoiceRelaunch } from 'src/gen/bpClient';
 
 export const invoiceRelaunch1: InvoiceRelaunch = {
   draftRelaunch: 10,

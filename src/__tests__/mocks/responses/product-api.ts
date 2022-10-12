@@ -3,7 +3,7 @@ import { Product } from 'src/gen/bpClient/models';
 export const products1: Product[] = [
   {
     description: 'description1',
-    quantity: 1,
+    quantity: 0,
     unitPrice: 1,
     vatPercent: 1,
     totalVat: 1,
@@ -12,7 +12,7 @@ export const products1: Product[] = [
   },
   {
     description: 'description2',
-    quantity: 2,
+    quantity: 0,
     unitPrice: 2,
     vatPercent: 2,
     totalVat: 2,
@@ -21,7 +21,7 @@ export const products1: Product[] = [
   },
   {
     description: 'description3',
-    quantity: 3,
+    quantity: 0,
     unitPrice: 3,
     vatPercent: 3,
     totalVat: 3,
@@ -30,7 +30,7 @@ export const products1: Product[] = [
   },
   {
     description: 'description3',
-    quantity: 4,
+    quantity: 0,
     unitPrice: 4,
     vatPercent: 4,
     totalVat: 4,
@@ -42,7 +42,7 @@ export const products1: Product[] = [
 export const newProduct1 = [
   {
     description: 'test description',
-    quantity: 1,
+    quantity: 0,
     unitPrice: 1,
     vatPercent: 1,
     totalVat: 1,

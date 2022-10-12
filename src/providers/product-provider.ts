@@ -15,9 +15,9 @@ const productProvider: BpDataProviderType = {
   async getOne(userId: string) {
     throw new Error('Function not implemented.');
   },
-  getList: async function (page: number, perPage: number, { categorized }: any): Promise<any[]> {
+  getList: async function (page: number, perPage: number, categorized: any): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().getProducts(accountId, false);
+    const { data } = await payingApi().getProducts(accountId, true);
     return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {

@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import { singleAccountGetter } from './account-provider';
 import { FileApi } from './api';
 import authProvider from './auth-provider';

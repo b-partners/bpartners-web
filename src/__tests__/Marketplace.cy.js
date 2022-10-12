@@ -25,7 +25,7 @@ describe(specTitle('Customers'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get(':nth-child(5) > .MuiListItem-root').click();
+    cy.get(':nth-child(6) > .MuiListItem-root').click();
     cy.wait('@getMarketplaces');
 
     cy.contains('websiteUrl 1');
