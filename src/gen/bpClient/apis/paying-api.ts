@@ -11,24 +11,29 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import globalAxios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import globalAxios, { AxiosResponse, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { Configuration } from '../configuration';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { BaseAPI, BASE_PATH, RequestArgs, RequiredError } from '../base';
-import {
-  CreateInvoiceRelaunch,
-  CreateProduct,
-  CreateTransactionCategory,
-  CrupdateInvoice,
-  Invoice,
-  InvoiceRelaunch,
-  PaymentInitiation,
-  PaymentRedirection,
-  Product,
-  Transaction,
-  TransactionCategory,
-} from '../models';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BadRequestException } from '../models';
+import { CreateInvoiceRelaunch } from '../models';
+import { CreateProduct } from '../models';
+import { CreateTransactionCategory } from '../models';
+import { CrupdateInvoice } from '../models';
+import { InternalServerException } from '../models';
+import { Invoice } from '../models';
+import { InvoiceRelaunch } from '../models';
+import { NotAuthorizedException } from '../models';
+import { Page } from '../models';
+import { PageSize } from '../models';
+import { PaymentInitiation } from '../models';
+import { PaymentRedirection } from '../models';
+import { Product } from '../models';
+import { ResourceNotFoundException } from '../models';
+import { TooManyRequestsException } from '../models';
+import { Transaction } from '../models';
+import { TransactionCategory } from '../models';
 /**
  * PayingApi - axios parameter creator
  * @export
@@ -279,6 +284,57 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get known invoices of the specified account
+     * @param {string} aId
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getInvoices: async (aId: string, page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'aId' is not null or undefined
+      if (aId === null || aId === undefined) {
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getInvoices.');
+      }
+      const localVarPath = `/accounts/{aId}/invoices`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (pageSize !== undefined) {
+        localVarQueryParameter['pageSize'] = pageSize;
+      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -653,6 +709,27 @@ export const PayingApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get known invoices of the specified account
+     * @param {string} aId
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getInvoices(
+      aId: string,
+      page?: Page,
+      pageSize?: PageSize,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Invoice>>>> {
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getInvoices(aId, page, pageSize, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
      * @summary Get known products of the specified account
      * @param {string} id
      * @param {boolean} [unique] If description is null, this parameter is required.
@@ -831,6 +908,20 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
     },
     /**
      *
+     * @summary Get known invoices of the specified account
+     * @param {string} aId
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getInvoices(aId: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Invoice>>> {
+      return PayingApiFp(configuration)
+        .getInvoices(aId, page, pageSize, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get known products of the specified account
      * @param {string} id
      * @param {boolean} [unique] If description is null, this parameter is required.
@@ -985,6 +1076,21 @@ export class PayingApi extends BaseAPI {
   public async getInvoiceRelaunch(aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunch>> {
     return PayingApiFp(this.configuration)
       .getInvoiceRelaunch(aId, options)
+      .then(request => request(this.axios, this.basePath));
+  }
+  /**
+   *
+   * @summary Get known invoices of the specified account
+   * @param {string} aId
+   * @param {Page} [page]
+   * @param {PageSize} [pageSize]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PayingApi
+   */
+  public async getInvoices(aId: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Invoice>>> {
+    return PayingApiFp(this.configuration)
+      .getInvoices(aId, page, pageSize, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**

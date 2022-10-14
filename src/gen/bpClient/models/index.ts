@@ -20,6 +20,8 @@ export * from './invoice-status';
 export * from './marketplace';
 export * from './not-authorized-exception';
 export * from './onboarding-initiation';
+export * from './page';
+export * from './page-size';
 export * from './payment-initiation';
 export * from './payment-redirection';
 export * from './pre-user';
