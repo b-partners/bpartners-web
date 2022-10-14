@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, TextField, Typography } from '@material-ui/core';
+import { Card, CardContent, Grid, Paper, TextField, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
 
@@ -9,6 +9,7 @@ const TransactionChart = () => {
     { name: 'Dépense', value: 300 },
   ];
   // const [data, setData] = useState([]);
+
   const currentDate = new Date().toISOString().split('T')[0];
   const [date, setDate] = useState({ startDate: currentDate, endDate: currentDate });
 
@@ -24,7 +25,7 @@ const TransactionChart = () => {
     console.log(date);
   }, [date]);
 
-  const COLORS = ['#0088FE', '#00C49F', '#F11C1C', '#5E12A4', '#A5FA20', '#F5A213'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -46,13 +47,33 @@ const TransactionChart = () => {
       </CardContent>
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item>
+          <Grid item sm={2}>
+            <Typography variant='subtitle1'>Filtrer par date</Typography>
             <TextField
               id='date'
+              variant='filled'
+              margin='dense'
               name='startDate'
               label='Date de debut'
               type='date'
               value={date.startDate}
+              fullWidth
+              onChange={e => {
+                changeDate(e);
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              id='dateFin'
+              variant='filled'
+              margin='dense'
+              name='endDate'
+              label='Date de fin'
+              type='date'
+              value={date.endDate}
+              fullWidth
               onChange={e => {
                 changeDate(e);
               }}
@@ -62,32 +83,17 @@ const TransactionChart = () => {
             />
           </Grid>
           <Grid item>
-            <TextField
-              id='dateFin'
-              name='endDate'
-              label='Date de fin'
-              type='date'
-              value={date.endDate}
-              onChange={e => {
-                changeDate(e);
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            <PieChart width={500} height={300}>
+              <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={130} fill='#8884d8' dataKey='value'>
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend iconType='circle' verticalAlign='bottom' layout='vertical' align='right' />
+            </PieChart>
           </Grid>
         </Grid>
-      </CardContent>
-      <CardContent>
-        <PieChart width={400} height={300}>
-          <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={100} fill='#8884d8' dataKey='value'>
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend iconType='circle' />
-        </PieChart>
       </CardContent>
     </Card>
   );
