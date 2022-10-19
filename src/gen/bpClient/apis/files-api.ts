@@ -135,10 +135,11 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
      * @param {Object} body
      * @param {string} aId
      * @param {string} id
+     * @param {string} [fileType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    uploadFile: async (body: Object, aId: string, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    uploadFile: async (body: Object, aId: string, id: string, fileType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'body' is not null or undefined
       if (body === null || body === undefined) {
         throw new RequiredError('body', 'Required parameter body was null or undefined when calling uploadFile.');
@@ -165,6 +166,10 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
+
+      if (fileType !== undefined) {
+        localVarQueryParameter['fileType'] = fileType;
+      }
 
       localVarHeaderParameter['Content-Type'] = 'image/jpeg';
 
@@ -241,6 +246,7 @@ export const FilesApiFp = function (configuration?: Configuration) {
      * @param {Object} body
      * @param {string} aId
      * @param {string} id
+     * @param {string} [fileType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -248,9 +254,10 @@ export const FilesApiFp = function (configuration?: Configuration) {
       body: Object,
       aId: string,
       id: string,
+      fileType?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Blob>>> {
-      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).uploadFile(body, aId, id, options);
+      const localVarAxiosArgs = await FilesApiAxiosParamCreator(configuration).uploadFile(body, aId, id, fileType, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -298,12 +305,13 @@ export const FilesApiFactory = function (configuration?: Configuration, basePath
      * @param {Object} body
      * @param {string} aId
      * @param {string} id
+     * @param {string} [fileType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async uploadFile(body: Object, aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+    async uploadFile(body: Object, aId: string, id: string, fileType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
       return FilesApiFp(configuration)
-        .uploadFile(body, aId, id, options)
+        .uploadFile(body, aId, id, fileType, options)
         .then(request => request(axios, basePath));
     },
   };
@@ -351,13 +359,14 @@ export class FilesApi extends BaseAPI {
    * @param {Object} body
    * @param {string} aId
    * @param {string} id
+   * @param {string} [fileType]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FilesApi
    */
-  public async uploadFile(body: Object, aId: string, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
+  public async uploadFile(body: Object, aId: string, id: string, fileType?: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return FilesApiFp(this.configuration)
-      .uploadFile(body, aId, id, options)
+      .uploadFile(body, aId, id, fileType, options)
       .then(request => request(this.axios, this.basePath));
   }
 }

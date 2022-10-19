@@ -404,15 +404,24 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {boolean} unique If disabled, all transaction categories are given
+     * @param {string} from
+     * @param {string} to
      * @param {boolean} [userDefined]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactionCategories: async (aId: string, unique: boolean, userDefined?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getTransactionCategories: async (
+      aId: string,
+      unique: boolean,
+      from: string,
+      to: string,
+      userDefined?: boolean,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
         throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getTransactionCategories.');
@@ -420,6 +429,14 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       // verify required parameter 'unique' is not null or undefined
       if (unique === null || unique === undefined) {
         throw new RequiredError('unique', 'Required parameter unique was null or undefined when calling getTransactionCategories.');
+      }
+      // verify required parameter 'from' is not null or undefined
+      if (from === null || from === undefined) {
+        throw new RequiredError('from', 'Required parameter from was null or undefined when calling getTransactionCategories.');
+      }
+      // verify required parameter 'to' is not null or undefined
+      if (to === null || to === undefined) {
+        throw new RequiredError('to', 'Required parameter to was null or undefined when calling getTransactionCategories.');
       }
       const localVarPath = `/accounts/{aId}/transactionCategories`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -440,6 +457,14 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (userDefined !== undefined) {
         localVarQueryParameter['userDefined'] = userDefined;
+      }
+
+      if (from !== undefined) {
+        localVarQueryParameter['from'] = (from as any) instanceof Date ? (from as any).toISOString().substr(0, 10) : from;
+      }
+
+      if (to !== undefined) {
+        localVarQueryParameter['to'] = (to as any) instanceof Date ? (to as any).toISOString().substr(0, 10) : to;
       }
 
       const query = new URLSearchParams(localVarUrlObj.search);
@@ -750,10 +775,12 @@ export const PayingApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     *
+     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {boolean} unique If disabled, all transaction categories are given
+     * @param {string} from
+     * @param {string} to
      * @param {boolean} [userDefined]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -761,10 +788,12 @@ export const PayingApiFp = function (configuration?: Configuration) {
     async getTransactionCategories(
       aId: string,
       unique: boolean,
+      from: string,
+      to: string,
       userDefined?: boolean,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionCategory>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, unique, userDefined, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, unique, from, to, userDefined, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -935,10 +964,12 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
         .then(request => request(axios, basePath));
     },
     /**
-     *
+     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {boolean} unique If disabled, all transaction categories are given
+     * @param {string} from
+     * @param {string} to
      * @param {boolean} [userDefined]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -946,11 +977,13 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
     async getTransactionCategories(
       aId: string,
       unique: boolean,
+      from: string,
+      to: string,
       userDefined?: boolean,
       options?: AxiosRequestConfig
     ): Promise<AxiosResponse<Array<TransactionCategory>>> {
       return PayingApiFp(configuration)
-        .getTransactionCategories(aId, unique, userDefined, options)
+        .getTransactionCategories(aId, unique, from, to, userDefined, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1109,10 +1142,12 @@ export class PayingApi extends BaseAPI {
       .then(request => request(this.axios, this.basePath));
   }
   /**
-   *
+   * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
    * @summary Get known transaction categories of an account
    * @param {string} aId Account identifier
    * @param {boolean} unique If disabled, all transaction categories are given
+   * @param {string} from
+   * @param {string} to
    * @param {boolean} [userDefined]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -1121,11 +1156,13 @@ export class PayingApi extends BaseAPI {
   public async getTransactionCategories(
     aId: string,
     unique: boolean,
+    from: string,
+    to: string,
     userDefined?: boolean,
     options?: AxiosRequestConfig
   ): Promise<AxiosResponse<Array<TransactionCategory>>> {
     return PayingApiFp(this.configuration)
-      .getTransactionCategories(aId, unique, userDefined, options)
+      .getTransactionCategories(aId, unique, from, to, userDefined, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**

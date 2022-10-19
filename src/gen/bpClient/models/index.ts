@@ -13,6 +13,7 @@ export * from './customer';
 export * from './enable-status';
 export * from './exception';
 export * from './file-info';
+export * from './file-type';
 export * from './internal-server-exception';
 export * from './invoice';
 export * from './invoice-relaunch';
