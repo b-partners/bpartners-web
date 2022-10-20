@@ -57,7 +57,7 @@ describe(specTitle('Account'), () => {
   it('upload logo image', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('logoUpload');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw?fileType=LOGO`, images1).as('logoUpload');
 
     mount(<App />);
 

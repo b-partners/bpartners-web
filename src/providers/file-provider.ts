@@ -23,7 +23,7 @@ export const fileProvider: BpDataProviderType = {
     const binaryFile = await toBinaryString(resources);
     const type = getMimeType(resources);
     return FileApi()
-      .uploadFile(binaryFile, accountId, `logo.jpeg`, { headers: { 'Content-Type': type } })
+      .uploadFile(binaryFile, accountId, `logo.jpeg`, `LOGO`, { headers: { 'Content-Type': type } })
       .then(data => [data]);
   },
 };
