@@ -1,14 +1,12 @@
-import { Card, CardContent, Grid, Paper, TextField, Typography } from '@material-ui/core';
+import { Card, CardContent, Grid, TextField, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
+import { payingApi } from 'src/providers/api';
+import authProvider from 'src/providers/auth-provider';
+import { singleAccountGetter } from 'src/providers/account-provider';
 
 const TransactionChart = () => {
-  const data = [
-    { name: "Chiffre d'affaires", value: 400 },
-    { name: 'Solde disponible', value: 300 },
-    { name: 'Dépense', value: 300 },
-  ];
-  // const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
 
   const currentDate = new Date().toISOString().split('T')[0];
   const [date, setDate] = useState({ startDate: currentDate, endDate: currentDate });
@@ -22,10 +20,23 @@ const TransactionChart = () => {
   };
 
   useEffect(() => {
-    console.log(date);
+    const getTransactionCategoriesData = async () => {
+      const userId = authProvider.getCachedWhoami().user.id;
+      const accountId = (await singleAccountGetter(userId)).id;
+
+      return (await payingApi().getTransactionCategories(accountId, true, date.startDate, date.endDate)).data;
+    };
+
+    const mapData = async () => {
+      const transactionCategories = await getTransactionCategoriesData();
+
+      setData(transactionCategories.map(({ type, count }) => ({ name: type, value: count })));
+    };
+
+    mapData();
   }, [date]);
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
+  const COLORS = ['#4472CA', '#21FA90', '#FCDC4D', '#4B2840', '#FA8334', '#EF2D56'];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -43,7 +54,7 @@ const TransactionChart = () => {
   return (
     <Card>
       <CardContent>
-        <Typography variant='h4'>Résumé Graphique</Typography>
+        <Typography variant='h5'>Résumé Graphique</Typography>
       </CardContent>
       <CardContent>
         <Grid container spacing={2}>
@@ -83,8 +94,8 @@ const TransactionChart = () => {
             />
           </Grid>
           <Grid item>
-            <PieChart width={500} height={300}>
-              <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={130} fill='#8884d8' dataKey='value'>
+            <PieChart width={700} height={300}>
+              <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={100} fill='#8884d8' dataKey='value'>
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
