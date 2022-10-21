@@ -5,7 +5,7 @@ import { Button, Toolbar, Typography } from '@material-ui/core';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 
-export const pageSize = 10;
+export const pageSize = 5;
 
 const haSetPerPage = (setPerPage, setPage, page) => {
   setPerPage(pageSize);
@@ -33,7 +33,7 @@ const PrevNextPagination = () => {
     setPage(page - 1);
     setLastPage(null);
   };
-  return (
+  return !isLoading ? (
     <Toolbar>
       {page > 1 && (
         <Button color='primary' key='prev' onClick={onPrevClick}>
@@ -41,7 +41,7 @@ const PrevNextPagination = () => {
           Précédent
         </Button>
       )}
-      {(!lastPage || page < lastPage) && (
+      {(resourcesCount === pageSize || !lastPage || page < lastPage) && (
         <Button color='primary' key='next' onClick={() => setPage(page + 1)}>
           Suivant
           <ChevronRight />
@@ -53,6 +53,8 @@ const PrevNextPagination = () => {
         </Typography>
       </div>
     </Toolbar>
+  ) : (
+    <></>
   );
 };
 
