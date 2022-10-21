@@ -12,12 +12,8 @@
  * Do not edit the class manually.
  */
 /**
- *
+ * Cannot exceed `500`
  * @export
- * @enum {string}
+ * @interface PageSize
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-}
+export interface PageSize {}

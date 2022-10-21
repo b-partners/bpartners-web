@@ -12,12 +12,8 @@
  * Do not edit the class manually.
  */
 /**
- *
+ * Start at `1`
  * @export
- * @enum {string}
+ * @interface Page
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-}
+export interface Page {}

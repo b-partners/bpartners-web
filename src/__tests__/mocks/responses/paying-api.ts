@@ -1,4 +1,4 @@
-import { Transaction } from 'src/gen/bpClient';
+import { Transaction, TransactionCategory } from 'src/gen/bpClient';
 
 export const transactions1: Array<Transaction> = [
   {
@@ -59,5 +59,32 @@ export const transactions1: Array<Transaction> = [
     reference: 'BP22005',
     amount: -5,
     paymentDatetime: new Date('2022-06-18T05:34:20'),
+  },
+];
+
+export const transactionCategories1: Array<TransactionCategory> = [
+  {
+    id: 't01',
+    type: 'Recette tva 20%',
+    vat: 0,
+    count: 10,
+  },
+  {
+    id: 't02',
+    type: 'Recette tva 10%',
+    vat: 0,
+    count: 6,
+  },
+  {
+    id: 't03',
+    type: 'Recette personnalisé tva 1%',
+    vat: 0,
+    count: 5,
+  },
+  {
+    id: 't02',
+    type: 'Recette personnalisé tva 1,5%',
+    vat: 0,
+    count: 2,
   },
 ];

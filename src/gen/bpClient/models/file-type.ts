@@ -16,8 +16,7 @@
  * @export
  * @enum {string}
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
+export enum FileType {
+  INVOICE = 'INVOICE',
+  LOGO = 'LOGO',
 }

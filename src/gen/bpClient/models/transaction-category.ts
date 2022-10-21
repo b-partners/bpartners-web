@@ -30,4 +30,10 @@ export interface TransactionCategory extends CreateTransactionCategory {
    * @memberof TransactionCategory
    */
   userDefined?: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof TransactionCategory
+   */
+  count?: number;
 }
