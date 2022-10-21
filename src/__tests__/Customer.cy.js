@@ -26,7 +26,7 @@ describe(specTitle('Customers'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get(':nth-child(2) > .MuiListItem-root').click();
+    cy.get(':nth-child(3) > .MuiListItem-root').click();
     cy.wait('@getCustomers');
 
     cy.contains('2589 Nelm Street');
@@ -38,7 +38,7 @@ describe(specTitle('Customers'), () => {
   it('is creatable (with valid input)', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get(':nth-child(2) > .MuiListItem-root').click();
+    cy.get(':nth-child(3) > .MuiListItem-root').click();
     cy.wait('@getCustomers');
 
     cy.get('[data-testid="AddIcon"]').click();

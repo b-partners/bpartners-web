@@ -6,6 +6,7 @@ import customerProvider from './customer-provider';
 import transactionProvider from './transaction-provider';
 import productProvider from './product-provider';
 import marketplaceProvider from './marketplace-provider';
+import invoiceProvider from './invoice-provider';
 
 export const maxPageSize = 500;
 
@@ -16,6 +17,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'products') return productProvider;
   if (resourceType === 'customers') return customerProvider;
   if (resourceType === 'marketplaces') return marketplaceProvider;
+  if (resourceType === 'invoices') return invoiceProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 

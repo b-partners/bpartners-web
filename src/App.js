@@ -12,6 +12,7 @@ import account from './operations/account';
 import transactions from './operations/transactions';
 import { customers } from './operations/customers';
 import products from './operations/products';
+import invoice from './operations/invoice';
 
 import MyLayout from './BpLayout';
 
@@ -33,7 +34,7 @@ export const BpAdmin = () => (
     <Resource name='transactions' {...transactions} />
     <Resource name='customers' {...customers} />
     <Resource name='products' {...products} />
-    <Resource name='customers' {...customers} />
+    <Resource name='invoices' {...invoice} />
     <Resource name='marketplaces' {...marketplaces} />
     <Resource name='account' />
 
@@ -41,6 +42,7 @@ export const BpAdmin = () => (
       <Route exact path='/account' element={<account.show />} />
       <Route exact path='/products' element={<products.list />} />
       <Route exact path='/configurations' element={<Configuration />} />
+      <Route exact path='/invoice' element={<invoice.list />} />
     </CustomRoutes>
   </Admin>
 );
