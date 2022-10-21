@@ -27,7 +27,7 @@ describe(specTitle('Transactions'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get('[href="/transactions"]').click();
+    cy.get('[name="transactions"]').click();
     cy.wait('@getTransactions1');
 
     cy.contains('Résumé Graphique');
@@ -56,7 +56,7 @@ describe(specTitle('Transactions'), () => {
   it('are filterable', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get('[href="/transactions"]').click();
+    cy.get('[name="transactions"]').click();
     cy.wait('@getTransactions1');
 
     cy.get('#categorized').click();
@@ -66,7 +66,7 @@ describe(specTitle('Transactions'), () => {
   it('can have document', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get('[href="/transactions"]').click();
+    cy.get('[name="transactions"]').click();
     cy.wait('@getTransactions1');
 
     cy.contains('TVA 20%');

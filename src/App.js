@@ -1,26 +1,27 @@
 import { Admin } from '@react-admin/ra-enterprise';
-import { CustomRoutes } from 'react-admin';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Resource } from '@react-admin/ra-rbac';
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import frenchMessages from 'ra-language-french';
+import { CustomRoutes } from 'react-admin';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
+import MyLayout from './BpLayout';
+import { bpTheme } from './bpTheme';
+
+import account from './operations/account';
+import { Configuration } from './operations/configurations';
+import { customers } from './operations/customers';
+import invoice from './operations/invoice';
+import { marketplaces } from './operations/marketplaces';
+import products from './operations/products';
+import transactions from './operations/transactions';
 
 import authProvider from './providers/auth-provider.ts';
 import dataProvider from './providers/data-provider';
-import polyglotI18nProvider from 'ra-i18n-polyglot';
-import frenchMessages from 'ra-language-french';
-
-import account from './operations/account';
-import transactions from './operations/transactions';
-import { customers } from './operations/customers';
-import products from './operations/products';
-import invoice from './operations/invoice';
-
-import MyLayout from './BpLayout';
+import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
 import LoginPage from './security/LoginPage';
-import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginSuccessPage from './security/LoginSuccessPage';
-import { Configuration } from './operations/configurations';
-import { marketplaces } from './operations/marketplaces';
 
 export const BpAdmin = () => (
   <Admin
@@ -29,6 +30,7 @@ export const BpAdmin = () => (
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
     loginPage={LoginPage}
+    theme={bpTheme}
     layout={MyLayout}
   >
     <Resource name='transactions' {...transactions} />

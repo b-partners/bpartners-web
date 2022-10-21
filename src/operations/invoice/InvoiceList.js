@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh } from 'react-admin';
 import { Edit, Check, Send } from '@material-ui/icons';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { EmptyList } from '../utils/EmptyList';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import { invoiceInitialValue } from './InvoiceCreate';
 import PrevNextPagination from '../utils/PrevNextPagination';
@@ -35,7 +36,7 @@ const InvoiceList = () => {
       hasShow={false}
       aside={<InvoiceCreateOrUpdate toEdit={invoice} />}
     >
-      <Datagrid>
+      <Datagrid empty={<EmptyList />}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />

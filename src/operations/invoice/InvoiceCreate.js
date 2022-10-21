@@ -37,11 +37,11 @@ const InvoiceCreateOrUpdate = ({ toEdit }) => {
   const notify = useNotify();
   const refresh = useRefresh();
   const classes = useStyle();
-  const update = (value) => {
+  const update = value => {
     Object.keys(value).forEach(e => {
-      if(value.id.length > 0 && e === 'ref'){
-        formValidator.setValue(e, value[e].slice(0, '-TMP')[0])
-      } 
+      if (value.id.length > 0 && e === 'ref') {
+        formValidator.setValue(e, value[e].slice(0, '-TMP')[0]);
+      }
       formValidator.setValue(e, value[e]);
     });
   };

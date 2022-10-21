@@ -1,4 +1,5 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
+import { EmptyList } from '../utils/EmptyList';
 
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
 
@@ -11,13 +12,14 @@ const ProductList = props => {
     <List
       {...props}
       resource='products'
+      exporter={resourcesCount > 0}
       hasCreate={true}
       hasEdit={false}
       hasList={false}
       hasShow={false}
       pagination={shouldPaginate ? null : <PrevNextPagination />}
     >
-      <Datagrid bulkActionButtons={false}>
+      <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
         <TextField source='description' label='Déscription' />
         <TextField source='quantity' label='Quantité' />
         <TextField source='unitPrice' label='Prix unitaire' />

@@ -1,16 +1,34 @@
-import { MenuItemCategory, MultiLevelMenu } from '@react-admin/ra-navigation';
-import { Euro, AccountCircle, People, Category, Store, Receipt } from '@material-ui/icons';
+import { AccountCircle, Category, Euro, Lock, People, Settings, Store } from '@material-ui/icons';
+import { Box } from '@mui/material';
+import { Menu } from 'react-admin';
+import authProvider from '../providers/auth-provider';
+
+const LogoutButton = () => {
+  const logout = async () => {
+    await authProvider.logout();
+    window.location.reload();
+  };
+  return <Menu.Item to='#' onClick={logout} name='deconnection' primaryText='Se déconnecter' leftIcon={<Lock />} />;
+};
 
 const BpMenu = () => {
   return (
-    <MultiLevelMenu variant='categories'>
-      <MenuItemCategory to='/transactions' name='transactions' label='Mes transactions' icon={<Euro />} />
-      <MenuItemCategory to='/invoice' name='invoice' label='Devis/Facturation' icon={<Receipt />} />
-      <MenuItemCategory to='/customers' name='customers' label='Mes clients' icon={<People />} />
-      <MenuItemCategory to='/account' name='account' label='Mon compte' icon={<AccountCircle />} />
-      <MenuItemCategory to='/products' name='products' label='Mes Produits' icon={<Category />} />
-      <MenuItemCategory to='/marketplaces' name='marketplaces' label='Les marchés' icon={<Store />} />
-    </MultiLevelMenu>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
+      <Menu>
+        <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
+        <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
+        <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
+        <Menu.Item to='/products' name='products' primaryText='Mes Produits' leftIcon={<Category />} />
+        <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Les marchés' leftIcon={<Store />} />
+      </Menu>
+
+      <Box sx={{ display: 'flex', alignItems: 'end' }}>
+        <Menu>
+          <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
+          <LogoutButton />
+        </Menu>
+      </Box>
+    </Box>
   );
 };
 
