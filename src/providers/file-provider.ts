@@ -2,7 +2,7 @@ import { singleAccountGetter } from './account-provider';
 import { FileApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { toBinaryString } from '../utils/to-binary-string';
+import { toArrayBuffer } from '../utils/to-array-buffer';
 import { getMimeType } from '../utils/get-mime-type';
 
 export const fileProvider: BpDataProviderType = {
@@ -19,10 +19,11 @@ export const fileProvider: BpDataProviderType = {
   async saveOrUpdate(resources: any): Promise<any[]> {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
-    const binaryFile = await toBinaryString(resources);
+    const binaryFile = await toArrayBuffer(resources);
     const type = getMimeType(resources);
+
     return FileApi()
-      .uploadFile(binaryFile, accountId, `logo.jpeg`, `LOGO`, { headers: { 'Content-Type': type } })
+      .uploadFile(binaryFile, accountId, 'logo.jpeg', `LOGO`, { headers: { 'Content-Type': type } })
       .then(data => [data]);
   },
 };

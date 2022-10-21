@@ -33,8 +33,6 @@ describe(specTitle('Account'), () => {
     cy.wait('@getUser1');
     cy.get('[href="/account"]').click();
 
-    cy.get('[href="/account"]').click();
-
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
@@ -68,5 +66,8 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.png', { force: true });
+
+    cy.wait('@logoUpload');
+    cy.contains('Changement enregistré');
   });
 });

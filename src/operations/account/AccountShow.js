@@ -3,13 +3,14 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import authProvider from '../../providers/auth-provider';
 
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { Show, SimpleShowLayout, TextField, useNotify } from 'react-admin';
 import { fileProvider } from 'src/providers/file-provider';
 import { useEffect, useState } from 'react';
 import { singleAccountGetter } from '../../providers/account-provider';
 
 export const AccountHolderLayout = () => {
   const [logoUrl, setLogoUrl] = useState('');
+  const notify = useNotify();
 
   useEffect(() => {
     async function getLogo() {
@@ -36,7 +37,12 @@ export const AccountHolderLayout = () => {
             name='upload-photo'
             type='file'
             onChange={async files => {
-              await fileProvider.saveOrUpdate(files);
+              try {
+                await fileProvider.saveOrUpdate(files);
+                notify('Changement enregistré', { type: 'success' });
+              } catch (err) {
+                notify("Une erreur s'est produite", { type: 'error' });
+              }
             }}
           />
           <Badge
