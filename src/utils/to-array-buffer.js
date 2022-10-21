@@ -1,4 +1,4 @@
-export const toBinaryString = e =>
+export const toArrayBuffer = e =>
   new Promise((resolve, reject) => {
     let file = e.target.files[0];
     const reader = new FileReader();
@@ -9,5 +9,5 @@ export const toBinaryString = e =>
 
     reader.onerror = () => reject(reader.error);
 
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   });
