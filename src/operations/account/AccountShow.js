@@ -1,6 +1,6 @@
 import { green } from '@material-ui/core/colors';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { Avatar, Badge, Box, Tab, Tabs, Typography } from '@mui/material';
+import { Autocomplete, Avatar, Badge, Box, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
@@ -134,12 +134,61 @@ const AdditionalInformation = () => {
 
 const AccountShow = () => {
   const userId = authProvider.getCachedWhoami().user.id;
+  
+  const metier = [
+    'Agenceur',
+    'Architecte',
+    "Architecte d'intérieur",
+    'Armurier ',
+    "Artisan tout corps d'état",
+    'Barbier ',
+    'Bottier ',
+    'Boucher-charcutier ',
+    'Boulanger',
+  ];
+
+  const [value, setValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
+
+  const [value0, setValue0] = useState('');
+  const [inputValue0, setInputValue0] = useState('');
 
   return (
     <ShowBase resource='account' basePath='/account' id={userId}>
       <Box sx={SHOW_LAYOUT_STYLE}>
         <Box sx={BOX_CONTENT_STYLE}>
           <AccountHolderLayout />
+
+          <Box sx={{ padding: 2 }}>
+            <Autocomplete
+              value={value}
+              onChange={(event, newValue) => {
+                setValue(newValue);
+              }}
+              inputValue={inputValue}
+              onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+              }}
+              id="primary-activity"
+              options={metier}
+              // sx={{ width: 300 }}
+              renderInput={(params) => <MuiTextField {...params} label="Activité principal" />}
+            />
+            <Autocomplete
+              value={value0}
+              onChange={(event, newValue) => {
+                setValue0(newValue);
+              }}
+              inputValue={inputValue0}
+              onInputChange={(event, newInputValue) => {
+                setInputValue0(newInputValue);
+              }}
+              id="secondary-activity"
+              options={metier}
+              // sx={{ width: 300 }}
+              renderInput={(params) => <MuiTextField {...params} label="Activité secondaire" />}
+            />
+          </Box>
 
           <SimpleShowLayout>
             <TextField pb={3} source='accountHolder.postalCode' label='Raison sociale' />
