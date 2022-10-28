@@ -24,7 +24,7 @@ describe(specTitle('Frequency relaunch'), () => {
     mount(<App />);
 
     cy.wait('@getUser1');
-    cy.get('[title="Configuration"] > .MuiIconButton-label > .MuiSvgIcon-root').click();
+    cy.get('[name="configurations"]').click();
     cy.get('.MuiAccordionSummary-content > .MuiTypography-root').click();
     cy.wait('@getInvoiceRelaunch1');
 

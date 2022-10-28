@@ -10,8 +10,10 @@ import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
+    cy.viewport(1360, 760);
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
+
     cy.then(
       async () =>
         await authProvider.login('dummy', 'dummy', {
@@ -21,6 +23,7 @@ describe(specTitle('Account'), () => {
           },
         })
     );
+
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
   });
 
@@ -31,12 +34,11 @@ describe(specTitle('Account'), () => {
     mount(<App />);
 
     cy.wait('@getUser1');
-    cy.get('[href="/account"]').click();
+    cy.get('[name="account"]').click();
 
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Ma société');
     cy.contains('101');
     cy.contains('Ivandry');
     cy.contains('Madagascar');
@@ -47,6 +49,7 @@ describe(specTitle('Account'), () => {
     cy.contains('last Name 1');
     cy.contains('11 11 11');
 
+    cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
     cy.contains(`L'ambitieux`);
     cy.contains(`0€ de coût fixe par mois`);
@@ -60,7 +63,7 @@ describe(specTitle('Account'), () => {
     mount(<App />);
 
     cy.wait('@getUser1');
-    cy.get('[href="/account"]').click();
+    cy.get('[name="account"]').click();
 
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');

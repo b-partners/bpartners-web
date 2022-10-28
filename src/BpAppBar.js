@@ -1,42 +1,35 @@
-import { Lock, Settings } from '@material-ui/icons';
-import authProvider from './providers/auth-provider';
-import accountProvider from './providers/account-provider';
-import { IconButton, Tooltip, Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
+import { Box } from '@mui/system';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import bpLogo from './assets/bp-logo-full.png';
+import accountProvider from './providers/account-provider';
+import authProvider from './providers/auth-provider';
 
-const LogoutButton = () => {
-  const logout = () => {
-    authProvider.logout();
-    window.location.reload();
-  };
-  return (
-    <Tooltip title='Se déconnecter' onClick={logout}>
-      <IconButton color='inherit'>
-        <Lock />
-      </IconButton>
-    </Tooltip>
-  );
-};
+const useStyle = makeStyles(() => ({
+  LOGO: {
+    height: '2.5rem',
+  },
+  TOOLBAR: {
+    zIndex: '999',
+    height: '3rem',
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    width: '100%',
+    backgroundColor: '#fff',
+    boxShadow: 2,
 
-const ConfigurationButton = () => {
-  const navigate = useNavigate();
-  const configuration = () => navigate('/configurations');
-
-  return (
-    <Tooltip title='Configuration' onClick={configuration}>
-      <IconButton color='inherit'>
-        <Settings />
-      </IconButton>
-    </Tooltip>
-  );
-};
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+}));
 
 const BpAppBar = props => {
+  const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
 
-  // memoize the function to avoid creating it all the time
   const getFirstName = useCallback(() => {
     userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
   }, [userId]);
@@ -44,11 +37,11 @@ const BpAppBar = props => {
   useEffect(() => getFirstName(), [getFirstName]);
 
   return (
-    <Box {...props} display='flex' justifyContent='flex-end' mt={-5}>
-      <Box>
+    <Box {...props} className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
+      <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
+
+      <Box sx={{ paddingInline: '1rem' }}>
         Bonjour <b>{name}</b> !
-        <ConfigurationButton />
-        <LogoutButton />
       </Box>
     </Box>
   );

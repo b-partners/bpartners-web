@@ -12,7 +12,15 @@ describe(specTitle('Customers'), () => {
     //note(login-user1)
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
+    cy.then(
+      async () =>
+        await authProvider.login('dummy', 'dummy', {
+          redirectionStatusUrls: {
+            successurl: 'dummy',
+            FailureUrl: 'dummy',
+          },
+        })
+    );
 
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
@@ -26,7 +34,7 @@ describe(specTitle('Customers'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get(':nth-child(3) > .MuiListItem-root').click();
+    cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
 
     cy.contains('2589 Nelm Street');
@@ -38,7 +46,7 @@ describe(specTitle('Customers'), () => {
   it('is creatable (with valid input)', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get(':nth-child(3) > .MuiListItem-root').click();
+    cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
 
     cy.get('[data-testid="AddIcon"]').click();

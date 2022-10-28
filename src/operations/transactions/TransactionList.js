@@ -1,17 +1,18 @@
+import { Box, IconButton, Tooltip } from '@material-ui/core';
+import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
+
+import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import { Datagrid, List, TextField, FunctionField, SelectInput, BooleanInput } from 'react-admin';
+import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { formatDate } from '../utils/date';
+import { EmptyList } from '../utils/EmptyList';
 import { coloredMoney, Currency, normalizeAmount } from '../utils/money';
 
-import { Chip, Card, CardContent, Typography } from '@mui/material';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import samplePdf from './testInvoice.pdf';
-import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
-import { Box, IconButton, Tooltip } from '@material-ui/core';
-
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
-import { useListContext } from 'react-admin';
-import { formatDate } from '../utils/date';
+import samplePdf from './testInvoice.pdf';
+
 import TransactionChart from './TransactionChart';
 
 //TODO: should be elsewhere
@@ -35,7 +36,7 @@ const Document = ({ transactionRef }) => (
 const StatusField = ({ status }) => <Chip style={{ backgroundColor: statuses[status]['color'], color: 'white' }} label={statuses[status]['label']} />;
 const TransactionList = props => {
   const { data, isLoading } = useListContext();
-  const resourcesCount = data ? Object.keys(data).length : 0;
+  const resourcesCount = data ? data.length : 0;
   const shouldPaginate = isLoading || resourcesCount < pageSize;
 
   const [documentRef, setDocumentRef] = useState(null);
@@ -72,7 +73,7 @@ const TransactionList = props => {
         hasShow={false}
         aside={shouldShowDocument ? <Document transactionRef={documentRef} /> : null}
       >
-        <Datagrid bulkActionButtons={false}>
+        <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
           <TextField source='reference' label='Référence' />
           <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
           <TextField source='label' label='Titre' />
@@ -83,9 +84,6 @@ const TransactionList = props => {
                   {category.map(cat => (
                     <Chip label={cat.type} variant='outlined' />
                   ))}
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
                 </Box>
               ) : null
             }

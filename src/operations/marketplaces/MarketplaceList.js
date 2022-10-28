@@ -1,6 +1,7 @@
 import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-admin';
 import { Stack, Avatar, Typography } from '@mui/material';
 import { StoreSharp } from '@material-ui/icons';
+import { EmptyList } from '../utils/EmptyList';
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
 
 const MarketplaceList = props => {
@@ -12,13 +13,14 @@ const MarketplaceList = props => {
     <List
       {...props}
       resource='marketplaces'
+      exporter={resourcesCount > 0}
       hasCreate={false}
       hasEdit={false}
       hasList={false}
       hasShow={false}
       pagination={shouldPaginate ? null : <PrevNextPagination />}
     >
-      <Datagrid bulkActionButtons={false}>
+      <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
         <FunctionField
           label='Marché'
           render={({ logoUrl, name }) => (

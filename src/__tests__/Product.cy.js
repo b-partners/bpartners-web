@@ -22,7 +22,7 @@ describe(specTitle('Products'), () => {
 
   it('are displayed', () => {
     mount(<App />);
-    cy.get('[href="/products"]').click();
+    cy.get('[name="products"]').click();
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
@@ -34,12 +34,12 @@ describe(specTitle('Products'), () => {
 
   it('should validate empty input', () => {
     mount(<App />);
-    cy.get('[href="/products"]').click();
+    cy.get('[name="products"]').click();
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts1');
-    cy.get('a.MuiButtonBase-root').click();
+    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
     cy.get('#description').type('test description');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
