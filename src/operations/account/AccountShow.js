@@ -1,16 +1,16 @@
-import { Box, Typography, Avatar, Badge, Tab, Tabs } from '@mui/material';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { SmallAvatar } from '../utils/SmallAvatar';
-import authProvider from '../../providers/auth-provider';
-
-import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
-import { fileProvider } from 'src/providers/file-provider';
-import { useEffect, useState } from 'react';
-import { singleAccountGetter } from '../../providers/account-provider';
-import { BP_COLOR } from 'src/bpTheme';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
-import TabPanel from '../utils/tab-panel';
 import { green } from '@material-ui/core/colors';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { Avatar, Badge, Box, Tab, Tabs, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+
+import { ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
+import { BP_COLOR } from 'src/bpTheme';
+import { fileProvider } from 'src/providers/file-provider';
+import { singleAccountGetter } from '../../providers/account-provider';
+import authProvider from '../../providers/auth-provider';
+import { SmallAvatar } from '../utils/SmallAvatar';
+import TabPanel from '../utils/tab-panel';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -46,6 +46,7 @@ const SubscriptionLayout = () => (
 
 const AccountHolderLayout = () => {
   const notify = useNotify();
+  const refresh = useRefresh();
   const [logoUrl, setLogoUrl] = useState('');
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const AccountHolderLayout = () => {
             try {
               await fileProvider.saveOrUpdate(files);
               notify('Changement enregistré', { type: 'success' });
+              refresh();
             } catch (err) {
               notify("Une erreur s'est produite", { type: 'error' });
             }
