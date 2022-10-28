@@ -1,4 +1,4 @@
-import { AccountCircle, Category, Euro, Lock, People, Settings, Store } from '@material-ui/icons';
+import { AccountCircle, Category, Euro, Lock, People, Settings, Store, Receipt } from '@material-ui/icons';
 import { Box } from '@mui/material';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
@@ -16,6 +16,7 @@ const BpMenu = () => {
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
       <Menu>
         <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
+        <Menu.Item to='/invoice' name='invoice' primaryText='Dévis/facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/products' name='products' primaryText='Mes Produits' leftIcon={<Category />} />

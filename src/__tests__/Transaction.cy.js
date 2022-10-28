@@ -42,7 +42,7 @@ describe(specTitle('Transactions'), () => {
   it('displaying the graphic summary', () => {
     mount(<App />);
     cy.wait('@getUser1');
-    cy.get('[href="/transactions"]').click();
+    cy.get('[name="transactions"]').click();
     cy.wait('@getTransactions1');
 
     cy.contains('Résumé Graphique');
