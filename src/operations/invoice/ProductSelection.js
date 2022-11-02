@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Box, FormControl, Select, MenuItem, InputLabel, makeStyles } from '@material-ui/core';
+import { Box, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
 import { Add } from '@material-ui/icons';
 import { ProductItem } from './ProductItem';
 import productProvider from '../../providers/product-provider';
@@ -11,6 +12,10 @@ const useStyle = makeStyles(theme => ({
     minWidth: 300,
     minHeight: 70,
     marginBlock: 7,
+  },
+  menuItem: {
+    width: '100%',
+    paddingBlock: 10,
   },
 }));
 
@@ -57,7 +62,7 @@ export const ProductSelection = ({ name, formValidator }) => {
       </Box>
       <Box sx={{ width: '100%', marginBottom: 10 }}>
         {!state.status ? (
-          <CustomButton onClick={toggle} label='Ajouter un produit' icon={<Add />} />
+          <CustomButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
         ) : (
           <FormControl variant='filled' value='' className={classes.formControl}>
             <InputLabel id='product-selection-id'>Produit</InputLabel>
@@ -66,7 +71,7 @@ export const ProductSelection = ({ name, formValidator }) => {
                 state.productsList
                   .filter(e => !isIncludesObject(selectedProduct, 'id', e.id))
                   .map(e => (
-                    <MenuItem onClick={() => handleProduct('add', e)} value={e.id} key={e.id + '2'}>
+                    <MenuItem className={classes.menuItem} onClick={() => handleProduct('add', e)} value={e.id} key={e.id + '2'}>
                       {e.description}
                     </MenuItem>
                   ))}

@@ -1,51 +1,24 @@
-import { Invoice, InvoiceStatus } from 'src/gen/bpClient';
 import { customers1 } from './customer-api';
 import { products1 } from './product-api';
 
-export const invoices1 = [
-  {
-    customer: customers1[0],
-    fileId: 'file-id-1',
-    id: 'invoice-id-1',
-    paymentUrl: 'paymentUrl-1',
-    products: [products1[0], products1[1]],
-    ref: 'invoice-ref-1',
-    sendingDate: '2022-05-10',
-    toPayAt: '2022-05-15',
-    status: 'DRAFT',
-    title: 'invoice-title-1',
-    totalPriceWithoutVat: 10000,
-    totalPriceWithVat: 12000,
-    totalVat: 2000,
-  },
-  {
-    customer: customers1[1],
-    fileId: 'file-id-2',
-    id: 'invoice-id-2',
-    paymentUrl: 'paymentUrl-2',
-    products: [products1[0], products1[1]],
-    ref: 'invoice-ref-2',
-    sendingDate: '2022-05-10',
-    toPayAt: '2022-05-15',
-    status: 'DRAFT',
-    title: 'invoice-title-2',
-    totalPriceWithoutVat: 10000,
-    totalPriceWithVat: 12000,
-    totalVat: 2000,
-  },
-  {
-    customer: customers1[2],
-    fileId: 'file-id-3',
-    id: 'invoice-id-3',
-    paymentUrl: 'paymentUrl-2',
-    products: [products1[0], products1[1]],
-    ref: 'invoice-ref-2',
-    sendingDate: '2022-05-10',
-    toPayAt: '2022-05-15',
-    status: 'DRAFT',
-    title: 'invoice-title-2',
-    totalPriceWithoutVat: 10000,
-    totalPriceWithVat: 12000,
-    totalVat: 2000,
-  },
-];
+export const createInvoices = (n: number) => {
+  const invoices = [];
+  for (let i = 0; i < n; i++) {
+    invoices.push({
+      customer: customers1[Math.round(Math.random() * 2)],
+      fileId: 'file-id-' + i,
+      id: 'invoice-id-' + i,
+      paymentUrl: 'paymentUrl-' + i,
+      products: [products1[0], products1[1]],
+      ref: 'invoice-ref-' + i,
+      sendingDate: '2022-05-10',
+      toPayAt: '2022-05-15',
+      status: 'DRAFT',
+      title: 'invoice-title-' + i,
+      totalPriceWithoutVat: 10000,
+      totalPriceWithVat: 12000,
+      totalVat: 2000,
+    });
+  }
+  return invoices;
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Select, MenuItem, InputLabel, FormControl, FormHelperText } from '@material-ui/core';
+import { Box, Select, MenuItem, InputLabel, FormControl, FormHelperText } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import { customerProvider } from '../../providers/customer-provider';
 
@@ -10,6 +10,10 @@ const useStyle = makeStyles(() => ({
     marginTop: 3,
     marginBottom: 7,
     marginLeft: 2,
+  },
+  menuItem: {
+    width: '100%',
+    paddingBlock: 10,
   },
 }));
 
@@ -33,7 +37,7 @@ export const ClientSelection = ({ formValidator, name }) => {
     <Box sx={{ width: '100%' }}>
       <FormControl variant='filled' className={classes.formControl} error={errors[name]}>
         <InputLabel id='client-selection-id'>Client</InputLabel>
-        <Select labelId='client-selection-id' value={watch(`${name}.id`) || ''} {...customRegister}>
+        <Select id='invoice-client-selection-id' labelId='client-selection-id' value={watch(`${name}.id`) || ''} {...customRegister}>
           {state.clients.length !== 0 &&
             state.clients.map(client => (
               <MenuItem
@@ -42,6 +46,7 @@ export const ClientSelection = ({ formValidator, name }) => {
                 }}
                 key={client.id}
                 value={client.id}
+                className={classes.menuItem}
               >
                 {client.name || ''}
               </MenuItem>

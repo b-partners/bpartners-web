@@ -1,8 +1,9 @@
-import { Typography, TextField, Card, CardHeader, CardContent, IconButton, makeStyles, CardActions } from '@material-ui/core';
+import { Typography, TextField, Card, CardHeader, CardContent, IconButton, CardActions } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
 import { Clear } from '@material-ui/icons';
 import { prettyPrintMoney, Currency } from '../utils/money';
 
-const useStyle = makeStyles(theme => ({
+const useStyle = makeStyles(() => ({
   card: {
     maxWidth: 290,
     padding: 5,
@@ -22,6 +23,7 @@ export const ProductItem = ({ product, handleProduct }) => {
     newProduct.quantity = parseInt(event.target.value);
     handleProduct('update', newProduct);
   };
+
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -34,7 +36,7 @@ export const ProductItem = ({ product, handleProduct }) => {
         }
       />
       <CardContent>
-        <Typography variant='p'>TVA: {product.vatPercent}€</Typography>
+        <Typography variant='p'>TVA: {product.totalVatPercent}€</Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
         <TextField
