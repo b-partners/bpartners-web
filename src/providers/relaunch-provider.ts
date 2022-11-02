@@ -1,5 +1,4 @@
 import { singleAccountGetter } from './account-provider';
-import { payingApi } from './api';
 import authProvider from './auth-provider';
 
 const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
