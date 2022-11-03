@@ -65,7 +65,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="transactions"]').click();
 
     cy.get('#categorized').click();
-    cy.should('not.contain', 'TVA 20%');
+    cy.contains('TVA 20%').not();
   });
 
   it('can have document', () => {

@@ -16,17 +16,15 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch1).as('getInvoiceRelaunch1');
-    cy.intercept('PUT', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch2).as('getInvoiceRelaunch2');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoiceRelaunchConf`, invoiceRelaunch1).as('getInvoiceRelaunch1');
+    cy.intercept('PUT', `/accounts/mock-account-id1/invoiceRelaunchConf`, invoiceRelaunch2).as('getInvoiceRelaunch2');
   });
 
   it('should send configuration', () => {
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.get('[name="configurations"]').click();
     cy.get('.MuiAccordionSummary-content > .MuiTypography-root').click();
-    cy.wait('@getInvoiceRelaunch1');
 
     cy.get('.MuiBox-root-3 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 10);
     cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 20);
@@ -35,7 +33,6 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type(1);
 
     cy.get('.MuiButton-label').click();
-    cy.wait('@getInvoiceRelaunch2');
 
     cy.contains('Changements enregistrer');
   });
