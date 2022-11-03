@@ -49,6 +49,24 @@ const AccountHolderLayout = () => {
   const refresh = useRefresh();
   const [logoUrl, setLogoUrl] = useState('');
 
+  const jobs = [
+    "Agenceur",
+    "Architecte",
+    "Architecte d'intérieur",
+    "Armurier",
+    "Artisan tout corps d'état",
+    "Barbier",
+    "Bottier",
+    "Boucher-charcutier",
+    "Boulanger",
+  ];
+
+  const [primaryActivity, setPrimaryActivity] = useState('');
+  const [inputPrimaryActivity, setInputPrimaryActivity] = useState('');
+
+  const [secondaryActivity, setSecondaryActivity] = useState('');
+  const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
+
   useEffect(() => {
     const getLogo = async () => {
       const {
@@ -65,45 +83,76 @@ const AccountHolderLayout = () => {
   });
 
   return (
-    <Box sx={ACCOUNT_HOLDER_STYLE}>
-      <label htmlFor='upload-photo' id='upload-photo-label'>
-        <input
-          style={{ display: 'none' }}
-          id='upload-photo'
-          name='upload-photo'
-          type='file'
-          onChange={async files => {
-            try {
-              await fileProvider.saveOrUpdate(files);
-              notify('Changement enregistré', { type: 'success' });
-              refresh();
-            } catch (err) {
-              notify("Une erreur s'est produite", { type: 'error' });
-            }
-          }}
-        />
-        <Badge
-          overlap='circular'
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
-        >
-          <Avatar
-            alt='company logo'
-            src={logoUrl}
-            sx={{
-              height: '8rem',
-              width: '8rem',
+    <>
+      <Box sx={ACCOUNT_HOLDER_STYLE}>
+        <label htmlFor='upload-photo' id='upload-photo-label'>
+          <input
+            style={{ display: 'none' }}
+            id='upload-photo'
+            name='upload-photo'
+            type='file'
+            onChange={async files => {
+              try {
+                await fileProvider.saveOrUpdate(files);
+                notify('Changement enregistré', { type: 'success' });
+                refresh();
+              } catch (err) {
+                notify("Une erreur s'est produite", { type: 'error' });
+              }
             }}
           />
-        </Badge>
-      </label>
+          <Badge
+            overlap='circular'
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
+          >
+            <Avatar
+              alt='company logo'
+              src={logoUrl}
+              sx={{
+                height: '8rem',
+                width: '8rem',
+              }}
+            />
+          </Badge>
+        </label>
 
-      <Box sx={{ display: 'flex', justifyContent: 'inherit' }}>
-        <Typography variant='h5'>
-          <TextField source='accountHolder.name' label='Raison sociale' />
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'inherit' }}>
+          <Typography variant='h5'>
+            <TextField source='accountHolder.name' label='Raison sociale' />
+          </Typography>
+        </Box>
       </Box>
-    </Box>
+
+      <Box sx={{ padding: 2 }}>
+        <Autocomplete
+          value={primaryActivity}
+          onChange={(event, newValue) => {
+            setPrimaryActivity(newValue);
+          }}
+          inputValue={inputPrimaryActivity}
+          onInputChange={(event, newInputValue) => {
+            setInputPrimaryActivity(newInputValue);
+          }}
+          id="primary-activity"
+          options={jobs}
+          renderInput={(params) => <MuiTextField {...params} label="Activité principal" />}
+        />
+        <Autocomplete
+          value={secondaryActivity}
+          onChange={(event, newValue) => {
+            setSecondaryActivity(newValue);
+          }}
+          inputValue={inputSecondaryActivity}
+          onInputChange={(event, newInputValue) => {
+            setInputSecondaryActivity(newInputValue);
+          }}
+          id="secondary-activity"
+          options={jobs}
+          renderInput={(params) => <MuiTextField {...params} label="Activité secondaire" />}
+        />
+      </Box>
+    </>
   );
 };
 
@@ -135,66 +184,18 @@ const AdditionalInformation = () => {
 const AccountShow = () => {
   const userId = authProvider.getCachedWhoami().user.id;
   
-  const metier = [
-    'Agenceur',
-    'Architecte',
-    "Architecte d'intérieur",
-    'Armurier ',
-    "Artisan tout corps d'état",
-    'Barbier ',
-    'Bottier ',
-    'Boucher-charcutier ',
-    'Boulanger',
-  ];
-
-  const [value, setValue] = useState('');
-  const [inputValue, setInputValue] = useState('');
-
-  const [value0, setValue0] = useState('');
-  const [inputValue0, setInputValue0] = useState('');
-
   return (
     <ShowBase resource='account' basePath='/account' id={userId}>
       <Box sx={SHOW_LAYOUT_STYLE}>
         <Box sx={BOX_CONTENT_STYLE}>
           <AccountHolderLayout />
 
-          <Box sx={{ padding: 2 }}>
-            <Autocomplete
-              value={value}
-              onChange={(event, newValue) => {
-                setValue(newValue);
-              }}
-              inputValue={inputValue}
-              onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              id="primary-activity"
-              options={metier}
-              // sx={{ width: 300 }}
-              renderInput={(params) => <MuiTextField {...params} label="Activité principal" />}
-            />
-            <Autocomplete
-              value={value0}
-              onChange={(event, newValue) => {
-                setValue0(newValue);
-              }}
-              inputValue={inputValue0}
-              onInputChange={(event, newInputValue) => {
-                setInputValue0(newInputValue);
-              }}
-              id="secondary-activity"
-              options={metier}
-              // sx={{ width: 300 }}
-              renderInput={(params) => <MuiTextField {...params} label="Activité secondaire" />}
-            />
-          </Box>
-
           <SimpleShowLayout>
-            <TextField pb={3} source='accountHolder.postalCode' label='Raison sociale' />
-            <TextField pb={3} source='accountHolder.city' label='Citée' />
-            <TextField pb={3} source='accountHolder.country' label='Pays' />
-            <TextField pb={3} source='accountHolder.address' label='Addresse' />
+            <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
+            <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Raison sociale' />
+            <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
+            <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
+            <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
           </SimpleShowLayout>
         </Box>
 
