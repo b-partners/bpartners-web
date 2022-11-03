@@ -1,42 +1,69 @@
-import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-admin';
-import { Stack, Avatar, Typography } from '@mui/material';
-import { StoreSharp } from '@material-ui/icons';
+import { Box, Grid, Avatar, Typography, Link } from '@mui/material';
+import { Storefront } from '@material-ui/icons';
+import { List, RecordContextProvider, useListContext } from 'react-admin';
+import { BP_COLOR } from '../../bpTheme';
 import { EmptyList } from '../utils/EmptyList';
-import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
+import { AVATAR_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, BACKDROP_STYLE, AVATAR_STYLE, BOX_CONTAINER_STYLE } from './style';
 
-const MarketplaceList = props => {
+const MarketplaceList = () => (
+  <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component='div' actions={false}>
+    <MarketplaceGrid />
+  </List>
+);
+
+const MarketplaceGrid = () => {
   const { data, isLoading } = useListContext();
-  const resourcesCount = data ? data.length : 0;
-  const shouldPaginate = isLoading || resourcesCount < pageSize;
+  if (isLoading) {
+    return null;
+  }
 
-  return (
-    <List
-      {...props}
-      resource='marketplaces'
-      exporter={resourcesCount > 0}
-      hasCreate={false}
-      hasEdit={false}
-      hasList={false}
-      hasShow={false}
-      pagination={shouldPaginate ? null : <PrevNextPagination />}
-    >
-      <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
-        <FunctionField
-          label='Marché'
-          render={({ logoUrl, name }) => (
-            <Stack direction='row' spacing={2}>
-              <Avatar variant='rounded' src={logoUrl}>
-                <StoreSharp />
-              </Avatar>
-              <Typography variant='h6'>{name}</Typography>
-            </Stack>
-          )}
-        />
-        <TextField source='phoneNumber' label='Numéro de téléphone' />
-        <TextField source='websiteUrl' label='Site web' />
-        <TextField source='description' label='Déscription' />
-      </Datagrid>
-    </List>
+  return (data || []).length > 0 ? (
+    <Grid container spacing={4} sx={{ marginTop: '1em' }}>
+      {data.map(record => {
+        const { name, logoUrl, description, phoneNumber, websiteUrl } = record;
+
+        return (
+          <RecordContextProvider key={record.id} value={record}>
+            <Grid key={record.id} xs={12} sm={12} md={6} item sx={{ width: '100%' }}>
+              <Box sx={BOX_CONTAINER_STYLE}>
+                <Box sx={{ paddingInline: '1.8rem' }}>
+                  <Box sx={BACKDROP_STYLE[1]}>
+                    <Typography variant='body2'>{phoneNumber}</Typography>
+                  </Box>
+
+                  <Box sx={BACKDROP_STYLE[2]}></Box>
+
+                  <Box sx={AVATAR_CONTAINER_STYLE}>
+                    <Avatar sx={AVATAR_STYLE} src={logoUrl}>
+                      <Storefront />
+                    </Avatar>
+
+                    <Typography variant='body1' component='b' sx={{ fontWeight: '600', mb: 3 }}>
+                      {name}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ ...DETAIL_CONTAINER_STYLE, borderBottom: `1px solid ${BP_COLOR['solid_grey']}` }}>
+                    <Typography variant='caption'>
+                      site web:{' '}
+                      <Link data-testid={`link-${websiteUrl}`} href={websiteUrl} target='_blank'>
+                        {name}
+                      </Link>
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ ...DETAIL_CONTAINER_STYLE, height: '8rem' }}>
+                    <Typography variant='caption'>{description}</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          </RecordContextProvider>
+        );
+      })}
+    </Grid>
+  ) : (
+    <EmptyList />
   );
 };
 
