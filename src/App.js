@@ -4,6 +4,7 @@ import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { CustomRoutes } from 'react-admin';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
 import { bpTheme } from './bpTheme';
@@ -45,6 +46,7 @@ export const BpAdmin = () => (
       <Route exact path='/products' element={<products.list />} />
       <Route exact path='/configurations' element={<Configuration />} />
       <Route exact path='/invoice' element={<invoice.list />} />
+      <Route exact path='/error' element={<BpErrorPage />} />
     </CustomRoutes>
   </Admin>
 );
