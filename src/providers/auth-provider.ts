@@ -65,7 +65,14 @@ const authProvider = {
 
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
-  checkError: ({ status }: any): Promise<void> => (status === 200 ? Promise.resolve() : Promise.reject()),
+  checkError: ({ status }: any): Promise<any> => {
+    if (status === 401 || status === 403) {
+      return Promise.reject();
+    } else if (status === 200) {
+      return Promise.resolve();
+    }
+    return Promise.reject({ redirectTo: '/error', message: false, logoutUser: false });
+  },
 
   getIdentity: async () => (await whoami()).user?.id,
 
