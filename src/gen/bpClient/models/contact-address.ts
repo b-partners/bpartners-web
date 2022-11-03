@@ -11,20 +11,34 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CreateProduct } from './create-product';
-import { CrupdateInvoiceTemplate } from './crupdate-invoice-template';
-import { Customer } from './customer';
-import { InvoiceStatus } from './invoice-status';
 /**
  *
  * @export
- * @interface CrupdateInvoice
+ * @interface ContactAddress
  */
-export interface CrupdateInvoice extends CrupdateInvoiceTemplate {
+export interface ContactAddress {
   /**
    *
-   * @type {Array<CreateProduct>}
-   * @memberof CrupdateInvoice
+   * @type {string}
+   * @memberof ContactAddress
    */
-  products?: Array<CreateProduct>;
+  address?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ContactAddress
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ContactAddress
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ContactAddress
+   */
+  postalCode?: string;
 }

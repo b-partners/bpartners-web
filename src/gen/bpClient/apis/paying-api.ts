@@ -17,13 +17,14 @@ import { Configuration } from '../configuration';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 import { BadRequestException } from '../models';
-import { CreateInvoiceRelaunch } from '../models';
+import { CreateInvoiceRelaunchConf } from '../models';
 import { CreateProduct } from '../models';
 import { CreateTransactionCategory } from '../models';
 import { CrupdateInvoice } from '../models';
 import { InternalServerException } from '../models';
 import { Invoice } from '../models';
-import { InvoiceRelaunch } from '../models';
+import { InvoiceRelaunchConf } from '../models';
+import { InvoiceStatus } from '../models';
 import { NotAuthorizedException } from '../models';
 import { Page } from '../models';
 import { PageSize } from '../models';
@@ -40,6 +41,56 @@ import { TransactionCategory } from '../models';
  */
 export const PayingApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     *
+     * @summary Configure the automatic relaunch of all invoices of an account
+     * @param {CreateInvoiceRelaunchConf} body
+     * @param {string} aId Account identifier
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    configureRelaunch: async (body: CreateInvoiceRelaunchConf, aId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'body' is not null or undefined
+      if (body === null || body === undefined) {
+        throw new RequiredError('body', 'Required parameter body was null or undefined when calling configureRelaunch.');
+      }
+      // verify required parameter 'aId' is not null or undefined
+      if (aId === null || aId === undefined) {
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling configureRelaunch.');
+      }
+      const localVarPath = `/accounts/{aId}/invoiceRelaunchConf`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      const needsSerialization = typeof body !== 'string' || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+      localVarRequestOptions.data = needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : body || '';
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
     /**
      *
      * @summary Create products of an invoice
@@ -267,12 +318,12 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getInvoiceRelaunch: async (aId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getInvoiceRelaunchConf: async (aId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
-        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getInvoiceRelaunch.');
+        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getInvoiceRelaunchConf.');
       }
-      const localVarPath = `/accounts/{aId}/invoiceRelaunch`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
+      const localVarPath = `/accounts/{aId}/invoiceRelaunchConf`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -302,15 +353,16 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     * Returned invoices are ordered by created datetime desc.
      * @summary Get known invoices of the specified account
      * @param {string} aId
      * @param {Page} [page]
      * @param {PageSize} [pageSize]
+     * @param {InvoiceStatus} [status] Filter invoices by appropriate status. If null, returns all invoices
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getInvoices: async (aId: string, page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getInvoices: async (aId: string, page?: Page, pageSize?: PageSize, status?: InvoiceStatus, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
         throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getInvoices.');
@@ -334,6 +386,10 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (pageSize !== undefined) {
         localVarQueryParameter['pageSize'] = pageSize;
+      }
+
+      if (status !== undefined) {
+        localVarQueryParameter['status'] = status;
       }
 
       const query = new URLSearchParams(localVarUrlObj.search);
@@ -487,10 +543,12 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactions: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getTransactions: async (id: string, page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling getTransactions.');
@@ -507,6 +565,14 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (pageSize !== undefined) {
+        localVarQueryParameter['pageSize'] = pageSize;
+      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -574,56 +640,6 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
-    /**
-     *
-     * @summary Configure the automatic relaunch of all invoices of an account
-     * @param {CreateInvoiceRelaunch} body
-     * @param {string} aId Account identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    relaunchInvoice: async (body: CreateInvoiceRelaunch, aId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'body' is not null or undefined
-      if (body === null || body === undefined) {
-        throw new RequiredError('body', 'Required parameter body was null or undefined when calling relaunchInvoice.');
-      }
-      // verify required parameter 'aId' is not null or undefined
-      if (aId === null || aId === undefined) {
-        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling relaunchInvoice.');
-      }
-      const localVarPath = `/accounts/{aId}/invoiceRelaunch`.replace(`{${'aId'}}`, encodeURIComponent(String(aId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-      const localVarRequestOptions: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication BearerAuth required
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      const query = new URLSearchParams(localVarUrlObj.search);
-      for (const key in localVarQueryParameter) {
-        query.set(key, localVarQueryParameter[key]);
-      }
-      for (const key in options.params) {
-        query.set(key, options.params[key]);
-      }
-      localVarUrlObj.search = new URLSearchParams(query).toString();
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-      const needsSerialization = typeof body !== 'string' || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-      localVarRequestOptions.data = needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : body || '';
-
-      return {
-        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -633,6 +649,25 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
  */
 export const PayingApiFp = function (configuration?: Configuration) {
   return {
+    /**
+     *
+     * @summary Configure the automatic relaunch of all invoices of an account
+     * @param {CreateInvoiceRelaunchConf} body
+     * @param {string} aId Account identifier
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async configureRelaunch(
+      body: CreateInvoiceRelaunchConf,
+      aId: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InvoiceRelaunchConf>>> {
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).configureRelaunch(body, aId, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
     /**
      *
      * @summary Create products of an invoice
@@ -722,22 +757,23 @@ export const PayingApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getInvoiceRelaunch(
+    async getInvoiceRelaunchConf(
       aId: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InvoiceRelaunch>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getInvoiceRelaunch(aId, options);
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InvoiceRelaunchConf>>> {
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getInvoiceRelaunchConf(aId, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
       };
     },
     /**
-     *
+     * Returned invoices are ordered by created datetime desc.
      * @summary Get known invoices of the specified account
      * @param {string} aId
      * @param {Page} [page]
      * @param {PageSize} [pageSize]
+     * @param {InvoiceStatus} [status] Filter invoices by appropriate status. If null, returns all invoices
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -745,9 +781,10 @@ export const PayingApiFp = function (configuration?: Configuration) {
       aId: string,
       page?: Page,
       pageSize?: PageSize,
+      status?: InvoiceStatus,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Invoice>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getInvoices(aId, page, pageSize, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getInvoices(aId, page, pageSize, status, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -803,14 +840,18 @@ export const PayingApiFp = function (configuration?: Configuration) {
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTransactions(
       id: string,
+      page?: Page,
+      pageSize?: PageSize,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Transaction>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, page, pageSize, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -835,25 +876,6 @@ export const PayingApiFp = function (configuration?: Configuration) {
         return axios.request(axiosRequestArgs);
       };
     },
-    /**
-     *
-     * @summary Configure the automatic relaunch of all invoices of an account
-     * @param {CreateInvoiceRelaunch} body
-     * @param {string} aId Account identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async relaunchInvoice(
-      body: CreateInvoiceRelaunch,
-      aId: string,
-      options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<InvoiceRelaunch>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).relaunchInvoice(body, aId, options);
-      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
-        return axios.request(axiosRequestArgs);
-      };
-    },
   };
 };
 
@@ -863,6 +885,19 @@ export const PayingApiFp = function (configuration?: Configuration) {
  */
 export const PayingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
   return {
+    /**
+     *
+     * @summary Configure the automatic relaunch of all invoices of an account
+     * @param {CreateInvoiceRelaunchConf} body
+     * @param {string} aId Account identifier
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async configureRelaunch(body: CreateInvoiceRelaunchConf, aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunchConf>> {
+      return PayingApiFp(configuration)
+        .configureRelaunch(body, aId, options)
+        .then(request => request(axios, basePath));
+    },
     /**
      *
      * @summary Create products of an invoice
@@ -930,23 +965,30 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getInvoiceRelaunch(aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunch>> {
+    async getInvoiceRelaunchConf(aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunchConf>> {
       return PayingApiFp(configuration)
-        .getInvoiceRelaunch(aId, options)
+        .getInvoiceRelaunchConf(aId, options)
         .then(request => request(axios, basePath));
     },
     /**
-     *
+     * Returned invoices are ordered by created datetime desc.
      * @summary Get known invoices of the specified account
      * @param {string} aId
      * @param {Page} [page]
      * @param {PageSize} [pageSize]
+     * @param {InvoiceStatus} [status] Filter invoices by appropriate status. If null, returns all invoices
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getInvoices(aId: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Invoice>>> {
+    async getInvoices(
+      aId: string,
+      page?: Page,
+      pageSize?: PageSize,
+      status?: InvoiceStatus,
+      options?: AxiosRequestConfig
+    ): Promise<AxiosResponse<Array<Invoice>>> {
       return PayingApiFp(configuration)
-        .getInvoices(aId, page, pageSize, options)
+        .getInvoices(aId, page, pageSize, status, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -990,12 +1032,14 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+    async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
       return PayingApiFp(configuration)
-        .getTransactions(id, options)
+        .getTransactions(id, page, pageSize, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1011,19 +1055,6 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
         .initiatePayments(body, id, options)
         .then(request => request(axios, basePath));
     },
-    /**
-     *
-     * @summary Configure the automatic relaunch of all invoices of an account
-     * @param {CreateInvoiceRelaunch} body
-     * @param {string} aId Account identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async relaunchInvoice(body: CreateInvoiceRelaunch, aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunch>> {
-      return PayingApiFp(configuration)
-        .relaunchInvoice(body, aId, options)
-        .then(request => request(axios, basePath));
-    },
   };
 };
 
@@ -1034,6 +1065,20 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
  * @extends {BaseAPI}
  */
 export class PayingApi extends BaseAPI {
+  /**
+   *
+   * @summary Configure the automatic relaunch of all invoices of an account
+   * @param {CreateInvoiceRelaunchConf} body
+   * @param {string} aId Account identifier
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PayingApi
+   */
+  public async configureRelaunch(body: CreateInvoiceRelaunchConf, aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunchConf>> {
+    return PayingApiFp(this.configuration)
+      .configureRelaunch(body, aId, options)
+      .then(request => request(this.axios, this.basePath));
+  }
   /**
    *
    * @summary Create products of an invoice
@@ -1106,24 +1151,31 @@ export class PayingApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getInvoiceRelaunch(aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunch>> {
+  public async getInvoiceRelaunchConf(aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunchConf>> {
     return PayingApiFp(this.configuration)
-      .getInvoiceRelaunch(aId, options)
+      .getInvoiceRelaunchConf(aId, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
-   *
+   * Returned invoices are ordered by created datetime desc.
    * @summary Get known invoices of the specified account
    * @param {string} aId
    * @param {Page} [page]
    * @param {PageSize} [pageSize]
+   * @param {InvoiceStatus} [status] Filter invoices by appropriate status. If null, returns all invoices
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getInvoices(aId: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Invoice>>> {
+  public async getInvoices(
+    aId: string,
+    page?: Page,
+    pageSize?: PageSize,
+    status?: InvoiceStatus,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<Array<Invoice>>> {
     return PayingApiFp(this.configuration)
-      .getInvoices(aId, page, pageSize, options)
+      .getInvoices(aId, page, pageSize, status, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
@@ -1169,13 +1221,15 @@ export class PayingApi extends BaseAPI {
    *
    * @summary Get transactions of an account
    * @param {string} id
+   * @param {Page} [page]
+   * @param {PageSize} [pageSize]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+  public async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
     return PayingApiFp(this.configuration)
-      .getTransactions(id, options)
+      .getTransactions(id, page, pageSize, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
@@ -1190,20 +1244,6 @@ export class PayingApi extends BaseAPI {
   public async initiatePayments(body: Array<PaymentInitiation>, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<PaymentRedirection>>> {
     return PayingApiFp(this.configuration)
       .initiatePayments(body, id, options)
-      .then(request => request(this.axios, this.basePath));
-  }
-  /**
-   *
-   * @summary Configure the automatic relaunch of all invoices of an account
-   * @param {CreateInvoiceRelaunch} body
-   * @param {string} aId Account identifier
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof PayingApi
-   */
-  public async relaunchInvoice(body: CreateInvoiceRelaunch, aId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<InvoiceRelaunch>> {
-    return PayingApiFp(this.configuration)
-      .relaunchInvoice(body, aId, options)
       .then(request => request(this.axios, this.basePath));
   }
 }

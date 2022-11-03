@@ -11,14 +11,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CreateInvoiceRelaunchConf } from './create-invoice-relaunch-conf';
 /**
  *
  * @export
- * @enum {string}
+ * @interface InvoiceRelaunchConf
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-  PAID = 'PAID',
+export interface InvoiceRelaunchConf extends CreateInvoiceRelaunchConf {
+  /**
+   *
+   * @type {string}
+   * @memberof InvoiceRelaunchConf
+   */
+  id?: string;
+  /**
+   *
+   * @type {Date}
+   * @memberof InvoiceRelaunchConf
+   */
+  updatedAt?: Date;
 }

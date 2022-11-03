@@ -14,11 +14,19 @@
 /**
  *
  * @export
- * @enum {string}
+ * @interface CreateInvoiceRelaunchConf
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-  PAID = 'PAID',
+export interface CreateInvoiceRelaunchConf {
+  /**
+   * The frequency of sending the message in days
+   * @type {number}
+   * @memberof CreateInvoiceRelaunchConf
+   */
+  unpaidRelaunch?: number;
+  /**
+   * The frequency of sending the message in days
+   * @type {number}
+   * @memberof CreateInvoiceRelaunchConf
+   */
+  draftRelaunch?: number;
 }
