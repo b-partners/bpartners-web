@@ -9,6 +9,7 @@ import invoiceProvider from 'src/providers/invoice-provider';
 import { totalCalculus, invoiceDateValidator } from './utils';
 import { useForm } from 'react-hook-form';
 import CustomFilledInput from '../utils/CustomFilledInput';
+import debounce from 'debounce';
 
 export const invoiceInitialValue = {
   id: '',
@@ -38,6 +39,7 @@ const InvoiceCreateOrUpdate = props => {
   const notify = useNotify();
   const refresh = useRefresh();
   const classes = useStyle();
+  let onSubmitDebounced = null;
 
   const update = value => {
     Object.keys(value).forEach(e => {
@@ -48,25 +50,9 @@ const InvoiceCreateOrUpdate = props => {
     });
   };
 
-  useEffect(() => {
-    formValidator.clearErrors();
-    update(toEdit);
-  }, [toEdit]);
-
-  useEffect(() => {
-    let temp = null;
-    setTimeout(() => {
-      formValidator.watch(data => {
-        if (data !== temp) {
-          temp = data;
-          onSubmit(data);
-        }
-      });
-    }, 1000);
-  }, []);
-
   const selectedProducts = formValidator.watch('products') || [];
-  const onSubmit = data => {
+  const onSubmit = () => {
+    const data = formValidator.watch();
     onPending('increase');
     invoiceProvider
       .saveOrUpdate([data])
@@ -78,6 +64,20 @@ const InvoiceCreateOrUpdate = props => {
         notify("Une erreur s'est produite, veuillez réessayer", { type: 'error' });
       });
   };
+
+  useEffect(() => {
+    formValidator.clearErrors();
+    onSubmitDebounced = debounce(onSubmit, 500);
+    update(toEdit);
+  }, [toEdit]);
+
+  useEffect(() => {
+    formValidator.watch(() => {
+      if (onSubmitDebounced !== null) {
+        onSubmitDebounced();
+      }
+    });
+  }, []);
 
   return (
     <Box className={className}>
