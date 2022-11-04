@@ -14,11 +14,19 @@
 /**
  *
  * @export
- * @enum {string}
+ * @interface BusinessActivity
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-  PAID = 'PAID',
+export interface BusinessActivity {
+  /**
+   *
+   * @type {string}
+   * @memberof BusinessActivity
+   */
+  primary?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BusinessActivity
+   */
+  secondary?: string;
 }

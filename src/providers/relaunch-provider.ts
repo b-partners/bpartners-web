@@ -1,4 +1,3 @@
-import { InvoiceRelaunch, CreateInvoiceRelaunch } from 'src/gen/bpClient';
 import { singleAccountGetter } from './account-provider';
 import { payingApi } from './api';
 import authProvider from './auth-provider';
@@ -13,13 +12,13 @@ const relaunchProvider = {
   async getConf() {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .getInvoiceRelaunch(accountId)
+      .getInvoiceRelaunchConf(accountId)
       .then(({ data }) => data);
   },
-  updateConf: async function (resources: CreateInvoiceRelaunch): Promise<InvoiceRelaunch> {
+  updateConf: async function (resources: any): Promise<any> {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .relaunchInvoice(resources, accountId)
+      .configureRelaunch(resources, accountId)
       .then(({ data }) => data);
   },
 };

@@ -35,24 +35,10 @@ const Document = ({ transactionRef }) => (
 
 const StatusField = ({ status }) => <Chip style={{ backgroundColor: statuses[status]['color'], color: 'white' }} label={statuses[status]['label']} />;
 const TransactionList = props => {
-  const { data, isLoading } = useListContext();
-  const resourcesCount = data ? data.length : 0;
-  const shouldPaginate = isLoading || resourcesCount < pageSize;
+  const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
 
-  const [documentRef, setDocumentRef] = useState(null);
-  const [shouldShowDocument, setShoudShowDocument] = useState(false);
-  const resetDocument = () => {
-    setDocumentRef(null);
-    setShoudShowDocument(null);
-  };
-  const onDocumentIconClicked = transactionRef => {
-    if (shouldShowDocument && transactionRef === documentRef) {
-      // close document if corresponding row was clicked
-      resetDocument();
-      return;
-    }
-    setDocumentRef(transactionRef);
-    setShoudShowDocument(true);
+  const onDocumentIconClicked = documentId => {
+    setDocumentState(e => ({ shouldShowDocument: true, documentId }));
   };
 
   return (
@@ -61,7 +47,7 @@ const TransactionList = props => {
       <List
         {...props}
         resource='transactions'
-        pagination={shouldPaginate ? null : <PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
+        pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
         actions={null}
         filters={[
           <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
@@ -71,7 +57,7 @@ const TransactionList = props => {
         hasEdit={false}
         hasList={false}
         hasShow={false}
-        aside={shouldShowDocument ? <Document transactionRef={documentRef} /> : null}
+        aside={documentState.shouldShowDocument ? <Document transactionRef={documentState.documentId} /> : null}
       >
         <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
           <TextField source='reference' label='Référence' />
@@ -93,8 +79,8 @@ const TransactionList = props => {
           <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
           <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
           <FunctionField
-            render={({ id, reference }) => (
-              <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(reference)}>
+            render={({ id }) => (
+              <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
                 <IconButton id={`document-button-${id}`}>
                   <AttachmentIcon />
                 </IconButton>
