@@ -1,4 +1,4 @@
-import { SecurityApi, UserAccountsApi, PayingApi, CustomersApi, FilesApi, ProspectingApi } from '../gen/bpClient';
+import { CustomersApi, FilesApi, PayingApi, ProspectingApi, SecurityApi, UserAccountsApi } from '../gen/bpClient';
 import authProvider from './auth-provider';
 
 export const securityApi = () => new SecurityApi(authProvider.getCachedAuthConf());

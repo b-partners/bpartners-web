@@ -58,7 +58,7 @@ const AccountHolderLayout = () => {
       const { accessToken } = authProvider.getCachedAuthConf();
       const accountId = (await singleAccountGetter(userId)).id;
       const fileId = 'logo.jpeg';
-      setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}`);
+      setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}&fileType=LOGO`);
     };
 
     getLogo();
