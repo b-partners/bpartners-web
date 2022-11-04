@@ -3,6 +3,7 @@ export * from './account-holder';
 export * from './auth-initiation';
 export * from './bad-request-exception';
 export * from './business-activity';
+export * from './company-business-activity';
 export * from './company-info';
 export * from './contact-address';
 export * from './create-customer';

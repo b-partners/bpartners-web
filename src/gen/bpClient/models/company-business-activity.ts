@@ -14,19 +14,19 @@
 /**
  *
  * @export
- * @interface BusinessActivity
+ * @interface CompanyBusinessActivity
  */
-export interface BusinessActivity {
+export interface CompanyBusinessActivity {
   /**
    *
    * @type {string}
-   * @memberof BusinessActivity
+   * @memberof CompanyBusinessActivity
    */
-  id?: string;
+  primary?: string;
   /**
    *
    * @type {string}
-   * @memberof BusinessActivity
+   * @memberof CompanyBusinessActivity
    */
-  name?: string;
+  secondary?: string;
 }
