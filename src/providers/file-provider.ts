@@ -1,5 +1,5 @@
 import { singleAccountGetter } from './account-provider';
-import { customFileApi, FileApi } from './api';
+import { FileApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { toArrayBuffer } from '../utils/to-array-buffer';
@@ -22,7 +22,7 @@ export const fileProvider: BpDataProviderType = {
     const binaryFile = await toArrayBuffer(resources);
     const type = getMimeType(resources);
 
-    return customFileApi()
+    return FileApi()
       .uploadFile(binaryFile, accountId, 'logo.jpeg', 'LOGO', { headers: { 'Content-Type': type } })
       .then(({ data }) => [data]);
   },
