@@ -1,12 +1,14 @@
 import { green } from '@material-ui/core/colors';
+import { Save } from '@material-ui/icons';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { Autocomplete, Avatar, Badge, Box, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
+import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
+import { userAccountsApi } from 'src/providers/api';
 import { fileProvider } from 'src/providers/file-provider';
-import { singleAccountGetter } from '../../providers/account-provider';
+import { accountHoldersGetter, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/tab-panel';
@@ -44,28 +46,10 @@ const SubscriptionLayout = () => (
   </SimpleShowLayout>
 );
 
-const AccountHolderLayout = () => {
+const LogoLayout = () => {
   const notify = useNotify();
   const refresh = useRefresh();
   const [logoUrl, setLogoUrl] = useState('');
-
-  const jobs = [
-    "Agenceur",
-    "Architecte",
-    "Architecte d'intérieur",
-    "Armurier",
-    "Artisan tout corps d'état",
-    "Barbier",
-    "Bottier",
-    "Boucher-charcutier",
-    "Boulanger",
-  ];
-
-  const [primaryActivity, setPrimaryActivity] = useState('');
-  const [inputPrimaryActivity, setInputPrimaryActivity] = useState('');
-
-  const [secondaryActivity, setSecondaryActivity] = useState('');
-  const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
 
   useEffect(() => {
     const getLogo = async () => {
@@ -83,47 +67,117 @@ const AccountHolderLayout = () => {
   });
 
   return (
-    <>
-      <Box sx={ACCOUNT_HOLDER_STYLE}>
-        <label htmlFor='upload-photo' id='upload-photo-label'>
-          <input
-            style={{ display: 'none' }}
-            id='upload-photo'
-            name='upload-photo'
-            type='file'
-            onChange={async files => {
-              try {
-                await fileProvider.saveOrUpdate(files);
-                notify('Changement enregistré', { type: 'success' });
-                refresh();
-              } catch (err) {
-                notify("Une erreur s'est produite", { type: 'error' });
-              }
+    <Box sx={ACCOUNT_HOLDER_STYLE}>
+      <label htmlFor='upload-photo' id='upload-photo-label'>
+        <input
+          style={{ display: 'none' }}
+          id='upload-photo'
+          name='upload-photo'
+          type='file'
+          onChange={async files => {
+            try {
+              await fileProvider.saveOrUpdate(files);
+              notify('Changement enregistré', { type: 'success' });
+              refresh();
+            } catch (err) {
+              notify("Une erreur s'est produite", { type: 'error' });
+            }
+          }}
+        />
+        <Badge
+          overlap='circular'
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
+        >
+          <Avatar
+            alt='company logo'
+            src={logoUrl}
+            sx={{
+              height: '8rem',
+              width: '8rem',
             }}
           />
-          <Badge
-            overlap='circular'
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
-          >
-            <Avatar
-              alt='company logo'
-              src={logoUrl}
-              sx={{
-                height: '8rem',
-                width: '8rem',
-              }}
-            />
-          </Badge>
-        </label>
+        </Badge>
+      </label>
 
-        <Box sx={{ display: 'flex', justifyContent: 'inherit' }}>
-          <Typography variant='h5'>
-            <TextField source='accountHolder.name' label='Raison sociale' />
-          </Typography>
-        </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'inherit' }}>
+        <Typography variant='h5'>
+          <TextField source='accountHolder.name' label='Raison sociale' />
+        </Typography>
       </Box>
+    </Box>
+  );
+};
 
+const AccountHolderLayout = () => {
+  const notify = useNotify();
+  const [accountHolders, setAccountHolders] = useState({});
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [jobList, setJobList] = useState([]);
+
+  const [primaryActivity, setPrimaryActivity] = useState('');
+  const [inputPrimaryActivity, setInputPrimaryActivity] = useState('');
+
+  const [secondaryActivity, setSecondaryActivity] = useState('');
+  const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
+
+  const updateBusinessActivities = async () => {
+    const {
+      user: { id: userId },
+    } = authProvider.getCachedWhoami();
+    const accountId = (await singleAccountGetter(userId)).id;
+    const { id } = accountHolders;
+    const body = {
+      primary: primaryActivity,
+      secondary: secondaryActivity,
+    };
+    setIsLoading(true);
+    try {
+      const aHolders = await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
+      notify('Changement enregistré', { type: 'success' });
+      setIsBtnDisabled(true);
+      setIsLoading(false);
+    } catch (error) {
+      notify("Une erreur s'est produite", { type: 'error' });
+      setIsLoading(false);
+    }
+  };
+
+  const validateActivity = (activityValue, setActivityValue, inputActivityValue) => {
+    const {
+      businessActivities: { primary, secondary },
+    } = accountHolders;
+    setActivityValue(activityValue && activityValue === inputActivityValue ? activityValue : inputActivityValue);
+    setIsBtnDisabled((primaryActivity !== primary || secondaryActivity !== secondary) && primaryActivity && secondaryActivity ? false : true);
+  };
+
+  useEffect(() => {
+    const getAccountHolders = async () => {
+      const {
+        user: { id: userId },
+      } = authProvider.getCachedWhoami();
+      const aHolders = await accountHoldersGetter(userId);
+      const {
+        businessActivities: { primary, secondary },
+      } = aHolders;
+
+      setAccountHolders(aHolders);
+      setPrimaryActivity(primary);
+      setSecondaryActivity(secondary);
+    };
+
+    const getBusinessActivities = async () => {
+      const { data } = await userAccountsApi().getBusinessActivities(1, 100);
+      setJobList(data.map(({ name }) => name));
+    };
+
+    getBusinessActivities();
+    getAccountHolders();
+  }, []);
+
+  return (
+    <>
       <Box sx={{ padding: 2 }}>
         <Autocomplete
           value={primaryActivity}
@@ -134,9 +188,13 @@ const AccountHolderLayout = () => {
           onInputChange={(event, newInputValue) => {
             setInputPrimaryActivity(newInputValue);
           }}
-          id="primary-activity"
-          options={jobs}
-          renderInput={(params) => <MuiTextField {...params} label="Activité principal" />}
+          onBlur={() => {
+            validateActivity(primaryActivity, setPrimaryActivity, inputPrimaryActivity);
+          }}
+          id='primary-activity'
+          sx={{ width: '45%', marginRight: 1, display: 'inline-block' }}
+          options={jobList}
+          renderInput={params => <MuiTextField {...params} label='Activité principale' />}
         />
         <Autocomplete
           value={secondaryActivity}
@@ -147,11 +205,33 @@ const AccountHolderLayout = () => {
           onInputChange={(event, newInputValue) => {
             setInputSecondaryActivity(newInputValue);
           }}
-          id="secondary-activity"
-          options={jobs}
-          renderInput={(params) => <MuiTextField {...params} label="Activité secondaire" />}
+          onBlur={() => {
+            validateActivity(secondaryActivity, setSecondaryActivity, inputSecondaryActivity);
+          }}
+          id='secondary-activity'
+          sx={{ width: '45%', display: 'inline-block' }}
+          options={jobList}
+          renderInput={params => <MuiTextField {...params} label='Activité secondaire' />}
         />
+        <Button
+          variant='contained'
+          size='small'
+          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <Save />}
+          disabled={isBtnDisabled}
+          onClick={updateBusinessActivities}
+          sx={{ marginTop: 1 }}
+        >
+          Enregistrer
+        </Button>
       </Box>
+
+      <SimpleShowLayout>
+        <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
+        <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Raison sociale' />
+        <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
+        <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
+        <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
+      </SimpleShowLayout>
     </>
   );
 };
@@ -166,12 +246,12 @@ const AdditionalInformation = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth' sx={TAB_STYLE}>
-        <Tab label='Mon identité' />
+        <Tab label='Ma société' />
         <Tab label='Mon abonnement' />
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-        <ProfileLayout />
+        <AccountHolderLayout />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
@@ -183,20 +263,13 @@ const AdditionalInformation = () => {
 
 const AccountShow = () => {
   const userId = authProvider.getCachedWhoami().user.id;
-  
+
   return (
     <ShowBase resource='account' basePath='/account' id={userId}>
       <Box sx={SHOW_LAYOUT_STYLE}>
         <Box sx={BOX_CONTENT_STYLE}>
-          <AccountHolderLayout />
-
-          <SimpleShowLayout>
-            <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
-            <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Raison sociale' />
-            <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
-            <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
-            <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
-          </SimpleShowLayout>
+          <LogoLayout />
+          <ProfileLayout />
         </Box>
 
         <Box sx={BOX_CONTENT_STYLE}>
