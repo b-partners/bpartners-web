@@ -36,13 +36,13 @@ const PrevNextPagination = () => {
   return !isLoading ? (
     <Toolbar>
       {page > 1 && (
-        <Button color='primary' key='prev' onClick={onPrevClick}>
+        <Button style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
           <ChevronLeft />
           Précédent
         </Button>
       )}
       {(resourcesCount === pageSize || !lastPage || page < lastPage) && (
-        <Button color='primary' key='next' onClick={() => setPage(page + 1)}>
+        <Button style={{ marginLeft: 6 }} color='primary' key='next' onClick={() => setPage(page + 1)}>
           Suivant
           <ChevronRight />
         </Button>
