@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { Typography, Box, FormControl, makeStyles } from '@material-ui/core';
-import { Save } from '@material-ui/icons';
+import { Typography, Box, FormControl, Card, CardHeader, CardContent } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 import { CustomButton } from '../utils/CustomButton';
@@ -9,6 +9,7 @@ import invoiceProvider from 'src/providers/invoice-provider';
 import { totalCalculus, invoiceDateValidator } from './utils';
 import { useForm } from 'react-hook-form';
 import CustomFilledInput from '../utils/CustomFilledInput';
+import debounce from 'debounce';
 
 export const invoiceInitialValue = {
   id: '',
@@ -32,11 +33,14 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const InvoiceCreateOrUpdate = ({ toEdit }) => {
+const InvoiceCreateOrUpdate = props => {
+  const { toEdit, className, onPending } = props;
   const formValidator = useForm();
   const notify = useNotify();
   const refresh = useRefresh();
   const classes = useStyle();
+  let onSubmitDebounced = null;
+
   const update = value => {
     Object.keys(value).forEach(e => {
       if (value.id.length > 0 && e === 'ref') {
@@ -45,53 +49,67 @@ const InvoiceCreateOrUpdate = ({ toEdit }) => {
       formValidator.setValue(e, value[e]);
     });
   };
+
+  const selectedProducts = formValidator.watch('products') || [];
+  const onSubmit = () => {
+    const data = formValidator.watch();
+    onPending('increase');
+    invoiceProvider
+      .saveOrUpdate([data])
+      .then(() => {
+        onPending('decrease');
+        refresh();
+      })
+      .catch(() => {
+        notify("Une erreur s'est produite, veuillez réessayer", { type: 'error' });
+      });
+  };
+
   useEffect(() => {
     formValidator.clearErrors();
+    onSubmitDebounced = debounce(onSubmit, 500);
     update(toEdit);
   }, [toEdit]);
 
-  const selectedProducts = formValidator.watch('products') || [];
-  const onSubmit = data => {
-    if (data.products.length === 0) {
-      notify('Veuillez selectionner au moins un produit', { type: 'error' });
-    } else {
-      invoiceProvider
-        .saveOrUpdate([data])
-        .then(() => {
-          notify('Facture bien enregistré', { type: 'success' });
-          update(invoiceInitialValue, 'reset');
-          refresh();
-        })
-        .catch(() => {
-          update(invoiceInitialValue);
-          notify("Une erreur s'est produite, veuillez réessayer", { type: 'error' });
-        });
-    }
-  };
+  useEffect(() => {
+    formValidator.watch(() => {
+      if (onSubmitDebounced !== null) {
+        onSubmitDebounced();
+      }
+    });
+  }, []);
 
   return (
-    <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
-      <Typography variant='h5'>Devis/Facturation</Typography>
-      <FormControl className={classes.formControl}>
-        <CustomFilledInput name='title' label='Titre' formValidator={formValidator} />
-        <CustomFilledInput name='ref' label='Référence' formValidator={formValidator} />
-        <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoie" type='date' formValidator={formValidator} />
-        <CustomFilledInput
-          validate={e => invoiceDateValidator(e, formValidator.watch('sendingDate'))}
-          name='toPayAt'
-          label='Date de payment'
-          type='date'
-          formValidator={formValidator}
-        />
-      </FormControl>
-      <ClientSelection name='customer' formValidator={formValidator} />
-      <ProductSelection name='products' formValidator={formValidator} />
-      <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-        <Typography variant='h5'>Total:</Typography>
-        <Typography variant='h5'>{totalCalculus(selectedProducts)}€</Typography>
-      </Box>
-      <CustomButton type='submit' label='Enregistrer' icon={<Save />} />
-    </form>
+    <Box className={className}>
+      <Card>
+        <CardHeader title='Devis/Facturation' />
+        <CardContent>
+          <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
+            <FormControl className={classes.formControl}>
+              <CustomFilledInput name='title' label='Titre' formValidator={formValidator} />
+              <CustomFilledInput name='ref' label='Référence' formValidator={formValidator} />
+              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoie" type='date' formValidator={formValidator} />
+              <CustomFilledInput
+                validate={e => invoiceDateValidator(e, formValidator.watch('sendingDate'))}
+                name='toPayAt'
+                label='Date de payment'
+                type='date'
+                formValidator={formValidator}
+              />
+            </FormControl>
+            <ClientSelection name='customer' formValidator={formValidator} />
+            <ProductSelection name='products' formValidator={formValidator} />
+            <Box sx={{ display: 'block' }}>
+              <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                <Typography variant='h6'>Total:</Typography>
+                <Typography variant='h6'>{totalCalculus(selectedProducts)}€</Typography>
+              </Box>
+              <CustomButton onClick={() => update(invoiceInitialValue)} label='Effacer le formulaire' />
+            </Box>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

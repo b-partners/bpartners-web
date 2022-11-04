@@ -1,15 +1,8 @@
-import { Button, makeStyles } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
-const useStyle = makeStyles(() => ({
-  button: {
-    width: 300,
-  },
-}));
-
-export const CustomButton = ({ onClick, label, icon, type, className }) => {
-  const classes = useStyle();
+export const CustomButton = ({ onClick, label, icon, type, className, id }) => {
   return (
-    <Button type={type || 'button'} color='primary' className={className || classes.button} onClick={onClick} variant='contained' startIcon={icon}>
+    <Button type={type || 'button'} style={{ width: 300 }} id={id} color='primary' className={className} onClick={onClick} variant='contained' startIcon={icon}>
       {label}
     </Button>
   );

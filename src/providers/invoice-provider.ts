@@ -4,7 +4,7 @@ import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
 import { v4 as uuid } from 'uuid';
 
-const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
+export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
   const accountId = (await singleAccountGetter(userId)).id;
   return { userId, accountId };

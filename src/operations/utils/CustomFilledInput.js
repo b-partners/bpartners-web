@@ -8,7 +8,8 @@ const textFieldStyle = {
 /**
  * input to use with react-hook-form only
  */
-const CustomFilledInput = ({ name, label, formValidator, type, validate, style }) => {
+const CustomFilledInput = props => {
+  const { name, label, formValidator, type, validate, style } = props;
   const {
     register,
     watch,

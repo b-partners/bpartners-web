@@ -1,4 +1,7 @@
 import { Product } from 'src/gen/bpClient';
+import { getUserInfo } from 'src/providers/invoice-provider';
+import { accessTokenItem } from 'src/providers/auth-provider';
+import { BASE_PATH } from 'src/gen/bpClient/base';
 
 const vatTotalPrice = (totalPrice: number) => {
   return (totalPrice * 20) / 100 + totalPrice;
@@ -37,4 +40,10 @@ export const invoiceDateValidator = (date1: string, date2?: string) => {
     return "La date d'envoie doit précéder celle d'aujourd'hui";
   }
   return true;
+};
+
+export const getInvoicePdfUrl = async (id: string) => {
+  const { accountId } = await getUserInfo();
+  const accessToken = localStorage.getItem(accessTokenItem) || '';
+  return `${BASE_PATH}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };

@@ -1,9 +1,9 @@
 import { Configuration, Whoami } from '../gen/bpClient';
 import { securityApi } from './api';
 
-const whoamiItem = 'bp_whoami';
-const accessTokenItem = 'bp_access_token';
-const refreshTokenItem = 'bp_refresh_token';
+export const whoamiItem = 'bp_whoami';
+export const accessTokenItem = 'bp_access_token';
+export const refreshTokenItem = 'bp_refresh_token';
 
 const whoami = async (): Promise<Whoami> => {
   return securityApi()
