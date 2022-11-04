@@ -62,7 +62,7 @@ const InvoiceListTable = props => {
   };
 
   const handleChange = data => {
-    onChange(e => ({ ...e, tabIndex: 1, selectedInvoice: data }));
+    onChange(e => ({ ...e, tabIndex: 1, selectedInvoice: { ...data, id: '' } }));
   };
 
   return (
