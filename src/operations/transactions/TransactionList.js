@@ -1,16 +1,16 @@
 import { Box, IconButton, Tooltip } from '@material-ui/core';
-import { Attachment as AttachmentIcon, Edit as EditIcon } from '@material-ui/icons';
+import { Attachment as AttachmentIcon } from '@material-ui/icons';
 
 import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
+import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { formatDate } from '../utils/date';
 import { EmptyList } from '../utils/EmptyList';
 import { coloredMoney, Currency, normalizeAmount } from '../utils/money';
 
-import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
+import PrevNextPagination from '../utils/PrevNextPagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';

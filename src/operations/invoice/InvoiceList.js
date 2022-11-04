@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh } from 'react-admin';
 import { Box, IconButton, Tooltip, Typography, Card, CardContent, CardHeader, Tabs, Tab, LinearProgress } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
-import { Edit, Check, Send, Update } from '@material-ui/icons';
+import { Edit, Check, Send } from '@material-ui/icons';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import { invoiceInitialValue } from './InvoiceCreate';
 import PrevNextPagination from '../utils/PrevNextPagination';
