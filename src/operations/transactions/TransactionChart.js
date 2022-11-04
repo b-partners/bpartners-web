@@ -19,24 +19,28 @@ const TransactionChart = () => {
     });
   };
 
+  const randomColor = () => {
+    const randomRGB = window.crypto.getRandomValues(new Uint8Array(3));
+
+    return `rgb(${randomRGB[0]}, ${randomRGB[1]}, ${randomRGB[2]})`;
+  };
+
   useEffect(() => {
     const getTransactionCategoriesData = async () => {
       const userId = authProvider.getCachedWhoami().user.id;
       const accountId = (await singleAccountGetter(userId)).id;
 
-      return (await payingApi().getTransactionCategories(accountId, true, date.startDate, date.endDate)).data;
+      const { data } = await payingApi().getTransactionCategories(accountId, true, date.startDate, date.endDate);
+
+      const filteredData = data.filter(item => item.count > 0);
+
+      setData(filteredData.map(({ type, count }) => ({ name: type, value: count })));
     };
 
-    const mapData = async () => {
-      const transactionCategories = await getTransactionCategoriesData();
-
-      setData(transactionCategories.map(({ type, count }) => ({ name: type, value: count })));
-    };
-
-    mapData();
+    getTransactionCategoriesData();
   }, [date]);
 
-  const COLORS = ['#4472CA', '#21FA90', '#FCDC4D', '#4B2840', '#FA8334', '#EF2D56'];
+  const COLORS = [];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -61,7 +65,7 @@ const TransactionChart = () => {
           <Grid item sm={2}>
             <Typography variant='subtitle1'>Filtrer par date</Typography>
             <TextField
-              id='date'
+              id='startDate'
               variant='filled'
               margin='dense'
               name='startDate'
@@ -77,7 +81,7 @@ const TransactionChart = () => {
               }}
             />
             <TextField
-              id='dateFin'
+              id='endDate'
               variant='filled'
               margin='dense'
               name='endDate'
@@ -97,7 +101,10 @@ const TransactionChart = () => {
             <PieChart width={700} height={300}>
               <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={100} fill='#8884d8' dataKey='value'>
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <>
+                    {COLORS.push(randomColor())}
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  </>
                 ))}
               </Pie>
               <Tooltip />
