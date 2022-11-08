@@ -1,6 +1,7 @@
 import { AccountCircle, Category, Euro, Lock, People, Settings, Store, Receipt } from '@material-ui/icons';
 import { Box } from '@mui/material';
-import { Menu } from 'react-admin';
+import { Menu, useSidebarState } from 'react-admin';
+import { LongWarning } from 'src/utils/beta-test-warning';
 import authProvider from '../providers/auth-provider';
 
 const LogoutButton = () => {
@@ -12,6 +13,8 @@ const LogoutButton = () => {
 };
 
 const BpMenu = () => {
+  const [open] = useSidebarState();
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
       <Menu>
@@ -29,6 +32,12 @@ const BpMenu = () => {
           <LogoutButton />
         </Menu>
       </Box>
+
+      {open && (
+        <Box>
+          <LongWarning />
+        </Box>
+      )}
     </Box>
   );
 };
