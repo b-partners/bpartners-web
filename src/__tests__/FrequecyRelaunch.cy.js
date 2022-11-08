@@ -26,11 +26,11 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('[name="configurations"]').click();
     cy.get('.MuiAccordionSummary-content > .MuiTypography-root').click();
 
-    cy.get('.MuiBox-root-3 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 10);
-    cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').should('have.value', 20);
+    cy.get('[name="draftRelaunch"]').should('have.value', 10);
+    cy.get('[name="unpaidRelaunch"]').should('have.value', 20);
 
-    cy.get('.MuiBox-root-3 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type(1);
-    cy.get('.MuiBox-root-4 > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type(1);
+    cy.get('[name="draftRelaunch"]').type(1);
+    cy.get('[name="unpaidRelaunch"]').type(1);
 
     cy.get('.MuiButton-label').click();
 
