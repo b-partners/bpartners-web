@@ -23,6 +23,6 @@ export const marketplaces1: Array<Marketplace> = [
     description: 'Description 3',
     phoneNumber: '33 33 33',
     websiteUrl: 'websiteUrl 3',
-    logoUrl: 'Logo url 3',
+    logoUrl: 'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?cs=srgb&dl=pexels-moose-photos-1037992.jpg&fm=jpg',
   },
 ];

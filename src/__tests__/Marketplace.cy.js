@@ -36,7 +36,7 @@ describe(specTitle('Customers'), () => {
     cy.get('[name="marketplaces"]').click();
     cy.wait('@getMarketplaces');
 
-    cy.contains('websiteUrl 1');
+    cy.get('[data-testid="link-websiteUrl 1"]').should('have.attr', 'href', 'websiteUrl 1');
     cy.contains('Name 1');
     cy.contains('Description 3');
   });
