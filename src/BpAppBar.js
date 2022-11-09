@@ -1,11 +1,11 @@
 import { makeStyles, useMediaQuery } from '@material-ui/core';
 import { Box } from '@mui/system';
 import { useCallback, useEffect, useState } from 'react';
-import { ShortWarning } from './utils/beta-test-warning';
+import { SidebarToggleButton } from 'react-admin';
 import bpLogo from './assets/bp-logo-full.png';
 import accountProvider from './providers/account-provider';
 import authProvider from './providers/auth-provider';
-import { SidebarToggleButton, useSidebarState } from 'react-admin';
+import { LongWarning, ShortWarning } from './utils/beta-test-warning';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -34,6 +34,7 @@ const useStyle = makeStyles(() => ({
 const BpAppBar = props => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
+  const displayAppBarWarning = useMediaQuery('(min-width: 468px)');
   const [name, setName] = useState('');
 
   const getFirstName = useCallback(() => {
@@ -43,18 +44,22 @@ const BpAppBar = props => {
   useEffect(() => getFirstName(), [getFirstName]);
 
   return (
-    <Box {...props} className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
-      <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
+    <>
+      <Box {...props} className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
+        <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
 
-      <Box sx={{ paddingInline: '1rem' }}>
-        Bonjour <b>{name}</b> !
+        <Box sx={{ paddingInline: '1rem' }}>
+          Bonjour <b>{name}</b> !
+        </Box>
+
+        <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
+          {displayAppBarWarning && <ShortWarning />}
+          <SidebarToggleButton className={classes.sidebarToggleButton} />
+        </Box>
       </Box>
 
-      <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
-        <ShortWarning />
-        <SidebarToggleButton className={classes.sidebarToggleButton} />
-      </Box>
-    </Box>
+      <LongWarning />
+    </>
   );
 };
 export default BpAppBar;
