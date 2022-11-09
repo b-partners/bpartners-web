@@ -8,6 +8,7 @@ import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, us
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { formatDate } from '../utils/date';
 import { EmptyList } from '../utils/EmptyList';
+import ListComponent from '../utils/ListComponent';
 import { coloredMoney, Currency, normalizeAmount } from '../utils/money';
 
 import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
@@ -34,6 +35,7 @@ const Document = ({ transactionRef }) => (
 );
 
 const StatusField = ({ status }) => <Chip style={{ backgroundColor: statuses[status]['color'], color: 'white' }} label={statuses[status]['label']} />;
+
 const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
 
@@ -55,41 +57,52 @@ const TransactionList = props => {
         ]}
         hasCreate={false}
         hasEdit={false}
+        component={ListComponent}
         hasList={false}
         hasShow={false}
         aside={documentState.shouldShowDocument ? <Document transactionRef={documentState.documentId} /> : null}
       >
-        <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
-          <TextField source='reference' label='Référence' />
-          <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
-          <TextField source='label' label='Titre' />
-          <FunctionField
-            render={({ category }) =>
-              category != null ? (
-                <Box sx={{ width: '15vw' }}>
-                  {category.map(cat => (
-                    <Chip label={cat.type} variant='outlined' />
-                  ))}
-                </Box>
-              ) : null
-            }
-            label='Catégorie'
-          />
-          {/*TODO: allow inline edition*/}
-          <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
-          <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
-          <FunctionField
-            render={({ id }) => (
-              <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
-                <IconButton id={`document-button-${id}`}>
-                  <AttachmentIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-          />
-        </Datagrid>
+        <TransactionGrid onDocumentIconClicked={onDocumentIconClicked} />
       </List>
     </>
+  );
+};
+
+const TransactionGrid = ({ onDocumentIconClicked }) => {
+  const { isLoading } = useListContext();
+
+  return (
+    !isLoading && (
+      <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
+        <TextField source='reference' label='Référence' />
+        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
+        <TextField source='label' label='Titre' />
+        <FunctionField
+          render={({ category }) =>
+            category != null ? (
+              <Box sx={{ width: '15vw' }}>
+                {category.map(cat => (
+                  <Chip label={cat.type} variant='outlined' />
+                ))}
+              </Box>
+            ) : null
+          }
+          label='Catégorie'
+        />
+        {/*TODO: allow inline edition*/}
+        <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+        <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
+        <FunctionField
+          render={({ id }) => (
+            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
+              <IconButton id={`document-button-${id}`}>
+                <AttachmentIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        />
+      </Datagrid>
+    )
   );
 };
 

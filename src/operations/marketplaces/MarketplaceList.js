@@ -3,10 +3,11 @@ import { Storefront } from '@material-ui/icons';
 import { List, RecordContextProvider, useListContext } from 'react-admin';
 import { BP_COLOR } from '../../bpTheme';
 import { EmptyList } from '../utils/EmptyList';
+import ListComponent from '../utils/ListComponent';
 import { AVATAR_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, BACKDROP_STYLE, AVATAR_STYLE, BOX_CONTAINER_STYLE } from './style';
 
 const MarketplaceList = () => (
-  <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component='div' actions={false}>
+  <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component={ListComponent} actions={false}>
     <MarketplaceGrid />
   </List>
 );

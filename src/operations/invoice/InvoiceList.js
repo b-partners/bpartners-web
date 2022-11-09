@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh } from 'react-admin';
+import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
 import { Box, IconButton, Tooltip, Typography, Card, CardContent, CardHeader, Tabs, Tab, LinearProgress } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
 import { Edit, Check, Send, Update } from '@material-ui/icons';
@@ -10,6 +10,7 @@ import invoiceProvider from 'src/providers/invoice-provider';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { getInvoicePdfUrl } from './utils';
 import TabPanel from '../utils/TabPanel';
+import ListComponent from '../utils/ListComponent';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
@@ -44,9 +45,20 @@ const Document = props => {
 };
 
 const InvoiceListTable = props => {
+  return (
+    <List exporter={false} resource='invoices' pagination={<PrevNextPagination />} component={ListComponent}>
+      <InvoiceListGrid {...props} />
+    </List>
+  );
+};
+
+const InvoiceListGrid = props => {
+  const { isLoading } = useListContext();
   const { onChange } = props;
   const notify = useNotify();
   const refresh = useRefresh();
+
+  if (isLoading) return null;
 
   const sendInvoice = data => {
     data.status = 'PROPOSAL';
@@ -66,41 +78,39 @@ const InvoiceListTable = props => {
   };
 
   return (
-    <List exporter={false} resource='invoices' pagination={<PrevNextPagination />}>
-      <Datagrid>
-        <TextField source='ref' label='Référence' />
-        <TextField source='title' label='Titre' />
-        <TextField source='customer[name]' label='Client' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
-        <TextField source='toPayAt' label='Date de payment' />
-        <FunctionField
-          render={data =>
-            data.status === 'DRAFT' ? (
-              <Box sx={{ display: 'flex' }}>
-                <Tooltip title='modifier' onClick={() => handleChange(data)}>
-                  <IconButton>
-                    <Edit />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title='envoyer' onClick={() => sendInvoice({ ...data })}>
-                  <IconButton>
-                    <Send />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            ) : (
-              <Tooltip title='Confirmer'>
+    <Datagrid>
+      <TextField source='ref' label='Référence' />
+      <TextField source='title' label='Titre' />
+      <TextField source='customer[name]' label='Client' />
+      <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
+      <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
+      <TextField source='toPayAt' label='Date de payment' />
+      <FunctionField
+        render={data =>
+          data.status === 'DRAFT' ? (
+            <Box sx={{ display: 'flex' }}>
+              <Tooltip title='modifier' onClick={() => handleChange(data)}>
                 <IconButton>
-                  <Check />
+                  <Edit />
                 </IconButton>
               </Tooltip>
-            )
-          }
-          label='Modifier'
-        />
-      </Datagrid>
-    </List>
+              <Tooltip title='envoyer' onClick={() => sendInvoice({ ...data })}>
+                <IconButton>
+                  <Send />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ) : (
+            <Tooltip title='Confirmer'>
+              <IconButton>
+                <Check />
+              </IconButton>
+            </Tooltip>
+          )
+        }
+        label='Modifier'
+      />
+    </Datagrid>
   );
 };
 
