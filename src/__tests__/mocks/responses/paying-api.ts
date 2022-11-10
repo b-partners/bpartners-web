@@ -65,26 +65,14 @@ export const transactions1: Array<Transaction> = [
 export const transactionCategories1: Array<TransactionCategory> = [
   {
     id: 't01',
-    type: 'Recette tva 20%',
+    type: 'Dépenses',
     vat: 0,
-    count: 10,
+    count: 100,
   },
   {
     id: 't02',
-    type: 'Recette tva 10%',
+    type: 'Recettes',
     vat: 0,
-    count: 6,
-  },
-  {
-    id: 't03',
-    type: 'Recette personnalisé tva 1%',
-    vat: 0,
-    count: 5,
-  },
-  {
-    id: 't02',
-    type: 'Recette personnalisé tva 1,5%',
-    vat: 0,
-    count: 2,
+    count: 120,
   },
 ];

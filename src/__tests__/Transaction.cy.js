@@ -54,10 +54,8 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="transactions"]').click();
 
     cy.contains('Résumé Graphique');
-    cy.contains('Recette tva 20%');
-    cy.contains('Recette tva 10%');
-    cy.contains('Recette personnalisé tva 1%');
-    cy.contains('Recette personnalisé tva 1,5%');
+    cy.contains('Dépenses');
+    cy.contains('Recettes');
   });
 
   it('are filterable', () => {

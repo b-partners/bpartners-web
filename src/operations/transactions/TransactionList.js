@@ -46,24 +46,28 @@ const TransactionList = props => {
   return (
     <>
       <TransactionChart />
-      <List
-        {...props}
-        resource='transactions'
-        pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
-        actions={null}
-        filters={[
-          <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
-          <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
-        ]}
-        hasCreate={false}
-        hasEdit={false}
-        component={ListComponent}
-        hasList={false}
-        hasShow={false}
-        aside={documentState.shouldShowDocument ? <Document transactionRef={documentState.documentId} /> : null}
-      >
-        <TransactionGrid onDocumentIconClicked={onDocumentIconClicked} />
-      </List>
+      <Card sx={{ marginTop: 1 }}>
+        <CardContent>
+          <List
+            {...props}
+            resource='transactions'
+            pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
+            actions={null}
+            filters={[
+              <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
+              <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
+            ]}
+            hasCreate={false}
+            hasEdit={false}
+            component={ListComponent}
+            hasList={false}
+            hasShow={false}
+            aside={documentState.shouldShowDocument ? <Document transactionRef={documentState.documentId} /> : null}
+          >
+            <TransactionGrid onDocumentIconClicked={onDocumentIconClicked} />
+          </List>
+        </CardContent>
+      </Card>
     </>
   );
 };

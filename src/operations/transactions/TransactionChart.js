@@ -32,28 +32,13 @@ const TransactionChart = () => {
 
       const { data } = await payingApi().getTransactionCategories(accountId, true, date.startDate, date.endDate);
 
-      const filteredData = data.filter(item => item.count > 0);
-
-      setData(filteredData.map(({ type, count }) => ({ name: type, value: count })));
+      setData(data.filter(item => item.count > 0));
     };
 
     getTransactionCategoriesData();
   }, [date]);
 
   const COLORS = [];
-
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <text x={x} y={y} fill='white' textAnchor={x > cx ? 'start' : 'end'} dominantBaseline='central'>
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
 
   return (
     <Card>
@@ -98,8 +83,21 @@ const TransactionChart = () => {
             />
           </Grid>
           <Grid item>
-            <PieChart width={700} height={300}>
-              <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={100} fill='#8884d8' dataKey='value'>
+            <PieChart width={500} height={150}>
+              <Pie
+                data={data}
+                cx={200}
+                cy={150}
+                outerRadius={100}
+                innerRadius={80}
+                fill='#8884d8'
+                nameKey='type'
+                dataKey='count'
+                startAngle={180}
+                endAngle={0}
+                paddingAngle={4}
+                label
+              >
                 {data.map((entry, index) => (
                   <>
                     {COLORS.push(randomColor())}
