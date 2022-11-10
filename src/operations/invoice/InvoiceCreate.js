@@ -1,26 +1,15 @@
 import { useEffect } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { Typography, Box, FormControl, Card, CardHeader, CardContent } from '@mui/material';
+import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/styles';
 import { ClientSelection } from './ClientSelection';
-import { ProductSelection } from './ProductSelection';
 import { CustomButton } from '../utils/CustomButton';
+import { ProductSelection } from './ProductSelection';
 import invoiceProvider from 'src/providers/invoice-provider';
-import { totalCalculus, invoiceDateValidator } from './utils';
-import { useForm } from 'react-hook-form';
+import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
+import { totalCalculus, invoiceDateValidator, invoiceInitialValue, getInvoicePdfUrl } from './utils';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import debounce from 'debounce';
-
-export const invoiceInitialValue = {
-  id: '',
-  ref: '',
-  title: '',
-  customer: null,
-  products: [],
-  sendingDate: '',
-  toPayAt: '',
-  status: 'DRAFT',
-};
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -53,11 +42,14 @@ const InvoiceCreateOrUpdate = props => {
   const selectedProducts = formValidator.watch('products') || [];
   const onSubmit = () => {
     const data = formValidator.watch();
-    onPending('increase');
+    onPending('startPending');
     invoiceProvider
       .saveOrUpdate([data])
-      .then(() => {
-        onPending('decrease');
+      .then(([data]) => {
+        return getInvoicePdfUrl(data.fileId);
+      })
+      .then(pdfUrl => {
+        onPending('stopPending', pdfUrl);
         refresh();
       })
       .catch(() => {
@@ -67,6 +59,7 @@ const InvoiceCreateOrUpdate = props => {
 
   useEffect(() => {
     formValidator.clearErrors();
+    getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending('stopPending', pdfUrl));
     onSubmitDebounced = debounce(onSubmit, 500);
     update(toEdit);
   }, [toEdit]);
@@ -82,7 +75,6 @@ const InvoiceCreateOrUpdate = props => {
   return (
     <Box className={className}>
       <Card>
-        <CardHeader title='Devis/Facturation' />
         <CardContent>
           <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>

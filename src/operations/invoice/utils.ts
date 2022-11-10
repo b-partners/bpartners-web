@@ -47,3 +47,39 @@ export const getInvoicePdfUrl = async (id: string) => {
   const accessToken = localStorage.getItem(accessTokenItem) || '';
   return `${BASE_PATH}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
+
+export const getInvoiceStatus = (status: string): string => {
+  switch (status) {
+    case 'PAYED':
+      return 'PAYÉ';
+    case 'ACCEPTED':
+      return 'ACCEPTÉ';
+    case 'CONFIRMED':
+      return 'CONFIRMÉ';
+    case 'DRAFT':
+      return 'BROUILLON';
+    case 'PROPOSAL':
+      return 'EN ATTENTE';
+    default:
+      throw new Error('Unknown status');
+  }
+};
+
+export const invoiceInitialValue: any = {
+  id: '',
+  ref: '',
+  title: '',
+  customer: null,
+  products: [],
+  sendingDate: '',
+  toPayAt: '',
+  status: 'DRAFT',
+};
+
+// viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
+export const invoiceListInitialState = {
+  tabIndex: 0,
+  selectedInvoice: invoiceInitialValue,
+  isPending: false,
+  viewScreen: 'lists',
+};

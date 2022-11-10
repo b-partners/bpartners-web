@@ -1,144 +1,98 @@
-import { useState, useEffect } from 'react';
-import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
-import { Box, IconButton, Tooltip, Typography, Card, CardContent, CardHeader, Tabs, Tab, LinearProgress } from '@mui/material';
-import { makeStyles } from '@material-ui/styles';
-import { Edit, Check, Send, Update } from '@material-ui/icons';
-import InvoiceCreateOrUpdate from './InvoiceCreate';
-import { invoiceInitialValue } from './InvoiceCreate';
-import PrevNextPagination from '../utils/PrevNextPagination';
-import invoiceProvider from 'src/providers/invoice-provider';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { getInvoicePdfUrl } from './utils';
+import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
-import ListComponent from '../utils/ListComponent';
+import InvoiceCreateOrUpdate from './InvoiceCreate';
+import InvoiceListTable from './InvoiceListTable';
+import { getInvoicePdfUrl, invoiceListInitialState } from './utils';
+import { Clear } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+import { Box, Tabs, Tab, Card, CardHeader, CardContent, IconButton, Tooltip } from '@mui/material';
+import { useState, useEffect, useReducer } from 'react';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
-  invoiceCreate: {},
 }));
 
-const Document = props => {
-  const { invoice, className, isPending } = props;
-  const [state, setState] = useState(null);
+const TAB_PANEL_STYLE = { padding: 0 };
+
+const CancelButton = ({ onClick }) => (
+  <Tooltip title='Retourner a la liste'>
+    <IconButton onClick={onClick}>
+      <Clear />
+    </IconButton>
+  </Tooltip>
+);
+
+const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
+  const [documentUrl, setDocumentUrl] = useState('');
 
   useEffect(() => {
-    if (isPending === 0) {
-      getInvoicePdfUrl(invoice.fileId).then(res => setState(res));
-    }
-  }, [invoice, isPending > 0]);
+    getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
+  }, [selectedInvoice]);
 
   return (
-    <Box className={className}>
-      <Card>
-        {isPending > 0 && <LinearProgress />}
-        <CardHeader title='Justificatif' />
-        <CardContent>
-          {state !== null && invoice.id.length > 0 && (
-            <Pdf file={state}>
-              <PdfPage pageNumber={1} />
-            </Pdf>
-          )}
-        </CardContent>
-      </Card>
-    </Box>
+    <Card>
+      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
+      <CardContent>
+        <PdfViewer url={documentUrl} />
+      </CardContent>
+    </Card>
   );
 };
 
-const InvoiceListTable = props => {
-  return (
-    <List exporter={false} resource='invoices' pagination={<PrevNextPagination />} component={ListComponent}>
-      <InvoiceListGrid {...props} />
-    </List>
-  );
-};
-
-const InvoiceListGrid = props => {
-  const { isLoading } = useListContext();
-  const { onChange } = props;
-  const notify = useNotify();
-  const refresh = useRefresh();
-
-  if (isLoading) return null;
-
-  const sendInvoice = data => {
-    data.status = 'PROPOSAL';
-    invoiceProvider
-      .saveOrUpdate([data])
-      .then(() => {
-        notify('Facture bien envoyer', { type: 'success' });
-        refresh();
-      })
-      .catch(() => {
-        notify("Une erreur s'est produite", { type: 'error' });
-      });
-  };
-
-  const handleChange = data => {
-    onChange(e => ({ ...e, tabIndex: 1, selectedInvoice: data }));
-  };
-
-  return (
-    <Datagrid>
-      <TextField source='ref' label='Référence' />
-      <TextField source='title' label='Titre' />
-      <TextField source='customer[name]' label='Client' />
-      <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
-      <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
-      <TextField source='toPayAt' label='Date de payment' />
-      <FunctionField
-        render={data =>
-          data.status === 'DRAFT' ? (
-            <Box sx={{ display: 'flex' }}>
-              <Tooltip title='modifier' onClick={() => handleChange(data)}>
-                <IconButton>
-                  <Edit />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='envoyer' onClick={() => sendInvoice({ ...data })}>
-                <IconButton>
-                  <Send />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          ) : (
-            <Tooltip title='Confirmer'>
-              <IconButton>
-                <Check />
-              </IconButton>
-            </Tooltip>
-          )
-        }
-        label='Modifier'
-      />
-    </Datagrid>
-  );
+const invoiceListReducer = (state, { type, payload }) => {
+  switch (type) {
+    case 'startPending':
+      return { ...state, isPending: true, documentUrl: payload.documentUrl };
+    case 'stopPending':
+      return { ...state, isPending: false, documentUrl: payload.documentUrl };
+    case 'set':
+      return { ...state, ...payload };
+    default:
+      throw new Error('Unknown action type');
+  }
 };
 
 const InvoiceList = () => {
-  const [{ selectedInvoice, tabIndex, isPending }, setState] = useState({ tabIndex: 0, selectedInvoice: invoiceInitialValue, isPending: 0 });
   const classes = useStyle();
+  const [{ selectedInvoice, tabIndex, isPending, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
 
-  const handleTabChange = (event, newTabIndex) => {
-    setState(e => ({ ...e, tabIndex: newTabIndex }));
-  };
-
-  const handlePending = type => {
-    setState(e => ({ ...e, isPending: e.isPending + (type === 'increase' ? 1 : -1) }));
-  };
+  const stateHandling = values => dispatch({ type: 'set', payload: values });
+  const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
+  const handleSwitchTab = (e, newTabIndex) => dispatch({ type: 'set', payload: { tabIndex: newTabIndex } });
+  const returnToList = () => stateHandling({ viewScreen: 'lists' });
 
   return (
-    <Box>
-      <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth'>
-        <Tab label='Liste' />
-        <Tab label='Modification' />
-      </Tabs>
-      <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-        <InvoiceListTable onChange={setState} />
-      </TabPanel>
-      <TabPanel value={tabIndex} sx={{ p: 3, display: 'flex', width: 'inherit', justifyContent: 'space-around' }} index={1}>
-        <InvoiceCreateOrUpdate onPending={handlePending} className={classes.invoiceCreate} toEdit={selectedInvoice} />
-        <Document isPending={isPending} className={classes.document} invoice={selectedInvoice} />
-      </TabPanel>
+    <Box sx={{ padding: 3 }}>
+      {viewScreen === 'lists' ? (
+        <Box>
+          <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
+            <Tab label='Brouillons' />
+            <Tab label='Devis' />
+            <Tab label='Factures' />
+          </Tabs>
+          <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
+            <InvoiceListTable stateHandling={stateHandling} invoiceType='DRAFT' />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
+            <InvoiceListTable stateHandling={stateHandling} invoiceType='PROPOSAL' />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
+            <InvoiceListTable stateHandling={stateHandling} invoiceType='CONFIRMED' />
+          </TabPanel>
+        </Box>
+      ) : viewScreen === 'edition' ? (
+        <Card>
+          <CardHeader title={selectedInvoice.ref.length > 0 ? 'Modification' : 'Création'} action={<CancelButton onClick={returnToList} />} />
+          <CardContent>
+            <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+              <InvoiceCreateOrUpdate onPending={handlePending} toEdit={selectedInvoice} />
+              <PdfViewer url={documentUrl} isPending={isPending} className={classes.document} />
+            </Box>
+          </CardContent>
+        </Card>
+      ) : (
+        <InvoicePdfDocument onClose={returnToList} selectedInvoice={selectedInvoice} />
+      )}
     </Box>
   );
 };
