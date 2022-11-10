@@ -1,12 +1,14 @@
 import { green } from '@material-ui/core/colors';
+import { Save } from '@material-ui/icons';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { Avatar, Badge, Box, Tab, Tabs, Typography } from '@mui/material';
+import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
+import { userAccountsApi } from 'src/providers/api';
 import { fileProvider } from 'src/providers/file-provider';
-import { singleAccountGetter } from '../../providers/account-provider';
+import { accountHoldersGetter, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/tab-panel';
@@ -44,7 +46,7 @@ const SubscriptionLayout = () => (
   </SimpleShowLayout>
 );
 
-const AccountHolderLayout = () => {
+const LogoLayout = () => {
   const notify = useNotify();
   const refresh = useRefresh();
   const [logoUrl, setLogoUrl] = useState('');
@@ -107,6 +109,133 @@ const AccountHolderLayout = () => {
   );
 };
 
+const AccountHolderLayout = () => {
+  const notify = useNotify();
+  const [accountHolders, setAccountHolders] = useState({});
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [jobList, setJobList] = useState([]);
+
+  const [primaryActivity, setPrimaryActivity] = useState('');
+  const [inputPrimaryActivity, setInputPrimaryActivity] = useState('');
+
+  const [secondaryActivity, setSecondaryActivity] = useState('');
+  const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
+
+  const updateBusinessActivities = async () => {
+    const {
+      user: { id: userId },
+    } = authProvider.getCachedWhoami();
+    const accountId = (await singleAccountGetter(userId)).id;
+    const { id } = accountHolders;
+    const body = {
+      primary: primaryActivity,
+      secondary: secondaryActivity,
+    };
+    setIsLoading(true);
+    try {
+      const aHolders = await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
+      notify('Changement enregistré', { type: 'success' });
+      setIsBtnDisabled(true);
+      setIsLoading(false);
+    } catch (error) {
+      notify("Une erreur s'est produite", { type: 'error' });
+      setIsLoading(false);
+    }
+  };
+
+  const validateActivity = (activityValue, setActivityValue, inputActivityValue) => {
+    const {
+      businessActivities: { primary, secondary },
+    } = accountHolders;
+    setActivityValue(activityValue && activityValue === inputActivityValue ? activityValue : inputActivityValue);
+    setIsBtnDisabled((primaryActivity !== primary || secondaryActivity !== secondary) && primaryActivity && secondaryActivity ? false : true);
+  };
+
+  useEffect(() => {
+    const getAccountHolders = async () => {
+      const {
+        user: { id: userId },
+      } = authProvider.getCachedWhoami();
+      const aHolders = await accountHoldersGetter(userId);
+      const {
+        businessActivities: { primary, secondary },
+      } = aHolders;
+
+      setAccountHolders(aHolders);
+      setPrimaryActivity(primary);
+      setSecondaryActivity(secondary);
+    };
+
+    const getBusinessActivities = async () => {
+      const { data } = await userAccountsApi().getBusinessActivities(1, 100);
+      setJobList(data.map(({ name }) => name));
+    };
+
+    getBusinessActivities();
+    getAccountHolders();
+  }, []);
+
+  return (
+    <>
+      <Box sx={{ padding: 2 }}>
+        <Autocomplete
+          value={primaryActivity}
+          onChange={(event, newValue) => {
+            setPrimaryActivity(newValue);
+          }}
+          inputValue={inputPrimaryActivity}
+          onInputChange={(event, newInputValue) => {
+            setInputPrimaryActivity(newInputValue);
+          }}
+          onBlur={() => {
+            validateActivity(primaryActivity, setPrimaryActivity, inputPrimaryActivity);
+          }}
+          id='primary-activity'
+          sx={{ width: '45%', marginRight: 1, display: 'inline-block' }}
+          options={jobList}
+          renderInput={params => <MuiTextField {...params} label='Activité principale' />}
+        />
+        <Autocomplete
+          value={secondaryActivity}
+          onChange={(event, newValue) => {
+            setSecondaryActivity(newValue);
+          }}
+          inputValue={inputSecondaryActivity}
+          onInputChange={(event, newInputValue) => {
+            setInputSecondaryActivity(newInputValue);
+          }}
+          onBlur={() => {
+            validateActivity(secondaryActivity, setSecondaryActivity, inputSecondaryActivity);
+          }}
+          id='secondary-activity'
+          sx={{ width: '45%', display: 'inline-block' }}
+          options={jobList}
+          renderInput={params => <MuiTextField {...params} label='Activité secondaire' />}
+        />
+        <Button
+          variant='contained'
+          size='small'
+          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <Save />}
+          disabled={isBtnDisabled}
+          onClick={updateBusinessActivities}
+          sx={{ marginTop: 1 }}
+        >
+          Enregistrer
+        </Button>
+      </Box>
+
+      <SimpleShowLayout>
+        <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
+        <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Raison sociale' />
+        <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
+        <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
+        <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
+      </SimpleShowLayout>
+    </>
+  );
+};
+
 const AdditionalInformation = () => {
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -117,12 +246,12 @@ const AdditionalInformation = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth' sx={TAB_STYLE}>
-        <Tab label='Mon identité' />
+        <Tab label='Ma société' />
         <Tab label='Mon abonnement' />
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-        <ProfileLayout />
+        <AccountHolderLayout />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
@@ -139,14 +268,8 @@ const AccountShow = () => {
     <ShowBase resource='account' basePath='/account' id={userId}>
       <Box sx={SHOW_LAYOUT_STYLE}>
         <Box sx={BOX_CONTENT_STYLE}>
-          <AccountHolderLayout />
-
-          <SimpleShowLayout>
-            <TextField pb={3} source='accountHolder.postalCode' label='Raison sociale' />
-            <TextField pb={3} source='accountHolder.city' label='Citée' />
-            <TextField pb={3} source='accountHolder.country' label='Pays' />
-            <TextField pb={3} source='accountHolder.address' label='Addresse' />
-          </SimpleShowLayout>
+          <LogoLayout />
+          <ProfileLayout />
         </Box>
 
         <Box sx={BOX_CONTENT_STYLE}>

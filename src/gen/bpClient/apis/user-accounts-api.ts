@@ -19,9 +19,13 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 import { Account } from '../models';
 import { AccountHolder } from '../models';
 import { BadRequestException } from '../models';
+import { BusinessActivity } from '../models';
+import { CompanyBusinessActivity } from '../models';
 import { CompanyInfo } from '../models';
 import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
+import { Page } from '../models';
+import { PageSize } from '../models';
 import { ResourceNotFoundException } from '../models';
 import { TooManyRequestsException } from '../models';
 import { User } from '../models';
@@ -122,6 +126,52 @@ export const UserAccountsApiAxiosParamCreator = function (configuration?: Config
     },
     /**
      *
+     * @summary Get all business activities pre-inserted by admin.
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getBusinessActivities: async (page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/businessActivities`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (pageSize !== undefined) {
+        localVarQueryParameter['pageSize'] = pageSize;
+      }
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get a user
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -163,6 +213,71 @@ export const UserAccountsApiAxiosParamCreator = function (configuration?: Config
     },
     /**
      *
+     * @summary Update business activities of an account holder
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {string} ahId
+     * @param {CompanyBusinessActivity} [body]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    updateBusinessActivities: async (
+      userId: string,
+      accountId: string,
+      ahId: string,
+      body?: CompanyBusinessActivity,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'userId' is not null or undefined
+      if (userId === null || userId === undefined) {
+        throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling updateBusinessActivities.');
+      }
+      // verify required parameter 'accountId' is not null or undefined
+      if (accountId === null || accountId === undefined) {
+        throw new RequiredError('accountId', 'Required parameter accountId was null or undefined when calling updateBusinessActivities.');
+      }
+      // verify required parameter 'ahId' is not null or undefined
+      if (ahId === null || ahId === undefined) {
+        throw new RequiredError('ahId', 'Required parameter ahId was null or undefined when calling updateBusinessActivities.');
+      }
+      const localVarPath = `/users/{userId}/accounts/{accountId}/accountHolders/{ahId}/businessActivities`
+        .replace(`{${'userId'}}`, encodeURIComponent(String(userId)))
+        .replace(`{${'accountId'}}`, encodeURIComponent(String(accountId)))
+        .replace(`{${'ahId'}}`, encodeURIComponent(String(ahId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      const needsSerialization = typeof body !== 'string' || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+      localVarRequestOptions.data = needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : body || '';
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update company info of an account holder
      * @param {string} userId
      * @param {string} accountId
@@ -171,26 +286,20 @@ export const UserAccountsApiAxiosParamCreator = function (configuration?: Config
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    updateAccountHolders: async (
-      userId: string,
-      accountId: string,
-      ahId: string,
-      body?: CompanyInfo,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
+    updateCompanyInfo: async (userId: string, accountId: string, ahId: string, body?: CompanyInfo, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'userId' is not null or undefined
       if (userId === null || userId === undefined) {
-        throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling updateAccountHolders.');
+        throw new RequiredError('userId', 'Required parameter userId was null or undefined when calling updateCompanyInfo.');
       }
       // verify required parameter 'accountId' is not null or undefined
       if (accountId === null || accountId === undefined) {
-        throw new RequiredError('accountId', 'Required parameter accountId was null or undefined when calling updateAccountHolders.');
+        throw new RequiredError('accountId', 'Required parameter accountId was null or undefined when calling updateCompanyInfo.');
       }
       // verify required parameter 'ahId' is not null or undefined
       if (ahId === null || ahId === undefined) {
-        throw new RequiredError('ahId', 'Required parameter ahId was null or undefined when calling updateAccountHolders.');
+        throw new RequiredError('ahId', 'Required parameter ahId was null or undefined when calling updateCompanyInfo.');
       }
-      const localVarPath = `/users/{userId}/accounts/{accountId}/accountHolders/{ahId}`
+      const localVarPath = `/users/{userId}/accounts/{accountId}/accountHolders/{ahId}/companyInfo`
         .replace(`{${'userId'}}`, encodeURIComponent(String(userId)))
         .replace(`{${'accountId'}}`, encodeURIComponent(String(accountId)))
         .replace(`{${'ahId'}}`, encodeURIComponent(String(ahId)));
@@ -273,6 +382,25 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get all business activities pre-inserted by admin.
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getBusinessActivities(
+      page?: Page,
+      pageSize?: PageSize,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<BusinessActivity>>>> {
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).getBusinessActivities(page, pageSize, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
      * @summary Get a user
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -280,6 +408,29 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
      */
     async getUserById(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<User>>> {
       const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).getUserById(id, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
+     * @summary Update business activities of an account holder
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {string} ahId
+     * @param {CompanyBusinessActivity} [body]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async updateBusinessActivities(
+      userId: string,
+      accountId: string,
+      ahId: string,
+      body?: CompanyBusinessActivity,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<AccountHolder>>> {
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).updateBusinessActivities(userId, accountId, ahId, body, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -295,14 +446,14 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async updateAccountHolders(
+    async updateCompanyInfo(
       userId: string,
       accountId: string,
       ahId: string,
       body?: CompanyInfo,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<AccountHolder>>> {
-      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).updateAccountHolders(userId, accountId, ahId, body, options);
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).updateCompanyInfo(userId, accountId, ahId, body, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -344,6 +495,19 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
     },
     /**
      *
+     * @summary Get all business activities pre-inserted by admin.
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getBusinessActivities(page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<BusinessActivity>>> {
+      return UserAccountsApiFp(configuration)
+        .getBusinessActivities(page, pageSize, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get a user
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -356,6 +520,27 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
     },
     /**
      *
+     * @summary Update business activities of an account holder
+     * @param {string} userId
+     * @param {string} accountId
+     * @param {string} ahId
+     * @param {CompanyBusinessActivity} [body]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async updateBusinessActivities(
+      userId: string,
+      accountId: string,
+      ahId: string,
+      body?: CompanyBusinessActivity,
+      options?: AxiosRequestConfig
+    ): Promise<AxiosResponse<AccountHolder>> {
+      return UserAccountsApiFp(configuration)
+        .updateBusinessActivities(userId, accountId, ahId, body, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update company info of an account holder
      * @param {string} userId
      * @param {string} accountId
@@ -364,7 +549,7 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async updateAccountHolders(
+    async updateCompanyInfo(
       userId: string,
       accountId: string,
       ahId: string,
@@ -372,7 +557,7 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
       options?: AxiosRequestConfig
     ): Promise<AxiosResponse<AccountHolder>> {
       return UserAccountsApiFp(configuration)
-        .updateAccountHolders(userId, accountId, ahId, body, options)
+        .updateCompanyInfo(userId, accountId, ahId, body, options)
         .then(request => request(axios, basePath));
     },
   };
@@ -414,6 +599,20 @@ export class UserAccountsApi extends BaseAPI {
   }
   /**
    *
+   * @summary Get all business activities pre-inserted by admin.
+   * @param {Page} [page]
+   * @param {PageSize} [pageSize]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserAccountsApi
+   */
+  public async getBusinessActivities(page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<BusinessActivity>>> {
+    return UserAccountsApiFp(this.configuration)
+      .getBusinessActivities(page, pageSize, options)
+      .then(request => request(this.axios, this.basePath));
+  }
+  /**
+   *
    * @summary Get a user
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -427,6 +626,28 @@ export class UserAccountsApi extends BaseAPI {
   }
   /**
    *
+   * @summary Update business activities of an account holder
+   * @param {string} userId
+   * @param {string} accountId
+   * @param {string} ahId
+   * @param {CompanyBusinessActivity} [body]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserAccountsApi
+   */
+  public async updateBusinessActivities(
+    userId: string,
+    accountId: string,
+    ahId: string,
+    body?: CompanyBusinessActivity,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<AccountHolder>> {
+    return UserAccountsApiFp(this.configuration)
+      .updateBusinessActivities(userId, accountId, ahId, body, options)
+      .then(request => request(this.axios, this.basePath));
+  }
+  /**
+   *
    * @summary Update company info of an account holder
    * @param {string} userId
    * @param {string} accountId
@@ -436,7 +657,7 @@ export class UserAccountsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof UserAccountsApi
    */
-  public async updateAccountHolders(
+  public async updateCompanyInfo(
     userId: string,
     accountId: string,
     ahId: string,
@@ -444,7 +665,7 @@ export class UserAccountsApi extends BaseAPI {
     options?: AxiosRequestConfig
   ): Promise<AxiosResponse<AccountHolder>> {
     return UserAccountsApiFp(this.configuration)
-      .updateAccountHolders(userId, accountId, ahId, body, options)
+      .updateCompanyInfo(userId, accountId, ahId, body, options)
       .then(request => request(this.axios, this.basePath));
   }
 }

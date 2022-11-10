@@ -11,7 +11,6 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { BusinessActivity } from './business-activity';
 /**
  *
  * @export
@@ -32,20 +31,14 @@ export interface CompanyInfo {
   email?: string;
   /**
    *
-   * @type {string}
+   * @type {number}
    * @memberof CompanyInfo
    */
-  socialCapital?: string;
+  socialCapital?: number;
   /**
    *
    * @type {string}
    * @memberof CompanyInfo
    */
   tvaNumber?: string;
-  /**
-   *
-   * @type {BusinessActivity}
-   * @memberof CompanyInfo
-   */
-  businessActivity?: BusinessActivity;
 }

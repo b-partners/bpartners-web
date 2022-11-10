@@ -20,7 +20,7 @@ export const singleAccountGetter = async (userId: string): Promise<Account> => {
     });
 };
 
-const accountHoldersGetter = async (userId: string): Promise<AccountHolder> => {
+export const accountHoldersGetter = async (userId: string): Promise<AccountHolder> => {
   return singleAccountGetter(userId)
     .then(account => userAccountsApi().getAccountHolders(userId, account.id))
     .then(accountHolders => accountHolders.data[0]);

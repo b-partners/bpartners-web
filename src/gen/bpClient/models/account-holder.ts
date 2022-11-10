@@ -11,6 +11,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CompanyBusinessActivity } from './company-business-activity';
 import { CompanyInfo } from './company-info';
 import { ContactAddress } from './contact-address';
 /**
@@ -79,4 +80,10 @@ export interface AccountHolder {
    * @memberof AccountHolder
    */
   companyInfo?: CompanyInfo;
+  /**
+   *
+   * @type {CompanyBusinessActivity}
+   * @memberof AccountHolder
+   */
+  businessActivities?: CompanyBusinessActivity;
 }
