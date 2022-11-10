@@ -3,6 +3,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
 import { v4 as uuid } from 'uuid';
+import { InvoiceStatus } from 'src/gen/bpClient';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -13,8 +14,10 @@ export const getUserInfo = async (): Promise<{ accountId: string; userId: string
 export const invoiceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
     const { accountId } = await getUserInfo();
+    const invoiceType: InvoiceStatus = filter.invoiceType;
+
     return payingApi()
-      .getInvoices(accountId, page, perPage)
+      .getInvoices(accountId, page, perPage, invoiceType)
       .then(({ data }) => data);
   },
   getOne: function (id: string): Promise<any> {
