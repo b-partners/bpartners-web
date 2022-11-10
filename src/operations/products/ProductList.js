@@ -2,12 +2,11 @@ import { Datagrid, List, TextField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 
-import PrevNextPagination, { pageSize } from '../utils/PrevNextPagination';
+import PrevNextPagination from '../utils/PrevNextPagination';
 
 const ProductList = props => {
-  const { data, isLoading } = useListContext();
+  const { data } = useListContext();
   const resourcesCount = data ? data.length : 0;
-  const shouldPaginate = isLoading || resourcesCount < pageSize;
 
   return (
     <List
@@ -32,7 +31,7 @@ const ProductGrid = () => {
   return (
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
-        <TextField source='description' label='Déscription' />
+        <TextField source='description' label='Description' />
         <TextField source='quantity' label='Quantité' />
         <TextField source='unitPrice' label='Prix unitaire' />
         <TextField source='vatPercent' label='Pourcentage du TVA' />

@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useListContext } from 'react-admin';
-
 import { Button, Toolbar, Typography } from '@material-ui/core';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
+import { useState } from 'react';
+import { useListContext } from 'react-admin';
 
 export const pageSize = 5;
 
@@ -34,15 +33,15 @@ const PrevNextPagination = () => {
     setLastPage(null);
   };
   return !isLoading ? (
-    <Toolbar>
+    <Toolbar style={{ padding: 0 }}>
       {page > 1 && (
-        <Button color='primary' key='prev' onClick={onPrevClick}>
+        <Button style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
           <ChevronLeft />
           Précédent
         </Button>
       )}
       {(resourcesCount === pageSize || !lastPage || page < lastPage) && (
-        <Button color='primary' key='next' onClick={() => setPage(page + 1)}>
+        <Button style={{ marginLeft: 6 }} color='primary' key='next' onClick={() => setPage(page + 1)}>
           Suivant
           <ChevronRight />
         </Button>

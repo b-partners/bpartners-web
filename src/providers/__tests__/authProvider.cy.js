@@ -1,7 +1,7 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import authProvider from '../auth-provider';
-import { whoami1, token1, user1 } from '../../__tests__/mocks/responses/security-api';
+import { whoami1, token1 } from '../../__tests__/mocks/responses/security-api';
 
 describe(specTitle('AuthProvider'), () => {
   beforeEach(() => {
