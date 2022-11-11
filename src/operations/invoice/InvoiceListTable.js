@@ -10,7 +10,6 @@ const sendInvoiceTemplate = (event, data, notify, refresh, successMessage) => {
   if (event) {
     event.stopPropagation();
   }
-  data.status = 'PROPOSAL';
   invoiceProvider
     .saveOrUpdate([data])
     .then(() => {
@@ -49,7 +48,11 @@ const InvoiceGridTable = props => {
         <FunctionField
           render={data =>
             data.status === 'DRAFT' ? (
-              <TooltipButton title='Envoyer et transformer en devis' icon={<Send />} onClick={event => sendInvoice(event, { ...data }, 'Devis bien envoyer')} />
+              <TooltipButton
+                title='Envoyer et transformer en devis'
+                icon={<Send />}
+                onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyer')}
+              />
             ) : data.status === 'PROPOSAL' ? (
               <TooltipButton
                 title='Transformer en facture'
