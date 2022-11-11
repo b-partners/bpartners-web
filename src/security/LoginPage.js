@@ -1,97 +1,92 @@
-import { Login } from 'react-admin'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import Grid from '@material-ui/core/Grid'
-import { Typography } from '@material-ui/core'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
-import { mainTheme } from '../haTheme'
-import CompletePasswordPage from './CompletePasswordPage'
-import authProvider from '../providers/authProvider'
+import { Box, Typography, TextField, FormHelperText, Button } from '@mui/material';
+import { pink, grey } from '@mui/material/colors';
+import { useReducer, useState, useEffect } from 'react';
 
-const aCard = (title, subtitle, description1, description2, course) => {
-  const syllabus = 'https://drive.google.com/file/d/12Lc4o3jfQOFHIzazPToO2hnGZc8epU3I/view'
+import { securityApi } from '../providers/api';
+import loginRedirectionUrls from './login-redirection-urls';
+import { redirect } from '../utils/redirect';
+import { v4 as uuidv4 } from 'uuid';
+
+const PhoneTextField = ({ formInput: { phone }, handleInput, isFirstAttempt }) => {
+  const [isValidPhone, setIsValidPhone] = useState(true);
+  useEffect(() => {
+    const testValidPhone = phone => /\d{10}/.test(phone);
+    setIsValidPhone(testValidPhone(phone));
+  }, [setIsValidPhone, phone]);
+
+  const isError = !isFirstAttempt && !isValidPhone;
   return (
-    <Card style={{ backgroundColor: '#ffffff', opacity: 0.9 }}>
-      <CardContent>
-        <Typography variant='h3' color='primary'>
-          {title}
-        </Typography>
-        <Typography variant='h5' color='primary'>
-          {subtitle}
-        </Typography>
-        <Typography variant='h7' color='initial'>
-          {description1}
-          <br />
-          {description2}
-        </Typography>
-        <Typography variant='h8' color='initial'>
-          <p>
-            Cours :{' '}
-            <a href={syllabus} style={{ color: '#000000' }}>
-              {course}
-            </a>
-          </p>
-        </Typography>
-      </CardContent>
-    </Card>
-  )
-}
+    <TextField
+      id='phone'
+      name='phone'
+      label='Téléphone'
+      value={phone}
+      onChange={handleInput}
+      error={isError}
+      helperText={isError ? 'Votre numéro doit ressembler à 0611223344' : null}
+    />
+  );
+};
 
-const HaLoginPage = () => {
-  const displayFull = useMediaQuery('(min-width:1024px) and (min-height:768px)')
-  const ResponsiveLogin = () => <Login backgroundImage={null} style={{ backgroundImage: 'inherit' }} />
-  const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />
-  const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <ResponsiveLogin />)
+const BpLoginPage = () => {
+  // Following reducer technique for update state of the form is taken from
+  // https://codesandbox.io/s/react-material-ui-form-submit-v40lz?from-embed=&file=/src/components/MaterialUIFormSubmit.js
+  const [formInput, setFormInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
+    phone: '',
+  });
+  const handleInput = ({ target: { name, value } }) => setFormInput({ [name]: value });
 
+  const [isFirstAttempt, setFirstAttempt] = useState(true);
+  const initiateAuth = async () => {
+    const {
+      data: { redirectionUrl },
+    } = await securityApi().initiateAuth({
+      state: uuidv4(),
+      phone: formInput.phone,
+      redirectionStatusUrls: loginRedirectionUrls,
+    });
+    redirect(redirectionUrl);
+  };
+  const onLogin = () => {
+    setFirstAttempt(false);
+    initiateAuth();
+  };
+
+  const lightGreyColor = grey[100];
+  const darkGreyColor = grey[800];
+  const pinkColor = pink[50];
+  const whiteColor = '#ffffff';
   return (
-    <div
-      style={{
-        backgroundImage: 'url(/login-bg100k.jpg)',
-        backgroundSize: 'cover',
-        position: 'fixed',
-        padding: '0',
-        margin: '0',
-        width: '100%',
-        height: '100%'
-      }}
-    >
-      {displayFull ? (
-        <Grid container spacing={2} style={{ paddingTop: '10%' }} theme={mainTheme}>
-          <Grid item xs={4}>
-            <Typography variant='h3' align='center'>
-              <div style={{ color: '#ffc107' }}>HEI</div>
-            </Typography>
-            <Typography variant='h7' align='center'>
-              <div style={{ color: '#ffffff' }}>Une scolarité qui passe à l'échelle</div>
-            </Typography>{' '}
-            <PasswordChangeableLogin />
-          </Grid>
-          <Grid item xs={8}>
-            <Grid container spacing={1}>
-              <Grid item xs={1} />
-              <Grid item xs={5}>
-                {aCard('0', "Coût à l'arrêt", 'Personne ne se connecte ?', 'Alors personne ne paie.', 'SYS-2')}
-              </Grid>
-              <Grid item xs={4}>
-                {aCard('0', 'Vulnérabilité', 'Crashtest nous scanne,', 'mais ne trouve rien !', 'WEB-2')}
-              </Grid>
-              <Grid item xs={2} />
+    <Box sx={{ display: 'flex', justifyContent: 'space-evenly', height: '100vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: lightGreyColor, flexShrink: 0, flexGrow: 1, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', bgcolor: lightGreyColor, minWidth: '30vh' }}>
+          <img src='./laborer.png' width={50} height={50} alt='Bienvenue sur BPartners !' />
+          <Typography variant='h5' gutterBottom mt={1}>
+            Bienvenue !
+          </Typography>
+          <PhoneTextField handleInput={handleInput} formInput={formInput} isFirstAttempt={isFirstAttempt} />
+          <FormHelperText>Nous vous enverrons un lien de connexion</FormHelperText>
+          <Button
+            id='login'
+            onClick={onLogin}
+            sx={{
+              textTransform: 'none',
+              bgcolor: darkGreyColor,
+              color: whiteColor,
+              '&:hover': {
+                background: darkGreyColor,
+              },
+            }}
+          >
+            Se connecter
+          </Button>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: pinkColor, flexShrink: 0, flexGrow: 1, alignItems: 'center' }}>
+        <img src='./bp-logo-full.png' width={600} height={275} alt='Bienvenue sur BPartners !' />
+      </Box>
+    </Box>
+  );
+};
 
-              <Grid item xs={1} />
-              <Grid item xs={5}>
-                {aCard('250,000,000', 'Utilisateurs', 'Onboarder tout Madagascar ?', 'Dix fois sans problème.', 'DONNEES-2')}
-              </Grid>
-              <Grid item xs={4}>
-                {aCard('1', 'Seconde', 'Pire réponse de notre API', 'au percentile 97.', 'PROG-2')}
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      ) : (
-        <PasswordChangeableLogin />
-      )}
-    </div>
-  )
-}
-
-export default HaLoginPage
+export default BpLoginPage;

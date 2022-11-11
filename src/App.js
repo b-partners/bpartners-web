@@ -1,57 +1,63 @@
-import { Admin } from '@react-admin/ra-enterprise'
-import { CustomRoutes } from 'react-admin'
-import { Resource } from '@react-admin/ra-rbac'
+import { Admin } from '@react-admin/ra-enterprise';
+import { Resource } from '@react-admin/ra-rbac';
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import frenchMessages from 'ra-language-french';
+import { CustomRoutes } from 'react-admin';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import BpErrorPage from './BpErrorPage';
 
-import { Route } from 'react-router-dom'
+import MyLayout from './BpLayout';
+import { bpTheme } from './bpTheme';
 
-import dataProvider from './providers/dataProvider'
-import authProvider from './providers/authProvider.ts'
+import account from './operations/account';
+import { Configuration } from './operations/configurations';
+import { customers } from './operations/customers';
+import invoice from './operations/invoice';
+import { marketplaces } from './operations/marketplaces';
+import products from './operations/products';
+import transactions from './operations/transactions';
 
-import polyglotI18nProvider from 'ra-i18n-polyglot'
-import frenchMessages from 'ra-language-french'
+import authProvider from './providers/auth-provider.ts';
+import dataProvider from './providers/data-provider';
+import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
-import profile from './operations/profile'
-import students from './operations/students'
-import teachers from './operations/teachers'
+import LoginPage from './security/LoginPage';
+import LoginSuccessPage from './security/LoginSuccessPage';
 
-import fees from './operations/fees'
-import payments from './operations/payments'
-
-import studentGrades from './operations/studentGrades'
-
-import MyLayout from './HaLayout'
-import HaLoginPage from './security/LoginPage'
-
-const App = () => (
+export const BpAdmin = () => (
   <Admin
-    title='HEI Admin'
+    title='BPartners'
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
-    loginPage={HaLoginPage}
+    loginPage={LoginPage}
+    theme={bpTheme}
     layout={MyLayout}
   >
-    <Resource name='profile' />
-    <Resource name='students' {...students} />
-    <Resource name='teachers' {...teachers} />
-
-    <Resource name='fees' {...fees} />
-    <Resource name='payments' {...payments} />
-
-    <Resource name='student-grades' {...studentGrades} />
+    <Resource name='transactions' {...transactions} />
+    <Resource name='customers' {...customers} />
+    <Resource name='products' {...products} />
+    <Resource name='invoices' {...invoice} />
+    <Resource name='marketplaces' {...marketplaces} />
+    <Resource name='account' />
 
     <CustomRoutes>
-      <Route exact path='/profile' element={<profile.show />} />
-
-      <Route exact path='/students/:studentId/fees' element={<fees.list />} />
-      <Route exact path='/students/:studentId/fees/create' element={<fees.create />} />
-      <Route exact path='/fees/:feeId/show' element={<fees.show />} />
-      <Route exact path='/fees' element={<fees.listByStatus />} />
-
-      <Route exact path='/fees/:feeId/payments' element={<payments.list />} />
-      <Route exact path='/fees/:feeId/payments/create' element={<payments.create />} />
+      <Route exact path='/account' element={<account.show />} />
+      <Route exact path='/products' element={<products.list />} />
+      <Route exact path='/configurations' element={<Configuration />} />
+      <Route exact path='/invoice' element={<invoice.list />} />
+      <Route exact path='/error' element={<BpErrorPage />} />
     </CustomRoutes>
   </Admin>
-)
+);
 
-export default App
+const App = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+      <Route path='*' element={<BpAdmin />} />
+    </Routes>
+  </BrowserRouter>
+);
+
+export default App;

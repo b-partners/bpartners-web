@@ -1,12 +1,9 @@
 name: CI
-on:
-  push:
-    branches:
-      - '*'
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   tests:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,27 +14,30 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 17.x
-      - run: ./initNpmToken.sh ${{ secrets.RA_ENTREPRISE_NPM_TOKEN }}
-
-      - run: yarn install
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+          rootdir: ''
+          workdir: ''
+      - run: sh ./initAWS.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }} ${{ secrets.AWS_REGION }}
+      - run: sh ./initNpmrc.sh ${{ secrets.NPM_REPOSITORY }} ${{ secrets.NPM_DOMAIN }} ${{ secrets.NPM_DOMAIN_OWNER }}
+      - run: npm config set always-auth true
+      - run: npm install --legacy-peer-deps
       - name: Cypress dependencies
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
         run: |
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-      - name: Test
-        run: |
-          export REACT_APP_TEST_STUDENT1_PASSWORD=${{ secrets.TEST_STUDENT1_PASSWORD }}
-          export REACT_APP_TEST_TEACHER1_PASSWORD=${{ secrets.TEST_TEACHER1_PASSWORD }}
-          export REACT_APP_TEST_MANAGER1_PASSWORD=${{ secrets.TEST_MANAGER1_PASSWORD }}
-          yarn test
-
+      - run: npm test
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
         with:
           file: version.yml
           version: version
-      - run: yarn global add sonar-scanner
+      - run: npm install --location=global sonar-scanner
       - name: Sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,7 +56,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 17.x
-      - run: ./initNpmToken.sh ${{ secrets.RA_ENTREPRISE_NPM_TOKEN }}
 
-      - run: yarn global add prettier
+      - run: npm install --location=global prettier
       - run: prettier --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"

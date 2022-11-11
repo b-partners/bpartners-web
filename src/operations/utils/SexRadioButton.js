@@ -1,4 +1,4 @@
-import { RadioButtonGroupInput } from 'react-admin'
+import { RadioButtonGroupInput } from 'react-admin';
 
 const SexRadioButton = () => (
   <RadioButtonGroupInput
@@ -6,9 +6,9 @@ const SexRadioButton = () => (
     label='Sexe'
     choices={[
       { id: 'M', name: 'Homme' },
-      { id: 'F', name: 'Femme' }
+      { id: 'F', name: 'Femme' },
     ]}
   />
-)
+);
 
-export default SexRadioButton
+export default SexRadioButton;
