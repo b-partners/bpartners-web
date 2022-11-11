@@ -9,7 +9,7 @@ import { CustomButton } from '../utils/CustomButton';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
-    minWidth: 300,
+    width: 300,
     minHeight: 70,
     marginBlock: 7,
   },

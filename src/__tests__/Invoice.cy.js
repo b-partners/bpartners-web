@@ -30,6 +30,7 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5`, createInvoices(5)).as('getInvoices1');
@@ -64,11 +65,11 @@ describe(specTitle('Frequency relaunch'), () => {
   it('Should show success message', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(10) > .MuiTypography-root > .MuiButtonBase-root').click();
+    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Envoyer et transformer en devis"]').click();
     cy.contains('Devis bien envoyer');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
-    cy.get(':nth-child(1) > :nth-child(10) > .MuiTypography-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
     cy.contains('Devis confirmer');
   });
 
@@ -131,7 +132,7 @@ describe(specTitle('Frequency relaunch'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"] > .MuiSvgIcon-root').click();
 
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');
