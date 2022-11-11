@@ -1,10 +1,12 @@
 import PrevNextPagination from '../utils/PrevNextPagination';
 import { getInvoiceStatus, invoiceInitialValue } from './utils';
 import { Check, Send, Attachment, Add, DoneAll } from '@material-ui/icons';
-import { IconButton, Tooltip, Typography } from '@mui/material';
+import { IconButton, Tooltip, Typography, Box } from '@mui/material';
 import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
 import ListComponent from '../utils/ListComponent';
+
+const LIST_ACTION_STYLE = { display: 'flex' };
 
 const sendInvoiceTemplate = (event, data, notify, refresh, successMessage) => {
   if (event) {
@@ -40,30 +42,29 @@ const InvoiceGridTable = props => {
         <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
         <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatus(data.status)}</Typography>} label='Statut' />
-        <TextField source='toPayAt' label='Date de payment' />
+        <TextField source='toPayAt' label='Date de paiement' />
         <FunctionField
-          render={data => <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} />}
-          label='Justificatif'
-        />
-        <FunctionField
-          render={data =>
-            data.status === 'DRAFT' ? (
-              <TooltipButton
-                title='Envoyer et transformer en devis'
-                icon={<Send />}
-                onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyer')}
-              />
-            ) : data.status === 'PROPOSAL' ? (
-              <TooltipButton
-                title='Transformer en facture'
-                icon={<Check />}
-                onClick={event => sendInvoice(event, { ...data, status: 'CONFIRMED' }, 'Devis confirmer')}
-              />
-            ) : (
-              <TooltipButton title='Facture déjà confirmé' icon={<DoneAll />} />
-            )
-          }
-          label='Envoie'
+          render={data => (
+            <Box sx={LIST_ACTION_STYLE}>
+              <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} />
+              {data.status === 'DRAFT' ? (
+                <TooltipButton
+                  title='Envoyer et transformer en devis'
+                  icon={<Send />}
+                  onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyer')}
+                />
+              ) : data.status === 'PROPOSAL' ? (
+                <TooltipButton
+                  title='Transformer en facture'
+                  icon={<Check />}
+                  onClick={event => sendInvoice(event, { ...data, status: 'CONFIRMED' }, 'Devis confirmer')}
+                />
+              ) : (
+                <TooltipButton title='Facture déjà confirmé' icon={<DoneAll />} />
+              )}
+            </Box>
+          )}
+          label=''
         />
       </Datagrid>
     )
