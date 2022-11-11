@@ -18,15 +18,15 @@
  */
 export interface CreateInvoiceRelaunch {
   /**
-   * The frequency of sending the message in days
-   * @type {number}
+   *
+   * @type {string}
    * @memberof CreateInvoiceRelaunch
    */
-  unpaidRelaunch?: number;
+  subject?: string;
   /**
-   * The frequency of sending the message in days
-   * @type {number}
+   *
+   * @type {string}
    * @memberof CreateInvoiceRelaunch
    */
-  draftRelaunch?: number;
+  message?: string;
 }

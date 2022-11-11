@@ -11,15 +11,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { MonthlyTransactionsSummary } from './monthly-transactions-summary';
 /**
  *
  * @export
- * @enum {string}
+ * @interface TransactionsSummary
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  ACCEPTED = 'ACCEPTED',
-  PROPOSAL = 'PROPOSAL',
-  CONFIRMED = 'CONFIRMED',
-  PAID = 'PAID',
+export interface TransactionsSummary {
+  /**
+   *
+   * @type {number}
+   * @memberof TransactionsSummary
+   */
+  year?: number;
+  /**
+   *
+   * @type {Array<MonthlyTransactionsSummary>}
+   * @memberof TransactionsSummary
+   */
+  summary?: Array<MonthlyTransactionsSummary>;
 }

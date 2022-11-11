@@ -16,10 +16,7 @@
  * @export
  * @enum {string}
  */
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  ACCEPTED = 'ACCEPTED',
+export enum RelaunchType {
   PROPOSAL = 'PROPOSAL',
   CONFIRMED = 'CONFIRMED',
-  PAID = 'PAID',
 }
