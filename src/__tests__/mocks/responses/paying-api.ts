@@ -1,4 +1,5 @@
 import { Transaction, TransactionCategory } from 'src/gen/bpClient';
+import { TransactionsSummary } from 'src/gen/bpClient/models';
 
 export const transactions1: Array<Transaction> = [
   {
@@ -76,3 +77,93 @@ export const transactionCategories1: Array<TransactionCategory> = [
     count: 120,
   },
 ];
+
+export const transactionsSummary: TransactionsSummary = {
+  year: 2022,
+  summary: [
+    {
+      month: 0,
+      income: 1200,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 1,
+      income: 1000,
+      outcome: 1100,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 2,
+      income: 2000,
+      outcome: 1200,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 3,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 4,
+      income: 2000,
+      outcome: 3000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 5,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 6,
+      income: 1000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 7,
+      income: 2000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 8,
+      income: 1000,
+      outcome: 1100,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 9,
+      income: 2000,
+      outcome: 1200,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 10,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 11,
+      income: 2000,
+      outcome: 3000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+  ],
+};
