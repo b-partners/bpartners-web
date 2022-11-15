@@ -1,4 +1,5 @@
 import { Transaction, TransactionCategory } from 'src/gen/bpClient';
+import { TransactionsSummary } from 'src/gen/bpClient/models';
 
 export const transactions1: Array<Transaction> = [
   {
@@ -65,26 +66,104 @@ export const transactions1: Array<Transaction> = [
 export const transactionCategories1: Array<TransactionCategory> = [
   {
     id: 't01',
-    type: 'Recette tva 20%',
+    type: 'Dépenses',
     vat: 0,
-    count: 10,
+    count: 100,
   },
   {
     id: 't02',
-    type: 'Recette tva 10%',
+    type: 'Recettes',
     vat: 0,
-    count: 6,
-  },
-  {
-    id: 't03',
-    type: 'Recette personnalisé tva 1%',
-    vat: 0,
-    count: 5,
-  },
-  {
-    id: 't02',
-    type: 'Recette personnalisé tva 1,5%',
-    vat: 0,
-    count: 2,
+    count: 120,
   },
 ];
+
+export const transactionsSummary: TransactionsSummary = {
+  year: 2022,
+  summary: [
+    {
+      month: 0,
+      income: 1200,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 1,
+      income: 1000,
+      outcome: 1100,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 2,
+      income: 2000,
+      outcome: 1200,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 3,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 4,
+      income: 2000,
+      outcome: 3000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 5,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 6,
+      income: 1000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 7,
+      income: 2000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 8,
+      income: 1000,
+      outcome: 1100,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 9,
+      income: 2000,
+      outcome: 1200,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 10,
+      income: 3000,
+      outcome: 1000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+    {
+      month: 11,
+      income: 2000,
+      outcome: 3000,
+      updatedAt: new Date(),
+      cashFlow: 4000,
+    },
+  ],
+};
