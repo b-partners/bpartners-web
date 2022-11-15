@@ -12,12 +12,6 @@ const TransactionChart = () => {
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
   const [date, setDate] = useState(currentDate);
 
-  const randomColor = () => {
-    const randomRGB = window.crypto.getRandomValues(new Uint8Array(3));
-
-    return `rgb(${randomRGB[0]}, ${randomRGB[1]}, ${randomRGB[2]})`;
-  };
-
   const getTransactionsSummary = async currentYear => {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
@@ -55,7 +49,7 @@ const TransactionChart = () => {
     getMonthlyTransaction(month);
   }, [transactionsSummary]);
 
-  const COLORS = [];
+  const COLORS = ['#1D9661', '#8E961D', '#003D7A'];
 
   return (
     <Card>
@@ -65,7 +59,6 @@ const TransactionChart = () => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item sm={3}>
-            <Typography variant='subtitle1'>Changer le mois et/ou l'année</Typography>
             <TextField type='month' id='date' variant='filled' value={date} onBlur={checkTransactionsSummary} onChange={e => setDate(e.target.value)} />
           </Grid>
           <Grid item>
@@ -85,10 +78,7 @@ const TransactionChart = () => {
                 label
               >
                 {data.map((entry, index) => (
-                  <>
-                    {COLORS.push(randomColor())}
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  </>
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />
