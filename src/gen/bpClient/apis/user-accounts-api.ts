@@ -23,6 +23,7 @@ import { BusinessActivity } from '../models';
 import { CompanyBusinessActivity } from '../models';
 import { CompanyInfo } from '../models';
 import { InternalServerException } from '../models';
+import { LegalFile } from '../models';
 import { NotAuthorizedException } from '../models';
 import { Page } from '../models';
 import { PageSize } from '../models';
@@ -35,6 +36,54 @@ import { User } from '../models';
  */
 export const UserAccountsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     *
+     * @summary Approve a user legal file
+     * @param {string} uId
+     * @param {string} lId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    approveLegalFile: async (uId: string, lId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'uId' is not null or undefined
+      if (uId === null || uId === undefined) {
+        throw new RequiredError('uId', 'Required parameter uId was null or undefined when calling approveLegalFile.');
+      }
+      // verify required parameter 'lId' is not null or undefined
+      if (lId === null || lId === undefined) {
+        throw new RequiredError('lId', 'Required parameter lId was null or undefined when calling approveLegalFile.');
+      }
+      const localVarPath = `/users/{uId}/legalFiles/{lId}`
+        .replace(`{${'uId'}}`, encodeURIComponent(String(uId)))
+        .replace(`{${'lId'}}`, encodeURIComponent(String(lId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
     /**
      *
      * @summary Get accountHolders of an account
@@ -153,6 +202,47 @@ export const UserAccountsApiAxiosParamCreator = function (configuration?: Config
       if (pageSize !== undefined) {
         localVarQueryParameter['pageSize'] = pageSize;
       }
+
+      const query = new URLSearchParams(localVarUrlObj.search);
+      for (const key in localVarQueryParameter) {
+        query.set(key, localVarQueryParameter[key]);
+      }
+      for (const key in options.params) {
+        query.set(key, options.params[key]);
+      }
+      localVarUrlObj.search = new URLSearchParams(query).toString();
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get legal files of a user
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getLegalFiles: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      if (id === null || id === undefined) {
+        throw new RequiredError('id', 'Required parameter id was null or undefined when calling getLegalFiles.');
+      }
+      const localVarPath = `/users/{id}/legalFiles`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, 'https://example.com');
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+      const localVarRequestOptions: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication BearerAuth required
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -346,6 +436,25 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Approve a user legal file
+     * @param {string} uId
+     * @param {string} lId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async approveLegalFile(
+      uId: string,
+      lId: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<LegalFile>>> {
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).approveLegalFile(uId, lId, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
      * @summary Get accountHolders of an account
      * @param {string} userId
      * @param {string} accountId
@@ -394,6 +503,23 @@ export const UserAccountsApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<BusinessActivity>>>> {
       const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).getBusinessActivities(page, pageSize, options);
+      return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
+        const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
+        return axios.request(axiosRequestArgs);
+      };
+    },
+    /**
+     *
+     * @summary Get legal files of a user
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getLegalFiles(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<LegalFile>>>> {
+      const localVarAxiosArgs = await UserAccountsApiAxiosParamCreator(configuration).getLegalFiles(id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -470,6 +596,19 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
   return {
     /**
      *
+     * @summary Approve a user legal file
+     * @param {string} uId
+     * @param {string} lId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async approveLegalFile(uId: string, lId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<LegalFile>> {
+      return UserAccountsApiFp(configuration)
+        .approveLegalFile(uId, lId, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get accountHolders of an account
      * @param {string} userId
      * @param {string} accountId
@@ -504,6 +643,18 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
     async getBusinessActivities(page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<BusinessActivity>>> {
       return UserAccountsApiFp(configuration)
         .getBusinessActivities(page, pageSize, options)
+        .then(request => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get legal files of a user
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getLegalFiles(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<LegalFile>>> {
+      return UserAccountsApiFp(configuration)
+        .getLegalFiles(id, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -572,6 +723,20 @@ export const UserAccountsApiFactory = function (configuration?: Configuration, b
 export class UserAccountsApi extends BaseAPI {
   /**
    *
+   * @summary Approve a user legal file
+   * @param {string} uId
+   * @param {string} lId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserAccountsApi
+   */
+  public async approveLegalFile(uId: string, lId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<LegalFile>> {
+    return UserAccountsApiFp(this.configuration)
+      .approveLegalFile(uId, lId, options)
+      .then(request => request(this.axios, this.basePath));
+  }
+  /**
+   *
    * @summary Get accountHolders of an account
    * @param {string} userId
    * @param {string} accountId
@@ -609,6 +774,19 @@ export class UserAccountsApi extends BaseAPI {
   public async getBusinessActivities(page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<BusinessActivity>>> {
     return UserAccountsApiFp(this.configuration)
       .getBusinessActivities(page, pageSize, options)
+      .then(request => request(this.axios, this.basePath));
+  }
+  /**
+   *
+   * @summary Get legal files of a user
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserAccountsApi
+   */
+  public async getLegalFiles(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<LegalFile>>> {
+    return UserAccountsApiFp(this.configuration)
+      .getLegalFiles(id, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
