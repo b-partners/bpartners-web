@@ -2,8 +2,9 @@ import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
-import { v4 as uuid } from 'uuid';
 import { InvoiceStatus } from 'src/gen/bpClient';
+
+export const invoicePutController = new AbortController();
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -24,10 +25,9 @@ export const invoiceProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
   saveOrUpdate: async function (invoices: any[]): Promise<any[]> {
-    const iId = invoices[0].id.length === 0 ? uuid() : invoices[0].id;
     const { accountId } = await getUserInfo();
     return payingApi()
-      .crupdateInvoice(invoices[0], accountId, iId)
+      .crupdateInvoice(invoices[0], accountId, invoices[0].id, { signal: invoicePutController.signal })
       .then(({ data }) => [data]);
   },
 };

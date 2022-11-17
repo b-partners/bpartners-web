@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { useNotify, useRefresh } from 'react-admin';
+import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/styles';
+import { Save } from '@material-ui/icons';
 import { ClientSelection } from './ClientSelection';
 import { CustomButton } from '../utils/CustomButton';
 import { ProductSelection } from './ProductSelection';
-import invoiceProvider from 'src/providers/invoice-provider';
+import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
 import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
 import { totalCalculus, invoiceDateValidator, invoiceInitialValue, getInvoicePdfUrl } from './utils';
 import CustomFilledInput from '../utils/CustomFilledInput';
@@ -23,53 +24,44 @@ const useStyle = makeStyles(() => ({
 }));
 
 const InvoiceCreateOrUpdate = props => {
-  const { toEdit, className, onPending } = props;
+  const { toEdit, className, onPending, isPending, close } = props;
   const formValidator = useForm();
-  const notify = useNotify();
-  const refresh = useRefresh();
   const classes = useStyle();
-  let onSubmitDebounced = null;
 
-  const update = value => {
-    Object.keys(value).forEach(e => {
-      if (value.id.length > 0 && e === 'ref') {
-        formValidator.setValue(e, value[e].slice(0, '-TMP')[0]);
-      }
-      formValidator.setValue(e, value[e]);
-    });
-  };
+  const update = value => Object.keys(value).forEach(e => formValidator.setValue(e, value[e]));
 
   const selectedProducts = formValidator.watch('products') || [];
+
   const onSubmit = () => {
     const data = formValidator.watch();
+    if (isPending > 0) {
+      invoicePutController.abort();
+      onPending('stopPending');
+    }
     onPending('startPending');
     invoiceProvider
       .saveOrUpdate([data])
-      .then(([data]) => {
-        return getInvoicePdfUrl(data.fileId);
-      })
-      .then(pdfUrl => {
-        onPending('stopPending', pdfUrl);
-        refresh();
-      })
-      .catch(() => {
-        notify("Une erreur s'est produite, veuillez réessayer", { type: 'error' });
-      });
+      .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
+      .then(pdfUrl =>
+        setTimeout(async () => {
+          onPending('stopPending', pdfUrl);
+        }, 3000)
+      );
+  };
+
+  const saveAndClose = () => {
+    onSubmit();
+    close();
   };
 
   useEffect(() => {
-    formValidator.clearErrors();
     getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending('stopPending', pdfUrl));
-    onSubmitDebounced = debounce(onSubmit, 500);
     update(toEdit);
   }, [toEdit]);
 
   useEffect(() => {
-    formValidator.watch(() => {
-      if (onSubmitDebounced !== null) {
-        onSubmitDebounced();
-      }
-    });
+    const onSubmitDebounced = debounce(onSubmit, 1000);
+    formValidator.watch(() => onSubmitDebounced());
   }, []);
 
   return (
@@ -80,11 +72,11 @@ const InvoiceCreateOrUpdate = props => {
             <FormControl className={classes.formControl}>
               <CustomFilledInput name='title' label='Titre' formValidator={formValidator} />
               <CustomFilledInput name='ref' label='Référence' formValidator={formValidator} />
-              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoie" type='date' formValidator={formValidator} />
+              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoi" type='date' formValidator={formValidator} />
               <CustomFilledInput
                 validate={e => invoiceDateValidator(e, formValidator.watch('sendingDate'))}
                 name='toPayAt'
-                label='Date de payment'
+                label='Date de paiement'
                 type='date'
                 formValidator={formValidator}
               />
@@ -96,7 +88,7 @@ const InvoiceCreateOrUpdate = props => {
                 <Typography variant='h6'>Total:</Typography>
                 <Typography variant='h6'>{totalCalculus(selectedProducts)}€</Typography>
               </Box>
-              <CustomButton onClick={() => update(invoiceInitialValue)} label='Effacer le formulaire' />
+              <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>
           </form>
         </CardContent>
