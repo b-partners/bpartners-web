@@ -14,6 +14,9 @@ const bpButton = {
   '&:hover, &:active': {
     backgroundColor: BP_COLOR[10],
   },
+  '&:disabled': {
+    backgroundColor: BP_COLOR[40],
+  },
 };
 
 export const bpTheme = {
