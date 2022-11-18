@@ -1,5 +1,6 @@
 import {
   Button,
+  IconButton,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -12,9 +13,13 @@ import {
   Stepper,
   Typography,
 } from '@mui/material';
+import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import 'react-pdf/dist/esm/Page/AnnotationLayer';
+import 'react-pdf/dist/esm/Page/TextLayer';
+import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
 
@@ -64,9 +69,7 @@ export const GeneralConditionOfUse = () => {
     }
   };
 
-  const approveLegalFile = () => {
-    userAccountsApi().approveLegalFile(userId, legalFiles[activeStep].id);
-  };
+  const approveLegalFile = () => userAccountsApi().approveLegalFile(userId, legalFiles[activeStep].id);
 
   return (
     <Dialog
@@ -105,6 +108,12 @@ export const GeneralConditionOfUse = () => {
 
 const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
   const notify = useNotify();
+  const [totalPage, setTotalPage] = useState(0);
+  const [actualPage, setActualPage] = useState(1);
+
+  const navigatePage = actions => {
+    setActualPage(prevActualPage => (actions === 'prev' ? prevActualPage - 1 : prevActualPage + 1));
+  };
 
   const onLoad = (hasError = false) => {
     setLoading(false);
@@ -117,10 +126,38 @@ const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
     <Stepper activeStep={activeStep} orientation='vertical'>
       {legalFiles.map(({ fileUrl, name }) => (
         <Step key={name}>
-          <StepLabel>{name}</StepLabel>
-          <StepContent>
-            <Pdf file={fileUrl} loading={<CircularProgress size={'1.8rem'} />} onLoadSuccess={() => onLoad()} onLoadError={() => onLoad(true)}>
-              <PdfPage pageNumber={1} />
+          <StepLabel>
+            {name}
+
+            {totalPage > 0 && (
+              <>
+                <IconButton disabled={actualPage <= 1} onClick={() => navigatePage('prev')}>
+                  <ArrowLeft />
+                </IconButton>
+                {actualPage} - {totalPage}
+                <IconButton disabled={actualPage === totalPage} onClick={() => navigatePage('next')}>
+                  <ArrowRight />
+                </IconButton>
+              </>
+            )}
+          </StepLabel>
+          <StepContent
+            sx={{
+              maxHeight: '25rem',
+              overflowY: 'scroll',
+              borderLeft: `1px solid ${BP_COLOR['solid_grey']}`,
+            }}
+          >
+            <Pdf
+              file={fileUrl}
+              loading={<CircularProgress size={'1.8rem'} />}
+              onLoadSuccess={({ numPages }) => {
+                setTotalPage(numPages);
+                onLoad();
+              }}
+              onLoadError={() => onLoad(true)}
+            >
+              <PdfPage pageNumber={actualPage} />
             </Pdf>
           </StepContent>
         </Step>
