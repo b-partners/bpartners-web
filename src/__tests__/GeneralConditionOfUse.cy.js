@@ -21,17 +21,16 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
   });
 
-  describe("there are unapproved cgu", () => {
+  describe('there are unapproved cgu', () => {
     beforeEach(() => {
       cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, legalFiles1).as('getLegalFiles1');
-    })
+    });
 
     it('is displayed when CGU is not accepted yet', () => {
       mount(<App />);
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
-
 
       cy.contains("Conditions générales d'utilisation");
       cy.contains('legal file version 1');
@@ -45,20 +44,18 @@ describe(specTitle('Products'), () => {
 
       cy.wait('@getLegalFiles1');
 
-
       cy.get('[name="lf-next-button"]').click();
       cy.wait('@approveLegalFile');
 
       cy.get('[name="lf-next-button"]').click();
       cy.wait('@approveLegalFile');
     });
+  });
 
-  })
-
-  describe("There is not any unapproved cgu", () => {
+  describe('There is not any unapproved cgu', () => {
     beforeEach(() => {
       cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('getLegalFiles');
-    })
+    });
 
     it('should not display cgu dialog', () => {
       mount(<App />);
@@ -69,7 +66,7 @@ describe(specTitle('Products'), () => {
 
       cy.get('body').should('not.contain.text', "Conditions générales d'utilisation");
     });
-  })
+  });
 });
 
 function gotoProduct() {

@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -13,10 +12,10 @@ import {
   Stepper,
   Typography,
 } from '@mui/material';
-import { BlurCircular } from '@material-ui/icons';
-import { userAccountsApi } from '../../providers/api';
+import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
 
 export const GeneralConditionOfUse = () => {
