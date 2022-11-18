@@ -1,35 +1,48 @@
-import { useEffect, useState } from 'react';
-import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Stack, Typography, Step, Stepper, StepLabel, StepContent, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@mui/material';
+import { BlurCircular } from '@material-ui/icons';
 import { userAccountsApi } from '../../providers/api';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import AuthProvider from '../../providers/auth-provider';
-import { DialogActions } from '@material-ui/core';
 
 export const GeneralConditionOfUse = () => {
-  const [legalFiles, setLegalFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const [stepperState, setStepperState] = useState({
-    activeStep: 0,
-    loading: false,
-  });
-
   const userId = AuthProvider.getCachedWhoami()?.user?.id;
+
   const notify = useNotify();
 
-  const handleNext = () => setStepperState({ ...stepperState, activeStep: stepperState.activeStep + 1 });
-  const handleBack = () => setStepperState({ ...stepperState, activeStep: stepperState.activeStep - 1 });
+  const [loading, setLoading] = useState(false);
+  const [legalFiles, setLegalFiles] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
+  const [cguDialogStatus, setCguDialogStatus] = useState(false);
 
   useEffect(() => {
-    const getLegalFile = async () => {
+    const fetchLegalFiles = async () => {
       if (userId) {
         try {
           setLoading(true);
-          setStepperState({ ...stepperState, loading });
-          const legalFilesToFetch = (await userAccountsApi().getLegalFiles(userId)).data;
-          setLegalFiles(legalFilesToFetch);
-        } catch (err) {
+          const legalFilesTemp = (await userAccountsApi().getLegalFiles(userId)).data;
+          const onlyNotApprovedLegalFiles = legalFilesTemp.filter(lf => !lf.approvalDatetime);
+
+          setLegalFiles([...onlyNotApprovedLegalFiles]);
+
+          if (onlyNotApprovedLegalFiles.length > 0) {
+            setCguDialogStatus(true);
+          }
+        } catch (e) {
           notify("Une erreur s'est produite", { type: 'error' });
         } finally {
           setLoading(false);
@@ -37,12 +50,29 @@ export const GeneralConditionOfUse = () => {
       }
     };
 
-    getLegalFile();
-  }, [notify, userId]);
+    fetchLegalFiles();
+  }, [userId, notify]);
 
-  return userId ? (
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await approveLegalFile();
+      activeStep === legalFiles.length - 1 ? setCguDialogStatus(false) : setActiveStep(prevActiveStep => prevActiveStep + 1);
+    } catch (e) {
+      notify("Une erreur s'est produite", { type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const approveLegalFile = () => {
+    userAccountsApi().approveLegalFile(userId, legalFiles[activeStep].id);
+  };
+
+  return (
     <Dialog
-      open={true}
+      open={cguDialogStatus}
+      data-testid='cgu-dialog'
       scroll='paper'
       fullWidth
       maxWidth='md'
@@ -60,28 +90,29 @@ export const GeneralConditionOfUse = () => {
       {(legalFiles || []).length > 0 && (
         <>
           <DialogContent dividers={true}>
-            <StepLegalFiles stepperState={stepperState} setStepperState={setStepperState} legalFiles={legalFiles} />
+            <StepLegalFiles activeStep={activeStep} legalFiles={legalFiles} setLoading={setLoading} />
           </DialogContent>
 
           <DialogActions>
-            <Button type='button' disabled={stepperState.loading} onClick={stepperState.activeStep === legalFiles.length - 1 ? handleBack : handleNext}>
-              {stepperState.activeStep === legalFiles.length - 1 ? 'Ok, Confirmer' : 'Continuer'}
-            </Button>
-
-            <Button type='button' onClick={handleBack}>
-              Revenir
+            <Button name='lf-next-button' type='button' disabled={loading} onClick={handleSubmit}>
+              {activeStep === legalFiles.length - 1 ? 'Ok, Confirmer' : 'Continuer'}
             </Button>
           </DialogActions>
         </>
       )}
     </Dialog>
-  ) : null;
+  );
 };
 
-const StepLegalFiles = ({ legalFiles, stepperState, setStepperState }) => {
-  const { activeStep } = stepperState;
+const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
+  const notify = useNotify();
 
-  const onLoadEnd = () => setStepperState(() => ({ ...stepperState, loading: false }));
+  const onLoad = (hasError = false) => {
+    setLoading(false);
+    hasError && notify("le pdf n'a pas pu être chargé", { type: 'error' });
+  };
+
+  useEffect(() => setLoading(true), [activeStep]);
 
   return (
     <Stepper activeStep={activeStep} orientation='vertical'>
@@ -89,12 +120,7 @@ const StepLegalFiles = ({ legalFiles, stepperState, setStepperState }) => {
         <Step key={name}>
           <StepLabel>{name}</StepLabel>
           <StepContent>
-            <Pdf
-              file={fileUrl}
-              loading={<CircularProgress size={'1.8rem'} />}
-              onLoadProgress={() => setStepperState({ ...stepperState, loading: true })}
-              onLoadSuccess={onLoadEnd}
-            >
+            <Pdf file={fileUrl} loading={<CircularProgress size={'1.8rem'} />} onLoadSuccess={() => onLoad()} onLoadError={() => onLoad(true)}>
               <PdfPage pageNumber={1} />
             </Pdf>
           </StepContent>
