@@ -8,7 +8,7 @@ import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { products1 } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
 
-describe(specTitle('Products'), () => {
+describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {
     //note(login-user1)
     cy.intercept('POST', '/token', token1);

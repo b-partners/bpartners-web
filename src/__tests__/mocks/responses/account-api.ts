@@ -59,12 +59,12 @@ export const legalFiles1: LegalFile[] = [
   {
     id: 'legal-file-1',
     name: 'legal file version 1',
-    fileUrl: 'dummy-url',
+    fileUrl: 'http://fitnik.tech/public/docs/terms.pdf',
   },
   {
     id: 'legal-file-2',
     name: 'legal file version 2',
-    fileUrl: 'dummy-url',
+    fileUrl: 'http://fitnik.tech/public/docs/terms.pdf',
   },
   {
     id: 'legal-file-3',
