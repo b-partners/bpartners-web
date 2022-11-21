@@ -3,7 +3,7 @@ import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { CustomRoutes } from 'react-admin';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
@@ -51,9 +51,16 @@ export const BpAdmin = () => (
   </Admin>
 );
 
+const CheckAuth = () => {
+  const accessToken = localStorage.getItem('bp_access_token');
+
+  return accessToken ? <Navigate to='/transactions' /> : <Navigate to='/login' />;
+};
+
 const App = () => (
   <BrowserRouter>
     <Routes>
+      <Route exact path='/' element={<CheckAuth />} />
       <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
       <Route path='*' element={<BpAdmin />} />
     </Routes>
