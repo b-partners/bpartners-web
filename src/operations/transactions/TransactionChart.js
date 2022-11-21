@@ -60,12 +60,12 @@ const TransactionChart = () => {
   return (
     <Card>
       <CardContent>
-        <Typography variant='h5'>Résumé Graphique</Typography>
+        <Typography variant='h5'>Résumé graphique</Typography>
       </CardContent>
       <CardContent>
         <Grid container spacing={2}>
           <Grid item sm={3}>
-            <Typography variant='subtitle1'>Changer le moi et/ou l'année</Typography>
+            <Typography variant='subtitle1'>Changer le mois et/ou l'année</Typography>
             <TextField type='month' id='date' variant='filled' value={date} onBlur={checkTransactionsSummary} onChange={e => setDate(e.target.value)} />
           </Grid>
           <Grid item>
