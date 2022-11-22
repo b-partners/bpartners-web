@@ -35,6 +35,7 @@ export const businessActivities: BusinessActivity[] = [
 export const accountHolder1: AccountHolder = {
   id: 'mock-accountHolder-id1',
   name: 'Numer',
+  siren: 'Siren',
   officialActivityName: 'activité officielle',
   contactAddress: {
     address: '6 rue Paul Langevin',

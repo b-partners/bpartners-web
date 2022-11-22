@@ -46,11 +46,14 @@ describe(specTitle('Account'), () => {
     cy.contains('11 11 11');
 
     cy.contains('Ma société');
+    cy.contains('Numer');
     cy.contains('activité officielle');
-    cy.contains('101');
+    cy.contains('100000');
+    cy.contains('123');
     cy.contains('Ivandry');
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
+    cy.contains('101');
 
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
@@ -75,10 +78,10 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
-    cy.get('#primary-activity').type('Bottier');
-    cy.contains('Bottier').click();
-    cy.get('#secondary-activity').type('Armurier');
-    cy.contains('Armurier').click();
+    cy.get('#primary-activity').type('Bottier').blur();
+    // cy.contains('Bottier').click();
+    cy.get('#secondary-activity').type('Armurier').blur();
+    // cy.contains('Armurier').click();
     cy.get('.css-19midj6 > .MuiButton-root').click();
     cy.contains('Changement enregistré');
   });

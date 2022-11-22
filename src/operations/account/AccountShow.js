@@ -99,12 +99,6 @@ const LogoLayout = () => {
           />
         </Badge>
       </label>
-
-      <Box sx={{ display: 'flex', justifyContent: 'inherit' }}>
-        <Typography variant='h5'>
-          <TextField source='accountHolder.name' label='Raison sociale' />
-        </Typography>
-      </Box>
     </Box>
   );
 };
@@ -226,11 +220,15 @@ const AccountHolderLayout = () => {
       </Box>
 
       <SimpleShowLayout>
+        <TextField pb={3} source='accountHolder.name' label='Raison sociale' />
         <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
-        <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Raison sociale' />
+        <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital Social' />
+        <TextField pb={3} source='accountHolder.companyInfo.tvaNumber' label='Numéro TVA' />
+        <TextField pb={3} source='accountHolder.siren' label='Siren' />
         <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
+        <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
       </SimpleShowLayout>
     </>
   );

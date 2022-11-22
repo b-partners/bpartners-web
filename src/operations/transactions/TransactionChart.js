@@ -35,14 +35,14 @@ const TransactionChart = () => {
   const checkTransactionsSummary = () => {
     const year = +date.split('-')[0];
     const month = +date.split('-')[1] - 1;
+    const currentYear = transactionsSummary && transactionsSummary.year;
 
-    transactionsSummary && transactionsSummary.year !== year ? getTransactionsSummary(year) : getMonthlyTransaction(month);
+    currentYear !== year && `${year}`.length === 4 ? getTransactionsSummary(year) : getMonthlyTransaction(month);
   };
 
   useEffect(() => {
-    const year = +date.split('-')[0];
-    getTransactionsSummary(year);
-  }, []);
+    checkTransactionsSummary();
+  }, [date]);
 
   useEffect(() => {
     const month = +date.split('-')[1] - 1;
@@ -59,7 +59,15 @@ const TransactionChart = () => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item sm={3}>
-            <TextField type='month' id='date' variant='filled' value={date} onBlur={checkTransactionsSummary} onChange={e => setDate(e.target.value)} />
+            <TextField
+              type='month'
+              id='date'
+              variant='filled'
+              value={date}
+              onChange={e => {
+                setDate(e.target.value);
+              }}
+            />
           </Grid>
           <Grid item>
             <PieChart width={500} height={150}>
