@@ -17,8 +17,6 @@ import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import 'react-pdf/dist/esm/Page/AnnotationLayer';
-import 'react-pdf/dist/esm/Page/TextLayer';
 import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
@@ -84,7 +82,7 @@ export const GeneralConditionOfUse = () => {
     >
       <DialogTitle>
         <Stack direction='row' justifyContent='space-between'>
-          <Typography variant='subtitle1'>Conditions générales d'utilisation</Typography>
+          <Typography variant='subtitle1'>Votre approbation est requise</Typography>
           {loading && <CircularProgress size={'1.8rem'} />}
         </Stack>
       </DialogTitle>
@@ -97,7 +95,7 @@ export const GeneralConditionOfUse = () => {
 
           <DialogActions>
             <Button name='lf-next-button' type='button' disabled={loading} onClick={handleSubmit}>
-              {activeStep === legalFiles.length - 1 ? 'Ok, Confirmer' : 'Continuer'}
+              {activeStep === legalFiles.length - 1 ? 'Accepter' : 'Accepter et continuer'}
             </Button>
           </DialogActions>
         </>
@@ -117,25 +115,25 @@ const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
 
   const onLoad = (hasError = false) => {
     setLoading(false);
-    hasError && notify("le pdf n'a pas pu être chargé", { type: 'error' });
+    hasError && notify('Impossible de charger le document', { type: 'error' });
   };
 
   useEffect(() => setLoading(true), [activeStep]);
 
   return (
     <Stepper activeStep={activeStep} orientation='vertical'>
-      {legalFiles.map(({ fileUrl, name }) => (
+      {legalFiles.map(({ fileUrl, name }, index) => (
         <Step key={name}>
           <StepLabel>
             {name}
 
             {totalPage > 0 && (
               <>
-                <IconButton disabled={actualPage <= 1} onClick={() => navigatePage('prev')}>
+                <IconButton data-item={`pdf-prev-${index}`} disabled={actualPage <= 1} onClick={() => navigatePage('prev')}>
                   <ArrowLeft />
                 </IconButton>
                 {actualPage} - {totalPage}
-                <IconButton disabled={actualPage === totalPage} onClick={() => navigatePage('next')}>
+                <IconButton data-item={`pdf-next-${index}`} disabled={actualPage === totalPage} onClick={() => navigatePage('next')}>
                   <ArrowRight />
                 </IconButton>
               </>

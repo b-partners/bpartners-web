@@ -24,6 +24,10 @@ describe(specTitle('General Condition of Use'), () => {
   describe('there are unapproved cgu', () => {
     beforeEach(() => {
       cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, legalFiles1).as('getLegalFiles1');
+
+      cy.readFile('src/assets/legal-file.pdf', 'binary').then(data => {
+        cy.intercept('https://clri-ltc.ca/files/2018/09/TEMP-PDF-Document.pdf', data.toString()).as('getLegalFilePdf');
+      });
     });
 
     it('is displayed when CGU is not accepted yet', () => {
@@ -31,8 +35,9 @@ describe(specTitle('General Condition of Use'), () => {
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
+      cy.wait('@getLegalFilePdf');
 
-      cy.contains("Conditions générales d'utilisation");
+      cy.contains('Votre approbation est requise');
       cy.contains('legal file version 1');
       cy.contains('legal file version 2');
       cy.should('not.contain.text', 'legal file version 3');
@@ -43,12 +48,32 @@ describe(specTitle('General Condition of Use'), () => {
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
+      cy.wait('@getLegalFilePdf');
 
       cy.get('[name="lf-next-button"]').click();
       cy.wait('@approveLegalFile');
 
       cy.get('[name="lf-next-button"]').click();
       cy.wait('@approveLegalFile');
+    });
+
+    it('is displaying pdf with pagination', () => {
+      mount(<App />);
+      gotoProduct();
+
+      cy.wait('@getLegalFiles1');
+      cy.wait('@getLegalFilePdf');
+
+      cy.contains('1 - 41');
+
+      cy.get('[data-item="pdf-prev-0"]').should('be.disabled');
+      cy.get('[data-item="pdf-next-0"]').click();
+
+      cy.contains('2 - 41');
+
+      cy.get('[data-item="pdf-prev-0"]').should('not.be.disabled').click();
+
+      cy.contains('1 - 41');
     });
   });
 
@@ -64,7 +89,7 @@ describe(specTitle('General Condition of Use'), () => {
 
       cy.wait('@getLegalFiles');
 
-      cy.get('body').should('not.contain.text', "Conditions générales d'utilisation");
+      cy.get('body').should('not.contain.text', 'Votre approbation est requise');
     });
   });
 });
