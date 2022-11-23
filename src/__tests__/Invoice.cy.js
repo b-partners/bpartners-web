@@ -11,7 +11,7 @@ import { products1 } from './mocks/responses/product-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices } from './mocks/responses/invoices-api';
 
-describe(specTitle('Frequency relaunch'), () => {
+describe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.viewport(1326, 514);
     cy.intercept('POST', '/token', token1);
@@ -33,7 +33,7 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5`, createInvoices(5)).as('getInvoices1');
+    cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
   it('Should show the list of invoice', () => {
@@ -66,11 +66,11 @@ describe(specTitle('Frequency relaunch'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Envoyer et transformer en devis"]').click();
-    cy.contains('Devis bien envoyer');
+    cy.contains('Devis bien envoyé');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
     cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
-    cy.contains('Devis confirmer');
+    cy.contains('Devis confirmé');
   });
 
   it('Should edit an invoice', () => {
@@ -88,8 +88,7 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
 
-    cy.get('.css-13o7eu2 > .MuiButtonBase-root').click();
-    cy.get('.css-19kzrtu > :nth-child(1) > :nth-child(1) > .MuiCardHeader-action > .MuiButtonBase-root').click();
+    cy.get('form #form-save-id').click();
 
     cy.contains('invoice-title-0');
     cy.contains('Name 3');
@@ -104,8 +103,6 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('[name="invoice"]').click();
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
-    cy.contains('Création');
-
     cy.get('form input[name=title]').type('1');
     cy.get('form input[name=ref]').type('-2');
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
@@ -117,13 +114,6 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
 
     cy.contains('1.20€');
-
-    cy.get('.css-13o7eu2 > .MuiButtonBase-root').click();
-    cy.get('.css-19kzrtu > :nth-child(1) > :nth-child(1) > .MuiCardHeader-action > .MuiButtonBase-root').click();
-
-    cy.contains('invoice-title-0');
-    cy.contains('Name 3');
-    cy.contains('Taille : 5');
   });
 
   it('Should show an invoice', () => {

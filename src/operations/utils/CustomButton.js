@@ -1,8 +1,9 @@
 import { Button } from '@material-ui/core';
 
-export const CustomButton = ({ onClick, label, icon, type, className, id }) => {
+export const CustomButton = props => {
+  const { label, icon, style, ...others } = props;
   return (
-    <Button type={type || 'button'} style={{ width: 300 }} id={id} color='primary' className={className} onClick={onClick} variant='contained' startIcon={icon}>
+    <Button style={{ ...style, width: 300 }} {...others} color='primary' variant='contained' startIcon={icon}>
       {label}
     </Button>
   );

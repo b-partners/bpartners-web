@@ -1,4 +1,4 @@
-import { Typography, TextField, Card, CardHeader, CardContent, IconButton, CardActions } from '@mui/material';
+import { Typography, Card, CardHeader, CardContent, IconButton, CardActions, FilledInput, FormControl, InputAdornment } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
 import { Clear } from '@material-ui/icons';
 import { prettyPrintMoney, Currency } from '../utils/money';
@@ -13,6 +13,12 @@ const useStyle = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     alignItems: 'end',
+  },
+  inputAdornment: {
+    transform: 'translateY(0.55rem)',
+  },
+  filledInput: {
+    maxWidth: 280,
   },
 }));
 
@@ -36,16 +42,23 @@ export const ProductItem = ({ product, handleProduct }) => {
         }
       />
       <CardContent>
-        <Typography variant='p'>TVA: {product.totalVatPercent}€</Typography>
+        <Typography variant='p'>TVA: {product.totalVat}€</Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
-        <TextField
-          value={isNaN(product.quantity) ? '' : product.quantity === 0 ? 1 : product.quantity}
-          onChange={handleChange}
-          type='number'
-          label='Nombre du produit'
-        />
-        <Typography variant='p'>* {product.unitPrice}€</Typography>
+        <FormControl variant='filled'>
+          <FilledInput
+            className={classes.filledInput}
+            value={isNaN(product.quantity) ? '' : product.quantity === 0 ? 1 : product.quantity}
+            onChange={handleChange}
+            endAdornment={
+              <InputAdornment className={classes.inputAdornment} position='end'>
+                X {product.unitPrice}€
+              </InputAdornment>
+            }
+            type='number'
+            label='Nombre du produit'
+          />
+        </FormControl>
       </CardActions>
     </Card>
   );
