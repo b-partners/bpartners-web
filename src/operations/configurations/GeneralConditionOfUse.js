@@ -60,7 +60,8 @@ export const GeneralConditionOfUse = () => {
     try {
       setLoading(true);
       await approveLegalFile();
-      activeStep === legalFiles.length - 1 ? setCguDialogStatus(false) : setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+      activeStep === legalFiles.length - 1 ? window.location.reload() : setActiveStep(prevActiveStep => prevActiveStep + 1);
     } catch (e) {
       notify("Une erreur s'est produite", { type: 'error' });
     } finally {
@@ -114,9 +115,8 @@ const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
     setActualPage(prevActualPage => (actions === 'prev' ? prevActualPage - 1 : prevActualPage + 1));
   };
 
-  const onLoad = (hasError = false) => {
+  const onLoad = () => {
     setLoading(false);
-    hasError && notify('Impossible de charger le document', { type: 'error' });
   };
 
   useEffect(() => setLoading(true), [activeStep]);
@@ -155,7 +155,7 @@ const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
                 setTotalPage(numPages);
                 onLoad();
               }}
-              onLoadError={() => onLoad(true)}
+              onLoadError={onLoad}
             >
               <PdfPage pageNumber={actualPage} />
             </Pdf>
