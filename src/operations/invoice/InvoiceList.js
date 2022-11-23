@@ -2,7 +2,7 @@ import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import InvoiceListTable from './InvoiceListTable';
-import { getInvoicePdfUrl, invoiceListInitialState } from './utils';
+import { getInvoicePdfUrl, invoiceListInitialState, PDF_WIDTH } from './utils';
 import { Clear } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 import { Box, Tabs, Tab, Card, CardHeader, CardContent, IconButton, Tooltip } from '@mui/material';
@@ -33,7 +33,7 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
     <Card>
       <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
       <CardContent>
-        <PdfViewer url={documentUrl} />
+        <PdfViewer width={PDF_WIDTH} url={documentUrl} />
       </CardContent>
     </Card>
   );
@@ -42,9 +42,9 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {
     case 'startPending':
-      return { ...state, isPending: true, documentUrl: payload.documentUrl };
+      return { ...state, isPending: state.isPending + 1, documentUrl: payload.documentUrl };
     case 'stopPending':
-      return { ...state, isPending: false, documentUrl: payload.documentUrl };
+      return { ...state, isPending: state.isPending - 1, documentUrl: payload.documentUrl };
     case 'set':
       return { ...state, ...payload };
     default:
@@ -82,11 +82,14 @@ const InvoiceList = () => {
         </Box>
       ) : viewScreen === 'edition' ? (
         <Card>
-          <CardHeader title={selectedInvoice.ref.length > 0 ? 'Modification' : 'Création'} action={<CancelButton onClick={returnToList} />} />
+          <CardHeader
+            title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
+            action={<CancelButton onClick={returnToList} />}
+          />
           <CardContent>
             <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate onPending={handlePending} toEdit={selectedInvoice} />
-              <PdfViewer url={documentUrl} isPending={isPending} className={classes.document} />
+              <InvoiceCreateOrUpdate close={returnToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
+              <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
             </Box>
           </CardContent>
         </Card>

@@ -27,7 +27,7 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
-    cy.contains('Résumé Graphique');
+    cy.contains('Résumé graphique');
     cy.contains("Abonnement BPartners - L'essentiel");
     cy.contains('BP22002');
     cy.contains('-0.05 €');
@@ -50,14 +50,14 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
-    cy.contains('Résumé Graphique');
+    cy.contains('Résumé graphique');
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
     cy.contains('30');
     cy.contains('10');
     cy.contains('40');
-    cy.get('#date').type('2022-01').blur();
+    cy.get('#date').type('2022-01');
     cy.contains('12');
     cy.contains('10');
     cy.contains('40');

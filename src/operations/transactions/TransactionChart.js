@@ -12,12 +12,6 @@ const TransactionChart = () => {
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
   const [date, setDate] = useState(currentDate);
 
-  const randomColor = () => {
-    const randomRGB = window.crypto.getRandomValues(new Uint8Array(3));
-
-    return `rgb(${randomRGB[0]}, ${randomRGB[1]}, ${randomRGB[2]})`;
-  };
-
   const getTransactionsSummary = async currentYear => {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
@@ -41,21 +35,21 @@ const TransactionChart = () => {
   const checkTransactionsSummary = () => {
     const year = +date.split('-')[0];
     const month = +date.split('-')[1] - 1;
+    const currentYear = transactionsSummary && transactionsSummary.year;
 
-    transactionsSummary && transactionsSummary.year !== year ? getTransactionsSummary(year) : getMonthlyTransaction(month);
+    currentYear !== year && `${year}`.length === 4 ? getTransactionsSummary(year) : getMonthlyTransaction(month);
   };
 
   useEffect(() => {
-    const year = +date.split('-')[0];
-    getTransactionsSummary(year);
-  }, []);
+    checkTransactionsSummary();
+  }, [date]);
 
   useEffect(() => {
     const month = +date.split('-')[1] - 1;
     getMonthlyTransaction(month);
   }, [transactionsSummary]);
 
-  const COLORS = [];
+  const COLORS = ['#1D9661', '#8E961D', '#003D7A'];
 
   return (
     <Card>
@@ -65,8 +59,15 @@ const TransactionChart = () => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item sm={3}>
-            <Typography variant='subtitle1'>Changer le mois et/ou l'année</Typography>
-            <TextField type='month' id='date' variant='filled' value={date} onBlur={checkTransactionsSummary} onChange={e => setDate(e.target.value)} />
+            <TextField
+              type='month'
+              id='date'
+              variant='filled'
+              value={date}
+              onChange={e => {
+                setDate(e.target.value);
+              }}
+            />
           </Grid>
           <Grid item>
             <PieChart width={500} height={150}>
@@ -85,10 +86,7 @@ const TransactionChart = () => {
                 label
               >
                 {data.map((entry, index) => (
-                  <>
-                    {COLORS.push(randomColor())}
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  </>
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />

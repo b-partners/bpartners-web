@@ -13,8 +13,8 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const redirectToSwan = () => {
-    const swanUrl = process.env.REACT_APP_SWAN_URL;
-    window.open(swanUrl, '_blank');
+    const swanUrl = 'https://banking.swan.io/login';
+    window.open(swanUrl, '_blank', 'noopener');
   };
 
   return (

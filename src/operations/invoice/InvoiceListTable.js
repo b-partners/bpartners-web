@@ -3,6 +3,7 @@ import { getInvoiceStatus, invoiceInitialValue } from './utils';
 import { Check, Send, Attachment, Add, DoneAll } from '@material-ui/icons';
 import { IconButton, Tooltip, Typography, Box } from '@mui/material';
 import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
+import { v4 as uuid } from 'uuid';
 import invoiceProvider from 'src/providers/invoice-provider';
 import ListComponent from '../utils/ListComponent';
 
@@ -35,7 +36,7 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(id, resourceName, record) => record.status === 'DRAFT' && crUpdateInvoice({ ...record, id: '' })}>
+      <Datagrid rowClick={(id, resourceName, record) => record.status === 'DRAFT' && crUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
@@ -51,16 +52,16 @@ const InvoiceGridTable = props => {
                 <TooltipButton
                   title='Envoyer et transformer en devis'
                   icon={<Send />}
-                  onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyer')}
+                  onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyé')}
                 />
               ) : data.status === 'PROPOSAL' ? (
                 <TooltipButton
                   title='Transformer en facture'
                   icon={<Check />}
-                  onClick={event => sendInvoice(event, { ...data, status: 'CONFIRMED' }, 'Devis confirmer')}
+                  onClick={event => sendInvoice(event, { ...data, status: 'CONFIRMED' }, 'Devis confirmé')}
                 />
               ) : (
-                <TooltipButton title='Facture déjà confirmé' icon={<DoneAll />} />
+                <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
               )}
             </Box>
           )}
@@ -90,7 +91,14 @@ const InvoiceListTable = props => {
       filter={{ invoiceType }}
       component={ListComponent}
       pagination={<PrevNextPagination />}
-      actions={<TooltipButton style={{ marginRight: 33 }} title='Créer un nouveau devis' onClick={() => crUpdateInvoice(invoiceInitialValue)} icon={<Add />} />}
+      actions={
+        <TooltipButton
+          style={{ marginRight: 33 }}
+          title='Créer un nouveau devis'
+          onClick={() => crUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+          icon={<Add />}
+        />
+      }
     >
       <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} getInvoiceStatus={getInvoiceStatus} viewDocument={viewDocument} sendInvoice={sendInvoice} />
     </List>
