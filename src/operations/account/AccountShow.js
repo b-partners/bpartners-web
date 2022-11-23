@@ -128,7 +128,7 @@ const AccountHolderLayout = () => {
     };
     setIsLoading(true);
     try {
-      const aHolders = await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
+      await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
       notify('Changement enregistré', { type: 'success' });
       setIsBtnDisabled(true);
       setIsLoading(false);

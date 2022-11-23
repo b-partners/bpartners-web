@@ -1,11 +1,12 @@
 import { useReducer, useState, useEffect } from 'react';
 import { Box, Typography, TextField, FormHelperText, Button, useMediaQuery } from '@mui/material';
 
-import { securityApi } from '../providers/api';
+import { onboardingApi, securityApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../utils/redirect';
 import { v4 as uuidv4 } from 'uuid';
 import { FLEX_CENTER, BP_B_LOGO, LOGIN_FORM, LOGIN_FORM_BUTTON, pinkColor } from './style.js';
+import { BP_COLOR } from '../bpTheme';
 
 const PhoneTextField = ({ formInput: { phone }, handleInput, isFirstAttempt }) => {
   const [isValidPhone, setIsValidPhone] = useState(true);
@@ -53,6 +54,16 @@ const BpLoginPage = () => {
     initiateAuth();
   };
 
+  const onRegistration = () => {
+    const initiateOnboarding = async () => {
+      const {
+        data: { redirectionUrl },
+      } = await onboardingApi().initiateOnboarding({ redirectionStatusUrls: loginRedirectionUrls });
+      redirect(redirectionUrl);
+    };
+    initiateOnboarding();
+  };
+
   return (
     <Box sx={FLEX_CENTER}>
       {matchMediaQuery && <img src='./logo3292.png' style={BP_B_LOGO} alt='Bienvenue sur BPartners !' />}
@@ -66,6 +77,25 @@ const BpLoginPage = () => {
           <FormHelperText>Nous vous enverrons un lien de connexion</FormHelperText>
           <Button id='login' onClick={onLogin} sx={LOGIN_FORM_BUTTON}>
             Se connecter
+          </Button>
+          <Button
+            id='register'
+            sx={{
+              backgroundColor: 'transparent',
+              color: '#000',
+              textDecoration: 'underline',
+              textTransform: 'none',
+              textAlign: 'left',
+              mt: 2,
+              p: 0,
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: BP_COLOR[20],
+              },
+            }}
+            onClick={onRegistration}
+          >
+            Pas de compte ? C'est par ici
           </Button>
         </Box>
       </Box>

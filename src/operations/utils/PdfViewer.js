@@ -3,7 +3,7 @@ import { Box, Card, CardHeader, CardContent, LinearProgress, Typography } from '
 import { Error } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core';
 
-const ErrorHandling = ({ errorMessage }) => (
+export const ErrorHandling = ({ errorMessage }) => (
   <Box sx={{ display: 'flex', alignItems: 'center' }}>
     <Error style={{ fontSize: 40 }} />
     <Typography variant='body2'>{errorMessage}</Typography>
@@ -16,10 +16,9 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const loadErrorMessage = "Une erreur s'est produite lors de l'affichage du document";
-
 const PdfViewer = props => {
   const { url, isPending, noData, onLoadError, width, ...others } = props;
+  const loadErrorMessage = 'Echec de chargement du document';
   const classes = useStyle();
 
   return (

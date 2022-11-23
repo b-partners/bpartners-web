@@ -17,6 +17,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions1).as('getTransactions1');
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions1).as('getTransactions1');
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=5', transactions1).as('getTransactions1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
@@ -26,6 +27,8 @@ describe(specTitle('Transactions'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
 
     cy.contains('Résumé graphique');
     cy.contains("Abonnement BPartners - L'essentiel");
@@ -40,6 +43,8 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
+    cy.wait('@legalFiles');
+
     cy.get('.RaList-main > :nth-child(3) > .MuiButtonBase-root').click();
 
     cy.contains('Page : 2');
@@ -49,6 +54,8 @@ describe(specTitle('Transactions'), () => {
   it('displaying the graphic summary', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
 
     cy.contains('Résumé graphique');
     cy.contains('Dépense');
@@ -67,13 +74,17 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
-    cy.get('#categorized').click();
-    cy.contains('TVA 20%').not();
+    cy.wait('@legalFiles');
+
+    cy.get('#categorized').check();
+    cy.should('not.contain.text', 'TVA 20%');
   });
 
   it('can have document', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
 
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();

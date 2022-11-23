@@ -6,6 +6,7 @@ import bpLogo from './assets/bp-logo-full.png';
 import accountProvider from './providers/account-provider';
 import authProvider from './providers/auth-provider';
 import { LongWarning, ShortWarning } from './utils/beta-test-warning';
+import { GeneralConditionOfUse } from './operations/configurations';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -59,6 +60,7 @@ const BpAppBar = props => {
       </Box>
 
       <LongWarning />
+      <GeneralConditionOfUse />
     </>
   );
 };
