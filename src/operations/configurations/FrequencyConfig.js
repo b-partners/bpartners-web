@@ -3,16 +3,18 @@ import { useNotify } from 'react-admin';
 import { Box, Button, TextField, Typography } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import relaunchProvider from 'src/providers/relaunch-provider';
+import authProvider from 'src/providers/auth-provider';
 
 const FrequencyConfig = () => {
   const [frequency, setFrequency] = useState({});
+  const userId = authProvider.getCachedWhoami()?.user?.id;
   const notify = useNotify();
   const initializeFrequency = async () => {
     const currentFrequency = await relaunchProvider.getConf();
     setFrequency(currentFrequency);
   };
 
-  useEffect(() => initializeFrequency(), []);
+  useEffect(() => userId && initializeFrequency(), []);
 
   const handleChange = e => {
     const { name, value } = e.target;

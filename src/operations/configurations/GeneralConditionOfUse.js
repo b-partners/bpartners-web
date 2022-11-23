@@ -20,6 +20,7 @@ import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpa
 import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
+import { ErrorHandling } from '../utils/PdfViewer';
 
 export const GeneralConditionOfUse = () => {
   const userId = AuthProvider.getCachedWhoami()?.user?.id;
@@ -148,6 +149,7 @@ const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
           >
             <Pdf
               file={fileUrl}
+              error={<ErrorHandling errorMessage={'Echec de chargement du document'} />}
               loading={<CircularProgress size={'1.8rem'} />}
               onLoadSuccess={({ numPages }) => {
                 setTotalPage(numPages);
