@@ -8,7 +8,7 @@ import { CustomButton } from '../utils/CustomButton';
 import { ProductSelection } from './ProductSelection';
 import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
 import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
-import { totalCalculus, invoiceDateValidator, invoiceInitialValue, getInvoicePdfUrl } from './utils';
+import { totalCalculus, invoiceDateValidator, getInvoicePdfUrl } from './utils';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import debounce from 'debounce';
 

@@ -1,4 +1,4 @@
-import { Account, AccountHolder, BusinessActivity } from 'src/gen/bpClient';
+import { Account, AccountHolder, BusinessActivity, LegalFile } from 'src/gen/bpClient';
 
 export const account1: Account = { BIC: 'BIC', IBAN: 'IBAN', id: 'mock-account-id1', name: 'Numer' };
 export const accounts1: Account[] = [account1];
@@ -54,4 +54,24 @@ export const accountHolder1: AccountHolder = {
     secondary: 'activité secondaire',
   },
 };
+
+export const legalFiles1: LegalFile[] = [
+  {
+    id: 'legal-file-1',
+    name: 'legal file version 1',
+    fileUrl: 'https://clri-ltc.ca/files/2018/09/TEMP-PDF-Document.pdf',
+  },
+  {
+    id: 'legal-file-2',
+    name: 'legal file version 2',
+    fileUrl: 'https://clri-ltc.ca/files/2018/09/TEMP-PDF-Document.pdf',
+  },
+  {
+    id: 'legal-file-3',
+    name: 'legal file version 3',
+    fileUrl: 'dummy-url',
+    approvalDatetime: new Date(),
+  },
+];
+
 export const accountHolders1: AccountHolder[] = [accountHolder1];
