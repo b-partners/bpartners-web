@@ -59,8 +59,15 @@ const TransactionChart = () => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item sm={3}>
-            <Typography variant='subtitle1'>Changer le mois et/ou l'année</Typography>
-            <TextField type='month' id='date' variant='filled' value={date} onBlur={checkTransactionsSummary} onChange={e => setDate(e.target.value)} />
+            <TextField
+              type='month'
+              id='date'
+              variant='filled'
+              value={date}
+              onChange={e => {
+                setDate(e.target.value);
+              }}
+            />
           </Grid>
           <Grid item>
             <PieChart width={500} height={150}>
