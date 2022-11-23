@@ -21,10 +21,10 @@ const BpMenu = () => {
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
       <Menu>
         <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
-        <Menu.Item to='/invoice' name='invoice' primaryText='Devis / Facturation' leftIcon={<Receipt />} />
+        <Menu.Item to='/invoice' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
-        <Menu.Item to='/products' name='products' primaryText='Mes Produits' leftIcon={<Category />} />
+        <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Les marchés' leftIcon={<Store />} />
       </Menu>
 
