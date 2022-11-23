@@ -7,6 +7,7 @@ import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { products1 } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
+import * as Reload from '../utils/reload';
 
 describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {
@@ -15,10 +16,19 @@ describe(specTitle('General Condition of Use'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getAccount1');
     cy.intercept('PUT', `/users/${whoami1.user.id}/legalFiles/*`, []).as('approveLegalFile');
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
+    cy.then(
+      async () =>
+        await authProvider.login('dummy', 'dummy', {
+          redirectionStatusUrls: {
+            successurl: 'dummy',
+            FailureUrl: 'dummy',
+          },
+        })
+    );
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
+    cy.stub(Reload, 'reload').as('reload');
   });
 
   describe('there are unapproved cgu', () => {
@@ -55,6 +65,8 @@ describe(specTitle('General Condition of Use'), () => {
 
       cy.get('[name="lf-next-button"]').click();
       cy.wait('@approveLegalFile');
+
+      cy.get('@reload').should('have.been.calledOnce');
     });
 
     it('is displaying pdf with pagination', () => {

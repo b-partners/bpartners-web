@@ -21,6 +21,7 @@ import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
 import { ErrorHandling } from '../utils/PdfViewer';
+import { reload } from '../../utils/reload';
 
 export const GeneralConditionOfUse = () => {
   const userId = AuthProvider.getCachedWhoami()?.user?.id;
@@ -61,7 +62,7 @@ export const GeneralConditionOfUse = () => {
       setLoading(true);
       await approveLegalFile();
 
-      activeStep === legalFiles.length - 1 ? window.location.reload() : setActiveStep(prevActiveStep => prevActiveStep + 1);
+      activeStep === legalFiles.length - 1 ? reload() : setActiveStep(prevActiveStep => prevActiveStep + 1);
     } catch (e) {
       notify("Une erreur s'est produite", { type: 'error' });
     } finally {
