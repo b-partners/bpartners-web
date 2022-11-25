@@ -41,6 +41,8 @@ export const GeneralConditionOfUse = () => {
           const legalFilesTemp = (await userAccountsApi().getLegalFiles(userId)).data;
           const onlyNotApprovedLegalFiles = legalFilesTemp.filter(lf => !lf.approvalDatetime);
 
+          localStorage.setItem('unapprovedFiles', onlyNotApprovedLegalFiles.length);
+
           setLegalFiles([...onlyNotApprovedLegalFiles]);
 
           if (onlyNotApprovedLegalFiles.length > 0) {

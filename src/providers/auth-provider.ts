@@ -66,7 +66,14 @@ const authProvider = {
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
   checkError: ({ status }: any): Promise<any> => {
-    return Promise.resolve();
+    const unapprovedFiles = +localStorage.getItem('unapprovedFiles');
+
+    if ((status === 401 || status === 403) && (!unapprovedFiles || unapprovedFiles === 0)) {
+      return Promise.reject();
+    } else if (status === 200) {
+      return Promise.resolve();
+    }
+    return Promise.reject({ message: false, logoutUser: false, redirectTo: window.location.pathname });
   },
 
   getIdentity: async () => (await whoami()).user?.id,
