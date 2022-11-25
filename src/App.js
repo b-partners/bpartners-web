@@ -3,14 +3,14 @@ import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { CustomRoutes } from 'react-admin';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
 import { bpTheme } from './bpTheme';
 
 import account from './operations/account';
-import { Configuration } from './operations/configurations';
+import { Configuration, GeneralConditionOfUse } from './operations/configurations';
 import { customers } from './operations/customers';
 import invoice from './operations/invoice';
 import { marketplaces } from './operations/marketplaces';
@@ -23,6 +23,8 @@ import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
 import LoginPage from './security/LoginPage';
 import LoginSuccessPage from './security/LoginSuccessPage';
+import React, { useEffect, useState } from 'react';
+import { userAccountsApi } from './providers/api';
 
 export const BpAdmin = () => (
   <Admin
@@ -51,15 +53,35 @@ export const BpAdmin = () => (
   </Admin>
 );
 
-const CheckAuth = () => {
-  const accessToken = localStorage.getItem('bp_access_token');
+const useCheckAuth = () => {
+  const userId = authProvider.getCachedWhoami()?.user?.id;
+  const [path, setPath] = useState('');
 
-  return accessToken ? <Navigate to='/transactions' /> : <Navigate to='/login' />;
+  useEffect(() => {
+    const fetch = async () => {
+      if (userId) {
+        const legalFiles = (await userAccountsApi().getLegalFiles(userId)).data;
+        const anyUnapprovedLf = legalFiles.some(lf => !lf.approvalDatetime);
+        setPath(anyUnapprovedLf ? '/general-condition-of-use' : '/transactions');
+      }
+    };
+
+    fetch();
+  }, [userId]);
+
+  return { path, userId };
+};
+
+const CheckAuth = () => {
+  const { path, userId } = useCheckAuth();
+
+  return <Navigate to={!userId ? '/login' : path} />;
 };
 
 const App = () => (
   <BrowserRouter>
     <Routes>
+      <Route exact path='/general-condition-of-use' element={<GeneralConditionOfUse />} />
       <Route exact path='/' element={<CheckAuth />} />
       <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
       <Route path='*' element={<BpAdmin />} />
