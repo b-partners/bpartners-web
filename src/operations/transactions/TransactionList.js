@@ -78,7 +78,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
         <TextField source='reference' label='Référence' />
-        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR)} label='Montant' />
+        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR, record.type)} label='Montant' />
         <TextField source='label' label='Titre' />
         <FunctionField
           render={({ category }) =>
