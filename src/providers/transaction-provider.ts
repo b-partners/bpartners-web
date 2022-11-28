@@ -11,7 +11,7 @@ const transactionProvider: BpDataProviderType = {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
     //TODO: implements transaction pagination on the back side
-    const { data } = await payingApi().getTransactions(accountId, page, perPage);
+    const { data } = await payingApi().getTransactions(accountId, { headers: { page, perPage } });
     return data.filter(
       //TODO: following filter can be expressed in a single, well-known, logic operator. What is it?
       //TODO(implement-backend)

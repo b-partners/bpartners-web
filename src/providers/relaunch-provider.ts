@@ -18,7 +18,7 @@ const relaunchProvider = {
   updateConf: async function (resources: any): Promise<any> {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .configureRelaunch(resources, accountId)
+      .configureRelaunch(accountId, resources)
       .then(({ data }) => data);
   },
 };
