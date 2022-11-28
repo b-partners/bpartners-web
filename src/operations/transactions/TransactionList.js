@@ -40,6 +40,8 @@ const TransactionList = props => {
     setDocumentState(e => ({ shouldShowDocument: true, documentId }));
   };
 
+  const statuses = Object.entries(TRANSACTION_STATUSES).map(([k, v]) => ({ id: k, name: v.label }));
+
   return (
     <>
       <TransactionChart />
@@ -51,7 +53,7 @@ const TransactionList = props => {
             pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
-              <SelectInput label='Statut' source='status' choices={[{ id: 'DONE', name: 'Effectué' /*TODO: generate from statuses*/ }]} alwaysOn resettable />,
+              <SelectInput label='Statut' source='status' choices={statuses} alwaysOn resettable />,
               <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
             hasCreate={false}
