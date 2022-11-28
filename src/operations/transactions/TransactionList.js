@@ -15,12 +15,7 @@ import PrevNextPagination from '../utils/PrevNextPagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
-
-//TODO: should be elsewhere
-const statuses = {
-  PENDING: { label: 'En attente', color: 'orange' },
-  DONE: { label: 'Effectué', color: 'green' },
-};
+import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -34,7 +29,9 @@ const Document = ({ transactionRef }) => (
   </Card>
 );
 
-const StatusField = ({ status }) => <Chip style={{ backgroundColor: statuses[status]['color'], color: 'white' }} label={statuses[status]['label']} />;
+const StatusField = ({ status }) => (
+  <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
+);
 
 const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
@@ -94,7 +91,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
           label='Catégorie'
         />
         {/*TODO: allow inline edition*/}
-        <FunctionField render={_record => <StatusField status='DONE' /*TODO: take from record*/ />} label='Statut' />
+        <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id }) => (
