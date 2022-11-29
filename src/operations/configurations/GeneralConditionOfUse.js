@@ -34,9 +34,7 @@ export const GeneralConditionOfUse = () => {
 
           const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
 
-          const legalFilesTemp = lfTemp.map(lf => ({ ...lf, approvalDatetime: null }));
-
-          const onlyNotApprovedLegalFiles = legalFilesTemp.filter(lf => !lf.approvalDatetime);
+          const onlyNotApprovedLegalFiles = lfTemp.filter(lf => !lf.approvalDatetime);
 
           cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
 
