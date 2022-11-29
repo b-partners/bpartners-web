@@ -29,7 +29,7 @@ export const VerticalPagination = ({ maxSteps, activeStep, setActiveStep, boxSx 
 
   return (
     <Box sx={{ ...STYLE, ...boxSx }}>
-      <IconButton size='small' onClick={handleNext} data-test-item='pdf-prev' disabled={activeStep === maxSteps || maxSteps === 0}>
+      <IconButton size='small' onClick={handleBack} data-test-item='pdf-prev' disabled={activeStep === 1 || maxSteps === 0}>
         {theme.direction === 'rtl' ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
       </IconButton>
 
@@ -37,7 +37,7 @@ export const VerticalPagination = ({ maxSteps, activeStep, setActiveStep, boxSx 
         {activeStep} / {maxSteps}
       </Typography>
 
-      <IconButton size='small' onClick={handleBack} data-test-item='pdf-next' disabled={activeStep === 1 || maxSteps === 0}>
+      <IconButton size='small' onClick={handleNext} data-test-item='pdf-next' disabled={activeStep === maxSteps || maxSteps === 0}>
         {theme.direction === 'rtl' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </IconButton>
     </Box>
