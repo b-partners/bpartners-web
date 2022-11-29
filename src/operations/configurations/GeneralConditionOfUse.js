@@ -1,3 +1,4 @@
+import { makeStyles } from '@material-ui/styles';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
@@ -94,11 +95,25 @@ export const GeneralConditionOfUse = () => {
   );
 };
 
+const useStyle = makeStyles(() => ({
+  PDF: {
+    '& .react-pdf__Page__canvas': {
+      height: '45rem !important',
+    },
+    '& .react-pdf__Page__textContent, & .react-pdf__Page__annotations': {
+      display: 'none',
+    },
+  },
+}));
+
 const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGALFILE }) => {
+  const classes = useStyle();
   const [activeStep, setActiveStep] = useState(1);
   const [maxSteps, setMaxSteps] = useState(0);
 
   const { fileUrl, name } = legalFile;
+
+  useEffect(() => setLoading(true), [activeStep, setLoading]);
 
   return (
     <>
@@ -107,6 +122,8 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
           <>
             <Pdf
               file={fileUrl}
+              renderMode='canvas'
+              className={classes.PDF}
               error={<EmptyList content="Une erreur s'est produite" />}
               loading={<></>}
               onLoadSuccess={({ numPages }) => {
@@ -133,7 +150,7 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
           </>
         )}
       </Box>
-      <VerticalPagination activeStep={activeStep} maxSteps={maxSteps} setActiveStep={setActiveStep} boxSx={VERTICAL_PAGINATION} />
+      {maxSteps > 0 && <VerticalPagination activeStep={activeStep} maxSteps={maxSteps} setActiveStep={setActiveStep} boxSx={VERTICAL_PAGINATION} />}
     </>
   );
 };
