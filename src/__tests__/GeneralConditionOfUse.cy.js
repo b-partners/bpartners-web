@@ -47,9 +47,8 @@ describe(specTitle('General Condition of Use'), () => {
       cy.wait('@getLegalFilePdf');
 
       cy.contains('Votre approbation est requise');
-      cy.contains('legal file version 1');
-      cy.contains('legal file version 2');
       cy.should('not.contain.text', 'legal file version 3');
+      cy.should('not.contain.text', 'legal file version 2');
     });
 
     it('is approving legal file on next button', () => {

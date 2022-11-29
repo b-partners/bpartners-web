@@ -95,7 +95,7 @@ export const GeneralConditionOfUse = () => {
 };
 
 const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGALFILE }) => {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const [maxSteps, setMaxSteps] = useState(0);
 
   const { fileUrl, name } = legalFile;
