@@ -5,6 +5,8 @@ export const whoamiItem = 'bp_whoami';
 export const accessTokenItem = 'bp_access_token';
 export const refreshTokenItem = 'bp_refresh_token';
 
+export const getCachedAccessToken = () => localStorage.getItem(accessTokenItem);
+
 const whoami = async (): Promise<Whoami> => {
   return securityApi()
     .whoami()
