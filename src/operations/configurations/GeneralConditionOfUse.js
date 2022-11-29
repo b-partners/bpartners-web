@@ -22,6 +22,7 @@ import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
 import { ErrorHandling } from '../utils/PdfViewer';
 import { reload } from '../../utils/reload';
+import { cacheUnapprovedFiles } from 'src/providers/auth-provider';
 
 export const GeneralConditionOfUse = () => {
   const userId = AuthProvider.getCachedWhoami()?.user?.id;
@@ -41,7 +42,7 @@ export const GeneralConditionOfUse = () => {
           const legalFilesTemp = (await userAccountsApi().getLegalFiles(userId)).data;
           const onlyNotApprovedLegalFiles = legalFilesTemp.filter(lf => !lf.approvalDatetime);
 
-          localStorage.setItem('unapprovedFiles', onlyNotApprovedLegalFiles.length);
+          cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
 
           setLegalFiles([...onlyNotApprovedLegalFiles]);
 

@@ -4,6 +4,10 @@ import { securityApi } from './api';
 export const whoamiItem = 'bp_whoami';
 export const accessTokenItem = 'bp_access_token';
 export const refreshTokenItem = 'bp_refresh_token';
+export const unapprovedFiles = 'bp_unapproved_Files';
+
+export const cacheUnapprovedFiles = (onlyNotApprovedLegalFiles: any) => localStorage.setItem(unapprovedFiles, onlyNotApprovedLegalFiles.length);
+const getCachedUnapprovedFiles = () => localStorage.getItem(unapprovedFiles);
 
 const whoami = async (): Promise<Whoami> => {
   return securityApi()
@@ -66,7 +70,7 @@ const authProvider = {
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
   checkError: ({ status }: any): Promise<any> => {
-    const unapprovedFiles = +localStorage.getItem('unapprovedFiles');
+    const unapprovedFiles = +getCachedUnapprovedFiles();
 
     if ((status === 401 || status === 403) && (!unapprovedFiles || unapprovedFiles === 0)) {
       return Promise.reject();
