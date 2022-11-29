@@ -1,36 +1,29 @@
-import {
-  Button,
-  IconButton,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@mui/material';
-import { ArrowLeft, ArrowRight } from '@material-ui/icons';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from '../../providers/api';
 import AuthProvider from '../../providers/auth-provider';
-import { ErrorHandling } from '../utils/PdfViewer';
 import { reload } from '../../utils/reload';
+import { EmptyList } from '../utils/EmptyList';
+import { VerticalPagination } from '../utils/vertical-pagination';
+import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
+
+const INIT_LEGALFILE = {
+  id: '',
+  name: '',
+  fileUrl: 'dummy-url.com',
+  approvalDatetime: null,
+};
 
 export const GeneralConditionOfUse = () => {
   const userId = AuthProvider.getCachedWhoami()?.user?.id;
-
   const notify = useNotify();
 
   const [loading, setLoading] = useState(false);
+  const [activeLfIndex, setActiveLfIndex] = useState(0);
   const [legalFiles, setLegalFiles] = useState([]);
-  const [activeStep, setActiveStep] = useState(0);
+  const [legalFile, setLegalFile] = useState(INIT_LEGALFILE);
   const [cguDialogStatus, setCguDialogStatus] = useState(false);
 
   useEffect(() => {
@@ -38,7 +31,11 @@ export const GeneralConditionOfUse = () => {
       if (userId) {
         try {
           setLoading(true);
-          const legalFilesTemp = (await userAccountsApi().getLegalFiles(userId)).data;
+
+          const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
+
+          const legalFilesTemp = lfTemp.map(lf => ({ ...lf, approvalDatetime: null }));
+
           const onlyNotApprovedLegalFiles = legalFilesTemp.filter(lf => !lf.approvalDatetime);
 
           setLegalFiles([...onlyNotApprovedLegalFiles]);
@@ -53,16 +50,19 @@ export const GeneralConditionOfUse = () => {
         }
       }
     };
-
     fetchLegalFiles();
   }, [userId, notify]);
+
+  useEffect(() => {
+    setLegalFile(legalFiles[activeLfIndex]);
+  }, [activeLfIndex, legalFiles]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
       await approveLegalFile();
 
-      activeStep === legalFiles.length - 1 ? reload() : setActiveStep(prevActiveStep => prevActiveStep + 1);
+      activeLfIndex === legalFiles.length - 1 ? reload() : setActiveLfIndex(prevActiveLf => prevActiveLf + 1);
     } catch (e) {
       notify("Une erreur s'est produite", { type: 'error' });
     } finally {
@@ -70,99 +70,70 @@ export const GeneralConditionOfUse = () => {
     }
   };
 
-  const approveLegalFile = () => userAccountsApi().approveLegalFile(userId, legalFiles[activeStep].id);
+  const approveLegalFile = () => userId && userAccountsApi().approveLegalFile(userId, legalFiles[activeLfIndex].id);
 
   return (
-    <Dialog
-      open={cguDialogStatus}
-      data-testid='cgu-dialog'
-      scroll='paper'
-      fullWidth
-      maxWidth='md'
-      sx={{
-        backdropFilter: 'blur(0.1rem)',
-      }}
-    >
+    <Dialog open={cguDialogStatus} fullScreen>
       <DialogTitle>
-        <Stack direction='row' justifyContent='space-between'>
-          <Typography variant='subtitle1'>Votre approbation est requise</Typography>
-          {loading && <CircularProgress size={'1.8rem'} />}
+        <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
+          <Typography variant='h6'>Votre approbation est requise</Typography>
+          <img src='./logo3292.png' alt='' width={30} />
         </Stack>
       </DialogTitle>
 
-      {(legalFiles || []).length > 0 && (
-        <>
-          <DialogContent dividers={true}>
-            <StepLegalFiles activeStep={activeStep} legalFiles={legalFiles} setLoading={setLoading} />
-          </DialogContent>
+      <DialogContent dividers sx={DIALOG_CONTENT}>
+        <GeneralConditionOfUseContent loading={loading} setLoading={setLoading} legalFile={legalFile} />
+      </DialogContent>
 
-          <DialogActions>
-            <Button name='lf-next-button' type='button' disabled={loading} onClick={handleSubmit}>
-              {activeStep === legalFiles.length - 1 ? 'Accepter' : 'Accepter et continuer'}
-            </Button>
-          </DialogActions>
-        </>
-      )}
+      <DialogActions>
+        <Button name='lf-next-button' type='button' disabled={false} onClick={handleSubmit}>
+          {activeLfIndex === legalFiles.length - 1 ? 'Accepter' : 'Accepter et continuer'}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
 
-const StepLegalFiles = ({ setLoading, activeStep, legalFiles }) => {
-  const notify = useNotify();
-  const [totalPage, setTotalPage] = useState(0);
-  const [actualPage, setActualPage] = useState(1);
+const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGALFILE }) => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [maxSteps, setMaxSteps] = useState(0);
 
-  const navigatePage = actions => {
-    setActualPage(prevActualPage => (actions === 'prev' ? prevActualPage - 1 : prevActualPage + 1));
-  };
-
-  const onLoad = () => {
-    setLoading(false);
-  };
-
-  useEffect(() => setLoading(true), [activeStep]);
+  const { fileUrl, name } = legalFile;
 
   return (
-    <Stepper activeStep={activeStep} orientation='vertical'>
-      {legalFiles.map(({ fileUrl, name }, index) => (
-        <Step key={name}>
-          <StepLabel>
-            {name}
-
-            {totalPage > 0 && (
-              <>
-                <IconButton data-item={`pdf-prev-${index}`} disabled={actualPage <= 1} onClick={() => navigatePage('prev')}>
-                  <ArrowLeft />
-                </IconButton>
-                {actualPage} - {totalPage}
-                <IconButton data-item={`pdf-next-${index}`} disabled={actualPage === totalPage} onClick={() => navigatePage('next')}>
-                  <ArrowRight />
-                </IconButton>
-              </>
-            )}
-          </StepLabel>
-          <StepContent
-            sx={{
-              maxHeight: '25rem',
-              overflowY: 'scroll',
-              borderLeft: `1px solid ${BP_COLOR['solid_grey']}`,
-            }}
-          >
+    <>
+      <Box sx={{ paddingLeft: '0.3rem', height: '100%', width: '100%', maxWidth: 1200 }}>
+        {!loading && (
+          <>
             <Pdf
               file={fileUrl}
-              error={<ErrorHandling errorMessage={'Echec de chargement du document'} />}
-              loading={<CircularProgress size={'1.8rem'} />}
+              error={<EmptyList content="Une erreur s'est produite" />}
+              loading={<></>}
               onLoadSuccess={({ numPages }) => {
-                setTotalPage(numPages);
-                onLoad();
+                setMaxSteps(numPages);
+                maxSteps > 0 && setActiveStep(1);
+                setLoading(false);
               }}
-              onLoadError={onLoad}
+              onLoadError={() => setLoading(false)}
             >
-              <PdfPage pageNumber={actualPage} />
+              <PdfPage pageNumber={activeStep} />
             </Pdf>
-          </StepContent>
-        </Step>
-      ))}
-    </Stepper>
+
+            <Box sx={LEGAL_FILE_TITLE}>
+              <Typography variant='body2'>{name}</Typography>
+            </Box>
+          </>
+        )}
+
+        {loading && (
+          <>
+            <Skeleton variant='text' height={20} width='60%' />
+            <Skeleton variant='text' height={20} width='20%' />
+            <Skeleton height='90%' variant='rectangular' />
+          </>
+        )}
+      </Box>
+      <VerticalPagination activeStep={activeStep} maxSteps={maxSteps} setActiveStep={setActiveStep} boxSx={VERTICAL_PAGINATION} />
+    </>
   );
 };
