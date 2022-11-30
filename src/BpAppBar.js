@@ -37,6 +37,7 @@ const BpAppBar = props => {
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const displayAppBarWarning = useMediaQuery('(min-width: 468px)');
   const [name, setName] = useState('');
+  const isBeta = process.env.REACT_APP_BETA;
 
   const getFirstName = useCallback(() => {
     userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
@@ -54,12 +55,12 @@ const BpAppBar = props => {
         </Box>
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
-          {displayAppBarWarning && <ShortWarning />}
+          {displayAppBarWarning && isBeta && <ShortWarning />}
           <SidebarToggleButton className={classes.sidebarToggleButton} />
         </Box>
       </Box>
 
-      <LongWarning />
+      {isBeta && <LongWarning />}
       <GeneralConditionOfUse />
     </>
   );
