@@ -1,4 +1,4 @@
-import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store } from '@material-ui/icons';
+import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport } from '@material-ui/icons';
 import { Box } from '@mui/material';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
@@ -17,6 +17,11 @@ const BpMenu = () => {
     window.open(swanUrl, '_blank', 'noopener');
   };
 
+  const contactSupport = () => {
+    const email = 'contact@bpartners.app';
+    window.open('mailto:', email);
+  };
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
       <Menu>
@@ -31,6 +36,7 @@ const BpMenu = () => {
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
         <Menu>
           <Menu.Item to='/' onClick={redirectToSwan} primaryText='Aller sur Swan' name='swan' leftIcon={<AccountBalance />} />
+          <Menu.Item to='/' onClick={contactSupport} primaryText='Contacter le support' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
         </Menu>

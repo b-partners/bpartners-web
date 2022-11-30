@@ -10,10 +10,10 @@ export enum Currency {
 }
 
 export const prettyPrintMoney = (amount: number, currency: Currency, type: TransactionTypeEnum): string =>
-  (type === TransactionTypeEnum.Income ? ' +' : ' -') + amount.toLocaleString() + ' ' + currency;
+  (type === TransactionTypeEnum.INCOME ? ' +' : ' -') + amount.toLocaleString() + ' ' + currency;
 
 export const coloredMoney = (amount: number, currency: Currency, type: TransactionTypeEnum) => (
-  <b style={{ color: type === TransactionTypeEnum.Outcome ? red[500] : green[500] }}> {prettyPrintMoney(amount, currency, type)} </b>
+  <b style={{ color: type === TransactionTypeEnum.OUTCOME ? red[500] : green[500] }}> {prettyPrintMoney(amount, currency, type)} </b>
 );
 
 // TODO: implement it in a proper way
