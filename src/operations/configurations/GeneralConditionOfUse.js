@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { userAccountsApi } from '../../providers/api';
-import AuthProvider from '../../providers/auth-provider';
+import AuthProvider, { cacheUnapprovedFiles } from '../../providers/auth-provider';
 import { reload } from '../../utils/reload';
 import { EmptyList } from '../utils/EmptyList';
 import { VerticalPagination } from '../utils/vertical-pagination';
@@ -36,6 +36,8 @@ export const GeneralConditionOfUse = () => {
           const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
 
           const onlyNotApprovedLegalFiles = lfTemp.filter(lf => !lf.approvalDatetime);
+
+          cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
 
           setLegalFiles([...onlyNotApprovedLegalFiles]);
 
@@ -111,7 +113,7 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
 
   const { fileUrl, name } = legalFile;
 
-  useEffect(() => setLoading(true), [activeStep, setLoading]);
+  useEffect(() => setLoading(true), [setLoading]);
 
   return (
     <>

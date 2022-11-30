@@ -17,7 +17,7 @@ import { marketplaces } from './operations/marketplaces';
 import products from './operations/products';
 import transactions from './operations/transactions';
 
-import authProvider from './providers/auth-provider.ts';
+import authProvider, { getCachedAccessToken } from './providers/auth-provider.ts';
 import dataProvider from './providers/data-provider';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
@@ -30,7 +30,7 @@ export const BpAdmin = () => (
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
-    loginPage={LoginPage}
+    loginPage={false}
     theme={bpTheme}
     layout={MyLayout}
   >
@@ -51,20 +51,18 @@ export const BpAdmin = () => (
   </Admin>
 );
 
-const CheckAuth = () => {
-  const accessToken = localStorage.getItem('bp_access_token');
+const App = () => {
+  const accessToken = getCachedAccessToken();
 
-  return accessToken ? <Navigate to='/transactions' /> : <Navigate to='/login' />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+        <Route exact path='/login' element={!accessToken ? <LoginPage /> : <Navigate to='/' />} />
+        <Route exact path='*' element={accessToken ? <BpAdmin /> : <Navigate to='/login' />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
-
-const App = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route exact path='/' element={<CheckAuth />} />
-      <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
-      <Route path='*' element={<BpAdmin />} />
-    </Routes>
-  </BrowserRouter>
-);
 
 export default App;
