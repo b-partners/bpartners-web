@@ -593,10 +593,12 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactions: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getTransactions: async (id: string, page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling getTransactions.');
@@ -613,6 +615,14 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (pageSize !== undefined) {
+        localVarQueryParameter['pageSize'] = pageSize;
+      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -1000,14 +1010,18 @@ export const PayingApiFp = function (configuration?: Configuration) {
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTransactions(
       id: string,
+      page?: Page,
+      pageSize?: PageSize,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Transaction>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, page, pageSize, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -1248,12 +1262,14 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      *
      * @summary Get transactions of an account
      * @param {string} id
+     * @param {Page} [page]
+     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+    async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
       return PayingApiFp(configuration)
-        .getTransactions(id, options)
+        .getTransactions(id, page, pageSize, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1483,13 +1499,15 @@ export class PayingApi extends BaseAPI {
    *
    * @summary Get transactions of an account
    * @param {string} id
+   * @param {Page} [page]
+   * @param {PageSize} [pageSize]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+  public async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
     return PayingApiFp(this.configuration)
-      .getTransactions(id, options)
+      .getTransactions(id, page, pageSize, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
