@@ -3,7 +3,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 
 import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
-import { v4 as uuid } from 'uuid';
+import emptyToNull from 'src/utils/emptyToNull';
 
 const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -22,7 +22,8 @@ const productProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    return [await payingApi().createProducts(resources, accountId, uuid())];
+    const toSend = { ...emptyToNull(resources[0]), quantity: null };
+    return [await payingApi().createProducts([toSend], accountId)];
   },
 };
 
