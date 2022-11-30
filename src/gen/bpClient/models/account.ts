@@ -34,6 +34,24 @@ export interface Account {
    * @type {string}
    * @memberof Account
    */
+  iban?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Account
+   */
+  bic?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Account
+   */
+  availableBalance?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof Account
+   */
   IBAN?: string;
   /**
    *

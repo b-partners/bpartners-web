@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 import { EnableStatus } from './enable-status';
+import { IdentificationStatus } from './identification-status';
 /**
  *
  * @export
@@ -38,28 +39,16 @@ export interface User {
   lastName?: string;
   /**
    *
-   * @type {string}
-   * @memberof User
-   */
-  birthDate?: string;
-  /**
-   *
    * @type {boolean}
    * @memberof User
    */
   idVerified?: boolean;
   /**
    *
-   * @type {string}
+   * @type {IdentificationStatus}
    * @memberof User
    */
-  identificationStatus?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof User
-   */
-  nationalityCCA3?: string;
+  identificationStatus?: IdentificationStatus;
   /**
    *
    * @type {string}

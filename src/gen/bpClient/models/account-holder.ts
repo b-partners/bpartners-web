@@ -14,6 +14,7 @@
 import { CompanyBusinessActivity } from './company-business-activity';
 import { CompanyInfo } from './company-info';
 import { ContactAddress } from './contact-address';
+import { VerificationStatus } from './verification-status';
 /**
  *
  * @export
@@ -86,4 +87,16 @@ export interface AccountHolder {
    * @memberof AccountHolder
    */
   businessActivities?: CompanyBusinessActivity;
+  /**
+   *
+   * @type {number}
+   * @memberof AccountHolder
+   */
+  initialCashflow?: number;
+  /**
+   *
+   * @type {VerificationStatus}
+   * @memberof AccountHolder
+   */
+  verificationStatus?: VerificationStatus;
 }

@@ -11,18 +11,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Redirection1 } from './redirection1';
 import { RedirectionStatusUrls } from './redirection-status-urls';
 /**
  *
  * @export
- * @interface PaymentRedirection
+ * @interface Redirection1
  */
-export interface PaymentRedirection extends Redirection1 {
+export interface Redirection1 {
   /**
    *
    * @type {string}
-   * @memberof PaymentRedirection
+   * @memberof Redirection1
    */
-  id?: string;
+  redirectionUrl?: string;
+  /**
+   *
+   * @type {RedirectionStatusUrls}
+   * @memberof Redirection1
+   */
+  redirectionStatusUrls?: RedirectionStatusUrls;
 }

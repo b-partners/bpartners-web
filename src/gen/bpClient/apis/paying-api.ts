@@ -96,29 +96,22 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *
-     * @summary Create products of an invoice
+     * @summary Create products of an account
      * @param {Array<CreateProduct>} body
-     * @param {string} aId Account identifier
-     * @param {string} iId Invoice identifier
+     * @param {string} id Account identifier
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createProducts: async (body: Array<CreateProduct>, aId: string, iId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    createProducts: async (body: Array<CreateProduct>, id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'body' is not null or undefined
       if (body === null || body === undefined) {
         throw new RequiredError('body', 'Required parameter body was null or undefined when calling createProducts.');
       }
-      // verify required parameter 'aId' is not null or undefined
-      if (aId === null || aId === undefined) {
-        throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling createProducts.');
+      // verify required parameter 'id' is not null or undefined
+      if (id === null || id === undefined) {
+        throw new RequiredError('id', 'Required parameter id was null or undefined when calling createProducts.');
       }
-      // verify required parameter 'iId' is not null or undefined
-      if (iId === null || iId === undefined) {
-        throw new RequiredError('iId', 'Required parameter iId was null or undefined when calling createProducts.');
-      }
-      const localVarPath = `/accounts/{aId}/invoices/{iId}/products`
-        .replace(`{${'aId'}}`, encodeURIComponent(String(aId)))
-        .replace(`{${'iId'}}`, encodeURIComponent(String(iId)));
+      const localVarPath = `/accounts/{id}/products`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, 'https://example.com');
       let baseOptions;
@@ -536,28 +529,16 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
-     * @param {boolean} unique If disabled, all transaction categories are given
      * @param {string} from
      * @param {string} to
      * @param {boolean} [userDefined]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactionCategories: async (
-      aId: string,
-      unique: boolean,
-      from: string,
-      to: string,
-      userDefined?: boolean,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
+    getTransactionCategories: async (aId: string, from: string, to: string, userDefined?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
         throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getTransactionCategories.');
-      }
-      // verify required parameter 'unique' is not null or undefined
-      if (unique === null || unique === undefined) {
-        throw new RequiredError('unique', 'Required parameter unique was null or undefined when calling getTransactionCategories.');
       }
       // verify required parameter 'from' is not null or undefined
       if (from === null || from === undefined) {
@@ -579,10 +560,6 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
-
-      if (unique !== undefined) {
-        localVarQueryParameter['unique'] = unique;
-      }
 
       if (userDefined !== undefined) {
         localVarQueryParameter['userDefined'] = userDefined;
@@ -616,12 +593,10 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
      *
      * @summary Get transactions of an account
      * @param {string} id
-     * @param {Page} [page]
-     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactions: async (id: string, page?: Page, pageSize?: PageSize, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getTransactions: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       if (id === null || id === undefined) {
         throw new RequiredError('id', 'Required parameter id was null or undefined when calling getTransactions.');
@@ -638,14 +613,6 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarQueryParameter = {} as any;
 
       // authentication BearerAuth required
-
-      if (page !== undefined) {
-        localVarQueryParameter['page'] = page;
-      }
-
-      if (pageSize !== undefined) {
-        localVarQueryParameter['pageSize'] = pageSize;
-      }
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -842,20 +809,18 @@ export const PayingApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Create products of an invoice
+     * @summary Create products of an account
      * @param {Array<CreateProduct>} body
-     * @param {string} aId Account identifier
-     * @param {string} iId Invoice identifier
+     * @param {string} id Account identifier
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createProducts(
       body: Array<CreateProduct>,
-      aId: string,
-      iId: string,
+      id: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Invoice>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).createProducts(body, aId, iId, options);
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Product>>>> {
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).createProducts(body, id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -1012,7 +977,6 @@ export const PayingApiFp = function (configuration?: Configuration) {
      * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
-     * @param {boolean} unique If disabled, all transaction categories are given
      * @param {string} from
      * @param {string} to
      * @param {boolean} [userDefined]
@@ -1021,13 +985,12 @@ export const PayingApiFp = function (configuration?: Configuration) {
      */
     async getTransactionCategories(
       aId: string,
-      unique: boolean,
       from: string,
       to: string,
       userDefined?: boolean,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionCategory>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, unique, from, to, userDefined, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, from, to, userDefined, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -1037,18 +1000,14 @@ export const PayingApiFp = function (configuration?: Configuration) {
      *
      * @summary Get transactions of an account
      * @param {string} id
-     * @param {Page} [page]
-     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTransactions(
       id: string,
-      page?: Page,
-      pageSize?: PageSize,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<Transaction>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, page, pageSize, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactions(id, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -1137,16 +1096,15 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
     },
     /**
      *
-     * @summary Create products of an invoice
+     * @summary Create products of an account
      * @param {Array<CreateProduct>} body
-     * @param {string} aId Account identifier
-     * @param {string} iId Invoice identifier
+     * @param {string} id Account identifier
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async createProducts(body: Array<CreateProduct>, aId: string, iId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Invoice>> {
+    async createProducts(body: Array<CreateProduct>, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
       return PayingApiFp(configuration)
-        .createProducts(body, aId, iId, options)
+        .createProducts(body, id, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1269,7 +1227,6 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
-     * @param {boolean} unique If disabled, all transaction categories are given
      * @param {string} from
      * @param {string} to
      * @param {boolean} [userDefined]
@@ -1278,28 +1235,25 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
      */
     async getTransactionCategories(
       aId: string,
-      unique: boolean,
       from: string,
       to: string,
       userDefined?: boolean,
       options?: AxiosRequestConfig
     ): Promise<AxiosResponse<Array<TransactionCategory>>> {
       return PayingApiFp(configuration)
-        .getTransactionCategories(aId, unique, from, to, userDefined, options)
+        .getTransactionCategories(aId, from, to, userDefined, options)
         .then(request => request(axios, basePath));
     },
     /**
      *
      * @summary Get transactions of an account
      * @param {string} id
-     * @param {Page} [page]
-     * @param {PageSize} [pageSize]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+    async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
       return PayingApiFp(configuration)
-        .getTransactions(id, page, pageSize, options)
+        .getTransactions(id, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1368,17 +1322,16 @@ export class PayingApi extends BaseAPI {
   }
   /**
    *
-   * @summary Create products of an invoice
+   * @summary Create products of an account
    * @param {Array<CreateProduct>} body
-   * @param {string} aId Account identifier
-   * @param {string} iId Invoice identifier
+   * @param {string} id Account identifier
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async createProducts(body: Array<CreateProduct>, aId: string, iId: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Invoice>> {
+  public async createProducts(body: Array<CreateProduct>, id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Product>>> {
     return PayingApiFp(this.configuration)
-      .createProducts(body, aId, iId, options)
+      .createProducts(body, id, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
@@ -1508,7 +1461,6 @@ export class PayingApi extends BaseAPI {
    * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
    * @summary Get known transaction categories of an account
    * @param {string} aId Account identifier
-   * @param {boolean} unique If disabled, all transaction categories are given
    * @param {string} from
    * @param {string} to
    * @param {boolean} [userDefined]
@@ -1518,29 +1470,26 @@ export class PayingApi extends BaseAPI {
    */
   public async getTransactionCategories(
     aId: string,
-    unique: boolean,
     from: string,
     to: string,
     userDefined?: boolean,
     options?: AxiosRequestConfig
   ): Promise<AxiosResponse<Array<TransactionCategory>>> {
     return PayingApiFp(this.configuration)
-      .getTransactionCategories(aId, unique, from, to, userDefined, options)
+      .getTransactionCategories(aId, from, to, userDefined, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
    *
    * @summary Get transactions of an account
    * @param {string} id
-   * @param {Page} [page]
-   * @param {PageSize} [pageSize]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
    */
-  public async getTransactions(id: string, page?: Page, pageSize?: PageSize, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
+  public async getTransactions(id: string, options?: AxiosRequestConfig): Promise<AxiosResponse<Array<Transaction>>> {
     return PayingApiFp(this.configuration)
-      .getTransactions(id, page, pageSize, options)
+      .getTransactions(id, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
