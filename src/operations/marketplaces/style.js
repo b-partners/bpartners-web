@@ -23,8 +23,8 @@ export const AVATAR_CONTAINER_STYLE = {
 };
 
 export const AVATAR_STYLE = {
-  height: '3em',
-  width: '3em',
+  height: '4em',
+  width: '4em',
   border: '3px solid #fff',
   zIndex: 2,
 };
@@ -57,7 +57,7 @@ export const BACKDROP_STYLE = {
 };
 
 export const DETAIL_CONTAINER_STYLE = {
-  padding: '0.6rem 0.3rem',
+  padding: '0.6rem 0',
   color: 'grey',
   width: '100%',
 };
