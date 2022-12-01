@@ -62,7 +62,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Recette');
     cy.contains('Trésorerie');
     cy.contains('30');
-    cy.contains('10');
+    cy.contains('20');
     cy.contains('40');
     cy.get('#date').type('2022-01');
     cy.contains('12');
