@@ -1,11 +1,13 @@
-import { Add, Attachment, Check, DoneAll, Send } from '@mui/icons-material';
+import { Add, Attachment, Check, DoneAll, Send, TurnRight } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
 import { InvoiceStatusEN } from '../../constants/invoice-status';
 import ListComponent from '../utils/ListComponent';
 import PrevNextPagination from '../utils/PrevNextPagination';
+import { ManualInvoiceRelaunch } from './ManualInvoiceRelaunch';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
@@ -32,7 +34,7 @@ const TooltipButton = ({ icon, ...others }) => (
 );
 
 const InvoiceGridTable = props => {
-  const { crUpdateInvoice, viewDocument, sendInvoice } = props;
+  const { crUpdateInvoice, viewDocument, sendInvoice, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
 
   return (
@@ -80,7 +82,10 @@ const InvoiceGridTable = props => {
                   }
                 />
               ) : (
-                <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
+                <>
+                  <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
+                  <TooltipButton title='Relancer manuellement ce devis' icon={<TurnRight />} onClick={() => setInvoiceToRelaunch(data)} />
+                </>
               )}
             </Box>
           )}
@@ -92,9 +97,10 @@ const InvoiceGridTable = props => {
 };
 
 const InvoiceListTable = props => {
-  const { stateHandling, invoiceType } = props;
+  const [selectedInvoiceToRelaunch, setSelectedInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
+  const { stateHandling, invoiceType } = props;
 
   const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
   const crUpdateInvoice = selectedInvoice => stateHandling({ selectedInvoice, viewScreen: viewScreenState.EDITION });
@@ -103,24 +109,35 @@ const InvoiceListTable = props => {
     stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
   };
 
+  const setInvoiceToRelaunch = invoice => {
+    console.log(invoice);
+    setSelectedInvoiceToRelaunch(() => invoice);
+  };
+
   return (
-    <List
-      exporter={false}
-      resource='invoices'
-      filter={{ invoiceType }}
-      component={ListComponent}
-      pagination={<PrevNextPagination />}
-      actions={
-        <TooltipButton
-          style={{ marginRight: 33 }}
-          title='Créer un nouveau devis'
-          onClick={() => crUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
-          icon={<Add />}
-        />
-      }
-    >
-      <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} />
-    </List>
+    <>
+      <List
+        exporter={false}
+        resource='invoices'
+        filter={{ invoiceType }}
+        component={ListComponent}
+        pagination={<PrevNextPagination />}
+        actions={
+          <TooltipButton
+            style={{ marginRight: 33 }}
+            title='Créer un nouveau devis'
+            onClick={() => crUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+            icon={<Add />}
+          />
+        }
+      >
+        <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />
+        } >
+        <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} />
+      </List>
+
+      <ManualInvoiceRelaunch invoice={selectedInvoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
+    </>
   );
 };
 
