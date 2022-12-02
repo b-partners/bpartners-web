@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import authProvider from '../providers/auth-provider';
-import { whoami1, token1, user1 } from './mocks/responses/security-api';
+import { whoami1, token1, user1, user2 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
@@ -84,6 +84,25 @@ describe(specTitle('Account'), () => {
     // cy.contains('Armurier').click();
     cy.get('.css-19midj6 > .MuiButton-root').click();
     cy.contains('Changement enregistré');
+  });
+
+  it('unverified user warning', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user2).as('getUser2');
+
+    mount(<App />);
+    cy.wait('@getUser2');
+
+    cy.contains('Avertissement');
+    cy.contains(`Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au support.`);
+    cy.get('#closeWarning').click();
+
+    cy.contains('(Compte non vérifié)');
+
+    cy.get('[name="account"]').click();
   });
 
   it('upload logo image', () => {

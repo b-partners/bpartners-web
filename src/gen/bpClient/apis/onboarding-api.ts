@@ -22,7 +22,7 @@ import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
 import { OnboardingInitiation } from '../models';
 import { PreUser } from '../models';
-import { Redirection } from '../models';
+import { Redirection1 } from '../models';
 import { ResourceNotFoundException } from '../models';
 import { TooManyRequestsException } from '../models';
 /**
@@ -153,7 +153,7 @@ export const OnboardingApiFp = function (configuration?: Configuration) {
     async initiateOnboarding(
       body: OnboardingInitiation,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Redirection>>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Redirection1>>> {
       const localVarAxiosArgs = await OnboardingApiAxiosParamCreator(configuration).initiateOnboarding(body, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
@@ -188,7 +188,7 @@ export const OnboardingApiFactory = function (configuration?: Configuration, bas
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection>> {
+    async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection1>> {
       return OnboardingApiFp(configuration)
         .initiateOnboarding(body, options)
         .then(request => request(axios, basePath));
@@ -224,7 +224,7 @@ export class OnboardingApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof OnboardingApi
    */
-  public async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection>> {
+  public async initiateOnboarding(body: OnboardingInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection1>> {
     return OnboardingApiFp(this.configuration)
       .initiateOnboarding(body, options)
       .then(request => request(this.axios, this.basePath));

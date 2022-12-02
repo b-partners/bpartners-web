@@ -1,4 +1,4 @@
-import { Transaction, TransactionCategory } from 'src/gen/bpClient';
+import { Transaction, TransactionCategory, TransactionStatus, TransactionTypeEnum } from 'src/gen/bpClient';
 import { TransactionsSummary } from 'src/gen/bpClient/models';
 
 export const transactions1: Array<Transaction> = [
@@ -15,7 +15,9 @@ export const transactions1: Array<Transaction> = [
         userDefined: true,
       },
     ],
-    paymentDatetime: new Date('2022-08-18T05:34:20'),
+    paymentDatetime: new Date('2022-07-18T05:34:20'),
+    status: TransactionStatus.PENDING,
+    type: TransactionTypeEnum.INCOME,
   },
   {
     id: 'transaction2',
@@ -30,14 +32,18 @@ export const transactions1: Array<Transaction> = [
         userDefined: true,
       },
     ],
-    paymentDatetime: new Date('2022-08-17T03:24:00'),
+    paymentDatetime: new Date('2022-07-18T05:34:20'),
+    status: TransactionStatus.BOOKED,
+    type: TransactionTypeEnum.INCOME,
   },
   {
     id: 'transaction3',
     label: "Abonnement BPartners - L'essentiel",
     reference: 'BP22003',
     amount: -5,
-    paymentDatetime: new Date('2022-07-18T05:34:20'),
+    paymentDatetime: new Date('2022-08-18T05:34:20'),
+    status: TransactionStatus.BOOKED,
+    type: TransactionTypeEnum.OUTCOME,
   },
   {
     id: 'transaction4',
@@ -53,6 +59,8 @@ export const transactions1: Array<Transaction> = [
       },
     ],
     paymentDatetime: new Date('2022-07-17T03:24:00'),
+    status: TransactionStatus.BOOKED,
+    type: TransactionTypeEnum.OUTCOME,
   },
   {
     id: 'transaction5',
@@ -60,6 +68,8 @@ export const transactions1: Array<Transaction> = [
     reference: 'BP22005',
     amount: -5,
     paymentDatetime: new Date('2022-06-18T05:34:20'),
+    status: TransactionStatus.PENDING,
+    type: TransactionTypeEnum.INCOME,
   },
 ];
 

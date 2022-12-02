@@ -30,7 +30,6 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
-    cy.contains('Résumé graphique');
     cy.contains("Abonnement BPartners - L'essentiel");
     cy.contains('BP22002');
     cy.contains('-0.05 €');
@@ -61,6 +60,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
+    cy.get('#date').type('2022-11');
     cy.contains('30');
     cy.contains('10');
     cy.contains('40');

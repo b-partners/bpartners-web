@@ -12,6 +12,8 @@
  * Do not edit the class manually.
  */
 import { TransactionCategory } from './transaction-category';
+import { TransactionStatus } from './transaction-status';
+import { TransactionTypeEnum } from './transaction-type-enum';
 /**
  *
  * @export
@@ -54,4 +56,16 @@ export interface Transaction {
    * @memberof Transaction
    */
   category?: Array<TransactionCategory>;
+  /**
+   *
+   * @type {TransactionTypeEnum}
+   * @memberof Transaction
+   */
+  type?: TransactionTypeEnum;
+  /**
+   *
+   * @type {TransactionStatus}
+   * @memberof Transaction
+   */
+  status?: TransactionStatus;
 }
