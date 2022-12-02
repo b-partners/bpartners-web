@@ -16,6 +16,13 @@ import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
 import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
+import { makeStyles } from '@material-ui/styles';
+
+const useStyle = makeStyles(() => ({
+  selectInputList: {
+    minWidth: '9.375rem',
+  },
+}));
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -42,6 +49,8 @@ const TransactionList = props => {
 
   const statuses = Object.entries(TRANSACTION_STATUSES).map(([k, v]) => ({ id: k, name: v.label }));
 
+  const classes = useStyle();
+
   return (
     <>
       <TransactionChart />
@@ -53,7 +62,7 @@ const TransactionList = props => {
             pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
-              <SelectInput label='Statut' source='status' choices={statuses} alwaysOn resettable />,
+              <SelectInput label='Statut' source='status' choices={statuses} alwaysOn resettable className={classes.selectInputList} />,
               <BooleanInput label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
             hasCreate={false}
