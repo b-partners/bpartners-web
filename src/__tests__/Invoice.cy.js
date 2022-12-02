@@ -135,4 +135,6 @@ describe(specTitle('Invoice'), () => {
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');
   });
+
+  it('should relaunch invoice', () => {});
 });

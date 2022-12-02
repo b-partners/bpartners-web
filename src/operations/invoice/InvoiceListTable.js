@@ -97,7 +97,7 @@ const InvoiceGridTable = props => {
 };
 
 const InvoiceListTable = props => {
-  const [selectedInvoiceToRelaunch, setSelectedInvoiceToRelaunch] = useState(null);
+  const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
   const { stateHandling, invoiceType } = props;
@@ -107,11 +107,6 @@ const InvoiceListTable = props => {
   const viewDocument = (event, selectedInvoice) => {
     event.stopPropagation();
     stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
-  };
-
-  const setInvoiceToRelaunch = invoice => {
-    console.log(invoice);
-    setSelectedInvoiceToRelaunch(() => invoice);
   };
 
   return (
@@ -132,11 +127,9 @@ const InvoiceListTable = props => {
         }
       >
         <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />
-        } >
-        <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} />
       </List>
 
-      <ManualInvoiceRelaunch invoice={selectedInvoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
+      <ManualInvoiceRelaunch invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
     </>
   );
 };
