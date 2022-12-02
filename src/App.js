@@ -7,7 +7,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
-import { bpTheme } from './bpTheme';
+import BpLoading from './BpLoading';
+import { bpTheme, BP_COLOR } from './bpTheme';
 
 import account from './operations/account';
 import { Configuration } from './operations/configurations';
@@ -23,6 +24,7 @@ import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
 import LoginPage from './security/LoginPage';
 import LoginSuccessPage from './security/LoginSuccessPage';
+import useAuthentication from './utils/useAuthentication';
 
 export const BpAdmin = () => (
   <Admin
@@ -53,13 +55,14 @@ export const BpAdmin = () => (
 
 const App = () => {
   const accessToken = getCachedAccessToken();
-
+  const { isLoading, isAuthenticated } = useAuthentication();
   return (
     <BrowserRouter>
       <Routes>
+        {isLoading && <Route path='*' element={<BpLoading />} />}
         <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
-        <Route exact path='/login' element={!accessToken ? <LoginPage /> : <Navigate to='/' />} />
-        <Route exact path='*' element={accessToken ? <BpAdmin /> : <Navigate to='/login' />} />
+        <Route exact path='/login' element={!isAuthenticated ? <LoginPage /> : <Navigate to='/' />} />
+        <Route exact path='*' element={isAuthenticated ? <BpAdmin /> : <Navigate to='/login' />} />
       </Routes>
     </BrowserRouter>
   );

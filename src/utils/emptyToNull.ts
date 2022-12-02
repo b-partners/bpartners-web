@@ -1,4 +1,5 @@
 /* TODO: use library instead */
+
 /**
  * Transform all empty string in given object to null
  * @param obj
