@@ -18,6 +18,7 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, products1).as('getProducts1');
   });
 
   it('are displayed', () => {
@@ -43,5 +44,20 @@ describe(specTitle('Products'), () => {
     cy.get('#description').type('test description');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
+  });
+
+  it('should send an invoice', () => {
+    mount(<App />);
+    cy.get('[name="products"]').click();
+    cy.wait('@whoami');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts1');
+
+    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
+    cy.get('#description').type('description');
+    cy.get('#unitPrice').type(100);
+    cy.get('#vatPercent').type(100);
+    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
   });
 });

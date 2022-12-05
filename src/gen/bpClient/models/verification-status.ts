@@ -11,18 +11,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Redirection1 } from './redirection1';
-import { RedirectionStatusUrls } from './redirection-status-urls';
 /**
  *
  * @export
- * @interface PaymentRedirection
+ * @enum {string}
  */
-export interface PaymentRedirection extends Redirection1 {
-  /**
-   *
-   * @type {string}
-   * @memberof PaymentRedirection
-   */
-  id?: string;
+export enum VerificationStatus {
+  VERIFIED = 'VERIFIED',
+  NOTSTARTED = 'NOT_STARTED',
+  PENDING = 'PENDING',
+  WAITINGFORINFORMATION = 'WAITING_FOR_INFORMATION',
 }

@@ -12,6 +12,7 @@
  * Do not edit the class manually.
  */
 import { CreateTransactionCategory } from './create-transaction-category';
+import { TransactionTypeEnum } from './transaction-type-enum';
 /**
  *
  * @export
@@ -36,4 +37,10 @@ export interface TransactionCategory extends CreateTransactionCategory {
    * @memberof TransactionCategory
    */
   count?: number;
+  /**
+   *
+   * @type {TransactionTypeEnum}
+   * @memberof TransactionCategory
+   */
+  transactionType?: TransactionTypeEnum;
 }

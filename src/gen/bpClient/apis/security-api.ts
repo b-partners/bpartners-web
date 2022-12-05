@@ -21,7 +21,7 @@ import { BadRequestException } from '../models';
 import { CreateToken } from '../models';
 import { InternalServerException } from '../models';
 import { NotAuthorizedException } from '../models';
-import { Redirection } from '../models';
+import { Redirection1 } from '../models';
 import { ResourceNotFoundException } from '../models';
 import { Token } from '../models';
 import { TooManyRequestsException } from '../models';
@@ -221,7 +221,7 @@ export const SecurityApiFp = function (configuration?: Configuration) {
     async initiateAuth(
       body: AuthInitiation,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Redirection>>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Redirection1>>> {
       const localVarAxiosArgs = await SecurityApiAxiosParamCreator(configuration).initiateAuth(body, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
@@ -282,7 +282,7 @@ export const SecurityApiFactory = function (configuration?: Configuration, baseP
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async initiateAuth(body: AuthInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection>> {
+    async initiateAuth(body: AuthInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection1>> {
       return SecurityApiFp(configuration)
         .initiateAuth(body, options)
         .then(request => request(axios, basePath));
@@ -340,7 +340,7 @@ export class SecurityApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof SecurityApi
    */
-  public async initiateAuth(body: AuthInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection>> {
+  public async initiateAuth(body: AuthInitiation, options?: AxiosRequestConfig): Promise<AxiosResponse<Redirection1>> {
     return SecurityApiFp(this.configuration)
       .initiateAuth(body, options)
       .then(request => request(this.axios, this.basePath));

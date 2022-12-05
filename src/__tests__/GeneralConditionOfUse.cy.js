@@ -34,7 +34,6 @@ describe(specTitle('General Condition of Use'), () => {
   describe('there are unapproved cgu', () => {
     beforeEach(() => {
       cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, legalFiles1).as('getLegalFiles1');
-
       cy.readFile('src/assets/legal-file.pdf', 'binary').then(data => {
         cy.intercept('https://clri-ltc.ca/files/2018/09/TEMP-PDF-Document.pdf', data.toString()).as('getLegalFilePdf');
       });
@@ -48,9 +47,8 @@ describe(specTitle('General Condition of Use'), () => {
       cy.wait('@getLegalFilePdf');
 
       cy.contains('Votre approbation est requise');
-      cy.contains('legal file version 1');
-      cy.contains('legal file version 2');
       cy.should('not.contain.text', 'legal file version 3');
+      cy.should('not.contain.text', 'legal file version 2');
     });
 
     it('is approving legal file on next button', () => {
@@ -76,16 +74,16 @@ describe(specTitle('General Condition of Use'), () => {
       cy.wait('@getLegalFiles1');
       cy.wait('@getLegalFilePdf');
 
-      cy.contains('1 - 41');
+      cy.contains('1 / 41');
 
-      cy.get('[data-item="pdf-prev-0"]').should('be.disabled');
-      cy.get('[data-item="pdf-next-0"]').click();
+      cy.get('[data-test-item="pdf-prev"]').should('be.disabled');
+      cy.get('[data-test-item="pdf-next"]').click();
 
-      cy.contains('2 - 41');
+      cy.contains('2 / 41');
 
-      cy.get('[data-item="pdf-prev-0"]').should('not.be.disabled').click();
+      cy.get('[data-test-item="pdf-prev"]').should('not.be.disabled').click();
 
-      cy.contains('1 - 41');
+      cy.contains('1 / 41');
     });
   });
 

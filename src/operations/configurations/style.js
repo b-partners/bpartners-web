@@ -1,0 +1,33 @@
+import { BP_COLOR } from '../../bpTheme';
+
+export const DIALOG_CONTENT = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  height: '100%',
+  position: 'relative',
+  padding: 0,
+  margin: 0,
+};
+
+export const VERTICAL_PAGINATION = {
+  position: 'absolute',
+  right: '0',
+  top: '50%',
+  backgroundColor: 'rgb(255, 255, 255, 0.95)',
+  margin: '0.2rem',
+  translate: '0 -50%',
+};
+
+export const LEGAL_FILE_TITLE = {
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  width: 'max-content',
+  padding: '0.3rem',
+  borderRadius: '0.4rem 0 0 0.4rem',
+  marginTop: '0.1rem',
+  backgroundColor: '#fff',
+  border: `1px solid`,
+  borderTop: 'none',
+  borderColor: BP_COLOR['solid_grey'],
+};
