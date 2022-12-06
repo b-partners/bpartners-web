@@ -1,6 +1,6 @@
-import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { Box, IconButton, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { BP_COLOR } from '../../bpTheme';
 
 const STYLE = {

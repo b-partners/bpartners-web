@@ -1,5 +1,5 @@
-import { Box, IconButton, Tooltip } from '@material-ui/core';
-import { Attachment as AttachmentIcon } from '@material-ui/icons';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import AttachmentIcon from '@mui/icons-material/Attachment';
 
 import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -92,7 +92,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
           }
           label='Catégorie'
         />
-        {/*TODO: allow inline edition*/}
+        TODO: allow inline edition
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField

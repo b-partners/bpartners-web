@@ -1,5 +1,5 @@
 import React from 'react';
-import { green, red } from '@material-ui/core/colors';
+import { green, red } from '@mui/material/colors';
 import { TransactionTypeEnum } from '../../gen/bpClient';
 
 export enum Currency {

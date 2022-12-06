@@ -1,6 +1,6 @@
 import { Typography, Card, CardHeader, CardContent, IconButton, CardActions, FilledInput, FormControl, InputAdornment } from '@mui/material';
-import { makeStyles } from '@material-ui/styles';
-import { Clear } from '@material-ui/icons';
+import { makeStyles } from '@mui/styles';
+import { Clear } from '@mui/icons-material';
 import { prettyPrintMoney, Currency } from '../utils/money';
 
 const useStyle = makeStyles(() => ({

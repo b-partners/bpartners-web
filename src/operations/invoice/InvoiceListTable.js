@@ -1,6 +1,6 @@
 import PrevNextPagination from '../utils/PrevNextPagination';
 import { getInvoiceStatus, invoiceInitialValue } from './utils';
-import { Check, Send, Attachment, Add, DoneAll } from '@material-ui/icons';
+import { Check, Send, Attachment, Add, DoneAll } from '@mui/icons-material';
 import { IconButton, Tooltip, Typography, Box } from '@mui/material';
 import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
 import { v4 as uuid } from 'uuid';

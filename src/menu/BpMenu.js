@@ -1,4 +1,4 @@
-import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport } from '@material-ui/icons';
+import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';

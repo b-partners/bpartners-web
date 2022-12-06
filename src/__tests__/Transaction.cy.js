@@ -86,11 +86,11 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
+    cy.get('[id=document-button-transaction2]').click();
+    cy.contains('BP22002');
+
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();
     cy.contains('BP22001').as('transaction1').should('exist');
-
-    cy.get('[id=document-button-transaction2]').click();
-    cy.contains('BP22002');
   });
 });
