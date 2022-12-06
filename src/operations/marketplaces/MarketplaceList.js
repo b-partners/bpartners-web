@@ -1,5 +1,5 @@
 import { Box, Grid, Avatar, Typography, Link } from '@mui/material';
-import { Storefront } from '@material-ui/icons';
+import { Storefront } from '@mui/icons-material';
 import { List, RecordContextProvider, useListContext } from 'react-admin';
 import { BP_COLOR } from '../../bpTheme';
 import { EmptyList } from '../utils/EmptyList';
@@ -21,7 +21,7 @@ const MarketplaceGrid = () => {
   return (data || []).length > 0 ? (
     <Grid container spacing={4} sx={{ marginTop: '1em' }}>
       {data.map(record => {
-        const { name, logoUrl, description, phoneNumber, websiteUrl } = record;
+        const { name, logoUrl, description, websiteUrl } = record;
 
         return (
           <RecordContextProvider key={record.id} value={record}>
@@ -40,7 +40,12 @@ const MarketplaceGrid = () => {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ ...DETAIL_CONTAINER_STYLE, borderBottom: `1px solid ${BP_COLOR['solid_grey']}` }}>
+                  <Box
+                    sx={{
+                      ...DETAIL_CONTAINER_STYLE,
+                      borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
+                    }}
+                  >
                     <Typography variant='caption'>
                       site web:{' '}
                       <Link data-testid={`link-${websiteUrl}`} href={websiteUrl} target='_blank'>

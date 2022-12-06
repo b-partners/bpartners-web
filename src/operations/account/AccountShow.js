@@ -1,6 +1,5 @@
-import { green } from '@material-ui/core/colors';
-import { Save } from '@material-ui/icons';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { green } from '@mui/material/colors';
+import { Save as SaveIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
 import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
@@ -210,7 +209,7 @@ const AccountHolderLayout = () => {
         <Button
           variant='contained'
           size='small'
-          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <Save />}
+          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
           disabled={isBtnDisabled}
           onClick={updateBusinessActivities}
           sx={{ marginTop: 1 }}

@@ -1,4 +1,4 @@
-import ReceiptIcon from '@material-ui/icons/Receipt';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import InvoiceList from './InvoiceList';
 
 const invoice = {

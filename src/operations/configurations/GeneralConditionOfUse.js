@@ -1,9 +1,9 @@
-import { makeStyles } from '@material-ui/styles';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { makeStyles } from '@mui/styles';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { userAccountsApi } from '../../providers/api';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import AuthProvider, { cacheUnapprovedFiles } from '../../providers/auth-provider';
 import { reload } from '../../utils/reload';
 import { EmptyList } from '../utils/EmptyList';
