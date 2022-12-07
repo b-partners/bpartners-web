@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Box, ButtonGroup, Divider, IconButton, Stack } from '@mui/material';
 import { Code, FormatBold, FormatItalic, FormatListBulleted, FormatListNumbered, FormatQuote, FormatStrikethrough } from '@mui/icons-material';
+import { ButtonGroup, Divider, IconButton, Stack } from '@mui/material';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import 'draft-js/dist/Draft.css';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // custom styleMap
 const styleMap = {
@@ -33,10 +33,10 @@ const RichTextEditor = ({ setContent, placeholder = '' }) => {
   };
 
   return (
-    <Box>
+    <>
       <Toolbar editorState={editorState} onChange={setEditorState} />
       <Editor onChange={setEditorState} customStyleMap={styleMap} editorState={editorState} handleKeyCommand={handleKeyCommand} placeholder={placeholder} />
-    </Box>
+    </>
   );
 };
 
@@ -51,7 +51,17 @@ const Toolbar = ({ editorState, onChange }) => {
   };
 
   return (
-    <Stack spacing='2' flexDirection='row' divider={<Divider />} p={1} boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0'>
+    <Stack
+      spacing='2'
+      flexDirection='row'
+      divider={<Divider />}
+      p={1}
+      boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0'
+      position='sticky'
+      top={0}
+      zIndex={999}
+      bgcolor='white'
+    >
       <BlockControls editorState={editorState} onToggle={toggleBlockType} />
       <InlineControls editorState={editorState} onToggle={toggleInlineStyle} />
     </Stack>
