@@ -61,14 +61,17 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
-    cy.get('#date').type('2022-11');
+    cy.contains('Dernière modification');
+    cy.get('#date').type(`${new Date().getFullYear()}-11`);
     cy.contains('30');
     cy.contains('20');
     cy.contains('40');
-    cy.get('#date').type('2022-01');
+    cy.get('#date').type(`${new Date().getFullYear()}-01`);
     cy.contains('12');
     cy.contains('10');
     cy.contains('40');
+    cy.get('#date').type(`${new Date().getFullYear()}-03`);
+    cy.contains(`Vous n'avez aucune transaction sur ce mois`);
   });
 
   it('are filterable', () => {
