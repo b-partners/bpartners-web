@@ -8,7 +8,7 @@ import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
-describe(specTitle('Error handling'), () => {
+xdescribe(specTitle('Error handling'), () => {
   beforeEach(() => {
     cy.viewport(1360, 760);
     cy.intercept('POST', '/token', token1);

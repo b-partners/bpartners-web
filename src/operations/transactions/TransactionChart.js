@@ -7,104 +7,86 @@ import { singleAccountGetter } from 'src/providers/account-provider';
 
 const TransactionChart = () => {
   const [data, setData] = useState([]);
+  const [transactionsSummary, setTransactionsSummary] = useState();
 
-  const currentDate = new Date().toISOString().split('T')[0];
-  const [date, setDate] = useState({ startDate: currentDate, endDate: currentDate });
+  const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+  const [date, setDate] = useState(currentDate);
 
-  const changeDate = e => {
-    const { name, value } = e.target;
-    setDate({
-      ...date,
-      [name]: value,
-    });
+  const getTransactionsSummary = async currentYear => {
+    const userId = authProvider.getCachedWhoami().user.id;
+    const accountId = (await singleAccountGetter(userId)).id;
+
+    const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
+    setTransactionsSummary(data);
   };
 
-  const randomColor = () => {
-    const randomRGB = window.crypto.getRandomValues(new Uint8Array(3));
+  const getMonthlyTransaction = month => {
+    const temp = transactionsSummary && transactionsSummary.summary.filter(item => item.month === +month)[0];
 
-    return `rgb(${randomRGB[0]}, ${randomRGB[1]}, ${randomRGB[2]})`;
+    temp
+      ? setData([
+          { name: 'Recette', value: temp.income / 100 },
+          { name: 'Dépense', value: temp.outcome / 100 },
+          { name: 'Trésorerie', value: temp.cashFlow / 100 },
+        ])
+      : setData([]);
+  };
+
+  const checkTransactionsSummary = () => {
+    const year = +date.split('-')[0];
+    const month = +date.split('-')[1] - 1;
+    const currentYear = transactionsSummary && transactionsSummary.year;
+
+    currentYear !== year && `${year}`.length === 4 ? getTransactionsSummary(year) : getMonthlyTransaction(month);
   };
 
   useEffect(() => {
-    const getTransactionCategoriesData = async () => {
-      const userId = authProvider.getCachedWhoami().user.id;
-      const accountId = (await singleAccountGetter(userId)).id;
-
-      const { data } = await payingApi().getTransactionCategories(accountId, true, date.startDate, date.endDate);
-
-      const filteredData = data.filter(item => item.count > 0);
-
-      setData(filteredData.map(({ type, count }) => ({ name: type, value: count })));
-    };
-
-    getTransactionCategoriesData();
+    checkTransactionsSummary();
   }, [date]);
 
-  const COLORS = [];
+  useEffect(() => {
+    const month = +date.split('-')[1] - 1;
+    getMonthlyTransaction(month);
+  }, [transactionsSummary]);
 
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <text x={x} y={y} fill='white' textAnchor={x > cx ? 'start' : 'end'} dominantBaseline='central'>
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
+  const COLORS = ['#1D9661', '#8E961D', '#003D7A'];
 
   return (
     <Card>
       <CardContent>
-        <Typography variant='h5'>Résumé Graphique</Typography>
+        <Typography variant='h5'>Résumé graphique</Typography>
       </CardContent>
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item sm={2}>
-            <Typography variant='subtitle1'>Filtrer par date</Typography>
+          <Grid item sm={3}>
             <TextField
-              id='startDate'
+              type='month'
+              id='date'
               variant='filled'
-              margin='dense'
-              name='startDate'
-              label='Date de debut'
-              type='date'
-              value={date.startDate}
-              fullWidth
+              value={date}
               onChange={e => {
-                changeDate(e);
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              id='endDate'
-              variant='filled'
-              margin='dense'
-              name='endDate'
-              label='Date de fin'
-              type='date'
-              value={date.endDate}
-              fullWidth
-              onChange={e => {
-                changeDate(e);
-              }}
-              InputLabelProps={{
-                shrink: true,
+                setDate(e.target.value);
               }}
             />
           </Grid>
           <Grid item>
-            <PieChart width={700} height={300}>
-              <Pie data={data} cx={200} cy={150} labelLine={false} label={renderCustomizedLabel} outerRadius={100} fill='#8884d8' dataKey='value'>
+            <PieChart width={500} height={150}>
+              <Pie
+                data={data}
+                cx={200}
+                cy={150}
+                outerRadius={100}
+                innerRadius={80}
+                fill='#8884d8'
+                nameKey='name'
+                dataKey='value'
+                startAngle={180}
+                endAngle={0}
+                paddingAngle={4}
+                label
+              >
                 {data.map((entry, index) => (
-                  <>
-                    {COLORS.push(randomColor())}
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  </>
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />

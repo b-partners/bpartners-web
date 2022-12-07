@@ -5,6 +5,29 @@ import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
 
+const userItem = 'bp_user';
+const accountItem = 'bp_account';
+const accountHolderItem = 'bp_accountHolder';
+
+export const cacheUser = (user: any) => {
+  localStorage.setItem(userItem, JSON.stringify(user));
+  return user;
+};
+
+export const cacheAccount = (account: any) => {
+  localStorage.setItem(accountItem, JSON.stringify(account));
+  return account;
+};
+
+export const cacheAccountHolder = (accountHolder: any) => {
+  localStorage.setItem(accountHolderItem, JSON.stringify(accountHolder));
+  return accountHolder;
+};
+
+export const getCachedUser = (): any => JSON.parse(localStorage.getItem(userItem));
+export const getCachedAccount = (): any => JSON.parse(localStorage.getItem(accountItem));
+export const getCachedAccountHolder = (): any => JSON.parse(localStorage.getItem(accountHolderItem));
+
 export const singleAccountGetter = async (userId: string): Promise<Account> => {
   const hasOnlyOneAccount = (accounts: Account[]) => {
     if (accounts.length > 1) {
@@ -12,25 +35,30 @@ export const singleAccountGetter = async (userId: string): Promise<Account> => {
     }
   };
 
-  return userAccountsApi()
-    .getAccountsByUserId(userId)
-    .then(({ data }) => {
-      hasOnlyOneAccount(data);
-      return data[0];
-    });
+  if (!getCachedAccount()) {
+    const { data } = await userAccountsApi().getAccountsByUserId(userId);
+    hasOnlyOneAccount(data);
+    return cacheAccount(data[0]);
+  }
+  return getCachedAccount();
 };
 
 export const accountHoldersGetter = async (userId: string): Promise<AccountHolder> => {
-  return singleAccountGetter(userId)
-    .then(account => userAccountsApi().getAccountHolders(userId, account.id))
-    .then(accountHolders => accountHolders.data[0]);
+  const account = await singleAccountGetter(userId);
+  if (!getCachedAccountHolder()) {
+    const { data } = await userAccountsApi().getAccountHolders(userId, account.id);
+    cacheAccountHolder(data[0]);
+  }
+  return getCachedAccountHolder();
 };
+
+export const userGetter = async (userId: string) => getCachedUser() || cacheUser(await profileProvider.getOne(userId));
 
 const accountProvider: BpDataProviderType = {
   async getOne(userId: string) {
     return {
       id: userId,
-      user: await profileProvider.getOne(userId),
+      user: await userGetter(userId),
       accountHolder: await accountHoldersGetter(userId),
     };
   },

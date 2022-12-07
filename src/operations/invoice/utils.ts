@@ -3,6 +3,8 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 
+export const PDF_WIDTH = window.screen.width * 0.7;
+
 const vatTotalPrice = (totalPrice: number) => {
   return (totalPrice * 20) / 100 + totalPrice;
 };
@@ -74,12 +76,13 @@ export const invoiceInitialValue: any = {
   sendingDate: '',
   toPayAt: '',
   status: 'DRAFT',
+  comment: '',
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
 export const invoiceListInitialState = {
   tabIndex: 0,
   selectedInvoice: invoiceInitialValue,
-  isPending: false,
+  isPending: 0,
   viewScreen: 'lists',
 };

@@ -11,13 +11,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CreateInvoiceRelaunch } from './create-invoice-relaunch';
+import { Invoice } from './invoice';
+import { RelaunchType } from './relaunch-type';
 /**
  *
  * @export
  * @interface InvoiceRelaunch
  */
-export interface InvoiceRelaunch extends CreateInvoiceRelaunch {
+export interface InvoiceRelaunch {
   /**
    *
    * @type {string}
@@ -26,8 +27,32 @@ export interface InvoiceRelaunch extends CreateInvoiceRelaunch {
   id?: string;
   /**
    *
+   * @type {RelaunchType}
+   * @memberof InvoiceRelaunch
+   */
+  type?: RelaunchType;
+  /**
+   *
+   * @type {Invoice}
+   * @memberof InvoiceRelaunch
+   */
+  invoice?: Invoice;
+  /**
+   *
+   * @type {string}
+   * @memberof InvoiceRelaunch
+   */
+  accountId?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof InvoiceRelaunch
+   */
+  isUserRelaunched?: boolean;
+  /**
+   *
    * @type {Date}
    * @memberof InvoiceRelaunch
    */
-  createdDatetime?: Date;
+  creationDatetime?: Date;
 }

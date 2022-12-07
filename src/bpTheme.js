@@ -12,7 +12,11 @@ const bpButton = {
   color: '#fff',
   backgroundColor: BP_COLOR[20],
   '&:hover, &:active': {
-    backgroundColor: BP_COLOR[10],
+    backgroundColor: BP_COLOR['20'],
+    textDecoration: 'underline',
+  },
+  '&:disabled': {
+    backgroundColor: BP_COLOR[40],
   },
 };
 

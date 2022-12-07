@@ -3,9 +3,11 @@ import { Box } from '@mui/system';
 import { useCallback, useEffect, useState } from 'react';
 import { SidebarToggleButton } from 'react-admin';
 import bpLogo from './assets/bp-logo-full.png';
-import accountProvider from './providers/account-provider';
+import accountProvider, { getCachedUser } from './providers/account-provider';
 import authProvider from './providers/auth-provider';
 import { LongWarning, ShortWarning } from './utils/beta-test-warning';
+import { GeneralConditionOfUse } from './operations/configurations';
+import UnverifiedUser from './operations/configurations/UnverifiedUser';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -36,6 +38,8 @@ const BpAppBar = props => {
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const displayAppBarWarning = useMediaQuery('(min-width: 468px)');
   const [name, setName] = useState('');
+  const isBeta = process.env.REACT_APP_BETA;
+  const isVerifiedUser = getCachedUser() && getCachedUser().idVerified;
 
   const getFirstName = useCallback(() => {
     userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
@@ -49,16 +53,18 @@ const BpAppBar = props => {
         <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
-          Bonjour <b>{name}</b> !
+          Bonjour <b>{name}</b> ! {!isVerifiedUser && <span style={{ color: 'rgb(168,141,104)' }}>(Compte non vérifié)</span>}
         </Box>
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
-          {displayAppBarWarning && <ShortWarning />}
+          {displayAppBarWarning && isBeta && <ShortWarning />}
           <SidebarToggleButton className={classes.sidebarToggleButton} />
         </Box>
       </Box>
 
-      <LongWarning />
+      {isBeta && <LongWarning />}
+      <GeneralConditionOfUse />
+      {getCachedUser() && <UnverifiedUser />}
     </>
   );
 };

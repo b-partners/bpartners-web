@@ -18,6 +18,7 @@
  */
 export enum InvoiceStatus {
   DRAFT = 'DRAFT',
+  ACCEPTED = 'ACCEPTED',
   PROPOSAL = 'PROPOSAL',
   CONFIRMED = 'CONFIRMED',
   PAID = 'PAID',

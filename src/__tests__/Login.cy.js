@@ -37,4 +37,13 @@ describe(specTitle('Login'), () => {
     cy.contains('Se connecter');
     cy.contains('Bienvenue !');
   });
+
+  it('MainPage redirects to onboarding url', () => {
+    mount(<LoginPage />);
+    cy.intercept('POST', '/onboardingInitiation', { redirectionUrl: 'https://authUrl.com' }).as('onboardingInitiation');
+    cy.get('#register').contains(`Pas de compte ? C'est par ici`);
+    cy.get('#register').click();
+    cy.wait('@onboardingInitiation');
+    cy.get('@redirect').should('have.been.calledOnce');
+  });
 });

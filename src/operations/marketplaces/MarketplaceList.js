@@ -28,10 +28,6 @@ const MarketplaceGrid = () => {
             <Grid key={record.id} xs={12} sm={12} md={6} item sx={{ width: '100%' }}>
               <Box sx={BOX_CONTAINER_STYLE}>
                 <Box sx={{ paddingInline: '1.8rem' }}>
-                  <Box sx={BACKDROP_STYLE[1]}>
-                    <Typography variant='body2'>{phoneNumber}</Typography>
-                  </Box>
-
                   <Box sx={BACKDROP_STYLE[2]}></Box>
 
                   <Box sx={AVATAR_CONTAINER_STYLE}>
