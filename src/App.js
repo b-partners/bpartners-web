@@ -25,6 +25,7 @@ import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginPage from './security/LoginPage';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import useAuthentication from './utils/useAuthentication';
+import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
 
 export const BpAdmin = () => (
   <Admin
@@ -62,6 +63,7 @@ const App = () => {
         {isLoading && <Route path='*' element={<BpLoading />} />}
         <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
         <Route exact path='/login' element={!isAuthenticated ? <LoginPage /> : <Navigate to='/' />} />
+        <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
         <Route exact path='*' element={isAuthenticated ? <BpAdmin /> : <Navigate to='/login' />} />
       </Routes>
     </BrowserRouter>
