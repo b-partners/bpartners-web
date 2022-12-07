@@ -3,8 +3,8 @@ import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import InvoiceListTable from './InvoiceListTable';
 import { getInvoicePdfUrl, invoiceListInitialState, PDF_WIDTH } from './utils';
-import { Clear } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
+import { Clear } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 import { Box, Tabs, Tab, Card, CardHeader, CardContent, IconButton, Tooltip } from '@mui/material';
 import { useState, useEffect, useReducer } from 'react';
 

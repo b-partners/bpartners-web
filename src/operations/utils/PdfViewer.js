@@ -1,7 +1,7 @@
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { Box, Card, CardHeader, CardContent, LinearProgress, Typography } from '@mui/material';
-import { Error } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core';
+import { Error } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
 
 export const ErrorHandling = ({ errorMessage }) => (
   <Box sx={{ display: 'flex', alignItems: 'center' }}>

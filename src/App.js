@@ -8,7 +8,7 @@ import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
 import BpLoading from './BpLoading';
-import { bpTheme, BP_COLOR } from './bpTheme';
+import { bpTheme } from './bpTheme';
 
 import account from './operations/account';
 import { Configuration } from './operations/configurations';
@@ -18,7 +18,7 @@ import { marketplaces } from './operations/marketplaces';
 import products from './operations/products';
 import transactions from './operations/transactions';
 
-import authProvider, { getCachedAccessToken } from './providers/auth-provider.ts';
+import authProvider from './providers/auth-provider.ts';
 import dataProvider from './providers/data-provider';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
@@ -55,7 +55,6 @@ export const BpAdmin = () => (
 );
 
 const App = () => {
-  const accessToken = getCachedAccessToken();
   const { isLoading, isAuthenticated } = useAuthentication();
   return (
     <BrowserRouter>

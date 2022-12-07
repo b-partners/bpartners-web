@@ -1,4 +1,4 @@
-import WorkIcon from '@material-ui/icons/Work';
+import WorkIcon from '@mui/icons-material/Work';
 import ProductCreate from './ProductCreate';
 import ProductList from './ProductList';
 
