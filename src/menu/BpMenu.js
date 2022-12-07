@@ -2,7 +2,7 @@ import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, S
 import { Box } from '@mui/material';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 
 const useStyle = makeStyles(() => ({
   menuItem: {

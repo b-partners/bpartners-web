@@ -16,7 +16,7 @@ import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
 import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 
 const useStyle = makeStyles(() => ({
   selectInputList: {
