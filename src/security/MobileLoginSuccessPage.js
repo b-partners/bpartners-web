@@ -6,14 +6,13 @@ const MobileLoginSuccessPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
     async function login() {
-      const code = getUrlParams(window.location.search, 'code');
-      window.location.assign(`${process.env.REACT_APP_MOBILE_REDIRECTION_URL}?code=${code}`);
+      window.location.assign(`bpartners://auth${window.location.search}`);
     }
 
     login();
   }, []);
 
-  return <p>Vous êtes authentifié ! Vous allez être redirigé vers votre espace professionel...</p>;
+  return <p>Vous êtes authentifié ! Vous allez être redirigé bpartners://auth{window.location.search}...</p>;
 };
 
 export default MobileLoginSuccessPage;
