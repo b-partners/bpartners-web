@@ -23,7 +23,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
       try {
         const aId = (await singleAccountGetter(userId)).id;
         await payingApi().relaunchInvoice(aId, invoice.id, { message, subject });
-        notify(`Le ${getContext()} ref ${invoice.ref} a bien été relancé avec succès.`, { type: 'success' });
+        notify(`La ${getContext()} ref: ${invoice.ref} a été relancée avec succès.`, { type: 'success' });
         resetInvoice();
       } catch (e) {
         notify("Une erreur s'est produite", { type: 'error' });
@@ -42,7 +42,9 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: 'center' }}>
-          <Button onClick={handleSubmit}>Relancer ce {getContext()}</Button>
+          <Button onClick={handleSubmit} data-cy='invoice-relaunch-submit'>
+            Relancer ce {getContext()}
+          </Button>
         </DialogActions>
       </Dialog>
     )
@@ -55,7 +57,7 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject }) => {
 
   return (
     <Box>
-      <TextField name='object' label='Objet' fullWidth onChange={handleChange} />
+      <TextField name='object' label='Objet' data-test-item='object-field' fullWidth onChange={handleChange} />
       <Box sx={{ mt: 2 }}>
         <Typography variant='subtitle1' mb={2}>
           Message
