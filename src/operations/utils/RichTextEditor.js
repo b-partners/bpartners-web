@@ -18,7 +18,7 @@ const RichTextEditor = ({ setContent, placeholder = '' }) => {
 
   useEffect(() => {
     const htmlContent = stateToHTML(editorState.getCurrentContent());
-    setContent(htmlContent);
+    setContent && setContent(htmlContent);
   }, [editorState, setContent]);
 
   const handleKeyCommand = cmd => {
@@ -82,7 +82,7 @@ const ToolbarButton = ({ onToggle, label, active, style, children }) => {
   };
 
   return (
-    <IconButton size='small' onClick={_onToggle} title={label} sx={{ minWidth: '2rem', borderRadius: '0.5rem', ...getStyle() }}>
+    <IconButton size='small' data-testid={label} onClick={_onToggle} title={label} sx={{ minWidth: '2rem', borderRadius: '0.5rem', ...getStyle() }}>
       {children}
     </IconButton>
   );
