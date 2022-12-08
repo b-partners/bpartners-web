@@ -57,6 +57,7 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains('Résumé graphique');
+    cy.get('#date').type('2022-11');
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
