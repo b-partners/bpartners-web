@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
-import { makeStyles } from '@material-ui/styles';
-import { Add } from '@material-ui/icons';
+import { makeStyles } from '@mui/styles';
+import { Add } from '@mui/icons-material';
 import { ProductItem } from './ProductItem';
 import productProvider from '../../providers/product-provider';
 import { isIncludesObject } from '../utils/isIncludesObject';

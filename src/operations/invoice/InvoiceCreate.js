@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
-import { makeStyles } from '@material-ui/styles';
-import { Save } from '@material-ui/icons';
+import { Save } from '@mui/icons-material';
+import { makeStyles } from '@mui/styles';
+import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
 import { ClientSelection } from './ClientSelection';
 import { CustomButton } from '../utils/CustomButton';
 import { ProductSelection } from './ProductSelection';
 import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
-import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
 import { totalCalculus, invoiceDateValidator, getInvoicePdfUrl } from './utils';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import debounce from 'debounce';

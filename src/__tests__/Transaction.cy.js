@@ -57,6 +57,7 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains('Résumé graphique');
+    cy.get('#date').type('2022-11');
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
@@ -86,11 +87,11 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
+    cy.get('[id=document-button-transaction2]').click();
+    cy.contains('BP22002');
+
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();
     cy.contains('BP22001').as('transaction1').should('exist');
-
-    cy.get('[id=document-button-transaction2]').click();
-    cy.contains('BP22002');
   });
 });

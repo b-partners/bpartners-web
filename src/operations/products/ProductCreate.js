@@ -1,5 +1,5 @@
 import { Create, SimpleForm, TextInput, NumberInput, required } from 'react-admin';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 const boxStyle = { margin: 0, padding: 0, display: 'flex', width: '35vw', justifyContent: 'space-between' };
 
