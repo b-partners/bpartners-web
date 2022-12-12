@@ -85,7 +85,7 @@ const InvoiceCreateOrUpdate = props => {
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total:</Typography>
-                <Typography variant='h6'>{totalCalculus(selectedProducts)}€</Typography>
+                <Typography variant='h6'>{totalCalculus(/*TODO: bad implem, see preprod DRAFT-FAC202201*/ selectedProducts)}€</Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>

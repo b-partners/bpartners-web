@@ -41,8 +41,13 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
 
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {
-    case 'startPending':
-      return { ...state, isPending: state.isPending + 1, documentUrl: payload.documentUrl };
+    case 'startPending' /*TODO(no-magic-string): do NOT use values directly like this!
+      Use variables instead then import these variables whenever need, eg in InvoiceList */:
+      return {
+        ...state,
+        isPending: state.isPending + 1, //TODO: very bad naming! isXXX MUST be a boolean. Here it seems you are couting something.
+        documentUrl: payload.documentUrl,
+      };
     case 'stopPending':
       return { ...state, isPending: state.isPending - 1, documentUrl: payload.documentUrl };
     case 'set':

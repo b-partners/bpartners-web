@@ -77,7 +77,7 @@ const LogoLayout = () => {
             try {
               await fileProvider.saveOrUpdate(files);
               notify('Changement enregistré', { type: 'success' });
-              refresh();
+              refresh(); //TODO: and yet, image is not refreshed!
             } catch (err) {
               notify("Une erreur s'est produite", { type: 'error' });
             }

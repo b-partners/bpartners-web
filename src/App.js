@@ -30,7 +30,7 @@ import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
 export const BpAdmin = () => (
   <Admin
     title='BPartners'
-    authProvider={authProvider}
+    authProvider={authProvider} //TODO: user should be redirected on loginPage on session expiration
     dataProvider={dataProvider}
     i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
     loginPage={false}

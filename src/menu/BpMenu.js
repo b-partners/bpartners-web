@@ -21,7 +21,7 @@ const BpMenu = () => {
 
   const contactSupport = useCallback(() => {
     const email = 'contact@bpartners.app';
-    window.open('mailto:', email);
+    window.open('mailto:', email); //TODO: additionaly display email in modal, as email clients are often NOT configured on customer devices
   }, []);
 
   return (
