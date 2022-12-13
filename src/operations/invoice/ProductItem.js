@@ -1,7 +1,8 @@
-import { Typography, Card, CardHeader, CardContent, IconButton, CardActions, FilledInput, FormControl, InputAdornment } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { Clear } from '@mui/icons-material';
-import { prettyPrintMoney, Currency } from '../utils/money';
+import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Currency, prettyPrintMoney } from '../utils/money';
+import { ProductActionType } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -27,7 +28,7 @@ export const ProductItem = ({ product, handleProduct }) => {
   const handleChange = event => {
     const newProduct = { ...product };
     newProduct.quantity = parseInt(event.target.value);
-    handleProduct('update', newProduct);
+    handleProduct(ProductActionType.UPDATE, newProduct);
   };
 
   return (
@@ -36,7 +37,7 @@ export const ProductItem = ({ product, handleProduct }) => {
         title={product.description}
         subheader={prettyPrintMoney(product.totalPriceWithVat, Currency.EUR)}
         action={
-          <IconButton onClick={() => handleProduct('remove', product)}>
+          <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
           </IconButton>
         }

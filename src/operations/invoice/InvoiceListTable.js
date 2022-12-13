@@ -1,11 +1,12 @@
-import PrevNextPagination from '../utils/PrevNextPagination';
-import { getInvoiceStatus, invoiceInitialValue } from './utils';
-import { Check, Send, Attachment, Add, DoneAll } from '@mui/icons-material';
-import { IconButton, Tooltip, Typography, Box } from '@mui/material';
-import { List, Datagrid, TextField, FunctionField, useNotify, useRefresh, useListContext } from 'react-admin';
-import { v4 as uuid } from 'uuid';
+import { Add, Attachment, Check, DoneAll, Send } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
+import { v4 as uuid } from 'uuid';
+import { InvoiceStatusEN } from '../../constants/invoice-status';
 import ListComponent from '../utils/ListComponent';
+import PrevNextPagination from '../utils/PrevNextPagination';
+import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -31,34 +32,52 @@ const TooltipButton = ({ icon, ...others }) => (
 );
 
 const InvoiceGridTable = props => {
-  const { crUpdateInvoice, getInvoiceStatus, viewDocument, sendInvoice } = props;
+  const { crUpdateInvoice, viewDocument, sendInvoice } = props;
   const { isLoading } = useListContext();
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(id, resourceName, record) => record.status === 'DRAFT' && crUpdateInvoice({ ...record })}>
+      <Datagrid rowClick={(id, resourceName, record) => record.status === InvoiceStatusEN.DRAFT && crUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
         <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
         <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
-        <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatus(data.status)}</Typography>} label='Statut' />
+        <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <TextField source='toPayAt' label='Date de paiement' />
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
               <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} />
-              {data.status === 'DRAFT' ? (
+              {data.status === InvoiceStatusEN.DRAFT ? (
                 <TooltipButton
                   title='Envoyer et transformer en devis'
                   icon={<Send />}
-                  onClick={event => sendInvoice(event, { ...data, status: 'PROPOSAL' }, 'Devis bien envoyé')}
+                  onClick={event =>
+                    sendInvoice(
+                      event,
+                      {
+                        ...data,
+                        status: InvoiceStatusEN.PROPOSAL,
+                      },
+                      'Devis bien envoyé'
+                    )
+                  }
                 />
-              ) : data.status === 'PROPOSAL' ? (
+              ) : data.status === InvoiceStatusEN.PROPOSAL ? (
                 <TooltipButton
                   title='Transformer en facture'
                   icon={<Check />}
-                  onClick={event => sendInvoice(event, { ...data, status: 'CONFIRMED' }, 'Devis confirmé')}
+                  onClick={event =>
+                    sendInvoice(
+                      event,
+                      {
+                        ...data,
+                        status: InvoiceStatusEN.CONFIRMED,
+                      },
+                      'Devis confirmé'
+                    )
+                  }
                 />
               ) : (
                 <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
@@ -78,10 +97,10 @@ const InvoiceListTable = props => {
   const refresh = useRefresh();
 
   const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
-  const crUpdateInvoice = selectedInvoice => stateHandling({ selectedInvoice, viewScreen: 'edition' });
+  const crUpdateInvoice = selectedInvoice => stateHandling({ selectedInvoice, viewScreen: viewScreenState.EDITION });
   const viewDocument = (event, selectedInvoice) => {
     event.stopPropagation();
-    stateHandling({ selectedInvoice, viewScreen: 'preview' });
+    stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
   };
 
   return (
@@ -100,7 +119,7 @@ const InvoiceListTable = props => {
         />
       }
     >
-      <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} getInvoiceStatus={getInvoiceStatus} viewDocument={viewDocument} sendInvoice={sendInvoice} />
+      <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} />
     </List>
   );
 };

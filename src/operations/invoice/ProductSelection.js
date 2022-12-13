@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Box, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { Add } from '@mui/icons-material';
-import { ProductItem } from './ProductItem';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { useEffect, useState } from 'react';
 import productProvider from '../../providers/product-provider';
-import { isIncludesObject } from '../utils/isIncludesObject';
 import { CustomButton } from '../utils/CustomButton';
+import { isIncludesObject } from '../utils/isIncludesObject';
+import { ProductItem } from './ProductItem';
+import { ProductActionType } from './utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -30,15 +31,15 @@ export const ProductSelection = ({ name, formValidator }) => {
   const handleProduct = (type, product) => {
     let productTemp = null;
     switch (type) {
-      case 'add':
+      case ProductActionType.ADD:
         productTemp = selectedProduct.slice();
         productTemp.push(product);
         toggle();
         break;
-      case 'remove':
+      case ProductActionType.REMOVE:
         productTemp = selectedProduct.filter(e => e.id !== product.id);
         break;
-      case 'update':
+      case ProductActionType.UPDATE:
         productTemp = selectedProduct.map(e => (e.id === product.id ? product : e));
         break;
       default:
@@ -71,7 +72,7 @@ export const ProductSelection = ({ name, formValidator }) => {
                 state.productsList
                   .filter(e => !isIncludesObject(selectedProduct, 'id', e.id))
                   .map(e => (
-                    <MenuItem className={classes.menuItem} onClick={() => handleProduct('add', e)} value={e.id} key={e.id + '2'}>
+                    <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
                       {e.description}
                     </MenuItem>
                   ))}
