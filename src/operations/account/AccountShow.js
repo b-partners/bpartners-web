@@ -47,21 +47,21 @@ const SubscriptionLayout = () => (
 
 const LogoLayout = () => {
   const notify = useNotify();
-  const refresh = useRefresh();
   const [logoUrl, setLogoUrl] = useState('');
+  const [logoIsReady, setLogoIsReady] = useState(true);
+
+  const getLogo = async () => {
+    const {
+      user: { id: userId },
+    } = authProvider.getCachedWhoami();
+    const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
+    const { accessToken } = authProvider.getCachedAuthConf();
+    const accountId = (await singleAccountGetter(userId)).id;
+    const fileId = 'logo.jpeg';
+    setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}&fileType=LOGO`);
+  };
 
   useEffect(() => {
-    const getLogo = async () => {
-      const {
-        user: { id: userId },
-      } = authProvider.getCachedWhoami();
-      const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
-      const { accessToken } = authProvider.getCachedAuthConf();
-      const accountId = (await singleAccountGetter(userId)).id;
-      const fileId = 'logo.jpeg';
-      setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}&fileType=LOGO`);
-    };
-
     getLogo();
   });
 
@@ -75,11 +75,13 @@ const LogoLayout = () => {
           type='file'
           onChange={async files => {
             try {
+              setLogoIsReady(false);
               await fileProvider.saveOrUpdate(files);
               notify('Changement enregistré', { type: 'success' });
-              refresh();
             } catch (err) {
               notify("Une erreur s'est produite", { type: 'error' });
+            } finally {
+              setLogoIsReady(true);
             }
           }}
         />
@@ -90,7 +92,7 @@ const LogoLayout = () => {
         >
           <Avatar
             alt='company logo'
-            src={logoUrl}
+            src={logoIsReady && logoUrl}
             sx={{
               height: '8rem',
               width: '8rem',
