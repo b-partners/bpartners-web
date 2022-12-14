@@ -5,7 +5,7 @@ import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
 
-const SUPPORT_EMAIL = 'contact@bpartners.app';
+const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
 
 const LogoutButton = () => {
   const logout = useCallback(() => {

@@ -30,7 +30,7 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.get('[name="support"]').click();
 
-    cy.contains('contact@bpartners.app');
+    cy.contains("Contactez-nous à l'adresse email");
     cy.contains('Pour utiliser votre client email, cliquez ici.');
     cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click();
   });
@@ -40,7 +40,7 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.get('[name="support"]').click();
 
-    cy.contains('contact@bpartners.app');
+    cy.contains("Contactez-nous à l'adresse email");
     cy.contains('Pour utiliser votre client email, cliquez ici.');
     cy.get('.MuiDialogContent-root > a').click();
   });
