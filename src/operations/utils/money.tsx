@@ -9,8 +9,14 @@ export enum Currency {
   GBP = '£',
 }
 
-export const prettyPrintMoney = (amount: number, currency: Currency, type: TransactionTypeEnum): string =>
-  (type === TransactionTypeEnum.INCOME ? ' +' : ' -') + amount.toLocaleString() + ' ' + currency;
+export const prettyPrintMoney = (amount: number, currency: Currency, type?: TransactionTypeEnum): string => {
+  let sign = '';
+
+  if (type) {
+    type === TransactionTypeEnum.INCOME ? (sign = '+ ') : (sign = '- ');
+  }
+  return sign + amount.toLocaleString() + ' ' + currency;
+};
 
 export const coloredMoney = (amount: number, currency: Currency, type: TransactionTypeEnum) => (
   <b style={{ color: type === TransactionTypeEnum.OUTCOME ? red[500] : green[500] }}> {prettyPrintMoney(amount, currency, type)} </b>
