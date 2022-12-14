@@ -1,15 +1,15 @@
+import { Save } from '@mui/icons-material';
+import { Box, Card, CardContent, FormControl, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import debounce from 'debounce';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Save } from '@mui/icons-material';
-import { makeStyles } from '@mui/styles';
-import { Typography, Box, FormControl, Card, CardContent } from '@mui/material';
-import { ClientSelection } from './ClientSelection';
-import { CustomButton } from '../utils/CustomButton';
-import { ProductSelection } from './ProductSelection';
 import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
-import { totalCalculus, invoiceDateValidator, getInvoicePdfUrl } from './utils';
+import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
-import debounce from 'debounce';
+import { ClientSelection } from './ClientSelection';
+import { ProductSelection } from './ProductSelection';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, totalCalculus } from './utils';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -35,15 +35,15 @@ const InvoiceCreateOrUpdate = props => {
     const data = formValidator.watch();
     if (isPending > 0) {
       invoicePutController.abort();
-      onPending('stopPending');
+      onPending(InvoiceActionType.STOP_PENDING);
     }
-    onPending('startPending');
+    onPending(InvoiceActionType.START_PENDING);
     invoiceProvider
       .saveOrUpdate([data])
       .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
       .then(pdfUrl =>
         setTimeout(async () => {
-          onPending('stopPending', pdfUrl);
+          onPending(InvoiceActionType.STOP_PENDING, pdfUrl);
         }, 3000)
       );
   };
@@ -54,7 +54,7 @@ const InvoiceCreateOrUpdate = props => {
   };
 
   useEffect(() => {
-    getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending('stopPending', pdfUrl));
+    getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
     update(toEdit);
   }, [toEdit]);
 
