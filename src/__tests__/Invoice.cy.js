@@ -54,7 +54,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
     cy.get('[data-test-item="relaunch-invoice-id-1"]').click();
 
-    cy.contains('Relance manuelle du facture ref: invoice-ref-1');
+    cy.contains('Relance manuelle de la facture ref: invoice-ref-1');
 
     cy.get('[data-test-item="object-field"]').type('objet-example');
     cy.get('.public-DraftEditor-content').type('message here');

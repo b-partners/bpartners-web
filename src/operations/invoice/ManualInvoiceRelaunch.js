@@ -1,8 +1,8 @@
-import { Typography, Box, Dialog, DialogContent, DialogActions, DialogTitle, TextField, Button } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { singleAccountGetter } from '../../providers/account-provider';
-import { payingApi, userAccountsApi } from '../../providers/api';
+import { payingApi } from '../../providers/api';
 import authProvider from '../../providers/auth-provider';
 import RichTextEditor from '../utils/RichTextEditor';
 
@@ -15,7 +15,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
     resetInvoice();
   };
 
-  const getContext = () => (invoice.status === 'PROPOSAL' ? 'dévis' : 'facture');
+  const getContext = ({ devis, facture }) => (invoice.status === 'PROPOSAL' ? `${devis} dévis` : `${facture} facture`);
 
   const handleSubmit = async () => {
     const userId = authProvider.getCachedWhoami().user.id;
@@ -23,7 +23,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
       try {
         const aId = (await singleAccountGetter(userId)).id;
         await payingApi().relaunchInvoice(aId, invoice.id, { message, subject });
-        notify(`La ${getContext()} ref: ${invoice.ref} a été relancée avec succès.`, { type: 'success' });
+        notify(`${getContext({ devis: 'Le', facture: 'La' })} ref: ${invoice.ref} a été relancée avec succès.`, { type: 'success' });
         resetInvoice();
       } catch (e) {
         notify("Une erreur s'est produite", { type: 'error' });
@@ -35,7 +35,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
     invoice && (
       <Dialog open={invoice} onClose={onClose} maxWidth='lg'>
         <DialogTitle>
-          Relance manuelle du {getContext()} ref: {invoice.ref}
+          Relance manuelle {getContext({ devis: 'du', facture: 'de la' })} ref: {invoice.ref}
         </DialogTitle>
         <DialogContent>
           <InvoiceRelaunchForm setMessage={setMessage} setSubject={setSubject} />
@@ -43,7 +43,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
 
         <DialogActions sx={{ justifyContent: 'center' }}>
           <Button onClick={handleSubmit} data-cy='invoice-relaunch-submit'>
-            Relancer ce {getContext()}
+            Relancer {getContext({ devis: 'ce', facture: 'cette' })}
           </Button>
         </DialogActions>
       </Dialog>
