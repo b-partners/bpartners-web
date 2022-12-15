@@ -50,25 +50,36 @@ const SubscriptionLayout = () => (
 
 const LogoLayout = () => {
   const notify = useNotify();
-  const [logoUrl, setLogoUrl] = useState('');
-  const [logoIsReady, setLogoIsReady] = useState(true);
+  const [logo, setLogo] = useState(undefined);
 
   const getLogo = async () => {
     const {
       user: { id: userId },
     } = authProvider.getCachedWhoami();
+    const { logoFileId } = getCachedUser();
+
+    if (!logoFileId) {
+      return;
+    }
+
     const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
     const { accessToken } = authProvider.getCachedAuthConf();
     const accountId = (await singleAccountGetter(userId)).id;
-    const { logoFileId } = getCachedUser();
+    const url = `${apiUrl}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
 
-    setLogoIsReady(logoFileId ? true : false);
-    setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`);
+    try {
+      const result = await fetch(url);
+      const blob = await result.blob();
+      setLogo(URL.createObjectURL(blob));
+    } catch (e) {
+      throw e;
+    } finally {
+      //TODO: setting loading logo to false
+    }
   };
 
   const updateLogo = async files => {
     try {
-      setLogoIsReady(false);
       const type = getMimeType(files);
       const [, logoExtension] = type.split('/');
       const logoFileId = `${uuid()}.${logoExtension}`;
@@ -84,13 +95,13 @@ const LogoLayout = () => {
     } catch (err) {
       notify("Une erreur s'est produite", { type: 'error' });
     } finally {
-      getLogo();
+      await getLogo();
     }
   };
 
   useEffect(() => {
     getLogo();
-  });
+  }, []);
 
   return (
     <Box sx={ACCOUNT_HOLDER_STYLE}>
@@ -103,7 +114,7 @@ const LogoLayout = () => {
         >
           <Avatar
             alt='company logo'
-            src={logoIsReady && logoUrl}
+            src={logo}
             sx={{
               height: '8rem',
               width: '8rem',
