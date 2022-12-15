@@ -1,6 +1,6 @@
-import { green } from '@mui/material/colors';
+import { green, grey } from '@mui/material/colors';
 import { Save as SaveIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
+import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Skeleton, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
@@ -15,6 +15,7 @@ import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_ST
 import { v4 as uuid } from 'uuid';
 import { getMimeType } from 'src/utils/get-mime-type';
 import { FileType } from 'src/gen/bpClient';
+import { BASE_PATH } from 'src/gen/bpClient/base';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -51,35 +52,38 @@ const SubscriptionLayout = () => (
 const LogoLayout = () => {
   const notify = useNotify();
   const [logo, setLogo] = useState(undefined);
+  const [logoLoading, setLogoLoading] = useState(false);
 
   const getLogo = async () => {
     const {
       user: { id: userId },
     } = authProvider.getCachedWhoami();
-    const { logoFileId } = getCachedUser();
+    const logoFileId = getCachedUser() && getCachedUser().logoFileId;
 
     if (!logoFileId) {
       return;
     }
 
-    const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
     const { accessToken } = authProvider.getCachedAuthConf();
     const accountId = (await singleAccountGetter(userId)).id;
-    const url = `${apiUrl}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
+    const url = `${BASE_PATH}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
 
     try {
+      setLogoLoading(true);
       const result = await fetch(url);
+      console.log(result);
       const blob = await result.blob();
       setLogo(URL.createObjectURL(blob));
     } catch (e) {
       throw e;
     } finally {
-      //TODO: setting loading logo to false
+      setLogoLoading(false);
     }
   };
 
   const updateLogo = async files => {
     try {
+      setLogoLoading(true);
       const type = getMimeType(files);
       const [, logoExtension] = type.split('/');
       const logoFileId = `${uuid()}.${logoExtension}`;
@@ -112,14 +116,18 @@ const LogoLayout = () => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
         >
-          <Avatar
-            alt='company logo'
-            src={logo}
-            sx={{
-              height: '8rem',
-              width: '8rem',
-            }}
-          />
+          {!logoLoading ? (
+            <Avatar
+              alt='company logo'
+              src={logo}
+              sx={{
+                height: '8rem',
+                width: '8rem',
+              }}
+            />
+          ) : (
+            <Skeleton animaiton='wave' variant='circular' width={128} height={128} sx={{ bgcolor: grey[400] }} />
+          )}
         </Badge>
       </label>
     </Box>
