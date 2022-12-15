@@ -57,7 +57,7 @@ const MarketplaceGrid = () => {
                     </Typography>
                   </Box>
 
-                  <Box onClick={() => handleShowMore(index)} sx={{ paddingBlock: 2 }}>
+                  <Box onClick={() => handleShowMore(index)} sx={{ paddingBlock: 2 }} data-cy-item={`mp-${index}`}>
                     <Typography variant='body2' component='p' sx={{ cursor: showMore === index ? 'text' : 'pointer' }}>
                       {description.slice(0, 20)}
                       {showMore === index ? description.slice(20) : <code title='lire la suite'>...</code>}
