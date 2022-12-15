@@ -15,12 +15,14 @@ export const fileProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
   async saveOrUpdate(resources: any): Promise<any[]> {
+    const { files, fileId, fileType } = resources;
+
     const { accountId } = await getUserInfo();
-    const binaryFile = await toArrayBuffer(resources);
-    const type = getMimeType(resources);
+    const binaryFile = await toArrayBuffer(files);
+    const type = getMimeType(files);
 
     return FileApi()
-      .uploadFile(binaryFile, accountId, 'logo.jpeg', 'LOGO', { headers: { 'Content-Type': type } })
+      .uploadFile(binaryFile, accountId, fileId, fileType, { headers: { 'Content-Type': type } })
       .then(({ data }) => [data]);
   },
 };
