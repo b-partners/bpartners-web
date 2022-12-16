@@ -4,9 +4,12 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginPage from '../security/LoginPage';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
-import { phone1, token1, whoami1 } from './mocks/responses/security-api';
+import { phone1, token1, whoami1, user1 } from './mocks/responses/security-api';
 import * as Redirect from '../utils/redirect';
 import App from 'src/App';
+
+import authProvider from '../providers/auth-provider';
+import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {
@@ -45,5 +48,25 @@ describe(specTitle('Login'), () => {
     cy.get('#register').click();
     cy.wait('@onboardingInitiation');
     cy.get('@redirect').should('have.been.calledOnce');
+  });
+
+  it('Should log out', () => {
+    cy.intercept('POST', '/token', token1);
+    cy.intercept('GET', '/whoami', whoami1).as('whoami');
+    cy.then(
+      async () =>
+        await authProvider.login('dummy', 'dummy', {
+          redirectionStatusUrls: {
+            successurl: 'dummy',
+            FailureUrl: 'dummy',
+          },
+        })
+    );
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    mount(<App />);
+
+    cy.get("[name='logout']").click();
   });
 });
