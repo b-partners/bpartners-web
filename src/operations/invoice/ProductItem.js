@@ -28,6 +28,12 @@ export const ProductItem = ({ product, handleProduct }) => {
   const classes = useStyle();
 
   const handleChange = ({ target }) => {
+    const qty = parseInt(target.value);
+
+    if (!qty) {
+      return;
+    }
+
     let localVarProd = { ...product, quantity: parseInt(target.value) };
     const { unitPrice, vatPercent, quantity } = localVarProd;
 
@@ -55,7 +61,7 @@ export const ProductItem = ({ product, handleProduct }) => {
         <FormControl variant='filled'>
           <FilledInput
             className={classes.filledInput}
-            value={isNaN(product.quantity) ? '' : product.quantity === 0 ? 1 : product.quantity}
+            value={product.quantity < 1 ? 1 : product.quantity}
             onChange={handleChange}
             data-cy-item='quantity-input'
             endAdornment={
