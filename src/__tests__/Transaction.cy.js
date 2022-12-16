@@ -7,8 +7,13 @@ import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { transactions1, transactionsSummary } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
+import transactionCategory1 from './mocks/responses/transaction-category-api';
+
+const date = new Date().toISOString().slice(0, 10);
+
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
+    cy.viewport(1326, 514);
     //note(login-user1)
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
@@ -22,6 +27,23 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
+    cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
+      'getTransactionCategory'
+    );
+  });
+
+  it('are displayed', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
+    cy.get(':nth-child(1) > :nth-child(4) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
+    cy.wait('@getTransactionCategory');
+    cy.get('.MuiButtonBase-root > [data-testid="ArrowDropDownIcon"]').click();
+    cy.contains('Autres dépenses').click();
+    cy.get('[name="comment"]').type('Test');
+    cy.get('[name="vat"]').type(10);
+    cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click();
   });
 
   it('are displayed', () => {
