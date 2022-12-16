@@ -12,25 +12,26 @@ export const BOX_CONTAINER_STYLE = {
 export const AVATAR_CONTAINER_STYLE = {
   height: '5.5rem',
   width: '100%',
-  padding: '0.8rem 0 2rem 0',
+  padding: '0.4rem 0 2rem 0',
+  mb: 1,
 
   display: 'grid',
   gridTemplateRows: 'auto auto',
   rowGap: '0.7rem',
 
-  borderBottom: `1px solid  ${BP_COLOR['solid_grey']}`,
   borderRadius: '.2rem',
 };
 
 export const AVATAR_STYLE = {
-  height: '3em',
-  width: '3em',
-  border: '3px solid #fff',
-  zIndex: 2,
+  height: '4em',
+  width: '4em',
+  border: `3px solid ${BP_COLOR[10]}`,
+  // backgroundColor: 'white',
+  zIndex: 3,
 };
 
 const BACKDROP_COMMON_STYLE = {
-  backgroundColor: '#7A003D',
+  backgroundColor: BP_COLOR[10],
   position: 'absolute',
   top: 0,
   left: 0,
@@ -40,13 +41,13 @@ const BACKDROP_COMMON_STYLE = {
 export const BACKDROP_STYLE = {
   1: {
     ...BACKDROP_COMMON_STYLE,
-    zIndex: 1,
-    borderRadius: '0 0 50% 0',
+    borderRadius: '0 0 5rem 0',
     color: '#fff',
     paddingInline: '.6rem',
     display: 'flex',
     alignItems: 'center',
-    height: '15%',
+    width: '7rem',
+    height: '7rem',
   },
 
   2: {
@@ -56,8 +57,16 @@ export const BACKDROP_STYLE = {
   },
 };
 
+export const LINK_STYLE = {
+  textDecoration: 'none',
+  color: BP_COLOR[10],
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+};
+
 export const DETAIL_CONTAINER_STYLE = {
-  padding: '0.6rem 0.3rem',
+  padding: '0.6rem 0',
   color: 'grey',
   width: '100%',
 };

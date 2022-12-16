@@ -89,7 +89,7 @@ export const transactionCategories1: Array<TransactionCategory> = [
 ];
 
 export const transactionsSummary: TransactionsSummary = {
-  year: 2022,
+  year: +new Date().getFullYear(),
   summary: [
     {
       month: 0,
@@ -107,10 +107,10 @@ export const transactionsSummary: TransactionsSummary = {
     },
     {
       month: 2,
-      income: 2000,
-      outcome: 1200,
+      income: 0,
+      outcome: 0,
       updatedAt: new Date(),
-      cashFlow: 4000,
+      cashFlow: 0,
     },
     {
       month: 3,
