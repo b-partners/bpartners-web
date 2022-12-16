@@ -32,8 +32,8 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains("Abonnement BPartners - L'essentiel");
     cy.contains('BP22002');
-    cy.contains('-0.05 €');
-    cy.contains('+5.00 €');
+    cy.contains('- 0.05 €');
+    cy.contains('+ 5.00 €');
     cy.contains('TVA 20%');
     cy.contains('18/08/2022 05:34:20');
   });
