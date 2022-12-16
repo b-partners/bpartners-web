@@ -37,6 +37,7 @@ import { ResourceNotFoundException } from '../models';
 import { TooManyRequestsException } from '../models';
 import { Transaction } from '../models';
 import { TransactionCategory } from '../models';
+import { TransactionTypeEnum } from '../models';
 import { TransactionsSummary } from '../models';
 /**
  * PayingApi - axios parameter creator
@@ -526,16 +527,22 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
+     * Can be filter by : * unique : show distinct transaction categories * date intervals : give the count of transaction categories used by existing transactions  between two dates * transactionType : INCOME or OUTCOME or null if both
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {string} from
      * @param {string} to
-     * @param {boolean} [userDefined]
+     * @param {TransactionTypeEnum} [transactionType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTransactionCategories: async (aId: string, from: string, to: string, userDefined?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+    getTransactionCategories: async (
+      aId: string,
+      from: string,
+      to: string,
+      transactionType?: TransactionTypeEnum,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
       // verify required parameter 'aId' is not null or undefined
       if (aId === null || aId === undefined) {
         throw new RequiredError('aId', 'Required parameter aId was null or undefined when calling getTransactionCategories.');
@@ -561,8 +568,8 @@ export const PayingApiAxiosParamCreator = function (configuration?: Configuratio
 
       // authentication BearerAuth required
 
-      if (userDefined !== undefined) {
-        localVarQueryParameter['userDefined'] = userDefined;
+      if (transactionType !== undefined) {
+        localVarQueryParameter['transactionType'] = transactionType;
       }
 
       if (from !== undefined) {
@@ -984,12 +991,12 @@ export const PayingApiFp = function (configuration?: Configuration) {
       };
     },
     /**
-     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
+     * Can be filter by : * unique : show distinct transaction categories * date intervals : give the count of transaction categories used by existing transactions  between two dates * transactionType : INCOME or OUTCOME or null if both
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {string} from
      * @param {string} to
-     * @param {boolean} [userDefined]
+     * @param {TransactionTypeEnum} [transactionType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -997,10 +1004,10 @@ export const PayingApiFp = function (configuration?: Configuration) {
       aId: string,
       from: string,
       to: string,
-      userDefined?: boolean,
+      transactionType?: TransactionTypeEnum,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => Promise<AxiosResponse<Array<TransactionCategory>>>> {
-      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, from, to, userDefined, options);
+      const localVarAxiosArgs = await PayingApiAxiosParamCreator(configuration).getTransactionCategories(aId, from, to, transactionType, options);
       return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
         const axiosRequestArgs: AxiosRequestConfig = { ...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url };
         return axios.request(axiosRequestArgs);
@@ -1238,12 +1245,12 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
         .then(request => request(axios, basePath));
     },
     /**
-     * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
+     * Can be filter by : * unique : show distinct transaction categories * date intervals : give the count of transaction categories used by existing transactions  between two dates * transactionType : INCOME or OUTCOME or null if both
      * @summary Get known transaction categories of an account
      * @param {string} aId Account identifier
      * @param {string} from
      * @param {string} to
-     * @param {boolean} [userDefined]
+     * @param {TransactionTypeEnum} [transactionType]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -1251,11 +1258,11 @@ export const PayingApiFactory = function (configuration?: Configuration, basePat
       aId: string,
       from: string,
       to: string,
-      userDefined?: boolean,
+      transactionType?: TransactionTypeEnum,
       options?: AxiosRequestConfig
     ): Promise<AxiosResponse<Array<TransactionCategory>>> {
       return PayingApiFp(configuration)
-        .getTransactionCategories(aId, from, to, userDefined, options)
+        .getTransactionCategories(aId, from, to, transactionType, options)
         .then(request => request(axios, basePath));
     },
     /**
@@ -1474,12 +1481,12 @@ export class PayingApi extends BaseAPI {
       .then(request => request(this.axios, this.basePath));
   }
   /**
-   * Can be filter by : * unique : show distinct transaction categories * userDefined : show transaction categories defined by the user * date intervals : give the count of transaction categories used by existing transactions  between two dates
+   * Can be filter by : * unique : show distinct transaction categories * date intervals : give the count of transaction categories used by existing transactions  between two dates * transactionType : INCOME or OUTCOME or null if both
    * @summary Get known transaction categories of an account
    * @param {string} aId Account identifier
    * @param {string} from
    * @param {string} to
-   * @param {boolean} [userDefined]
+   * @param {TransactionTypeEnum} [transactionType]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PayingApi
@@ -1488,11 +1495,11 @@ export class PayingApi extends BaseAPI {
     aId: string,
     from: string,
     to: string,
-    userDefined?: boolean,
+    transactionType?: TransactionTypeEnum,
     options?: AxiosRequestConfig
   ): Promise<AxiosResponse<Array<TransactionCategory>>> {
     return PayingApiFp(this.configuration)
-      .getTransactionCategories(aId, from, to, userDefined, options)
+      .getTransactionCategories(aId, from, to, transactionType, options)
       .then(request => request(this.axios, this.basePath));
   }
   /**
