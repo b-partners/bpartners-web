@@ -10,13 +10,16 @@ export enum Currency {
 }
 
 export const prettyPrintMoney = (amount: number, currency: Currency, type?: TransactionTypeEnum): string => {
-  let sign = '';
+  let localVarMoney = '';
 
   if (type) {
-    type === TransactionTypeEnum.INCOME ? (sign = '+ ') : (sign = '- ');
+    localVarMoney += getSign(type);
   }
-  return sign + amount.toLocaleString() + ' ' + currency;
+
+  return localVarMoney + ` ${amount.toLocaleString()} ${currency}`;
 };
+
+const getSign = (type: TransactionTypeEnum) => (type === TransactionTypeEnum.INCOME ? '+' : '-');
 
 export const coloredMoney = (amount: number, currency: Currency, type: TransactionTypeEnum) => (
   <b style={{ color: type === TransactionTypeEnum.OUTCOME ? red[500] : green[500] }}> {prettyPrintMoney(amount, currency, type)} </b>

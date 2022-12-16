@@ -6,7 +6,7 @@ import productProvider from '../../providers/product-provider';
 import { CustomButton } from '../utils/CustomButton';
 import { isIncludesObject } from '../utils/isIncludesObject';
 import { ProductItem } from './ProductItem';
-import { getProdTotalPrice, ProductActionType } from './utils';
+import { ProductActionType } from './utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {

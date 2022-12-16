@@ -2,7 +2,7 @@ import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Currency, prettyPrintMoney } from '../utils/money';
-import { getPriceInclVat, getVat } from '../utils/vat';
+import { getVat } from '../utils/vat';
 import { getProdTotalPrice, ProductActionType } from './utils';
 
 const useStyle = makeStyles(() => ({
@@ -57,6 +57,7 @@ export const ProductItem = ({ product, handleProduct }) => {
             className={classes.filledInput}
             value={isNaN(product.quantity) ? '' : product.quantity === 0 ? 1 : product.quantity}
             onChange={handleChange}
+            data-cy-item='quantity-input'
             endAdornment={
               <InputAdornment className={classes.inputAdornment} position='end'>
                 X {product.unitPrice}€

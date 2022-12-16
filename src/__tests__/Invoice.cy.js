@@ -99,8 +99,13 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
 
-    cy.contains('2400.00€');
     cy.contains('400€');
+    cy.contains('2400.00€');
+
+    cy.get('[data-cy-item="quantity-input"]').type('5');
+
+    cy.contains('5000€');
+    cy.contains('30000.00€');
   });
 
   it('Should edit an invoice', () => {
