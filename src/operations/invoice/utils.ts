@@ -3,6 +3,7 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
+import { getVat } from '../utils/vat';
 
 /**
  * **PRODUCT**
@@ -29,14 +30,12 @@ const normalizeProd = (products: Product[] = []) => {
   return (products || []).map(product => {
     if (!product) return {};
 
-    let { quantity, vatPercent } = product;
+    let { quantity, vatPercent, unitPrice } = product;
 
     const hasMinQuantity = quantity === 0;
     const hasInvalidQuantity = !quantity && quantity !== 0;
 
-    if (hasInvalidQuantity) {
-      quantity = localDefaultQuantity.MIN;
-    } else if (hasMinQuantity) {
+    if (hasInvalidQuantity || hasMinQuantity) {
       quantity = localDefaultQuantity.INIT;
     }
 
@@ -44,7 +43,9 @@ const normalizeProd = (products: Product[] = []) => {
       vatPercent /= 100;
     }
 
-    return { ...product, quantity, vatPercent };
+    let totalVat = getVat(unitPrice * quantity, vatPercent);
+
+    return { ...product, quantity, vatPercent, totalVat };
   });
 };
 
