@@ -50,7 +50,7 @@ const InvoiceGridTable = props => {
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
-              <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} />
+              <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
               {data.status === InvoiceStatusEN.DRAFT ? (
                 <TooltipButton
                   title='Envoyer et transformer en devis'
