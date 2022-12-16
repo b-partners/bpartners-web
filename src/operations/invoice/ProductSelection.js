@@ -6,7 +6,7 @@ import productProvider from '../../providers/product-provider';
 import { CustomButton } from '../utils/CustomButton';
 import { isIncludesObject } from '../utils/isIncludesObject';
 import { ProductItem } from './ProductItem';
-import { ProductActionType } from './utils';
+import { getProdTotalPrice, ProductActionType } from './utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -40,7 +40,9 @@ export const ProductSelection = ({ name, formValidator }) => {
         productTemp = selectedProduct.filter(e => e.id !== product.id);
         break;
       case ProductActionType.UPDATE:
-        productTemp = selectedProduct.map(e => (e.id === product.id ? product : e));
+        const prodIndex = selectedProduct.findIndex(prod => prod.id === product.id);
+        productTemp = selectedProduct;
+        productTemp[prodIndex] = product;
         break;
       default:
         throw new Error('Unknown type');

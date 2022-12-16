@@ -9,43 +9,45 @@ import { getPriceInclVat } from '../utils/vat';
  * **PRODUCT**
  */
 export const totalCalculus = (products: Product[] = []) => {
-  console.table(products);
-
   if (products.length === 0) return 0;
-  const prodTemp = normalizeProdQty(products);
-  const localVarTotalPrice = getProdTotalPrice(prodTemp);
-  return sumPrices(localVarTotalPrice).toFixed(2);
+  const prodTemp = normalizeProd(products);
+  const localVarTotalPrice = getProdTotalPrice(...prodTemp);
+  return localVarTotalPrice.reduce((prev, curr) => prev + curr, 0).toFixed(2);
 };
 
-const getProdTotalPrice = (products: Product[]) => products.map(({ quantity, unitPrice }) => getPriceInclVat(quantity * unitPrice));
+export const getProdTotalPrice = (...products: Product[]) => {
+  return products.map(({ quantity, unitPrice, totalVat }) => {
+    return quantity * unitPrice + totalVat;
+  });
+};
 
-const normalizeProdQty = (products: Product[] = []) => {
+const normalizeProd = (products: Product[] = []) => {
   const localDefaultQuantity = {
     MIN: 0,
     INIT: 1,
   };
 
-  console.log(products);
-
   return (products || []).map(product => {
     if (!product) return {};
 
-    let localVarQty = product.quantity;
+    let { quantity, vatPercent } = product;
 
-    const hasMinQuantity = localVarQty === 0;
-    const hasInvalidQuantity = !localVarQty && localVarQty !== 0;
+    const hasMinQuantity = quantity === 0;
+    const hasInvalidQuantity = !quantity && quantity !== 0;
 
     if (hasInvalidQuantity) {
-      localVarQty = localDefaultQuantity.MIN;
+      quantity = localDefaultQuantity.MIN;
     } else if (hasMinQuantity) {
-      localVarQty = localDefaultQuantity.INIT;
+      quantity = localDefaultQuantity.INIT;
     }
 
-    return { ...product, quantity: localVarQty };
+    if (vatPercent > 0) {
+      vatPercent /= 100;
+    }
+
+    return { ...product, quantity, vatPercent };
   });
 };
-
-const sumPrices = (nums: number[] = []) => nums.reduce((prev, curr) => prev + curr, 0);
 
 /**
  * **INVOICE**
