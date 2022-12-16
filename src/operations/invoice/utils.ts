@@ -4,32 +4,53 @@ import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
 
-export const PDF_WIDTH = window.screen.width * 0.7;
-
-const vatTotalPrice = (totalPrice: number) => {
-  return (totalPrice * 20) / 100 + totalPrice;
+/**
+ * **PRODUCT**
+ */
+export const totalCalculus = (products: Product[] = []) => {
+  if (products.length === 0) return 0;
+  const prodTemp = normalizeProd(products);
+  const localVarTotalPrice = getProdTotalPrice(...prodTemp);
+  return localVarTotalPrice.reduce((prev, curr) => prev + curr, 0).toFixed(2);
 };
 
-export const totalCalculus = (products: Product[]) => {
-  if (products.length === 0) {
-    return 0;
-  }
-  const productsTemp = products.map(e => {
-    const productTemp = { ...e };
-    if (isNaN(e.quantity)) {
-      productTemp.quantity = 0;
-    } else if (e.quantity === 0) {
-      productTemp.quantity = 1;
-    }
-    return productTemp;
+export const getProdTotalPrice = (...products: Product[]) => {
+  return products.map(({ quantity, unitPrice, totalVat }) => {
+    return quantity * unitPrice + totalVat;
   });
-
-  return productsTemp
-    .map(e => vatTotalPrice(e.quantity * e.unitPrice))
-    .reduce((a, b) => a + b, 0)
-    .toFixed(2);
 };
 
+const normalizeProd = (products: Product[] = []) => {
+  const localDefaultQuantity = {
+    MIN: 0,
+    INIT: 1,
+  };
+
+  return (products || []).map(product => {
+    if (!product) return {};
+
+    let { quantity, vatPercent } = product;
+
+    const hasMinQuantity = quantity === 0;
+    const hasInvalidQuantity = !quantity && quantity !== 0;
+
+    if (hasInvalidQuantity) {
+      quantity = localDefaultQuantity.MIN;
+    } else if (hasMinQuantity) {
+      quantity = localDefaultQuantity.INIT;
+    }
+
+    if (vatPercent > 0) {
+      vatPercent /= 100;
+    }
+
+    return { ...product, quantity, vatPercent };
+  });
+};
+
+/**
+ * **INVOICE**
+ */
 export const invoiceDateValidator = (date1: string, date2?: string) => {
   if (date2) {
     if (date2.length === 0) {
@@ -107,3 +128,6 @@ export const invoiceListInitialState = {
   isPending: 0,
   viewScreen: viewScreenState.LIST,
 };
+
+// CONSTANT
+export const PDF_WIDTH = window.screen.width * 0.7;

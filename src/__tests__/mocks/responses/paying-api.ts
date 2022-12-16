@@ -6,7 +6,7 @@ export const transactions1: Array<Transaction> = [
     id: 'transaction1',
     label: "Abonnement BPartners - L'essentiel",
     reference: 'BP22001',
-    amount: -5,
+    amount: 5,
     category: [
       {
         type: 'TVA 20%',
@@ -40,7 +40,7 @@ export const transactions1: Array<Transaction> = [
     id: 'transaction3',
     label: "Abonnement BPartners - L'essentiel",
     reference: 'BP22003',
-    amount: -5,
+    amount: 5,
     paymentDatetime: new Date('2022-08-18T05:34:20'),
     status: TransactionStatus.BOOKED,
     type: TransactionTypeEnum.OUTCOME,
@@ -66,7 +66,7 @@ export const transactions1: Array<Transaction> = [
     id: 'transaction5',
     label: "Abonnement BPartners - L'essentiel",
     reference: 'BP22005',
-    amount: -5,
+    amount: 5,
     paymentDatetime: new Date('2022-06-18T05:34:20'),
     status: TransactionStatus.PENDING,
     type: TransactionTypeEnum.INCOME,
