@@ -81,6 +81,28 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé');
   });
 
+  it('Should create an invoice', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    cy.get('form input[name=title]').type('1');
+    cy.get('form input[name=ref]').type('-2');
+    cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
+    cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
+    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-value="customer2"]').click();
+    cy.get('#invoice-product-selection-button-id').click();
+    cy.get('.MuiInputBase-root > #product-selection-id').click();
+    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+
+    cy.contains('2400.00€');
+    cy.contains('400€');
+  });
+
   it('Should edit an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
@@ -101,27 +123,6 @@ describe(specTitle('Invoice'), () => {
     cy.contains('invoice-title-0');
     cy.contains('Name 3');
     cy.contains('Taille : 5');
-  });
-
-  it('Should create an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
-
-    cy.get('form input[name=title]').type('1');
-    cy.get('form input[name=ref]').type('-2');
-    cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
-    cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-    cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-
-    cy.contains('1.20€');
   });
 
   it('Should show an invoice', () => {
