@@ -70,7 +70,7 @@ const SelectionDialog = props => {
     try {
       setLoading(true);
       const { comment, type, vat } = selectedCategory;
-      await transactionCategoryProvider.saveOrUpdate(id, { vat, type, comment });
+      await transactionCategoryProvider.saveOrUpdate(id, { vat: vat * 100, type, comment });
       notify(successMessage(category), { type: 'success' });
       refresh();
     } catch {
