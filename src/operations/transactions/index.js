@@ -1,4 +1,4 @@
-import WorkIcon from '@material-ui/icons/Work';
+import WorkIcon from '@mui/icons-material/Work';
 import TransactionShow from './TransactionShow';
 import TransactionList from './TransactionList';
 

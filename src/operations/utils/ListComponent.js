@@ -1,4 +1,4 @@
-import { LinearProgress, Box } from '@material-ui/core';
+import { LinearProgress, Box } from '@mui/material';
 import { useListContext } from 'react-admin';
 
 const ListComponent = ({ children }) => {

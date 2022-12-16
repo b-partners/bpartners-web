@@ -57,17 +57,21 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains('Résumé graphique');
+    cy.get('#date').type('2022-11');
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
-    cy.get('#date').type('2022-11');
+    cy.contains('Dernière modification');
+    cy.get('#date').type(`${new Date().getFullYear()}-11`);
     cy.contains('30');
     cy.contains('20');
     cy.contains('40');
-    cy.get('#date').type('2022-01');
+    cy.get('#date').type(`${new Date().getFullYear()}-01`);
     cy.contains('12');
     cy.contains('10');
     cy.contains('40');
+    cy.get('#date').type(`${new Date().getFullYear()}-03`);
+    cy.contains(`Vous n'avez aucune transaction sur ce mois`);
   });
 
   it('are filterable', () => {
@@ -86,11 +90,11 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
+    cy.get('[id=document-button-transaction2]').click();
+    cy.contains('BP22002');
+
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();
     cy.contains('BP22001').as('transaction1').should('exist');
-
-    cy.get('[id=document-button-transaction2]').click();
-    cy.contains('BP22002');
   });
 });

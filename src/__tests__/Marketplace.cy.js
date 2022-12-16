@@ -29,6 +29,29 @@ describe(specTitle('Customers'), () => {
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
+  it('only show long description when asked', () => {
+    mount(<App />);
+    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces', marketplaces1).as('getMarketplaces');
+    cy.wait('@getUser1');
+    cy.get('[name="marketplaces"]').click();
+
+    cy.wait('@getMarketplaces');
+
+    const mp1 = '[data-cy-item="mp-0"]';
+    const mp2 = '[data-cy-item="mp-1"]';
+
+    cy.get(mp1).should('not.contain.text', 'mp-0');
+    cy.get(mp2).should('not.contain.text', 'mp-1');
+
+    cy.get(mp1).click();
+    cy.get(mp1).should('contain.text', 'mp-0');
+
+    cy.get(mp2).click();
+    cy.get(mp2).should('contain.text', 'mp-1');
+
+    cy.get(mp1).should('not.contain.text', 'mp-0');
+  });
+
   it('are displayed', () => {
     mount(<App />);
     cy.intercept('GET', '/accounts/mock-account-id1/marketplaces', marketplaces1).as('getMarketplaces');

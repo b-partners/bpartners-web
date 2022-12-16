@@ -1,13 +1,16 @@
-import { Card, CardContent, Grid, TextField, Typography } from '@material-ui/core';
+import { Box, Card, CardContent, Grid, TextField, Typography, Skeleton } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
 import authProvider from 'src/providers/auth-provider';
 import { singleAccountGetter } from 'src/providers/account-provider';
 
+import emptyData from 'src/assets/noData.png';
+
 const TransactionChart = () => {
   const [data, setData] = useState([]);
   const [transactionsSummary, setTransactionsSummary] = useState();
+  const [updateDate, setUpdateDate] = useState();
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
   const [date, setDate] = useState(currentDate);
@@ -23,6 +26,7 @@ const TransactionChart = () => {
   const getMonthlyTransaction = month => {
     const temp = transactionsSummary && transactionsSummary.summary.filter(item => item.month === +month)[0];
 
+    setUpdateDate(temp && temp.updatedAt);
     temp
       ? setData([
           { name: 'Recette', value: temp.income / 100 },
@@ -49,50 +53,77 @@ const TransactionChart = () => {
     getMonthlyTransaction(month);
   }, [transactionsSummary]);
 
-  const COLORS = ['#1D9661', '#8E961D', '#003D7A'];
+  const COLORS = ['#1D9661', '#B30000', '#003D7A'];
 
   return (
     <Card>
       <CardContent>
-        <Typography variant='h5'>Résumé graphique</Typography>
-      </CardContent>
-      <CardContent>
-        <Grid container spacing={2}>
+        <Typography variant='h6'>Résumé graphique</Typography>
+        <Grid container spacing={1}>
           <Grid item sm={3}>
-            <TextField
-              type='month'
-              id='date'
-              variant='filled'
-              value={date}
-              onChange={e => {
-                setDate(e.target.value);
-              }}
-            />
+            {transactionsSummary ? (
+              <TextField
+                type='month'
+                id='date'
+                variant='filled'
+                value={date}
+                onChange={e => {
+                  setDate(e.target.value);
+                }}
+              />
+            ) : (
+              <Skeleton width={210} height={60} />
+            )}
+            {updateDate && (
+              <Box mt={2}>
+                <Typography variant='body1'>
+                  <i>Dernière modification</i>
+                </Typography>
+                <Typography variant='body2'>
+                  <i>{updateDate.split('T').join(' ').split('.')[0]}</i>
+                </Typography>
+              </Box>
+            )}
           </Grid>
-          <Grid item>
-            <PieChart width={500} height={150}>
-              <Pie
-                data={data}
-                cx={200}
-                cy={150}
-                outerRadius={100}
-                innerRadius={80}
-                fill='#8884d8'
-                nameKey='name'
-                dataKey='value'
-                startAngle={180}
-                endAngle={0}
-                paddingAngle={4}
-                label
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend iconType='circle' verticalAlign='bottom' layout='vertical' align='right' />
-            </PieChart>
-          </Grid>
+          {transactionsSummary ? (
+            <Grid item>
+              {data.length === 0 || data.filter(item => item.value === 0).length === 3 ? (
+                <Box textAlign='center'>
+                  <img src={emptyData} alt='aucune transaction' height={120} />
+                  <Typography variant='body1' mt={2}>
+                    Vous n'avez aucune transaction sur ce mois
+                  </Typography>
+                </Box>
+              ) : (
+                <PieChart width={500} height={150}>
+                  <Pie
+                    data={data}
+                    cx={200}
+                    cy={150}
+                    outerRadius={100}
+                    innerRadius={82}
+                    fill='#8884d8'
+                    nameKey='name'
+                    dataKey='value'
+                    startAngle={180}
+                    endAngle={0}
+                    paddingAngle={4}
+                    label
+                  >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend iconType='circle' verticalAlign='bottom' layout='vertical' align='right' />
+                </PieChart>
+              )}
+            </Grid>
+          ) : (
+            <Grid item>
+              <Skeleton variant='rounded' width={300} height={110} />
+            </Grid>
+          )}
         </Grid>
       </CardContent>
     </Card>

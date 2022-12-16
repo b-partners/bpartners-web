@@ -178,6 +178,7 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
       }
 
       localVarHeaderParameter['Content-Type'] = 'image/jpeg';
+      localVarHeaderParameter['Authorization'] = `Bearer ${configuration.accessToken}`;
 
       const query = new URLSearchParams(localVarUrlObj.search);
       for (const key in localVarQueryParameter) {
@@ -189,8 +190,15 @@ export const FilesApiAxiosParamCreator = function (configuration?: Configuration
       localVarUrlObj.search = new URLSearchParams(query).toString();
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-      const needsSerialization = typeof body !== 'string' || localVarRequestOptions.headers['Content-Type'] === 'application/json';
-      localVarRequestOptions.data = needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : body || '';
+      /**
+       * BINARY shouldn't be serialized to avoid to corrupt it
+       *
+       *  const needsSerialization = typeof body !== 'string' || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+       *  localVarRequestOptions.data = needsSerialization ? JSON.stringify(body !== undefined ? body : {}) : body || '';
+       *
+       * instead assign it to the data directly
+       */
+      localVarRequestOptions.data = body;
 
       return {
         url: localVarUrlObj.pathname + localVarUrlObj.search + localVarUrlObj.hash,

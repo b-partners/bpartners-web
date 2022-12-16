@@ -2,6 +2,7 @@ import { Product } from 'src/gen/bpClient';
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
+import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
 
 export const PDF_WIDTH = window.screen.width * 0.7;
 
@@ -50,21 +51,41 @@ export const getInvoicePdfUrl = async (id: string) => {
   return `${BASE_PATH}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
 
-export const getInvoiceStatus = (status: string): string => {
+type InvoiceStatusLabel = keyof typeof InvoiceStatusEN;
+
+export const getInvoiceStatusInFr = (status: InvoiceStatusLabel): string => {
   switch (status) {
-    case 'PAYED':
-      return 'PAYÉ';
-    case 'ACCEPTED':
-      return 'ACCEPTÉ';
-    case 'CONFIRMED':
-      return 'CONFIRMÉ';
-    case 'DRAFT':
-      return 'BROUILLON';
-    case 'PROPOSAL':
-      return 'EN ATTENTE';
+    case InvoiceStatusEN.PAYED:
+      return InvoiceStatusFR.PAYED;
+    case InvoiceStatusEN.PROPOSAL:
+      return InvoiceStatusFR.PROPOSAL;
+    case InvoiceStatusEN.DRAFT:
+      return InvoiceStatusFR.DRAFT;
+    case InvoiceStatusEN.CONFIRMED:
+      return InvoiceStatusFR.CONFIRMED;
+    case InvoiceStatusEN.ACCEPTED:
+      return InvoiceStatusFR.ACCEPTED;
     default:
-      throw new Error('Unknown status');
+      throw new Error(`Unknown status: ${status}`);
   }
+};
+
+export const InvoiceActionType = {
+  START_PENDING: 'startPending',
+  STOP_PENDING: 'stopPending',
+  SET: 'set',
+};
+
+export const ProductActionType = {
+  UPDATE: 'update',
+  REMOVE: 'remove',
+  ADD: 'add',
+};
+
+export const viewScreenState = {
+  LIST: 'lists',
+  EDITION: 'edition',
+  PREVIEW: 'preview',
 };
 
 export const invoiceInitialValue: any = {
@@ -75,7 +96,7 @@ export const invoiceInitialValue: any = {
   products: [],
   sendingDate: '',
   toPayAt: '',
-  status: 'DRAFT',
+  status: InvoiceStatusEN.DRAFT,
   comment: '',
 };
 
@@ -84,5 +105,5 @@ export const invoiceListInitialState = {
   tabIndex: 0,
   selectedInvoice: invoiceInitialValue,
   isPending: 0,
-  viewScreen: 'lists',
+  viewScreen: viewScreenState.LIST,
 };

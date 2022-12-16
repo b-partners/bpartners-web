@@ -1,4 +1,4 @@
-import WorkIcon from '@material-ui/icons/Work';
+import WorkIcon from '@mui/icons-material/Work';
 import CustomerList from './CustomerList';
 import CustomerCreate from './CustomerCreate';
 

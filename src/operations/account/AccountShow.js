@@ -1,18 +1,21 @@
-import { green } from '@material-ui/core/colors';
-import { Save } from '@material-ui/icons';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
+import { green, grey } from '@mui/material/colors';
+import { Save as SaveIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
+import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Skeleton, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
+import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from 'src/providers/api';
 import { fileProvider } from 'src/providers/file-provider';
-import { accountHoldersGetter, singleAccountGetter } from '../../providers/account-provider';
+import { accountHoldersGetter, cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/tab-panel';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { v4 as uuid } from 'uuid';
+import { getMimeType } from 'src/utils/get-mime-type';
+import { FileType } from 'src/gen/bpClient';
+import { BASE_PATH } from 'src/gen/bpClient/base';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -48,55 +51,83 @@ const SubscriptionLayout = () => (
 
 const LogoLayout = () => {
   const notify = useNotify();
-  const refresh = useRefresh();
-  const [logoUrl, setLogoUrl] = useState('');
+  const [logo, setLogo] = useState(undefined);
+  const [logoLoading, setLogoLoading] = useState(false);
+
+  const getLogo = async () => {
+    const {
+      user: { id: userId },
+    } = authProvider.getCachedWhoami();
+    const logoFileId = getCachedUser() && getCachedUser().logoFileId;
+
+    if (!logoFileId) {
+      return;
+    }
+
+    const { accessToken } = authProvider.getCachedAuthConf();
+    const accountId = (await singleAccountGetter(userId)).id;
+    const url = `${BASE_PATH}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
+
+    try {
+      setLogoLoading(true);
+      const result = await fetch(url);
+      console.log(result);
+      const blob = await result.blob();
+      setLogo(URL.createObjectURL(blob));
+    } catch (e) {
+      throw e;
+    } finally {
+      setLogoLoading(false);
+    }
+  };
+
+  const updateLogo = async files => {
+    try {
+      setLogoLoading(true);
+      const type = getMimeType(files);
+      const [, logoExtension] = type.split('/');
+      const logoFileId = `${uuid()}.${logoExtension}`;
+      const user = getCachedUser();
+
+      const resources = { files: files, fileId: logoFileId, fileType: FileType.LOGO };
+
+      await fileProvider.saveOrUpdate(resources);
+
+      notify('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.', { type: 'success' });
+
+      cacheUser({ ...user, logoFileId: logoFileId });
+    } catch (err) {
+      notify("Une erreur s'est produite", { type: 'error' });
+    } finally {
+      await getLogo();
+    }
+  };
 
   useEffect(() => {
-    const getLogo = async () => {
-      const {
-        user: { id: userId },
-      } = authProvider.getCachedWhoami();
-      const apiUrl = process.env.REACT_APP_BPARTNERS_API_URL || '';
-      const { accessToken } = authProvider.getCachedAuthConf();
-      const accountId = (await singleAccountGetter(userId)).id;
-      const fileId = 'logo.jpeg';
-      setLogoUrl(`${apiUrl}/accounts/${accountId}/files/${fileId}/raw?accessToken=${accessToken}&fileType=LOGO`);
-    };
-
     getLogo();
-  });
+  }, []);
 
   return (
     <Box sx={ACCOUNT_HOLDER_STYLE}>
       <label htmlFor='upload-photo' id='upload-photo-label'>
-        <input
-          style={{ display: 'none' }}
-          id='upload-photo'
-          name='upload-photo'
-          type='file'
-          onChange={async files => {
-            try {
-              await fileProvider.saveOrUpdate(files);
-              notify('Changement enregistré', { type: 'success' });
-              refresh();
-            } catch (err) {
-              notify("Une erreur s'est produite", { type: 'error' });
-            }
-          }}
-        />
+        <input style={{ display: 'none' }} id='upload-photo' name='upload-photo' type='file' onChange={updateLogo} />
         <Badge
           overlap='circular'
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
         >
-          <Avatar
-            alt='company logo'
-            src={logoUrl}
-            sx={{
-              height: '8rem',
-              width: '8rem',
-            }}
-          />
+          {!logoLoading ? (
+            <Avatar
+              alt='company logo'
+              src={logo}
+              sx={{
+                height: '8rem',
+                width: '8rem',
+              }}
+            />
+          ) : (
+            <Skeleton animaiton='wave' variant='circular' width={128} height={128} sx={{ bgcolor: grey[400] }} />
+          )}
         </Badge>
       </label>
     </Box>
@@ -210,7 +241,7 @@ const AccountHolderLayout = () => {
         <Button
           variant='contained'
           size='small'
-          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <Save />}
+          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
           disabled={isBtnDisabled}
           onClick={updateBusinessActivities}
           sx={{ marginTop: 1 }}

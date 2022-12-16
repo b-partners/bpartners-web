@@ -1,5 +1,5 @@
-import { makeStyles, useMediaQuery } from '@material-ui/core';
-import { Box } from '@mui/system';
+import { makeStyles } from '@mui/styles';
+import { useMediaQuery, Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { SidebarToggleButton } from 'react-admin';
 import bpLogo from './assets/bp-logo-full.png';

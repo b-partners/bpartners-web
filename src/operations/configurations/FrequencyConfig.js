@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Box, Button, TextField, Typography } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
 import relaunchProvider from 'src/providers/relaunch-provider';
 import authProvider from 'src/providers/auth-provider';
 

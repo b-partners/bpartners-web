@@ -1,12 +1,13 @@
+import { Clear } from '@mui/icons-material';
+import { Box, Card, CardContent, CardHeader, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { useEffect, useReducer, useState } from 'react';
+import { InvoiceStatusEN } from '../../constants/invoice-status';
 import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import InvoiceListTable from './InvoiceListTable';
-import { getInvoicePdfUrl, invoiceListInitialState, PDF_WIDTH } from './utils';
-import { Clear } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
-import { Box, Tabs, Tab, Card, CardHeader, CardContent, IconButton, Tooltip } from '@mui/material';
-import { useState, useEffect, useReducer } from 'react';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
@@ -41,11 +42,11 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
 
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {
-    case 'startPending':
+    case InvoiceActionType.START_PENDING:
       return { ...state, isPending: state.isPending + 1, documentUrl: payload.documentUrl };
-    case 'stopPending':
+    case InvoiceActionType.STOP_PENDING:
       return { ...state, isPending: state.isPending - 1, documentUrl: payload.documentUrl };
-    case 'set':
+    case InvoiceActionType.SET:
       return { ...state, ...payload };
     default:
       throw new Error('Unknown action type');
@@ -56,14 +57,18 @@ const InvoiceList = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, isPending, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
 
-  const stateHandling = values => dispatch({ type: 'set', payload: values });
+  const stateHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (e, newTabIndex) => dispatch({ type: 'set', payload: { tabIndex: newTabIndex } });
-  const returnToList = () => stateHandling({ viewScreen: 'lists' });
+  const handleSwitchTab = (e, newTabIndex) =>
+    dispatch({
+      type: InvoiceActionType.SET,
+      payload: { tabIndex: newTabIndex },
+    });
+  const returnToList = () => stateHandling({ viewScreen: viewScreenState.LIST });
 
   return (
     <Box sx={{ padding: 3 }}>
-      {viewScreen === 'lists' ? (
+      {viewScreen === viewScreenState.LIST ? (
         <Box>
           <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
             <Tab label='Brouillons' />
@@ -71,16 +76,16 @@ const InvoiceList = () => {
             <Tab label='Factures' />
           </Tabs>
           <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType='DRAFT' />
+            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.DRAFT} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType='PROPOSAL' />
+            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType='CONFIRMED' />
+            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
           </TabPanel>
         </Box>
-      ) : viewScreen === 'edition' ? (
+      ) : viewScreen === viewScreenState.EDITION ? (
         <Card>
           <CardHeader
             title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
