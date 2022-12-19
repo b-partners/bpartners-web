@@ -16,6 +16,7 @@ import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
 import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
+import TransactionCategorySelection from './TransactionCategorySelection';
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -80,18 +81,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <TextField source='reference' label='Référence' />
         <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR, record.type)} label='Montant' />
         <TextField source='label' label='Titre' />
-        <FunctionField
-          render={({ category }) =>
-            category != null ? (
-              <Box sx={{ width: '15vw' }}>
-                {category.map(cat => (
-                  <Chip label={cat.type} variant='outlined' />
-                ))}
-              </Box>
-            ) : null
-          }
-          label='Catégorie'
-        />
+        <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
         TODO: allow inline edition
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />

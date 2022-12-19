@@ -11,6 +11,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { EmailInfo } from './email-info';
 import { Invoice } from './invoice';
 import { RelaunchType } from './relaunch-type';
 /**
@@ -37,6 +38,12 @@ export interface InvoiceRelaunch {
    * @memberof InvoiceRelaunch
    */
   invoice?: Invoice;
+  /**
+   *
+   * @type {EmailInfo}
+   * @memberof InvoiceRelaunch
+   */
+  emailInfo?: EmailInfo;
   /**
    *
    * @type {string}

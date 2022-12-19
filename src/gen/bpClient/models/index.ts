@@ -16,6 +16,7 @@ export * from './create-transaction-category';
 export * from './crupdate-invoice';
 export * from './crupdate-invoice-template';
 export * from './customer';
+export * from './email-info';
 export * from './enable-status';
 export * from './exception';
 export * from './file-info';

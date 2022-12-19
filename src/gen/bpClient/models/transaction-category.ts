@@ -27,12 +27,6 @@ export interface TransactionCategory extends CreateTransactionCategory {
   id?: string;
   /**
    *
-   * @type {boolean}
-   * @memberof TransactionCategory
-   */
-  userDefined?: boolean;
-  /**
-   *
    * @type {number}
    * @memberof TransactionCategory
    */
@@ -43,4 +37,16 @@ export interface TransactionCategory extends CreateTransactionCategory {
    * @memberof TransactionCategory
    */
   transactionType?: TransactionTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof TransactionCategory
+   */
+  description?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof TransactionCategory
+   */
+  isOther?: boolean;
 }
