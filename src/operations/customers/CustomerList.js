@@ -1,19 +1,10 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
-import PrevNextPagination from '../utils/PrevNextPagination';
+import Pagination from '../utils/Pagination';
 
 const CustomerList = props => (
-  <List
-    {...props}
-    resource='customers'
-    hasCreate={true}
-    hasEdit={false}
-    hasList={false}
-    hasShow={false}
-    component={ListComponent}
-    pagination={<PrevNextPagination />}
-  >
+  <List {...props} resource='customers' hasCreate={true} hasEdit={false} hasList={false} hasShow={false} component={ListComponent} pagination={<Pagination />}>
     <CustomerGrid />
   </List>
 );

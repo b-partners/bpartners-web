@@ -4,7 +4,7 @@ import ListComponent from '../utils/ListComponent';
 
 import { prettyPrintMinors, toMajors } from '../utils/money';
 
-import PrevNextPagination from '../utils/PrevNextPagination';
+import Pagination from '../utils/Pagination';
 
 const ProductList = props => {
   const { data } = useListContext();
@@ -20,7 +20,7 @@ const ProductList = props => {
       hasList={false}
       hasShow={false}
       component={ListComponent}
-      pagination={<PrevNextPagination />}
+      pagination={<Pagination />}
     >
       <Product />
     </List>
