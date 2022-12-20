@@ -20,9 +20,9 @@ const useStyle = makeStyles(theme => ({
   },
 }));
 
-export const ProductSelection = ({ name, formValidator }) => {
+export const ProductFormControl = ({ name, formValidator }) => {
   const { watch, setValue } = formValidator;
-  const [state, setState] = useState({ productsList: [], status: false });
+  const [state, setState] = useState({ products: [], status: false });
   const selectedProduct = watch(name) || [];
   const classes = useStyle();
 
@@ -70,8 +70,8 @@ export const ProductSelection = ({ name, formValidator }) => {
           <FormControl variant='filled' value='' className={classes.formControl}>
             <InputLabel id='product-selection-id'>Produit</InputLabel>
             <Select id='product-selection-id'>
-              {state.productsList.length > 0 &&
-                state.productsList
+              {state.products.length > 0 &&
+                state.products
                   .filter(e => !isIncludesObject(selectedProduct, 'id', e.id))
                   .map(e => (
                     <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>

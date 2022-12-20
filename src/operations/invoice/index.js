@@ -1,10 +1,10 @@
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import InvoiceList from './InvoiceList';
+import InvoiceListContainer from './InvoiceListContainer';
 
 const invoice = {
-  list: InvoiceList,
+  list: InvoiceListContainer,
   icon: ReceiptIcon,
-  options: { label: 'Devis/Facturation' },
+  options: { label: 'Devis / Facturation' },
 };
 
 export default invoice;

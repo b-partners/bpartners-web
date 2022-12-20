@@ -6,7 +6,7 @@ import { payingApi } from '../../providers/api';
 import authProvider from '../../providers/auth-provider';
 import RichTextEditor from '../utils/RichTextEditor';
 
-export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
+export const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');

@@ -9,7 +9,7 @@ import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
-import { ProductSelection } from './ProductSelection';
+import { ProductFormControl } from './ProductFormControl';
 import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, totalCalculus } from './utils';
 
 const useStyle = makeStyles(() => ({
@@ -82,7 +82,7 @@ const InvoiceCreateOrUpdate = props => {
               />
             </FormControl>
             <ClientSelection name='customer' formValidator={formValidator} />
-            <ProductSelection name='products' formValidator={formValidator} />
+            <ProductFormControl name='products' formValidator={formValidator} />
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
