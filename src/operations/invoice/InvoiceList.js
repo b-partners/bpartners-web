@@ -1,107 +1,157 @@
-import { Clear } from '@mui/icons-material';
-import { Box, Card, CardContent, CardHeader, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useEffect, useReducer, useState } from 'react';
+import { Add, Attachment, Check, DoneAll, Send, TurnRight } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
+import invoiceProvider from 'src/providers/invoice-provider';
+import { v4 as uuid } from 'uuid';
 import { InvoiceStatusEN } from '../../constants/invoice-status';
-import PdfViewer from '../utils/PdfViewer';
-import TabPanel from '../utils/TabPanel';
-import InvoiceCreateOrUpdate from './InvoiceCreate';
-import InvoiceListTable from './InvoiceListTable';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
+import ListComponent from '../utils/ListComponent';
+import Pagination from '../utils/Pagination';
+import { InvoiceRelaunchModal } from './InvoiceRelaunchModal';
+import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
-const useStyle = makeStyles(() => ({
-  document: { width: '60%' },
-}));
+const LIST_ACTION_STYLE = { display: 'flex' };
 
-const TAB_PANEL_STYLE = { padding: 0 };
+const sendInvoiceTemplate = (event, data, notify, refresh, successMessage) => {
+  if (event) {
+    event.stopPropagation();
+  }
+  invoiceProvider
+    .saveOrUpdate([data])
+    .then(() => {
+      notify(successMessage, { type: 'success' });
+      refresh();
+    })
+    .catch(() => {
+      notify("Une erreur s'est produite", { type: 'error' });
+    });
+};
 
-const CancelButton = ({ onClick }) => (
-  <Tooltip title='Retourner a la liste'>
-    <IconButton onClick={onClick}>
-      <Clear />
-    </IconButton>
+const TooltipButton = ({ icon, ...others }) => (
+  <Tooltip {...others} sx={{ margin: '0 15px' }}>
+    <IconButton>{icon}</IconButton>
   </Tooltip>
 );
 
-const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
-  const [documentUrl, setDocumentUrl] = useState('');
-
-  useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
-  }, [selectedInvoice]);
+const Invoice = props => {
+  const { createOrUpdateInvoice, viewDocument, sendInvoice, setInvoiceToRelaunch } = props;
+  const { isLoading } = useListContext();
 
   return (
-    <Card>
-      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
-      <CardContent>
-        <PdfViewer width={PDF_WIDTH} url={documentUrl} />
-      </CardContent>
-    </Card>
+    !isLoading && (
+      <Datagrid rowClick={(id, resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
+        <TextField source='ref' label='Référence' />
+        <TextField source='title' label='Titre' />
+        <TextField source='customer[name]' label='Client' />
+        <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
+        <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
+        <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
+        <TextField source='toPayAt' label='Date de paiement' />
+        <FunctionField
+          render={data => (
+            <Box sx={LIST_ACTION_STYLE}>
+              <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
+              {data.status === InvoiceStatusEN.DRAFT ? (
+                <TooltipButton
+                  title='Envoyer et transformer en devis'
+                  icon={<Send />}
+                  onClick={event =>
+                    sendInvoice(
+                      event,
+                      {
+                        ...data,
+                        status: InvoiceStatusEN.PROPOSAL,
+                      },
+                      'Devis bien envoyé'
+                    )
+                  }
+                />
+              ) : data.status === InvoiceStatusEN.PROPOSAL ? (
+                <TooltipButton
+                  title='Transformer en facture'
+                  icon={<Check />}
+                  onClick={event =>
+                    sendInvoice(
+                      event,
+                      {
+                        ...data,
+                        status: InvoiceStatusEN.CONFIRMED,
+                      },
+                      'Devis confirmé'
+                    )
+                  }
+                />
+              ) : (
+                <>
+                  <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
+                  <TooltipButton
+                    title='Relancer manuellement ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
+              )}
+            </Box>
+          )}
+          label=''
+        />
+      </Datagrid>
+    )
   );
 };
 
-const invoiceListReducer = (state, { type, payload }) => {
-  switch (type) {
-    case InvoiceActionType.START_PENDING:
-      return { ...state, isPending: state.isPending + 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.STOP_PENDING:
-      return { ...state, isPending: state.isPending - 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.SET:
-      return { ...state, ...payload };
-    default:
-      throw new Error('Unknown action type');
-  }
-};
+const InvoiceList = props => {
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const notify = useNotify();
+  const refresh = useRefresh();
+  /*
+    TODO: For all event or state handlers, use the prefix "on" followed by the name of the event or state being handled.
 
-const InvoiceList = () => {
-  const classes = useStyle();
-  const [{ selectedInvoice, tabIndex, isPending, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
+    For example:
 
-  const stateHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
-  const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (e, newTabIndex) =>
-    dispatch({
-      type: InvoiceActionType.SET,
-      payload: { tabIndex: newTabIndex },
+    "onClick" for a click event handler
+    "onHover" for a hover event handler
+    "onSubmit" for a form submission event handler
+    "onLoad" for a page load event handler
+    "onError" for an error handling event handler
+    This naming convention helps to clearly identify the purpose of the event or state handler and makes it easier to understand the code.
+  */
+  const { stateHandling, invoiceType } = props;
+
+  const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
+  const createOrUpdateInvoice = selectedInvoice =>
+    stateHandling({
+      selectedInvoice,
+      viewScreen: viewScreenState.EDITION,
     });
-  const returnToList = () => stateHandling({ viewScreen: viewScreenState.LIST });
+  const viewPdf = (event, selectedInvoice) => {
+    event.stopPropagation();
+    stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
+  };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      {viewScreen === viewScreenState.LIST ? (
-        <Box>
-          <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
-            <Tab label='Brouillons' />
-            <Tab label='Devis' />
-            <Tab label='Factures' />
-          </Tabs>
-          <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.DRAFT} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
-          </TabPanel>
-        </Box>
-      ) : viewScreen === viewScreenState.EDITION ? (
-        <Card>
-          <CardHeader
-            title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
-            action={<CancelButton onClick={returnToList} />}
+    <>
+      <List
+        exporter={false}
+        resource='invoices'
+        filter={{ invoiceType }}
+        component={ListComponent}
+        pagination={<Pagination />}
+        actions={
+          <TooltipButton
+            style={{ marginRight: 33 }}
+            title='Créer un nouveau devis'
+            onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+            icon={<Add />}
           />
-          <CardContent>
-            <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate close={returnToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
-              <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
-            </Box>
-          </CardContent>
-        </Card>
-      ) : (
-        <InvoicePdfDocument onClose={returnToList} selectedInvoice={selectedInvoice} />
-      )}
-    </Box>
+        }
+      >
+        <Invoice createOrUpdateInvoice={createOrUpdateInvoice} viewDocument={viewPdf} sendInvoice={sendInvoice} setInvoiceToRelaunch={setSelectedInvoice} />
+      </List>
+
+      <InvoiceRelaunchModal invoice={selectedInvoice} resetInvoice={() => setSelectedInvoice(null)} />
+    </>
   );
 };
 

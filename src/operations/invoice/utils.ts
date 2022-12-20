@@ -103,12 +103,14 @@ export const ProductActionType = {
   ADD: 'add',
 };
 
+// TODO: Use PascalCase for the naming of constants to maintain consistency with our naming conventions
 export const viewScreenState = {
   LIST: 'lists',
   EDITION: 'edition',
   PREVIEW: 'preview',
 };
 
+// TODO: Idem
 export const invoiceInitialValue: any = {
   id: '',
   ref: '',

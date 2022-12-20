@@ -1,3 +1,4 @@
+// TODO: Replace this gasigasy implementation by the React Admin Intl module
 export const InvoiceStatusEN = {
   PAYED: 'PAYED',
   PROPOSAL: 'PROPOSAL',
