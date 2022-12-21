@@ -59,6 +59,21 @@ describe(specTitle('Transactions'), () => {
     cy.contains('18/08/2022 05:34:20');
   });
 
+  it('transaction category', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
+    // cy.get(':nth-child(1) > :nth-child(4) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
+    cy.get(':nth-child(1) > :nth-child(3) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
+    cy.wait('@getTransactionCategory');
+    cy.get('.MuiButtonBase-root > [data-testid="ArrowDropDownIcon"]').click();
+    cy.contains('Autres dépenses').click();
+    cy.get('[name="comment"]').type('Test');
+    cy.get('[name="vat"]').type(10);
+    cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click();
+  });
+
   it('Should test pagination', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
