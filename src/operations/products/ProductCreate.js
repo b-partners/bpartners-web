@@ -7,10 +7,10 @@ const ProductCreate = () => (
   <Create redirect='list'>
     <SimpleForm>
       <Box sx={boxStyle}>
-        <NumberInput min={0} source='unitPrice' validate={[required()]} />
-        <NumberInput min={0} source='vatPercent' />
+        <NumberInput min={0} source='unitPrice' validate={[required()]} name='unit-price' />
+        <NumberInput min={0} source='vatPercent' validate={[required()]} name='vat-percent' />
       </Box>
-      <TextInput sx={{ maxWidth: '35vw' }} multiline={true} minRows={3} source='description' validate={[required()]} fullWidth />
+      <TextInput sx={{ maxWidth: '35vw' }} multiline={true} minRows={3} source='description' validate={[required()]} fullWidth name='description' />
     </SimpleForm>
   </Create>
 );
