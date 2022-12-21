@@ -52,7 +52,7 @@ export const ProductFormControl = ({ name, formValidator }) => {
 
   useEffect(() => {
     productProvider.getList().then(data => {
-      setState(e => ({ ...e, productsList: data }));
+      setState(e => ({ ...e, products: data }));
     });
   }, []);
 
