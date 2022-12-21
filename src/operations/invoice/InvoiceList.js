@@ -8,7 +8,7 @@ import { InvoiceStatusEN } from '../../constants/invoice-status';
 import ListComponent from '../utils/ListComponent';
 import Pagination from '../utils/Pagination';
 import { InvoiceRelaunchModal } from './InvoiceRelaunchModal';
-import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
+import { getInvoiceStatusInFr, InvoiceInitialValue, ViewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -105,29 +105,17 @@ const InvoiceList = props => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
-  /*
-    TODO: For all event or state handlers, use the prefix "on" followed by the name of the event or state being handled.
-
-    For example:
-
-    "onClick" for a click event handler
-    "onHover" for a hover event handler
-    "onSubmit" for a form submission event handler
-    "onLoad" for a page load event handler
-    "onError" for an error handling event handler
-    This naming convention helps to clearly identify the purpose of the event or state handler and makes it easier to understand the code.
-  */
-  const { stateHandling, invoiceType } = props;
+  const { onStateChange, invoiceType } = props;
 
   const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
   const createOrUpdateInvoice = selectedInvoice =>
-    stateHandling({
+    onStateChange({
       selectedInvoice,
-      viewScreen: viewScreenState.EDITION,
+      viewScreen: ViewScreenState.EDITION,
     });
   const viewPdf = (event, selectedInvoice) => {
     event.stopPropagation();
-    stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
+    onStateChange({ selectedInvoice, viewScreen: ViewScreenState.PREVIEW });
   };
 
   return (
@@ -142,7 +130,7 @@ const InvoiceList = props => {
           <TooltipButton
             style={{ marginRight: 33 }}
             title='Créer un nouveau devis'
-            onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+            onClick={() => createOrUpdateInvoice({ ...InvoiceInitialValue, id: uuid() })}
             icon={<Add />}
           />
         }

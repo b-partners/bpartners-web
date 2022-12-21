@@ -7,7 +7,7 @@ import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
 import InvoiceList from './InvoiceList';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, ViewScreenState } from './utils';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
@@ -57,7 +57,7 @@ const InvoiceListContainer = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, isPending, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
 
-  const stateHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
+  const setInvoiceState = values => dispatch({ type: InvoiceActionType.SET, payload: values });
 
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
 
@@ -67,46 +67,43 @@ const InvoiceListContainer = () => {
       payload: { tabIndex: newTabIndex },
     });
 
-  const backToList = () => stateHandling({ viewScreen: viewScreenState.LIST });
+  const backToList = () => setInvoiceState({ viewScreen: ViewScreenState.LIST });
 
   return (
     <Box sx={{ padding: 3 }}>
-      {
-        // TODO: using nested ternary operator makes the code harder to read refactor this
-        viewScreen === viewScreenState.LIST ? (
-          <Box>
-            <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
-              <Tab label='Brouillons' />
-              <Tab label='Devis' />
-              <Tab label='Factures' />
-            </Tabs>
-            <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-              <InvoiceList stateHandling={stateHandling} invoiceType={InvoiceStatusEN.DRAFT} />
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-              <InvoiceList stateHandling={stateHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
-            </TabPanel>
-            <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-              <InvoiceList stateHandling={stateHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
-            </TabPanel>
-          </Box>
-        ) : viewScreen === viewScreenState.EDITION ? (
-          <Card>
-            <CardHeader
-              title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
-              action={<CancelButton onClick={backToList} />}
-            />
-            <CardContent>
-              <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-                <InvoiceCreateOrUpdate close={backToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
-                <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
-              </Box>
-            </CardContent>
-          </Card>
-        ) : (
-          <InvoicePdf onClose={backToList} selectedInvoice={selectedInvoice} />
-        )
-      }
+      {viewScreen === ViewScreenState.LIST && (
+        <Box>
+          <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
+            <Tab label='Brouillons' />
+            <Tab label='Devis' />
+            <Tab label='Factures' />
+          </Tabs>
+          <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
+            <InvoiceList onStateChange={setInvoiceState} invoiceType={InvoiceStatusEN.DRAFT} />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
+            <InvoiceList onStateChange={setInvoiceState} invoiceType={InvoiceStatusEN.PROPOSAL} />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
+            <InvoiceList onStateChange={setInvoiceState} invoiceType={InvoiceStatusEN.CONFIRMED} />
+          </TabPanel>
+        </Box>
+      )}
+      {viewScreen === ViewScreenState.EDITION && (
+        <Card>
+          <CardHeader
+            title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
+            action={<CancelButton onClick={backToList} />}
+          />
+          <CardContent>
+            <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+              <InvoiceCreateOrUpdate close={backToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
+              <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+      {viewScreen !== ViewScreenState.LIST && viewScreen !== ViewScreenState.EDITION && <InvoicePdf onClose={backToList} selectedInvoice={selectedInvoice} />}
     </Box>
   );
 };
