@@ -7,7 +7,7 @@ import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
 import { userAccountsApi } from 'src/providers/api';
 import { fileProvider } from 'src/providers/file-provider';
-import { accountHoldersGetter, cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
+import { accountHoldersGetter, cacheAccountHolder, cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/tab-panel';
@@ -71,7 +71,6 @@ const LogoLayout = () => {
     try {
       setLogoLoading(true);
       const result = await fetch(url);
-      console.log(result);
       const blob = await result.blob();
       setLogo(URL.createObjectURL(blob));
     } catch (e) {
@@ -159,8 +158,9 @@ const AccountHolderLayout = () => {
     };
     setIsLoading(true);
     try {
-      await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
+      const { data } = await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
       notify('Changement enregistré', { type: 'success' });
+      cacheAccountHolder(data);
       setIsBtnDisabled(true);
       setIsLoading(false);
     } catch (error) {

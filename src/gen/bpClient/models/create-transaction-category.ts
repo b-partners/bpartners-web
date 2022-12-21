@@ -25,6 +25,12 @@ export interface CreateTransactionCategory {
   type?: string;
   /**
    *
+   * @type {string}
+   * @memberof CreateTransactionCategory
+   */
+  comment?: string;
+  /**
+   *
    * @type {number}
    * @memberof CreateTransactionCategory
    */

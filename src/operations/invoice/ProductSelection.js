@@ -40,7 +40,9 @@ export const ProductSelection = ({ name, formValidator }) => {
         productTemp = selectedProduct.filter(e => e.id !== product.id);
         break;
       case ProductActionType.UPDATE:
-        productTemp = selectedProduct.map(e => (e.id === product.id ? product : e));
+        const prodIndex = selectedProduct.findIndex(prod => prod.id === product.id);
+        productTemp = selectedProduct;
+        productTemp[prodIndex] = product;
         break;
       default:
         throw new Error('Unknown type');

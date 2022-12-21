@@ -1,4 +1,4 @@
-import { Datagrid, List, TextField, useListContext } from 'react-admin';
+import { Datagrid, List, TextField, FunctionField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 
@@ -34,7 +34,7 @@ const ProductGrid = () => {
         <TextField source='description' label='Description' />
         <TextField source='quantity' label='Quantité' />
         <TextField source='unitPrice' label='Prix unitaire' />
-        <TextField source='vatPercent' label='Pourcentage du TVA' />
+        <FunctionField source='vatPercent' label='Pourcentage du TVA' render={record => record.vatPercent / 100} inputMode='numeric' />
         <TextField source='totalVat' label='Total du TVA' />
         <TextField source='totalPriceWithVat' label='Prix total avec le TVA' />
       </Datagrid>

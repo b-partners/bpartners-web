@@ -14,31 +14,19 @@
 /**
  *
  * @export
- * @interface CreateInvoiceRelaunch
+ * @interface EmailInfo
  */
-export interface CreateInvoiceRelaunch {
+export interface EmailInfo {
   /**
    *
    * @type {string}
-   * @memberof CreateInvoiceRelaunch
+   * @memberof EmailInfo
    */
-  subject?: string;
+  emailObject?: string;
   /**
-   *
+   * use HTML tags
    * @type {string}
-   * @memberof CreateInvoiceRelaunch
-   */
-  object?: string;
-  /**
-   * html is waited
-   * @type {string}
-   * @memberof CreateInvoiceRelaunch
-   */
-  message?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInvoiceRelaunch
+   * @memberof EmailInfo
    */
   emailBody?: string;
 }
