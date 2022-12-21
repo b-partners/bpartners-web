@@ -59,7 +59,6 @@ export const ProductItem = ({ product, handleProduct }) => {
             onChange={handleChange}
             data-cy-item='quantity-input'
             endAdornment={
-              // TODO: What does this component do ?
               <InputAdornment className={classes.inputAdornment} position='end'>
                 X {product.unitPrice}€
               </InputAdornment>

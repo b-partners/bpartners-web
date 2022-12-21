@@ -103,15 +103,13 @@ export const ProductActionType = {
   ADD: 'add',
 };
 
-// TODO: Use PascalCase for the naming of constants to maintain consistency with our naming conventions
-export const viewScreenState = {
+export const ViewScreenState = {
   LIST: 'lists',
   EDITION: 'edition',
   PREVIEW: 'preview',
 };
 
-// TODO: Idem
-export const invoiceInitialValue: any = {
+export const InvoiceInitialValue: any = {
   id: '',
   ref: '',
   title: '',
@@ -126,9 +124,9 @@ export const invoiceInitialValue: any = {
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
 export const invoiceListInitialState = {
   tabIndex: 0,
-  selectedInvoice: invoiceInitialValue,
+  selectedInvoice: InvoiceInitialValue,
   isPending: 0,
-  viewScreen: viewScreenState.LIST,
+  viewScreen: ViewScreenState.LIST,
 };
 
 // CONSTANT
