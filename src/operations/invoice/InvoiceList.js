@@ -8,7 +8,7 @@ import { InvoiceStatusEN } from '../../constants/invoice-status';
 import ListComponent from '../utils/ListComponent';
 import Pagination from '../utils/Pagination';
 import { InvoiceRelaunchModal } from './InvoiceRelaunchModal';
-import { getInvoiceStatusInFr, InvoiceInitialValue, ViewScreenState } from './utils';
+import { getInvoiceStatusInFr, InvoiceInitialValue, ViewScreenState, invoiceValidator, INVOICE_DRAFT_ERROR_MESSAGE } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -36,10 +36,27 @@ const TooltipButton = ({ icon, ...others }) => (
 const Invoice = props => {
   const { createOrUpdateInvoice, viewDocument, sendInvoice, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
+  const notify = useNotify();
+
+  const onSendDraftInvoice = (event, invoice) => {
+    if (!invoiceValidator(invoice)) {
+      event.stopPropagation();
+      notify(INVOICE_DRAFT_ERROR_MESSAGE, { type: 'warning', autoHideDuration: 3000, multiLine: true });
+    } else {
+      sendInvoice(
+        event,
+        {
+          ...invoice,
+          status: InvoiceStatusEN.PROPOSAL,
+        },
+        'Devis bien envoyé'
+      );
+    }
+  };
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(id, resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
@@ -51,22 +68,10 @@ const Invoice = props => {
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
               <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatusEN.DRAFT ? (
-                <TooltipButton
-                  title='Envoyer et transformer en devis'
-                  icon={<Send />}
-                  onClick={event =>
-                    sendInvoice(
-                      event,
-                      {
-                        ...data,
-                        status: InvoiceStatusEN.PROPOSAL,
-                      },
-                      'Devis bien envoyé'
-                    )
-                  }
-                />
-              ) : data.status === InvoiceStatusEN.PROPOSAL ? (
+              {data.status === InvoiceStatusEN.DRAFT && (
+                <TooltipButton title='Envoyer et transformer en devis' icon={<Send />} onClick={event => onSendDraftInvoice(event, data)} />
+              )}
+              {data.status === InvoiceStatusEN.PROPOSAL && (
                 <TooltipButton
                   title='Transformer en facture'
                   icon={<Check />}
@@ -81,7 +86,8 @@ const Invoice = props => {
                     )
                   }
                 />
-              ) : (
+              )}
+              {data.status === InvoiceStatusEN.CONFIRMED && (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton

@@ -6,7 +6,7 @@ export const createInvoices = (n: number, status: string) => {
   for (let i = 0; i < n; i++) {
     invoices.push({
       customer: customers1[i < 2 ? 0 : i < 4 ? 1 : 2],
-      fileId: 'file-id',
+      fileId: i !== 2 ? 'file-id' : null,
       id: 'invoice-id-' + i,
       paymentUrl: 'paymentUrl-' + i,
       products: [products1[0], products1[1]],

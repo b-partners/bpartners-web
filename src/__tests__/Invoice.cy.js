@@ -101,6 +101,14 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé');
   });
 
+  it('Should show error message', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get(':nth-child(3) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [tabindex="0"] > [data-testid="SendIcon"]').click();
+    cy.contains('Veuillez bien remplir tout les champs de ce devis.');
+    cy.contains('Elle doit au moins contenir un produit dont la quantité est supérieur à zéro');
+  });
+
   it('Should create an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
