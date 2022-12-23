@@ -18,7 +18,7 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
-    cy.intercept('POST', `/accounts/mock-account-id1/products`, products1).as('getProducts1');
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, products1).as('postProducts1');
   });
 
   it('are displayed', () => {
@@ -27,10 +27,18 @@ describe(specTitle('Products'), () => {
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
+
     cy.wait('@getProducts1');
     cy.contains('description1');
+    cy.contains('10.00 €');
+
     cy.contains('description2');
+    cy.contains('20.00 €');
+
     cy.contains('description3');
+    cy.contains('30.00 €');
+    cy.contains('10 %');
+    cy.contains('33.00 €');
   });
 
   it('should validate empty input', () => {
@@ -46,18 +54,30 @@ describe(specTitle('Products'), () => {
     cy.contains('Ce champ est requis');
   });
 
-  it('should send an invoice', () => {
+  it('should create well-defined product', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts1');
-
     cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
-    cy.get('#description').type('description');
-    cy.get('#unitPrice').type(100);
-    cy.get('#vatPercent').type(100);
+
+    cy.get('#description').type('new description');
+    cy.get('#unitPrice').type(1.03);
+    cy.get('#vatPercent').type(5);
+
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
+      expect(req.body).to.deep.eq([
+        {
+          unitPrice: 103,
+          vatPercent: 5,
+          description: 'new description',
+          quantity: null,
+        },
+      ]);
+    }).as('postNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
+    cy.wait('@postNewProduct');
   });
 });

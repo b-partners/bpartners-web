@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
 import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
+import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, totalCalculus } from './utils';
@@ -84,8 +85,10 @@ const InvoiceCreateOrUpdate = props => {
             <ProductSelection name='products' formValidator={formValidator} />
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <Typography variant='h6'>Total:</Typography>
-                <Typography variant='h6'>{totalCalculus(selectedProducts)}€</Typography>
+                <Typography variant='h6'>Total TTC :</Typography>
+                <Typography variant='h6'>
+                  {prettyPrintMinors(selectedProducts.map(product => product.totalPriceWithVat).reduce((price1, price2) => price1 + price2, 0))}
+                </Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>

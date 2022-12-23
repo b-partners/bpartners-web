@@ -1,4 +1,4 @@
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 
 import { Card, CardContent, Chip, Typography } from '@mui/material';
@@ -9,7 +9,7 @@ import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpa
 import { formatDate } from '../utils/date';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
-import { coloredMoney, Currency, normalizeAmount } from '../utils/money';
+import { coloredPrettyPrintMinors } from '../utils/money';
 
 import PrevNextPagination from '../utils/PrevNextPagination';
 import samplePdf from './testInvoice.pdf';
@@ -75,14 +75,14 @@ const TransactionList = props => {
 const TransactionGrid = ({ onDocumentIconClicked }) => {
   const { isLoading } = useListContext();
 
+  // TODO: allow inline edition
   return (
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
         <TextField source='reference' label='Référence' />
-        <FunctionField render={record => coloredMoney(normalizeAmount(record.amount), Currency.EUR, record.type)} label='Montant' />
+        <FunctionField render={record => coloredPrettyPrintMinors(record.amount, record.type)} label='Montant' />
         <TextField source='label' label='Titre' />
         <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
-        TODO: allow inline edition
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField

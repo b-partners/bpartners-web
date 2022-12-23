@@ -64,7 +64,15 @@ describe(specTitle('Invoice'), () => {
     cy.contains('La facture ref: invoice-ref-1');
   });
 
-  it('Should show the list of invoice', () => {
+  it('should show the money in major unit', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+
+    cy.contains('120.00 €');
+    cy.contains('20.00 €');
+  });
+
+  it('should show the list of invoice', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
@@ -81,7 +89,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('CONFIRMÉ');
   });
 
-  it('Should test pagination', () => {
+  it('should test pagination', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.RaList-main > :nth-child(3) > .MuiButtonBase-root').click();
@@ -90,18 +98,18 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Taille : 5');
   });
 
-  it('Should show success message', () => {
+  it('should show success message', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Envoyer et transformer en devis"]').click();
-    cy.contains('Devis bien envoyé');
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Envoyer et transformer en devis"]').click();
+    cy.contains('Devis bien envoyé'); //TODO: you should not make this test if you didn't test beforehand that /relaunch is hit!
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
-    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
     cy.contains('Devis confirmé');
   });
 
-  it('Should create an invoice', () => {
+  it('should create an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -117,18 +125,17 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-value="customer2"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
 
-    cy.contains('400€');
-    cy.contains('2400.00€');
+    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+    cy.contains('12.00 € (TTC)');
+    cy.contains('TVA : 2.00 €');
+    cy.contains('10.00 € (HT)');
 
     cy.get('[data-cy-item="quantity-input"]').type('5');
-
-    cy.contains('5000€');
-    cy.contains('30000.00€');
+    cy.contains('180.00 €');
   });
 
-  it('Should edit an invoice', () => {
+  it('should edit an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -142,6 +149,12 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').type('-2');
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/invoice-id-0`, req => {
+      expect(req.body.products[0].totalPriceWithVat).to.deep.eq(1200);
+      expect(req.body.products[1].totalPriceWithVat).to.deep.eq(2400);
+    }).as('crupdateInvoice1');
+    cy.contains('36.00 €');
+    cy.wait('@crupdateInvoice1');
 
     cy.get('form #form-save-id').click();
 
@@ -150,13 +163,13 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Taille : 5');
   });
 
-  it('Should show an invoice', () => {
+  it('should show an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(9) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"] > .MuiSvgIcon-root').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"] > .MuiSvgIcon-root').click();
 
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');

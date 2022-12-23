@@ -7,44 +7,9 @@ import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status
 /**
  * **PRODUCT**
  */
-export const totalCalculus = (products: Product[] = []) => {
-  if (products.length === 0) return 0;
-  const prodTemp = normalizeProd(products);
-  const localVarTotalPrice = getProdTotalPrice(...prodTemp);
-  return localVarTotalPrice.reduce((prev, curr) => prev + curr, 0).toFixed(2);
-};
-
 export const getProdTotalPrice = (...products: Product[]) => {
   return products.map(({ quantity, unitPrice, totalVat }) => {
     return quantity * unitPrice + totalVat;
-  });
-};
-
-const normalizeProd = (products: Product[] = []) => {
-  const localDefaultQuantity = {
-    MIN: 0,
-    INIT: 1,
-  };
-
-  return (products || []).map(product => {
-    if (!product) return {};
-
-    let { quantity, vatPercent } = product;
-
-    const hasMinQuantity = quantity === 0;
-    const hasInvalidQuantity = !quantity && quantity !== 0;
-
-    if (hasInvalidQuantity) {
-      quantity = localDefaultQuantity.MIN;
-    } else if (hasMinQuantity) {
-      quantity = localDefaultQuantity.INIT;
-    }
-
-    if (vatPercent > 0) {
-      vatPercent /= 100;
-    }
-
-    return { ...product, quantity, vatPercent };
   });
 };
 
