@@ -1,7 +1,7 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Currency, prettyPrintMoney } from '../utils/money';
+import { prettyPrintMinors } from '../utils/money';
 import { getVat } from '../utils/vat';
 import { getProdTotalPrice, ProductActionType } from './utils';
 
@@ -29,9 +29,9 @@ export const ProductItem = ({ product, handleProduct }) => {
 
   const handleChange = ({ target }) => {
     let localVarProd = { ...product, quantity: parseInt(target.value) };
-    const { unitPrice, vatPercent, quantity } = localVarProd;
+    const { unitPrice, quantity } = localVarProd;
 
-    const totalVat = getVat(unitPrice * quantity, vatPercent / 100);
+    const totalVat = getVat(unitPrice * quantity);
     const totalPriceWithVat = getProdTotalPrice({ ...localVarProd, totalVat });
 
     handleProduct(ProductActionType.UPDATE, { ...localVarProd, totalVat, totalPriceWithVat });
@@ -41,7 +41,7 @@ export const ProductItem = ({ product, handleProduct }) => {
     <Card className={classes.card}>
       <CardHeader
         title={product.description}
-        subheader={prettyPrintMoney(product.totalPriceWithVat, Currency.EUR)}
+        subheader={prettyPrintMinors(product.totalPriceWithVat) + ' (TTC)'}
         action={
           <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
@@ -49,7 +49,7 @@ export const ProductItem = ({ product, handleProduct }) => {
         }
       />
       <CardContent>
-        <Typography variant='p'>TVA: {product.totalVat}€</Typography>
+        <Typography variant='p'>TVA : {prettyPrintMinors(product.totalVat)}</Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
         <FormControl variant='filled'>
@@ -60,7 +60,7 @@ export const ProductItem = ({ product, handleProduct }) => {
             data-cy-item='quantity-input'
             endAdornment={
               <InputAdornment className={classes.inputAdornment} position='end'>
-                X {product.unitPrice}€
+                X {prettyPrintMinors(product.unitPrice)} (HT)
               </InputAdornment>
             }
             type='number'
