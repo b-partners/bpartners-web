@@ -1,5 +1,5 @@
 import { customers1 } from './customer-api';
-import { products1 } from './product-api';
+import { products } from './product-api';
 
 export const createInvoices = (n: number, status: string) => {
   const invoices = [];
@@ -9,7 +9,7 @@ export const createInvoices = (n: number, status: string) => {
       fileId: 'file-id',
       id: 'invoice-id-' + i,
       paymentUrl: 'paymentUrl-' + i,
-      products: [products1[0], products1[1]],
+      products: [products[0], products[1]],
       ref: 'invoice-ref-' + i,
       sendingDate: '2022-05-10',
       toPayAt: '2022-05-15',
