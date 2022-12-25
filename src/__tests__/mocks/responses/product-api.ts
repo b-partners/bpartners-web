@@ -1,6 +1,6 @@
 import { Product } from 'src/gen/bpClient/models';
 
-export const products1: Product[] = [
+export const products: Product[] = [
   {
     description: 'description1',
     quantity: 1,

@@ -8,7 +8,7 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
 import { createInvoices } from './mocks/responses/invoices-api';
-import { products1 } from './mocks/responses/product-api';
+import { products } from './mocks/responses/product-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
@@ -35,7 +35,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch1).as('getInvoiceRelaunch1');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch2).as('getInvoiceRelaunch2');
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=DRAFT`, createInvoices(5, 'DRAFT'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT'));
