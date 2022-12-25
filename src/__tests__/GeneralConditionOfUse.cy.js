@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { products1 } from './mocks/responses/product-api';
+import { products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
 import * as Reload from '../utils/reload';
 
@@ -27,7 +27,7 @@ describe(specTitle('General Condition of Use'), () => {
     );
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products1).as('getProducts1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
     cy.stub(Reload, 'reload').as('reload');
   });
 
@@ -109,5 +109,5 @@ function gotoProduct() {
   cy.wait('@whoami');
   cy.wait('@getAccount1');
   cy.wait('@getAccountHolder1');
-  cy.wait('@getProducts1');
+  cy.wait('@getProducts');
 }
