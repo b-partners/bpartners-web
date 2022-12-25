@@ -1,29 +1,25 @@
-import React from 'react';
 import { green, red } from '@mui/material/colors';
-import { TransactionTypeEnum } from '../../gen/bpClient';
+import { ReactElement } from 'react';
+import { TransactionTypeEnum } from 'src/gen/bpClient';
 
-export enum Currency {
+enum Currency {
   EUR = '€',
-  MGA = 'Ar',
-  USD = '$',
-  GBP = '£',
 }
 
-export const prettyPrintMoney = (amount: number, currency: Currency, type?: TransactionTypeEnum): string => {
-  let localVarMoney = '';
-
+export const prettyPrintMinors = (amount: number, type?: TransactionTypeEnum): string => {
+  let optionalSign = '';
   if (type) {
-    localVarMoney += getSign(type);
+    optionalSign = type === TransactionTypeEnum.INCOME ? '+' : '-';
   }
 
-  return localVarMoney + ` ${amount.toLocaleString()} ${currency}`;
+  return optionalSign + ` ${toMajors(amount).toFixed(2).toLocaleString()} ${Currency.EUR}`;
 };
 
-const getSign = (type: TransactionTypeEnum) => (type === TransactionTypeEnum.INCOME ? '+' : '-');
-
-export const coloredMoney = (amount: number, currency: Currency, type: TransactionTypeEnum) => (
-  <b style={{ color: type === TransactionTypeEnum.OUTCOME ? red[500] : green[500] }}> {prettyPrintMoney(amount, currency, type)} </b>
+export const coloredPrettyPrintMinors = (amount: number, type?: TransactionTypeEnum): ReactElement => (
+  <b style={{ color: type === TransactionTypeEnum.INCOME ? green[500] : red[500] }}> {prettyPrintMinors(amount, type)} </b>
 );
 
-// TODO: implement it in a proper way
-export const normalizeAmount = (amount: number) => (amount ? (amount / 100).toFixed(2) : 0);
+export const toMinors = (amount: number): number => amount * 100;
+const toMajors = (amount: number): number =>
+  //TODO: subject to rounding errors, should use lib like Dinero
+  amount / 100;

@@ -5,8 +5,11 @@ import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, us
 import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
 import { InvoiceStatusEN } from '../../constants/invoice-status';
+
+import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
 import PrevNextPagination from '../utils/PrevNextPagination';
+
 import { ManualInvoiceRelaunch } from './ManualInvoiceRelaunch';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
@@ -43,8 +46,7 @@ const InvoiceGridTable = props => {
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
+        <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <TextField source='toPayAt' label='Date de paiement' />
         <FunctionField

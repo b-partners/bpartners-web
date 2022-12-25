@@ -7,6 +7,8 @@ import { singleAccountGetter } from 'src/providers/account-provider';
 
 import emptyData from 'src/assets/noData.png';
 
+import { prettyPrintMinors } from '../utils/money';
+
 const TransactionChart = () => {
   const [data, setData] = useState([]);
   const [transactionsSummary, setTransactionsSummary] = useState();
@@ -29,9 +31,9 @@ const TransactionChart = () => {
     setUpdateDate(temp && temp.updatedAt);
     temp
       ? setData([
-          { name: 'Recette', value: temp.income / 100 },
-          { name: 'Dépense', value: temp.outcome / 100 },
-          { name: 'Trésorerie', value: temp.cashFlow / 100 },
+          { name: 'Recette', value: temp.income },
+          { name: 'Dépense', value: temp.outcome },
+          { name: 'Trésorerie', value: temp.cashFlow },
         ])
       : setData([]);
   };
@@ -105,10 +107,10 @@ const TransactionChart = () => {
                     fill='#8884d8'
                     nameKey='name'
                     dataKey='value'
+                    label={data => prettyPrintMinors(data.value)}
                     startAngle={180}
                     endAngle={0}
                     paddingAngle={4}
-                    label
                   >
                     {data.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
