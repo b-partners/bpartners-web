@@ -87,7 +87,7 @@ const InvoiceCreateOrUpdate = props => {
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
                 <Typography variant='h6'>
-                  {prettyPrintMinors(selectedProducts.map(product => product.totalPriceWithVat).reduce((price1, price2) => price1 + price2, 0))}
+                  {prettyPrintMinors(selectedProducts.map(product => product.totalPriceWithVat).reduce((price1, price2) => +price1 + +price2, 0))}
                 </Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
