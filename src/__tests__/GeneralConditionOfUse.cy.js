@@ -31,7 +31,7 @@ describe(specTitle('General Condition of Use'), () => {
     cy.stub(Reload, 'reload').as('reload');
   });
 
-  describe('there are unapproved cgu', () => {
+  describe('There are unapproved cgu', () => {
     beforeEach(() => {
       cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, legalFiles1).as('getLegalFiles1');
       cy.readFile('src/assets/legal-file.pdf', 'binary').then(data => {
