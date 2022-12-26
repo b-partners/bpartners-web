@@ -116,7 +116,6 @@ const TransactionChart = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
                   <Legend iconType='circle' verticalAlign='bottom' layout='vertical' align='right' />
                 </PieChart>
               )}
