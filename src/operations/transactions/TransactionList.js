@@ -79,7 +79,6 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
   return (
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
-        <TextField source='reference' label='Référence' />
         <FunctionField render={record => coloredPrettyPrintMinors(record.amount, record.type)} label='Montant' />
         <TextField source='label' label='Titre' />
         <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
