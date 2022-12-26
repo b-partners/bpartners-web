@@ -36,7 +36,7 @@ const ProductGrid = () => {
         <TextField source='description' label='Description' />
         <FunctionField source='unitPrice' label='Prix unitaire HT' render={record => prettyPrintMinors(record.unitPrice)} />
         <FunctionField source='vatPercent' label='TVA' render={record => record.vatPercent + ' %'} />
-        <FunctionField source='totalPriceWithVat' label='Prix unitaire TTC' render={record => prettyPrintMinors(record.totalPriceWithVat)} />
+        <FunctionField source='totalPriceWithVat' label='Prix unitaire TTC' render={record => prettyPrintMinors(record.totalPriceWithVat / record.quantity)} />
       </Datagrid>
     )
   );
