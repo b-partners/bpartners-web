@@ -9,6 +9,7 @@ import { InvoiceStatusEN } from '../../constants/invoice-status';
 import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
 import PrevNextPagination from '../utils/PrevNextPagination';
+import { formatDate } from '../utils/date';
 
 import { ManualInvoiceRelaunch } from './ManualInvoiceRelaunch';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
@@ -48,7 +49,7 @@ const InvoiceGridTable = props => {
         <TextField source='customer[name]' label='Client' />
         <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-        <TextField source='toPayAt' label='Date de paiement' />
+        <FunctionField render={record => formatDate(new Date(record.toPayAt))} label='Date de paiement' />
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
