@@ -10,7 +10,7 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, totalCalculus } from './utils';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator } from './utils';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -28,20 +28,30 @@ const InvoiceCreateOrUpdate = props => {
   const formValidator = useForm();
   const classes = useStyle();
 
-  const update = value => Object.keys(value).forEach(e => formValidator.setValue(e, value[e]));
+  const updateInvoiceForm = newInvoice => {
+    const formHasNewUpdate = newInvoice.updatedAt !== formValidator.watch().updatedAt;
+    if (newInvoice.updatedAt && !formHasNewUpdate) {
+      return;
+    }
 
-  const selectedProducts = formValidator.watch('products') || [];
+    // note(invoiceCreate-fixpoint): form will be continuously updated until !formHasNewUpdate
+    Object.keys(newInvoice).forEach(key => formValidator.setValue(key, newInvoice[key]));
+  };
 
   const onSubmit = () => {
-    const data = formValidator.watch();
     if (isPending > 0) {
       invoicePutController.abort();
       onPending(InvoiceActionType.STOP_PENDING);
     }
     onPending(InvoiceActionType.START_PENDING);
+
+    const toSubmit = formValidator.watch();
     invoiceProvider
-      .saveOrUpdate([data])
-      .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
+      .saveOrUpdate([toSubmit])
+      .then(([updatedInvoice]) => {
+        updateInvoiceForm(updatedInvoice);
+        return getInvoicePdfUrl(updatedInvoice.fileId);
+      })
       .then(pdfUrl =>
         setTimeout(async () => {
           onPending(InvoiceActionType.STOP_PENDING, pdfUrl);
@@ -56,11 +66,11 @@ const InvoiceCreateOrUpdate = props => {
 
   useEffect(() => {
     getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
-    update(toEdit);
+    updateInvoiceForm(toEdit);
   }, [toEdit]);
 
   useEffect(() => {
-    const onSubmitDebounced = debounce(onSubmit, 1000);
+    const onSubmitDebounced = debounce(onSubmit, 200);
     formValidator.watch(() => onSubmitDebounced());
   }, []);
 
@@ -86,9 +96,7 @@ const InvoiceCreateOrUpdate = props => {
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
-                <Typography variant='h6'>
-                  {prettyPrintMinors(selectedProducts.map(product => product.totalPriceWithVat).reduce((price1, price2) => price1 + price2, 0))}
-                </Typography>
+                <Typography variant='h6'>{prettyPrintMinors(formValidator.watch().totalPriceWithVat)}</Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>

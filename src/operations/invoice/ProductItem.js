@@ -2,8 +2,7 @@ import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { prettyPrintMinors } from '../utils/money';
-import { getVat } from '../utils/vat';
-import { getProdTotalPrice, ProductActionType } from './utils';
+import { ProductActionType } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -25,18 +24,12 @@ const useStyle = makeStyles(() => ({
 }));
 
 export const ProductItem = ({ product, handleProduct }) => {
-  const classes = useStyle();
-
   const handleChange = ({ target }) => {
     let localVarProd = { ...product, quantity: parseInt(target.value) };
-    const { unitPrice, quantity } = localVarProd;
-
-    const totalVat = getVat(unitPrice * quantity);
-    const totalPriceWithVat = getProdTotalPrice({ ...localVarProd, totalVat });
-
-    handleProduct(ProductActionType.UPDATE, { ...localVarProd, totalVat, totalPriceWithVat });
+    handleProduct(ProductActionType.UPDATE, { ...localVarProd });
   };
 
+  const classes = useStyle();
   return (
     <Card className={classes.card}>
       <CardHeader
