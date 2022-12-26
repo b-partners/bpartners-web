@@ -1,23 +1,23 @@
+import React, { useState } from 'react';
+import ListComponent from '../utils/ListComponent';
+import { List, RecordContextProvider, useListContext } from 'react-admin';
+import { EmptyList } from '../utils/EmptyList';
 import { Storefront } from '@mui/icons-material';
 import { Avatar, Box, Grid, Link, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { List, RecordContextProvider, useListContext } from 'react-admin';
 import { BP_COLOR } from '../../bpTheme';
-import { EmptyList } from '../utils/EmptyList';
-import ListComponent from '../utils/ListComponent';
 import { AVATAR_CONTAINER_STYLE, AVATAR_STYLE, BACKDROP_STYLE, BOX_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, LINK_STYLE } from './style';
 
 const MarketplaceList = () => (
   <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component={ListComponent} actions={false} sx={{ mb: 3 }}>
-    <MarketplaceGrid />
+    <Marketplace />
   </List>
 );
 
-const MarketplaceGrid = () => {
-  const [showMore, setShowMore] = useState(null);
+const Marketplace = () => {
+  const [expandedDescIndex, setExpandedDescIndex] = useState(null);
 
-  const handleShowMore = index => {
-    setShowMore(prev => (prev === index ? null : index));
+  const handleShowMore = selectedIndex => {
+    setExpandedDescIndex(prevIndex => (prevIndex === selectedIndex ? null : selectedIndex));
   };
 
   const { data, isLoading } = useListContext();
@@ -58,9 +58,9 @@ const MarketplaceGrid = () => {
                   </Box>
 
                   <Box onClick={() => handleShowMore(index)} sx={{ paddingBlock: 2 }} data-cy-item={`mp-${index}`}>
-                    <Typography variant='body2' component='p' sx={{ cursor: showMore === index ? 'text' : 'pointer' }}>
+                    <Typography variant='body2' component='p' sx={{ cursor: expandedDescIndex === index ? 'text' : 'pointer' }}>
                       {description.slice(0, 20)}
-                      {showMore === index ? description.slice(20) : <code title='lire la suite'>...</code>}
+                      {expandedDescIndex === index ? description.slice(20) : <code title='lire la suite'>...</code>}
                     </Typography>
                   </Box>
                 </Box>

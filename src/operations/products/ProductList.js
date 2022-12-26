@@ -1,4 +1,4 @@
-import { Datagrid, List, TextField, FunctionField, useListContext } from 'react-admin';
+import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 
@@ -22,12 +22,12 @@ const ProductList = props => {
       component={ListComponent}
       pagination={<PrevNextPagination />}
     >
-      <ProductGrid />
+      <Product />
     </List>
   );
 };
 
-const ProductGrid = () => {
+const Product = () => {
   const { isLoading } = useListContext();
 
   return (
