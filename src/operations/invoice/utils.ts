@@ -1,17 +1,7 @@
-import { Product } from 'src/gen/bpClient';
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
-
-/**
- * **PRODUCT**
- */
-export const getProdTotalPrice = (...products: Product[]) => {
-  return products.map(({ quantity, unitPrice, totalVat }) => {
-    return quantity * unitPrice + totalVat;
-  });
-};
 
 /**
  * **INVOICE**
