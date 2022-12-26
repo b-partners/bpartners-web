@@ -32,12 +32,12 @@ describe(specTitle('Transactions'), () => {
     );
   });
 
-  it('are displayed', () => {
+  it('can be categorized', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
-    cy.get(':nth-child(1) > :nth-child(4) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
+    cy.get(':nth-child(1) > :nth-child(3) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
     cy.wait('@getTransactionCategory');
     cy.get('.MuiButtonBase-root > [data-testid="ArrowDropDownIcon"]').click();
     cy.contains('Autres dépenses').click();
@@ -53,7 +53,6 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains("Abonnement BPartners - L'essentiel");
-    cy.contains('BP22002');
     cy.contains('- 0.05 €');
     cy.contains('+ 5.00 €');
     cy.contains('TVA 20%');
@@ -113,10 +112,8 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.get('[id=document-button-transaction2]').click();
-    cy.contains('BP22002');
 
     cy.contains('TVA 20%');
     cy.get('[id=document-button-transaction1]').click();
-    cy.contains('BP22001').as('transaction1').should('exist');
   });
 });

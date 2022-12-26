@@ -25,7 +25,7 @@ export const products: Product[] = [
     unitPrice: 3000,
     vatPercent: 10,
     totalVat: 300,
-    totalPriceWithVat: 3300,
+    totalPriceWithVat: 6600,
     id: 'product3_id',
   },
   {
@@ -34,7 +34,7 @@ export const products: Product[] = [
     unitPrice: 4000,
     vatPercent: 10,
     totalVat: 400,
-    totalPriceWithVat: 4400,
+    totalPriceWithVat: 8800,
     id: 'product4_id',
   },
 ];
