@@ -10,7 +10,9 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator } from './utils';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, rmUpdateDates } from './utils';
+
+import deepEqual from 'deep-equal';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -29,13 +31,15 @@ const InvoiceCreateOrUpdate = props => {
   const classes = useStyle();
 
   const updateInvoiceForm = newInvoice => {
-    const formHasNewUpdate = newInvoice.updatedAt !== formValidator.watch().updatedAt;
-    if (newInvoice.updatedAt && !formHasNewUpdate) {
-      return;
+    const actualInvoice = formValidator.watch();
+    const formHasNewUpdate =
+      !newInvoice.metadata ||
+      !actualInvoice.metadata ||
+      (new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt) &&
+        !deepEqual(rmUpdateDates(newInvoice), rmUpdateDates(actualInvoice)));
+    if (formHasNewUpdate) {
+      Object.keys(newInvoice).forEach(key => formValidator.setValue(key, newInvoice[key]));
     }
-
-    // note(invoiceCreate-fixpoint): form will be continuously updated until !formHasNewUpdate
-    Object.keys(newInvoice).forEach(key => formValidator.setValue(key, newInvoice[key]));
   };
 
   const onSubmit = () => {
@@ -45,7 +49,7 @@ const InvoiceCreateOrUpdate = props => {
     }
     onPending(InvoiceActionType.START_PENDING);
 
-    const toSubmit = formValidator.watch();
+    const toSubmit = { ...formValidator.watch(), metadata: { ...formValidator.watch().metadata, submittedAt: new Date().toISOString() } };
     invoiceProvider
       .saveOrUpdate([toSubmit])
       .then(([updatedInvoice]) => {
@@ -70,7 +74,7 @@ const InvoiceCreateOrUpdate = props => {
   }, [toEdit]);
 
   useEffect(() => {
-    const onSubmitDebounced = debounce(onSubmit, 200);
+    const onSubmitDebounced = debounce(onSubmit, 1000);
     formValidator.watch(() => onSubmitDebounced());
   }, []);
 
