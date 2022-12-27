@@ -71,9 +71,9 @@ describe(specTitle('Products'), () => {
       expect(req.body).to.deep.eq([
         {
           unitPrice: 103,
-          vatPercent: 5,
+          vatPercent: 500,
           description: 'new description',
-          quantity: null,
+          quantity: 1,
         },
       ]);
     }).as('postNewProduct');
