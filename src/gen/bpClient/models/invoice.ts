@@ -75,4 +75,10 @@ export interface Invoice extends CrupdateInvoiceTemplate {
    * @memberof Invoice
    */
   fileId?: string;
+  /**
+   *
+   * @type {{ [key: string]: string; }}
+   * @memberof Invoice
+   */
+  metadata?: { [key: string]: string };
 }

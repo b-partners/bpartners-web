@@ -1,18 +1,17 @@
 import { Create, SimpleForm, TextInput, NumberInput, required } from 'react-admin';
-import { Box } from '@mui/material';
 
-import { toMinors } from '../utils/money';
-
-const boxStyle = { margin: 0, padding: 0, display: 'flex', width: '35vw', justifyContent: 'space-between' };
+import { toMinors as moneyToMinors } from '../utils/money';
+import { toMinors as vatToMinors } from '../utils/vat';
 
 const ProductCreate = () => (
-  <Create redirect='list' transform={record => ({ ...record, unitPrice: toMinors(record.unitPrice) })}>
+  <Create
+    redirect='list'
+    transform={record => ({ ...record, quantity: 1, unitPrice: moneyToMinors(record.unitPrice), vatPercent: vatToMinors(record.vatPercent) })}
+  >
     <SimpleForm>
-      <Box sx={boxStyle}>
-        <NumberInput min={0} source='unitPrice' validate={[required()]} />
-        <NumberInput min={0} source='vatPercent' />
-      </Box>
-      <TextInput sx={{ maxWidth: '35vw' }} multiline={true} minRows={3} source='description' validate={[required()]} fullWidth />
+      <NumberInput validate={[required()]} min={0} source='unitPrice' label='Prix unitaire HT (en €)' sx={{ minWidth: '25vw' }} />
+      <NumberInput validate={[required()]} min={0} source='vatPercent' label='TVA (en %)' sx={{ minWidth: '25vw' }} />
+      <TextInput validate={[required()]} source='description' label='Description' multiline={true} minRows={3} fullWidth />
     </SimpleForm>
   </Create>
 );
