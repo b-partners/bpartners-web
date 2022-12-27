@@ -70,25 +70,33 @@ const InvoiceGridTable = props => {
                   }
                 />
               ) : data.status === InvoiceStatusEN.PROPOSAL ? (
-                <TooltipButton
-                  title='Transformer en facture'
-                  icon={<Check />}
-                  onClick={event =>
-                    convertToProposal(
-                      event,
-                      {
-                        ...data,
-                        status: InvoiceStatusEN.CONFIRMED,
-                      },
-                      'Devis confirmé'
-                    )
-                  }
-                />
+                <>
+                  <TooltipButton
+                    title='Transformer en facture'
+                    icon={<Check />}
+                    onClick={event =>
+                      convertToProposal(
+                        event,
+                        {
+                          ...data,
+                          status: InvoiceStatusEN.CONFIRMED,
+                        },
+                        'Devis confirmé'
+                      )
+                    }
+                  />
+                  <TooltipButton
+                    title='Relancer manuellement ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
               ) : (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
-                    title='Relancer manuellement ce devis'
+                    title='Relancer manuellement cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
                     data-test-item={`relaunch-${data.id}`}

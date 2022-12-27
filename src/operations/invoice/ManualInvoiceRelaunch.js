@@ -23,7 +23,13 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
       try {
         const aId = (await singleAccountGetter(userId)).id;
         await payingApi().relaunchInvoice(aId, invoice.id, { message, subject });
-        notify(`${getContext({ devis: 'Le', facture: 'La' })} ref: ${invoice.ref} a été relancée avec succès.`, { type: 'success' });
+        notify(
+          `${getContext({
+            devis: 'Le',
+            facture: 'La',
+          })} ref: ${invoice.ref} a été relancée avec succès.`,
+          { type: 'success' }
+        );
         resetInvoice();
       } catch (e) {
         notify("Une erreur s'est produite", { type: 'error' });
