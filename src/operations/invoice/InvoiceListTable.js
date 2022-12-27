@@ -1,4 +1,4 @@
-import { Add, Attachment, Check, DoneAll, Send, TurnRight } from '@mui/icons-material';
+import { Add, Attachment, Check, DoneAll, TurnRight, DriveFileMove } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
@@ -16,7 +16,7 @@ import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './ut
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
-const sendInvoiceTemplate = (event, data, notify, refresh, successMessage) => {
+const saveInvoice = (event, data, notify, refresh, successMessage) => {
   if (event) {
     event.stopPropagation();
   }
@@ -38,7 +38,7 @@ const TooltipButton = ({ icon, ...others }) => (
 );
 
 const InvoiceGridTable = props => {
-  const { crUpdateInvoice, viewDocument, sendInvoice, setInvoiceToRelaunch } = props;
+  const { crUpdateInvoice, viewDocument, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
 
   return (
@@ -56,10 +56,10 @@ const InvoiceGridTable = props => {
               <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
               {data.status === InvoiceStatusEN.DRAFT ? (
                 <TooltipButton
-                  title='Envoyer et transformer en devis'
-                  icon={<Send />}
+                  title='Convertir en devis'
+                  icon={<DriveFileMove />}
                   onClick={event =>
-                    sendInvoice(
+                    convertToProposal(
                       event,
                       {
                         ...data,
@@ -70,25 +70,33 @@ const InvoiceGridTable = props => {
                   }
                 />
               ) : data.status === InvoiceStatusEN.PROPOSAL ? (
-                <TooltipButton
-                  title='Transformer en facture'
-                  icon={<Check />}
-                  onClick={event =>
-                    sendInvoice(
-                      event,
-                      {
-                        ...data,
-                        status: InvoiceStatusEN.CONFIRMED,
-                      },
-                      'Devis confirmé'
-                    )
-                  }
-                />
+                <>
+                  <TooltipButton
+                    title='Transformer en facture'
+                    icon={<Check />}
+                    onClick={event =>
+                      convertToProposal(
+                        event,
+                        {
+                          ...data,
+                          status: InvoiceStatusEN.CONFIRMED,
+                        },
+                        'Devis confirmé'
+                      )
+                    }
+                  />
+                  <TooltipButton
+                    title='Relancer manuellement ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
               ) : (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
-                    title='Relancer manuellement ce devis'
+                    title='Relancer manuellement cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
                     data-test-item={`relaunch-${data.id}`}
@@ -110,7 +118,7 @@ const InvoiceListTable = props => {
   const refresh = useRefresh();
   const { stateHandling, invoiceType } = props;
 
-  const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
+  const sendInvoice = (event, data, successMessage) => saveInvoice(event, data, notify, refresh, successMessage);
   const crUpdateInvoice = selectedInvoice => stateHandling({ selectedInvoice, viewScreen: viewScreenState.EDITION });
   const viewDocument = (event, selectedInvoice) => {
     event.stopPropagation();
@@ -134,7 +142,12 @@ const InvoiceListTable = props => {
           />
         }
       >
-        <InvoiceGridTable crUpdateInvoice={crUpdateInvoice} viewDocument={viewDocument} sendInvoice={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />
+        <InvoiceGridTable
+          crUpdateInvoice={crUpdateInvoice}
+          viewDocument={viewDocument}
+          convertToProposal={sendInvoice}
+          setInvoiceToRelaunch={setInvoiceToRelaunch}
+        />
       </List>
 
       <ManualInvoiceRelaunch invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
