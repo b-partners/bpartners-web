@@ -2,7 +2,7 @@ import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 
-import { prettyPrintMinors } from '../utils/money';
+import { prettyPrintMinors, toMajors } from '../utils/money';
 
 import PrevNextPagination from '../utils/PrevNextPagination';
 
@@ -35,8 +35,8 @@ const Product = () => {
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
         <TextField source='description' label='Description' />
         <FunctionField source='unitPrice' label='Prix unitaire HT' render={record => prettyPrintMinors(record.unitPrice)} />
-        <FunctionField source='vatPercent' label='TVA' render={record => record.vatPercent + ' %'} />
-        <FunctionField source='totalPriceWithVat' label='Prix unitaire TTC' render={record => prettyPrintMinors(record.totalPriceWithVat / record.quantity)} />
+        <FunctionField source='vatPercent' label='TVA' render={record => toMajors(record.vatPercent) + ' %'} />
+        <FunctionField source='unitPriceWithVat' label='Prix unitaire TTC' render={record => prettyPrintMinors(record.unitPriceWithVat)} />
       </Datagrid>
     )
   );

@@ -36,4 +36,10 @@ export interface Product extends CreateProduct {
    * @memberof Product
    */
   totalPriceWithVat?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Product
+   */
+  unitPriceWithVat?: number;
 }

@@ -8,6 +8,7 @@ export const products: Product[] = [
     vatPercent: 20,
     totalVat: 200,
     totalPriceWithVat: 1200,
+    unitPriceWithVat: 1200,
     id: 'product1_id',
   },
   {
@@ -17,6 +18,7 @@ export const products: Product[] = [
     vatPercent: 20,
     totalVat: 400,
     totalPriceWithVat: 2400,
+    unitPriceWithVat: 2400,
     id: 'product2_id',
   },
   {
@@ -26,6 +28,7 @@ export const products: Product[] = [
     vatPercent: 10,
     totalVat: 300,
     totalPriceWithVat: 6600,
+    unitPriceWithVat: 3300,
     id: 'product3_id',
   },
   {
@@ -35,6 +38,7 @@ export const products: Product[] = [
     vatPercent: 10,
     totalVat: 400,
     totalPriceWithVat: 8800,
+    unitPriceWithVat: 4400,
     id: 'product4_id',
   },
 ];
