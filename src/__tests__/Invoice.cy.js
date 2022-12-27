@@ -119,16 +119,16 @@ describe(specTitle('Invoice'), () => {
 
     const newTitle = 'A new title';
     cy.get('form input[name=title]').type(newTitle);
-    const withNewTitle = { ...createInvoices(1)[0], title: newTitle, updatedAt: new Date() };
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, withNewTitle).as('crupdateWithNewTitle');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      req.reply({ ...req.body, updatedAt: new Date() });
+    }).as('crupdateWithNewTitle');
     cy.wait('@crupdateWithNewTitle');
 
     const newRef = 'A new ref';
     cy.get('form input[name=ref]').clear().type(newRef);
-    const withNewRef = { ...withNewTitle, ref: newRef, updatedAt: new Date() };
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
-      req.reply({ body: withNewRef });
+      req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewRef');
     cy.wait('@crupdateWithNewRef');
 
@@ -144,31 +144,27 @@ describe(specTitle('Invoice'), () => {
     cy.contains('TVA : 2.00 €');
     cy.contains('10.00 € (HT)');
 
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').type('5');
+    cy.get('[data-cy-item="quantity-input"]').type('5');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      const payloadProducts = req.body.products;
-      expect(payloadProducts.length).to.deep.eq(3);
+      expect(req.body.products.length).to.deep.eq(1);
 
-      const product1ToUpdate = payloadProducts[1];
-      const product1Updated = {
-        ...product1ToUpdate,
+      const product0ToUpdate = req.body.products[0];
+      const product0Updated = {
+        ...product0ToUpdate,
         quantity: 15,
-        totalPriceWithVat: 15 * product1ToUpdate.unitPrice * (1 + product1ToUpdate.vatPercent / 100),
+        totalPriceWithVat: 15 * product0ToUpdate.unitPrice * (1 + product0ToUpdate.vatPercent / 100),
       };
-      const productsUpdated = [payloadProducts[0], product1Updated, payloadProducts[2]];
       const invoiceUpdated = {
         ...req.body,
-        products: productsUpdated,
-        totalPriceWithVat: productsUpdated.map(p => p.totalPriceWithVat).reduce((a, b) => a + b),
-        // note(fixed-far-future):
-        // Set a FIXED new date far in the future to guarantee note(invoiceCreate-fixpoint)
-        updatedAt: new Date('2999-12-26T21:12:53.116Z'),
+        products: [product0Updated],
+        totalPriceWithVat: product0Updated.totalPriceWithVat,
+        updatedAt: new Date(),
       };
       req.reply({ body: invoiceUpdated });
-    }).as('crupdateWithNewInvoice');
+    }).as('crupdateWithNewProduct');
 
-    cy.wait('@crupdateWithNewInvoice');
-    cy.contains('438.00 €');
+    cy.wait('@crupdateWithNewProduct');
+    cy.contains('180.00 €');
   });
 
   it('should edit an invoice', () => {
@@ -184,8 +180,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       req.reply({
         body: { ...req.body },
-        // note(fixed-far-future)
-        updatedAt: new Date('2999-12-26T21:12:53.116Z'),
+        updatedAt: new Date(),
       });
     });
 
