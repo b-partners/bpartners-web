@@ -7,11 +7,6 @@ import { Invoice } from 'src/gen/bpClient';
 /**
  * **INVOICE**
  */
-export const rmUpdateDates = (invoice: Invoice): any => {
-  const { updatedAt, metadata, ...rest } = invoice;
-  return rest;
-};
-
 export const invoiceDateValidator = (date1: string, date2?: string) => {
   if (date2) {
     if (date2.length === 0) {

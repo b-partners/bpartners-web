@@ -10,9 +10,7 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, rmUpdateDates } from './utils';
-
-import deepEqual from 'deep-equal';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator } from './utils';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -36,7 +34,10 @@ const InvoiceCreateOrUpdate = props => {
       !newInvoice.metadata ||
       !actualInvoice.metadata ||
       (new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt) &&
-        !deepEqual(rmUpdateDates(newInvoice), rmUpdateDates(actualInvoice)));
+        // Only amounts are not known frontend-side.
+        // Hence they are the only information that can change accross backend calls.
+        // TODO: check product.amounts
+        newInvoice.totalPriceWithVat !== actualInvoice.totalPriceWithVat);
     if (formHasNewUpdate) {
       Object.keys(newInvoice).forEach(key => formValidator.setValue(key, newInvoice[key]));
     }
@@ -56,11 +57,12 @@ const InvoiceCreateOrUpdate = props => {
         updateInvoiceForm(updatedInvoice);
         return getInvoicePdfUrl(updatedInvoice.fileId);
       })
-      .then(pdfUrl =>
+      .then(pdfUrl => {
+        const hopeInMillisForBackendToBeConsistent = 3000;
         setTimeout(async () => {
           onPending(InvoiceActionType.STOP_PENDING, pdfUrl);
-        }, 3000)
-      );
+        }, hopeInMillisForBackendToBeConsistent);
+      });
   };
 
   const saveAndClose = () => {
