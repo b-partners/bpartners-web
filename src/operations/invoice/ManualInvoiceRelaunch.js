@@ -15,7 +15,7 @@ export const ManualInvoiceRelaunch = ({ invoice = null, resetInvoice }) => {
     resetInvoice();
   };
 
-  const getContext = ({ devis, facture }) => (invoice.status === 'PROPOSAL' ? `${devis} dévis` : `${facture} facture`);
+  const getContext = ({ devis, facture }) => (invoice.status === 'PROPOSAL' ? `${devis} devis` : `${facture} facture`);
 
   const handleSubmit = async () => {
     const userId = authProvider.getCachedWhoami().user.id;

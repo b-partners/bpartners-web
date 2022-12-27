@@ -54,14 +54,14 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
     cy.get('[data-test-item="relaunch-invoice-id-1"]').click();
 
-    cy.contains('Relance manuelle du dévis ref: invoice-ref-1');
+    cy.contains('Relance manuelle du devis ref: invoice-ref-1');
 
     cy.get('[data-test-item="object-field"]').type('objet-example');
     cy.get('.public-DraftEditor-content').type('message here');
 
     cy.get('[data-cy="invoice-relaunch-submit"]').click();
 
-    cy.contains('Le dévis ref: invoice-ref-1');
+    cy.contains('Le devis ref: invoice-ref-1');
   });
 
   it('should display modal to relaunch an invoice', () => {
