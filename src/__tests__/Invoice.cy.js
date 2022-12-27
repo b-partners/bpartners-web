@@ -48,6 +48,22 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
+  it('should display modal to relaunch a quotation', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
+    cy.get('[data-test-item="relaunch-invoice-id-1"]').click();
+
+    cy.contains('Relance manuelle du dévis ref: invoice-ref-1');
+
+    cy.get('[data-test-item="object-field"]').type('objet-example');
+    cy.get('.public-DraftEditor-content').type('message here');
+
+    cy.get('[data-cy="invoice-relaunch-submit"]').click();
+
+    cy.contains('Le dévis ref: invoice-ref-1');
+  });
+
   it('should display modal to relaunch an invoice', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
