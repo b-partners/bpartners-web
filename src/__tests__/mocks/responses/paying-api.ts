@@ -1,7 +1,7 @@
 import { Transaction, TransactionCategory, TransactionStatus, TransactionTypeEnum } from 'src/gen/bpClient';
 import { TransactionsSummary } from 'src/gen/bpClient/models';
 
-export const transactions1: Array<Transaction> = [
+export const transactions: Array<Transaction> = [
   {
     id: 'transaction1',
     label: "Abonnement BPartners - L'essentiel",
@@ -31,7 +31,7 @@ export const transactions1: Array<Transaction> = [
       },
     ],
     paymentDatetime: new Date('2022-07-18T05:34:20'),
-    status: TransactionStatus.BOOKED,
+    status: TransactionStatus.UPCOMING,
     type: TransactionTypeEnum.INCOME,
   },
   {
@@ -56,7 +56,7 @@ export const transactions1: Array<Transaction> = [
       },
     ],
     paymentDatetime: new Date('2022-07-17T03:24:00'),
-    status: TransactionStatus.BOOKED,
+    status: TransactionStatus.REJECTED,
     type: TransactionTypeEnum.OUTCOME,
   },
   {
@@ -65,23 +65,8 @@ export const transactions1: Array<Transaction> = [
     reference: 'BP22005',
     amount: 5,
     paymentDatetime: new Date('2022-06-18T05:34:20'),
-    status: TransactionStatus.PENDING,
+    status: TransactionStatus.UNKNOWN,
     type: TransactionTypeEnum.INCOME,
-  },
-];
-
-export const transactionCategories1: Array<TransactionCategory> = [
-  {
-    id: 't01',
-    type: 'Dépenses',
-    vat: 0,
-    count: 100,
-  },
-  {
-    id: 't02',
-    type: 'Recettes',
-    vat: 0,
-    count: 120,
   },
 ];
 
