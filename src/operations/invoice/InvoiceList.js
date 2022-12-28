@@ -1,18 +1,22 @@
-import { Add, Attachment, Check, DoneAll, Send, TurnRight } from '@mui/icons-material';
+import { Add, Attachment, Check, DoneAll, TurnRight, DriveFileMove } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
 import { InvoiceStatusEN } from '../../constants/invoice-status';
+
+import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
 import Pagination from '../utils/Pagination';
-import { InvoiceRelaunchModal } from './InvoiceRelaunchModal';
+import { formatDate } from '../utils/date';
+
+import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, InvoiceInitialValue, ViewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
-const sendInvoiceTemplate = (event, data, notify, refresh, successMessage) => {
+const saveInvoice = (event, data, notify, refresh, successMessage) => {
   if (event) {
     event.stopPropagation();
   }
@@ -33,30 +37,29 @@ const TooltipButton = ({ icon, ...others }) => (
   </Tooltip>
 );
 
-const Invoice = props => {
-  const { createOrUpdateInvoice, viewDocument, sendInvoice, setInvoiceToRelaunch } = props;
+const InvoiceGridTable = props => {
+  const { createOrUpdateInvoice, viewDocument, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(id, resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalVat}€</Typography>} label='TVA' />
-        <FunctionField render={data => <Typography variant='body2'>{data.totalPriceWithVat}€</Typography>} label='Prix total' />
+        <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-        <TextField source='toPayAt' label='Date de paiement' />
+        <FunctionField render={record => formatDate(new Date(record.toPayAt))} label='Date de paiement' />
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
               <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatusEN.DRAFT ? (
+              {data.status === InvoiceStatusEN.DRAFT && (
                 <TooltipButton
-                  title='Envoyer et transformer en devis'
-                  icon={<Send />}
+                  title='Convertir en devis'
+                  icon={<DriveFileMove />}
                   onClick={event =>
-                    sendInvoice(
+                    convertToProposal(
                       event,
                       {
                         ...data,
@@ -66,26 +69,36 @@ const Invoice = props => {
                     )
                   }
                 />
-              ) : data.status === InvoiceStatusEN.PROPOSAL ? (
-                <TooltipButton
-                  title='Transformer en facture'
-                  icon={<Check />}
-                  onClick={event =>
-                    sendInvoice(
-                      event,
-                      {
-                        ...data,
-                        status: InvoiceStatusEN.CONFIRMED,
-                      },
-                      'Devis confirmé'
-                    )
-                  }
-                />
-              ) : (
+              )}
+              {data.status === InvoiceStatusEN.PROPOSAL && (
+                <>
+                  <TooltipButton
+                    title='Transformer en facture'
+                    icon={<Check />}
+                    onClick={event =>
+                      convertToProposal(
+                        event,
+                        {
+                          ...data,
+                          status: InvoiceStatusEN.CONFIRMED,
+                        },
+                        'Devis confirmé'
+                      )
+                    }
+                  />
+                  <TooltipButton
+                    title='Relancer manuellement ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
+              )}
+              {data.status !== InvoiceStatusEN.DRAFT && data.status !== InvoiceStatusEN.PROPOSAL && (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
-                    title='Relancer manuellement ce devis'
+                    title='Relancer manuellement cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
                     data-test-item={`relaunch-${data.id}`}
@@ -102,18 +115,18 @@ const Invoice = props => {
 };
 
 const InvoiceList = props => {
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
   const { onStateChange, invoiceType } = props;
 
-  const sendInvoice = (event, data, successMessage) => sendInvoiceTemplate(event, data, notify, refresh, successMessage);
+  const sendInvoice = (event, data, successMessage) => saveInvoice(event, data, notify, refresh, successMessage);
   const createOrUpdateInvoice = selectedInvoice =>
     onStateChange({
       selectedInvoice,
       viewScreen: ViewScreenState.EDITION,
     });
-  const viewPdf = (event, selectedInvoice) => {
+  const viewDocument = (event, selectedInvoice) => {
     event.stopPropagation();
     onStateChange({ selectedInvoice, viewScreen: ViewScreenState.PREVIEW });
   };
@@ -135,10 +148,15 @@ const InvoiceList = props => {
           />
         }
       >
-        <Invoice createOrUpdateInvoice={createOrUpdateInvoice} viewDocument={viewPdf} sendInvoice={sendInvoice} setInvoiceToRelaunch={setSelectedInvoice} />
+        <InvoiceGridTable
+          createOrUpdateInvoice={createOrUpdateInvoice}
+          viewDocument={viewDocument}
+          convertToProposal={sendInvoice}
+          setInvoiceToRelaunch={setInvoiceToRelaunch}
+        />
       </List>
 
-      <InvoiceRelaunchModal invoice={selectedInvoice} resetInvoice={() => setSelectedInvoice(null)} />
+      <InvoiceRelaunchModal invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
     </>
   );
 };
