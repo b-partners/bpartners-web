@@ -48,6 +48,22 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
+  it('should display modal to relaunch a quotation', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
+    cy.get('[data-test-item="relaunch-invoice-id-1"]').click();
+
+    cy.contains('Relance manuelle du devis ref: invoice-ref-1');
+
+    cy.get('[data-test-item="object-field"]').type('objet-example');
+    cy.get('.public-DraftEditor-content').type('message here');
+
+    cy.get('[data-cy="invoice-relaunch-submit"]').click();
+
+    cy.contains('Le devis ref: invoice-ref-1');
+  });
+
   it('should display modal to relaunch an invoice', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
@@ -101,7 +117,7 @@ describe(specTitle('Invoice'), () => {
   it('should show success message', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Envoyer et transformer en devis"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
     cy.contains('Devis bien envoyé'); //TODO: you should not make this test if you didn't test beforehand that /relaunch is hit!
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();

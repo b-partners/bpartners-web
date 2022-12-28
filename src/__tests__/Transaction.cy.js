@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { transactions1, transactionsSummary } from './mocks/responses/paying-api';
+import { transactions, transactionsSummary } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 
@@ -19,9 +19,9 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
 
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions1).as('getTransactions1');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions1).as('getTransactions1');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=5', transactions1).as('getTransactions1');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=5', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -93,6 +93,19 @@ describe(specTitle('Transactions'), () => {
     cy.contains('40.00 €');
     cy.get('#date').type(`${new Date().getFullYear()}-03`);
     cy.contains(`Vous n'avez aucune transaction sur ce mois`);
+  });
+
+  it('display statuses correctly', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
+
+    cy.contains('En attente');
+    cy.contains('En réception');
+    cy.contains('Acceptée');
+    cy.contains('Rejetée');
+    cy.contains('En traitement');
   });
 
   it('are filterable', () => {

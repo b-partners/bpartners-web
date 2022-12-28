@@ -46,7 +46,7 @@ const TransactionList = props => {
   return (
     <>
       <TransactionChart />
-      <Card sx={{ marginTop: 1 }}>
+      <Card sx={{ marginTop: 1, border: 0 }}>
         <CardContent>
           <List
             {...props}

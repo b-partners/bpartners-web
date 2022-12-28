@@ -58,7 +58,7 @@ const TransactionChart = () => {
   const COLORS = ['#1D9661', '#B30000', '#003D7A'];
 
   return (
-    <Card>
+    <Card sx={{ border: 0 }}>
       <CardContent>
         <Typography variant='h6'>Résumé graphique</Typography>
         <Grid container spacing={1}>

@@ -14,7 +14,15 @@ describe(specTitle('Products'), () => {
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getAccount1');
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
+    cy.then(
+      async () =>
+        await authProvider.login('dummy', 'dummy', {
+          redirectionStatusUrls: {
+            successurl: 'dummy',
+            FailureUrl: 'dummy',
+          },
+        })
+    );
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
@@ -30,14 +38,12 @@ describe(specTitle('Products'), () => {
 
     cy.wait('@getProducts');
     cy.contains('description1');
-    cy.contains('10.00 €');
+    cy.contains('12.00 €');
 
     cy.contains('description2');
-    cy.contains('20.00 €');
+    cy.contains('24.00 €');
 
     cy.contains('description3');
-    cy.contains('30.00 €');
-    cy.contains('10 %');
     cy.contains('33.00 €');
   });
 

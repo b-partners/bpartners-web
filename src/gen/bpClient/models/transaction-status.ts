@@ -18,6 +18,8 @@
  */
 export enum TransactionStatus {
   PENDING = 'PENDING',
-  BOOKED = 'BOOKED',
   UPCOMING = 'UPCOMING',
+  BOOKED = 'BOOKED',
+  REJECTED = 'REJECTED',
+  UNKNOWN = 'UNKNOWN',
 }
