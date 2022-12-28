@@ -11,7 +11,7 @@ import ListComponent from '../utils/ListComponent';
 import Pagination from '../utils/Pagination';
 import { formatDate } from '../utils/date';
 
-import { ManualInvoiceRelaunch } from './ManualInvoiceRelaunch';
+import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
@@ -38,12 +38,12 @@ const TooltipButton = ({ icon, ...others }) => (
 );
 
 const InvoiceGridTable = props => {
-  const { crUpdateInvoice, viewDocument, convertToProposal, setInvoiceToRelaunch } = props;
+  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(id, resourceName, record) => record.status === InvoiceStatusEN.DRAFT && crUpdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
@@ -53,8 +53,8 @@ const InvoiceGridTable = props => {
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
-              <TooltipButton title='Justificatif' onClick={event => viewDocument(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatusEN.DRAFT ? (
+              <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
+              {data.status === InvoiceStatusEN.DRAFT && (
                 <TooltipButton
                   title='Convertir en devis'
                   icon={<DriveFileMove />}
@@ -69,7 +69,8 @@ const InvoiceGridTable = props => {
                     )
                   }
                 />
-              ) : data.status === InvoiceStatusEN.PROPOSAL ? (
+              )}
+              {data.status === InvoiceStatusEN.PROPOSAL && (
                 <>
                   <TooltipButton
                     title='Transformer en facture'
@@ -92,7 +93,8 @@ const InvoiceGridTable = props => {
                     data-test-item={`relaunch-${data.id}`}
                   />
                 </>
-              ) : (
+              )}
+              {data.status !== InvoiceStatusEN.PROPOSAL && data.status !== InvoiceStatusEN.DRAFT && (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
@@ -112,17 +114,17 @@ const InvoiceGridTable = props => {
   );
 };
 
-const InvoiceListTable = props => {
+const Invoice = props => {
   const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
-  const { stateHandling, invoiceType } = props;
+  const { onStateChange, invoiceType } = props;
 
   const sendInvoice = (event, data, successMessage) => saveInvoice(event, data, notify, refresh, successMessage);
-  const crUpdateInvoice = selectedInvoice => stateHandling({ selectedInvoice, viewScreen: viewScreenState.EDITION });
-  const viewDocument = (event, selectedInvoice) => {
+  const createOrUpdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
+  const viewPdf = (event, selectedInvoice) => {
     event.stopPropagation();
-    stateHandling({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
+    onStateChange({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
   };
 
   return (
@@ -137,22 +139,22 @@ const InvoiceListTable = props => {
           <TooltipButton
             style={{ marginRight: 33 }}
             title='Créer un nouveau devis'
-            onClick={() => crUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+            onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
             icon={<Add />}
           />
         }
       >
         <InvoiceGridTable
-          crUpdateInvoice={crUpdateInvoice}
-          viewDocument={viewDocument}
+          createOrUpdateInvoice={createOrUpdateInvoice}
+          viewPdf={viewPdf}
           convertToProposal={sendInvoice}
           setInvoiceToRelaunch={setInvoiceToRelaunch}
         />
       </List>
 
-      <ManualInvoiceRelaunch invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
+      <InvoiceRelaunchModal invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
     </>
   );
 };
 
-export default InvoiceListTable;
+export default Invoice;
