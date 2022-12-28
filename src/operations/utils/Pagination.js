@@ -10,7 +10,7 @@ const haSetPerPage = (setPerPage, setPage, page) => {
   setPage(page); // setPage has to be called after setPerPage, otherwise react-admin fails...
 };
 
-const PrevNextPagination = () => {
+const Pagination = () => {
   var [lastPage, setLastPage] = useState(null);
   const { page, data, isLoading, setPage, setPerPage } = useListContext();
   haSetPerPage(setPerPage, setPage, page);
@@ -56,4 +56,4 @@ const PrevNextPagination = () => {
   );
 };
 
-export default PrevNextPagination;
+export default Pagination;

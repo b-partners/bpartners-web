@@ -8,7 +8,7 @@ import { InvoiceStatusEN } from '../../constants/invoice-status';
 
 import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
-import PrevNextPagination from '../utils/PrevNextPagination';
+import Pagination from '../utils/Pagination';
 import { formatDate } from '../utils/date';
 
 import { ManualInvoiceRelaunch } from './ManualInvoiceRelaunch';
@@ -132,7 +132,7 @@ const InvoiceListTable = props => {
         resource='invoices'
         filter={{ invoiceType }}
         component={ListComponent}
-        pagination={<PrevNextPagination />}
+        pagination={<Pagination />}
         actions={
           <TooltipButton
             style={{ marginRight: 33 }}
