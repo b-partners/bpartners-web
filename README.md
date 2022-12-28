@@ -2,4 +2,5 @@ BPartners Web is a web UI for [ BPartners API](https://github.com/b-partners/bpa
 
 ## Environments
 * [dev](https://dashboard-dev.bpartners.app)
-* [prod](https://dashboard-dev.bpartners.app)
+* [preprod](https://dashboard-preprod.bpartners.app)
+* [prod](https://dashboard.bpartners.app)
