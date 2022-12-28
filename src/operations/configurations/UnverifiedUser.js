@@ -1,34 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
 import { getCachedUser } from 'src/providers/account-provider';
+import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {
-  const [open, setOpen] = useState(false);
+  const user = getCachedUser();
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleClose = () => {
-    setOpen(false);
+    setIsOpen(false);
   };
 
-  const idVerified = getCachedUser().idVerified;
-
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    borderRadius: 1,
-    p: 4,
-  };
+  const idVerified = user && user.idVerified;
 
   useEffect(() => {
-    !idVerified && setOpen(true);
-  }, []);
+    !idVerified && setIsOpen(true);
+  }, [idVerified]);
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box sx={style}>
+    <Modal open={isOpen} onClose={handleClose}>
+      <Box sx={UNVERIFIED_USER_BOX}>
         <Typography variant='h5'>Avertissement</Typography>
         <Divider sx={{ my: 1 }} />
         <Typography mb={3} variant='body1'>

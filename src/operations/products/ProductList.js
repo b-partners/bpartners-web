@@ -1,4 +1,4 @@
-import { Datagrid, List, TextField, FunctionField, useListContext } from 'react-admin';
+import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 
@@ -23,12 +23,12 @@ const ProductList = props => {
       component={ListComponent}
       pagination={<PrevNextPagination />}
     >
-      <ProductGrid />
+      <Product />
     </List>
   );
 };
 
-const ProductGrid = () => {
+const Product = () => {
   const { isLoading } = useListContext();
 
   return (
@@ -37,7 +37,7 @@ const ProductGrid = () => {
         <TextField source='description' label='Description' />
         <FunctionField source='unitPrice' label='Prix unitaire HT' render={record => ppMoneyMinors(record.unitPrice)} />
         <FunctionField source='vatPercent' label='TVA' render={record => ppVatMinors(record.vatPercent)} />
-        <FunctionField source='totalPriceWithVat' label='Prix unitaire TTC' render={record => ppMoneyMinors(record.totalPriceWithVat / record.quantity)} />
+        <FunctionField source='unitPriceWithVat' label='Prix unitaire TTC' render={record => ppMoneyMinors(record.unitPriceWithVat)} />
       </Datagrid>
     )
   );
