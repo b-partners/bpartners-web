@@ -2,7 +2,6 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
-import { Invoice } from 'src/gen/bpClient';
 
 /**
  * **INVOICE**
