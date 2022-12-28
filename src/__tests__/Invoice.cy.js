@@ -133,8 +133,21 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="invoice"]').click();
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
-    cy.get('form input[name=title]').type('1');
-    cy.get('form input[name=ref]').type('-2');
+    const newTitle = 'A new title';
+    cy.get('form input[name=title]').type(newTitle);
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      req.reply({ ...req.body, updatedAt: new Date() });
+    }).as('crupdateWithNewTitle');
+    cy.wait('@crupdateWithNewTitle');
+
+    const newRef = 'A new ref';
+    cy.get('form input[name=ref]').clear().type(newRef);
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(newRef);
+      req.reply({ ...req.body, updatedAt: new Date() });
+    }).as('crupdateWithNewRef');
+    cy.wait('@crupdateWithNewRef');
+
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
     cy.get('#invoice-client-selection-id').click();
@@ -148,6 +161,25 @@ describe(specTitle('Invoice'), () => {
     cy.contains('10.00 € (HT)');
 
     cy.get('[data-cy-item="quantity-input"]').type('5');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.products.length).to.deep.eq(1);
+
+      const product0ToUpdate = req.body.products[0];
+      const product0Updated = {
+        ...product0ToUpdate,
+        quantity: 15,
+        totalPriceWithVat: 15 * product0ToUpdate.unitPrice * (1 + product0ToUpdate.vatPercent / 100),
+      };
+      const invoiceUpdated = {
+        ...req.body,
+        products: [product0Updated],
+        totalPriceWithVat: product0Updated.totalPriceWithVat,
+        updatedAt: new Date(),
+      };
+      req.reply({ body: invoiceUpdated });
+    }).as('crupdateWithNewProduct');
+
+    cy.wait('@crupdateWithNewProduct');
     cy.contains('180.00 €');
   });
 
@@ -160,19 +192,13 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
     cy.contains('Modification');
-
-    cy.get('form input[name=title]').type('1');
-    cy.get('form input[name=ref]').type('-2');
-    cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
-    cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/invoice-id-0`, req => {
-      expect(req.body.products[0].totalPriceWithVat).to.deep.eq(1200);
-      expect(req.body.products[1].totalPriceWithVat).to.deep.eq(2400);
-    }).as('crupdateInvoice1');
-    cy.contains('36.00 €');
-    cy.wait('@crupdateInvoice1');
-
     cy.get('form #form-save-id').click();
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      req.reply({
+        body: { ...req.body },
+        updatedAt: new Date(),
+      });
+    });
 
     cy.contains('invoice-title-0');
     cy.contains('Name 3');

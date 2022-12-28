@@ -79,7 +79,7 @@ describe(specTitle('Products'), () => {
           unitPrice: 103,
           vatPercent: 500,
           description: 'new description',
-          quantity: null,
+          quantity: 1,
         },
       ]);
     }).as('postNewProduct');

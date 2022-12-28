@@ -13,7 +13,7 @@ export const createInvoices = (n: number, status: string) => {
       ref: 'invoice-ref-' + i,
       sendingDate: '2022-05-10',
       toPayAt: '2022-05-15',
-      status,
+      status: status,
       title: 'invoice-title-' + i,
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
