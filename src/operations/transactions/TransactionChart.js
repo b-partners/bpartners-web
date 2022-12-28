@@ -5,17 +5,18 @@ import { payingApi } from 'src/providers/api';
 import authProvider from 'src/providers/auth-provider';
 import { singleAccountGetter } from 'src/providers/account-provider';
 
-import emptyData from 'src/assets/noData.png';
+import emptyGraph from 'src/assets/noData.png';
 
 import { prettyPrintMinors } from '../utils/money';
 
 const TransactionChart = () => {
   const [data, setData] = useState([]);
   const [transactionsSummary, setTransactionsSummary] = useState();
-  const [updateDate, setUpdateDate] = useState();
+  const [lastUpdateDate, setLastUpdateDate] = useState();
 
   const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
   const [date, setDate] = useState(currentDate);
+  const [year, month] = date.split('-');
 
   const getTransactionsSummary = async currentYear => {
     const userId = authProvider.getCachedWhoami().user.id;
@@ -26,24 +27,22 @@ const TransactionChart = () => {
   };
 
   const getMonthlyTransaction = month => {
-    const temp = transactionsSummary && transactionsSummary.summary.filter(item => item.month === +month)[0];
+    const transactionOfTheMonth = transactionsSummary && transactionsSummary.summary.filter(item => item.month === +month)[0];
 
-    setUpdateDate(temp && temp.updatedAt);
-    temp
+    setLastUpdateDate(transactionOfTheMonth && transactionOfTheMonth.updatedAt);
+    transactionOfTheMonth
       ? setData([
-          { name: 'Recette', value: temp.income },
-          { name: 'Dépense', value: temp.outcome },
-          { name: 'Trésorerie', value: temp.cashFlow },
+          { name: 'Recette', value: transactionOfTheMonth.income },
+          { name: 'Dépense', value: transactionOfTheMonth.outcome },
+          { name: 'Trésorerie', value: transactionOfTheMonth.cashFlow },
         ])
       : setData([]);
   };
 
   const checkTransactionsSummary = () => {
-    const year = +date.split('-')[0];
-    const month = +date.split('-')[1] - 1;
     const currentYear = transactionsSummary && transactionsSummary.year;
 
-    currentYear !== year && `${year}`.length === 4 ? getTransactionsSummary(year) : getMonthlyTransaction(month);
+    currentYear !== +year && year.length === 4 ? getTransactionsSummary(+year) : getMonthlyTransaction(+month - 1);
   };
 
   useEffect(() => {
@@ -51,8 +50,7 @@ const TransactionChart = () => {
   }, [date]);
 
   useEffect(() => {
-    const month = +date.split('-')[1] - 1;
-    getMonthlyTransaction(month);
+    getMonthlyTransaction(+month - 1);
   }, [transactionsSummary]);
 
   const COLORS = ['#1D9661', '#B30000', '#003D7A'];
@@ -76,13 +74,13 @@ const TransactionChart = () => {
             ) : (
               <Skeleton width={210} height={60} />
             )}
-            {updateDate && (
+            {lastUpdateDate && (
               <Box mt={2}>
                 <Typography variant='body1'>
                   <i>Dernière modification</i>
                 </Typography>
                 <Typography variant='body2'>
-                  <i>{updateDate.split('T').join(' ').split('.')[0]}</i>
+                  <i>{lastUpdateDate.split('T').join(' ').split('.')[0]}</i>
                 </Typography>
               </Box>
             )}
@@ -91,7 +89,7 @@ const TransactionChart = () => {
             <Grid item>
               {data.length === 0 || data.filter(item => item.value === 0).length === 3 ? (
                 <Box textAlign='center'>
-                  <img src={emptyData} alt='aucune transaction' height={120} />
+                  <img src={emptyGraph} alt='aucune transaction' height={120} />
                   <Typography variant='body1' mt={2}>
                     Vous n'avez aucune transaction sur ce mois
                   </Typography>
@@ -112,7 +110,7 @@ const TransactionChart = () => {
                     endAngle={0}
                     paddingAngle={4}
                   >
-                    {data.map((entry, index) => (
+                    {data.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
