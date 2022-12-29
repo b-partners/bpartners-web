@@ -57,12 +57,7 @@ const InvoiceCreateOrUpdate = props => {
         updateInvoiceForm(updatedInvoice);
         return getInvoicePdfUrl(updatedInvoice.fileId);
       })
-      .then(pdfUrl => {
-        const hopeInMillisForBackendToBeConsistent = 3000;
-        setTimeout(async () => {
-          onPending(InvoiceActionType.STOP_PENDING, pdfUrl);
-        }, hopeInMillisForBackendToBeConsistent);
-      });
+      .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
   };
 
   const saveAndClose = () => {
