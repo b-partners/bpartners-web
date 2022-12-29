@@ -21,6 +21,9 @@ const useStyle = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  card: {
+    border: 'none',
+  },
 }));
 
 const InvoiceCreateOrUpdate = props => {
@@ -77,7 +80,7 @@ const InvoiceCreateOrUpdate = props => {
 
   return (
     <Box className={className}>
-      <Card>
+      <Card className={classes.card}>
         <CardContent>
           <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>
