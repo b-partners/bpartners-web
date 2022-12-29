@@ -2,7 +2,6 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
-import { Invoice } from 'src/gen/bpClient';
 
 /**
  * **INVOICE**
@@ -65,14 +64,22 @@ export const viewScreenState = {
   PREVIEW: 'preview',
 };
 
+const generatedInvoiceRef = () => {
+  const todayDate = new Date()
+    .toLocaleString('fr-ca')
+    .replace(/[:hmins\- ]/g, '')
+    .slice(2, 12);
+  return `REF-${todayDate}`;
+};
+
 export const invoiceInitialValue: any = {
   id: '',
-  ref: '',
-  title: '',
+  ref: generatedInvoiceRef(),
+  title: 'Nouveau devis',
   customer: null,
   products: [],
-  sendingDate: '',
-  toPayAt: '',
+  sendingDate: new Date().toLocaleDateString('fr-ca'),
+  toPayAt: new Date().toLocaleDateString('fr-ca'),
   status: InvoiceStatusEN.DRAFT,
   comment: '',
 };
