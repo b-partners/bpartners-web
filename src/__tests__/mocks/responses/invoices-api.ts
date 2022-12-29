@@ -22,3 +22,34 @@ export const createInvoices = (n: number, status: string) => {
   }
   return invoices;
 };
+
+export const invoiceWithoutCustomer = {
+  fileId: 'file-incomplete-id',
+  id: 'invoice-incomplete-id',
+  paymentUrl: 'paymentUrl',
+  products: [products[0], products[1]],
+  ref: 'invoice-incomplete-ref',
+  sendingDate: '2022-05-10',
+  toPayAt: '2022-05-15',
+  status: 'DRAFT',
+  title: 'invoice-incomplete-title',
+  totalPriceWithoutVat: 10000,
+  totalPriceWithVat: 12000,
+  totalVat: 2000,
+};
+
+export const invoiceWithoutTitle = {
+  customers: customers1[1],
+  fileId: 'file-incomplete-id',
+  id: 'invoice-incomplete-id',
+  paymentUrl: 'paymentUrl',
+  products: [products[0], products[1]],
+  ref: 'invoice-incomplete-ref',
+  sendingDate: '2022-05-10',
+  toPayAt: '2022-05-15',
+  status: 'DRAFT',
+  title: '',
+  totalPriceWithoutVat: 10000,
+  totalPriceWithVat: 12000,
+  totalVat: 2000,
+};

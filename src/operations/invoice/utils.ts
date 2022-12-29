@@ -2,6 +2,7 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
+import { Invoice } from 'src/gen/bpClient/models/invoice';
 
 /**
  * **INVOICE**
@@ -94,3 +95,18 @@ export const invoiceListInitialState = {
 
 // CONSTANT
 export const PDF_WIDTH = window.screen.width * 0.7;
+
+// check that all informations in one invoice are correct
+// - had title, ref, customer and products
+// - all products had quantity > 0
+export const draftInvoiceValidator = (invoice: Invoice) => {
+  if (invoice.ref.length === 0 || invoice.title.length === 0 || !invoice.customer || invoice.products.length === 0) {
+    return false;
+  }
+  for (let product of invoice.products) {
+    if (product.quantity === 0) {
+      return false;
+    }
+  }
+  return true;
+};
