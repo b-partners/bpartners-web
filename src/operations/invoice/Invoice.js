@@ -12,7 +12,7 @@ import Pagination from '../utils/Pagination';
 import { formatDate } from '../utils/date';
 
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
+import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -40,6 +40,25 @@ const TooltipButton = ({ icon, ...others }) => (
 const InvoiceGridTable = props => {
   const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading } = useListContext();
+  const notify = useNotify();
+
+  const onConvertToProposal = data => event => {
+    event.stopPropagation();
+    if (!draftInvoiceValidator(data)) {
+      notify('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0', {
+        type: 'warning',
+      });
+    } else {
+      convertToProposal(
+        event,
+        {
+          ...data,
+          status: InvoiceStatusEN.PROPOSAL,
+        },
+        'Devis bien envoyé'
+      );
+    }
+  };
 
   return (
     !isLoading && (
@@ -55,20 +74,7 @@ const InvoiceGridTable = props => {
             <Box sx={LIST_ACTION_STYLE}>
               <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
               {data.status === InvoiceStatusEN.DRAFT && (
-                <TooltipButton
-                  title='Convertir en devis'
-                  icon={<DriveFileMove />}
-                  onClick={event =>
-                    convertToProposal(
-                      event,
-                      {
-                        ...data,
-                        status: InvoiceStatusEN.PROPOSAL,
-                      },
-                      'Devis bien envoyé'
-                    )
-                  }
-                />
+                <TooltipButton title='Convertir en devis' icon={<DriveFileMove />} onClick={onConvertToProposal(data)} />
               )}
               {data.status === InvoiceStatusEN.PROPOSAL && (
                 <>
