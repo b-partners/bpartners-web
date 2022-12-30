@@ -17,7 +17,7 @@ describe(specTitle('Login'), () => {
   });
 
   it('MainPage redirects to authUrl on phone submission', () => {
-    mount(<LoginPage />);
+    mount(<App />);
     cy.get('#phone').type(phone1);
 
     //TODO: ask backend to fix token.whoami
@@ -42,7 +42,7 @@ describe(specTitle('Login'), () => {
   });
 
   it('MainPage redirects to onboarding url', () => {
-    mount(<LoginPage />);
+    mount(<App />);
     cy.intercept('POST', '/onboardingInitiation', { redirectionUrl: 'https://authUrl.com' }).as('onboardingInitiation');
     cy.get('#register').contains(`Pas de compte ? C'est par ici`);
     cy.get('#register').click();

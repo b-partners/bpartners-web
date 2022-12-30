@@ -7,6 +7,9 @@ import { redirect } from '../utils/redirect';
 import { v4 as uuidv4 } from 'uuid';
 import { FLEX_CENTER, BP_B_LOGO, LOGIN_FORM, LOGIN_FORM_BUTTON, pinkColor } from './style.js';
 import { BP_COLOR } from '../bpTheme';
+import useAuthentication from 'src/utils/useAuthentication';
+import BpLoading from 'src/BpLoading';
+import authProvider from 'src/providers/auth-provider';
 
 const PhoneTextField = ({ formInput: { phone }, handleInput, isFirstAttempt }) => {
   const [isValidPhone, setIsValidPhone] = useState(true);
@@ -38,6 +41,8 @@ const BpLoginPage = () => {
   const matchMediaQuery = useMediaQuery('(max-width: 898px)');
   const handleInput = ({ target: { name, value } }) => setFormInput({ [name]: value });
 
+  const { isLoading } = useAuthentication();
+
   const [isFirstAttempt, setFirstAttempt] = useState(true);
   const initiateAuth = async () => {
     const {
@@ -64,7 +69,9 @@ const BpLoginPage = () => {
     initiateOnboarding();
   };
 
-  return (
+  return isLoading && authProvider.getCachedWhoami() ? (
+    <BpLoading />
+  ) : (
     <Box sx={FLEX_CENTER}>
       {matchMediaQuery && <img src='./logo3292.png' style={BP_B_LOGO} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
