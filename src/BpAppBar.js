@@ -53,7 +53,8 @@ const BpAppBar = props => {
         <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
-          Bonjour <b>{name}</b> ! {!isVerifiedUser && <span style={{ color: 'rgb(168,141,104)' }}>(Compte non vérifié)</span>}
+          Bonjour <b>{name}</b> !{isVerifiedUser === null && <span style={{ color: 'rgb(168,141,104)' }}>(Chargement du statut du compte...)</span>}
+          {isVerifiedUser === false && <span style={{ color: 'rgb(168,141,104)' }}>(Compte non vérifié)</span>}
         </Box>
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
