@@ -11,6 +11,8 @@ import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
+  card: { border: 'none' },
+  form: { transform: 'translateY(-1rem)' },
 }));
 
 const TAB_PANEL_STYLE = { padding: 0 };
@@ -25,13 +27,14 @@ const CancelButton = ({ onClick }) => (
 
 const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
+  const classes = useStyle();
 
   useEffect(() => {
     getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
   }, [selectedInvoice]);
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
       <CardContent>
         <PdfViewer width={PDF_WIDTH} url={documentUrl} />
@@ -67,7 +70,7 @@ const InvoiceList = () => {
   const returnToList = () => stateChangeHandling({ viewScreen: viewScreenState.LIST });
 
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box>
       {viewScreen === viewScreenState.LIST ? (
         <Box>
           <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
@@ -86,14 +89,14 @@ const InvoiceList = () => {
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (
-        <Card>
+        <Card className={classes.card}>
           <CardHeader
             title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
             action={<CancelButton onClick={returnToList} />}
           />
           <CardContent>
             <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate onClose={returnToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
+              <InvoiceCreateOrUpdate className={classes.form} onClose={returnToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
               <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
             </Box>
           </CardContent>
