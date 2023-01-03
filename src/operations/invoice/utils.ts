@@ -12,7 +12,7 @@ export const invoiceDateValidator = (date1: string, date2?: string) => {
     if (date2.length === 0) {
       return 'Ce champ est requis';
     } else if (new Date(date1) < new Date(date2)) {
-      return "La date d'envoie doit précéder celle du payement";
+      return "La date d'envoie doit précéder celle du paiement";
     }
   } else if (date1.length === 0) {
     return 'Ce champ est requis';
