@@ -24,7 +24,7 @@ const useStyle = makeStyles(() => ({
 }));
 
 const InvoiceCreateOrUpdate = props => {
-  const { toEdit, className, onPending, isPending, close } = props;
+  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, close } = props;
   const formValidator = useForm();
   const classes = useStyle();
 
@@ -44,7 +44,7 @@ const InvoiceCreateOrUpdate = props => {
   };
 
   const onSubmit = () => {
-    if (isPending > 0) {
+    if (nbPendingInvoiceCrupdate > 0) {
       invoicePutController.abort();
       onPending(InvoiceActionType.STOP_PENDING);
     }
