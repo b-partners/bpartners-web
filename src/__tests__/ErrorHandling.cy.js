@@ -51,7 +51,7 @@ xdescribe(specTitle('Error handling'), () => {
 
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
-    cy.contains(`L'ambitieux`);
+    cy.contains(`L'essentiel`);
     cy.contains(`0€ de coût fixe par mois`);
 
     cy.get('[name="products"]').click();

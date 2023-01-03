@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Grid, TextField, Typography, Skeleton } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
 import authProvider from 'src/providers/auth-provider';
 import { singleAccountGetter } from 'src/providers/account-provider';
@@ -14,7 +14,7 @@ const TransactionChart = () => {
   const [transactionsSummary, setTransactionsSummary] = useState();
   const [updateDate, setUpdateDate] = useState();
 
-  const currentDate = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+  const currentDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`;
   const [date, setDate] = useState(currentDate);
 
   const getTransactionsSummary = async currentYear => {
