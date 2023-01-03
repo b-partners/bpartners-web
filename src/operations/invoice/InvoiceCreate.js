@@ -97,7 +97,9 @@ const InvoiceCreateOrUpdate = props => {
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
-                <Typography variant='h6'>{prettyPrintMinors(formValidator.watch().totalPriceWithVat)}</Typography>
+                <Typography variant='h6'>
+                  {isNaN(formValidator.watch().totalPriceWithVat) ? prettyPrintMinors(0) : prettyPrintMinors(formValidator.watch().totalPriceWithVat)}
+                </Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>
