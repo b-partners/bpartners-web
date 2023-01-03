@@ -17,7 +17,3 @@ export const EmptyList = ({ content = 'Aucun enregistrement à afficher' }) => (
     </Alert>
   </Box>
 );
-
-export const emptyProps = {
-  empty: <EmptyList />,
-};

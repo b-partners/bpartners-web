@@ -21,10 +21,13 @@ const useStyle = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  card: {
+    border: 'none',
+  },
 }));
 
 const InvoiceCreateOrUpdate = props => {
-  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, close } = props;
+  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose } = props;
   const formValidator = useForm();
   const classes = useStyle();
 
@@ -35,7 +38,7 @@ const InvoiceCreateOrUpdate = props => {
       !actualInvoice.metadata ||
       (new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt) &&
         // Only amounts are not known frontend-side.
-        // Hence they are the only information that can change accross backend calls.
+        // Hence they are the only information that can change across backend calls.
         // TODO: check product.amounts
         newInvoice.totalPriceWithVat !== actualInvoice.totalPriceWithVat);
     if (formHasNewUpdate) {
@@ -62,7 +65,7 @@ const InvoiceCreateOrUpdate = props => {
 
   const saveAndClose = () => {
     onSubmit();
-    close();
+    onClose();
   };
 
   useEffect(() => {
@@ -77,7 +80,7 @@ const InvoiceCreateOrUpdate = props => {
 
   return (
     <Box className={className}>
-      <Card>
+      <Card className={classes.card}>
         <CardContent>
           <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>

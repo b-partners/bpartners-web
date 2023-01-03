@@ -1,27 +1,34 @@
 import { useEffect, useState } from 'react';
 import authProvider from 'src/providers/auth-provider';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * function that check is the user is authenticated or not (react admin has the same function but it seems not work)
  *
  */
 const useAuthentication = () => {
-  const [{ isLoading, isAuthenticated }, setState] = useState({ isLoading: true, isAuthenticated: false });
+  const [isLoading, setState] = useState(true);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    setState({ isLoading: true, isAuthenticated: false });
+    setState(true);
     authProvider
       .checkAuth()
       .then(() => {
-        setState({ isLoading: false, isAuthenticated: true });
+        if (/login/.test(pathname)) {
+          navigate('/transactions');
+        }
+        setState(false);
       })
       .catch(() => {
+        navigate('/login');
         authProvider.logout();
-        setState({ isLoading: false, isAuthenticated: false });
+        setState(false);
       });
-  }, []);
+  }, [navigate]);
 
-  return { isLoading, isAuthenticated };
+  return { isLoading };
 };
 
 export default useAuthentication;

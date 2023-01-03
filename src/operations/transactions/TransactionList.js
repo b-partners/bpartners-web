@@ -11,7 +11,7 @@ import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 import { coloredPrettyPrintMinors } from '../utils/money';
 
-import PrevNextPagination from '../utils/PrevNextPagination';
+import Pagination from '../utils/Pagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
@@ -51,7 +51,7 @@ const TransactionList = props => {
           <List
             {...props}
             resource='transactions'
-            pagination={<PrevNextPagination /> /*TODO: test that it appears when resourcesCount == 12 */}
+            pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
               <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={statuses} alwaysOn resettable />,

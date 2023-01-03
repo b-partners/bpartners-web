@@ -10,7 +10,7 @@ import { fileProvider } from 'src/providers/file-provider';
 import { accountHoldersGetter, cacheAccountHolder, cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
-import TabPanel from '../utils/tab-panel';
+import TabPanel from '../utils/TabPanel';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 import { v4 as uuid } from 'uuid';
 import { getMimeType } from 'src/utils/get-mime-type';

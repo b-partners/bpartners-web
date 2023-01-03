@@ -1,6 +1,6 @@
 import { Button, Toolbar, Typography } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useListContext } from 'react-admin';
 
 export const pageSize = 5;
@@ -10,16 +10,17 @@ const haSetPerPage = (setPerPage, setPage, page) => {
   setPage(page); // setPage has to be called after setPerPage, otherwise react-admin fails...
 };
 
-const PrevNextPagination = () => {
-  var [lastPage, setLastPage] = useState(null);
+const Pagination = () => {
+  const [lastPage, setLastPage] = useState(null);
   const { page, data, isLoading, setPage, setPerPage } = useListContext();
   haSetPerPage(setPerPage, setPage, page);
   const resourcesCount = data ? Object.keys(data).length : 0;
-  if (!lastPage && lastPage !== 0 /* TODO(empty-pages): test! */ && !isLoading && resourcesCount === 0) {
-    lastPage = page - 1;
-    setLastPage(lastPage);
-    setPage(lastPage);
-  }
+  useEffect(() => {
+    if (!lastPage && lastPage !== 0 && !isLoading && resourcesCount === 0 /* TODO(empty-pages): test! */) {
+      setLastPage(page - 1);
+      setPage(lastPage);
+    }
+  }, [resourcesCount]);
   if (lastPage && page === 1) {
     // react-admin redirects to page 1 if no more data to show
     // We dont't like that behavior!
@@ -56,4 +57,4 @@ const PrevNextPagination = () => {
   );
 };
 
-export default PrevNextPagination;
+export default Pagination;
