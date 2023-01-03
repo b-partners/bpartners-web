@@ -6,11 +6,13 @@ import { InvoiceStatusEN } from '../../constants/invoice-status';
 import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
-import InvoiceListTable from './InvoiceListTable';
+import Invoice from './Invoice';
 import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
+  card: { border: 'none' },
+  form: { transform: 'translateY(-1rem)' },
 }));
 
 const TAB_PANEL_STYLE = { padding: 0 };
@@ -25,13 +27,14 @@ const CancelButton = ({ onClick }) => (
 
 const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
+  const classes = useStyle();
 
   useEffect(() => {
     getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
   }, [selectedInvoice]);
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
       <CardContent>
         <PdfViewer width={PDF_WIDTH} url={documentUrl} />
@@ -57,17 +60,17 @@ const InvoiceList = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
 
-  const stateHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
+  const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
   const handleSwitchTab = (e, newTabIndex) =>
     dispatch({
       type: InvoiceActionType.SET,
       payload: { tabIndex: newTabIndex },
     });
-  const returnToList = () => stateHandling({ viewScreen: viewScreenState.LIST });
+  const returnToList = () => stateChangeHandling({ viewScreen: viewScreenState.LIST });
 
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box>
       {viewScreen === viewScreenState.LIST ? (
         <Box>
           <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
@@ -76,17 +79,17 @@ const InvoiceList = () => {
             <Tab label='Factures' />
           </Tabs>
           <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.DRAFT} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.DRAFT} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <InvoiceListTable stateHandling={stateHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (
-        <Card>
+        <Card className={classes.card}>
           <CardHeader
             title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
             action={<CancelButton onClick={returnToList} />}
@@ -94,7 +97,8 @@ const InvoiceList = () => {
           <CardContent>
             <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
               <InvoiceCreateOrUpdate
-                close={returnToList}
+                className={classes.form}
+                onClose={returnToList}
                 onPending={handlePending}
                 toEdit={selectedInvoice}
                 nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}

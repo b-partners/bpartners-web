@@ -2,7 +2,7 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
-import { Invoice } from 'src/gen/bpClient';
+import { Invoice } from 'src/gen/bpClient/models/invoice';
 
 /**
  * **INVOICE**
@@ -12,7 +12,7 @@ export const invoiceDateValidator = (date1: string, date2?: string) => {
     if (date2.length === 0) {
       return 'Ce champ est requis';
     } else if (new Date(date1) < new Date(date2)) {
-      return "La date d'envoie doit précéder celle du payement";
+      return "La date d'envoie doit précéder celle du paiement";
     }
   } else if (date1.length === 0) {
     return 'Ce champ est requis';
@@ -65,14 +65,22 @@ export const viewScreenState = {
   PREVIEW: 'preview',
 };
 
+const generatedInvoiceRef = () => {
+  const todayDate = new Date()
+    .toLocaleString('fr-ca')
+    .replace(/[:hmins\- ]/g, '')
+    .slice(2, 12);
+  return `REF-${todayDate}`;
+};
+
 export const invoiceInitialValue: any = {
   id: '',
-  ref: '',
-  title: '',
+  ref: generatedInvoiceRef(),
+  title: 'Nouveau devis',
   customer: null,
   products: [],
-  sendingDate: '',
-  toPayAt: '',
+  sendingDate: new Date().toLocaleDateString('fr-ca'),
+  toPayAt: new Date().toLocaleDateString('fr-ca'),
   status: InvoiceStatusEN.DRAFT,
   comment: '',
 };
@@ -87,3 +95,18 @@ export const invoiceListInitialState = {
 
 // CONSTANT
 export const PDF_WIDTH = window.screen.width * 0.7;
+
+// check that all informations in one invoice are correct
+// - had title, ref, customer and products
+// - all products had quantity > 0
+export const draftInvoiceValidator = (invoice: Invoice) => {
+  if (invoice.ref.length === 0 || invoice.title.length === 0 || !invoice.customer || invoice.products.length === 0) {
+    return false;
+  }
+  for (let product of invoice.products) {
+    if (product.quantity === 0) {
+      return false;
+    }
+  }
+  return true;
+};
