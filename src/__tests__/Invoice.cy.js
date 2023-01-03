@@ -125,6 +125,17 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé');
   });
 
+  it.only('should display default values on invoice creation', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    cy.contains('0.00 €');
+  });
+
   it('should create an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);

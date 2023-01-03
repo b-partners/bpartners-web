@@ -28,22 +28,23 @@ const ProfileLayout = () => (
 const SubscriptionLayout = () => (
   <SimpleShowLayout>
     <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2 }}>
-      <Avatar variant='rounded' alt='subscription logo' src='https://www.bpartners.app/static/media/ambitieux.4acee4dedf2cd21425bf.png' />
+      <Avatar variant='rounded' alt='Votre abonnement' src='https://www.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png' />
       <Typography ml={2} variant='h6'>
-        L'ambitieux
+        L'essentiel
       </Typography>
     </Box>
 
     <Box>
-      <Typography variant='h6' style={{ color: green[500], mb: 3 }}>
-        0€ de coût fixe par mois, au lieu de 20€, grâce à votre pré-inscription !
+      <Typography variant='h7' style={{ color: green[500], mb: 3 }}>
+        <b>0€</b> de coût fixe par mois, au lieu de 7€, car vous avez accepté d'être beta-testeur !
       </Typography>
 
       <Typography variant='body2' sx={{ lineHeight: '2' }}>
-        200€ de retraits gratuits par mois, puis 1% du montant <br />
-        1500€ de plafond de retrait <br />
-        2% pour les paiements hors zone euro <br />
-        30 virements et prélèvements puis 0,50€ au delà
+        <b>0%</b> de frais sur les encaissements par mail et QR code sous 1k€, puis 1.5% si au-delà <br />
+        <b>0€</b> sur les 20 premières initiations de virements, puis 0.40€ par virement si au-delà <br />
+        <b>0%</b> de commission sur les mouvements annuels sous 60k€, puis 0.15% si au-delà <br />
+        <b>1 Mastercard</b> offerte, puis 5€ par mois par carte supplémentaire <br />
+        <b>1 assistant virtuel</b> pour développer votre activité <br />
       </Typography>
     </Box>
   </SimpleShowLayout>

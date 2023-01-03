@@ -46,9 +46,9 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {
     case InvoiceActionType.START_PENDING:
-      return { ...state, isPending: state.isPending + 1, documentUrl: payload.documentUrl };
+      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1, documentUrl: payload.documentUrl };
     case InvoiceActionType.STOP_PENDING:
-      return { ...state, isPending: state.isPending - 1, documentUrl: payload.documentUrl };
+      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1, documentUrl: payload.documentUrl };
     case InvoiceActionType.SET:
       return { ...state, ...payload };
     default:
@@ -58,7 +58,7 @@ const invoiceListReducer = (state, { type, payload }) => {
 
 const InvoiceList = () => {
   const classes = useStyle();
-  const [{ selectedInvoice, tabIndex, isPending, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
+  const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
 
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
@@ -96,8 +96,14 @@ const InvoiceList = () => {
           />
           <CardContent>
             <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate className={classes.form} onClose={returnToList} onPending={handlePending} toEdit={selectedInvoice} isPending={isPending} />
-              <PdfViewer url={documentUrl} isPending={isPending > 0} className={classes.document} />
+              <InvoiceCreateOrUpdate
+                className={classes.form}
+                onClose={returnToList}
+                onPending={handlePending}
+                toEdit={selectedInvoice}
+                nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
+              />
+              <PdfViewer url={documentUrl} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document} />
             </Box>
           </CardContent>
         </Card>

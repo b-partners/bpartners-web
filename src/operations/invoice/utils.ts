@@ -89,7 +89,7 @@ export const invoiceInitialValue: any = {
 export const invoiceListInitialState = {
   tabIndex: 0,
   selectedInvoice: invoiceInitialValue,
-  isPending: 0,
+  nbPendingInvoiceCrupdate: 0,
   viewScreen: viewScreenState.LIST,
 };
 
