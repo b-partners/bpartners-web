@@ -86,8 +86,8 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id }) => (
-            <Tooltip title='Justificatif' onClick={() => onDocumentIconClicked(id)}>
-              <IconButton id={`document-button-${id}`}>
+            <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(id)}>
+              <IconButton id={`document-button-${id}`} disabled={true}>
                 <AttachmentIcon />
               </IconButton>
             </Tooltip>
