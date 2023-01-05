@@ -17,11 +17,11 @@ const MarketplaceList = () => (
         position: 'fixed',
         top: '4rem',
         right: '1rem',
-        height: 'auto',
+        height: '2rem',
         minWidth: '20rem',
       }}
     >
-      En construction 🚧 &nbsp; Bientôt, nous vous proposerons de nouveaux clients 👥 &nbsp; ici !
+      En construction 🚧 Bientôt, nous vous proposerons de nouveaux clients 👥 ici !
     </Alert>
     <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component={ListComponent} actions={false} sx={{ mb: 3 }}>
       <Marketplace />
