@@ -87,9 +87,13 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <FunctionField
           render={({ id }) => (
             <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(id)}>
-              <IconButton id={`document-button-${id}`} disabled={true}>
-                <AttachmentIcon />
-              </IconButton>
+              <span>
+                {/* Do NOT remove span otherwise Tooltip won't show while IconButton is disabled
+                    https://mui.com/material-ui/react-tooltip/#disabled-elements */}
+                <IconButton id={`document-button-${id}`} disabled={true}>
+                  <AttachmentIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           )}
         />
