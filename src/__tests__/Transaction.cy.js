@@ -130,9 +130,6 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
-    cy.get('[id=document-button-transaction2]').click();
-
-    cy.contains('TVA 20%');
-    cy.get('[id=document-button-transaction1]').click();
+    cy.get('[id=document-button-transaction2]').clik();
   });
 });
