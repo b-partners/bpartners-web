@@ -3,14 +3,30 @@ import ListComponent from '../utils/ListComponent';
 import { List, RecordContextProvider, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import { Storefront } from '@mui/icons-material';
-import { Avatar, Box, Grid, Link, Typography } from '@mui/material';
+import { Avatar, Box, Grid, Link, Typography, Alert } from '@mui/material';
 import { BP_COLOR } from '../../bpTheme';
 import { AVATAR_CONTAINER_STYLE, AVATAR_STYLE, BACKDROP_STYLE, BOX_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, LINK_STYLE } from './style';
+import { COMMON_STYLE } from 'src/utils/beta-test-warning';
 
 const MarketplaceList = () => (
-  <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component={ListComponent} actions={false} sx={{ mb: 3 }}>
-    <Marketplace />
-  </List>
+  <div>
+    <Alert
+      severity='warning'
+      sx={{
+        ...COMMON_STYLE,
+        position: 'fixed',
+        top: '4rem',
+        right: '1rem',
+        height: 'auto',
+        minWidth: '20rem',
+      }}
+    >
+      En construction 🚧 &nbsp; Bientôt, nous vous proposerons de nouveaux clients 👥 &nbsp; ici !
+    </Alert>
+    <List sort={{ field: 'name', order: 'ASC' }} perPage={20} pagination={false} component={ListComponent} actions={false} sx={{ mb: 3 }}>
+      <Marketplace />
+    </List>
+  </div>
 );
 
 const Marketplace = () => {
