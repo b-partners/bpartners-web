@@ -42,7 +42,7 @@ const BpMenu = () => {
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
-        <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Les marchés' leftIcon={<Store />} />
+        <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />
       </Menu>
 
       <Box sx={{ display: 'flex', alignItems: 'end' }}>

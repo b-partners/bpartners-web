@@ -1,6 +1,6 @@
 import { Alert, AlertTitle } from '@mui/material';
 
-const COMMON_STYLE = {
+export const COMMON_STYLE = {
   border: 'none',
   opacity: 0.85,
 };

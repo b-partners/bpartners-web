@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, DialogContent, TextField, CircularProgress } from '@mui/material';
+import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, DialogContent, TextField, Typography, CircularProgress } from '@mui/material';
 import { useNotify, useRefresh } from 'react-admin';
 import transactionCategoryProvider from 'src/providers/transaction-category-provider';
 import { BP_COLOR } from 'src/bpTheme';
@@ -11,7 +11,7 @@ const ICON_STYLE = {
 };
 
 const successMessage = category => {
-  return !category ? 'La catégorie a bien été ajouter' : 'La catégorie a bien été modifier';
+  return !category ? 'La catégorie a bien été ajoutée' : 'La catégorie a bien été modifiée';
 };
 
 const CustomsAutocomplete = props => {
@@ -83,7 +83,10 @@ const SelectionDialog = props => {
 
   return (
     <Dialog open={open} onClose={close}>
-      <DialogTitle>{label}</DialogTitle>
+      <DialogTitle>
+        <Typography>Catégorisez votre transaction :</Typography>
+        {label}
+      </DialogTitle>
       <DialogContent>
         {category &&
           category.map(({ description, comment }) => <Chip sx={{ margin: '0.1rem' }} label={description || comment} variant='outlined' size='small' />)}
