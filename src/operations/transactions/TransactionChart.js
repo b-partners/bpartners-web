@@ -14,15 +14,32 @@ const TransactionChart = () => {
   const [transactionsSummary, setTransactionsSummary] = useState();
   const [lastUpdateDate, setLastUpdateDate] = useState();
 
+  const getAccountId = async () => {
+    const userId = authProvider.getCachedWhoami().user.id;
+    return (await singleAccountGetter(userId)).id;
+  };
+
   const currentDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`;
+  const [currentBalance, setCurrentBalance] = useState();
+  useEffect(() => {
+    const updateBalance = async () => {
+      const [currentYearString, currentMonthString] = currentDate.split('-');
+      const currentYear = +currentYearString;
+      const currentMonth = +currentMonthString;
+      const accountId = await getAccountId();
+      const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
+      setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
+    };
+    updateBalance();
+  }, []);
+
   const [date, setDate] = useState(currentDate);
   const [year, month] = date.split('-');
 
-  const getTransactionsSummary = async currentYear => {
-    const userId = authProvider.getCachedWhoami().user.id;
-    const accountId = (await singleAccountGetter(userId)).id;
+  const getTransactionsSummary = async year => {
+    const accountId = await getAccountId();
 
-    const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
+    const { data } = await payingApi().getTransactionsSummary(accountId, year);
     setTransactionsSummary(data);
   };
 
@@ -58,7 +75,7 @@ const TransactionChart = () => {
   return (
     <Card sx={{ border: 0 }}>
       <CardContent>
-        <Typography variant='h6'>Résumé graphique</Typography>
+        <Typography variant='h6'>Solde du jour : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}</Typography>
         <Grid container spacing={1}>
           <Grid item sm={3}>
             {transactionsSummary ? (

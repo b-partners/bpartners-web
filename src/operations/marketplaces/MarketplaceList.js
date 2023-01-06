@@ -67,7 +67,7 @@ const Marketplace = () => {
                   <Box sx={{ ...DETAIL_CONTAINER_STYLE, borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, mt: 1 }}>
                     <Typography variant='caption'>
                       site web:{' '}
-                      <Link data-testid={`link-${websiteUrl}`} href={websiteUrl} target='_blank' sx={LINK_STYLE}>
+                      <Link data-testid={`link-${websiteUrl}`} href={websiteUrl} target='_blank' rel='noreferrer' sx={LINK_STYLE}>
                         {name}
                       </Link>
                     </Typography>

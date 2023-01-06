@@ -118,14 +118,14 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
-    cy.contains('Devis bien envoyé'); //TODO: you should not make this test if you didn't test beforehand that /relaunch is hit!
+    cy.contains('Brouillon transformé en devis !');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
     cy.contains('Devis confirmé');
   });
 
-  it.only('should display default values on invoice creation', () => {
+  it('should display default values on invoice creation', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -216,7 +216,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Taille : 5');
   });
 
-  it.only('should show an invoice', () => {
+  it('should show an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
