@@ -118,7 +118,7 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
-    cy.contains('Devis bien envoyé'); //TODO: you should not make this test if you didn't test beforehand that /relaunch is hit!
+    cy.contains('Brouillon transformé en devis !');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
