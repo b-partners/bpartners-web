@@ -18,7 +18,7 @@ const CustomerGrid = () => {
     <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
       <TextField source='name' label='Nom' />
       <TextField source='email' label='Email' />
-      <TextField source='address' label='Addresse' />
+      <TextField source='address' label='Adresse' />
       <TextField source='phone' label='Téléphone' />
     </Datagrid>
   );

@@ -257,9 +257,9 @@ const AccountHolderLayout = () => {
         <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital Social' />
         <TextField pb={3} source='accountHolder.companyInfo.tvaNumber' label='Numéro TVA' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
-        <TextField pb={3} source='accountHolder.contactAddress.city' label='Citée' />
+        <TextField pb={3} source='accountHolder.contactAddress.city' label='Ville' />
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
-        <TextField pb={3} source='accountHolder.contactAddress.address' label='Addresse' />
+        <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
       </SimpleShowLayout>
     </>

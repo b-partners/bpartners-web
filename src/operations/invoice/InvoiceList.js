@@ -37,7 +37,7 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
     <Card className={classes.card}>
       <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
       <CardContent>
-        <PdfViewer width={PDF_WIDTH} url={documentUrl} />
+        <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
       </CardContent>
     </Card>
   );
@@ -103,7 +103,7 @@ const InvoiceList = () => {
                 toEdit={selectedInvoice}
                 nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
               />
-              <PdfViewer url={documentUrl} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document} />
+              <PdfViewer url={documentUrl} filename={selectedInvoice.ref} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document} />
             </Box>
           </CardContent>
         </Card>
