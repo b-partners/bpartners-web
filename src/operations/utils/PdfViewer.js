@@ -29,7 +29,7 @@ const PdfViewer = props => {
         {isPending && <LinearProgress />}
         <Box display='flex' justifyContent='space-between'>
           <CardHeader title='Justificatif' />
-          <a href={url} download={filename + '.pdf'} style={{ marginTop: '0.5em' }}>
+          <a href={url} target='_blank' download={filename + '.pdf'} style={{ marginTop: '0.5em' }}>
             <TooltipButton title='Télécharger' icon={<DownloadForOffline />} />
           </a>
         </Box>
