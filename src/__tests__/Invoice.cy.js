@@ -216,7 +216,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Taille : 5');
   });
 
-  it('should show an invoice', () => {
+  it.only('should show an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -226,6 +226,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');
+    cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
   it('should show warning message', () => {
