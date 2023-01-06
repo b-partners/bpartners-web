@@ -125,7 +125,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé');
   });
 
-  it.only('should display default values on invoice creation', () => {
+  it('should display default values on invoice creation', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -216,7 +216,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Taille : 5');
   });
 
-  it.only('should show an invoice', () => {
+  it('should show an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });

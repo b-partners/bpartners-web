@@ -74,11 +74,9 @@ describe(specTitle('Transactions'), () => {
   it('display graphic summary', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
-
     cy.wait('@legalFiles');
 
     const today = new Date();
-    cy.contains('Résumé graphique');
     cy.wait('@getTransactionsSummary');
     cy.get('#date').should(
       'have.value',
@@ -98,6 +96,23 @@ describe(specTitle('Transactions'), () => {
     cy.contains('10.00 €');
     cy.contains('40.00 €');
     cy.get('#date').type(`${today.getFullYear()}-03`);
+    cy.contains(`Vous n'avez aucune transaction sur ce mois`);
+  });
+
+  it('display current balance all the time', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+    cy.wait('@legalFiles');
+    const today = new Date();
+
+    cy.wait('@getTransactionsSummary');
+    cy.contains('Solde du jour : 40.00 €');
+
+    cy.get('#date').type(`${today.getFullYear()}-01`);
+    cy.contains('Solde du jour : 40.00 €');
+    cy.contains('Trésorerie');
+    cy.get('#date').type(`${today.getFullYear()}-03`);
+    cy.contains('Solde du jour : 40.00 €');
     cy.contains(`Vous n'avez aucune transaction sur ce mois`);
   });
 
