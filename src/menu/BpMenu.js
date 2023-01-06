@@ -64,7 +64,7 @@ const BpMenu = () => {
           </DialogActions>
         </Dialog>
         <Menu>
-          <Menu.Item to='/' onClick={redirectToSwan} primaryText='Aller sur Swan' name='swan' leftIcon={<AccountBalance />} />
+          <Menu.Item to='/' onClick={redirectToSwan} primaryText='Ma banque' name='swan' leftIcon={<AccountBalance />} />
           <Menu.Item to='/' onClick={contactSupport} primaryText='Contacter le support' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
