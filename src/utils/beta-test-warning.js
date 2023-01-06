@@ -5,24 +5,6 @@ export const COMMON_STYLE = {
   opacity: 0.85,
 };
 
-export const LongWarning = () => (
-  <Alert
-    severity='warning'
-    sx={{
-      ...COMMON_STYLE,
-      position: 'fixed',
-      zIndex: 3,
-      bottom: '1rem',
-      right: '1rem',
-      height: 'auto',
-      minWidth: '20rem',
-    }}
-  >
-    <AlertTitle>Avertissement</AlertTitle>
-    <strong>BPartners</strong> est actuellement en beta test
-  </Alert>
-);
-
 export const ShortWarning = () => (
   <Alert
     sx={{

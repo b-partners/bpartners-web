@@ -1,11 +1,11 @@
 import { makeStyles } from '@mui/styles';
-import { useMediaQuery, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { SidebarToggleButton } from 'react-admin';
 import bpLogo from './assets/bp-logo-full.png';
 import accountProvider, { getCachedUser } from './providers/account-provider';
 import authProvider from './providers/auth-provider';
-import { LongWarning, ShortWarning } from './utils/beta-test-warning';
+import { ShortWarning } from './utils/beta-test-warning';
 import { GeneralConditionOfUse } from './operations/configurations';
 import UnverifiedUser from './operations/configurations/UnverifiedUser';
 
@@ -36,9 +36,8 @@ const useStyle = makeStyles(() => ({
 const BpAppBar = props => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
-  const displayAppBarWarning = useMediaQuery('(min-width: 468px)');
   const [name, setName] = useState('');
-  const isBeta = process.env.REACT_APP_BETA;
+  const isBeta = process.env.REACT_APP_BETA !== 'false';
   const isVerifiedUser = getCachedUser() && getCachedUser().idVerified;
 
   const getFirstName = useCallback(() => {
@@ -58,12 +57,11 @@ const BpAppBar = props => {
         </Box>
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
-          {displayAppBarWarning && isBeta && <ShortWarning />}
+          {isBeta && <ShortWarning />}
           <SidebarToggleButton className={classes.sidebarToggleButton} />
         </Box>
       </Box>
 
-      {isBeta && <LongWarning />}
       <GeneralConditionOfUse />
       {getCachedUser() && <UnverifiedUser />}
     </>

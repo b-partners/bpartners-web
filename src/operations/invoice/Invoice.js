@@ -50,7 +50,7 @@ const InvoiceGridTable = props => {
           ...data,
           status: InvoiceStatusEN.PROPOSAL,
         },
-        'Devis bien envoyé'
+        'Brouillon transformé en devis !'
       );
     }
   };
