@@ -1,5 +1,5 @@
 import { Add, Attachment, Check, DoneAll, TurnRight, DriveFileMove } from '@mui/icons-material';
-import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
@@ -10,6 +10,7 @@ import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
 import Pagination from '../utils/Pagination';
 import { formatDate } from '../utils/date';
+import TooltipButton from '../utils/TooltipButton';
 
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator } from './utils';
@@ -30,12 +31,6 @@ const saveInvoice = (event, data, notify, refresh, successMessage) => {
       notify("Une erreur s'est produite", { type: 'error' });
     });
 };
-
-const TooltipButton = ({ icon, ...others }) => (
-  <Tooltip {...others} sx={{ margin: '0 15px' }}>
-    <IconButton>{icon}</IconButton>
-  </Tooltip>
-);
 
 const InvoiceGridTable = props => {
   const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
