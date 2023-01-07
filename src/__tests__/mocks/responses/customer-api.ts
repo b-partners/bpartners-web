@@ -1,4 +1,4 @@
-import { Customer } from 'src/gen/bpClient';
+import { Customer } from 'bpartners-react-client';
 
 export const customers1: Array<Customer> = [
   {

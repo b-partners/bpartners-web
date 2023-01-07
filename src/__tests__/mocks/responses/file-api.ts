@@ -1,4 +1,4 @@
-import { ModelFile } from 'src/gen/bpClient';
+import { ModelFile } from 'bpartners-react-client';
 
 export const file1: ModelFile = {
   id: 'file-id-1',

@@ -1,8 +1,7 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
-import { BASE_PATH } from 'src/gen/bpClient/base';
 import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
-import { Invoice } from 'src/gen/bpClient/models/invoice';
+import { Invoice } from 'bpartners-react-client';
 
 /**
  * **INVOICE**
@@ -25,7 +24,7 @@ export const invoiceDateValidator = (date1: string, date2?: string) => {
 export const getInvoicePdfUrl = async (id: string) => {
   const { accountId } = await getUserInfo();
   const accessToken = localStorage.getItem(accessTokenItem) || '';
-  return `${BASE_PATH}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
+  return `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
 
 type InvoiceStatusLabel = keyof typeof InvoiceStatusEN;

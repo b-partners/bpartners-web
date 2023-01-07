@@ -1,7 +1,7 @@
 import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import { payingApi } from './api';
-import { TransactionCategory, TransactionTypeEnum } from 'src/gen/bpClient';
+import { TransactionCategory, TransactionTypeEnum } from 'bpartners-react-client';
 
 const transactionCategoryProvider = {
   getList: async (from: string, to?: string, transactionType?: TransactionTypeEnum): Promise<TransactionCategory[]> => {
