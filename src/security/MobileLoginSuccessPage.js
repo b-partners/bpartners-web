@@ -1,9 +1,6 @@
 import { useEffect } from 'react';
-import { getUrlParams } from '../utils/getParams';
-import { useNavigate } from 'react-router-dom';
 
 const MobileLoginSuccessPage = () => {
-  const navigate = useNavigate();
   useEffect(() => {
     async function login() {
       window.location.assign(`bpartners://auth${window.location.search}`);

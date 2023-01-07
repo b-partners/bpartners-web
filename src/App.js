@@ -2,13 +2,11 @@ import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
-import { useEffect } from 'react';
 import { CustomRoutes } from 'react-admin';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BpErrorPage from './BpErrorPage';
 
 import MyLayout from './BpLayout';
-import BpLoading from './BpLoading';
 import { bpTheme } from './bpTheme';
 
 import account from './operations/account';

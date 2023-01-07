@@ -1,4 +1,4 @@
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert } from '@mui/material';
 
 export const COMMON_STYLE = {
   border: 'none',
