@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls } from 'src/gen/bpClient';
+import { RedirectionStatusUrls } from 'bpartners-react-client';
 
 export const loginSuccessRelUrl = '/login/success';
 export const failureSuccessRelUrl = '/login/failure';

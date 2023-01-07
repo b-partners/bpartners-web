@@ -1,4 +1,4 @@
-import { Product } from 'src/gen/bpClient/models';
+import { Product } from 'bpartners-react-client';
 
 export const products: Product[] = [
   {

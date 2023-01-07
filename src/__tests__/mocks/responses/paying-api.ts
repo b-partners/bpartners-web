@@ -1,5 +1,4 @@
-import { Transaction, TransactionCategory, TransactionStatus, TransactionTypeEnum } from 'src/gen/bpClient';
-import { TransactionsSummary } from 'src/gen/bpClient/models';
+import { Transaction, TransactionStatus, TransactionTypeEnum, TransactionsSummary } from 'bpartners-react-client';
 
 export const transactions: Array<Transaction> = [
   {

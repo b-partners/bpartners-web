@@ -1,4 +1,4 @@
-import { Account, AccountHolder } from 'src/gen/bpClient';
+import { Account, AccountHolder } from 'bpartners-react-client';
 
 import { userAccountsApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
