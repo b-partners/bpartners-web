@@ -1,5 +1,5 @@
-import { useReducer, useState, useEffect } from 'react';
-import { Box, Typography, TextField, FormHelperText, Button, useMediaQuery } from '@mui/material';
+import { useReducer } from 'react';
+import { Box, Typography, Button, useMediaQuery } from '@mui/material';
 
 import { onboardingApi, securityApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
@@ -11,27 +11,6 @@ import useAuthentication from 'src/utils/useAuthentication';
 import BpLoading from 'src/BpLoading';
 import authProvider from 'src/providers/auth-provider';
 
-const PhoneTextField = ({ formInput: { phone }, handleInput, isFirstAttempt }) => {
-  const [isValidPhone, setIsValidPhone] = useState(true);
-  useEffect(() => {
-    const testValidPhone = phone => /\d{10}/.test(phone);
-    setIsValidPhone(testValidPhone(phone));
-  }, [setIsValidPhone, phone]);
-
-  const isError = !isFirstAttempt && !isValidPhone;
-  return (
-    <TextField
-      id='phone'
-      name='phone'
-      label='Téléphone'
-      value={phone}
-      onChange={handleInput}
-      error={isError}
-      helperText={isError ? 'Votre numéro doit ressembler à 0611223344' : null}
-    />
-  );
-};
-
 const BpLoginPage = () => {
   // Following reducer technique for update state of the form is taken from
   // https://codesandbox.io/s/react-material-ui-form-submit-v40lz?from-embed=&file=/src/components/MaterialUIFormSubmit.js
@@ -39,11 +18,9 @@ const BpLoginPage = () => {
     phone: '',
   });
   const matchMediaQuery = useMediaQuery('(max-width: 898px)');
-  const handleInput = ({ target: { name, value } }) => setFormInput({ [name]: value });
 
   const { isLoading } = useAuthentication();
 
-  const [isFirstAttempt, setFirstAttempt] = useState(true);
   const initiateAuth = async () => {
     const {
       data: { redirectionUrl },
@@ -55,7 +32,6 @@ const BpLoginPage = () => {
     redirect(redirectionUrl);
   };
   const onLogin = () => {
-    setFirstAttempt(false);
     initiateAuth();
   };
 
@@ -80,8 +56,6 @@ const BpLoginPage = () => {
           <Typography variant='h5' gutterBottom mt={1}>
             Bienvenue !
           </Typography>
-          <PhoneTextField handleInput={handleInput} formInput={formInput} isFirstAttempt={isFirstAttempt} />
-          <FormHelperText>Nous vous enverrons un lien de connexion</FormHelperText>
           <Button id='login' onClick={onLogin} sx={LOGIN_FORM_BUTTON}>
             Se connecter
           </Button>
