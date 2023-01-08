@@ -10,7 +10,7 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator } from './utils';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, retryOnError } from './utils';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -52,14 +52,19 @@ const InvoiceCreateOrUpdate = props => {
     }
     onPending(InvoiceActionType.START_PENDING);
 
-    const toSubmit = { ...form.watch(), metadata: { ...form.watch().metadata, submittedAt: new Date().toISOString() } };
-    invoiceProvider
-      .saveOrUpdate([toSubmit])
-      .then(([updatedInvoice]) => {
-        updateInvoiceForm(updatedInvoice);
-        return getInvoicePdfUrl(updatedInvoice.fileId);
-      })
-      .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
+    const submittedAt = new Date();
+    const toSubmit = { ...form.watch(), metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() } };
+    retryOnError(
+      () =>
+        invoiceProvider
+          .saveOrUpdate([toSubmit])
+          .then(([updatedInvoice]) => {
+            updateInvoiceForm(updatedInvoice);
+            return getInvoicePdfUrl(updatedInvoice.fileId);
+          })
+          .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
+      error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
+    );
   };
 
   const saveAndClose = () => {

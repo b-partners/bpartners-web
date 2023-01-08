@@ -109,3 +109,15 @@ export const draftInvoiceValidator = (invoice: Invoice) => {
   }
   return true;
 };
+
+export const retryOnError = async (f: any, isErrorRetriable: any) => {
+  try {
+    await f();
+  } catch (e) {
+    if (isErrorRetriable(e)) {
+      retryOnError(f, isErrorRetriable);
+    } else {
+      throw e;
+    }
+  }
+};
