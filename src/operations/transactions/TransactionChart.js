@@ -75,7 +75,9 @@ const TransactionChart = () => {
   return (
     <Card sx={{ border: 0 }}>
       <CardContent>
-        <Typography variant='h6'>Solde du jour : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}</Typography>
+        <Typography align='center' mr={12} variant='h6' fontWeight='bold'>
+          Solde du jour : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}
+        </Typography>
         <Grid container spacing={1}>
           <Grid item sm={3}>
             {transactionsSummary ? (

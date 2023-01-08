@@ -4,8 +4,6 @@ import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
 import { InvoiceStatus } from 'bpartners-react-client';
 
-export const invoicePutController = new AbortController();
-
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
   const accountId = (await singleAccountGetter(userId)).id;
@@ -27,7 +25,7 @@ export const invoiceProvider: BpDataProviderType = {
   saveOrUpdate: async function (invoices: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .crupdateInvoice(accountId, invoices[0].id, invoices[0] /*TODO: { signal: invoicePutController.signal }*/)
+      .crupdateInvoice(accountId, invoices[0].id, invoices[0])
       .then(({ data }) => [data]);
   },
 };

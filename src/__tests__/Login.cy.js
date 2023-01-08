@@ -16,11 +16,8 @@ describe(specTitle('Login'), () => {
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
-  it('MainPage redirects to authUrl on phone submission', () => {
+  it('MainPage redirects to authUrl on login button clicked', () => {
     mount(<App />);
-    cy.get('#phone').type(phone1);
-
-    //TODO: ask backend to fix token.whoami
     cy.intercept('POST', '/authInitiation', { redirectionUrl: 'https://authUrl.com' }).as('createAuthInitiation');
     cy.get('#login').click();
     cy.wait('@createAuthInitiation');

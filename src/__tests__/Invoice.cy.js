@@ -194,6 +194,67 @@ describe(specTitle('Invoice'), () => {
     cy.contains('180.00 €');
   });
 
+  it('should retry on 429', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    const newRef = 'A new ref';
+    cy.get('form input[name=ref]').clear().type(newRef);
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(newRef);
+      req.reply({ statusCode: 429 });
+    }).as('crupdateWithNewRef429');
+    cy.wait('@crupdateWithNewRef429'); // suppose we are extremely unlucky and first creation (no metadata.submitted) results in 429!
+
+    // then...
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(newRef);
+      req.reply({ ...req.body, updatedAt: new Date() });
+    }).as('crupdateWithNewRef');
+    cy.wait('@crupdateWithNewRef'); // ... then submission is eventually retried and succeeds
+  });
+
+  it('should discard outdated 429 retry', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    const newRef = 'A new ref';
+    cy.get('form input[name=ref]').clear().type(newRef);
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(newRef);
+      req.reply({ statusCode: 429 });
+    }).as('crupdateWithNewRef429');
+    cy.wait('@crupdateWithNewRef429'); // a first update is sent but resulted in 429, then...
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(newRef);
+      req.reply({
+        body: { ...req.body, updatedAt: new Date() },
+        // ... then it is retried but http call takes an eternity to finish
+        delay: 10_000,
+      });
+    }).as('crupdateWithNewRef');
+
+    const evenNewerRef = 'Even newer ref';
+    cy.get('form input[name=ref]').clear().type(evenNewerRef);
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.ref).to.deep.eq(evenNewerRef);
+      req.reply({ ...req.body, updatedAt: new Date() });
+    }).as('crupdateWithEvenNewerRef');
+    cy.wait('@crupdateWithEvenNewerRef'); // a second update is sent and succeeds
+
+    cy.wait('@crupdateWithNewRef'); // retried first update finally finished but is now outdated
+    cy.get('form input[name=ref]').should('have.value', evenNewerRef); // ... hence discarded in favor of second update
+  });
+
   it('should edit an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
