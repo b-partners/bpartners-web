@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import invoiceProvider, { invoicePutController } from 'src/providers/invoice-provider';
+import invoiceProvider from 'src/providers/invoice-provider';
 import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
@@ -48,7 +48,6 @@ const InvoiceCreateOrUpdate = props => {
 
   const onSubmit = () => {
     if (nbPendingInvoiceCrupdate > 0) {
-      invoicePutController.abort();
       onPending(InvoiceActionType.STOP_PENDING);
     }
     onPending(InvoiceActionType.START_PENDING);

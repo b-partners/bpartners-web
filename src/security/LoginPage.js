@@ -1,4 +1,3 @@
-import { useReducer } from 'react';
 import { Box, Typography, Button, useMediaQuery } from '@mui/material';
 
 import { onboardingApi, securityApi } from '../providers/api';
@@ -12,11 +11,6 @@ import BpLoading from 'src/BpLoading';
 import authProvider from 'src/providers/auth-provider';
 
 const BpLoginPage = () => {
-  // Following reducer technique for update state of the form is taken from
-  // https://codesandbox.io/s/react-material-ui-form-submit-v40lz?from-embed=&file=/src/components/MaterialUIFormSubmit.js
-  const [formInput, setFormInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
-    phone: '',
-  });
   const matchMediaQuery = useMediaQuery('(max-width: 898px)');
 
   const { isLoading } = useAuthentication();
@@ -26,7 +20,6 @@ const BpLoginPage = () => {
       data: { redirectionUrl },
     } = await securityApi().initiateAuth({
       state: uuidv4(),
-      phone: formInput.phone,
       redirectionStatusUrls: loginRedirectionUrls,
     });
     redirect(redirectionUrl);
