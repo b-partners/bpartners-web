@@ -23,7 +23,7 @@ const productProvider: BpDataProviderType = {
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
     const toSend = { ...emptyToNull(resources[0]) };
-    return [await payingApi().createProducts([toSend], accountId)];
+    return [await payingApi().createProducts(accountId, [toSend])];
   },
 };
 

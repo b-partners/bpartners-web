@@ -1,4 +1,4 @@
-import { Marketplace } from 'src/gen/bpClient';
+import { Marketplace } from 'bpartners-react-client';
 
 export const marketplaces1: Array<Marketplace> = [
   {

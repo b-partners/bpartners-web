@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls, Token, User, Whoami } from 'src/gen/bpClient';
+import { RedirectionStatusUrls, Token, User, Whoami } from 'bpartners-react-client';
 
 export const phone1 = '0648492113';
 export const authStatusUrls1: RedirectionStatusUrls = { successUrl: '/login/success', failureUrl: 'login/failure' };

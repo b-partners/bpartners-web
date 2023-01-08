@@ -1,6 +1,6 @@
 import { green, red } from '@mui/material/colors';
 import { ReactElement } from 'react';
-import { TransactionTypeEnum } from 'src/gen/bpClient';
+import { TransactionTypeEnum } from 'bpartners-react-client';
 
 enum Currency {
   EUR = '€',

@@ -88,7 +88,7 @@ const InvoiceGridTable = props => {
                     }
                   />
                   <TooltipButton
-                    title='Relancer manuellement ce devis'
+                    title='Envoyer ou relancer ce devis'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
                     data-test-item={`relaunch-${data.id}`}
@@ -99,7 +99,7 @@ const InvoiceGridTable = props => {
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
-                    title='Relancer manuellement cette facture'
+                    title='Envoyer ou relancer cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
                     data-test-item={`relaunch-${data.id}`}

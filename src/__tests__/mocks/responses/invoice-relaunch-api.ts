@@ -1,15 +1,13 @@
-import { InvoiceRelaunch } from 'src/gen/bpClient';
+import { AccountInvoiceRelaunchConf } from 'bpartners-react-client';
 
-export const invoiceRelaunch1: InvoiceRelaunch = {
+export const invoiceRelaunch1: AccountInvoiceRelaunchConf = {
   draftRelaunch: 10,
   unpaidRelaunch: 20,
-  createdDatetime: new Date(),
   id: 'mock_id_invoice1',
 };
 
-export const invoiceRelaunch2: InvoiceRelaunch = {
+export const invoiceRelaunch2: AccountInvoiceRelaunchConf = {
   draftRelaunch: 101,
   unpaidRelaunch: 201,
-  createdDatetime: new Date(),
   id: 'mock_id_invoice2',
 };

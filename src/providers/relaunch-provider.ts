@@ -12,13 +12,13 @@ const relaunchProvider = {
   async getConf() {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .getInvoiceRelaunchConf(accountId)
+      .getAccountInvoiceRelaunchConf(accountId)
       .then(({ data }) => data);
   },
   updateConf: async function (resources: any): Promise<any> {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .configureRelaunch(resources, accountId)
+      .configureAccountInvoiceRelaunch(accountId, resources)
       .then(({ data }) => data);
   },
 };

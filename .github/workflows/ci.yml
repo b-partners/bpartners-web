@@ -22,8 +22,14 @@ jobs:
           arch: amd64
           rootdir: ''
           workdir: ''
-      - run: sh ./initAWS.sh ${{ secrets.AWS_ACCESS_KEY_ID }} ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }} ${{ secrets.AWS_REGION }}
-      - run: sh ./initNpmrc.sh hei-store npm-hei-school 088312068315
+      - name: Connect to HEI AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh hei ${{ secrets.HEI_AWS_ACCESS_KEY_ID }} ${{ secrets.HEI_AWS_SECRET_ACCESS_KEY }} ${{ secrets.HEI_AWS_REGION }}
+          sh ./initNpmrc.sh hei hei-store npm-hei-school 088312068315
+      - name: Connect to BPartners AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
+          sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
       - run: npm config set always-auth true
       - run: npm install --legacy-peer-deps
       - name: Cypress dependencies

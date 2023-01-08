@@ -14,8 +14,7 @@ import TabPanel from '../utils/TabPanel';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 import { v4 as uuid } from 'uuid';
 import { getMimeType } from 'src/utils/get-mime-type';
-import { FileType } from 'src/gen/bpClient';
-import { BASE_PATH } from 'src/gen/bpClient/base';
+import { FileType } from 'bpartners-react-client';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -67,7 +66,7 @@ const LogoLayout = () => {
 
     const { accessToken } = authProvider.getCachedAuthConf();
     const accountId = (await singleAccountGetter(userId)).id;
-    const url = `${BASE_PATH}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
+    const url = `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
 
     try {
       setLogoLoading(true);

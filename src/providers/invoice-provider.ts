@@ -2,9 +2,7 @@ import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
-import { InvoiceStatus } from 'src/gen/bpClient';
-
-export const invoicePutController = new AbortController();
+import { InvoiceStatus } from 'bpartners-react-client';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -27,7 +25,7 @@ export const invoiceProvider: BpDataProviderType = {
   saveOrUpdate: async function (invoices: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
     return payingApi()
-      .crupdateInvoice(invoices[0], accountId, invoices[0].id, { signal: invoicePutController.signal })
+      .crupdateInvoice(accountId, invoices[0].id, invoices[0])
       .then(({ data }) => [data]);
   },
 };

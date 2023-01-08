@@ -9,12 +9,12 @@ const textFieldStyle = {
  * input to use with react-hook-form only
  */
 const CustomFilledInput = props => {
-  const { name, label, formValidator, type, validate, style } = props;
+  const { name, label, form, type, validate, style } = props;
   const {
     register,
     watch,
     formState: { errors },
-  } = formValidator;
+  } = form;
   const dateProps = type === 'date' ? { InputLabelProps: { shrink: true } } : {};
   const errorStyle = errors[name] ? { error: true, helperText: errors[name].message } : { error: false };
 

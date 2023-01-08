@@ -1,4 +1,4 @@
-import { Configuration, Whoami } from '../gen/bpClient';
+import { Configuration, Whoami } from 'bpartners-react-client';
 import { securityApi } from './api';
 
 export const whoamiItem = 'bp_whoami';
