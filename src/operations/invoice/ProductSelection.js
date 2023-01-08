@@ -20,8 +20,8 @@ const useStyle = makeStyles(theme => ({
   },
 }));
 
-export const ProductSelection = ({ name, formValidator }) => {
-  const { watch, setValue } = formValidator;
+export const ProductSelection = ({ name, form }) => {
+  const { watch, setValue } = form;
   const [state, setState] = useState({ productsList: [], status: false });
   const selectedProduct = watch(name) || [];
   const classes = useStyle();

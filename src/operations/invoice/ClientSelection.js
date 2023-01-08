@@ -17,13 +17,13 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-export const ClientSelection = ({ formValidator, name }) => {
+export const ClientSelection = ({ form, name }) => {
   const {
     register,
     watch,
     setValue,
     formState: { errors },
-  } = formValidator;
+  } = form;
   const [state, setState] = useState({ clients: [], clientSelected: watch(`${name}.name`) || '' });
   const classes = useStyle();
   const customRegister = register(`${name}.name`, { required: true });

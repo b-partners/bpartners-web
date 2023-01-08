@@ -28,11 +28,11 @@ const useStyle = makeStyles(() => ({
 
 const InvoiceCreateOrUpdate = props => {
   const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose } = props;
-  const formValidator = useForm();
+  const form = useForm();
   const classes = useStyle();
 
   const updateInvoiceForm = newInvoice => {
-    const actualInvoice = formValidator.watch();
+    const actualInvoice = form.watch();
     const formHasNewUpdate =
       !newInvoice.metadata ||
       !actualInvoice.metadata ||
@@ -42,7 +42,7 @@ const InvoiceCreateOrUpdate = props => {
         // TODO: check product.amounts
         newInvoice.totalPriceWithVat !== actualInvoice.totalPriceWithVat);
     if (formHasNewUpdate) {
-      Object.keys(newInvoice).forEach(key => formValidator.setValue(key, newInvoice[key]));
+      Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
     }
   };
 
@@ -52,7 +52,7 @@ const InvoiceCreateOrUpdate = props => {
     }
     onPending(InvoiceActionType.START_PENDING);
 
-    const toSubmit = { ...formValidator.watch(), metadata: { ...formValidator.watch().metadata, submittedAt: new Date().toISOString() } };
+    const toSubmit = { ...form.watch(), metadata: { ...form.watch().metadata, submittedAt: new Date().toISOString() } };
     invoiceProvider
       .saveOrUpdate([toSubmit])
       .then(([updatedInvoice]) => {
@@ -74,33 +74,33 @@ const InvoiceCreateOrUpdate = props => {
 
   useEffect(() => {
     const onSubmitDebounced = debounce(onSubmit, 1000);
-    formValidator.watch(() => onSubmitDebounced());
+    form.watch(() => onSubmitDebounced());
   }, []);
 
   return (
     <Box className={className}>
       <Card className={classes.card}>
         <CardContent>
-          <form className={classes.form} onSubmit={formValidator.handleSubmit(onSubmit)}>
+          <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>
-              <CustomFilledInput name='title' label='Titre' formValidator={formValidator} />
-              <CustomFilledInput name='ref' label='Référence' formValidator={formValidator} />
-              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoi" type='date' formValidator={formValidator} />
+              <CustomFilledInput name='title' label='Titre' form={form} />
+              <CustomFilledInput name='ref' label='Référence' form={form} />
+              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoi" type='date' form={form} />
               <CustomFilledInput
-                validate={e => invoiceDateValidator(e, formValidator.watch('sendingDate'))}
+                validate={e => invoiceDateValidator(e, form.watch('sendingDate'))}
                 name='toPayAt'
                 label='Date de paiement'
                 type='date'
-                formValidator={formValidator}
+                form={form}
               />
             </FormControl>
-            <ClientSelection name='customer' formValidator={formValidator} />
-            <ProductSelection name='products' formValidator={formValidator} />
+            <ClientSelection name='customer' form={form} />
+            <ProductSelection name='products' form={form} />
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
                 <Typography variant='h6'>
-                  {isNaN(formValidator.watch().totalPriceWithVat) ? prettyPrintMinors(0) : prettyPrintMinors(formValidator.watch().totalPriceWithVat)}
+                  {isNaN(form.watch().totalPriceWithVat) ? prettyPrintMinors(0) : prettyPrintMinors(form.watch().totalPriceWithVat)}
                 </Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
