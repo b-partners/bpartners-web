@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
-import { InvoiceStatusEN } from '../../constants/invoice-status';
+import { InvoiceStatus } from 'bpartners-react-client';
 
 import { prettyPrintMinors } from '../utils/money';
 import ListComponent from '../utils/ListComponent';
@@ -48,7 +48,7 @@ const InvoiceGridTable = props => {
         event,
         {
           ...data,
-          status: InvoiceStatusEN.PROPOSAL,
+          status: InvoiceStatus.PROPOSAL,
         },
         'Brouillon transformé en devis !'
       );
@@ -57,7 +57,7 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatusEN.DRAFT && createOrUpdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
@@ -68,10 +68,8 @@ const InvoiceGridTable = props => {
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
               <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatusEN.DRAFT && (
-                <TooltipButton title='Convertir en devis' icon={<DriveFileMove />} onClick={onConvertToProposal(data)} />
-              )}
-              {data.status === InvoiceStatusEN.PROPOSAL && (
+              {data.status === InvoiceStatus.DRAFT && <TooltipButton title='Convertir en devis' icon={<DriveFileMove />} onClick={onConvertToProposal(data)} />}
+              {data.status === InvoiceStatus.PROPOSAL && (
                 <>
                   <TooltipButton
                     title='Transformer en facture'
@@ -81,7 +79,7 @@ const InvoiceGridTable = props => {
                         event,
                         {
                           ...data,
-                          status: InvoiceStatusEN.CONFIRMED,
+                          status: InvoiceStatus.CONFIRMED,
                         },
                         'Devis confirmé'
                       )
@@ -95,7 +93,7 @@ const InvoiceGridTable = props => {
                   />
                 </>
               )}
-              {data.status !== InvoiceStatusEN.PROPOSAL && data.status !== InvoiceStatusEN.DRAFT && (
+              {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
                 <>
                   <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
