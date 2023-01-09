@@ -1,10 +1,9 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
-import LoginPage from '../security/LoginPage';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
-import { phone1, token1, whoami1, user1 } from './mocks/responses/security-api';
+import { token1, whoami1, user1 } from './mocks/responses/security-api';
 import * as Redirect from '../utils/redirect';
 import App from 'src/App';
 
@@ -18,7 +17,10 @@ describe(specTitle('Login'), () => {
 
   it('MainPage redirects to authUrl on login button clicked', () => {
     mount(<App />);
-    cy.intercept('POST', '/authInitiation', { redirectionUrl: 'https://authUrl.com' }).as('createAuthInitiation');
+    cy.intercept('POST', '/authInitiation', req => {
+      expect(req.body.phone).to.deep.eq('dummy on purpose');
+      req.reply({ redirectionUrl: 'https://authUrl.com' });
+    }).as('createAuthInitiation');
     cy.get('#login').click();
     cy.wait('@createAuthInitiation');
     cy.get('@redirect').should('have.been.calledOnce');
