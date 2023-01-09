@@ -33,8 +33,8 @@ const saveInvoice = (event, data, notify, refresh, successMessage) => {
 };
 
 const InvoiceGridTable = props => {
-  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
-  const { isLoading } = useListContext();
+  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch, refresh } = props;
+  const { isLoading, refetch } = useListContext();
   const notify = useNotify();
 
   const onConvertToProposal = data => event => {
@@ -53,6 +53,13 @@ const InvoiceGridTable = props => {
         'Brouillon transformé en devis !'
       );
     }
+  };
+
+  const handleInvoicePaid = invoice => {
+    invoiceProvider.saveOrUpdate([{ ...invoice, status: InvoiceStatus.PAID }]).then(() => {
+      notify(`Facture ${invoice.ref} payée !`);
+      refetch();
+    });
   };
 
   return (
@@ -95,8 +102,15 @@ const InvoiceGridTable = props => {
               )}
               {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
                 <>
-                  <TooltipButton title='Facture déjà confirmée' icon={<DoneAll />} />
                   <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
+                    title='Marquer comme payée'
+                    icon={<DoneAll />}
+                    onClick={() => handleInvoicePaid(data)}
+                    data-test-item={`pay-${data.id}`}
+                  />
+                  <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
                     title='Envoyer ou relancer cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
@@ -117,7 +131,7 @@ const Invoice = props => {
   const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
-  const { onStateChange, invoiceType } = props;
+  const { onStateChange, invoiceTypes } = props;
 
   const sendInvoice = (event, data, successMessage) => saveInvoice(event, data, notify, refresh, successMessage);
   const createOrUpdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
@@ -131,7 +145,7 @@ const Invoice = props => {
       <List
         exporter={false}
         resource='invoices'
-        filter={{ invoiceType }}
+        filter={{ invoiceTypes }}
         component={ListComponent}
         pagination={<Pagination />}
         actions={
