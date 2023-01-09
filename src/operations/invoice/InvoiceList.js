@@ -2,7 +2,7 @@ import { Clear } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
-import { InvoiceStatusEN } from '../../constants/invoice-status';
+import { InvoiceStatus } from 'bpartners-react-client';
 import PdfViewer from '../utils/PdfViewer';
 import TabPanel from '../utils/TabPanel';
 import InvoiceCreateOrUpdate from './InvoiceCreate';
@@ -79,13 +79,13 @@ const InvoiceList = () => {
             <Tab label='Factures' />
           </Tabs>
           <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.DRAFT} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.DRAFT} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.PROPOSAL} />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
+            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.CONFIRMED} />
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (

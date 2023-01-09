@@ -1,6 +1,7 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
-import { InvoiceStatusEN, InvoiceStatusFR } from '../../constants/invoice-status';
+import { InvoiceStatusFR } from '../../constants/invoice-status';
+import { InvoiceStatus } from 'bpartners-react-client';
 import { Invoice } from 'bpartners-react-client';
 
 /**
@@ -27,21 +28,22 @@ export const getInvoicePdfUrl = async (id: string) => {
   return `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
 
-type InvoiceStatusLabel = keyof typeof InvoiceStatusEN;
+type InvoiceStatusLabel = keyof typeof InvoiceStatus;
 
 export const getInvoiceStatusInFr = (status: InvoiceStatusLabel): string => {
   switch (status) {
-    case InvoiceStatusEN.PAYED:
-      return InvoiceStatusFR.PAYED;
-    case InvoiceStatusEN.PROPOSAL:
+    case InvoiceStatus.PAID:
+      return InvoiceStatusFR.PAID;
+    case InvoiceStatus.PROPOSAL:
       return InvoiceStatusFR.PROPOSAL;
-    case InvoiceStatusEN.DRAFT:
+    case InvoiceStatus.DRAFT:
       return InvoiceStatusFR.DRAFT;
-    case InvoiceStatusEN.CONFIRMED:
+    case InvoiceStatus.CONFIRMED:
       return InvoiceStatusFR.CONFIRMED;
-    case InvoiceStatusEN.ACCEPTED:
+    case InvoiceStatus.ACCEPTED:
       return InvoiceStatusFR.ACCEPTED;
     default:
+      //TODO: bad
       throw new Error(`Unknown status: ${status}`);
   }
 };
@@ -80,7 +82,7 @@ export const invoiceInitialValue: any = {
   products: [],
   sendingDate: new Date().toLocaleDateString('fr-ca'),
   toPayAt: new Date().toLocaleDateString('fr-ca'),
-  status: InvoiceStatusEN.DRAFT,
+  status: InvoiceStatus.DRAFT,
   comment: '',
 };
 
