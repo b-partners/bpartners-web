@@ -2,7 +2,7 @@ import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { prettyPrintMinors } from '../utils/money';
-import { ProductActionType } from './utils';
+import { ProductActionType, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -34,7 +34,7 @@ export const ProductItem = ({ product, handleProduct }) => {
     <Card className={classes.card}>
       <CardHeader
         title={product.description}
-        subheader={prettyPrintMinors(product.totalPriceWithVat) + ' (TTC)'}
+        subheader={prettyPrintMinors(totalPriceWithVatFromProductQuantity(product)) + ' (TTC)'}
         action={
           <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
@@ -42,13 +42,13 @@ export const ProductItem = ({ product, handleProduct }) => {
         }
       />
       <CardContent>
-        <Typography variant='p'>TVA : {prettyPrintMinors(product.totalVat)}</Typography>
+        <Typography variant='p'>TVA : {prettyPrintMinors(totalVatFromProductQuantity(product))}</Typography>
       </CardContent>
       <CardActions className={classes.cardActions}>
         <FormControl variant='filled'>
           <FilledInput
             className={classes.filledInput}
-            value={isNaN(product.quantity) ? '' : product.quantity === 0 ? 1 : product.quantity}
+            value={isNaN(product.quantity) ? 0 : product.quantity}
             onChange={handleChange}
             data-cy-item='quantity-input'
             endAdornment={
