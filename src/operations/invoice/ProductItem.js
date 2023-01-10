@@ -48,7 +48,7 @@ export const ProductItem = ({ product, handleProduct }) => {
         <FormControl variant='filled'>
           <FilledInput
             className={classes.filledInput}
-            value={isNaN(product.quantity) ? 0 : product.quantity}
+            value={product.quantity}
             onChange={handleChange}
             data-cy-item='quantity-input'
             endAdornment={
