@@ -79,13 +79,13 @@ const InvoiceList = () => {
             <Tab label='Factures' />
           </Tabs>
           <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.DRAFT} />
+            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.DRAFT]} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.PROPOSAL} />
+            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.PROPOSAL]} />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatus.CONFIRMED} />
+            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.CONFIRMED, InvoiceStatus.PAID]} />
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (

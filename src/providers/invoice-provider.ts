@@ -13,11 +13,17 @@ export const getUserInfo = async (): Promise<{ accountId: string; userId: string
 export const invoiceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const invoiceType: InvoiceStatus = filter.invoiceType;
+    const invoiceTypes: Array<InvoiceStatus> = filter.invoiceTypes;
 
-    return payingApi()
-      .getInvoices(accountId, page, perPage, invoiceType)
-      .then(({ data }) => data);
+    return Promise.all(
+      // TODO: this has to be done backend-side.
+      // In particular, front-end side pagination is at best inefficient, and at worst broken (case here).
+      invoiceTypes.map(invoiceType =>
+        payingApi()
+          .getInvoices(accountId, page, perPage, invoiceType)
+          .then(({ data }) => data)
+      )
+    ).then(listOfLists => listOfLists.flat());
   },
   getOne: function (id: string): Promise<any> {
     throw new Error('Function not implemented.');

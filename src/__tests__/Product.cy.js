@@ -32,11 +32,6 @@ describe(specTitle('Products'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-
-    cy.wait('@getProducts');
     cy.contains('description1');
     cy.contains('12.00 €');
 
@@ -50,11 +45,7 @@ describe(specTitle('Products'), () => {
   it('should validate empty input', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
-    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
+    cy.get('[data-testid="AddIcon"]').click();
     cy.get('#description').type('test description');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
@@ -63,11 +54,7 @@ describe(specTitle('Products'), () => {
   it('should create well-defined product', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
-    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
+    cy.get('[data-testid="AddIcon"]').click();
 
     cy.get('#description').type('new description');
     cy.get('#unitPrice').type(1.03);

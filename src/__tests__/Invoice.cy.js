@@ -1,4 +1,5 @@
 import { mount } from '@cypress/react';
+import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -45,6 +46,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
@@ -94,15 +96,33 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('invoice-title-0');
     cy.contains('Name 3');
-    cy.contains('BROUILLON');
+    cy.contains('Brouillon');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
 
-    cy.contains('EN ATTENTE');
+    cy.contains('À confirmer');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
 
-    cy.contains('CONFIRMÉ');
+    cy.contains('À payer');
+  });
+
+  it('can be paid', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+
+    cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
+    cy.contains('invoice-ref-3');
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.status).to.eq(InvoiceStatus.PAID);
+      req.reply({ ...req.body });
+    }).as('pay');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`).as('refetch');
+    cy.get('[data-test-item="pay-invoice-id-3"]').click();
+    cy.wait('@pay');
+    cy.wait('@refetch');
+    cy.contains('Facture invoice-ref-3 payée !');
   });
 
   it('should test pagination', () => {
