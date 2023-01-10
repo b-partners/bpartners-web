@@ -1,10 +1,22 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
-import { EmptyList } from '../utils/EmptyList';
-import ListComponent from '../utils/ListComponent';
-import Pagination from '../utils/Pagination';
+import BPListActions from '../../common/components/BPListActions';
+import { EmptyList } from '../../common/components/EmptyList';
+import ListComponent from '../../common/components/ListComponent';
+import Pagination, { pageSize } from '../../common/components/Pagination';
 
 const CustomerList = props => (
-  <List {...props} resource='customers' hasCreate={true} hasEdit={false} hasList={false} hasShow={false} component={ListComponent} pagination={<Pagination />}>
+  <List
+    {...props}
+    perPage={pageSize}
+    actions={<BPListActions />}
+    resource='customers'
+    hasCreate={true}
+    hasEdit={false}
+    hasList={false}
+    hasShow={false}
+    component={ListComponent}
+    pagination={<Pagination />}
+  >
     <CustomerGrid />
   </List>
 );
@@ -15,7 +27,7 @@ const CustomerGrid = () => {
   if (isLoading) return null;
 
   return (
-    <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
+    <Datagrid bulkActionButtons={false} rowClick='edit' empty={<EmptyList />}>
       <TextField source='name' label='Nom' />
       <TextField source='email' label='Email' />
       <TextField source='address' label='Adresse' />

@@ -44,15 +44,32 @@ export const accountHolder1: AccountHolder = {
     postalCode: '101',
   },
   companyInfo: {
-    phone: '+261 34 xx xx xx',
+    phone: '+261 34 xx xxx xx',
     email: 'numer@madagascar.com',
     socialCapital: 100000,
     tvaNumber: '123',
+    isSubjectToVat: true,
   },
   businessActivities: {
     primary: 'activité principale',
     secondary: 'activité secondaire',
   },
+  revenueTargets: [
+    {
+      year: 2023,
+      amountTarget: 12000000,
+      amountAttempted: 1200000,
+      amountAttemptedPercent: 1000,
+      updatedAt: new Date(),
+    },
+    {
+      year: 2021,
+      amountTarget: 12000000,
+      amountAttempted: 13000000,
+      amountAttemptedPercent: 10833,
+      updatedAt: new Date(),
+    },
+  ],
 };
 
 export const legalFiles1: LegalFile[] = [

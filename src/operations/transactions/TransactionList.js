@@ -6,17 +6,17 @@ import { useState } from 'react';
 
 import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { formatDate } from '../utils/date';
-import { EmptyList } from '../utils/EmptyList';
-import ListComponent from '../utils/ListComponent';
-import { coloredPrettyPrintMinors } from '../utils/money';
+import { formatDatetime } from '../../common/utils/date';
+import { EmptyList } from '../../common/components/EmptyList';
+import ListComponent from '../../common/components/ListComponent';
+import { coloredPrettyPrintMinors } from '../../common/utils/money';
 
-import Pagination from '../utils/Pagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
-import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
+import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
 import TransactionCategorySelection from './TransactionCategorySelection';
+import Pagination, { pageSize } from '../../common/components/Pagination';
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -38,10 +38,8 @@ const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
 
   const onDocumentIconClicked = documentId => {
-    setDocumentState(e => ({ shouldShowDocument: true, documentId }));
+    setDocumentState({ shouldShowDocument: true, documentId });
   };
-
-  const statuses = Object.entries(TRANSACTION_STATUSES).map(([k, v]) => ({ id: k, name: v.label }));
 
   return (
     <>
@@ -51,10 +49,11 @@ const TransactionList = props => {
           <List
             {...props}
             resource='transactions'
+            perPage={pageSize}
             pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
-              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={statuses} alwaysOn resettable />,
+              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={TRANSACTION_STATUSES_HANDLED} alwaysOn resettable />,
               <BooleanInput key='transaction_list_boolean_filter' label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
             hasCreate={false}
@@ -83,7 +82,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <TextField source='label' label='Titre' />
         <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
+        <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id }) => (
             <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(id)}>

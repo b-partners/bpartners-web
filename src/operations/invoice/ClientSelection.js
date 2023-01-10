@@ -52,7 +52,7 @@ export const ClientSelection = ({ form, name }) => {
               </MenuItem>
             ))}
         </Select>
-        {errors[name] && <FormHelperText>Ce champ set requis</FormHelperText>}
+        {errors[name] && <FormHelperText>Ce champ est requis</FormHelperText>}
       </FormControl>
     </Box>
   );

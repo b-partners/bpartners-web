@@ -2,7 +2,7 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import authProvider from 'src/providers/auth-provider';
-import * as Redirect from '../utils/redirect';
+import * as Redirect from '../common/utils/redirect';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
@@ -31,7 +31,7 @@ describe(specTitle('Customers'), () => {
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
-  it('are displayed', () => {
+  it('Should display customer list', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
@@ -43,13 +43,16 @@ describe(specTitle('Customers'), () => {
     cy.contains('22 22 22');
   });
 
-  it('is creatable (with valid input)', () => {
+  it('Should create customer', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.contains('Email');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
@@ -64,5 +67,40 @@ describe(specTitle('Customers'), () => {
     cy.wait('@createCustomers');
 
     cy.contains('Bonjour First Name 1 !');
+  });
+
+  it('Should exit of the edit on click on the close button', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
+    cy.contains('Email');
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-name').click();
+    cy.contains('Édition de client');
+    cy.get("[data-testid='closeIcon']").click();
+
+    cy.contains('Édition de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
+
+  it('Should exit of the create on click on the close button', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
+    cy.contains('Email');
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+    cy.contains('Création de client');
+    cy.get("[data-testid='closeIcon']").click();
+    cy.contains('Création de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
+
+  it('Should edit a customer', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
   });
 });

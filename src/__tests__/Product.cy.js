@@ -32,11 +32,6 @@ describe(specTitle('Products'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-
-    cy.wait('@getProducts');
     cy.contains('description1');
     cy.contains('12.00 €');
 
@@ -50,24 +45,37 @@ describe(specTitle('Products'), () => {
   it('should validate empty input', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
+
     cy.wait('@getAccount1');
+    cy.wait('@whoami');
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
-    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
-    cy.get('#description').type('test description');
+
+    cy.contains('description1');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+
+    cy.get('#description').type('test description').blur();
+
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
   });
 
   it('should create well-defined product', () => {
     mount(<App />);
+
     cy.get('[name="products"]').click();
-    cy.wait('@whoami');
+
     cy.wait('@getAccount1');
+    cy.wait('@whoami');
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
-    cy.get('.MuiToolbar-root > a.MuiButtonBase-root').click();
+
+    cy.contains('description1');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#description').type('new description');
     cy.get('#unitPrice').type(1.03);
@@ -85,5 +93,52 @@ describe(specTitle('Products'), () => {
     }).as('postNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@postNewProduct');
+  });
+
+  it('VAT references should not displayed', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, req => {
+      // make isSubjectToVat = false
+      const accountHolder = { ...accountHolders1[0] };
+      accountHolder.companyInfo.isSubjectToVat = false;
+      req.reply(accountHolder);
+    }).as('getAccountHolder1');
+
+    mount(<App />);
+    cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains(/TTC/gi).should('not.exist');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains(/TTC/gi).should('not.exist');
+  });
+
+  it('Should exit of the edit or create node on click on the close button', () => {
+    mount(<App />);
+
+    cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
+    cy.contains('description1');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+
+    cy.contains('Création de produit');
+    cy.get("[data-testid='closeIcon']").click();
+    cy.contains('Création de produit').should('not.exist');
+    cy.contains('Page : 1');
   });
 });

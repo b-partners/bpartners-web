@@ -1,4 +1,4 @@
-import { BP_COLOR } from 'src/bpTheme';
+import { BP_COLOR } from 'src/bp-theme';
 
 export const SHOW_LAYOUT_STYLE = {
   height: '100%',
@@ -47,4 +47,16 @@ export const TAB_STYLE = {
     color: `${BP_COLOR[10]} !important`,
   },
   borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
+};
+
+export const BP_SWITCH_STYLE = {
+  '& .MuiSwitch-switchBase': {
+    '&.Mui-checked': {
+      color: BP_COLOR[10],
+      '& + .MuiSwitch-track': {
+        backgroundColor: BP_COLOR[40],
+        opacity: 1,
+      },
+    },
+  },
 };

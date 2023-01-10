@@ -3,7 +3,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 
 import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
-import emptyToNull from 'src/utils/emptyToNull';
+import emptyToNull from 'src/common/utils/empty-to-null';
 
 const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;

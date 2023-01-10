@@ -13,11 +13,15 @@ export const createInvoices = (n: number, status: string) => {
       ref: 'invoice-ref-' + i,
       sendingDate: '2022-05-10',
       toPayAt: '2022-05-15',
+      validityDate: '2022-05-15',
       status: status,
       title: 'invoice-title-' + i,
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
       totalVat: 2000,
+      metadata: {
+        submittedAt: '2023-01-10T11:05:22.362Z',
+      },
     });
   }
   return invoices;
@@ -31,11 +35,15 @@ export const invoiceWithoutCustomer = {
   ref: 'invoice-incomplete-ref',
   sendingDate: '2022-05-10',
   toPayAt: '2022-05-15',
+  validityDate: '2022-05-10',
   status: 'DRAFT',
   title: 'invoice-incomplete-title',
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  metadata: {
+    submittedAt: '2023-01-10T11:05:22.362Z',
+  },
 };
 
 export const invoiceWithoutTitle = {
@@ -47,9 +55,13 @@ export const invoiceWithoutTitle = {
   ref: 'invoice-incomplete-ref',
   sendingDate: '2022-05-10',
   toPayAt: '2022-05-15',
+  validityDate: '2022-05-15',
   status: 'DRAFT',
   title: '',
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  metadata: {
+    submittedAt: '2023-01-10T11:05:22.362Z',
+  },
 };

@@ -2,12 +2,12 @@ import { Box, Typography, Button, useMediaQuery } from '@mui/material';
 
 import { onboardingApi, securityApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
-import { redirect } from '../utils/redirect';
+import { redirect } from '../common/utils/redirect';
 import { v4 as uuidv4 } from 'uuid';
 import { FLEX_CENTER, BP_B_LOGO, LOGIN_FORM, LOGIN_FORM_BUTTON, pinkColor } from './style.js';
-import { BP_COLOR } from '../bpTheme';
-import useAuthentication from 'src/utils/useAuthentication';
-import BpLoading from 'src/BpLoading';
+import { BP_COLOR } from '../bp-theme';
+import useAuthentication from 'src/common/hooks/use-authentication';
+import BPLoader from 'src/common/components/BPLoader';
 import authProvider from 'src/providers/auth-provider';
 
 const BpLoginPage = () => {
@@ -21,7 +21,7 @@ const BpLoginPage = () => {
     } = await securityApi().initiateAuth({
       state: uuidv4(),
       // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-      phone: 'dummy on purpose',
+      phone: 'numéro renseigné',
       redirectionStatusUrls: loginRedirectionUrls,
     });
     redirect(redirectionUrl);
@@ -41,7 +41,7 @@ const BpLoginPage = () => {
   };
 
   return isLoading && authProvider.getCachedWhoami() ? (
-    <BpLoading />
+    <BPLoader />
   ) : (
     <Box sx={FLEX_CENTER}>
       {matchMediaQuery && <img src='./logo3292.png' style={BP_B_LOGO} alt='Bienvenue sur BPartners !' />}

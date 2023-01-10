@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport } from '@mui/icons-material';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
@@ -8,9 +9,10 @@ import authProvider from '../providers/auth-provider';
 const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
 
 const LogoutButton = () => {
+  const navigate = useNavigate();
   const logout = useCallback(() => {
     authProvider.logout().then(() => {
-      window.location.reload();
+      navigate('/login');
     });
   }, []);
   return <Menu.Item to='#' onClick={logout} name='logout' primaryText='Se déconnecter' leftIcon={<Lock />} />;
@@ -40,9 +42,9 @@ const BpMenu = () => {
         <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
-        <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />
+        <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </Menu>
 
       <Box sx={{ display: 'flex', alignItems: 'end' }}>

@@ -19,6 +19,12 @@ export const customerProvider: BpDataProviderType = {
     const { data } = await customerApi().createCustomers(accountId, customers);
     return data;
   },
+  update: async function (customers: any[]): Promise<any[]> {
+    const userId = authProvider.getCachedWhoami().user.id;
+    const accountId = (await singleAccountGetter(userId)).id;
+    const { data } = await customerApi().updateCustomers(accountId, customers);
+    return data;
+  },
 };
 
 export default customerProvider;

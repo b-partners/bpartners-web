@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import ListComponent from '../utils/ListComponent';
+import ListComponent from '../../common/components/ListComponent';
 import { List, RecordContextProvider, useListContext } from 'react-admin';
-import { EmptyList } from '../utils/EmptyList';
+import { EmptyList } from '../../common/components/EmptyList';
 import { Storefront } from '@mui/icons-material';
 import { Avatar, Box, Grid, Link, Typography, Alert } from '@mui/material';
-import { BP_COLOR } from '../../bpTheme';
+import { BP_COLOR } from '../../bp-theme';
 import { AVATAR_CONTAINER_STYLE, AVATAR_STYLE, BACKDROP_STYLE, BOX_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, LINK_STYLE } from './style';
-import { COMMON_STYLE } from 'src/utils/beta-test-warning';
+import { COMMON_STYLE } from 'src/common/utils/beta-test-warning';
 
 const MarketplaceList = () => (
   <div>
