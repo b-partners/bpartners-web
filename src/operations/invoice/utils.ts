@@ -123,3 +123,7 @@ export const retryOnError = async (f: any, isErrorRetriable: any) => {
     }
   }
 };
+
+export const invoiceRefTranslate = (ref: string): string => {
+  return ref.includes('DRAFT') ? ref.replace('DRAFT', 'DEVIS') : ref;
+};

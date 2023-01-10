@@ -13,7 +13,7 @@ import { formatDate } from '../utils/date';
 import TooltipButton from '../utils/TooltipButton';
 
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator } from './utils';
+import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator, invoiceRefTranslate } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -65,7 +65,8 @@ const InvoiceGridTable = props => {
   return (
     !isLoading && (
       <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}>
-        <TextField source='ref' label='Référence' />
+        {/* <TextField source='ref' label='Référence' /> */}
+        <FunctionField render={data => <Typography variant='body2'>{invoiceRefTranslate(data.ref)}</Typography>} label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
         <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
