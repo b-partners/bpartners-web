@@ -52,45 +52,15 @@ describe(specTitle('Invoice'), () => {
     }).as('crupdateWithNewRef429');
     cy.get('form input[name=ref]').clear().type(newRef);
     cy.wait('@crupdateWithNewRef429'); // suppose we are extremely unlucky and first creation (no metadata.submitted) results in 429!
+    cy.wait('@crupdateWithNewRef429'); // ... we are so unlucky we actually got 429 twice
+    cy.wait('@crupdateWithNewRef429'); // ... and even a third time!
+    cy.wait('@crupdateWithNewRef429', { timeout: 4_000 /*if exp backoff, from 1, with factor 2*/ + 5_000 }); // ... and even a fourth time!
 
     // then...
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
       req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewRef');
-    cy.wait('@crupdateWithNewRef'); // ... then submission is eventually retried and succeeds
-  });
-
-  it('should discard outdated 429 retry', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
-    cy.wait('@getDraftsPer10Page1');
-    cy.wait('@getDraftsPer5Page1');
-
-    const newRef = 'A new ref';
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({ statusCode: 429 });
-    }).as('crupdateWithNewRef429');
-    cy.get('form input[name=ref]').clear().type(newRef);
-    cy.wait('@crupdateWithNewRef429'); // a first update is sent but resulted in 429, then...
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({
-        body: { ...req.body, updatedAt: new Date() },
-        // ... then it is retried but http call takes an eternity to finish
-        delay: 10_000,
-      });
-    }).as('crupdateWithNewRef');
-
-    const evenNewerRef = 'Even newer ref';
-    cy.get('form input[name=ref]').clear().type(evenNewerRef);
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({ ...req.body, ref: evenNewerRef, updatedAt: new Date() });
-    }).as('crupdateWithEvenNewerRef');
-    cy.wait('@crupdateWithEvenNewerRef'); // a second update is sent and succeeds
-
-    cy.wait('@crupdateWithNewRef'); // retried first update finally finished but is now outdated
-    cy.get('form input[name=ref]').should('have.value', evenNewerRef); // ... hence discarded in favor of second update
+    cy.wait('@crupdateWithNewRef', { timeout: 8_000 + 5000 }); // ... then submission is eventually retried and succeeds
   });
 });

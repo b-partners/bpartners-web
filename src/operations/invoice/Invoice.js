@@ -33,7 +33,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage) => {
 };
 
 const InvoiceGridTable = props => {
-  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch, refresh } = props;
+  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading, refetch } = useListContext();
   const notify = useNotify();
 

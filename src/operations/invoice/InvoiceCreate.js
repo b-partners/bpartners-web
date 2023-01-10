@@ -10,7 +10,7 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, retryOnError } from './utils';
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, retryOnError, totalPriceWithVatFromProducts } from './utils';
 
 const useStyle = makeStyles(() => ({
   formControl: {
@@ -34,13 +34,8 @@ const InvoiceCreateOrUpdate = props => {
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
     const formHasNewUpdate =
-      !newInvoice.metadata ||
-      !actualInvoice.metadata ||
-      (new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt) &&
-        // Only amounts are not known frontend-side.
-        // Hence they are the only information that can change across backend calls.
-        // TODO: check product.amounts
-        newInvoice.totalPriceWithVat !== actualInvoice.totalPriceWithVat);
+      // Check submittedAt to avoid rolling back to a previous update when an older call finished before a newer call
+      !newInvoice.metadata || !actualInvoice.metadata || new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
     if (formHasNewUpdate) {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
     }
@@ -58,10 +53,7 @@ const InvoiceCreateOrUpdate = props => {
       () =>
         invoiceProvider
           .saveOrUpdate([toSubmit])
-          .then(([updatedInvoice]) => {
-            updateInvoiceForm(updatedInvoice);
-            return getInvoicePdfUrl(updatedInvoice.fileId);
-          })
+          .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
           .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
       error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
     );
@@ -104,9 +96,7 @@ const InvoiceCreateOrUpdate = props => {
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
-                <Typography variant='h6'>
-                  {isNaN(form.watch().totalPriceWithVat) ? prettyPrintMinors(0) : prettyPrintMinors(form.watch().totalPriceWithVat)}
-                </Typography>
+                <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
               </Box>
               <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
             </Box>

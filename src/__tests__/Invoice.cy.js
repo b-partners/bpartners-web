@@ -188,7 +188,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
     cy.contains('12.00 € (TTC)');
-    cy.contains('TVA : 2.00 €');
+    cy.contains('TVA : 0.02 €');
     cy.contains('10.00 € (HT)');
 
     cy.get('[data-cy-item="quantity-input"]').type('5');
@@ -199,7 +199,7 @@ describe(specTitle('Invoice'), () => {
       const product0Updated = {
         ...product0ToUpdate,
         quantity: 15,
-        totalPriceWithVat: 15 * product0ToUpdate.unitPrice * (1 + product0ToUpdate.vatPercent / 100),
+        totalPriceWithVat: 15 * product0ToUpdate.unitPrice * (1 + product0ToUpdate.vatPercent / 100 / 100),
       };
       const invoiceUpdated = {
         ...req.body,

@@ -1,7 +1,7 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { InvoiceStatusFR } from '../../constants/invoice-status';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus, Product } from 'bpartners-react-client';
 import { Invoice } from 'bpartners-react-client';
 
 /**
@@ -27,6 +27,14 @@ export const getInvoicePdfUrl = async (id: string) => {
   const accessToken = localStorage.getItem(accessTokenItem) || '';
   return `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
+
+export const totalPriceWithVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPriceWithVat;
+export const totalVatFromProductQuantity = (product: Product): number => (product.quantity * product.unitPrice * product.vatPercent) / 100 / 100;
+
+export const totalPriceWithVatFromProducts = (products: Array<Product>): number =>
+  products != null && products.length > 0
+    ? products.map(product => totalPriceWithVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
+    : 0;
 
 type InvoiceStatusLabel = keyof typeof InvoiceStatus;
 
@@ -112,12 +120,13 @@ export const draftInvoiceValidator = (invoice: Invoice) => {
   return true;
 };
 
-export const retryOnError = async (f: any, isErrorRetriable: any) => {
+export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis = 1_000) => {
   try {
     await f();
   } catch (e) {
     if (isErrorRetriable(e)) {
-      retryOnError(f, isErrorRetriable);
+      await new Promise(r => setTimeout(r, backoffMillis));
+      retryOnError(f, isErrorRetriable, 2 * backoffMillis);
     } else {
       throw e;
     }

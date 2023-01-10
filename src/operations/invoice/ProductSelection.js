@@ -33,7 +33,7 @@ export const ProductSelection = ({ name, form }) => {
     switch (type) {
       case ProductActionType.ADD:
         productTemp = selectedProduct.slice();
-        productTemp.push(product);
+        productTemp.push({ ...product, quantity: 1 });
         toggle();
         break;
       case ProductActionType.REMOVE:
