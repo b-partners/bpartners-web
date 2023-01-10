@@ -64,7 +64,10 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}>
+      <Datagrid
+        bulkActionButtons={false}
+        rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}
+      >
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
