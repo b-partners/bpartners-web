@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "target": "es5",
-    "lib": ["es5", "dom"],
+    "target": "ES2019",
+    "lib": ["ES2019", "dom"],
     "types": ["cypress", "node"],
     "allowJs": true,
     "skipLibCheck": true,

@@ -1,18 +1,18 @@
-import { Box, Typography, Button, useMediaQuery } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 
 import { onboardingApi, securityApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
-import { redirect } from '../utils/redirect';
+import { redirect } from '../common/utils/redirect';
 import { v4 as uuidv4 } from 'uuid';
-import { FLEX_CENTER, BP_B_LOGO, LOGIN_FORM, LOGIN_FORM_BUTTON, pinkColor } from './style.js';
-import { BP_COLOR } from '../bpTheme';
-import useAuthentication from 'src/utils/useAuthentication';
-import BpLoading from 'src/BpLoading';
+
+import useAuthentication from 'src/common/hooks/use-authentication';
+import BPLoader from 'src/common/components/BPLoader';
 import authProvider from 'src/providers/auth-provider';
+import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
+import { BP_COLOR } from '../bp-theme.js';
+import BpBackgroundImage from '../assets/bp-bg-image.png';
 
 const BpLoginPage = () => {
-  const matchMediaQuery = useMediaQuery('(max-width: 898px)');
-
   const { isLoading } = useAuthentication();
 
   const initiateAuth = async () => {
@@ -21,7 +21,7 @@ const BpLoginPage = () => {
     } = await securityApi().initiateAuth({
       state: uuidv4(),
       // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-      phone: 'dummy on purpose',
+      phone: 'numéro renseigné',
       redirectionStatusUrls: loginRedirectionUrls,
     });
     redirect(redirectionUrl);
@@ -41,10 +41,10 @@ const BpLoginPage = () => {
   };
 
   return isLoading && authProvider.getCachedWhoami() ? (
-    <BpLoading />
+    <BPLoader />
   ) : (
     <Box sx={FLEX_CENTER}>
-      {matchMediaQuery && <img src='./logo3292.png' style={BP_B_LOGO} alt='Bienvenue sur BPartners !' />}
+      {<img src='./bp-logo-full.png' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
         <Box sx={LOGIN_FORM}>
           <img src='./laborer.png' width={50} height={50} alt='Bienvenue sur BPartners !' />
@@ -59,24 +59,45 @@ const BpLoginPage = () => {
             sx={{
               backgroundColor: 'transparent',
               color: '#000',
-              textDecoration: 'underline',
               textTransform: 'none',
               textAlign: 'left',
               mt: 2,
               p: 0,
               '&:hover': {
                 backgroundColor: 'transparent',
+                textDecoration: 'underline',
                 color: BP_COLOR[20],
               },
             }}
             onClick={onRegistration}
           >
-            Pas de compte ? C'est par ici
+            <Typography variant='h7' gutterBottom mt={1}>
+              Pas de compte ? <b>C'est par ici</b>
+            </Typography>
           </Button>
         </Box>
       </Box>
-      <Box width={{ md: '60%', sm: '0%', xs: '0%' }} sx={{ ...FLEX_CENTER, bgcolor: pinkColor }}>
-        <img src='./bp-logo-full.png' width={600} alt='Bienvenue sur BPartners !' />
+      <Box
+        width={{ md: '60%', sm: '0%', xs: '0%' }}
+        sx={{
+          ...FLEX_CENTER,
+          height: '110vh',
+          backgroundImage: `url(${BpBackgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
+        }}
+      >
+        <Typography
+          sx={{
+            color: '#F5F5F5',
+            fontStyle: 'italic',
+            position: 'absolute',
+            bottom: '6.5rem',
+          }}
+        >
+          L'assistant intelligent qui accélère la croissance des artisans et indépendants.
+        </Typography>
       </Box>
     </Box>
   );

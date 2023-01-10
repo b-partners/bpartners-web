@@ -1,116 +1,199 @@
-import { Clear } from '@mui/icons-material';
-import { Box, Card, CardContent, CardHeader, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useEffect, useReducer, useState } from 'react';
-import { InvoiceStatusEN } from '../../constants/invoice-status';
-import PdfViewer from '../utils/PdfViewer';
-import TabPanel from '../utils/TabPanel';
-import InvoiceCreateOrUpdate from './InvoiceCreate';
-import Invoice from './Invoice';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
+import { Add, Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
+import { InvoiceStatus } from 'bpartners-react-client';
+import { useState } from 'react';
+import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
+import invoiceProvider from 'src/providers/invoice-provider';
+import { v4 as uuid } from 'uuid';
 
-const useStyle = makeStyles(() => ({
-  document: { width: '60%' },
-  card: { border: 'none' },
-  form: { transform: 'translateY(-1rem)' },
-}));
+import { formatDate } from '../../common/utils/date';
+import ListComponent from '../../common/components/ListComponent';
+import { prettyPrintMinors } from '../../common/utils/money';
+import Pagination, { pageSize } from '../../common/components/Pagination';
+import TooltipButton from '../../common/components/TooltipButton';
 
-const TAB_PANEL_STYLE = { padding: 0 };
+import PopoverButton from '../../common/components/PopoverButton';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import InvoiceRelaunchModal from './InvoiceRelaunchModal';
+import { draftInvoiceValidator, getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
-const CancelButton = ({ onClick }) => (
-  <Tooltip title='Retourner a la liste'>
-    <IconButton onClick={onClick}>
-      <Clear />
-    </IconButton>
-  </Tooltip>
-);
+const LIST_ACTION_STYLE = { display: 'flex' };
 
-const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
-  const [documentUrl, setDocumentUrl] = useState('');
-  const classes = useStyle();
+const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
+  if (event) {
+    event.stopPropagation();
+  }
+  invoiceProvider
+    .saveOrUpdate([data])
+    .then(() => {
+      notify(successMessage, { type: 'success' });
+      handleSwitchTab(null, tabIndex);
+      refresh();
+    })
+    .catch(() => {
+      notify("Une erreur s'est produite", { type: 'error' });
+    });
+};
 
-  useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
-  }, [selectedInvoice]);
+const InvoiceGridTable = props => {
+  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
+  const { isLoading, refetch } = useListContext();
+  const notify = useNotify();
+
+  const onConvertToProposal = data => event => {
+    event.stopPropagation();
+    if (!draftInvoiceValidator(data)) {
+      notify('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0', {
+        type: 'warning',
+      });
+    } else {
+      convertToProposal(
+        event,
+        {
+          ...data,
+          status: InvoiceStatus.PROPOSAL,
+        },
+        'Brouillon transformé en devis !',
+        1
+      );
+    }
+  };
+
+  const handleInvoicePaid = invoice => {
+    invoiceProvider.saveOrUpdate([{ ...invoice, status: InvoiceStatus.PAID }]).then(() => {
+      notify(`Facture ${invoice.ref} payée !`);
+      refetch();
+    });
+  };
+
+  const { companyInfo } = useGetAccountHolder();
+
+  const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName || ''} ${customer?.firstName}` || ''}</Typography>;
 
   return (
-    <Card className={classes.card}>
-      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
-      <CardContent>
-        <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
-      </CardContent>
-    </Card>
+    !isLoading && (
+      <Datagrid
+        bulkActionButtons={false}
+        rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}
+      >
+        <TextField source='ref' label='Référence' />
+        <TextField source='title' label='Titre' />
+        <FunctionField render={nameRenderer} label='Client' />
+        {companyInfo && companyInfo.isSubjectToVat && (
+          <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
+        )}
+        <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
+        <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
+        <FunctionField
+          render={data => (
+            <Box sx={LIST_ACTION_STYLE}>
+              <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
+              {data.status === InvoiceStatus.DRAFT && <TooltipButton title='Convertir en devis' icon={<DriveFileMove />} onClick={onConvertToProposal(data)} />}
+              {data.status === InvoiceStatus.PROPOSAL && (
+                <>
+                  <TooltipButton
+                    title='Transformer en facture'
+                    icon={<Check />}
+                    onClick={event =>
+                      convertToProposal(
+                        event,
+                        {
+                          ...data,
+                          status: InvoiceStatus.CONFIRMED,
+                        },
+                        'Devis confirmé',
+                        2
+                      )
+                    }
+                  />
+                  <TooltipButton
+                    title='Envoyer ou relancer ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
+              )}
+              {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
+                <>
+                  <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
+                    title='Marquer comme payée'
+                    icon={<DoneAll />}
+                    onClick={() => handleInvoicePaid(data)}
+                    data-test-item={`pay-${data.id}`}
+                  />
+                  <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
+                    title='Envoyer ou relancer cette facture'
+                    icon={<TurnRight />}
+                    onClick={() => setInvoiceToRelaunch(data)}
+                    data-test-item={`relaunch-${data.id}`}
+                  />
+                </>
+              )}
+            </Box>
+          )}
+          label=''
+        />
+      </Datagrid>
+    )
   );
 };
 
-const invoiceListReducer = (state, { type, payload }) => {
-  switch (type) {
-    case InvoiceActionType.START_PENDING:
-      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.STOP_PENDING:
-      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.SET:
-      return { ...state, ...payload };
-    default:
-      throw new Error('Unknown action type');
-  }
-};
+const InvoiceList = props => {
+  const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
+  const notify = useNotify();
+  const refresh = useRefresh();
+  const { onStateChange, invoiceTypes, handleSwitchTab } = props;
 
-const InvoiceList = () => {
-  const classes = useStyle();
-  const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
-
-  const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
-  const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (e, newTabIndex) =>
-    dispatch({
-      type: InvoiceActionType.SET,
-      payload: { tabIndex: newTabIndex },
-    });
-  const returnToList = () => stateChangeHandling({ viewScreen: viewScreenState.LIST });
+  const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
+  const createOrUpdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
+  const viewPdf = (event, selectedInvoice) => {
+    event.stopPropagation();
+    onStateChange({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
+  };
 
   return (
-    <Box>
-      {viewScreen === viewScreenState.LIST ? (
-        <Box>
-          <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
-            <Tab label='Brouillons' />
-            <Tab label='Devis' />
-            <Tab label='Factures' />
-          </Tabs>
-          <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.DRAFT} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.PROPOSAL} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceType={InvoiceStatusEN.CONFIRMED} />
-          </TabPanel>
-        </Box>
-      ) : viewScreen === viewScreenState.EDITION ? (
-        <Card className={classes.card}>
-          <CardHeader
-            title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
-            action={<CancelButton onClick={returnToList} />}
-          />
-          <CardContent>
-            <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate
-                className={classes.form}
-                onClose={returnToList}
-                onPending={handlePending}
-                toEdit={selectedInvoice}
-                nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
-              />
-              <PdfViewer url={documentUrl} filename={selectedInvoice.ref} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document} />
+    <>
+      <List
+        exporter={false}
+        resource='invoices'
+        filter={{ invoiceTypes }}
+        component={ListComponent}
+        pagination={<Pagination />}
+        perPage={pageSize}
+        actions={
+          <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
+            <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Button
+                name='create-draft-invoice'
+                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+                sx={{ margin: 1, display: 'block', width: '12rem' }}
+              >
+                Créer un devis
+              </Button>
+              <Button
+                name='create-confirmed-invoice'
+                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
+                sx={{ margin: 1, display: 'block', width: '12rem' }}
+              >
+                Créer une facture
+              </Button>
             </Box>
-          </CardContent>
-        </Card>
-      ) : (
-        <InvoicePdfDocument onClose={returnToList} selectedInvoice={selectedInvoice} />
-      )}
-    </Box>
+          </PopoverButton>
+        }
+      >
+        <InvoiceGridTable
+          createOrUpdateInvoice={createOrUpdateInvoice}
+          viewPdf={viewPdf}
+          convertToProposal={sendInvoice}
+          setInvoiceToRelaunch={setInvoiceToRelaunch}
+        />
+      </List>
+
+      <InvoiceRelaunchModal invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
+    </>
   );
 };
 

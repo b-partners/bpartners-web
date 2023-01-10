@@ -2,7 +2,7 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import authProvider from 'src/providers/auth-provider';
-import * as Redirect from '../utils/redirect';
+import * as Redirect from '../common/utils/redirect';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { marketplaces1 } from './mocks/responses/marketplace-api.ts';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';

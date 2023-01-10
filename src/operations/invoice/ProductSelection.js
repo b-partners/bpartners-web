@@ -1,12 +1,12 @@
 import { Add } from '@mui/icons-material';
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import productProvider from '../../providers/product-provider';
-import { CustomButton } from '../utils/CustomButton';
-import { isIncludesObject } from '../utils/isIncludesObject';
+import { BPButton } from '../../common/components/BPButton';
+import { includesObject } from '../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
-import { ProductActionType } from './utils';
+import { ProductActionType, productValidationHandling } from './utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -21,7 +21,13 @@ const useStyle = makeStyles(theme => ({
 }));
 
 export const ProductSelection = ({ name, form }) => {
-  const { watch, setValue } = form;
+  const {
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = form;
   const [state, setState] = useState({ productsList: [], status: false });
   const selectedProduct = watch(name) || [];
   const classes = useStyle();
@@ -33,7 +39,7 @@ export const ProductSelection = ({ name, form }) => {
     switch (type) {
       case ProductActionType.ADD:
         productTemp = selectedProduct.slice();
-        productTemp.push(product);
+        productTemp.push({ ...product, quantity: 1 });
         toggle();
         break;
       case ProductActionType.REMOVE:
@@ -48,6 +54,7 @@ export const ProductSelection = ({ name, form }) => {
         throw new Error('Unknown type');
     }
     setValue(name, productTemp);
+    productValidationHandling(productTemp, name, setError, clearErrors);
   };
 
   useEffect(() => {
@@ -65,14 +72,14 @@ export const ProductSelection = ({ name, form }) => {
       </Box>
       <Box sx={{ width: '100%', marginBottom: 10 }}>
         {!state.status ? (
-          <CustomButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
+          <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
         ) : (
           <FormControl variant='filled' value='' className={classes.formControl}>
             <InputLabel id='product-selection-id'>Produit</InputLabel>
             <Select id='product-selection-id'>
               {state.productsList.length > 0 &&
                 state.productsList
-                  .filter(e => !isIncludesObject(selectedProduct, 'id', e.id))
+                  .filter(e => !includesObject(selectedProduct, 'id', e.id))
                   .map(e => (
                     <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
                       {e.description}
@@ -81,6 +88,7 @@ export const ProductSelection = ({ name, form }) => {
             </Select>
           </FormControl>
         )}
+        {errors[name] && <FormHelperText error={true}>{errors[name].message}</FormHelperText>}
       </Box>
     </>
   );

@@ -7,7 +7,7 @@ import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
-import * as Reload from '../utils/reload';
+import * as Reload from '../common/utils/reload';
 
 describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe(specTitle('General Condition of Use'), () => {
     );
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=5`, products).as('getProducts');
     cy.stub(Reload, 'reload').as('reload');
   });
 

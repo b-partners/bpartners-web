@@ -1,15 +1,7 @@
-export const InvoiceStatusEN = {
-  PAYED: 'PAYED',
-  PROPOSAL: 'PROPOSAL',
-  DRAFT: 'DRAFT',
-  CONFIRMED: 'CONFIRMED',
-  ACCEPTED: 'ACCEPTED',
-};
-
 export const InvoiceStatusFR = {
-  PAYED: 'PAYÉ',
-  PROPOSAL: 'EN ATTENTE',
-  DRAFT: 'BROUILLON',
-  CONFIRMED: 'CONFIRMÉ',
-  ACCEPTED: 'ACCEPTÉ',
+  PAID: 'Payée',
+  PROPOSAL: 'À confirmer',
+  DRAFT: 'Brouillon',
+  CONFIRMED: 'À payer', // TODO: should be "À envoyer", but transitionally merge with "À payer"
+  ACCEPTED: 'À payer',
 };
