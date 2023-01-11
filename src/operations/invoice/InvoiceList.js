@@ -59,14 +59,14 @@ const invoiceListReducer = (state, { type, payload }) => {
 const InvoiceList = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
-
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (e, newTabIndex) =>
+  const handleSwitchTab = (e, newTabIndex) => {
     dispatch({
       type: InvoiceActionType.SET,
       payload: { tabIndex: newTabIndex },
     });
+  };
   const returnToList = () => stateChangeHandling({ viewScreen: viewScreenState.LIST });
 
   return (
@@ -79,10 +79,10 @@ const InvoiceList = () => {
             <Tab label='Factures' />
           </Tabs>
           <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.DRAFT]} />
+            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.DRAFT]} handleSwitchTab={handleSwitchTab} />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.PROPOSAL]} />
+            <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.PROPOSAL]} handleSwitchTab={handleSwitchTab} />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
             <Invoice onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.CONFIRMED, InvoiceStatus.PAID]} />
