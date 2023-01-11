@@ -75,7 +75,7 @@ const InvoiceGridTable = props => {
         <TextField source='customer[name]' label='Client' />
         <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'envoi" />
+        <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
