@@ -34,7 +34,14 @@ const Product = () => {
   return (
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
-        <TextField source='description' label='Description' />
+        <FunctionField
+          source='description'
+          label='Description'
+          render={({ description }) =>
+            //TODO: test is missing
+            description.length < 60 ? description : description.slice(0, 60) + '...'
+          }
+        />
         <FunctionField source='unitPrice' label='Prix unitaire HT' render={record => ppMoneyMinors(record.unitPrice)} />
         <FunctionField source='vatPercent' label='TVA' render={record => ppVatMinors(record.vatPercent)} />
         <FunctionField source='unitPriceWithVat' label='Prix unitaire TTC' render={record => ppMoneyMinors(record.unitPriceWithVat)} />
