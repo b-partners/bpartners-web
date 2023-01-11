@@ -145,6 +145,17 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé');
   });
 
+  it('should automatically change tabs when converting to a quote or invoice', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
+    cy.contains('À confirmer');
+
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
+    cy.contains('À payer');
+  });
+
   it('should display default values on invoice creation', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
