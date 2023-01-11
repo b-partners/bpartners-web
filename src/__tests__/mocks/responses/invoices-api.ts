@@ -18,6 +18,9 @@ export const createInvoices = (n: number, status: string) => {
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
       totalVat: 2000,
+      metadata: {
+        submittedAt: '2023-01-10T11:05:22.362Z',
+      },
     });
   }
   return invoices;
@@ -36,6 +39,9 @@ export const invoiceWithoutCustomer = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  metadata: {
+    submittedAt: '2023-01-10T11:05:22.362Z',
+  },
 };
 
 export const invoiceWithoutTitle = {
@@ -52,4 +58,7 @@ export const invoiceWithoutTitle = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  metadata: {
+    submittedAt: '2023-01-10T11:05:22.362Z',
+  },
 };

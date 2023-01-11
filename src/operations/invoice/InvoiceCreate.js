@@ -82,11 +82,11 @@ const InvoiceCreateOrUpdate = props => {
             <FormControl className={classes.formControl}>
               <CustomFilledInput name='title' label='Titre' form={form} />
               <CustomFilledInput name='ref' label='Référence' form={form} />
-              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'envoi" type='date' form={form} />
+              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'émission" type='date' form={form} />
               <CustomFilledInput
                 validate={e => invoiceDateValidator(e, form.watch('sendingDate'))}
                 name='toPayAt'
-                label='Date de paiement'
+                label='Date limite de validité'
                 type='date'
                 form={form}
               />

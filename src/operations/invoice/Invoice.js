@@ -17,7 +17,7 @@ import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoic
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
-const saveInvoice = (event, data, notify, refresh, successMessage) => {
+const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
     event.stopPropagation();
   }
@@ -25,6 +25,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage) => {
     .saveOrUpdate([data])
     .then(() => {
       notify(successMessage, { type: 'success' });
+      handleSwitchTab(null, tabIndex);
       refresh();
     })
     .catch(() => {
@@ -50,7 +51,8 @@ const InvoiceGridTable = props => {
           ...data,
           status: InvoiceStatus.PROPOSAL,
         },
-        'Brouillon transformé en devis !'
+        'Brouillon transformé en devis !',
+        1
       );
     }
   };
@@ -64,13 +66,16 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}>
+      <Datagrid
+        bulkActionButtons={false}
+        rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}
+      >
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
         <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.toPayAt))} label='Date de paiement' />
+        <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'envoi" />
         <FunctionField
           render={data => (
             <Box sx={LIST_ACTION_STYLE}>
@@ -88,7 +93,8 @@ const InvoiceGridTable = props => {
                           ...data,
                           status: InvoiceStatus.CONFIRMED,
                         },
-                        'Devis confirmé'
+                        'Devis confirmé',
+                        2
                       )
                     }
                   />
@@ -131,9 +137,9 @@ const Invoice = props => {
   const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
   const notify = useNotify();
   const refresh = useRefresh();
-  const { onStateChange, invoiceTypes } = props;
+  const { onStateChange, invoiceTypes, handleSwitchTab } = props;
 
-  const sendInvoice = (event, data, successMessage) => saveInvoice(event, data, notify, refresh, successMessage);
+  const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
   const createOrUpdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
   const viewPdf = (event, selectedInvoice) => {
     event.stopPropagation();
