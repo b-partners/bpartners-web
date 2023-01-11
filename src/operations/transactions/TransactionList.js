@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { formatDate } from '../utils/date';
+import { formatDatetime } from '../utils/date';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 import { coloredPrettyPrintMinors } from '../utils/money';
@@ -83,7 +83,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <TextField source='label' label='Titre' />
         <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.paymentDatetime))} label='Date de paiement' />
+        <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id }) => (
             <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(id)}>
