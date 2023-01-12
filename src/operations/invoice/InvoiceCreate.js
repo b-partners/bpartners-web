@@ -3,6 +3,7 @@ import { Box, Card, CardContent, FormControl, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
+import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { CustomButton } from '../utils/CustomButton';
@@ -10,8 +11,8 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, retryOnError, totalPriceWithVatFromProducts } from './utils';
 
+import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, productValidationHandling, retryOnError, totalPriceWithVatFromProducts } from './utils';
 const useStyle = makeStyles(() => ({
   formControl: {
     width: 300,
@@ -28,8 +29,10 @@ const useStyle = makeStyles(() => ({
 
 const InvoiceCreateOrUpdate = props => {
   const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose } = props;
-  const form = useForm();
+  const form = useForm({ mode: 'all' });
   const classes = useStyle();
+  const notify = useNotify();
+  const PRODUCT_NAME = 'products';
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -41,7 +44,16 @@ const InvoiceCreateOrUpdate = props => {
     }
   };
 
-  const onSubmit = () => {
+  const validateInvoice = ifValid => {
+    return form.handleSubmit(data => {
+      productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
+      if (!form.formState.errors[PRODUCT_NAME]) {
+        ifValid();
+      }
+    });
+  };
+
+  const onSubmit = validateInvoice(() => {
     if (nbPendingInvoiceCrupdate > 0) {
       onPending(InvoiceActionType.STOP_PENDING);
     }
@@ -57,11 +69,18 @@ const InvoiceCreateOrUpdate = props => {
           .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
       error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
     );
-  };
+  });
 
   const saveAndClose = () => {
-    onSubmit();
-    onClose();
+    const synchroneSaveAndClose = async () => {
+      await onSubmit();
+      if (Object.keys(form.formState.errors).length !== 0) {
+        notify('Veuillez remplir correctement tous les champs', { type: 'error' });
+      } else {
+        onClose();
+      }
+    };
+    synchroneSaveAndClose();
   };
 
   useEffect(() => {
@@ -82,9 +101,9 @@ const InvoiceCreateOrUpdate = props => {
             <FormControl className={classes.formControl}>
               <CustomFilledInput name='title' label='Titre' form={form} />
               <CustomFilledInput name='ref' label='Référence' form={form} />
-              <CustomFilledInput validate={e => invoiceDateValidator(e)} name='sendingDate' label="Date d'émission" type='date' form={form} />
+              <CustomFilledInput validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
               <CustomFilledInput
-                validate={e => invoiceDateValidator(e, form.watch('sendingDate'))}
+                validate={e => invoiceDateValidator({ toPayAt: e, sendingDate: form.watch('sendingDate') })}
                 name='toPayAt'
                 label='Date limite de validité'
                 type='date'
@@ -92,7 +111,7 @@ const InvoiceCreateOrUpdate = props => {
               />
             </FormControl>
             <ClientSelection name='customer' form={form} />
-            <ProductSelection name='products' form={form} />
+            <ProductSelection name={PRODUCT_NAME} form={form} />
             <Box sx={{ display: 'block' }}>
               <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                 <Typography variant='h6'>Total TTC :</Typography>
