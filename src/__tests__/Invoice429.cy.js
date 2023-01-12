@@ -51,6 +51,16 @@ describe(specTitle('Invoice'), () => {
       req.reply({ statusCode: 429 });
     }).as('crupdateWithNewRef429');
     cy.get('form input[name=ref]').clear().type(newRef);
+    
+    // select customer
+    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-value="customer2"]').click();
+
+    //select product
+    cy.get('#invoice-product-selection-button-id').click();
+    cy.get('.MuiInputBase-root > #product-selection-id').click();
+    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+
     cy.wait('@crupdateWithNewRef429'); // suppose we are extremely unlucky and first creation (no metadata.submitted) results in 429!
     cy.wait('@crupdateWithNewRef429'); // ... we are so unlucky we actually got 429 twice
     cy.wait('@crupdateWithNewRef429'); // ... and even a third time!
