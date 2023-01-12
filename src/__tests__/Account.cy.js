@@ -79,10 +79,10 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
+    cy.get('#secondary-activity').focus();
+    cy.contains("Sélectionner votre métier sur la liste. S'il n'y figure pas, veuillez le saisir directement dans le champ de saisie.");
     cy.get('#primary-activity').type('Bottier').blur();
-    // cy.contains('Bottier').click();
     cy.get('#secondary-activity').type('Armurier').blur();
-    // cy.contains('Armurier').click();
     cy.get('.css-19midj6 > .MuiButton-root').click();
     cy.contains('Changement enregistré');
   });
