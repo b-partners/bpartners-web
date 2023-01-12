@@ -1,12 +1,12 @@
 import { Add } from '@mui/icons-material';
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import productProvider from '../../providers/product-provider';
 import { CustomButton } from '../utils/CustomButton';
 import { isIncludesObject } from '../utils/isIncludesObject';
 import { ProductItem } from './ProductItem';
-import { ProductActionType } from './utils';
+import { ProductActionType, productValidationHandling } from './utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -21,7 +21,13 @@ const useStyle = makeStyles(theme => ({
 }));
 
 export const ProductSelection = ({ name, form }) => {
-  const { watch, setValue } = form;
+  const {
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = form;
   const [state, setState] = useState({ productsList: [], status: false });
   const selectedProduct = watch(name) || [];
   const classes = useStyle();
@@ -48,6 +54,7 @@ export const ProductSelection = ({ name, form }) => {
         throw new Error('Unknown type');
     }
     setValue(name, productTemp);
+    productValidationHandling(productTemp, name, setError, clearErrors);
   };
 
   useEffect(() => {
@@ -81,6 +88,7 @@ export const ProductSelection = ({ name, form }) => {
             </Select>
           </FormControl>
         )}
+        {errors[name] && <FormHelperText error={true}>{errors[name].message}</FormHelperText>}
       </Box>
     </>
   );

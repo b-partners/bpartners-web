@@ -176,14 +176,27 @@ describe(specTitle('Invoice'), () => {
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
     const newTitle = 'A new title';
-    cy.get('form input[name=title]').type(newTitle);
+    cy.get('form input[name=title]').clear().type(newTitle);
+
+    const newRef = 'A new ref';
+    cy.get('form input[name=ref]').clear().type(newRef);
+
+    // select the customer
+    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-value="customer2"]').click();
+
+    // select the product
+    cy.get('#invoice-product-selection-button-id').click();
+    cy.get('.MuiInputBase-root > #product-selection-id').click();
+    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewTitle');
     cy.wait('@crupdateWithNewTitle');
+    // make change to send new request
+    cy.get('.MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(2);
 
-    const newRef = 'A new ref';
-    cy.get('form input[name=ref]').clear().type(newRef);
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
       req.reply({ ...req.body, updatedAt: new Date() });
@@ -198,11 +211,13 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiInputBase-root > #product-selection-id').click();
 
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-    cy.contains('12.00 € (TTC)');
-    cy.contains('TVA : 0.02 €');
+    cy.contains('24.00 € (TTC)');
+    cy.contains('TVA : 0.04 €');
     cy.contains('10.00 € (HT)');
+    cy.contains('20.00 € (HT)');
 
-    cy.get('[data-cy-item="quantity-input"]').type('5');
+    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(15);
+    cy.get(':nth-child(3) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(1);
 
@@ -222,7 +237,63 @@ describe(specTitle('Invoice'), () => {
     }).as('crupdateWithNewProduct');
 
     cy.wait('@crupdateWithNewProduct');
-    cy.contains('180.00 €');
+    cy.contains('360.00 €');
+  });
+
+  it("should show error message and don't send invoice", () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
+    });
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    cy.get('form input[name=title]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('form input[name=title]').type('Nouveau titre');
+
+    cy.get('form input[name=ref]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('form input[name=ref]').type('New ref');
+
+    cy.get('form input[name=sendingDate]').clear();
+    cy.contains('Ce champ est requis');
+    const currentDate = new Date();
+    cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
+    cy.contains("La date d'envoie doit précéder celle du paiement");
+    cy.get('form input[name=sendingDate]').clear();
+    cy.get('form input[name=sendingDate]').type(`2023-01-01`);
+
+    cy.get('form input[name=toPayAt]').clear();
+    cy.contains('Ce champ est requis');
+
+    cy.get('form input[name=toPayAt]').type('2022-12-31');
+    cy.contains("La date d'envoie doit précéder celle du paiement");
+    cy.get('form input[name=toPayAt]').clear().type('2023-01-02');
+
+    cy.contains('Ce champ est requis');
+    // select the customer
+    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-value="customer2"]').click();
+
+    // the user can't save the invoice if it is not valid
+    // the user shoud view an error message
+    cy.get('#form-save-id').click();
+    cy.contains('Veuillez remplir correctement tous les champs');
+    // select the product
+    cy.get('#invoice-product-selection-button-id').click();
+    cy.get('.MuiInputBase-root > #product-selection-id').click();
+    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+
+    // 'cause the invoice is now valid, onclick on the save button,
+    // the crupdate request is send and the edit mode is closed
+    cy.get('#form-save-id').click();
+    cy.contains('Référence');
+    cy.contains('Titre');
+    cy.contains('Client');
+    cy.contains('Prix TTC');
+    cy.contains('Statut');
+    cy.contains("Date d'émission");
   });
 
   it('should edit an invoice', () => {

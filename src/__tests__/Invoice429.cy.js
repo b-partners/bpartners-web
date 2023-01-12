@@ -51,7 +51,7 @@ describe(specTitle('Invoice'), () => {
       req.reply({ statusCode: 429 });
     }).as('crupdateWithNewRef429');
     cy.get('form input[name=ref]').clear().type(newRef);
-    
+
     // select customer
     cy.get('#invoice-client-selection-id').click();
     cy.get('[data-value="customer2"]').click();
