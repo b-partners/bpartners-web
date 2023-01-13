@@ -146,7 +146,7 @@ const AccountHolderLayout = () => {
   const [secondaryActivity, setSecondaryActivity] = useState('');
   const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
 
-  const activityTooltipTitle = "Sélectionner votre métier sur la liste. S'il n'y figure pas, veuillez le saisir directement dans le champ de saisie.";
+  const activityTooltipTitle = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
 
   const updateBusinessActivities = async () => {
     const {
