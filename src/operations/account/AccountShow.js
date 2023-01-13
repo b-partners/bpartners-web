@@ -1,6 +1,6 @@
 import { green, grey } from '@mui/material/colors';
 import { Save as SaveIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Skeleton, Tab, Tabs, Typography, TextField as MuiTextField } from '@mui/material';
+import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Skeleton, Tab, Tabs, Tooltip, Typography, TextField as MuiTextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
@@ -146,6 +146,8 @@ const AccountHolderLayout = () => {
   const [secondaryActivity, setSecondaryActivity] = useState('');
   const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
 
+  const activityTooltipTitle = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
+
   const updateBusinessActivities = async () => {
     const {
       user: { id: userId },
@@ -204,40 +206,44 @@ const AccountHolderLayout = () => {
   return (
     <>
       <Box sx={{ padding: 2 }}>
-        <Autocomplete
-          value={primaryActivity}
-          onChange={(event, newValue) => {
-            setPrimaryActivity(newValue);
-          }}
-          inputValue={inputPrimaryActivity}
-          onInputChange={(event, newInputValue) => {
-            setInputPrimaryActivity(newInputValue);
-          }}
-          onBlur={() => {
-            validateActivity(primaryActivity, setPrimaryActivity, inputPrimaryActivity);
-          }}
-          id='primary-activity'
-          sx={{ width: '45%', marginRight: 1, display: 'inline-block' }}
-          options={jobList}
-          renderInput={params => <MuiTextField {...params} label='Activité principale' />}
-        />
-        <Autocomplete
-          value={secondaryActivity}
-          onChange={(event, newValue) => {
-            setSecondaryActivity(newValue);
-          }}
-          inputValue={inputSecondaryActivity}
-          onInputChange={(event, newInputValue) => {
-            setInputSecondaryActivity(newInputValue);
-          }}
-          onBlur={() => {
-            validateActivity(secondaryActivity, setSecondaryActivity, inputSecondaryActivity);
-          }}
-          id='secondary-activity'
-          sx={{ width: '45%', display: 'inline-block' }}
-          options={jobList}
-          renderInput={params => <MuiTextField {...params} label='Activité secondaire' />}
-        />
+        <Tooltip title={activityTooltipTitle}>
+          <Autocomplete
+            value={primaryActivity}
+            onChange={(event, newValue) => {
+              setPrimaryActivity(newValue);
+            }}
+            inputValue={inputPrimaryActivity}
+            onInputChange={(event, newInputValue) => {
+              setInputPrimaryActivity(newInputValue);
+            }}
+            onBlur={() => {
+              validateActivity(primaryActivity, setPrimaryActivity, inputPrimaryActivity);
+            }}
+            id='primary-activity'
+            sx={{ width: '45%', marginRight: 1, display: 'inline-block' }}
+            options={jobList}
+            renderInput={params => <MuiTextField {...params} label='Activité principale' />}
+          />
+        </Tooltip>
+        <Tooltip title={activityTooltipTitle}>
+          <Autocomplete
+            value={secondaryActivity}
+            onChange={(event, newValue) => {
+              setSecondaryActivity(newValue);
+            }}
+            inputValue={inputSecondaryActivity}
+            onInputChange={(event, newInputValue) => {
+              setInputSecondaryActivity(newInputValue);
+            }}
+            onBlur={() => {
+              validateActivity(secondaryActivity, setSecondaryActivity, inputSecondaryActivity);
+            }}
+            id='secondary-activity'
+            sx={{ width: '45%', display: 'inline-block' }}
+            options={jobList}
+            renderInput={params => <MuiTextField {...params} label='Activité secondaire' />}
+          />
+        </Tooltip>
         <Button
           variant='contained'
           size='small'
