@@ -1,5 +1,5 @@
-import { Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, Typography } from '@mui/material';
+import { Save, Refresh } from '@mui/icons-material';
+import { Box, Card, CardContent, FormControl, Typography, IconButton } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
@@ -97,6 +97,9 @@ const InvoiceCreateOrUpdate = props => {
     <Box className={className}>
       <Card className={classes.card}>
         <CardContent>
+          <IconButton onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu">
+            <Refresh />
+          </IconButton>
           <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>
               <CustomFilledInput name='title' label='Titre' form={form} />
