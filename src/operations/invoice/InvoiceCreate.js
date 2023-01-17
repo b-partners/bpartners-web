@@ -110,6 +110,7 @@ const InvoiceCreateOrUpdate = props => {
                 form={form}
               />
             </FormControl>
+            <CustomFilledInput name='comment' label='Commentaire' form={form} shouldValidate={false} />
             <ClientSelection name='customer' form={form} />
             <ProductSelection name={PRODUCT_NAME} form={form} />
             <Box sx={{ display: 'block' }}>
