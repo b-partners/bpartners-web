@@ -1,5 +1,5 @@
-import { Save, Refresh } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, Typography, IconButton } from '@mui/material';
+import { Save, Refresh as RefreshIcon } from '@mui/icons-material';
+import { Box, ButtonGroup, Card, CardContent, FormControl, IconButton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
@@ -13,6 +13,7 @@ import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 
 import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, productValidationHandling, retryOnError, totalPriceWithVatFromProducts } from './utils';
+
 const useStyle = makeStyles(() => ({
   formControl: {
     width: 300,
@@ -60,7 +61,10 @@ const InvoiceCreateOrUpdate = props => {
     onPending(InvoiceActionType.START_PENDING);
 
     const submittedAt = new Date();
-    const toSubmit = { ...form.watch(), metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() } };
+    const toSubmit = {
+      ...form.watch(),
+      metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
+    };
     retryOnError(
       () =>
         invoiceProvider
@@ -97,9 +101,6 @@ const InvoiceCreateOrUpdate = props => {
     <Box className={className}>
       <Card className={classes.card}>
         <CardContent>
-          <IconButton onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu">
-            <Refresh />
-          </IconButton>
           <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
             <FormControl className={classes.formControl}>
               <CustomFilledInput name='title' label='Titre' form={form} />
@@ -121,7 +122,14 @@ const InvoiceCreateOrUpdate = props => {
                 <Typography variant='h6'>Total TTC :</Typography>
                 <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
               </Box>
-              <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
+              <ButtonGroup fullWidth sx={{ gap: 1.6, marginTop: 10 }}>
+                <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <IconButton onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu">
+                    <RefreshIcon />
+                  </IconButton>
+                </Box>
+              </ButtonGroup>
             </Box>
           </form>
         </CardContent>
