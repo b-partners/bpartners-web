@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { transactions, transactionsSummary } from './mocks/responses/paying-api';
+import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 
@@ -27,6 +27,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
       'getTransactionCategory'
     );
@@ -83,6 +84,21 @@ describe(specTitle('Transactions'), () => {
       `${today.getFullYear()}-${(today.getMonth() + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`
     );
     cy.get('#date').type('2023-11');
+
+    cy.contains('Dépense 2023');
+    cy.contains('Recette 2023');
+    cy.contains('Trésorerie 2023');
+
+    cy.contains('2100.00 €');
+    cy.contains('1000.00 €');
+    cy.contains('1100.00 €');
+
+    cy.get('#date').type(`2022-11`);
+    cy.contains(`Vous n'avez pas de transaction sur cette période.`);
+
+    cy.get('#annualSummarySwitch').click();
+    cy.get('#date').type('2023-11');
+
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
@@ -96,7 +112,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('10.00 €');
     cy.contains('40.00 €');
     cy.get('#date').type(`${today.getFullYear()}-03`);
-    cy.contains(`Vous n'avez aucune transaction sur ce mois`);
+    cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
   it('display current balance all the time', () => {
@@ -113,7 +129,8 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Trésorerie');
     cy.get('#date').type(`${today.getFullYear()}-03`);
     cy.contains('Solde du jour : 40.00 €');
-    cy.contains(`Vous n'avez aucune transaction sur ce mois`);
+    cy.get('#annualSummarySwitch').click();
+    cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
   it('display statuses correctly', () => {

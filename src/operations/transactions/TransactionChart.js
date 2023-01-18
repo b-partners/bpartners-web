@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Grid, TextField, Typography, Skeleton } from '@mui/material';
+import { Box, Card, CardContent, Grid, TextField, Typography, Skeleton, Switch } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
@@ -8,11 +8,14 @@ import { singleAccountGetter } from 'src/providers/account-provider';
 import emptyGraph from 'src/assets/noData.png';
 
 import { prettyPrintMinors } from '../utils/money';
+import { BP_COLOR } from 'src/bpTheme';
 
 const TransactionChart = () => {
   const [data, setData] = useState([]);
   const [transactionsSummary, setTransactionsSummary] = useState();
   const [lastUpdateDate, setLastUpdateDate] = useState();
+
+  const [annualSummary, isAnnualSummary] = useState(true);
 
   const getAccountId = async () => {
     const userId = authProvider.getCachedWhoami().user.id;
@@ -28,7 +31,7 @@ const TransactionChart = () => {
       const currentMonth = +currentMonthString;
       const accountId = await getAccountId();
       const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
-      setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
+      data && setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
     };
     updateBalance();
   }, []);
@@ -56,18 +59,33 @@ const TransactionChart = () => {
       : setData([]);
   };
 
+  const getAnnualSummary = () => {
+    setLastUpdateDate(transactionsSummary && transactionsSummary.updatedAt);
+    transactionsSummary && transactionsSummary.summary.length !== 0
+      ? setData([
+          { name: `Recette ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
+          { name: `Dépense ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
+          { name: `Trésorerie ${transactionsSummary.year}`, value: transactionsSummary.annualCashFlow },
+        ])
+      : setData([]);
+  };
+
   const checkTransactionsSummary = () => {
     const currentYear = transactionsSummary && transactionsSummary.year;
 
-    currentYear !== +year && year.length === 4 ? getTransactionsSummary(+year) : getMonthlyTransaction(+month - 1);
+    if (currentYear !== +year && `${+year}`.length === 4) {
+      getTransactionsSummary(+year);
+    } else {
+      annualSummary ? getAnnualSummary() : getMonthlyTransaction(+month - 1);
+    }
   };
 
   useEffect(() => {
     checkTransactionsSummary();
-  }, [date]);
+  }, [date, annualSummary]);
 
   useEffect(() => {
-    getMonthlyTransaction(+month - 1);
+    transactionsSummary && annualSummary ? getAnnualSummary() : getMonthlyTransaction(+month - 1);
   }, [transactionsSummary]);
 
   const COLORS = ['#1D9661', '#B30000', '#003D7A'];
@@ -81,20 +99,31 @@ const TransactionChart = () => {
         <Grid container spacing={1}>
           <Grid item sm={3}>
             {transactionsSummary ? (
-              <TextField
-                type='month'
-                id='date'
-                variant='filled'
-                value={date}
-                onChange={e => {
-                  setDate(e.target.value);
-                }}
-              />
+              <Box>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant='body1'>Vue:</Typography>
+                  <Typography variant='body1'>
+                    mensuelle{' '}
+                    <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} sx={{ color: BP_COLOR[10] }} />{' '}
+                    annuelle
+                  </Typography>
+                </Box>
+                <TextField
+                  type='month'
+                  id='date'
+                  variant='filled'
+                  value={date}
+                  sx={{ mx: 2 }}
+                  onChange={e => {
+                    setDate(e.target.value);
+                  }}
+                />
+              </Box>
             ) : (
               <Skeleton width={210} height={60} />
             )}
             {lastUpdateDate && (
-              <Box mt={2}>
+              <Box mt={2} mx={2}>
                 <Typography variant='body1'>
                   <i>Dernière modification</i>
                 </Typography>
@@ -110,11 +139,11 @@ const TransactionChart = () => {
                 <Box textAlign='center'>
                   <img src={emptyGraph} alt='aucune transaction' height={120} />
                   <Typography variant='body1' mt={2}>
-                    Vous n'avez aucune transaction sur ce mois
+                    Vous n'avez pas de transaction sur cette période.
                   </Typography>
                 </Box>
               ) : (
-                <PieChart width={500} height={150}>
+                <PieChart width={600} height={150}>
                   <Pie
                     data={data}
                     cx={200}
