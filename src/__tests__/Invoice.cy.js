@@ -205,6 +205,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
+    cy.get('form input[name=comment]').type('this is a comment for testing');
     cy.get('#invoice-client-selection-id').click();
     cy.get('[data-value="customer2"]').click();
     cy.get('#invoice-product-selection-button-id').click();
@@ -217,7 +218,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('20.00 € (HT)');
 
     cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(15);
-    cy.get(':nth-child(3) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
+    cy.get(':nth-child(4) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(1);
 
@@ -353,5 +354,35 @@ describe(specTitle('Invoice'), () => {
 
     cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
     cy.contains('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0');
+  });
+
+  it('should send the request even if there is not comment', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+    const simpleComment = 'This is a simple comment';
+    cy.get('form input[name=comment]').type(simpleComment);
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      expect(req.body.comment).to.be.eq(simpleComment);
+      req.reply({
+        body: { ...req.body },
+        updatedAt: new Date(),
+        comment: simpleComment,
+      });
+    });
+    cy.get('form input[name=comment]').clear();
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      assert.isNull(req.body.comment);
+      req.reply({
+        body: { ...req.body },
+        updatedAt: new Date(),
+      });
+    });
   });
 });
