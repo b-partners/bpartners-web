@@ -32,7 +32,7 @@ const useStyle = makeStyles(() => ({
 
 const InvoiceCreateOrUpdate = props => {
   const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
-  const form = useForm({ mode: 'all' });
+  const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 23 } });
   const classes = useStyle();
   const notify = useNotify();
   const PRODUCT_NAME = 'products';

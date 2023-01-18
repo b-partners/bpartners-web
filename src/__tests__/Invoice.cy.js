@@ -260,7 +260,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form input[name=ref]').type('New ref');
-    cy.get('from input[name=delayInPaymentAllowed]').type('30');
+    cy.get('form input[name=delayInPaymentAllowed]').clear().type('30');
 
     cy.get('form input[name=sendingDate]').clear();
     cy.contains('Ce champ est requis');
