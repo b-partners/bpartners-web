@@ -1,4 +1,4 @@
-import { Save, RefreshOutlined as RefreshIcon } from '@mui/icons-material';
+import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
 import { Box, Card, CardContent, FormControl, IconButton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
@@ -122,6 +122,13 @@ const InvoiceCreateOrUpdate = props => {
                   type='date'
                   form={form}
                 />
+                <CustomFilledInput
+                  validate={e => e && e >= 0 && e < 31}
+                  name='delayInPaymentAllowed'
+                  label='Délai de retard de payment autorisé (jours)'
+                  type='number'
+                  form={form}
+                />
               </FormControl>
               <CustomFilledInput name='comment' label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' form={form} />
@@ -137,7 +144,6 @@ const InvoiceCreateOrUpdate = props => {
           </CardContent>
         </Card>
       </Box>
-
       <PdfViewer url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document}>
         <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />

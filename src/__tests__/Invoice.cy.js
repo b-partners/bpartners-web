@@ -181,6 +181,9 @@ describe(specTitle('Invoice'), () => {
     const newRef = 'A new ref';
     cy.get('form input[name=ref]').clear().type(newRef);
 
+    const newDelayInPaymentAllowed = '26';
+    cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
+
     // select the customer
     cy.get('#invoice-client-selection-id').click();
     cy.get('[data-value="customer2"]').click();
@@ -199,6 +202,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
+      expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
       req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewRef');
     cy.wait('@crupdateWithNewRef');
@@ -256,6 +260,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form input[name=ref]').type('New ref');
+    cy.get('from input[name=delayInPaymentAllowed]').type('30');
 
     cy.get('form input[name=sendingDate]').clear();
     cy.contains('Ce champ est requis');
