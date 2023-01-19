@@ -1,25 +1,79 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { InvoiceStatusFR } from '../../constants/invoice-status';
-import { InvoiceStatus, Product } from 'bpartners-react-client';
-import { Invoice } from 'bpartners-react-client';
+import { InvoiceStatus, Product, Invoice } from 'bpartners-react-client';
 
 /**
  * **INVOICE**
  */
-export const invoiceDateValidator = (date1: string, date2?: string) => {
-  if (date2) {
-    if (date2.length === 0) {
-      return 'Ce champ est requis';
-    } else if (new Date(date1) < new Date(date2)) {
-      return "La date d'envoie doit précéder celle du paiement";
-    }
-  } else if (date1.length === 0) {
+
+// invoice validator
+type InvoiceValidatorParams = {
+  sendingDate?: string;
+  toPayAt?: string;
+};
+
+type ProductValidatorResult = {
+  isValid: boolean;
+  message?: string;
+};
+
+const sendingDateValidator = (sendingDate: Date) => {
+  const currentDate = new Date();
+  if (!sendingDate) {
     return 'Ce champ est requis';
-  } else if (new Date() < new Date(date1)) {
+  } else if (sendingDate.getTime() > currentDate.getTime()) {
     return "La date d'envoie doit précéder celle d'aujourd'hui";
   }
   return true;
+};
+
+const toPayAtValidator = (toPayAtDate: Date) => {
+  if (!toPayAtDate) {
+    return 'Ce champ est requis';
+  }
+  return true;
+};
+
+const stringDateValidator = (stringDate: string) => (stringDate && stringDate.length === 10 ? true : false);
+
+export const invoiceDateValidator = (dates: InvoiceValidatorParams) => {
+  const { sendingDate, toPayAt } = dates;
+  if (!stringDateValidator(sendingDate) && !stringDateValidator(toPayAt)) {
+    return 'Ce champ est requis';
+  } else if (stringDateValidator(sendingDate) && !stringDateValidator(toPayAt)) {
+    return sendingDateValidator(new Date(sendingDate));
+  } else if (!stringDateValidator(sendingDate) && stringDateValidator(toPayAt)) {
+    return toPayAtValidator(new Date(toPayAt));
+  } else if (new Date(sendingDate) > new Date(toPayAt)) {
+    return "La date d'envoie doit précéder celle du paiement";
+  }
+  return true;
+};
+
+export const productValidator = (products: Product[]): ProductValidatorResult => {
+  if (!products || products.length === 0) {
+    return { isValid: false, message: 'Veuillez sélectionner au moins un produit' };
+  }
+  for (let product of products) {
+    if (!product.quantity || product.quantity === 0) {
+      return { isValid: false, message: 'La quantité de chaque produit doit être supérieur à zéro (0)' };
+    }
+  }
+  return { isValid: true };
+};
+
+export const productValidationHandling = (product: Product[], name: string, setError: any, clearErrors: any) => {
+  /**
+   * function that creates an error when the products are not valid and
+   * clears the errors if they are valid
+   */
+  const productValidation = productValidator(product);
+  if (!productValidation.isValid) {
+    setError(name, { message: productValidation.message });
+  } else {
+    clearErrors(name);
+  }
 };
 
 export const getInvoicePdfUrl = async (id: string) => {
@@ -109,13 +163,14 @@ export const PDF_WIDTH = window.screen.width * 0.7;
 // - had title, ref, customer and products
 // - all products had quantity > 0
 export const draftInvoiceValidator = (invoice: Invoice) => {
-  if (invoice.ref.length === 0 || invoice.title.length === 0 || !invoice.customer || invoice.products.length === 0) {
+  if (
+    invoice.ref.length === 0 ||
+    invoice.title.length === 0 ||
+    !invoice.customer ||
+    invoice.products.length === 0 ||
+    !productValidator(invoice.products).isValid
+  ) {
     return false;
-  }
-  for (let product of invoice.products) {
-    if (product.quantity === 0) {
-      return false;
-    }
   }
   return true;
 };
