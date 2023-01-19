@@ -10,7 +10,6 @@ import Invoice from './Invoice';
 import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
 
 const useStyle = makeStyles(() => ({
-  document: { width: '60%' },
   card: { border: 'none' },
   form: { transform: 'translateY(-1rem)' },
 }));
@@ -95,16 +94,15 @@ const InvoiceList = () => {
             action={<CancelButton onClick={returnToList} />}
           />
           <CardContent>
-            <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-              <InvoiceCreateOrUpdate
-                className={classes.form}
-                onClose={returnToList}
-                onPending={handlePending}
-                toEdit={selectedInvoice}
-                nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
-              />
-              <PdfViewer url={documentUrl} filename={selectedInvoice.ref} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document} />
-            </Box>
+            <InvoiceCreateOrUpdate
+              className={classes.form}
+              onClose={returnToList}
+              onPending={handlePending}
+              selectedInvoiceRef={selectedInvoice.ref}
+              documentUrl={documentUrl}
+              toEdit={selectedInvoice}
+              nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
+            />
           </CardContent>
         </Card>
       ) : (
