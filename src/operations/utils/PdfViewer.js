@@ -1,7 +1,7 @@
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { Box, Card, CardHeader, CardContent, LinearProgress, Typography } from '@mui/material';
-import { Error, DownloadForOffline } from '@mui/icons-material';
+import { DownloadForOffline, Error } from '@mui/icons-material';
+import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 
 import TooltipButton from './TooltipButton';
 
@@ -19,7 +19,7 @@ const useStyle = makeStyles(() => ({
 }));
 
 const PdfViewer = props => {
-  const { url, filename, isPending, noData, onLoadError, width, ...others } = props;
+  const { url, filename, isPending, noData, onLoadError, width, children, ...others } = props;
   const loadErrorMessage = 'Echec de chargement du document';
   const classes = useStyle();
 
@@ -29,9 +29,12 @@ const PdfViewer = props => {
         {isPending && <LinearProgress />}
         <Box display='flex' justifyContent='space-between'>
           <CardHeader title='Justificatif' />
-          <a href={url} target='_blank' rel='noreferrer' download={filename + '.pdf'} style={{ marginTop: '0.5em' }}>
-            <TooltipButton title='Télécharger' icon={<DownloadForOffline />} />
-          </a>
+          <Stack flexDirection='row' spacing={2} sx={{ alignItems: 'center', padding: '0.2rem 0.2rem 0 0' }}>
+            <a href={url} target='_blank' rel='noreferrer' download={filename + '.pdf'}>
+              <TooltipButton title='Télécharger' icon={<DownloadForOffline />} size='small' />
+            </a>
+            {children}
+          </Stack>
         </Box>
         <CardContent>
           {url ? (

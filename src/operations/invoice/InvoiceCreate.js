@@ -1,5 +1,5 @@
-import { Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, Typography } from '@mui/material';
+import { Save, RefreshOutlined as RefreshIcon } from '@mui/icons-material';
+import { Box, Card, CardContent, FormControl, IconButton, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
@@ -9,11 +9,14 @@ import invoiceProvider from 'src/providers/invoice-provider';
 import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
+import PdfViewer from '../utils/PdfViewer';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 
 import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, productValidationHandling, retryOnError, totalPriceWithVatFromProducts } from './utils';
+
 const useStyle = makeStyles(() => ({
+  document: { width: '60%' },
   formControl: {
     width: 300,
     justifyContent: 'space-around',
@@ -28,7 +31,7 @@ const useStyle = makeStyles(() => ({
 }));
 
 const InvoiceCreateOrUpdate = props => {
-  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose } = props;
+  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all' });
   const classes = useStyle();
   const notify = useNotify();
@@ -60,7 +63,10 @@ const InvoiceCreateOrUpdate = props => {
     onPending(InvoiceActionType.START_PENDING);
 
     const submittedAt = new Date();
-    const toSubmit = { ...form.watch(), metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() } };
+    const toSubmit = {
+      ...form.watch(),
+      metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
+    };
     retryOnError(
       () =>
         invoiceProvider
@@ -94,35 +100,49 @@ const InvoiceCreateOrUpdate = props => {
   }, []);
 
   return (
-    <Box className={className}>
-      <Card className={classes.card}>
-        <CardContent>
-          <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
-            <FormControl className={classes.formControl}>
-              <CustomFilledInput name='title' label='Titre' form={form} />
-              <CustomFilledInput name='ref' label='Référence' form={form} />
-              <CustomFilledInput validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
-              <CustomFilledInput
-                validate={e => invoiceDateValidator({ toPayAt: e, sendingDate: form.watch('sendingDate') })}
-                name='toPayAt'
-                label='Date limite de validité'
-                type='date'
-                form={form}
-              />
-            </FormControl>
-            <CustomFilledInput name='comment' label='Commentaire' form={form} shouldValidate={false} />
-            <ClientSelection name='customer' form={form} />
-            <ProductSelection name={PRODUCT_NAME} form={form} />
-            <Box sx={{ display: 'block' }}>
-              <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <Typography variant='h6'>Total TTC :</Typography>
-                <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
+    <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+      <Box className={className}>
+        <Card className={classes.card}>
+          <CardContent>
+            <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
+              <FormControl className={classes.formControl}>
+                <CustomFilledInput name='title' label='Titre' form={form} />
+                <CustomFilledInput name='ref' label='Référence' form={form} />
+                <CustomFilledInput
+                  validate={e => invoiceDateValidator({ sendingDate: e })}
+                  name='sendingDate'
+                  label="Date d'émission"
+                  type='date'
+                  form={form}
+                />
+                <CustomFilledInput
+                  validate={e => invoiceDateValidator({ toPayAt: e, sendingDate: form.watch('sendingDate') })}
+                  name='toPayAt'
+                  label='Date limite de validité'
+                  type='date'
+                  form={form}
+                />
+              </FormControl>
+              <CustomFilledInput name='comment' label='Commentaire' form={form} shouldValidate={false} />
+              <ClientSelection name='customer' form={form} />
+              <ProductSelection name={PRODUCT_NAME} form={form} />
+              <Box sx={{ display: 'block' }}>
+                <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <Typography variant='h6'>Total TTC :</Typography>
+                  <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
+                </Box>
+                <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
               </Box>
-              <CustomButton id='form-save-id' onClick={saveAndClose} style={{ marginTop: 10 }} label='Enregistrer' icon={<Save />} />
-            </Box>
-          </form>
-        </CardContent>
-      </Card>
+            </form>
+          </CardContent>
+        </Card>
+      </Box>
+
+      <PdfViewer url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document}>
+        <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu" sx={{ margin: '0 !important' }}>
+          <RefreshIcon />
+        </IconButton>
+      </PdfViewer>
     </Box>
   );
 };
