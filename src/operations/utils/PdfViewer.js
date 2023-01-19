@@ -29,11 +29,11 @@ const PdfViewer = props => {
         {isPending && <LinearProgress />}
         <Box display='flex' justifyContent='space-between'>
           <CardHeader title='Justificatif' />
-          <Stack flexDirection='row' spacing={2} sx={{ alignItems: 'center', padding: '0.2rem 0.2rem 0 0' }}>
+          <Stack flexDirection='row' sx={{ alignItems: 'center', padding: '0.2rem 0.2rem 0 0' }}>
+            {children}
             <a href={url} target='_blank' rel='noreferrer' download={filename + '.pdf'}>
               <TooltipButton title='Télécharger' icon={<DownloadForOffline />} size='small' />
             </a>
-            {children}
           </Stack>
         </Box>
         <CardContent>
