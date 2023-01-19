@@ -385,4 +385,24 @@ describe(specTitle('Invoice'), () => {
       });
     });
   });
+
+  it('is able to refresh the preview', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      req.reply({
+        body: { ...req.body },
+        updatedAt: new Date(),
+      });
+    }).as('emitInvoice');
+
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+
+    cy.get('#form-refresh-preview').click();
+    cy.wait('@emitInvoice');
+  });
 });

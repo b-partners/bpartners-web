@@ -139,7 +139,7 @@ const InvoiceCreateOrUpdate = props => {
       </Box>
 
       <PdfViewer url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document}>
-        <IconButton onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu" sx={{ margin: '0 !important' }}>
+        <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title="rafraîchir l'aperçu" sx={{ margin: '0 !important' }}>
           <RefreshIcon />
         </IconButton>
       </PdfViewer>
