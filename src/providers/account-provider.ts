@@ -1,6 +1,7 @@
-import { Account, AccountHolder } from 'bpartners-react-client';
+import { Account, AccountHolder, BusinessActivity, CompanyBusinessActivity, CompanyInfo, User } from 'bpartners-react-client';
 
 import { userAccountsApi } from './api';
+import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
@@ -24,9 +25,9 @@ export const cacheAccountHolder = (accountHolder: any) => {
   return accountHolder;
 };
 
-export const getCachedUser = (): any => JSON.parse(localStorage.getItem(userItem));
-export const getCachedAccount = (): any => JSON.parse(localStorage.getItem(accountItem));
-export const getCachedAccountHolder = (): any => JSON.parse(localStorage.getItem(accountHolderItem));
+export const getCachedUser = (): User => JSON.parse(localStorage.getItem(userItem));
+export const getCachedAccount = (): Account => JSON.parse(localStorage.getItem(accountItem));
+export const getCachedAccountHolder = (): AccountHolder => JSON.parse(localStorage.getItem(accountHolderItem));
 
 export const singleAccountGetter = async (userId: string): Promise<Account> => {
   const hasOnlyOneAccount = (accounts: Account[]) => {
@@ -43,10 +44,11 @@ export const singleAccountGetter = async (userId: string): Promise<Account> => {
   return getCachedAccount();
 };
 
-export const accountHoldersGetter = async (userId: string): Promise<AccountHolder> => {
-  const account = await singleAccountGetter(userId);
+export const accountHoldersGetter = async (): Promise<AccountHolder> => {
   if (!getCachedAccountHolder()) {
-    const { data } = await userAccountsApi().getAccountHolders(userId, account.id);
+    const whoami = authProvider.getCachedWhoami();
+    const account = await singleAccountGetter(whoami?.user?.id);
+    const { data } = await userAccountsApi().getAccountHolders(whoami?.user?.id, account.id);
     cacheAccountHolder(data[0]);
   }
   return getCachedAccountHolder();
@@ -59,14 +61,33 @@ const accountProvider: BpDataProviderType = {
     return {
       id: userId,
       user: await userGetter(userId),
-      accountHolder: await accountHoldersGetter(userId),
+      accountHolder: await accountHoldersGetter(),
     };
+  },
+  async saveOrUpdate(resources: CompanyInfo[]): Promise<AccountHolder[]> {
+    const user = getCachedUser();
+    const account = getCachedAccount();
+    const accountHolder = await accountHoldersGetter();
+    const { data } = await userAccountsApi().updateCompanyInfo(user?.id, account?.id, accountHolder?.id, resources[0]);
+    cacheAccountHolder(data);
+    return [data];
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: function (resources: any[]): Promise<any[]> {
-    throw new Error('Function not implemented.');
+};
+
+export const businessActivitiesProvider = {
+  update: async (resources: CompanyBusinessActivity): Promise<AccountHolder> => {
+    const user = getCachedUser();
+    const account = getCachedAccount();
+    const accountHolder = await accountHoldersGetter();
+    const { data } = await userAccountsApi().updateBusinessActivities(user?.id, account?.id, accountHolder?.id, resources);
+    cacheAccountHolder(data);
+    return data;
+  },
+  getJobList: async (): Promise<BusinessActivity[]> => {
+    return (await userAccountsApi().getBusinessActivities(1, 100)).data;
   },
 };
 

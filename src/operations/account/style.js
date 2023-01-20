@@ -48,3 +48,15 @@ export const TAB_STYLE = {
   },
   borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
 };
+
+export const BP_SWITCH_STYLE = {
+  '& .MuiSwitch-switchBase': {
+    '&.Mui-checked': {
+      color: BP_COLOR[10],
+      '& + .MuiSwitch-track': {
+        backgroundColor: BP_COLOR[40],
+        opacity: 1,
+      },
+    },
+  },
+};
