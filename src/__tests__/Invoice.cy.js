@@ -165,6 +165,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
     cy.contains('0.00 €');
+    cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
   });
 
   it('should create an invoice', () => {
