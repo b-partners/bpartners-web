@@ -36,8 +36,8 @@ describe(specTitle('Login'), () => {
 
   it('should redirect to LoginPage when not connected', () => {
     mount(<App />);
-    cy.contains('Se connecter');
     cy.contains('Bienvenue !');
+    cy.contains('Se connecter');
   });
 
   it('MainPage redirects to onboarding url', () => {

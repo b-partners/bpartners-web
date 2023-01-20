@@ -1,20 +1,21 @@
 import { green, grey } from '@mui/material/colors';
-import { Save as SaveIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Autocomplete, Avatar, Badge, Box, Button, CircularProgress, Skeleton, Tab, Tabs, Tooltip, Typography, TextField as MuiTextField } from '@mui/material';
+import { Edit as EditIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
+import { Avatar, Badge, Box, IconButton, Skeleton, Tab, Tabs, Typography, Switch, FormGroup, FormControlLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { ShowBase, SimpleShowLayout, TextField, useNotify } from 'react-admin';
+import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
-import { userAccountsApi } from 'src/providers/api';
 import { fileProvider } from 'src/providers/file-provider';
-import { accountHoldersGetter, cacheAccountHolder, cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
+import accountProvider, { cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/TabPanel';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE, BP_SWITCH_STYLE } from './style';
 import { v4 as uuid } from 'uuid';
 import { getMimeType } from 'src/utils/get-mime-type';
 import { FileType } from 'bpartners-react-client';
+import { ACCOUNT_HOLDER_LAYOUT } from './utils';
+import AccountEditionLayout from './AccountEditionLayout';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -133,145 +134,61 @@ const LogoLayout = () => {
   );
 };
 
-const AccountHolderLayout = () => {
+const SubjectToVatSwitch = data => {
+  const [isLoading, setLoading] = useState(false);
   const notify = useNotify();
-  const [accountHolders, setAccountHolders] = useState({});
-  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [jobList, setJobList] = useState([]);
+  const refresh = useRefresh();
 
-  const [primaryActivity, setPrimaryActivity] = useState('');
-  const [inputPrimaryActivity, setInputPrimaryActivity] = useState('');
-
-  const [secondaryActivity, setSecondaryActivity] = useState('');
-  const [inputSecondaryActivity, setInputSecondaryActivity] = useState('');
-
-  const activityTooltipTitle = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
-
-  const updateBusinessActivities = async () => {
-    const {
-      user: { id: userId },
-    } = authProvider.getCachedWhoami();
-    const accountId = (await singleAccountGetter(userId)).id;
-    const { id } = accountHolders;
-    const body = {
-      primary: primaryActivity,
-      secondary: secondaryActivity,
-    };
-    setIsLoading(true);
+  const handleChange = async (_event, checked) => {
     try {
-      const { data } = await userAccountsApi().updateBusinessActivities(userId, accountId, id, body);
-      notify('Changement enregistré', { type: 'success' });
-      cacheAccountHolder(data);
-      setIsBtnDisabled(true);
-      setIsLoading(false);
-    } catch (error) {
+      setLoading(true);
+      await accountProvider.saveOrUpdate([{ ...data.accountHolder.companyInfo, isSubjectToVat: checked }]);
+      refresh();
+    } catch (_err) {
       notify("Une erreur s'est produite", { type: 'error' });
-      setIsLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const validateActivity = (activityValue, setActivityValue, inputActivityValue) => {
-    const {
-      businessActivities: { primary, secondary },
-    } = accountHolders;
-    setActivityValue(activityValue && activityValue === inputActivityValue ? activityValue : inputActivityValue);
-    setIsBtnDisabled((primaryActivity !== primary || secondaryActivity !== secondary) && primaryActivity && secondaryActivity ? false : true);
-  };
-
-  useEffect(() => {
-    const getAccountHolders = async () => {
-      const {
-        user: { id: userId },
-      } = authProvider.getCachedWhoami();
-      const aHolders = await accountHoldersGetter(userId);
-      const {
-        businessActivities: { primary, secondary },
-      } = aHolders;
-
-      setAccountHolders(aHolders);
-      setPrimaryActivity(primary);
-      setSecondaryActivity(secondary);
-    };
-
-    const getBusinessActivities = async () => {
-      const { data } = await userAccountsApi().getBusinessActivities(1, 100);
-      setJobList(data.map(({ name }) => name));
-    };
-
-    getBusinessActivities();
-    getAccountHolders();
-  }, []);
-
   return (
-    <>
-      <Box sx={{ padding: 2 }}>
-        <Tooltip title={activityTooltipTitle}>
-          <Autocomplete
-            value={primaryActivity}
-            onChange={(event, newValue) => {
-              setPrimaryActivity(newValue);
-            }}
-            inputValue={inputPrimaryActivity}
-            onInputChange={(event, newInputValue) => {
-              setInputPrimaryActivity(newInputValue);
-            }}
-            onBlur={() => {
-              validateActivity(primaryActivity, setPrimaryActivity, inputPrimaryActivity);
-            }}
-            id='primary-activity'
-            sx={{ width: '45%', marginRight: 1, display: 'inline-block' }}
-            options={jobList}
-            renderInput={params => <MuiTextField {...params} label='Activité principale' />}
-          />
-        </Tooltip>
-        <Tooltip title={activityTooltipTitle}>
-          <Autocomplete
-            value={secondaryActivity}
-            onChange={(event, newValue) => {
-              setSecondaryActivity(newValue);
-            }}
-            inputValue={inputSecondaryActivity}
-            onInputChange={(event, newInputValue) => {
-              setInputSecondaryActivity(newInputValue);
-            }}
-            onBlur={() => {
-              validateActivity(secondaryActivity, setSecondaryActivity, inputSecondaryActivity);
-            }}
-            id='secondary-activity'
-            sx={{ width: '45%', display: 'inline-block' }}
-            options={jobList}
-            renderInput={params => <MuiTextField {...params} label='Activité secondaire' />}
-          />
-        </Tooltip>
-        <Button
-          variant='contained'
-          size='small'
-          startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
-          disabled={isBtnDisabled}
-          onClick={updateBusinessActivities}
-          sx={{ marginTop: 1 }}
-        >
-          Enregistrer
-        </Button>
-      </Box>
+    <FormGroup>
+      <FormControlLabel
+        control={<Switch disabled={isLoading} checked={data.accountHolder.companyInfo.isSubjectToVat} sx={BP_SWITCH_STYLE} onChange={handleChange} />}
+        label={data.accountHolder.companyInfo.isSubjectToVat ? 'Oui' : 'Non'}
+      />
+    </FormGroup>
+  );
+};
 
-      <SimpleShowLayout>
+const AccountHolderLayout = props => {
+  const { toggleAccountHolderLayout } = props;
+  return (
+    <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
+      <IconButton onClick={toggleAccountHolderLayout} sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+        <EditIcon />
+      </IconButton>
+      <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
         <TextField pb={3} source='accountHolder.name' label='Raison sociale' />
+        <TextField pb={3} source='accountHolder.businessActivities.primary' label='Activité principale' />
+        <TextField pb={3} source='accountHolder.businessActivities.secondary' label='Activité secondaire' />
         <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
         <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital Social' />
-        <TextField pb={3} source='accountHolder.companyInfo.tvaNumber' label='Numéro TVA' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
+      </SimpleShowLayout>
+      <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
         <TextField pb={3} source='accountHolder.contactAddress.city' label='Ville' />
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
+        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonéré de TVA' />
       </SimpleShowLayout>
-    </>
+    </Box>
   );
 };
 
-const AdditionalInformation = () => {
+const AdditionalInformation = props => {
+  const { toggleAccountHolderLayout } = props;
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (event, newTabIndex) => {
@@ -286,7 +203,7 @@ const AdditionalInformation = () => {
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-        <AccountHolderLayout />
+        <AccountHolderLayout toggleAccountHolderLayout={toggleAccountHolderLayout} />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
@@ -298,21 +215,32 @@ const AdditionalInformation = () => {
 
 const AccountShow = () => {
   const userId = authProvider.getCachedWhoami().user.id;
+  const [layout, setLayout] = useState(ACCOUNT_HOLDER_LAYOUT.VIEW);
+  const refresh = useRefresh();
+
+  const toggleAccountHolderLayout = () => {
+    setLayout(property => (property === ACCOUNT_HOLDER_LAYOUT.VIEW ? ACCOUNT_HOLDER_LAYOUT.CONFIGURATION : ACCOUNT_HOLDER_LAYOUT.VIEW));
+    refresh();
+  };
 
   return (
     <ShowBase resource='account' basePath='/account' id={userId}>
-      <Box sx={SHOW_LAYOUT_STYLE}>
-        <Box sx={BOX_CONTENT_STYLE}>
-          <LogoLayout />
-          <ProfileLayout />
-        </Box>
+      {layout === ACCOUNT_HOLDER_LAYOUT.VIEW ? (
+        <Box sx={SHOW_LAYOUT_STYLE}>
+          <Box sx={BOX_CONTENT_STYLE}>
+            <LogoLayout />
+            <ProfileLayout />
+          </Box>
 
-        <Box sx={BOX_CONTENT_STYLE}>
-          <AdditionalInformation />
-        </Box>
+          <Box sx={BOX_CONTENT_STYLE}>
+            <AdditionalInformation toggleAccountHolderLayout={toggleAccountHolderLayout} />
+          </Box>
 
-        <Box sx={BACKDROP_STYLE}></Box>
-      </Box>
+          <Box sx={BACKDROP_STYLE}></Box>
+        </Box>
+      ) : (
+        <AccountEditionLayout onClose={toggleAccountHolderLayout} />
+      )}
     </ShowBase>
   );
 };
