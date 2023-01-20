@@ -25,6 +25,7 @@ describe(specTitle('Account'), () => {
     );
 
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
   });
 
   it('is displayed on login', () => {
@@ -50,7 +51,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Numer');
     cy.contains('activité officielle');
     cy.contains('100000');
-    cy.contains('123');
     cy.contains('Ivandry');
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
@@ -67,24 +67,106 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw?fileType=LOGO`, images1).as('logoUpload');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, accountHolders1).as(
-      'updateBusinessActivities'
-    );
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[name="account"]').click();
+
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.contains('Édition de mon compte');
+    cy.contains('Activité');
+    cy.contains('Information sur la société');
+
+    // close company edition
+    cy.get('#panel2a-header > .MuiAccordionSummary-expandIconWrapper > [data-testid="ExpandMoreIcon"]').click();
+
+    cy.get(
+      '.css-1nghgb-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
+    ).click();
+    cy.contains('Armurier').click();
+
+    cy.get(
+      '.css-1hgr5aa-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
+    ).click();
+    cy.contains('Barbier').click();
+
+    const newAccountHolder = { ...accountHolders1[0] };
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, req => {
+      const newBusinessActivity = { primary: 'Armurier', secondary: 'Barbier' };
+      expect(req.body).to.deep.eq(newBusinessActivity);
+      newAccountHolder.businessActivities = newBusinessActivity;
+      req.reply(newAccountHolder);
+    });
+
+    cy.get('.css-1vtm9ti > .MuiButton-root').click();
+
+    cy.get('[data-testid="ClearIcon"]').click();
+  });
+
+  it('change company information', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      const response = { ...accountHolders1[0] };
+      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      req.reply({ body: response });
+    });
 
     mount(<App />);
 
     cy.wait('@getUser1');
     cy.get('[name="account"]').click();
+    // because the current accountholder's isSubjectToVat is true,
+    // the isSubjectToVat switch button should be activate
+    cy.contains('Oui');
 
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
+    cy.get('.PrivateSwitchBase-input').click();
+    //now the isSubjectToVat is false
+    cy.contains('Non');
 
-    cy.get('#secondary-activity').focus();
-    cy.contains('Sélectionnez votre métier dans la liste.');
-    cy.get('#primary-activity').type('Bottier').blur();
-    cy.get('#secondary-activity').type('Armurier').blur();
-    cy.get('.css-19midj6 > .MuiButton-root').click();
-    cy.contains('Changement enregistré');
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.contains('Édition de mon compte');
+    cy.contains('Activité');
+    cy.contains('Information sur la société');
+    // close business activity edition
+    cy.get('#panel1a-header > .MuiAccordionSummary-expandIconWrapper > [data-testid="ExpandMoreIcon"]').click();
+
+    cy.get('form [name="socialCapital"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('form [name="socialCapital"]').type(301);
+    cy.get('form [name="phone"]').clear().type('+261 not valid phone number');
+    cy.contains('Le numéro de téléphone ne doit contenir que des chiffres est un signe +');
+    cy.get('form [name="phone"]').clear().type('656565');
+    cy.contains('Format de numéro incorrecte, format correcte: "+[code pays][numéro]"');
+    cy.get('form [name="phone"]').clear().type('+261340465338');
+    cy.get('form [name="email"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
+
+    const newCompanyInformation = {
+      ...accountHolders1[0].companyInfo,
+      isSubjectToVat: false,
+      phone: '+261340465338',
+      email: 'joe.doe@bpartnes.app',
+      socialCapital: 301,
+    };
+    const newAccountHolder = { ...accountHolders1[0] };
+    newAccountHolder.companyInfo = newCompanyInformation;
+
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      expect(req.body.phone).to.deep.eq(newCompanyInformation.phone);
+      expect(req.body.email).to.deep.eq(newCompanyInformation.email);
+      expect(+req.body.socialCapital).to.deep.eq(newCompanyInformation.socialCapital);
+      req.reply({ body: newAccountHolder });
+    }).as('editCompanyInfo');
+
+    cy.get('form [type="submit"]').click();
+    cy.get('[data-testid="ClearIcon"]').click();
   });
 
   it('unverified user warning', () => {
