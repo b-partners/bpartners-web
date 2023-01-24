@@ -32,7 +32,7 @@ export const businessActivities: BusinessActivity[] = [
     name: 'Bottier',
   },
 ];
-export const accountHolder1: AccountHolder = {
+export const accountHolder1: any = {
   id: 'mock-accountHolder-id1',
   name: 'Numer',
   siren: 'Siren',
@@ -44,10 +44,11 @@ export const accountHolder1: AccountHolder = {
     postalCode: '101',
   },
   companyInfo: {
-    phone: '+261 34 xx xx xx',
+    phone: '+261 34 xx xxx xx',
     email: 'numer@madagascar.com',
     socialCapital: 100000,
     tvaNumber: '123',
+    isSubjectToVat: true,
   },
   businessActivities: {
     primary: 'activité principale',

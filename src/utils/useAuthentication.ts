@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import authProvider from 'src/providers/auth-provider';
+import authProvider, { getCachedAccessToken } from 'src/providers/auth-provider';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
@@ -12,20 +12,22 @@ const useAuthentication = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    setState(true);
-    authProvider
-      .checkAuth()
-      .then(() => {
-        if (/login/.test(pathname)) {
-          navigate('/transactions');
-        }
-        setState(false);
-      })
-      .catch(() => {
-        navigate('/login');
-        authProvider.logout();
-        setState(false);
-      });
+    if (getCachedAccessToken()) {
+      setState(true);
+      authProvider
+        .checkAuth()
+        .then(() => {
+          if (/login/.test(pathname)) {
+            navigate('/transactions');
+          }
+          setState(false);
+        })
+        .catch(() => {
+          navigate('/login');
+          authProvider.logout();
+          setState(false);
+        });
+    }
   }, [navigate]);
 
   return { isLoading };

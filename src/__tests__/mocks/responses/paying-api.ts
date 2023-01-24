@@ -69,8 +69,19 @@ export const transactions: Array<Transaction> = [
   },
 ];
 
+export const transactionsSummary1: TransactionsSummary = {
+  year: 2022,
+  annualIncome: 0,
+  annualOutcome: 0,
+  annualCashFlow: 0,
+  summary: [],
+};
+
 export const transactionsSummary: TransactionsSummary = {
   year: +new Date().getFullYear(),
+  annualIncome: 210000,
+  annualOutcome: 100000,
+  annualCashFlow: 110000,
   summary: [
     {
       month: 0,

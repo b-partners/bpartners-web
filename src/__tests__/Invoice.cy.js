@@ -165,6 +165,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
     cy.contains('0.00 €');
+    cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
   });
 
   it('should create an invoice', () => {
@@ -180,6 +181,9 @@ describe(specTitle('Invoice'), () => {
 
     const newRef = 'A new ref';
     cy.get('form input[name=ref]').clear().type(newRef);
+
+    const newDelayInPaymentAllowed = '26';
+    cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
 
     // select the customer
     cy.get('#invoice-client-selection-id').click();
@@ -199,6 +203,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
+      expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
       req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewRef');
     cy.wait('@crupdateWithNewRef');
@@ -256,12 +261,13 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form input[name=ref]').type('New ref');
+    cy.get('form input[name=delayInPaymentAllowed]').clear().type('30');
 
     cy.get('form input[name=sendingDate]').clear();
     cy.contains('Ce champ est requis');
     const currentDate = new Date();
     cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
-    cy.contains("La date d'envoie doit précéder celle du paiement");
+    cy.contains("La date d'envoi doit précéder celle du paiement");
     cy.get('form input[name=sendingDate]').clear();
     cy.get('form input[name=sendingDate]').type(`2023-01-01`);
 
@@ -269,7 +275,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
 
     cy.get('form input[name=toPayAt]').type('2022-12-31');
-    cy.contains("La date d'envoie doit précéder celle du paiement");
+    cy.contains("La date d'envoi doit précéder celle du paiement");
     cy.get('form input[name=toPayAt]').clear().type('2023-01-02');
 
     cy.contains('Ce champ est requis');
