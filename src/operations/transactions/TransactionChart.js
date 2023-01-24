@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Grid, Typography, Skeleton, Switch } from '@mui/material';
+import { Box, Card, CardContent, Grid, LinearProgress, TextField, Typography, Skeleton, Switch } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
@@ -10,6 +10,51 @@ import emptyGraph from 'src/assets/noData.png';
 import { prettyPrintMinors } from '../utils/money';
 import { BP_SWITCH_STYLE } from '../account/style';
 import CustomDatePicker from '../utils/CustomDatePicker';
+import { BP_COLOR } from 'src/bpTheme';
+
+const AnnualTargetGraph = props => {
+  const { annualGoal, currentAnnualIncome } = props;
+  const percentageCalculation = () => {
+    return annualGoal && currentAnnualIncome ? (currentAnnualIncome * 100) / annualGoal : 0;
+  };
+  return (
+    <Box sx={{ width: '70%', mt: 3, mx: 'auto', textAlign: 'center' }}>
+      {annualGoal && annualGoal !== 0 ? (
+        <>
+          <Typography variant='h5'>Objectif annuel ({currentAnnualIncome ? percentageCalculation().toFixed(2) : '...'} % atteint)</Typography>
+          <Typography variant='h6' fontWeight='bold'>
+            Recette de cette année : {currentAnnualIncome ? prettyPrintMinors(currentAnnualIncome) : '...'}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ width: '100%', mr: 1 }}>
+              <LinearProgress
+                variant='determinate'
+                value={percentageCalculation() > 100 ? 100 : percentageCalculation()}
+                sx={{
+                  height: 25,
+                  borderRadius: 2,
+                  backgroundColor: BP_COLOR[40],
+                  '& .MuiLinearProgress-barColorPrimary': {
+                    backgroundColor: BP_COLOR[10],
+                  },
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: 100 }}>
+              <Typography variant='body2' color='text.secondary'>
+                {annualGoal && prettyPrintMinors(annualGoal)}
+              </Typography>
+            </Box>
+          </Box>
+        </>
+      ) : (
+        <Typography variant='body2' color='text.secondary'>
+          Vous n'avez pas encore défini votre objectif annuel, Veuillez le renseigner dans l'onglet <b>mon compte</b>
+        </Typography>
+      )}
+    </Box>
+  );
+};
 
 const TransactionChart = () => {
   const [data, setData] = useState([]);
@@ -25,6 +70,7 @@ const TransactionChart = () => {
 
   const currentDate = { year: new Date().getFullYear(), month: new Date().getMonth() };
   const [currentBalance, setCurrentBalance] = useState();
+  const [currentAnnualIncome, setCurrentAnnualIncome] = useState();
   useEffect(() => {
     const updateBalance = async () => {
       const currentYear = currentDate.year;
@@ -32,6 +78,7 @@ const TransactionChart = () => {
       const accountId = await getAccountId();
       const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
       data && setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
+      data && setCurrentAnnualIncome(data.annualIncome);
     };
     updateBalance();
   }, []);
@@ -165,6 +212,7 @@ const TransactionChart = () => {
             </Grid>
           )}
         </Grid>
+        <AnnualTargetGraph annualGoal={5000000} currentAnnualIncome={currentAnnualIncome} />
       </CardContent>
     </Card>
   );
