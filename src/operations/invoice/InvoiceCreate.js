@@ -10,11 +10,21 @@ import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import PdfViewer from '../utils/PdfViewer';
+import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
-import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
 
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, productValidationHandling, retryOnError, totalPriceWithVatFromProducts } from './utils';
+import {
+  DEFAULT_DELAY_PENALTY_PERCENT,
+  DELAY_PENALTY_PERCENT,
+  getInvoicePdfUrl,
+  InvoiceActionType,
+  invoiceDateValidator,
+  PRODUCT_NAME,
+  productValidationHandling,
+  retryOnError,
+  totalPriceWithVatFromProducts,
+} from './utils';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
@@ -36,8 +46,6 @@ const InvoiceCreateOrUpdate = props => {
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const classes = useStyle();
   const notify = useNotify();
-  const PRODUCT_NAME = 'products';
-  const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -47,7 +55,7 @@ const InvoiceCreateOrUpdate = props => {
     if (formHasNewUpdate) {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
       // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
-      form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]));
+      form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
     }
   };
 
@@ -86,7 +94,7 @@ const InvoiceCreateOrUpdate = props => {
   });
 
   const saveAndClose = () => {
-    const synchroneSaveAndClose = async () => {
+    const synchronousSaveAndClose = async () => {
       await onSubmit();
       if (Object.keys(form.formState.errors).length !== 0) {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
@@ -94,7 +102,8 @@ const InvoiceCreateOrUpdate = props => {
         onClose();
       }
     };
-    synchroneSaveAndClose();
+
+    synchronousSaveAndClose();
   };
 
   useEffect(() => {
