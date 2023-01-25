@@ -419,23 +419,33 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@emitInvoice');
   });
 
-  it.only("Shouldn't show all tva reference when isSubjectToVat is false", () => {
+  it("Shouldn't show all tva reference when isSubjectToVat is false", () => {
+    // Make isSubjectToVat false
+    const companyInfo = { ...accountHolders1[0].companyInfo, isSubjectToVat: false };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, { ...accountHolders1[0], companyInfo }).as('getAccountHolder1');
+
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+      cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({
-        body: { ...req.body },
-        updatedAt: new Date(),
-      });
-    }).as('emitInvoice');
-
     mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
-    cy.get('#form-refresh-preview').click();
-    cy.wait('@emitInvoice');
+    cy.get('[name="invoice"]').click();
+
+    cy.wait('@whoami');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getDraftsPer10Page1');
+    cy.wait('@getDraftsPer5Page1');
+    // shouldn't show TTC price
+    cy.contains(/TTC/gi).should('not.exist');
+
+    cy.get(':nth-child(1) > .column-ref > .MuiTypography-root').click();
+
+    // shouldn't show TTC price
+    cy.contains(/TTC/gi).should('not.exist');
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains('Total TTC :').should('not.exist');
   });
 });
