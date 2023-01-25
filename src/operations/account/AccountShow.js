@@ -142,7 +142,7 @@ const SubjectToVatSwitch = data => {
   const handleChange = async (_event, checked) => {
     try {
       setLoading(true);
-      await accountProvider.saveOrUpdate([{ ...data.accountHolder.companyInfo, isSubjectToVat: checked }]);
+      await accountProvider.saveOrUpdate([{ ...data.accountHolder.companyInfo, isSubjectToVat: !checked }]);
       refresh();
     } catch (_err) {
       notify("Une erreur s'est produite", { type: 'error' });
@@ -154,8 +154,8 @@ const SubjectToVatSwitch = data => {
   return (
     <FormGroup>
       <FormControlLabel
-        control={<Switch disabled={isLoading} checked={data.accountHolder.companyInfo.isSubjectToVat} sx={BP_SWITCH_STYLE} onChange={handleChange} />}
-        label={data.accountHolder.companyInfo.isSubjectToVat ? 'Oui' : 'Non'}
+        control={<Switch disabled={isLoading} checked={!data.accountHolder.companyInfo.isSubjectToVat} sx={BP_SWITCH_STYLE} onChange={handleChange} />}
+        label={!data.accountHolder.companyInfo.isSubjectToVat ? 'Oui' : 'Non'}
       />
     </FormGroup>
   );
@@ -173,7 +173,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.businessActivities.primary' label='Activité principale' />
         <TextField pb={3} source='accountHolder.businessActivities.secondary' label='Activité secondaire' />
         <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
-        <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital Social' />
+        <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital social' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -181,7 +181,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
-        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonéré de TVA' />
+        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
     </Box>
   );
