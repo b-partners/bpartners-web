@@ -121,12 +121,12 @@ describe(specTitle('Account'), () => {
 
     cy.wait('@getUser1');
     cy.get('[name="account"]').click();
-    // because the current accountholder's isSubjectToVat is true,
-    // the isSubjectToVat switch button should be activate
+    // because the current accountholder's isSubjectToVat is false,
+    // the isSubjectToVat switch button shouldn't be activate
     cy.contains('Non');
 
     cy.get('.PrivateSwitchBase-input').click();
-    //now the isSubjectToVat is false
+    //now the isSubjectToVat is true
     cy.contains('Oui');
 
     cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
