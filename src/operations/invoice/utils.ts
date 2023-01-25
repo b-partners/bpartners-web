@@ -7,6 +7,11 @@ import { InvoiceStatus, Product, Invoice } from 'bpartners-react-client';
  * **INVOICE**
  */
 
+// utility value
+export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
+export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
+export const PRODUCT_NAME = 'products';
+
 // invoice validator
 type InvoiceValidatorParams = {
   sendingDate?: string;

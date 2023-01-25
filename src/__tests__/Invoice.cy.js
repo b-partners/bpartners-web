@@ -166,6 +166,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('0.00 €');
     cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
+    cy.get('form input[name="delayPenaltyPercent"]').should('have.value', 5);
   });
 
   it('should create an invoice', () => {
@@ -184,6 +185,9 @@ describe(specTitle('Invoice'), () => {
 
     const newDelayInPaymentAllowed = '26';
     cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
+
+    const newDelayPenaltyPercent = '40';
+    cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
 
     // select the customer
     cy.get('#invoice-client-selection-id').click();
@@ -204,9 +208,12 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
       expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
+      expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(newDelayPenaltyPercent) * 100);
       req.reply({ ...req.body, updatedAt: new Date() });
-    }).as('crupdateWithNewRef');
-    cy.wait('@crupdateWithNewRef');
+    }).as('crupdateWithNewRefAndDelayData');
+    cy.wait('@crupdateWithNewRefAndDelayData');
+
+    cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
 
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
@@ -222,7 +229,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('10.00 € (HT)');
     cy.contains('20.00 € (HT)');
 
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(15);
+    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
     cy.get(':nth-child(4) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(1);
