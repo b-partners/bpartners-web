@@ -11,6 +11,7 @@ import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import PdfViewer from '../utils/PdfViewer';
 import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 
@@ -20,8 +21,8 @@ import {
   getInvoicePdfUrl,
   InvoiceActionType,
   invoiceDateValidator,
-  PRODUCT_NAME,
   productValidationHandling,
+  PRODUCT_NAME,
   retryOnError,
   totalPriceWithVatFromProducts,
 } from './utils';
@@ -73,7 +74,6 @@ const InvoiceCreateOrUpdate = props => {
       onPending(InvoiceActionType.STOP_PENDING);
     }
     onPending(InvoiceActionType.START_PENDING);
-
     const submittedAt = new Date();
     const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
 
@@ -117,6 +117,8 @@ const InvoiceCreateOrUpdate = props => {
     form.watch(() => onSubmitDebounced());
   }, []);
 
+  const { companyInfo } = useGetAccountHolder();
+
   return (
     <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
       <Box className={className}>
@@ -159,10 +161,12 @@ const InvoiceCreateOrUpdate = props => {
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <Box sx={{ display: 'block' }}>
-                <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <Typography variant='h6'>Total TTC :</Typography>
-                  <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
-                </Box>
+                {companyInfo && companyInfo.isSubjectToVat && (
+                  <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <Typography variant='h6'>Total TTC :</Typography>
+                    <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
+                  </Box>
+                )}
                 <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
               </Box>
             </form>

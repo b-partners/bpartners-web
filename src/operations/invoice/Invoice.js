@@ -14,6 +14,7 @@ import TooltipButton from '../utils/TooltipButton';
 
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator } from './utils';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -64,6 +65,8 @@ const InvoiceGridTable = props => {
     });
   };
 
+  const { companyInfo } = useGetAccountHolder();
+
   return (
     !isLoading && (
       <Datagrid
@@ -73,7 +76,9 @@ const InvoiceGridTable = props => {
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <TextField source='customer[name]' label='Client' />
-        <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
+        {companyInfo && companyInfo.isSubjectToVat && (
+          <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
+        )}
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
