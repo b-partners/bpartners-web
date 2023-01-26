@@ -100,7 +100,7 @@ const InvoiceCreateOrUpdate = props => {
       if (Object.keys(form.formState.errors).length !== 0) {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
       } else {
-        onClose();
+        onClose(form.watch());
       }
     };
 
