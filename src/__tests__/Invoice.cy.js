@@ -446,6 +446,12 @@ describe(specTitle('Invoice'), () => {
     // shouldn't show TTC price
     cy.contains(/TTC/gi).should('not.exist');
     cy.contains(/TVA/gi).should('not.exist');
-    cy.contains('Total TTC :').should('not.exist');
+    cy.contains('Total TTC').should('not.exist');
+    cy.contains('Total HT');
+    // we have now 2 products
+    // description1 { quantity: 1, unitPrice: 10 }
+    // description2 { quantity: 1, unitPrice: 20 }
+    // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
+    cy.contains('30.00 €');
   });
 });

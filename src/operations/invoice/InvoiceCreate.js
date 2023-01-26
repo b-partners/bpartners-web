@@ -24,6 +24,7 @@ import {
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
+  totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
 } from './utils';
 
@@ -161,12 +162,16 @@ const InvoiceCreateOrUpdate = props => {
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <Box sx={{ display: 'block' }}>
-                {companyInfo && companyInfo.isSubjectToVat && (
-                  <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Typography variant='h6'>Total TTC :</Typography>
-                    <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
-                  </Box>
-                )}
+                <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
+                  <Typography variant='h6'>
+                    {prettyPrintMinors(
+                      companyInfo && companyInfo.isSubjectToVat
+                        ? totalPriceWithVatFromProducts(form.watch().products)
+                        : totalPriceWithoutVatFromProducts(form.watch().products)
+                    )}
+                  </Typography>
+                </Box>
                 <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
               </Box>
             </form>
