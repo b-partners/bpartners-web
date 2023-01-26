@@ -1,5 +1,6 @@
 type FileTransformer<T> = (reader: FileReader, file: File) => T;
 
+// TODO: test this function
 export const filesToArrayBuffer = <T = unknown>(files: FileList, transform?: FileTransformer<T>) => {
   const allFiles = Array.from(files).map<Promise<T>>(file => {
     let reader = new FileReader();
