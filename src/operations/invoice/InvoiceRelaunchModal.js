@@ -87,8 +87,6 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject, attachments, setAttachmen
   const handleAttachFile = async event => {
     const { files } = event.target;
 
-    console.log(files);
-
     const localVarAttachments = await filesToArrayBuffer(files, fileToAttachmentApi);
     setAttachments(attachments => attachments.concat(...localVarAttachments));
   };
