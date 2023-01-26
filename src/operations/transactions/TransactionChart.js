@@ -1,14 +1,15 @@
-import { Box, Card, CardContent, Grid, TextField, Typography, Skeleton, Switch } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography, Skeleton, Switch } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
 import authProvider from 'src/providers/auth-provider';
-import { singleAccountGetter } from 'src/providers/account-provider';
+import { getCachedAccount, singleAccountGetter } from 'src/providers/account-provider';
 
 import emptyGraph from 'src/assets/noData.png';
 
 import { prettyPrintMinors } from '../utils/money';
-import { BP_COLOR } from 'src/bpTheme';
+import { BP_SWITCH_STYLE } from '../account/style';
+import CustomDatePicker from '../utils/CustomDatePicker';
 
 const TransactionChart = () => {
   const [data, setData] = useState([]);
@@ -19,16 +20,15 @@ const TransactionChart = () => {
 
   const getAccountId = async () => {
     const userId = authProvider.getCachedWhoami().user.id;
-    return (await singleAccountGetter(userId)).id;
+    return getCachedAccount() ? getCachedAccount().id : (await singleAccountGetter(userId)).id;
   };
 
-  const currentDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`;
+  const currentDate = { year: new Date().getFullYear(), month: new Date().getMonth() };
   const [currentBalance, setCurrentBalance] = useState();
   useEffect(() => {
     const updateBalance = async () => {
-      const [currentYearString, currentMonthString] = currentDate.split('-');
-      const currentYear = +currentYearString;
-      const currentMonth = +currentMonthString;
+      const currentYear = currentDate.year;
+      const currentMonth = currentDate.month;
       const accountId = await getAccountId();
       const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
       data && setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
@@ -37,7 +37,6 @@ const TransactionChart = () => {
   }, []);
 
   const [date, setDate] = useState(currentDate);
-  const [year, month] = date.split('-');
 
   const getTransactionsSummary = async year => {
     const accountId = await getAccountId();
@@ -47,7 +46,7 @@ const TransactionChart = () => {
   };
 
   const getMonthlyTransaction = month => {
-    const transactionOfTheMonth = transactionsSummary && transactionsSummary.summary.filter(item => item.month === +month)[0];
+    const transactionOfTheMonth = transactionsSummary && transactionsSummary.summary.filter(item => item.month === month)[0];
 
     setLastUpdateDate(transactionOfTheMonth && transactionOfTheMonth.updatedAt);
     transactionOfTheMonth
@@ -72,11 +71,12 @@ const TransactionChart = () => {
 
   const checkTransactionsSummary = () => {
     const currentYear = transactionsSummary && transactionsSummary.year;
+    const { year, month } = date;
 
-    if (currentYear !== +year && `${+year}`.length === 4) {
-      getTransactionsSummary(+year);
+    if (currentYear !== year && `${year}`.length === 4) {
+      getTransactionsSummary(year);
     } else {
-      annualSummary ? getAnnualSummary() : getMonthlyTransaction(+month - 1);
+      annualSummary ? getAnnualSummary() : getMonthlyTransaction(month);
     }
   };
 
@@ -85,7 +85,7 @@ const TransactionChart = () => {
   }, [date, annualSummary]);
 
   useEffect(() => {
-    transactionsSummary && annualSummary ? getAnnualSummary() : getMonthlyTransaction(+month - 1);
+    transactionsSummary && annualSummary ? getAnnualSummary() : getMonthlyTransaction(date.month);
   }, [transactionsSummary]);
 
   const COLORS = ['#1D9661', '#B30000', '#003D7A'];
@@ -96,27 +96,20 @@ const TransactionChart = () => {
         <Typography align='center' mr={12} variant='h6' fontWeight='bold'>
           Solde du jour : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}
         </Typography>
+        <Box sx={{ textAlign: 'end', paddingX: 10 }}>
+          <Typography variant='body1'>
+            Vue mensuelle <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} sx={BP_SWITCH_STYLE} /> Vue
+            annuelle
+          </Typography>
+        </Box>
         <Grid container spacing={1}>
           <Grid item sm={3}>
             {transactionsSummary ? (
               <Box>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant='body1'>Vue:</Typography>
-                  <Typography variant='body1'>
-                    mensuelle{' '}
-                    <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} sx={{ color: BP_COLOR[10] }} />{' '}
-                    annuelle
-                  </Typography>
-                </Box>
-                <TextField
-                  type='month'
-                  id='date'
-                  variant='filled'
-                  value={date}
-                  sx={{ mx: 2 }}
-                  onChange={e => {
-                    setDate(e.target.value);
-                  }}
+                <CustomDatePicker
+                  views={annualSummary ? ['year'] : ['year', 'month']}
+                  label={annualSummary ? 'Sélectionnez une année' : 'Sélectionnez un mois'}
+                  setDate={setDate}
                 />
               </Box>
             ) : (

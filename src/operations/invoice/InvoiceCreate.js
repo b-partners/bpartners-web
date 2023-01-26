@@ -10,10 +10,23 @@ import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
 import { prettyPrintMinors } from '../utils/money';
 import PdfViewer from '../utils/PdfViewer';
+import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 
-import { getInvoicePdfUrl, InvoiceActionType, invoiceDateValidator, productValidationHandling, retryOnError, totalPriceWithVatFromProducts } from './utils';
+import {
+  DEFAULT_DELAY_PENALTY_PERCENT,
+  DELAY_PENALTY_PERCENT,
+  getInvoicePdfUrl,
+  InvoiceActionType,
+  invoiceDateValidator,
+  productValidationHandling,
+  PRODUCT_NAME,
+  retryOnError,
+  totalPriceWithoutVatFromProducts,
+  totalPriceWithVatFromProducts,
+} from './utils';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%' },
@@ -35,7 +48,6 @@ const InvoiceCreateOrUpdate = props => {
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const classes = useStyle();
   const notify = useNotify();
-  const PRODUCT_NAME = 'products';
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -44,6 +56,8 @@ const InvoiceCreateOrUpdate = props => {
       !newInvoice.metadata || !actualInvoice.metadata || new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
     if (formHasNewUpdate) {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
+      // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
+      form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
     }
   };
 
@@ -61,12 +75,15 @@ const InvoiceCreateOrUpdate = props => {
       onPending(InvoiceActionType.STOP_PENDING);
     }
     onPending(InvoiceActionType.START_PENDING);
-
     const submittedAt = new Date();
+    const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
+
     const toSubmit = {
       ...form.watch(),
+      delayPenaltyPercent,
       metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
     };
+
     retryOnError(
       () =>
         invoiceProvider
@@ -78,7 +95,7 @@ const InvoiceCreateOrUpdate = props => {
   });
 
   const saveAndClose = () => {
-    const synchroneSaveAndClose = async () => {
+    const synchronousSaveAndClose = async () => {
       await onSubmit();
       if (Object.keys(form.formState.errors).length !== 0) {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
@@ -86,10 +103,12 @@ const InvoiceCreateOrUpdate = props => {
         onClose();
       }
     };
-    synchroneSaveAndClose();
+
+    synchronousSaveAndClose();
   };
 
   useEffect(() => {
+    console.log(toEdit);
     getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
     updateInvoiceForm(toEdit);
   }, [toEdit]);
@@ -98,6 +117,8 @@ const InvoiceCreateOrUpdate = props => {
     const onSubmitDebounced = debounce(onSubmit, 1000);
     form.watch(() => onSubmitDebounced());
   }, []);
+
+  const { companyInfo } = useGetAccountHolder();
 
   return (
     <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
@@ -123,9 +144,16 @@ const InvoiceCreateOrUpdate = props => {
                   form={form}
                 />
                 <CustomFilledInput
-                  validate={d => d && d >= 0 && d < 31}
+                  validate={value => value && value >= 0}
                   name='delayInPaymentAllowed'
                   label='Délai de retard de payment autorisé (jours)'
+                  type='number'
+                  form={form}
+                />
+                <CustomFilledInput
+                  validate={value => value && value >= 0 && value <= 100}
+                  name={DELAY_PENALTY_PERCENT}
+                  label='Pourcentage de penalité de retard'
                   type='number'
                   form={form}
                 />
@@ -135,8 +163,14 @@ const InvoiceCreateOrUpdate = props => {
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <Box sx={{ display: 'block' }}>
                 <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <Typography variant='h6'>Total TTC :</Typography>
-                  <Typography variant='h6'>{prettyPrintMinors(totalPriceWithVatFromProducts(form.watch().products))}</Typography>
+                  <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
+                  <Typography variant='h6'>
+                    {prettyPrintMinors(
+                      companyInfo && companyInfo.isSubjectToVat
+                        ? totalPriceWithVatFromProducts(form.watch().products)
+                        : totalPriceWithoutVatFromProducts(form.watch().products)
+                    )}
+                  </Typography>
                 </Box>
                 <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
               </Box>

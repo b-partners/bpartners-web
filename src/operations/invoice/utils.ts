@@ -7,6 +7,11 @@ import { InvoiceStatus, Product, Invoice } from 'bpartners-react-client';
  * **INVOICE**
  */
 
+// utility value
+export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
+export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
+export const PRODUCT_NAME = 'products';
+
 // invoice validator
 type InvoiceValidatorParams = {
   sendingDate?: string;
@@ -83,11 +88,17 @@ export const getInvoicePdfUrl = async (id: string) => {
 };
 
 export const totalPriceWithVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPriceWithVat;
+export const totalPriceWithoutVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPrice;
 export const totalVatFromProductQuantity = (product: Product): number => (product.quantity * product.unitPrice * product.vatPercent) / 100 / 100;
 
 export const totalPriceWithVatFromProducts = (products: Array<Product>): number =>
   products != null && products.length > 0
     ? products.map(product => totalPriceWithVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
+    : 0;
+
+export const totalPriceWithoutVatFromProducts = (products: Array<Product>): number =>
+  products != null && products.length > 0
+    ? products.map(product => totalPriceWithoutVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
     : 0;
 
 type InvoiceStatusLabel = keyof typeof InvoiceStatus;

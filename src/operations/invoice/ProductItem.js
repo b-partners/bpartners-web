@@ -2,7 +2,8 @@ import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { prettyPrintMinors } from '../utils/money';
-import { ProductActionType, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
+import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -29,21 +30,31 @@ export const ProductItem = ({ product, handleProduct }) => {
     handleProduct(ProductActionType.UPDATE, { ...localVarProd });
   };
 
+  const { companyInfo } = useGetAccountHolder();
+  const productPriceTTC = companyInfo && companyInfo.isSubjectToVat ? ' (TTC)' : '';
+
   const classes = useStyle();
+
   return (
     <Card className={classes.card}>
       <CardHeader
         title={product.description}
-        subheader={prettyPrintMinors(totalPriceWithVatFromProductQuantity(product)) + ' (TTC)'}
+        subheader={
+          prettyPrintMinors(
+            companyInfo && companyInfo.isSubjectToVat ? totalPriceWithVatFromProductQuantity(product) : totalPriceWithoutVatFromProductQuantity(product)
+          ) + productPriceTTC
+        }
         action={
           <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
           </IconButton>
         }
       />
-      <CardContent>
-        <Typography variant='p'>TVA : {prettyPrintMinors(totalVatFromProductQuantity(product))}</Typography>
-      </CardContent>
+      {companyInfo && companyInfo.isSubjectToVat && (
+        <CardContent>
+          <Typography variant='p'>TVA : {prettyPrintMinors(totalVatFromProductQuantity(product))}</Typography>
+        </CardContent>
+      )}
       <CardActions className={classes.cardActions}>
         <FormControl variant='filled'>
           <FilledInput

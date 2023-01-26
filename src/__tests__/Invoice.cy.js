@@ -166,6 +166,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('0.00 €');
     cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
+    cy.get('form input[name="delayPenaltyPercent"]').should('have.value', 5);
   });
 
   it('should create an invoice', () => {
@@ -184,6 +185,9 @@ describe(specTitle('Invoice'), () => {
 
     const newDelayInPaymentAllowed = '26';
     cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
+
+    const newDelayPenaltyPercent = '40';
+    cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
 
     // select the customer
     cy.get('#invoice-client-selection-id').click();
@@ -204,9 +208,12 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.ref).to.deep.eq(newRef);
       expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
+      expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(newDelayPenaltyPercent) * 100);
       req.reply({ ...req.body, updatedAt: new Date() });
-    }).as('crupdateWithNewRef');
-    cy.wait('@crupdateWithNewRef');
+    }).as('crupdateWithNewRefAndDelayData');
+    cy.wait('@crupdateWithNewRefAndDelayData');
+
+    cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
 
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
@@ -222,7 +229,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('10.00 € (HT)');
     cy.contains('20.00 € (HT)');
 
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(15);
+    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
     cy.get(':nth-child(4) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(1);
@@ -410,5 +417,41 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
+  });
+
+  it("Shouldn't show all tva reference when isSubjectToVat is false", () => {
+    // Make isSubjectToVat false
+    const companyInfo = { ...accountHolders1[0].companyInfo, isSubjectToVat: false };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, { ...accountHolders1[0], companyInfo }).as('getAccountHolder1');
+
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+
+    mount(<App />);
+
+    cy.get('[name="invoice"]').click();
+
+    cy.wait('@whoami');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getDraftsPer10Page1');
+    cy.wait('@getDraftsPer5Page1');
+    // shouldn't show TTC price
+    cy.contains(/TTC/gi).should('not.exist');
+
+    cy.get(':nth-child(1) > .column-ref > .MuiTypography-root').click();
+
+    // shouldn't show TTC price
+    cy.contains(/TTC/gi).should('not.exist');
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains('Total TTC').should('not.exist');
+    cy.contains('Total HT');
+    // we have now 2 products
+    // description1 { quantity: 1, unitPrice: 10 }
+    // description2 { quantity: 1, unitPrice: 20 }
+    // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
+    cy.contains('30.00 €');
   });
 });

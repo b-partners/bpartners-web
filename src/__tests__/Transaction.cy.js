@@ -79,11 +79,12 @@ describe(specTitle('Transactions'), () => {
 
     const today = new Date();
     cy.wait('@getTransactionsSummary');
-    cy.get('#date').should(
-      'have.value',
-      `${today.getFullYear()}-${(today.getMonth() + 1).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}`
-    );
-    cy.get('#date').type('2023-11');
+    cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
+    cy.get('[name="datePicker"]').clear().type(2023);
+
+    cy.contains('Vue mensuelle');
+    cy.contains('Vue annuelle');
+    cy.contains('Sélectionnez une année');
 
     cy.contains('Dépense 2023');
     cy.contains('Recette 2023');
@@ -93,25 +94,36 @@ describe(specTitle('Transactions'), () => {
     cy.contains('1000.00 €');
     cy.contains('1100.00 €');
 
-    cy.get('#date').type(`2022-11`);
+    cy.get('[name="datePicker"]').clear().type(2022);
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
 
     cy.get('#annualSummarySwitch').click();
-    cy.get('#date').type('2023-11');
+    cy.contains('Sélectionnez un mois');
+
+    cy.contains(`Vous n'avez pas de transaction sur cette période.`);
+
+    cy.get('[name="datePicker"]').clear().type('janvier 2023');
+
+    cy.contains('120.00 €');
+    cy.contains('0.00 €');
 
     cy.contains('Dépense');
     cy.contains('Recette');
     cy.contains('Trésorerie');
+
     cy.contains('Dernière modification');
-    cy.get('#date').type(`${today.getFullYear()}-11`);
-    cy.contains('30.00 €');
+
+    cy.get('[name="datePicker"]').clear().type('avril 2023');
+
+    cy.contains('130.00 €');
     cy.contains('10.00 €');
-    cy.contains('40.00 €');
-    cy.get('#date').type(`${today.getFullYear()}-01`);
-    cy.contains('12.00 €');
-    cy.contains('10.00 €');
-    cy.contains('40.00 €');
-    cy.get('#date').type(`${today.getFullYear()}-03`);
+    cy.contains('330.00 €');
+
+    cy.get('[name="datePicker"]').clear().type('décembre 2023');
+
+    cy.contains(`Vous n'avez pas de transaction sur cette période.`);
+
+    cy.get('[name="datePicker"]').clear().type('avril 2022');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
@@ -119,17 +131,17 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
-    const today = new Date();
 
     cy.wait('@getTransactionsSummary');
-    cy.contains('Solde du jour : 40.00 €');
+    cy.contains('Solde du jour : 120.00 €');
 
-    cy.get('#date').type(`${today.getFullYear()}-01`);
-    cy.contains('Solde du jour : 40.00 €');
-    cy.contains('Trésorerie');
-    cy.get('#date').type(`${today.getFullYear()}-03`);
-    cy.contains('Solde du jour : 40.00 €');
     cy.get('#annualSummarySwitch').click();
+
+    cy.get('[name="datePicker"]').clear().type('janvier 2023');
+    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Trésorerie');
+    cy.get('[name="datePicker"]').clear().type('décembre 2023');
+    cy.contains('Solde du jour : 120.00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
