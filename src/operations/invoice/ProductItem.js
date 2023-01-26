@@ -3,7 +3,7 @@ import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, I
 import { makeStyles } from '@mui/styles';
 import { prettyPrintMinors } from '../utils/money';
 import useGetAccountHolder from '../utils/useGetAccountHolder';
-import { ProductActionType, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
+import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -39,7 +39,11 @@ export const ProductItem = ({ product, handleProduct }) => {
     <Card className={classes.card}>
       <CardHeader
         title={product.description}
-        subheader={prettyPrintMinors(totalPriceWithVatFromProductQuantity(product)) + productPriceTTC}
+        subheader={
+          prettyPrintMinors(
+            companyInfo && companyInfo.isSubjectToVat ? totalPriceWithVatFromProductQuantity(product) : totalPriceWithoutVatFromProductQuantity(product)
+          ) + productPriceTTC
+        }
         action={
           <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
