@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { CustomButton } from '../utils/CustomButton';
 import CustomFilledInput from '../utils/CustomFilledInput';
+import { formatDateTo8601 } from '../utils/date';
 import { prettyPrintMinors } from '../utils/money';
 import PdfViewer from '../utils/PdfViewer';
 import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
@@ -81,6 +82,8 @@ const InvoiceCreateOrUpdate = props => {
     const toSubmit = {
       ...form.watch(),
       delayPenaltyPercent,
+      sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00+00:00'),
+      validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59+00:00'),
       metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
     };
 
@@ -137,8 +140,8 @@ const InvoiceCreateOrUpdate = props => {
                   form={form}
                 />
                 <CustomFilledInput
-                  validate={e => invoiceDateValidator({ toPayAt: e, sendingDate: form.watch('sendingDate') })}
-                  name='toPayAt'
+                  validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
+                  name='validityDate'
                   label='Date limite de validité'
                   type='date'
                   form={form}

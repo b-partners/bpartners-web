@@ -15,7 +15,7 @@ export const PRODUCT_NAME = 'products';
 // invoice validator
 type InvoiceValidatorParams = {
   sendingDate?: string;
-  toPayAt?: string;
+  validityDate?: string;
 };
 
 type ProductValidatorResult = {
@@ -43,15 +43,15 @@ const toPayAtValidator = (toPayAtDate: Date) => {
 const stringDateValidator = (stringDate: string) => (stringDate && stringDate.length === 10 ? true : false);
 
 export const invoiceDateValidator = (dates: InvoiceValidatorParams) => {
-  const { sendingDate, toPayAt } = dates;
-  if (!stringDateValidator(sendingDate) && !stringDateValidator(toPayAt)) {
+  const { sendingDate, validityDate } = dates;
+  if (!stringDateValidator(sendingDate) && !stringDateValidator(validityDate)) {
     return 'Ce champ est requis';
-  } else if (stringDateValidator(sendingDate) && !stringDateValidator(toPayAt)) {
+  } else if (stringDateValidator(sendingDate) && !stringDateValidator(validityDate)) {
     return sendingDateValidator(new Date(sendingDate));
-  } else if (!stringDateValidator(sendingDate) && stringDateValidator(toPayAt)) {
-    return toPayAtValidator(new Date(toPayAt));
-  } else if (new Date(sendingDate) > new Date(toPayAt)) {
-    return "La date d'envoi doit précéder celle du paiement";
+  } else if (!stringDateValidator(sendingDate) && stringDateValidator(validityDate)) {
+    return toPayAtValidator(new Date(validityDate));
+  } else if (new Date(sendingDate) > new Date(validityDate)) {
+    return "La date d'envoi doit précéder celle de la validité";
   }
   return true;
 };
@@ -154,7 +154,7 @@ export const invoiceInitialValue: any = {
   customer: null,
   products: [],
   sendingDate: new Date().toLocaleDateString('fr-ca'),
-  toPayAt: new Date().toLocaleDateString('fr-ca'),
+  validityDate: new Date().toLocaleDateString('fr-ca'),
   status: InvoiceStatus.DRAFT,
   comment: '',
 };
