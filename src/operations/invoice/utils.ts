@@ -1,7 +1,8 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { InvoiceStatusFR } from '../../constants/invoice-status';
-import { InvoiceStatus, Product, Invoice } from 'bpartners-react-client';
+import { Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { getFilenameMeta } from '../utils/file';
 
 /**
  * **INVOICE**
@@ -16,6 +17,22 @@ type InvoiceValidatorParams = {
 type ProductValidatorResult = {
   isValid: boolean;
   message?: string;
+};
+
+// TODO: use generated client api
+export interface AttachmentFile {
+  name: string;
+  content: ArrayBuffer;
+}
+
+export const MAX_ATTACHMENT_NAME_LENGTH = 50;
+
+export const fileToAttachmentApi = (reader: FileReader, file: File): AttachmentFile => {
+  const { name } = getFilenameMeta(file.name);
+  return {
+    name,
+    content: reader.result as ArrayBuffer,
+  };
 };
 
 const sendingDateValidator = (sendingDate: Date) => {
