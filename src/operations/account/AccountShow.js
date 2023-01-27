@@ -162,6 +162,16 @@ const SubjectToVatSwitch = data => {
   );
 };
 
+const IncomeTargets = ({ revenueTargets }) => {
+  const currentYear = new Date().getFullYear();
+  const currentIncomeTarget = revenueTargets.filter(item => item.year === currentYear);
+  const currentIncomeTargetValue = currentIncomeTarget[0]
+    ? prettyPrintMinors(currentIncomeTarget[0].amountTarget)
+    : `Vous n'avez pas encore défini votre objectif pour cette année.`;
+
+  return <span>{currentIncomeTargetValue}</span>;
+};
+
 const AccountHolderLayout = props => {
   const { toggleAccountHolderLayout } = props;
   return (
@@ -179,6 +189,7 @@ const AccountHolderLayout = props => {
           render={data => <Typography>{prettyPrintMinors(data.accountHolder.companyInfo.socialCapital)}</Typography>}
           label='Capital social'
         />
+        <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.accountHolder.revenueTargets} />} label='Recette annuelle à réaliser' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>

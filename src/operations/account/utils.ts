@@ -1,4 +1,5 @@
 import { CompanyBusinessActivity, CompanyInfo } from 'bpartners-react-client';
+import { toMajors } from '../utils/money';
 
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
 
@@ -53,7 +54,7 @@ export const companyInfoDiff = (currentCompanyInfo: CompanyInfo, newCompanyInfo:
   if (
     currentCompanyInfo.email !== newCompanyInfo.email ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
-    currentCompanyInfo.socialCapital !== +newCompanyInfo.socialCapital
+    toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
   ) {
     return false;
   }

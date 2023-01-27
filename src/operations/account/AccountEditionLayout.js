@@ -2,6 +2,7 @@ import { Clear as ClearIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-mat
 import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, CardHeader, IconButton, Tooltip, Typography } from '@mui/material';
 import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInfomationForm from './CompanyInformationForm';
+import RevenueTargetForm from './RevenueTargetForm';
 
 const CloseConfigurationButton = ({ onClick }) => (
   <Tooltip title="Fermé l'édition">
@@ -31,6 +32,14 @@ const AccountEditionLayout = ({ onClose }) => {
             </AccordionSummary>
             <AccordionDetails>
               <CompanyInfomationForm />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel3a-content' id='panel3a-header'>
+              <Typography variant='h6'>Recette annuelle à réaliser</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <RevenueTargetForm />
             </AccordionDetails>
           </Accordion>
         </Box>

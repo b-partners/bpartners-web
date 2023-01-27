@@ -11,7 +11,7 @@ import { toMinors, toMajors } from '../utils/money';
 const CompanyInfomationForm = () => {
   const { record } = useShowContext();
   const form = useForm({ mode: 'all' });
-  const [tools, setTools] = useState({ isLoading: false, buttonDisable: false });
+  const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
   const notify = useNotify();
 
   const setLoading = newState => {
@@ -20,17 +20,19 @@ const CompanyInfomationForm = () => {
 
   useEffect(() => {
     // set form default value
-    const currentCompanyInfo = { ...record.accountHolder.companyInfo };
-    Object.keys(currentCompanyInfo).forEach(key => form.setValue(key, currentCompanyInfo[key]));
-    // format social capital to majors
-    form.setValue('socialCapital', toMajors(currentCompanyInfo['socialCapital']));
+    if (record) {
+      const currentCompanyInfo = { ...record.accountHolder.companyInfo };
+      Object.keys(currentCompanyInfo).forEach(key => form.setValue(key, currentCompanyInfo[key]));
+      // format social capital to majors
+      form.setValue('socialCapital', toMajors(currentCompanyInfo['socialCapital']));
 
-    setTools(properties => ({ ...properties, buttonDisable: companyInfoDiff(record.accountHolder.companyInfo, form.watch()) }));
+      setTools(properties => ({ ...properties, buttonDisable: companyInfoDiff(record.accountHolder.companyInfo, form.watch()) }));
 
-    form.watch(data => {
-      const isDifferent = companyInfoDiff(record.accountHolder.companyInfo, data);
-      setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
-    });
+      form.watch(data => {
+        const isDifferent = companyInfoDiff(record.accountHolder.companyInfo, data);
+        setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
+      });
+    }
   }, []);
 
   const handleSubmit = form.handleSubmit(async data => {
@@ -58,6 +60,7 @@ const CompanyInfomationForm = () => {
         startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
         disabled={tools.isLoading || tools.buttonDisable}
         type='submit'
+        name='submitCompanyInfo'
         sx={{ width: 'min-content', mt: 1 }}
       >
         Enregistrer

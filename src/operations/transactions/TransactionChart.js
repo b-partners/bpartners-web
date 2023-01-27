@@ -1,35 +1,43 @@
-import { Box, Card, CardContent, Grid, LinearProgress, TextField, Typography, Skeleton, Switch } from '@mui/material';
+import { Box, Card, CardContent, Grid, LinearProgress, Typography, Skeleton, Switch } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { payingApi } from 'src/providers/api';
 import authProvider from 'src/providers/auth-provider';
 import { getCachedAccount, singleAccountGetter } from 'src/providers/account-provider';
-
 import emptyGraph from 'src/assets/noData.png';
 
+import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../utils/percent';
 import { prettyPrintMinors } from '../utils/money';
 import { BP_SWITCH_STYLE } from '../account/style';
 import CustomDatePicker from '../utils/CustomDatePicker';
 import { BP_COLOR } from 'src/bpTheme';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
 
-const AnnualTargetGraph = props => {
-  const { annualGoal, currentAnnualIncome } = props;
-  const percentageCalculation = () => {
-    return annualGoal && currentAnnualIncome ? (currentAnnualIncome * 100) / annualGoal : 0;
+const AnnualTargetGraph = ({ year }) => {
+  const revenueTargets = useGetAccountHolder().revenueTargets;
+  const currentRevenueTargets = revenueTargets ? revenueTargets.filter(item => item.year === year)[0] : false;
+
+  const printAmountAttemptedPercent = amountAttemptedPercent => {
+    const additionalPercent = toMajors(amountAttemptedPercent) > 100 ? toMajors(amountAttemptedPercent) % 100 : 0;
+
+    return additionalPercent > 0
+      ? `100 % atteint. +${prettyPrintPercentMinors(toMinors(additionalPercent))}`
+      : `${prettyPrintPercentMinors(amountAttemptedPercent)} atteint`;
   };
+
   return (
-    <Box sx={{ width: '70%', mt: 3, mx: 'auto', textAlign: 'center' }}>
-      {annualGoal && annualGoal !== 0 ? (
+    <Box sx={{ width: '60%', mt: 4, mx: 'auto', textAlign: 'center' }}>
+      {currentRevenueTargets ? (
         <>
-          <Typography variant='h5'>Objectif annuel ({currentAnnualIncome ? percentageCalculation().toFixed(2) : '...'} % atteint)</Typography>
-          <Typography variant='h6' fontWeight='bold'>
-            Recette de cette année : {currentAnnualIncome ? prettyPrintMinors(currentAnnualIncome) : '...'}
+          <Typography variant='h6'>Objectif annuel ({printAmountAttemptedPercent(currentRevenueTargets.amountAttemptedPercent)})</Typography>
+          <Typography variant='body1' fontWeight='bold'>
+            Recette de cette année : {prettyPrintMinors(currentRevenueTargets.amountAttempted)}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box sx={{ width: '100%', mr: 1 }}>
               <LinearProgress
                 variant='determinate'
-                value={percentageCalculation() > 100 ? 100 : percentageCalculation()}
+                value={toMajors(currentRevenueTargets.amountAttemptedPercent) > 100 ? 100 : toMajors(currentRevenueTargets.amountAttemptedPercent)}
                 sx={{
                   height: 25,
                   borderRadius: 2,
@@ -42,14 +50,16 @@ const AnnualTargetGraph = props => {
             </Box>
             <Box sx={{ minWidth: 100 }}>
               <Typography variant='body2' color='text.secondary'>
-                {annualGoal && prettyPrintMinors(annualGoal)}
+                {currentRevenueTargets.amountTarget ? prettyPrintMinors(currentRevenueTargets.amountTarget) : '...'}
               </Typography>
             </Box>
           </Box>
         </>
       ) : (
         <Typography variant='body2' color='text.secondary'>
-          Vous n'avez pas encore défini votre objectif annuel, Veuillez le renseigner dans l'onglet <b>mon compte</b>
+          {currentRevenueTargets === false
+            ? `Chargement...`
+            : `Vous n'avez pas défini d'objectif pour cette année. Veuillez accéder à l'onglet mon compte pour définir votre objectif annuel.`}
         </Typography>
       )}
     </Box>
@@ -70,7 +80,7 @@ const TransactionChart = () => {
 
   const currentDate = { year: new Date().getFullYear(), month: new Date().getMonth() };
   const [currentBalance, setCurrentBalance] = useState();
-  const [currentAnnualIncome, setCurrentAnnualIncome] = useState();
+
   useEffect(() => {
     const updateBalance = async () => {
       const currentYear = currentDate.year;
@@ -78,7 +88,6 @@ const TransactionChart = () => {
       const accountId = await getAccountId();
       const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
       data && setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
-      data && setCurrentAnnualIncome(data.annualIncome);
     };
     updateBalance();
   }, []);
@@ -212,7 +221,7 @@ const TransactionChart = () => {
             </Grid>
           )}
         </Grid>
-        <AnnualTargetGraph annualGoal={5000000} currentAnnualIncome={currentAnnualIncome} />
+        <AnnualTargetGraph year={date.year} />
       </CardContent>
     </Card>
   );
