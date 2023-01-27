@@ -165,8 +165,41 @@ describe(specTitle('Account'), () => {
       req.reply({ body: newAccountHolder });
     }).as('editCompanyInfo');
 
-    cy.get('form [type="submit"]').click();
+    cy.get('form [name="submitCompanyInfo"]').click();
     cy.get('[data-testid="ClearIcon"]').click();
+  });
+
+  it('change revenue targets', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+
+    cy.contains('Recette annuelle à réaliser');
+    cy.get('[name="amountTarget"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="amountTarget"]').type(230000);
+
+    cy.get('form [name="submitRevenueTargets"]').click();
+
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
+      const newRevenueTargets = [{ year: 2023, amountTarget: 23000000 }];
+      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
+      const response = { ...accountHolders1[0] };
+      response.revenueTargets = newRevenueTargets;
+      req.reply(response);
+    });
+
+    cy.contains('Changement enregistré');
   });
 
   it('unverified user warning', () => {

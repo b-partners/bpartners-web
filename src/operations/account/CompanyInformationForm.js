@@ -58,6 +58,7 @@ const CompanyInfomationForm = () => {
         startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
         disabled={tools.isLoading || tools.buttonDisable}
         type='submit'
+        name='submitCompanyInfo'
         sx={{ width: 'min-content', mt: 1 }}
       >
         Enregistrer
