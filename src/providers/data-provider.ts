@@ -7,6 +7,7 @@ import transactionProvider from './transaction-provider';
 import productProvider from './product-provider';
 import marketplaceProvider from './marketplace-provider';
 import invoiceProvider from './invoice-provider';
+import { UpdateParams } from 'react-admin';
 
 export const maxPageSize = 500;
 
@@ -39,8 +40,13 @@ const dataProvider: RaDataProviderType = {
     const result = await getProvider(resourceType).getOne(params.id);
     return { data: result };
   },
-  async update(resourceType: string, params: any) {
-    const result = await getProvider(resourceType).saveOrUpdate([params.data]);
+  async update(resourceType: string, params: UpdateParams) {
+    let result;
+    if (getProvider(resourceType).update) {
+      result = await getProvider(resourceType).update([{ ...params.data, id: params.id }]);
+    } else {
+      result = await getProvider(resourceType).saveOrUpdate([params.data]);
+    }
     return { data: result[0] };
   },
   async create(resourceType: string, params: any) {
