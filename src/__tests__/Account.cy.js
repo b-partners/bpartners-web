@@ -50,7 +50,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ma société');
     cy.contains('Numer');
     cy.contains('activité officielle');
-    cy.contains('100000');
+    cy.contains('1000.00 €');
     cy.contains('Ivandry');
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
@@ -153,7 +153,7 @@ describe(specTitle('Account'), () => {
       isSubjectToVat: false,
       phone: '+261340465338',
       email: 'joe.doe@bpartnes.app',
-      socialCapital: 301,
+      socialCapital: 30100,
     };
     const newAccountHolder = { ...accountHolders1[0] };
     newAccountHolder.companyInfo = newCompanyInformation;
