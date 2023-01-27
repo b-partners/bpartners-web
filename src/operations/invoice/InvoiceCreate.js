@@ -82,8 +82,8 @@ const InvoiceCreateOrUpdate = props => {
     const toSubmit = {
       ...form.watch(),
       delayPenaltyPercent,
-      sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00+00:00'),
-      validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59+00:00'),
+      sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00'),
+      validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59'),
       metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
     };
 

@@ -117,7 +117,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
 
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
-    cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
+    cy.get('form input[name=validityDate]').invoke('removeAttr').type('2022-10-05');
     cy.get('form input[name=comment]').type('this is a comment for testing');
     cy.get('#invoice-client-selection-id').click();
     cy.get('[data-value="customer2"]').click();
