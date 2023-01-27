@@ -46,7 +46,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
     if (userId) {
       try {
         const aId = (await singleAccountGetter(userId)).id;
-        await payingApi().relaunchInvoice(aId, invoice.id, { message, subject });
+        await payingApi().relaunchInvoice(aId, invoice.id, { message, subject, attachments });
         notify(
           `${getContext({
             devis: 'Le',
@@ -100,7 +100,7 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject, attachments, setAttachmen
 
   return (
     <Box>
-      <TextField name='object' label='Objet' data-test-item='object-field' fullWidth onChange={handleChange} />
+      <TextField name='subject' label='Objet' data-test-item='subject-field' fullWidth onChange={handleChange} />
 
       <Accordion sx={{ mt: 2, border: 'none', '&:before': { display: 'none' } }} defaultExpanded>
         <AccordionSummary
@@ -149,7 +149,9 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject, attachments, setAttachmen
       </Accordion>
 
       <AccordionActions sx={{ margin: 0, justifyContent: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}` }}>
-        {attachments.length > 0 && <Chip sx={{ color: 'white', bgcolor: BP_COLOR[10] }} label={attachments.length} size='small' />}
+        {attachments.length > 0 && (
+          <Chip sx={{ color: 'white', bgcolor: BP_COLOR[10] }} label={attachments.length} size='small' data-cy-item='num-of-docs' title='nombres de fichiers' />
+        )}
 
         <label htmlFor='attachment-input'>
           <Tooltip title='joindre un/des fichiers'>
