@@ -32,7 +32,7 @@ export const businessActivities: BusinessActivity[] = [
     name: 'Bottier',
   },
 ];
-export const accountHolder1: any = {
+export const accountHolder1: AccountHolder = {
   id: 'mock-accountHolder-id1',
   name: 'Numer',
   siren: 'Siren',

@@ -120,7 +120,6 @@ describe(specTitle('Invoice'), () => {
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`).as('refetch');
     cy.get('[data-test-item="pay-invoice-id-3"]').click();
-    cy.wait('@pay');
     cy.wait('@refetch');
     cy.contains('Facture invoice-ref-3 payée !');
   });

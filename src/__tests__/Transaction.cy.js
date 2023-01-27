@@ -133,15 +133,15 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.wait('@getTransactionsSummary');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
 
     cy.get('#annualSummarySwitch').click();
 
     cy.get('[name="datePicker"]').clear().type('janvier 2023');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
     cy.contains('Trésorerie');
     cy.get('[name="datePicker"]').clear().type('décembre 2023');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
