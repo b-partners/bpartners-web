@@ -42,6 +42,9 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    cy.get("[name='create-draft-invoice']").click();
+
     cy.wait('@getDraftsPer10Page1');
     cy.wait('@getDraftsPer5Page1');
 
