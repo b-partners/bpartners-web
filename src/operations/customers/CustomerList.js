@@ -15,7 +15,7 @@ const CustomerGrid = () => {
   if (isLoading) return null;
 
   return (
-    <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
+    <Datagrid bulkActionButtons={false} rowClick='edit' empty={<EmptyList />}>
       <TextField source='name' label='Nom' />
       <TextField source='email' label='Email' />
       <TextField source='address' label='Adresse' />
