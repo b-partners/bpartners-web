@@ -1,4 +1,4 @@
-import { Edit, email, required, SimpleForm, TextInput, DeleteButton, Toolbar, SaveButton, useRecordContext, useGetOne } from 'react-admin';
+import { Edit, email, required, SimpleForm, TextInput, DeleteButton, Toolbar, SaveButton } from 'react-admin';
 import { Close as CloseIcon } from '@mui/icons-material';
 
 const CustomerEdit = () => {

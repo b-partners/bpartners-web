@@ -31,7 +31,7 @@ describe(specTitle('Customers'), () => {
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
-  it('are displayed', () => {
+  it('Should display customer list', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
@@ -43,11 +43,13 @@ describe(specTitle('Customers'), () => {
     cy.contains('22 22 22');
   });
 
-  it('is creatable (with valid input)', () => {
+  it('Should create customer', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
+
+    cy.contains('Email');
 
     cy.get('[data-testid="AddIcon"]').click();
 
@@ -64,5 +66,39 @@ describe(specTitle('Customers'), () => {
     cy.wait('@createCustomers');
 
     cy.contains('Bonjour First Name 1 !');
+  });
+
+  it('Should edit a customer', () => {
+    const editedCustomer = {
+      id: customers1[0].id,
+      name: 'new Name',
+      email: 'new@email.com',
+      phone: '+261 34 04 653 38',
+      address: 'Ivandry',
+    };
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
+
+    cy.contains('Email');
+
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-name').click();
+
+    const { address, email, name, phone } = editedCustomer;
+
+    cy.get('#name').clear().type(name);
+    cy.get('#email').clear().type(email);
+    cy.get('#address').clear().type(address);
+    cy.get('#phone').clear().type(phone);
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/customers`, req => {
+      assert.deepEqual(editedCustomer, req.body[0]);
+      req.reply([editedCustomer]);
+    }).as('editCustomer');
+
+    cy.get('[data-testid="SaveIcon"]').click();
+    cy.wait('@editCustomer');
   });
 });
