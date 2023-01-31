@@ -45,6 +45,9 @@ describe(specTitle('Products'), () => {
   it('should validate empty input', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
+
+    cy.contains('description1');
+
     cy.get('[data-testid="AddIcon"]').click();
     cy.get('#description').type('test description');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
@@ -54,6 +57,9 @@ describe(specTitle('Products'), () => {
   it('should create well-defined product', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
+
+    cy.contains('description1');
+
     cy.get('[data-testid="AddIcon"]').click();
 
     cy.get('#description').type('new description');
