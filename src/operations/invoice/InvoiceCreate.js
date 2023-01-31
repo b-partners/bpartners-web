@@ -146,7 +146,7 @@ const InvoiceCreateOrUpdate = props => {
                 <CustomFilledInput
                   validate={value => value && value >= 0}
                   name='delayInPaymentAllowed'
-                  label='Délai de retard de payment autorisé (jours)'
+                  label='Délai de retard de paiement autorisé (jours)'
                   type='number'
                   form={form}
                 />
