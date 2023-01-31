@@ -133,15 +133,15 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.wait('@getTransactionsSummary');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
 
     cy.get('#annualSummarySwitch').click();
 
     cy.get('[name="datePicker"]').clear().type('janvier 2023');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
     cy.contains('Trésorerie');
     cy.get('[name="datePicker"]').clear().type('décembre 2023');
-    cy.contains('Solde du jour : 120.00 €');
+    cy.contains('Solde du jour : 220.00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
@@ -152,7 +152,6 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains('En attente');
-    cy.contains('En réception');
     cy.contains('Acceptée');
     cy.contains('Rejetée');
     cy.contains('En traitement');
@@ -168,12 +167,23 @@ describe(specTitle('Transactions'), () => {
     cy.should('not.contain.text', 'TVA 20%');
   });
 
+  it('Should show the appropriate status', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
+
+    cy.get('#status').click();
+
+    cy.contains('En réception').should('not.exist');
+  });
+
   it.skip(/*TODO*/ 'can have document', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
 
-    cy.get('[id=document-button-transaction2]').clik();
+    cy.get('[id=document-button-transaction2]').click();
   });
 });
