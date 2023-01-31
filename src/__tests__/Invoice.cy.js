@@ -179,16 +179,16 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
     const currentDate = new Date();
     cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
-    cy.contains("La date d'envoi doit précéder celle du paiement");
+    cy.contains("La date d'envoi doit précéder celle de la validité");
     cy.get('form input[name=sendingDate]').clear();
     cy.get('form input[name=sendingDate]').type(`2023-01-01`);
 
-    cy.get('form input[name=toPayAt]').clear();
+    cy.get('form input[name=validityDate]').clear();
     cy.contains('Ce champ est requis');
 
-    cy.get('form input[name=toPayAt]').type('2022-12-31');
-    cy.contains("La date d'envoi doit précéder celle du paiement");
-    cy.get('form input[name=toPayAt]').clear().type('2023-01-02');
+    cy.get('form input[name=validityDate]').type('2022-12-31');
+    cy.contains("La date d'envoi doit précéder celle de la validité");
+    cy.get('form input[name=validityDate]').clear().type('2023-01-02');
 
     cy.contains('Ce champ est requis');
     // select the customer
@@ -319,7 +319,6 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
   });
