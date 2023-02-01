@@ -46,17 +46,30 @@ describe(specTitle('Products'), () => {
     mount(<App />);
     cy.get('[name="products"]').click();
 
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
     cy.contains('description1');
 
     cy.get('[data-testid="AddIcon"]').click();
-    cy.get('#description').type('test description');
+
+    cy.get('#description').type('test description').blur();
+
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
   });
 
   it('should create well-defined product', () => {
     mount(<App />);
+
     cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
 
     cy.contains('description1');
 
@@ -78,5 +91,30 @@ describe(specTitle('Products'), () => {
     }).as('postNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@postNewProduct');
+  });
+
+  it('VAT references should not displayed', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, req => {
+      // make isSubjectToVat = false
+      const accountHolder = { ...accountHolders1[0] };
+      accountHolder.companyInfo.isSubjectToVat = false;
+      req.reply(accountHolder);
+    }).as('getAccountHolder1');
+
+    mount(<App />);
+    cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains(/TTC/gi).should('not.exist');
+
+    cy.get('[data-testid="AddIcon"]').click();
+
+    cy.contains(/TVA/gi).should('not.exist');
+    cy.contains(/TTC/gi).should('not.exist');
   });
 });

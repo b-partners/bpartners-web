@@ -6,6 +6,7 @@ import { prettyPrintMinors as ppMoneyMinors } from '../utils/money';
 import { prettyPrintMinors as ppVatMinors } from '../utils/vat';
 
 import Pagination from '../utils/Pagination';
+import useGetAccountHolder from '../utils/useGetAccountHolder';
 
 const ProductList = props => {
   const { data } = useListContext();
@@ -30,7 +31,8 @@ const ProductList = props => {
 
 const Product = () => {
   const { isLoading } = useListContext();
-
+  const { companyInfo } = useGetAccountHolder();
+  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
   return (
     !isLoading && (
       <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
@@ -43,8 +45,8 @@ const Product = () => {
           }
         />
         <FunctionField source='unitPrice' label='Prix unitaire HT' render={record => ppMoneyMinors(record.unitPrice)} />
-        <FunctionField source='vatPercent' label='TVA' render={record => ppVatMinors(record.vatPercent)} />
-        <FunctionField source='unitPriceWithVat' label='Prix unitaire TTC' render={record => ppMoneyMinors(record.unitPriceWithVat)} />
+        {isSubjectToVat && <FunctionField source='vatPercent' label='TVA' render={record => ppVatMinors(record.vatPercent)} />}
+        {isSubjectToVat && <FunctionField source='unitPriceWithVat' label='Prix unitaire TTC' render={record => ppMoneyMinors(record.unitPriceWithVat)} />}
       </Datagrid>
     )
   );
