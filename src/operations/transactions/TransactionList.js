@@ -15,7 +15,7 @@ import Pagination from '../utils/Pagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
-import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
+import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
 import TransactionCategorySelection from './TransactionCategorySelection';
 
 const Document = ({ transactionRef }) => (
@@ -41,8 +41,6 @@ const TransactionList = props => {
     setDocumentState(e => ({ shouldShowDocument: true, documentId }));
   };
 
-  const statuses = Object.entries(TRANSACTION_STATUSES).map(([k, v]) => ({ id: k, name: v.label }));
-
   return (
     <>
       <TransactionChart />
@@ -54,7 +52,7 @@ const TransactionList = props => {
             pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
-              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={statuses} alwaysOn resettable />,
+              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={TRANSACTION_STATUSES_HANDLED} alwaysOn resettable />,
               <BooleanInput key='transaction_list_boolean_filter' label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
             hasCreate={false}
