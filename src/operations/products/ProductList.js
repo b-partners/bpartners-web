@@ -5,7 +5,7 @@ import ListComponent from '../utils/ListComponent';
 import { prettyPrintMinors as ppMoneyMinors } from '../utils/money';
 import { prettyPrintMinors as ppVatMinors } from '../utils/vat';
 
-import Pagination from '../utils/Pagination';
+import Pagination, { pageSize } from '../utils/Pagination';
 import useGetAccountHolder from '../utils/useGetAccountHolder';
 
 const ProductList = props => {
@@ -21,6 +21,7 @@ const ProductList = props => {
       hasEdit={false}
       hasList={false}
       hasShow={false}
+      perPage={pageSize}
       component={ListComponent}
       pagination={<Pagination />}
     >
