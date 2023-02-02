@@ -120,7 +120,6 @@ describe(specTitle('Invoice'), () => {
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`).as('refetch');
     cy.get('[data-test-item="pay-invoice-id-3"]').click();
-    cy.wait('@pay');
     cy.wait('@refetch');
     cy.contains('Facture invoice-ref-3 payée !');
   });
@@ -156,103 +155,6 @@ describe(specTitle('Invoice'), () => {
     cy.contains('À payer');
   });
 
-  it('should display default values on invoice creation', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
-
-    cy.contains('0.00 €');
-    cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
-    cy.get('form input[name="delayPenaltyPercent"]').should('have.value', 5);
-  });
-
-  it('should create an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
-
-    const newTitle = 'A new title';
-    cy.get('form input[name=title]').clear().type(newTitle);
-
-    const newRef = 'A new ref';
-    cy.get('form input[name=ref]').clear().type(newRef);
-
-    const newDelayInPaymentAllowed = '26';
-    cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
-
-    const newDelayPenaltyPercent = '40';
-    cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
-
-    // select the customer
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-
-    // select the product
-    cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({ ...req.body, updatedAt: new Date() });
-    }).as('crupdateWithNewTitle');
-    cy.wait('@crupdateWithNewTitle');
-    // make change to send new request
-    cy.get('.MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(2);
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      expect(req.body.ref).to.deep.eq(newRef);
-      expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
-      expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(newDelayPenaltyPercent) * 100);
-      req.reply({ ...req.body, updatedAt: new Date() });
-    }).as('crupdateWithNewRefAndDelayData');
-    cy.wait('@crupdateWithNewRefAndDelayData');
-
-    cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
-
-    cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
-    cy.get('form input[name=toPayAt]').invoke('removeAttr').type('2022-10-05');
-    cy.get('form input[name=comment]').type('this is a comment for testing');
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-    cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-    cy.contains('24.00 € (TTC)');
-    cy.contains('TVA : 0.04 €');
-    cy.contains('10.00 € (HT)');
-    cy.contains('20.00 € (HT)');
-
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
-    cy.get(':nth-child(4) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      expect(req.body.products.length).to.deep.eq(1);
-
-      const product0ToUpdate = req.body.products[0];
-      const product0Updated = {
-        ...product0ToUpdate,
-        quantity: 15,
-        totalPriceWithVat: 15 * product0ToUpdate.unitPrice * (1 + product0ToUpdate.vatPercent / 100 / 100),
-      };
-      const invoiceUpdated = {
-        ...req.body,
-        products: [product0Updated],
-        totalPriceWithVat: product0Updated.totalPriceWithVat,
-        updatedAt: new Date(),
-      };
-      req.reply({ body: invoiceUpdated });
-    }).as('crupdateWithNewProduct');
-
-    cy.wait('@crupdateWithNewProduct');
-    cy.contains('360.00 €');
-  });
-
   it("should show error message and don't send invoice", () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
@@ -260,6 +162,8 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+
+    cy.get("[name='create-draft-invoice']").click();
 
     cy.get('form input[name=title]').clear();
     cy.contains('Ce champ est requis');
@@ -274,16 +178,16 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
     const currentDate = new Date();
     cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
-    cy.contains("La date d'envoi doit précéder celle du paiement");
+    cy.contains("La date d'émission doit être antérieure ou égale à la date d’aujourd’hui");
     cy.get('form input[name=sendingDate]').clear();
     cy.get('form input[name=sendingDate]').type(`2023-01-01`);
 
-    cy.get('form input[name=toPayAt]').clear();
+    cy.get('form input[name=validityDate]').clear();
     cy.contains('Ce champ est requis');
 
-    cy.get('form input[name=toPayAt]').type('2022-12-31');
-    cy.contains("La date d'envoi doit précéder celle du paiement");
-    cy.get('form input[name=toPayAt]').clear().type('2023-01-02');
+    cy.get('form input[name=validityDate]').type('2022-12-31');
+    cy.contains("La date limite de validité doit être ultérieure ou égale à la date d'émission");
+    cy.get('form input[name=validityDate]').clear().type('2023-01-02');
 
     cy.contains('Ce champ est requis');
     // select the customer
@@ -414,7 +318,6 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
   });

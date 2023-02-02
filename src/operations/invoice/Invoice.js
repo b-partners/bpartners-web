@@ -1,20 +1,21 @@
-import { Add, Attachment, Check, DoneAll, TurnRight, DriveFileMove } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Add, Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
+import { InvoiceStatus } from 'bpartners-react-client';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
-import { InvoiceStatus } from 'bpartners-react-client';
 
-import { prettyPrintMinors } from '../utils/money';
-import ListComponent from '../utils/ListComponent';
-import Pagination from '../utils/Pagination';
 import { formatDate } from '../utils/date';
+import ListComponent from '../utils/ListComponent';
+import { prettyPrintMinors } from '../utils/money';
+import Pagination from '../utils/Pagination';
 import TooltipButton from '../utils/TooltipButton';
 
-import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState, draftInvoiceValidator } from './utils';
+import PopoverButton from '../utils/PopoverButton';
 import useGetAccountHolder from '../utils/useGetAccountHolder';
+import InvoiceRelaunchModal from './InvoiceRelaunchModal';
+import { draftInvoiceValidator, getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -160,12 +161,24 @@ const Invoice = props => {
         component={ListComponent}
         pagination={<Pagination />}
         actions={
-          <TooltipButton
-            style={{ marginRight: 33 }}
-            title='Créer un nouveau devis'
-            onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
-            icon={<Add />}
-          />
+          <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
+            <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Button
+                name='create-draft-invoice'
+                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+                sx={{ margin: 1, display: 'block', width: '12rem' }}
+              >
+                Créer un devis
+              </Button>
+              <Button
+                name='create-confirmed-invoice'
+                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
+                sx={{ margin: 1, display: 'block', width: '12rem' }}
+              >
+                Créer une facture
+              </Button>
+            </Box>
+          </PopoverButton>
         }
       >
         <InvoiceGridTable

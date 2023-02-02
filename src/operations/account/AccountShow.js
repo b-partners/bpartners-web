@@ -1,21 +1,22 @@
-import { green, grey } from '@mui/material/colors';
 import { Edit as EditIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Avatar, Badge, Box, IconButton, Skeleton, Tab, Tabs, Typography, Switch, FormGroup, FormControlLabel } from '@mui/material';
+import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Skeleton, Switch, Tab, Tabs, Typography } from '@mui/material';
+import { green, grey } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
+import { FileType } from 'bpartners-react-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bpTheme';
 import { fileProvider } from 'src/providers/file-provider';
+import { getMimeType } from 'src/utils/get-mime-type';
+import { v4 as uuid } from 'uuid';
 import accountProvider, { cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
+import { prettyPrintMinors } from '../utils/money';
 import { SmallAvatar } from '../utils/SmallAvatar';
 import TabPanel from '../utils/TabPanel';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE, BP_SWITCH_STYLE } from './style';
-import { v4 as uuid } from 'uuid';
-import { getMimeType } from 'src/utils/get-mime-type';
-import { FileType } from 'bpartners-react-client';
-import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import AccountEditionLayout from './AccountEditionLayout';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, BP_SWITCH_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -173,7 +174,11 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.businessActivities.primary' label='Activité principale' />
         <TextField pb={3} source='accountHolder.businessActivities.secondary' label='Activité secondaire' />
         <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
-        <TextField pb={3} source='accountHolder.companyInfo.socialCapital' label='Capital social' />
+        <FunctionField
+          pb={3}
+          render={data => <Typography>{prettyPrintMinors(data.accountHolder.companyInfo.socialCapital)}</Typography>}
+          label='Capital social'
+        />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>

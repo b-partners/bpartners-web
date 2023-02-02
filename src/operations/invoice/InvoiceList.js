@@ -60,13 +60,20 @@ const InvoiceList = () => {
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (e, newTabIndex) => {
+  const handleSwitchTab = (_e, newTabIndex) => {
     dispatch({
       type: InvoiceActionType.SET,
       payload: { tabIndex: newTabIndex },
     });
   };
-  const returnToList = () => stateChangeHandling({ viewScreen: viewScreenState.LIST });
+  const returnToList = invoice => {
+    stateChangeHandling({ viewScreen: viewScreenState.LIST });
+    if (invoice && invoice.status === InvoiceStatus.CONFIRMED) {
+      handleSwitchTab(null, 2);
+    } else {
+      handleSwitchTab(null, 0);
+    }
+  };
 
   return (
     <Box>
