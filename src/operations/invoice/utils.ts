@@ -28,7 +28,7 @@ const sendingDateValidator = (sendingDate: Date) => {
   if (!sendingDate) {
     return 'Ce champ est requis';
   } else if (sendingDate.getTime() > currentDate.getTime()) {
-    return "La date d'envoi doit précéder celle d'aujourd'hui";
+    return "La date d'émission doit être antérieure ou égale à la date d’aujourd’hui";
   }
   return true;
 };
@@ -51,7 +51,7 @@ export const invoiceDateValidator = (dates: InvoiceValidatorParams) => {
   } else if (!stringDateValidator(sendingDate) && stringDateValidator(validityDate)) {
     return toPayAtValidator(new Date(validityDate));
   } else if (new Date(sendingDate) > new Date(validityDate)) {
-    return "La date d'envoi doit précéder celle de la validité";
+    return "La date limite de validité doit être ultérieure ou égale à la date d'émission";
   }
   return true;
 };
