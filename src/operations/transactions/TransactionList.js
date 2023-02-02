@@ -11,7 +11,6 @@ import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 import { coloredPrettyPrintMinors } from '../utils/money';
 
-// import Pagination from '../utils/Pagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
