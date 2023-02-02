@@ -178,7 +178,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
     const currentDate = new Date();
     cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
-    cy.contains("La date d'envoi doit précéder celle de la validité");
+    cy.contains("La date d'émission doit être antérieure ou égale à la date d’aujourd’hui");
     cy.get('form input[name=sendingDate]').clear();
     cy.get('form input[name=sendingDate]').type(`2023-01-01`);
 
@@ -186,7 +186,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
 
     cy.get('form input[name=validityDate]').type('2022-12-31');
-    cy.contains("La date d'envoi doit précéder celle de la validité");
+    cy.contains("La date limite de validité doit être ultérieure ou égale à la date d'émission");
     cy.get('form input[name=validityDate]').clear().type('2023-01-02');
 
     cy.contains('Ce champ est requis');
