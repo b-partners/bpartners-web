@@ -21,7 +21,7 @@ const BpLoginPage = () => {
     } = await securityApi().initiateAuth({
       state: uuidv4(),
       // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-      phone: 'dummy on purpose',
+      phone: 'numéro renseigné',
       redirectionStatusUrls: loginRedirectionUrls,
     });
     redirect(redirectionUrl);
