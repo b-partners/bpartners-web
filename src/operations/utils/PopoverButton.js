@@ -21,7 +21,7 @@ const PopoverButton = props => {
 
   return (
     <>
-      <Tooltip sx={style} title={icon && label} onClick={handleClick}>
+      <Tooltip data-testId='open-popover' sx={style} title={icon && label} onClick={handleClick}>
         {icon ? <IconButton>{icon}</IconButton> : <Typography>{label}</Typography>}
       </Tooltip>
       <Popover
