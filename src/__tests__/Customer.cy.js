@@ -51,7 +51,8 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Email');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
@@ -88,10 +89,18 @@ describe(specTitle('Customers'), () => {
     cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
     cy.contains('Email');
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
     cy.contains('Création de client');
     cy.get("[data-testid='closeIcon']").click();
     cy.contains('Création de client').should('not.exist');
     cy.contains('Page : 1');
+  });
+
+  it('Should edit a customer', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
   });
 });

@@ -1,4 +1,5 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
+import CustomListActions from '../utils/CustomListActions';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 import Pagination, { pageSize } from '../utils/Pagination';
@@ -7,6 +8,7 @@ const CustomerList = props => (
   <List
     {...props}
     perPage={pageSize}
+    actions={<CustomListActions />}
     resource='customers'
     hasCreate={true}
     hasEdit={false}
