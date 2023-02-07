@@ -11,12 +11,12 @@ import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
 import { coloredPrettyPrintMinors } from '../utils/money';
 
-import Pagination from '../utils/Pagination';
 import samplePdf from './testInvoice.pdf';
 
 import TransactionChart from './TransactionChart';
 import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
 import TransactionCategorySelection from './TransactionCategorySelection';
+import Pagination, { pageSize } from '../utils/Pagination';
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -38,7 +38,7 @@ const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
 
   const onDocumentIconClicked = documentId => {
-    setDocumentState(e => ({ shouldShowDocument: true, documentId }));
+    setDocumentState({ shouldShowDocument: true, documentId });
   };
 
   return (
@@ -49,6 +49,7 @@ const TransactionList = props => {
           <List
             {...props}
             resource='transactions'
+            perPage={pageSize}
             pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[

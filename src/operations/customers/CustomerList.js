@@ -1,10 +1,20 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
 import { EmptyList } from '../utils/EmptyList';
 import ListComponent from '../utils/ListComponent';
-import Pagination from '../utils/Pagination';
+import Pagination, { pageSize } from '../utils/Pagination';
 
 const CustomerList = props => (
-  <List {...props} resource='customers' hasCreate={true} hasEdit={false} hasList={false} hasShow={false} component={ListComponent} pagination={<Pagination />}>
+  <List
+    {...props}
+    perPage={pageSize}
+    resource='customers'
+    hasCreate={true}
+    hasEdit={false}
+    hasList={false}
+    hasShow={false}
+    component={ListComponent}
+    pagination={<Pagination />}
+  >
     <CustomerGrid />
   </List>
 );
