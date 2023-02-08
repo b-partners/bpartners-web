@@ -32,7 +32,7 @@ const Product = () => {
   const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
   return (
     !isLoading && (
-      <Datagrid bulkActionButtons={false} empty={<EmptyList />}>
+      <Datagrid bulkActionButtons={false} rowClick='edit' empty={<EmptyList />}>
         <FunctionField
           source='description'
           label='Description'
