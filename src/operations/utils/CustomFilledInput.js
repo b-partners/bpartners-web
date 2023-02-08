@@ -9,7 +9,7 @@ const textFieldStyle = {
  * input to use with react-hook-form only
  */
 const CustomFilledInput = props => {
-  const { name, label, form, type, validate, style, shouldValidate } = props;
+  const { name, label, form, type, validate, style, shouldValidate, ...others } = props;
   const {
     register,
     watch,
@@ -28,6 +28,7 @@ const CustomFilledInput = props => {
       label={label}
       {...dateProps}
       {...errorStyle}
+      {...others}
       variant='filled'
       {...customRegister}
       type={type || 'text'}
