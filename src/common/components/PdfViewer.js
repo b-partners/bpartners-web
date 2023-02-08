@@ -1,7 +1,9 @@
 import { DownloadForOffline, Error } from '@mui/icons-material';
-import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography, CardActions } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useCallback, useEffect, useState } from 'react';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { HorizontalPagination } from './HorizontalPagination';
 
 import TooltipButton from './TooltipButton';
 
@@ -20,8 +22,25 @@ const useStyle = makeStyles(() => ({
 
 const PdfViewer = props => {
   const { url, filename, isPending, noData, onLoadError, width, children, ...others } = props;
-  const loadErrorMessage = 'Echec de chargement du document';
+  const loadErrorMessage = 'Échec de chargement du document';
   const classes = useStyle();
+  const [pages, setPages] = useState({ current: 1, last: null });
+  const [isLoading, setLoading] = useState(true);
+
+  const stopLoading = () => setLoading(false);
+  const startLoading = useCallback(() => setLoading(true), [setLoading]);
+
+  const setLastPage = ({ numPages }) => {
+    setPages(e => ({ ...e, last: numPages }));
+  };
+
+  const setPage = callback => {
+    setPages(e => ({ ...e, current: callback(e.current) }));
+  };
+
+  useEffect(() => {
+    startLoading();
+  }, [url, startLoading]);
 
   return (
     <Box {...others}>
@@ -36,24 +55,30 @@ const PdfViewer = props => {
             </a>
           </Stack>
         </Box>
-        <CardContent>
+        <CardContent sx={url && !isLoading && { paddingInline: 0 }}>
           {url ? (
             <Pdf
               className={classes.pdf}
               noData={noData || <Typography variant='body2'>En attente du document ...</Typography>}
               error={onLoadError || <ErrorHandling errorMessage={loadErrorMessage} />}
-              loading={<Typography variant='body2'>Chargement du document ...</Typography>}
+              loading={<LoadingMessage />}
               file={!isPending ? url : null}
+              onLoadSuccess={setLastPage}
             >
-              <PdfPage className={classes.pdf} width={width} pageNumber={1} />
+              <PdfPage loading={<LoadingMessage />} onLoadSuccess={stopLoading} className={classes.pdf} width={width} pageNumber={pages.current} />
             </Pdf>
           ) : (
             <Typography variant='body2'>En attente du document ...</Typography>
           )}
         </CardContent>
+        <CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {url && !isLoading && <HorizontalPagination activeStep={pages.current} maxSteps={pages.last} setActiveStep={setPage} />}
+        </CardActions>
       </Card>
     </Box>
   );
 };
+
+const LoadingMessage = () => <Typography variant='body2'>Chargement du document ...</Typography>;
 
 export default PdfViewer;

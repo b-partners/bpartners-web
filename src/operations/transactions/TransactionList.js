@@ -1,5 +1,5 @@
 import { IconButton, Tooltip } from '@mui/material';
-import AttachmentIcon from '@mui/icons-material/Attachment';
+import { Attachment as AttachmentIcon, AddLink as AddLinkIcon } from '@mui/icons-material';
 
 import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -17,6 +17,8 @@ import TransactionChart from './TransactionChart';
 import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import Pagination, { pageSize } from '../../common/components/Pagination';
+import PopoverButton from '../utils/PopoverButton';
+import TransactionLinkInvoice from './TransactionLinkInvoice';
 
 const Document = ({ transactionRef }) => (
   <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
@@ -96,6 +98,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
             </Tooltip>
           )}
         />
+        <FunctionField render={transaction => <TransactionLinkInvoice transaction={transaction} />} label='' />
       </Datagrid>
     )
   );
