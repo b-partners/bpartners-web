@@ -53,7 +53,8 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description1');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#description').type('test description').blur();
 
@@ -73,7 +74,8 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description1');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#description').type('new description');
     cy.get('#unitPrice').type(1.03);
@@ -112,9 +114,31 @@ describe(specTitle('Products'), () => {
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
+  });
+
+  it('Should exit of the edit or create node on click on the close button', () => {
+    mount(<App />);
+
+    cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
+    cy.contains('description1');
+
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+
+    cy.contains('Création de produit');
+    cy.get("[data-testid='closeIcon']").click();
+    cy.contains('Création de produit').should('not.exist');
+    cy.contains('Page : 1');
   });
 });

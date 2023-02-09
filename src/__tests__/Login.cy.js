@@ -20,7 +20,7 @@ describe(specTitle('Login'), () => {
   it('MainPage redirects to authUrl on login button clicked', () => {
     mount(<App />);
     cy.intercept('POST', '/authInitiation', req => {
-      expect(req.body.phone).to.deep.eq('dummy on purpose');
+      expect(req.body.phone).to.deep.eq('numéro renseigné');
       req.reply({ redirectionUrl: 'https://authUrl.com' });
     }).as('createAuthInitiation');
     cy.get('#login').click();

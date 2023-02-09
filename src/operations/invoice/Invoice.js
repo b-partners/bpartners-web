@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { formatDate } from '../utils/date';
 import ListComponent from '../utils/ListComponent';
 import { prettyPrintMinors } from '../utils/money';
-import Pagination from '../utils/Pagination';
+import Pagination, { pageSize } from '../utils/Pagination';
 import TooltipButton from '../utils/TooltipButton';
 
 import PopoverButton from '../utils/PopoverButton';
@@ -160,6 +160,7 @@ const Invoice = props => {
         filter={{ invoiceTypes }}
         component={ListComponent}
         pagination={<Pagination />}
+        perPage={pageSize}
         actions={
           <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
             <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>

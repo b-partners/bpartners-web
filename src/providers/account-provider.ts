@@ -1,4 +1,4 @@
-import { Account, AccountHolder, BusinessActivity, CompanyBusinessActivity, CompanyInfo, User } from 'bpartners-react-client';
+import { Account, AccountHolder, BusinessActivity, CompanyBusinessActivity, CompanyInfo, CreateAnnualRevenueTarget, User } from 'bpartners-react-client';
 
 import { userAccountsApi } from './api';
 import authProvider from './auth-provider';
@@ -88,6 +88,17 @@ export const businessActivitiesProvider = {
   },
   getJobList: async (): Promise<BusinessActivity[]> => {
     return (await userAccountsApi().getBusinessActivities(1, 100)).data;
+  },
+};
+
+export const revenueTargetsProvider = {
+  update: async (resources: CreateAnnualRevenueTarget[]): Promise<AccountHolder> => {
+    const user = getCachedUser();
+    const account = getCachedAccount();
+    const accountHolder = await accountHoldersGetter();
+    const { data } = await userAccountsApi().updateRevenueTargets(user?.id, account?.id, accountHolder?.id, resources);
+    cacheAccountHolder(data);
+    return data;
   },
 };
 

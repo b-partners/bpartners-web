@@ -5,22 +5,18 @@ import { useListContext } from 'react-admin';
 
 export const pageSize = 5;
 
-const haSetPerPage = (setPerPage, setPage, page) => {
-  setPerPage(pageSize);
-  setPage(page); // setPage has to be called after setPerPage, otherwise react-admin fails...
-};
-
 const Pagination = () => {
   const [lastPage, setLastPage] = useState(null);
-  const { page, data, isLoading, setPage, setPerPage } = useListContext();
-  haSetPerPage(setPerPage, setPage, page);
-  const resourcesCount = data ? Object.keys(data).length : 0;
+  const { data, page, isLoading, setPage } = useListContext();
+  const resourcesCount = data ? data.length : 0;
+
   useEffect(() => {
     if (!lastPage && lastPage !== 0 && !isLoading && resourcesCount === 0 /* TODO(empty-pages): test! */) {
       setLastPage(page - 1);
       setPage(lastPage);
     }
   }, [resourcesCount]);
+
   if (lastPage && page === 1) {
     // react-admin redirects to page 1 if no more data to show
     // We dont't like that behavior!
@@ -32,7 +28,12 @@ const Pagination = () => {
     setPage(page - 1);
     setLastPage(null);
   };
-  return !isLoading ? (
+
+  if (isLoading) {
+    return <Toolbar variant='dense' />;
+  }
+
+  return (
     <Toolbar style={{ padding: 0 }}>
       {page > 1 && (
         <Button style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
@@ -52,8 +53,6 @@ const Pagination = () => {
         </Typography>
       </div>
     </Toolbar>
-  ) : (
-    <></>
   );
 };
 

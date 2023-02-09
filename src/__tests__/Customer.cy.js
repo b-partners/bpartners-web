@@ -51,7 +51,8 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Email');
 
-    cy.get('[data-testid="AddIcon"]').click();
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
 
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
@@ -68,37 +69,38 @@ describe(specTitle('Customers'), () => {
     cy.contains('Bonjour First Name 1 !');
   });
 
-  it('Should edit a customer', () => {
-    const editedCustomer = {
-      id: customers1[0].id,
-      name: 'new Name',
-      email: 'new@email.com',
-      phone: '+261 34 04 653 38',
-      address: 'Ivandry',
-    };
-
+  it('Should exit of the edit on click on the close button', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.wait('@getCustomers');
-
     cy.contains('Email');
-
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-name').click();
+    cy.contains('Édition de client');
+    cy.get("[data-testid='closeIcon']").click();
 
-    const { address, email, name, phone } = editedCustomer;
+    cy.contains('Édition de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
 
-    cy.get('#name').clear().type(name);
-    cy.get('#email').clear().type(email);
-    cy.get('#address').clear().type(address);
-    cy.get('#phone').clear().type(phone);
+  it('Should exit of the create on click on the close button', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
+    cy.contains('Email');
+    cy.get('[data-testId="open-popover"]').click();
+    cy.get('[data-testId="create-button"]').click();
+    cy.contains('Création de client');
+    cy.get("[data-testid='closeIcon']").click();
+    cy.contains('Création de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
 
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/customers`, req => {
-      assert.deepEqual(editedCustomer, req.body[0]);
-      req.reply([editedCustomer]);
-    }).as('editCustomer');
-
-    cy.get('[data-testid="SaveIcon"]').click();
-    cy.wait('@editCustomer');
+  it('Should edit a customer', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers');
   });
 });

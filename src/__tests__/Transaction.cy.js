@@ -28,6 +28,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2021`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
       'getTransactionCategory'
     );
@@ -125,6 +126,28 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('[name="datePicker"]').clear().type('avril 2022');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
+  });
+
+  it('display graphic of revenue targets', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+    cy.wait('@legalFiles');
+
+    const today = new Date();
+    cy.wait('@getTransactionsSummary');
+    cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
+    cy.get('[name="datePicker"]').clear().type(2023);
+
+    cy.contains('Objectif annuel (10.00 % atteint)');
+    cy.contains('Recette de cette année : 12000.00 €');
+    cy.contains('120000.00 €');
+
+    cy.get('[name="datePicker"]').clear().type(2022);
+    cy.contains(`Vous n'avez pas défini d'objectif pour cette année. Veuillez accéder à l'onglet mon compte pour définir votre objectif annuel.`);
+
+    cy.get('[name="datePicker"]').clear().type(2021);
+    cy.contains('Objectif annuel (100 % atteint. +8.33 %)');
+    cy.contains('Recette de cette année : 130000.00 €');
   });
 
   it('display current balance all the time', () => {
