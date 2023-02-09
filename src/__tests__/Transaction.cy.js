@@ -201,6 +201,14 @@ describe(specTitle('Transactions'), () => {
     cy.contains('En réception').should('not.exist');
   });
 
+  it.only('Link transaction to invoice', () => {
+    cy.viewport(1326, 1326);
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.wait('@legalFiles');
+  });
+
   it.skip(/*TODO*/ 'can have document', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();

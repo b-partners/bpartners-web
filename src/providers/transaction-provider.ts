@@ -2,6 +2,7 @@ import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
+import { Transaction } from 'bpartners-react-client';
 
 const transactionProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -24,6 +25,12 @@ const transactionProvider: BpDataProviderType = {
   saveOrUpdate: function (resources: any[]): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
+};
+
+export const justifyTransaction = async (transactionId: string, invoiceId: string): Promise<Transaction> => {
+  const userId = authProvider.getCachedWhoami().user.id;
+  const accountId = (await singleAccountGetter(userId)).id;
+  return (await payingApi().justifyTransaction(accountId, transactionId, invoiceId)).data;
 };
 
 export default transactionProvider;

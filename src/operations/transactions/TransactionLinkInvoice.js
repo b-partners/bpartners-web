@@ -1,90 +1,52 @@
-import { useState, useEffect } from 'react';
-import { AddLink } from '@mui/icons-material';
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  TextField,
-  Typography,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
+import { useState } from 'react';
+import { AddLink as AddLinkIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import InvoiceListSelection from './InvoiceListSelection';
 import { useNotify, useRefresh } from 'react-admin';
-import transactionCategoryProvider from 'src/providers/transaction-category-provider';
-import { BP_COLOR } from 'src/bpTheme';
-
-const ICON_STYLE = {
-  color: BP_COLOR[30],
-  cursor: 'pointer',
-};
-
-const successMessage = category => {
-  return !category ? 'La catégorie a bien été ajoutée' : 'La catégorie a bien été modifiée';
-};
-
-const CustomsAutocomplete = props => {
-  const { onChange, transactionType } = props;
-  const [autocompleteData, setAutocompleteData] = useState(null);
-
-  useEffect(() => {
-    const dateFilter = new Date().toISOString().slice(0, 10);
-    const getTransactionCategory = async () => {
-      const transactionCategoryList = await transactionCategoryProvider.getList(dateFilter, dateFilter, transactionType);
-      setAutocompleteData(transactionCategoryList);
-    };
-    getTransactionCategory();
-  }, [transactionType]);
-
-  const handleChange = (e, value) => {
-    onChange(value);
-  };
-
-  return (
-    <Autocomplete
-      onChange={handleChange}
-      getOptionLabel={e => e.description}
-      options={autocompleteData || []}
-      loading={autocompleteData === null}
-      loadingText='Chargement...'
-      renderInput={params => <TextField required {...params} sx={{ minWidth: '20vw' }} label='Catégories' />}
-    />
-  );
-};
+import { justifyTransaction } from 'src/providers/transaction-provider';
 
 const SelectionDialog = props => {
-  const notify = useNotify();
-  const refresh = useRefresh();
   const {
-    transaction: { label, category, id, type },
+    transaction: { label, id },
     open,
     close,
   } = props;
+  const notify = useNotify();
+  const refresh = useRefresh();
   const [isLoading, setLoading] = useState(false);
-  const [invoiceList, setInvoiceList] = useState([]);
+  const [invoiceToLink, setInvoiceToLink] = useState(null);
 
-  const onSubmit = async () => {};
-
-  const handleChange = e => {};
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await justifyTransaction(id, invoiceToLink.id);
+      notify(`La transaction "${label}" à été associer au devis "${invoiceToLink.title}"`, { type: 'success' });
+      refresh();
+      close();
+    } catch (e) {
+      notify("Une erreur s'est produite", { type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Dialog open={open} onClose={close}>
+    <Dialog fullWidth={true} maxWidth='md' open={open} onClose={close}>
       <DialogTitle>
-        <Typography>Liée la transaction "{label}" à un devis :</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography>Liée la transaction "{label}" à un devis :</Typography>
+          <Tooltip title='Annuler'>
+            <IconButton onClick={close}>
+              <ClearIcon data-testid='closeIcon' />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </DialogTitle>
       <DialogContent>
-        <Box>
-          <TextField onChange={handleChange} />
-          <Box>{}</Box>
-        </Box>
+        <InvoiceListSelection onSelectInvoice={setInvoiceToLink} />
       </DialogContent>
       <DialogActions>
-        <Button endIcon={isLoading && <CircularProgress size={20} sx={{ color: 'white' }} />} onClick={onSubmit} disabled={!validator()}>
+        <Button disabled={isLoading || !invoiceToLink} endIcon={isLoading && <CircularProgress size={20} sx={{ color: 'white' }} />} onClick={handleSubmit}>
           Enregistrer
         </Button>
       </DialogActions>
@@ -105,7 +67,7 @@ const TransactionLinkInvoice = props => {
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
       <Tooltip title='Liée à un devis'>
         <IconButton>
-          <AddLink onClick={toggleDialog} />
+          <AddLinkIcon onClick={toggleDialog} />
         </IconButton>
       </Tooltip>
       <SelectionDialog transaction={transaction} open={dialogState} close={toggleDialog} />
