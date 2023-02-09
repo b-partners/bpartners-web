@@ -48,7 +48,7 @@ export const ClientSelection = ({ form, name }) => {
                 value={client.id}
                 className={classes.menuItem}
               >
-                {client.name || ''}
+                {`${client.lastName} ${client.firstName}` || ''}
               </MenuItem>
             ))}
         </Select>
