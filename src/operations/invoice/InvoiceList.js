@@ -76,7 +76,12 @@ const InvoiceGridTable = props => {
       >
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
-        <TextField source='customer[name]' label='Client' />
+        <FunctionField
+          render={invoice => {
+            return <Typography>{`${invoice.customer?.lastName || ''} ${invoice.customer?.firstName}` || ''}</Typography>;
+          }}
+          label='Client'
+        />
         {companyInfo && companyInfo.isSubjectToVat && (
           <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         )}

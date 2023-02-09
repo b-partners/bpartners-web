@@ -7,6 +7,7 @@ import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
+import { customers1 } from './mocks/responses/customer-api';
 
 describe(specTitle('Products'), () => {
   beforeEach(() => {
@@ -23,6 +24,8 @@ describe(specTitle('Products'), () => {
           },
         })
     );
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
@@ -100,15 +103,18 @@ describe(specTitle('Products'), () => {
       // make isSubjectToVat = false
       const accountHolder = { ...accountHolders1[0] };
       accountHolder.companyInfo.isSubjectToVat = false;
-      req.reply(accountHolder);
-    }).as('getAccountHolder1');
+
+      req.reply({
+        body: [{ ...accountHolder }],
+      });
+    }).as('getAccountHolder2');
 
     mount(<App />);
     cy.get('[name="products"]').click();
 
     cy.wait('@getAccount1');
     cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
+    cy.wait('@getAccountHolder2');
     cy.wait('@getProducts');
 
     cy.contains(/TVA/gi).should('not.exist');
