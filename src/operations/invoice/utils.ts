@@ -1,7 +1,7 @@
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { InvoiceStatusFR } from '../../constants/invoice-status';
-import { Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { Attachment, CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
 import { getFilenameMeta } from '../utils/file';
 
 /**
@@ -24,19 +24,13 @@ type ProductValidatorResult = {
   message?: string;
 };
 
-// TODO: use generated client api
-export interface AttachmentFile {
-  name: string;
-  content: ArrayBuffer;
-}
-
 export const MAX_ATTACHMENT_NAME_LENGTH = 50;
 
-export const fileToAttachmentApi = (reader: FileReader, file: File): AttachmentFile => {
+export const fileToAttachmentApi = (reader: FileReader, file: File): CreateAttachment => {
   const { name } = getFilenameMeta(file.name);
   return {
     name,
-    content: reader.result as ArrayBuffer,
+    content: (reader.result as string).split(',')[1],
   };
 };
 
