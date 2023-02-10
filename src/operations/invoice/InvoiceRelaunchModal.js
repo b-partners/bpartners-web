@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -31,12 +32,14 @@ import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils';
 
 const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
   const [attachments, setAttachments] = useState([]);
 
   const onClose = () => {
     resetInvoice();
+    setAttachments([]);
   };
 
   const getContext = ({ devis, facture }) => (invoice.status === 'PROPOSAL' ? `${devis} devis` : `${facture} facture`);
@@ -44,6 +47,8 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const handleSubmit = async () => {
     const userId = authProvider.getCachedWhoami().user.id;
     if (userId) {
+      setIsLoading(true);
+
       try {
         const aId = (await singleAccountGetter(userId)).id;
         await payingApi().relaunchInvoice(aId, invoice.id, { message, subject, attachments });
@@ -58,6 +63,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
       } catch (e) {
         notify("Une erreur s'est produite", { type: 'error' });
       }
+      setIsLoading(false);
     }
   };
 
@@ -71,8 +77,13 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
           <InvoiceRelaunchForm setMessage={setMessage} setSubject={setSubject} setAttachments={setAttachments} attachments={attachments} />
         </DialogContent>
 
-        <DialogActions sx={{ justifyContent: 'center' }}>
-          <Button onClick={handleSubmit} data-cy='invoice-relaunch-submit'>
+        <DialogActions sx={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Button
+            disabled={isLoading}
+            onClick={handleSubmit}
+            data-cy='invoice-relaunch-submit'
+            startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
+          >
             Relancer {getContext({ devis: 'ce', facture: 'cette' })}
           </Button>
         </DialogActions>
@@ -167,6 +178,7 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject, attachments, setAttachmen
         <Typography variant='subtitle1' mb={2}>
           Message
         </Typography>
+
         <RichTextEditor placeholder='corps de votre message' setContent={setMessage} />
       </Box>
     </Box>

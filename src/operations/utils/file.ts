@@ -14,7 +14,7 @@ export const filesToArrayBuffer = <T = unknown>(files: FileList, transform?: Fil
         resolve(reader.result as T);
       };
 
-      reader.readAsArrayBuffer(file);
+      reader.readAsDataURL(file);
     });
   });
 
