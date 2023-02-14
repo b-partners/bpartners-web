@@ -2,7 +2,7 @@ import { getUserInfo } from 'src/providers/invoice-provider';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { InvoiceStatusFR } from '../../constants/invoice-status';
 import { Attachment, CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
-import { getFilenameMeta } from '../utils/file';
+import { getFilenameMeta } from '../../common/utils/file';
 
 /**
  * **INVOICE**

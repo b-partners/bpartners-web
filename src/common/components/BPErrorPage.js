@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import { EmptyList } from './operations/utils/EmptyList';
+import { EmptyList } from './EmptyList';
 
-const BpErrorPage = () => {
+const BPErrorPage = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <EmptyList content="Une erreur s'est produite" />
@@ -9,4 +9,4 @@ const BpErrorPage = () => {
   );
 };
 
-export default BpErrorPage;
+export default BPErrorPage;

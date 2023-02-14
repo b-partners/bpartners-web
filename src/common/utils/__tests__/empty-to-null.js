@@ -1,5 +1,5 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import emptyToNull from '../emptyToNull';
+import emptyToNull from '../empty-to-null';
 
 const expected = {
   test1: null,

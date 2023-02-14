@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import { revenueTargetsProvider } from 'src/providers/account-provider';
-import CustomFilledInput from '../utils/CustomFilledInput';
-import { toMajors, toMinors } from '../utils/money';
+import BPFormField from '../../common/components/BPFormField';
+import { toMajors, toMinors } from '../../common/utils/money';
 
 const RevenueTargetForm = () => {
   const currentYear = new Date().getFullYear();
@@ -60,7 +60,7 @@ const RevenueTargetForm = () => {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-      <CustomFilledInput
+      <BPFormField
         style={{ width: '45%' }}
         name='amountTarget'
         type='number'

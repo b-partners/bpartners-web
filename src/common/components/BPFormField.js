@@ -8,7 +8,7 @@ const textFieldStyle = {
 /**
  * input to use with react-hook-form only
  */
-const CustomFilledInput = props => {
+const BPFormField = props => {
   const { name, label, form, type, validate, style, shouldValidate, ...others } = props;
   const {
     register,
@@ -38,4 +38,4 @@ const CustomFilledInput = props => {
   );
 };
 
-export default CustomFilledInput;
+export default BPFormField;

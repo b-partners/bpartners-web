@@ -1,5 +1,5 @@
 import { CompanyBusinessActivity, CompanyInfo } from 'bpartners-react-client';
-import { toMajors } from '../utils/money';
+import { toMajors } from '../../common/utils/money';
 
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
 

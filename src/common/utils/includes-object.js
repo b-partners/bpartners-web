@@ -1,4 +1,4 @@
-export const isIncludesObject = (array, key, value) => {
+export const includesObject = (array, key, value) => {
   for (let a of array) {
     if (a[key] === value) {
       return true;

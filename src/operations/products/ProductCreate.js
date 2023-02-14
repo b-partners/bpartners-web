@@ -1,14 +1,14 @@
 import { Create, SimpleForm, TextInput, NumberInput, required } from 'react-admin';
-import CustomFormLayout from '../utils/CustomFormLayout';
+import BPFormLayout from '../../common/components/BPFormLayout';
 
-import { toMinors as moneyToMinors } from '../utils/money';
-import useGetAccountHolder from '../utils/useGetAccountHolder';
-import { toMinors as vatToMinors } from '../utils/vat';
+import { toMinors as moneyToMinors } from '../../common/utils/money';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import { toMinors as vatToMinors } from '../../common/utils/vat';
 
 const ProductCreate = () => {
   const { companyInfo } = useGetAccountHolder();
   return (
-    <CustomFormLayout title='Création de produit' resource='products'>
+    <BPFormLayout title='Création de produit' resource='products'>
       <Create
         redirect='list'
         transform={record => ({ ...record, quantity: 1, unitPrice: moneyToMinors(record.unitPrice), vatPercent: vatToMinors(record.vatPercent) })}
@@ -21,7 +21,7 @@ const ProductCreate = () => {
           <TextInput validate={[required()]} source='description' label='Description' multiline={true} minRows={3} fullWidth name='description' />
         </SimpleForm>
       </Create>
-    </CustomFormLayout>
+    </BPFormLayout>
   );
 };
 

@@ -1,4 +1,4 @@
-import { BP_COLOR } from '../../bpTheme';
+import { BP_COLOR } from '../../bp-theme';
 
 export const BOX_CONTAINER_STYLE = {
   border: `1px solid ${BP_COLOR['solid_grey']}`,

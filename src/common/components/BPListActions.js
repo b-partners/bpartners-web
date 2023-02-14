@@ -1,10 +1,10 @@
 import { CreateButton, ExportButton } from 'react-admin';
 
-import PopoverButton from '../utils/PopoverButton';
+import PopoverButton from './PopoverButton';
 import { MoreVert as MoreIcon } from '@mui/icons-material';
 import { Box } from '@mui/material';
 
-const CustomListActions = props => {
+const BPListActions = props => {
   const { buttons, hasCreate, hasExport, label, icon } = props;
   return (
     <PopoverButton style={{ marginRight: 5.2 }} icon={icon || <MoreIcon />} label={label || 'Menu'}>
@@ -19,4 +19,4 @@ const CustomListActions = props => {
   );
 };
 
-export default CustomListActions;
+export default BPListActions;

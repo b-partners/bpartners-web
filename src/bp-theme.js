@@ -8,7 +8,7 @@ export const BP_COLOR = {
   solid_grey: 'rgb(0, 0, 0, 0.05)',
 };
 
-const bpButton = {
+const BP_BUTTON = {
   color: '#fff',
   backgroundColor: BP_COLOR[20],
   '&:hover, &:active': {
@@ -20,7 +20,7 @@ const bpButton = {
   },
 };
 
-export const bpTheme = {
+export const BP_THEME = {
   ...defaultTheme,
   components: {
     RaMenuItemLink: {
@@ -73,13 +73,13 @@ export const bpTheme = {
     RaList: {
       styleOverrides: {
         root: {
-          '& .RaList-main button': bpButton,
+          '& .RaList-main button': BP_BUTTON,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
-        root: bpButton,
+        root: BP_BUTTON,
       },
     },
   },

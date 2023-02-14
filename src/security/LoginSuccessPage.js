@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import authProvider from '../providers/auth-provider';
 import loginRedirectionUrls from './login-redirection-urls';
-import { redirect } from '../utils/redirect';
-import { getUrlParams } from '../utils/getParams';
+import { redirect } from '../common/utils/redirect';
+import { getUrlParams } from '../common/utils/get-params';
 
 const LoginSuccessPage = () => {
   useEffect(() => {
