@@ -1,4 +1,4 @@
-import { BP_COLOR } from '../../bpTheme';
+import { BP_COLOR } from '../../bp-theme';
 
 export const DIALOG_CONTENT = {
   display: 'flex',

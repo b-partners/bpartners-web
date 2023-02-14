@@ -1,6 +1,6 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import RichTextEditor from '../../operations/utils/RichTextEditor';
+import RichTextEditor from '../../components/RichTextEditor';
 
 describe(specTitle('RichTextEditor'), () => {
   const field = '.public-DraftEditor-content';

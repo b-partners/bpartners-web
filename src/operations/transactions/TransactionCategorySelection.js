@@ -3,7 +3,7 @@ import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, DialogContent, TextField, Typography, CircularProgress } from '@mui/material';
 import { useNotify, useRefresh } from 'react-admin';
 import transactionCategoryProvider from 'src/providers/transaction-category-provider';
-import { BP_COLOR } from 'src/bpTheme';
+import { BP_COLOR } from 'src/bp-theme';
 
 const ICON_STYLE = {
   color: BP_COLOR[30],

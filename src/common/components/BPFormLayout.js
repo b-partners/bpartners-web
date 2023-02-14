@@ -7,7 +7,7 @@ const useStyle = makeStyles(() => ({
   card: { border: 'none !important' },
 }));
 
-const CustomFormLayout = props => {
+const BPFormLayout = props => {
   const { children, resource, title } = props;
   const classes = useStyle();
   return (
@@ -35,4 +35,4 @@ const CloseButton = props => {
   );
 };
 
-export default CustomFormLayout;
+export default BPFormLayout;

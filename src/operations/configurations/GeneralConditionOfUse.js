@@ -5,9 +5,9 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleto
 import { userAccountsApi } from '../../providers/api';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import AuthProvider, { cacheUnapprovedFiles } from '../../providers/auth-provider';
-import { reload } from '../../utils/reload';
-import { EmptyList } from '../utils/EmptyList';
-import { VerticalPagination } from '../utils/vertical-pagination';
+import { reload } from '../../common/utils/reload';
+import { EmptyList } from '../../common/components/EmptyList';
+import { VerticalPagination } from '../../common/utils/vertical-pagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 
 const INIT_LEGALFILE = {

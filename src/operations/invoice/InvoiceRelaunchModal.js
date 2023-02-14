@@ -22,12 +22,12 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
-import { BP_COLOR } from '../../bpTheme';
+import { BP_COLOR } from '../../bp-theme';
 import { singleAccountGetter } from '../../providers/account-provider';
 import { payingApi } from '../../providers/api';
 import authProvider from '../../providers/auth-provider';
-import { filesToArrayBuffer } from '../utils/file';
-import RichTextEditor from '../utils/RichTextEditor';
+import { filesToArrayBuffer } from '../../common/utils/file';
+import RichTextEditor from '../../common/components/RichTextEditor';
 import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils';
 
 const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {

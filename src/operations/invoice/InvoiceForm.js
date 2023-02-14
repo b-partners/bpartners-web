@@ -6,13 +6,13 @@ import { useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
-import { CustomButton } from '../utils/CustomButton';
-import CustomFilledInput from '../utils/CustomFilledInput';
-import { formatDateTo8601 } from '../utils/date';
-import { prettyPrintMinors } from '../utils/money';
-import PdfViewer from '../utils/PdfViewer';
-import { toMajors as percentToMajors, toMinors as percentToMinors } from '../utils/percent';
-import useGetAccountHolder from '../utils/useGetAccountHolder';
+import { BPButton } from '../../common/components/BPButton';
+import BPFormField from '../../common/components/BPFormField';
+import { formatDateTo8601 } from '../../common/utils/date';
+import { prettyPrintMinors } from '../../common/utils/money';
+import PdfViewer from '../../common/components/PdfViewer';
+import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { ClientSelection } from './ClientSelection';
 import { ProductSelection } from './ProductSelection';
 
@@ -44,7 +44,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const InvoiceCreateOrUpdate = props => {
+const InvoiceForm = props => {
   const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const classes = useStyle();
@@ -130,30 +130,24 @@ const InvoiceCreateOrUpdate = props => {
           <CardContent>
             <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
               <FormControl className={classes.formControl}>
-                <CustomFilledInput name='title' label='Titre' form={form} />
-                <CustomFilledInput name='ref' label='Référence' form={form} />
-                <CustomFilledInput
-                  validate={e => invoiceDateValidator({ sendingDate: e })}
-                  name='sendingDate'
-                  label="Date d'émission"
-                  type='date'
-                  form={form}
-                />
-                <CustomFilledInput
+                <BPFormField name='title' label='Titre' form={form} />
+                <BPFormField name='ref' label='Référence' form={form} />
+                <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
+                <BPFormField
                   validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
                   name='validityDate'
                   label='Date limite de validité'
                   type='date'
                   form={form}
                 />
-                <CustomFilledInput
+                <BPFormField
                   validate={value => value && value >= 0}
                   name='delayInPaymentAllowed'
                   label='Délai de retard de paiement autorisé (jours)'
                   type='number'
                   form={form}
                 />
-                <CustomFilledInput
+                <BPFormField
                   validate={value => value && value >= 0 && value <= 100}
                   name={DELAY_PENALTY_PERCENT}
                   label='Pourcentage de penalité de retard'
@@ -161,7 +155,7 @@ const InvoiceCreateOrUpdate = props => {
                   form={form}
                 />
               </FormControl>
-              <CustomFilledInput name='comment' label='Commentaire' form={form} shouldValidate={false} />
+              <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <Box sx={{ display: 'block' }}>
@@ -175,7 +169,7 @@ const InvoiceCreateOrUpdate = props => {
                     )}
                   </Typography>
                 </Box>
-                <CustomButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
+                <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
               </Box>
             </form>
           </CardContent>
@@ -190,4 +184,4 @@ const InvoiceCreateOrUpdate = props => {
   );
 };
 
-export default InvoiceCreateOrUpdate;
+export default InvoiceForm;
