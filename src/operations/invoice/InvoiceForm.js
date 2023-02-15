@@ -59,6 +59,8 @@ const InvoiceForm = props => {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
       // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
       form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
+      // TODO: implement this so we can delete this
+      form.setValue('paymentRegulations', undefined);
     }
   };
 
