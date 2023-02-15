@@ -7,7 +7,7 @@ import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpa
 import AuthProvider, { cacheUnapprovedFiles } from '../../providers/auth-provider';
 import { reload } from '../../common/utils/reload';
 import { EmptyList } from '../../common/components/EmptyList';
-import { VerticalPagination } from '../../common/utils/vertical-pagination';
+import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 
 const INIT_LEGALFILE = {

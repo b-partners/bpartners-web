@@ -5,7 +5,7 @@ import { SidebarToggleButton } from 'react-admin';
 import bpLogo from '../../assets/bp-logo-full.png';
 import accountProvider, { getCachedUser } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
-import { ShortWarning } from '../utils/beta-test-warning';
+import { ShortWarning } from './BPBetaTestWarning';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
