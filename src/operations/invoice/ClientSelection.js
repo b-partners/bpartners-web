@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Box, Select, MenuItem, InputLabel, FormControl, FormHelperText } from '@mui/material';
+import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useEffect, useState } from 'react';
 import { customerProvider } from '../../providers/customer-provider';
 
 const useStyle = makeStyles(() => ({
@@ -18,26 +18,19 @@ const useStyle = makeStyles(() => ({
 }));
 
 export const ClientSelection = ({ form, name }) => {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = form;
+  const { watch, setValue } = form;
   const [state, setState] = useState({ clients: [], clientSelected: watch(`${name}.name`) || '' });
   const classes = useStyle();
-  const customRegister = register(`${name}.name`, { required: true });
-  customRegister.onchange = undefined;
-
+  const checkError = !watch(name);
   useEffect(() => {
     customerProvider.getList().then(data => setState({ clients: data }));
   }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
-      <FormControl variant='filled' className={classes.formControl} error={errors[name]}>
+      <FormControl variant='filled' className={classes.formControl} error={checkError}>
         <InputLabel id='client-selection-id'>Client</InputLabel>
-        <Select id='invoice-client-selection-id' labelId='client-selection-id' value={watch(`${name}.id`) || ''} {...customRegister}>
+        <Select id='invoice-client-selection-id' labelId='client-selection-id' value={watch(`${name}.id`) || ''}>
           {state.clients.length !== 0 &&
             state.clients.map(client => (
               <MenuItem
@@ -52,7 +45,7 @@ export const ClientSelection = ({ form, name }) => {
               </MenuItem>
             ))}
         </Select>
-        {errors[name] && <FormHelperText>Ce champ est requis</FormHelperText>}
+        {checkError && <FormHelperText>Ce champ est requis</FormHelperText>}
       </FormControl>
     </Box>
   );
