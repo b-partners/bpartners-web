@@ -1,8 +1,8 @@
 import { Create, required, SimpleForm, TextInput, email } from 'react-admin';
-import CustomFormLayout from '../utils/CustomFormLayout';
+import BPFormLayout from '../../common/components/BPFormLayout';
 
 const CustomerCreate = props => (
-  <CustomFormLayout title='Création de client' resource='customers'>
+  <BPFormLayout title='Création de client' resource='customers'>
     <Create {...props} title='Clients' redirect='list'>
       <SimpleForm>
         <TextInput name='name' source='name' label='Nom' validate={required()} />
@@ -11,7 +11,7 @@ const CustomerCreate = props => (
         <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
       </SimpleForm>
     </Create>
-  </CustomFormLayout>
+  </BPFormLayout>
 );
 
 export default CustomerCreate;

@@ -6,12 +6,12 @@ import authProvider from 'src/providers/auth-provider';
 import { getCachedAccount, singleAccountGetter } from 'src/providers/account-provider';
 import emptyGraph from 'src/assets/noData.png';
 
-import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../utils/percent';
-import { prettyPrintMinors } from '../utils/money';
+import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../../common/utils/percent';
+import { prettyPrintMinors } from '../../common/utils/money';
 import { BP_SWITCH_STYLE } from '../account/style';
-import CustomDatePicker from '../utils/CustomDatePicker';
-import { BP_COLOR } from 'src/bpTheme';
-import useGetAccountHolder from '../utils/useGetAccountHolder';
+import BPDatePicker from '../../common/components/BPDatePicker';
+import { BP_COLOR } from 'src/bp-theme';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 
 const AnnualTargetGraph = ({ year }) => {
   const revenueTargets = useGetAccountHolder().revenueTargets;
@@ -162,7 +162,7 @@ const TransactionChart = () => {
           <Grid item sm={3}>
             {transactionsSummary ? (
               <Box>
-                <CustomDatePicker
+                <BPDatePicker
                   views={annualSummary ? ['year'] : ['year', 'month']}
                   label={annualSummary ? 'Sélectionnez une année' : 'Sélectionnez un mois'}
                   setDate={setDate}

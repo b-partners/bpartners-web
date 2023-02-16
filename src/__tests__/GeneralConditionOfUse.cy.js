@@ -7,7 +7,7 @@ import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
-import * as Reload from '../utils/reload';
+import * as Reload from '../common/utils/reload';
 
 describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {

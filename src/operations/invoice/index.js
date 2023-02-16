@@ -1,8 +1,8 @@
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import InvoiceList from './InvoiceList';
+import InvoiceListEditor from './InvoiceListEditor';
 
 const invoice = {
-  list: InvoiceList,
+  list: InvoiceListEditor,
   icon: ReceiptIcon,
   options: { label: 'Devis/Facturation' },
 };

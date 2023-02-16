@@ -1,7 +1,7 @@
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { Box, IconButton, Typography } from '@mui/material';
 import { useTheme } from '@mui/styles';
-import { BP_COLOR } from '../../bpTheme';
+import { BP_COLOR } from '../../bp-theme';
 
 const STYLE = {
   width: 'max-content',

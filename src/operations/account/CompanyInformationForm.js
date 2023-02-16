@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import accountProvider from 'src/providers/account-provider';
-import CustomFilledInput from '../utils/CustomFilledInput';
+import BPFormField from '../../common/components/BPFormField';
 import { phoneValidator, companyInfoDiff } from './utils';
-import { toMinors, toMajors } from '../utils/money';
+import { toMinors, toMajors } from '../../common/utils/money';
 
 const CompanyInfomationForm = () => {
   const { record } = useShowContext();
@@ -51,9 +51,9 @@ const CompanyInfomationForm = () => {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-      <CustomFilledInput style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
-      <CustomFilledInput style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
-      <CustomFilledInput style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />
+      <BPFormField style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
+      <BPFormField style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
+      <BPFormField style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />
       <Button
         variant='contained'
         size='small'

@@ -3,8 +3,8 @@ import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import productProvider from '../../providers/product-provider';
-import { CustomButton } from '../utils/CustomButton';
-import { isIncludesObject } from '../utils/isIncludesObject';
+import { BPButton } from '../../common/components/BPButton';
+import { includesObject } from '../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
 import { ProductActionType, productValidationHandling } from './utils';
 
@@ -72,14 +72,14 @@ export const ProductSelection = ({ name, form }) => {
       </Box>
       <Box sx={{ width: '100%', marginBottom: 10 }}>
         {!state.status ? (
-          <CustomButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
+          <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
         ) : (
           <FormControl variant='filled' value='' className={classes.formControl}>
             <InputLabel id='product-selection-id'>Produit</InputLabel>
             <Select id='product-selection-id'>
               {state.productsList.length > 0 &&
                 state.productsList
-                  .filter(e => !isIncludesObject(selectedProduct, 'id', e.id))
+                  .filter(e => !includesObject(selectedProduct, 'id', e.id))
                   .map(e => (
                     <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
                       {e.description}

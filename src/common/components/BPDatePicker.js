@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import 'dayjs/locale/fr';
 import dayjs from 'dayjs';
 
-const CustomDatePicker = props => {
+const BPDatePicker = props => {
   const { views, label, setDate } = props;
   const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
 
@@ -37,4 +37,4 @@ const CustomDatePicker = props => {
   );
 };
 
-export default CustomDatePicker;
+export default BPDatePicker;

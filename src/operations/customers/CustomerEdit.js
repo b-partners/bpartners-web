@@ -1,9 +1,9 @@
 import { Edit, email, required, SimpleForm, TextInput } from 'react-admin';
-import CustomFormLayout from '../utils/CustomFormLayout';
+import BPFormLayout from '../../common/components/BPFormLayout';
 
 const CustomerEdit = () => {
   return (
-    <CustomFormLayout title='Édition de client' resource='customers'>
+    <BPFormLayout title='Édition de client' resource='customers'>
       <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de client'>
           <TextInput name='name' source='name' label='Nom' validate={required()} />
@@ -12,7 +12,7 @@ const CustomerEdit = () => {
           <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
         </SimpleForm>
       </Edit>
-    </CustomFormLayout>
+    </BPFormLayout>
   );
 };
 

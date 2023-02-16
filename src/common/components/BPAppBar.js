@@ -2,12 +2,12 @@ import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { SidebarToggleButton } from 'react-admin';
-import bpLogo from './assets/bp-logo-full.png';
-import accountProvider, { getCachedUser } from './providers/account-provider';
-import authProvider from './providers/auth-provider';
-import { ShortWarning } from './utils/beta-test-warning';
-import { GeneralConditionOfUse } from './operations/configurations';
-import UnverifiedUser from './operations/configurations/UnverifiedUser';
+import bpLogo from '../../assets/bp-logo-full.png';
+import accountProvider, { getCachedUser } from '../../providers/account-provider';
+import authProvider from '../../providers/auth-provider';
+import { ShortWarning } from '../utils/beta-test-warning';
+import { GeneralConditionOfUse } from '../../operations/configurations';
+import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -33,7 +33,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const BpAppBar = props => {
+const BPAppBar = props => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
@@ -67,4 +67,4 @@ const BpAppBar = props => {
     </>
   );
 };
-export default BpAppBar;
+export default BPAppBar;

@@ -1,5 +1,5 @@
 import { CompanyBusinessActivity, CompanyInfo } from 'bpartners-react-client';
-import { toMajors } from '../utils/money';
+import { toMajors } from '../../common/utils/money';
 
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
 
@@ -33,13 +33,11 @@ export const ACCOUNT_HOLDER_LAYOUT = {
   VIEW: 'view',
 };
 
-export const phoneValidator = (phoneNumber: string) => {
+export const phoneValidator = (phoneNumber: string): any => {
   if (!phoneNumber || phoneNumber.length === 0) {
     return 'Ce champ est requis';
   } else if (/[^0-9+]/.test(phoneNumber)) {
-    return 'Le numéro de téléphone ne doit contenir que des chiffres est un signe +';
-  } else if (!/\+[0-9]/.test(phoneNumber)) {
-    return 'Format de numéro incorrecte, format correcte: "+[code pays][numéro]"';
+    return 'Le numéro de téléphone ne doit contenir que des chiffres';
   }
   return true;
 };

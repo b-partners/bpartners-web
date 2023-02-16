@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import { token1, whoami1, user1 } from './mocks/responses/security-api';
-import * as Redirect from '../utils/redirect';
+import * as Redirect from '../common/utils/redirect';
 import App from 'src/App';
 
 import authProvider from '../providers/auth-provider';
