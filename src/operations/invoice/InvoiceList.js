@@ -68,6 +68,8 @@ const InvoiceGridTable = props => {
 
   const { companyInfo } = useGetAccountHolder();
 
+  const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName || ''} ${customer?.firstName}` || ''}</Typography>;
+
   return (
     !isLoading && (
       <Datagrid
@@ -76,12 +78,7 @@ const InvoiceGridTable = props => {
       >
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
-        <FunctionField
-          render={invoice => {
-            return <Typography>{`${invoice.customer?.lastName || ''} ${invoice.customer?.firstName}` || ''}</Typography>;
-          }}
-          label='Client'
-        />
+        <FunctionField render={nameRenderer} label='Client' />
         {companyInfo && companyInfo.isSubjectToVat && (
           <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
         )}

@@ -220,6 +220,12 @@ describe(specTitle('Invoice'), () => {
 
     mount(<App />);
     cy.get('[name="invoice"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getDraftsPer5Page1');
+
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
