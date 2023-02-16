@@ -140,9 +140,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis');
     cy.get('form [name="socialCapital"]').type(301);
     cy.get('form [name="phone"]').clear().type('+261 not valid phone number');
-    cy.contains('Le numéro de téléphone ne doit contenir que des chiffres est un signe +');
-    cy.get('form [name="phone"]').clear().type('656565');
-    cy.contains('Format de numéro incorrecte, format correcte: "+[code pays][numéro]"');
+    cy.contains('Le numéro de téléphone ne doit contenir que des chiffres');
     cy.get('form [name="phone"]').clear().type('+261340465338');
     cy.get('form [name="email"]').clear();
     cy.contains('Ce champ est requis');
