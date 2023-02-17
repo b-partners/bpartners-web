@@ -54,3 +54,5 @@ export const newProduct1 = [
     id: 'product5_id',
   },
 ];
+
+export const newProduct2 = [newProduct1[0], ...products.slice(1)];

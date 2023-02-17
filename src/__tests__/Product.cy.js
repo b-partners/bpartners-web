@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { products } from './mocks/responses/product-api';
+import { newProduct2, products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 
@@ -96,6 +96,33 @@ describe(specTitle('Products'), () => {
     }).as('postNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@postNewProduct');
+  });
+
+  it('Should edit a product', () => {
+    mount(<App />);
+
+    cy.get('[name="products"]').click();
+
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getProducts');
+
+    cy.contains('description1');
+
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
+    cy.contains('Édition de produit');
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, newProduct2).as('getModifiedProducts');
+
+    cy.get('#description').clear().type('test description');
+    cy.get('#unitPrice').clear().type(1);
+    cy.get('#vatPercent').clear().type(1);
+
+    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
+    cy.wait('@getModifiedProducts');
+
+    cy.contains('test description');
   });
 
   it('VAT references should not displayed', () => {
