@@ -10,3 +10,9 @@ export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' '
  * @ex '2023-01-25T20:10:20.000Z'
  */
 export const formatDateTo8601 = (date: String, time: String) => new Date(date + 'T' + time).toISOString();
+export const getNextMonthDate = (date: string) => {
+    const currentMonth = date.split("-")[1]
+    const currentDate = new Date(date);
+    currentDate.setMonth(+currentMonth + 1)
+    return currentDate.toLocaleDateString('fr-ca');
+}

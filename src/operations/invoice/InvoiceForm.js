@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, IconButton, Typography } from '@mui/material';
+import { Box, Card, CardContent, FormControl, IconButton, Typography, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
@@ -13,8 +13,8 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import PdfViewer from '../../common/components/PdfViewer';
 import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { ClientSelection } from './ClientSelection';
-import { ProductSelection } from './ProductSelection';
+import { ClientSelection } from './components/ClientSelection';
+import { ProductSelection } from './components/ProductSelection';
 
 import {
   DEFAULT_DELAY_PENALTY_PERCENT,
@@ -23,12 +23,16 @@ import {
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
+  PAYMENT_REGULATIONS,
+  PAYMENT_TYPE,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  validatePaymentRegulation,
 } from './utils';
+import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%', position: 'relative' },
@@ -68,7 +72,8 @@ const InvoiceForm = props => {
   const validateInvoice = ifValid => {
     return form.handleSubmit(data => {
       productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
-      if (!form.formState.errors[PRODUCT_NAME]) {
+      const paymentRegulationError = validatePaymentRegulation(data[PAYMENT_TYPE], data[PAYMENT_REGULATIONS]);
+      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME]) {
         ifValid();
       }
     });
@@ -160,6 +165,7 @@ const InvoiceForm = props => {
               <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
+              <PaymentRegulationsForm form={form} />
               <Box sx={{ display: 'block' }}>
                 <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                   <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
