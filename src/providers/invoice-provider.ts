@@ -6,6 +6,7 @@ import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { sumOfRegulationsPercentages, TPaymentRegulation } from 'src/operations/invoice/utils';
 import { getNextMonthDate } from 'src/common/utils/date';
+import { toMinors } from 'src/common/utils/percent';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -14,23 +15,23 @@ export const getUserInfo = async (): Promise<{ accountId: string; userId: string
 };
 
 const formatPaymentRegulation = (paymentRegulations: TPaymentRegulation[]) => {
-  const percentage = sumOfRegulationsPercentages(paymentRegulations)
-  const lastDate = paymentRegulations.sort((a, b) => new Date(b.maturityDate).getTime() - new Date(b.maturityDate).getTime())[0].maturityDate
+  if (!paymentRegulations || paymentRegulations.length === 0) return paymentRegulations;
+  const percentage = sumOfRegulationsPercentages(paymentRegulations);
+  const lastDate = paymentRegulations.sort((a, b) => new Date(b.maturityDate).getTime() - new Date(a.maturityDate).getTime())[0].maturityDate;
   if (percentage !== 0) {
     const newPaymentRegulation: TPaymentRegulation = {
       amount: null,
-      percent: percentage * 100,
+      percent: toMinors(percentage),
       comment: null,
-      maturityDate: getNextMonthDate(lastDate)
-    }
-    return [...paymentRegulations.map(e => ({ ...e, percent: e.percent * 100 })), newPaymentRegulation]
+      maturityDate: getNextMonthDate(lastDate),
+    };
+    return [...paymentRegulations.map(e => ({ ...e, percent: toMinors(e.percent) })), newPaymentRegulation];
   }
   return paymentRegulations;
-}
+};
 
 export const invoiceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
-
     const { accountId } = await getUserInfo();
     const invoiceTypes: Array<InvoiceStatus> = filter.invoiceTypes;
 
@@ -49,8 +50,8 @@ export const invoiceProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (_invoices: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const invoices = { ..._invoices[0] }
-    const newPaymentRegulations = formatPaymentRegulation(invoices.paymentRegulations)
+    const invoices = { ..._invoices[0] };
+    const newPaymentRegulations = formatPaymentRegulation(invoices.paymentRegulations);
     const formattedInvoice = { ...emptyToNull({ ...invoices, paymentRegulations: newPaymentRegulations }) };
 
     if (formattedInvoice.paymentType === InvoicePaymentTypeEnum.CASH) {

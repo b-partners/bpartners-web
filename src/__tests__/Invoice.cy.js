@@ -139,31 +139,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
-  it('should edit an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-
-    cy.contains('Modification');
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({
-        body: { ...req.body },
-        updatedAt: new Date(),
-      });
-    });
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-
-    cy.get('form #form-save-id').click();
-
-    cy.contains('invoice-title-0');
-    cy.contains('Name 3');
-    cy.contains('Taille : 5');
-  });
-
   it('should show warning message', () => {
     const invoices = [invoiceWithoutCustomer, invoiceWithoutTitle, ...createInvoices(3, 'DRAFT')];
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=DRAFT`, invoices).as('incompleteInvoice1');

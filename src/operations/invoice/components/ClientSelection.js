@@ -1,7 +1,7 @@
 import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
-import { customerProvider } from '../../providers/customer-provider';
+import customerProvider from 'src/providers/customer-provider';
 
 const useStyle = makeStyles(() => ({
   formControl: {

@@ -10,17 +10,8 @@
     "@sentry/react": "^7.22.0",
     "@sentry/tracing": "^7.22.0",
     "axios": "^0.27.2",
-<<<<<<< HEAD
     "bpartners-react-client": "^0.8.0",
     "dayjs": "^1.11.7",
-=======
-    "bpartners-react-client": "^0.7.0",
-    "dayjs": "^1.11.7",
-<<<<<<< HEAD
-    "bpartners-react-client": "^0.7.0",
-=======
->>>>>>> bf40c14 (feat: invoice payment regulation)
->>>>>>> b235141 (feat: invoice payment regulation)
     "debounce": "^1.2.1",
     "draft-js": "^0.11.7",
     "draft-js-export-html": "^1.4.1",

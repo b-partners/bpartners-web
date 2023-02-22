@@ -103,7 +103,7 @@ const RegulationsForm = props => {
       <FormControl sx={{ margin: 1 }}>
         <BPFormField validate={validatePercentage} type='number' form={form} name='percent' label='Pourcentage' />
         <BPFormField type='date' form={form} name='maturityDate' label='Date limite de paiement' />
-        <BPFormField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} data-testid="payment-regulation-comment-id" />
+        <BPFormField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} data-testid='payment-regulation-comment-id' />
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           <BPButton id='form-regulation-save-id' onClick={handleSubmit} label={isCreation ? 'Créer' : 'Modifier'} icon={<SaveIcon />} sx={{ marginBlock: 1 }} />
           <BPButton id='form-regulation-cancel-id' onClick={onCancel} label='Annuler' icon={<CancelIcon />} sx={{ marginBlock: 1 }} />
