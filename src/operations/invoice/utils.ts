@@ -1,8 +1,8 @@
-import { getUserInfo } from 'src/providers/invoice-provider';
+import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
 import { accessTokenItem } from 'src/providers/auth-provider';
-import { InvoiceStatusFR } from '../../constants/invoice-status';
-import { Attachment, CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { getUserInfo } from 'src/providers/invoice-provider';
 import { getFilenameMeta } from '../../common/utils/file';
+import { InvoiceStatusFR } from '../../constants/invoice-status';
 
 /**
  * **INVOICE**

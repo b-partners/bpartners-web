@@ -25,6 +25,12 @@ const productProvider: BpDataProviderType = {
     const toSend = { ...emptyToNull(resources[0]) };
     return [await payingApi().createProducts(accountId, [toSend])];
   },
+  update: async function (resources: any[]): Promise<any[]> {
+    const userId = authProvider.getCachedWhoami().user.id;
+    const accountId = (await singleAccountGetter(userId)).id;
+    const { data } = await payingApi().crupdateProducts(accountId, resources);
+    return data;
+  },
 };
 
 export default productProvider;

@@ -10,11 +10,12 @@ export const FLEX_CENTER = { display: 'flex', justifyContent: 'center', bgcolor:
 export const LOGIN_FORM = { display: 'flex', flexDirection: 'column', bgcolor: lightGreyColor, minWidth: '30vh' };
 export const LOGIN_FORM_BUTTON = {
   textTransform: 'none',
-  bgcolor: darkGreyColor,
+  bgcolor: 'rgba(156, 37, 90, 1)',
   color: whiteColor,
+  width: '300px',
   '&:hover': {
     background: darkGreyColor,
   },
 };
 
-export const BP_B_LOGO = { width: 60, position: 'absolute', top: '3%', left: '3%' };
+export const BP_B_LOGO = { width: 100, position: 'absolute', top: '3%', left: '3%' };

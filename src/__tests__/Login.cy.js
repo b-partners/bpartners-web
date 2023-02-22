@@ -39,6 +39,7 @@ describe(specTitle('Login'), () => {
   it('should redirect to LoginPage when not connected', () => {
     mount(<App />);
     cy.contains('Bienvenue !');
+    cy.contains("L'assistant intelligent qui accélère la croissance des artisans et indépendants.");
     cy.contains('Se connecter');
   });
 
