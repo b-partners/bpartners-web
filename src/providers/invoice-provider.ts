@@ -2,7 +2,7 @@ import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
 import emptyToNull from 'src/common/utils/empty-to-null';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
@@ -31,9 +31,14 @@ export const invoiceProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (invoices: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const formatedInvoice = { ...emptyToNull(invoices[0]) };
+    const formattedInvoice: Invoice = { ...emptyToNull(invoices[0]) };
+
+    if (formattedInvoice.paymentType === InvoicePaymentTypeEnum.CASH) {
+      formattedInvoice.paymentRegulations = undefined;
+    }
+
     return payingApi()
-      .crupdateInvoice(accountId, invoices[0].id, formatedInvoice)
+      .crupdateInvoice(accountId, invoices[0].id, formattedInvoice)
       .then(({ data }) => [data]);
   },
 };
