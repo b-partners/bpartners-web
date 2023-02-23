@@ -52,7 +52,6 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Email');
 
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
 
     cy.get('#email').type('invalid email{enter}');
@@ -98,7 +97,6 @@ describe(specTitle('Customers'), () => {
     cy.get('[name="customers"]').click();
     cy.wait('@getCustomers1');
     cy.contains('Email');
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
     cy.contains('Création de client');
     cy.get("[data-testid='closeIcon']").click();

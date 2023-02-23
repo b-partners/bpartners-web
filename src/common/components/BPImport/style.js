@@ -11,9 +11,7 @@ export const ERROR_BOX_STYLE = {
 };
 
 export const IMPORT_BUTTON_STYLE = {
-  width: '12rem',
-  marginInline: 1,
-  marginBottom: 1,
+  width: '10rem',
   paddingBlock: 1,
 };
 

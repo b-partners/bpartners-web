@@ -41,7 +41,6 @@ describe(specTitle('Import Products'), () => {
     cy.get('[name="products"]').click();
     cy.wait('@getProducts');
 
-    cy.get('[data-testid="open-popover"]').click();
     cy.get('[data-testid="import-modal-button"]').click();
 
     cy.contains('Importer des produits');
@@ -85,7 +84,6 @@ describe(specTitle('Import Products'), () => {
     cy.get('[name="products"]').click();
     cy.wait('@getProducts');
 
-    cy.get('[data-testid="open-popover"]').click();
     cy.get('[data-testid="import-modal-button"]').click();
 
     cy.contains('Importer des produits');
