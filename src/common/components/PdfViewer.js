@@ -15,9 +15,7 @@ export const ErrorHandling = ({ errorMessage }) => (
 );
 
 const useStyle = makeStyles(() => ({
-  pdf: {
-    width: '100%',
-  },
+  pdf: {},
 }));
 
 const PdfViewer = props => {
@@ -55,7 +53,7 @@ const PdfViewer = props => {
             </a>
           </Stack>
         </Box>
-        <CardContent sx={url && !isLoading && { paddingInline: 0 }}>
+        <CardContent sx={{ ...(url && !isLoading && { paddingInline: 0 }), justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
           {url ? (
             <Pdf
               className={classes.pdf}
