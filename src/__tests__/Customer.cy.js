@@ -22,7 +22,8 @@ describe(specTitle('Customers'), () => {
         })
     );
 
-    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers1');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers1).as('getCustomers1');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=2&pageSize=5', customers1).as('getCustomers1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
@@ -62,7 +63,7 @@ describe(specTitle('Customers'), () => {
     cy.contains('Ce champ est requis');
 
     cy.get('#lastName').type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers2).as('getCustomers2');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers2).as('getCustomers2');
     cy.get('#firstName').type('FirstName 11');
     cy.get('#address').type('Wall Street 2');
     cy.get('#phone').type('55 55 55{enter}');
@@ -106,6 +107,19 @@ describe(specTitle('Customers'), () => {
     cy.contains('Page : 1');
   });
 
+  it('Should test pagination', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.wait('@getCustomers1');
+    cy.contains('Email');
+    cy.contains('Page : 1');
+
+    cy.get('[data-testid="pagination-left-id"]').click();
+    cy.contains('Page : 2');
+    cy.contains('Taille : 3');
+  });
+
   it('Should edit a customer', () => {
     mount(<App />);
     cy.wait('@getUser1');
@@ -123,12 +137,11 @@ describe(specTitle('Customers'), () => {
     cy.get('#email').clear().type('test@gmail.com');
 
     cy.get('#lastName').clear().type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers3).as('getCustomers3');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers3).as('getCustomers3');
     cy.get('#firstName').clear().type('FirstName 11');
     cy.get('#address').clear().type('Wall Street 2');
     cy.get('#phone').clear().type('55 55 55{enter}');
 
-    cy.wait('@getCustomers3');
     cy.contains('Bonjour First Name 1 !');
 
     cy.contains('Wall Street 2');

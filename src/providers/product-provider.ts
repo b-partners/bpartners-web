@@ -24,7 +24,7 @@ const productProvider: BpDataProviderType = {
   },
   getList: async function (page: number, perPage: number, categorized: any): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().getProducts(accountId, true);
+    const { data } = await payingApi().getProducts(accountId, true, undefined, undefined, undefined, page, perPage);
     return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
