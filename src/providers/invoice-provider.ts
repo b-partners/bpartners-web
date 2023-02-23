@@ -7,7 +7,7 @@ import emptyToNull from 'src/common/utils/empty-to-null';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
-  const accountId = (await singleAccountGetter(userId)).id;
+  const accountId: any = (await singleAccountGetter(userId)).id;
   return { userId, accountId };
 };
 

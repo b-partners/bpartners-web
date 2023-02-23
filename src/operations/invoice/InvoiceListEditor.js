@@ -1,13 +1,12 @@
-import { Clear } from '@mui/icons-material';
-import { Box, Card, CardContent, CardHeader, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Tab, Tabs } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useEffect, useReducer, useState } from 'react';
 import { InvoiceStatus } from 'bpartners-react-client';
-import PdfViewer from '../../common/components/PdfViewer';
+import { useReducer } from 'react';
 import TabPanel from '../../common/components/TabPanel';
 import InvoiceForm from './InvoiceForm';
 import InvoiceList from './InvoiceList';
-import { getInvoicePdfUrl, InvoiceActionType, invoiceListInitialState, PDF_WIDTH, viewScreenState } from './utils';
+import InvoicePdfDocument, { CancelButton } from './InvoicePdfDocument';
+import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -15,32 +14,6 @@ const useStyle = makeStyles(() => ({
 }));
 
 const TAB_PANEL_STYLE = { padding: 0 };
-
-const CancelButton = ({ onClick }) => (
-  <Tooltip title='Retourner a la liste'>
-    <IconButton onClick={onClick}>
-      <Clear />
-    </IconButton>
-  </Tooltip>
-);
-
-const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
-  const [documentUrl, setDocumentUrl] = useState('');
-  const classes = useStyle();
-
-  useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
-  }, [selectedInvoice]);
-
-  return (
-    <Card className={classes.card}>
-      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
-      <CardContent>
-        <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
-      </CardContent>
-    </Card>
-  );
-};
 
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {

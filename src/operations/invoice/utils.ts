@@ -180,6 +180,7 @@ export const invoiceListInitialState = {
 
 // CONSTANT
 export const PDF_WIDTH = window.screen.width * 0.7;
+export const PDF_EDITION_WIDTH = window.screen.width * 0.45;
 
 // check that all informations in one invoice are correct
 // - had title, ref, customer and products

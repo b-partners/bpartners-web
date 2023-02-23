@@ -16,6 +16,7 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-07-18T05:34:20'),
     status: TransactionStatus.PENDING,
     type: TransactionTypeEnum.INCOME,
+    invoice: null,
   },
   {
     id: 'transaction2',
@@ -32,6 +33,7 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-07-18T05:34:20'),
     status: TransactionStatus.UPCOMING,
     type: TransactionTypeEnum.INCOME,
+    invoice: null,
   },
   {
     id: 'transaction3',
@@ -41,6 +43,7 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-08-18T05:34:20'),
     status: TransactionStatus.BOOKED,
     type: TransactionTypeEnum.OUTCOME,
+    invoice: null,
   },
   {
     id: 'transaction4',
@@ -57,6 +60,7 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-07-17T03:24:00'),
     status: TransactionStatus.REJECTED,
     type: TransactionTypeEnum.OUTCOME,
+    invoice: null,
   },
   {
     id: 'transaction5',
@@ -66,6 +70,7 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-06-18T05:34:20'),
     status: TransactionStatus.UNKNOWN,
     type: TransactionTypeEnum.INCOME,
+    invoice: null,
   },
 ];
 

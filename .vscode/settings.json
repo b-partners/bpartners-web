@@ -9,5 +9,6 @@
     "amplify/backend/awscloudformation": true
   },
   "jest.jestCommandLine": "npm test --",
-  "prettier.configPath": "./.prettierrc.json"
+  "prettier.configPath": "./.prettierrc.json",
+  "cSpell.words": ["bpartners", "Crupdate", "Datetime"]
 }
