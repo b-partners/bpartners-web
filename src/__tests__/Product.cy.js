@@ -56,7 +56,6 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description1');
 
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
 
     cy.get('#description').type('test description').blur();
@@ -77,7 +76,6 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description1');
 
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
 
     cy.get('#description').type('new description');
@@ -147,7 +145,6 @@ describe(specTitle('Products'), () => {
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
 
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
 
     cy.contains(/TVA/gi).should('not.exist');
@@ -166,7 +163,6 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description1');
 
-    cy.get('[data-testId="open-popover"]').click();
     cy.get('[data-testId="create-button"]').click();
 
     cy.contains('Création de produit');
