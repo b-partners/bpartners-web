@@ -11,6 +11,13 @@ const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => 
   return { userId, accountId };
 };
 
+export const importProducts = async (body: any) => {
+  const userId = authProvider.getCachedWhoami().user.id;
+  const accountId = (await singleAccountGetter(userId)).id;
+  const { data } = await payingApi().importProducts(accountId, body);
+  return data;
+};
+
 const productProvider: BpDataProviderType = {
   async getOne(userId: string) {
     throw new Error('Function not implemented.');
