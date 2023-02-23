@@ -7,12 +7,13 @@ import ProductModel from 'src/assets/ProductModel.png';
 import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL_STYLE } from './style';
 import { importCustomers } from 'src/providers/customer-provider';
 
-import { useNotify } from 'react-admin';
+import { useNotify, useRefresh } from 'react-admin';
 import { importProducts } from 'src/providers/product-provider';
 import { toArrayBuffer } from 'src/common/utils/to-array-buffer';
 
 export const BPImport = props => {
   const notify = useNotify();
+  const refresh = useRefresh();
   const { source } = props;
   const subject = source === 'customer' ? 'clients' : 'produits';
   const customerTemplateUrl = process.env.REACT_APP_CUSTOMER_TEMPLATE_URL;
@@ -50,6 +51,7 @@ export const BPImport = props => {
       source === 'customer' ? await importCustomers(file) : await importProducts(file);
       notify('Importation effectuée avec succès.', { type: 'success' });
       handleClose();
+      refresh();
     } catch ({ response }) {
       const {
         data: { message },
