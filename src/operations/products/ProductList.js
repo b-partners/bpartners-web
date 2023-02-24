@@ -8,11 +8,12 @@ import { prettyPrintMinors as ppVatMinors } from '../../common/utils/vat';
 import BPListActions from '../../common/components/BPListActions';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import { BPImport } from 'src/common/components/BPImport';
 
 const ProductList = props => (
   <List
     {...props}
-    actions={<BPListActions />}
+    actions={<BPListActions importComponent={<BPImport source='product' />} />}
     resource='products'
     hasCreate={true}
     hasEdit={false}

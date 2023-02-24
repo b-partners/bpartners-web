@@ -36,13 +36,13 @@ const Pagination = () => {
   return (
     <Toolbar style={{ padding: 0 }}>
       {page > 1 && (
-        <Button style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
+        <Button data-testid='pagination-right-id' style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
           <ChevronLeft />
           Précédent
         </Button>
       )}
       {(resourcesCount === pageSize || !lastPage || page < lastPage) && (
-        <Button style={{ marginLeft: 6 }} color='primary' key='next' onClick={() => setPage(page + 1)}>
+        <Button data-testid='pagination-left-id' style={{ marginLeft: 6 }} color='primary' key='next' onClick={() => setPage(page + 1)}>
           Suivant
           <ChevronRight />
         </Button>

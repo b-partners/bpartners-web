@@ -1,4 +1,5 @@
 import { Datagrid, List, TextField, useListContext } from 'react-admin';
+import { BPImport } from '../../common/components/BPImport';
 import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
@@ -8,7 +9,7 @@ const CustomerList = props => (
   <List
     {...props}
     perPage={pageSize}
-    actions={<BPListActions />}
+    actions={<BPListActions importComponent={<BPImport source='customer' />} />}
     resource='customers'
     hasCreate={true}
     hasEdit={false}

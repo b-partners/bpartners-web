@@ -6,7 +6,7 @@ import { Storefront } from '@mui/icons-material';
 import { Avatar, Box, Grid, Link, Typography, Alert } from '@mui/material';
 import { BP_COLOR } from '../../bp-theme';
 import { AVATAR_CONTAINER_STYLE, AVATAR_STYLE, BACKDROP_STYLE, BOX_CONTAINER_STYLE, DETAIL_CONTAINER_STYLE, LINK_STYLE } from './style';
-import { COMMON_STYLE } from 'src/common/utils/beta-test-warning';
+import { COMMON_STYLE } from 'src/common/components/BPBetaTestWarning';
 
 const MarketplaceList = () => (
   <div>

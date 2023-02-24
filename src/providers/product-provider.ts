@@ -11,13 +11,20 @@ const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => 
   return { userId, accountId };
 };
 
+export const importProducts = async (body: any) => {
+  const userId = authProvider.getCachedWhoami().user.id;
+  const accountId = (await singleAccountGetter(userId)).id;
+  const { data } = await payingApi().importProducts(accountId, body);
+  return data;
+};
+
 const productProvider: BpDataProviderType = {
   async getOne(userId: string) {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, categorized: any): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().getProducts(accountId, true);
+    const { data } = await payingApi().getProducts(accountId, true, undefined, undefined, undefined, page, perPage);
     return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {

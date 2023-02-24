@@ -22,6 +22,7 @@ import {
   getInvoicePdfUrl,
   InvoiceActionType,
   invoiceDateValidator,
+  PDF_EDITION_WIDTH,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
@@ -30,7 +31,7 @@ import {
 } from './utils';
 
 const useStyle = makeStyles(() => ({
-  document: { width: '60%' },
+  document: { width: '60%', position: 'relative' },
   formControl: {
     width: 300,
     justifyContent: 'space-around',
@@ -113,7 +114,6 @@ const InvoiceForm = props => {
   };
 
   useEffect(() => {
-    console.log(toEdit);
     getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
     updateInvoiceForm(toEdit);
   }, [toEdit]);
@@ -126,8 +126,8 @@ const InvoiceForm = props => {
   const { companyInfo } = useGetAccountHolder();
 
   return (
-    <Box sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-      <Box className={className}>
+    <Box className={className} sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+      <Box>
         <Card className={classes.card}>
           <CardContent>
             <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
@@ -177,7 +177,13 @@ const InvoiceForm = props => {
           </CardContent>
         </Card>
       </Box>
-      <PdfViewer url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0} className={classes.document}>
+      <PdfViewer
+        width={PDF_EDITION_WIDTH}
+        url={documentUrl}
+        filename={selectedInvoiceRef}
+        isPending={nbPendingInvoiceCrupdate > 0}
+        className={classes.document}
+      >
         <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />
         </IconButton>
