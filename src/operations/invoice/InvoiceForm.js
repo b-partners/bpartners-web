@@ -3,7 +3,7 @@ import { Box, Card, CardContent, FormControl, IconButton, Typography } from '@mu
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
-import { useNotify } from 'react-admin';
+import { useNotify, useRefresh } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
@@ -50,6 +50,7 @@ const InvoiceForm = props => {
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const classes = useStyle();
   const notify = useNotify();
+  const refresh = useRefresh();
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -105,6 +106,7 @@ const InvoiceForm = props => {
       await onSubmit();
       if (Object.keys(form.formState.errors).length !== 0) {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
+        refresh();
       } else {
         onClose(form.watch());
       }
