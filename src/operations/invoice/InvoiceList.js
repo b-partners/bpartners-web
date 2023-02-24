@@ -15,7 +15,7 @@ import TooltipButton from '../../common/components/TooltipButton';
 import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { draftInvoiceValidator, getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils';
+import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -43,9 +43,7 @@ const InvoiceGridTable = props => {
   const onConvertToProposal = data => event => {
     event.stopPropagation();
     if (!draftInvoiceValidator(data)) {
-      notify('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0', {
-        type: 'warning',
-      });
+      notify(InvoiceFieldErrorMessage, { type: 'warning' });
     } else {
       convertToProposal(
         event,
