@@ -2,7 +2,6 @@ import { singleAccountGetter } from './account-provider';
 import { prospectingApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { maxPageSize } from './data-provider';
 
 export const marketplaceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
