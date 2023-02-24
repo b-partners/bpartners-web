@@ -2,12 +2,13 @@ import { singleAccountGetter } from './account-provider';
 import { prospectingApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
+import { maxPageSize } from './data-provider';
 
 export const marketplaceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
-    const { data } = await prospectingApi().getMarketplaces(accountId);
+    const { data } = await prospectingApi().getMarketplaces(accountId, page, perPage);
     return data;
   },
   getOne: function (id: string): Promise<any> {
