@@ -1,47 +1,37 @@
+import { Attachment as AttachmentIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import AttachmentIcon from '@mui/icons-material/Attachment';
 
-import { Card, CardContent, Chip, Typography } from '@mui/material';
+import { Card, CardContent, Chip } from '@mui/material';
 import { useState } from 'react';
 
 import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { formatDatetime } from '../../common/utils/date';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
+import { formatDatetime } from '../../common/utils/date';
 import { coloredPrettyPrintMinors } from '../../common/utils/money';
 
-import samplePdf from './testInvoice.pdf';
-
-import TransactionChart from './TransactionChart';
-import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
-import TransactionCategorySelection from './TransactionCategorySelection';
 import Pagination, { pageSize } from '../../common/components/Pagination';
-
-const Document = ({ transactionRef }) => (
-  <Card sx={{ marginLeft: 2, marginTop: 2, minWidth: 500 }}>
-    <CardContent>
-      <Typography variant='h4'>Justificatif</Typography>
-      <Typography variant='h6'>{transactionRef}</Typography>
-      <Pdf file={samplePdf /*TODO: retrieve from FilesAPI*/}>
-        <PdfPage pageNumber={1} />
-      </Pdf>
-    </CardContent>
-  </Card>
-);
+import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
+import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
+import TransactionCategorySelection from './TransactionCategorySelection';
+import TransactionChart from './TransactionChart';
+import TransactionLinkInvoice from './TransactionLinkInvoice';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
 );
 
 const TransactionList = props => {
-  const [documentState, setDocumentState] = useState({ documentId: null, shouldShowDocument: false });
+  const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false });
 
-  const onDocumentIconClicked = documentId => {
-    setDocumentState({ shouldShowDocument: true, documentId });
+  const onDocumentIconClicked = document => {
+    setDocumentState({ shouldShowDocument: true, document });
+  };
+  const closeDocument = () => {
+    setDocumentState(e => ({ ...e, shouldShowDocument: false }));
   };
 
-  return (
+  return !documentState.shouldShowDocument ? (
     <>
       <TransactionChart />
       <Card sx={{ marginTop: 1, border: 0 }}>
@@ -61,13 +51,15 @@ const TransactionList = props => {
             component={ListComponent}
             hasList={false}
             hasShow={false}
-            aside={documentState.shouldShowDocument ? <Document transactionRef={documentState.documentId} /> : null}
+            aside={false}
           >
             <TransactionGrid onDocumentIconClicked={onDocumentIconClicked} />
           </List>
         </CardContent>
       </Card>
     </>
+  ) : (
+    <InvoicePdfDocument selectedInvoice={documentState.document} onClose={closeDocument} />
   );
 };
 
@@ -84,18 +76,19 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
-          render={({ id }) => (
-            <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(id)}>
+          render={({ id, invoice }) => (
+            <Tooltip title='Vous pourrez bientôt ajouter des justificatifs' onClick={() => onDocumentIconClicked(invoice)}>
               <span>
                 {/* Do NOT remove span otherwise Tooltip won't show while IconButton is disabled
                     https://mui.com/material-ui/react-tooltip/#disabled-elements */}
-                <IconButton id={`document-button-${id}`} disabled={true}>
+                <IconButton id={`document-button-${id}`} disabled={invoice === null}>
                   <AttachmentIcon />
                 </IconButton>
               </span>
             </Tooltip>
           )}
         />
+        <FunctionField render={transaction => <TransactionLinkInvoice transaction={transaction} />} label='' />
       </Datagrid>
     )
   );

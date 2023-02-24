@@ -8,6 +8,7 @@ import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
+import { createInvoices } from './mocks/responses/invoices-api';
 
 const date = new Date().toISOString().slice(0, 10);
 
@@ -201,12 +202,37 @@ describe(specTitle('Transactions'), () => {
     cy.contains('En réception').should('not.exist');
   });
 
-  it.skip(/*TODO*/ 'can have document', () => {
+  it('Link transaction to invoice', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
+    });
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions).as('getTransactions5');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
+    cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-id-0`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
+    cy.wait('@getTransactions5');
 
-    cy.get('[id=document-button-transaction2]').click();
+    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="AddLinkIcon"] > path').click();
+
+    cy.wait('@getConfirmedInvoices');
+    cy.wait('@getPaidInvoices');
+
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+    const newTransaction = transactions.slice();
+    newTransaction[0].invoice = { fileId: 'file-id-1', invoiceId: 'invoice-id-1' };
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', newTransaction).as('getTransactionsWithInvoice5');
+
+    cy.get('#link-invoice-button-id').click();
+    cy.wait('@linkInvoiceAndTransaction');
+    cy.wait('@getTransactionsWithInvoice5');
+
+    cy.get('#document-button-transaction1').click();
+    cy.contains('Justificatif');
+    cy.get('[data-testid="ClearIcon"]').click();
+    cy.contains('Vue mensuelle');
   });
 });
