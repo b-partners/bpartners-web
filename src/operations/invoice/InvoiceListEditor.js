@@ -31,21 +31,15 @@ const invoiceListReducer = (state, { type, payload }) => {
 const InvoiceListEditor = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
+
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-  const handleSwitchTab = (_e, newTabIndex) => {
-    dispatch({
-      type: InvoiceActionType.SET,
-      payload: { tabIndex: newTabIndex },
-    });
-  };
+
+  const handleSwitchTab = (_e, newTabIndex) => stateChangeHandling({ tabIndex: newTabIndex });
+
   const returnToList = invoice => {
-    stateChangeHandling({ viewScreen: viewScreenState.LIST });
-    if (invoice && invoice.status === InvoiceStatus.CONFIRMED) {
-      handleSwitchTab(null, 2);
-    } else {
-      handleSwitchTab(null, 0);
-    }
+    const newTabIndex = invoice && invoice.status == InvoiceStatus.CONFIRMED ? 2 : tabIndex;
+    stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
   };
 
   return (

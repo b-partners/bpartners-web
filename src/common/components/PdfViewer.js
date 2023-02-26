@@ -1,5 +1,5 @@
 import { DownloadForOffline, Error } from '@mui/icons-material';
-import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography, CardActions } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useCallback, useEffect, useState } from 'react';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
@@ -47,6 +47,7 @@ const PdfViewer = props => {
         <Box display='flex' justifyContent='space-between'>
           <CardHeader title='Justificatif' />
           <Stack flexDirection='row' sx={{ alignItems: 'center', padding: '0.2rem 0.2rem 0 0' }}>
+            {url && !isLoading && <HorizontalPagination activeStep={pages.current} maxSteps={pages.last} setActiveStep={setPage} />}
             {children}
             <a href={url} target='_blank' rel='noreferrer' download={filename + '.pdf'}>
               <TooltipButton title='Télécharger' icon={<DownloadForOffline />} size='small' />
@@ -69,9 +70,6 @@ const PdfViewer = props => {
             <Typography variant='body2'>En attente du document ...</Typography>
           )}
         </CardContent>
-        <CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {url && !isLoading && <HorizontalPagination activeStep={pages.current} maxSteps={pages.last} setActiveStep={setPage} />}
-        </CardActions>
       </Card>
     </Box>
   );

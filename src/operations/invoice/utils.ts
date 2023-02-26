@@ -14,6 +14,8 @@ export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
 export const PRODUCT_NAME = 'products';
 
 // invoice validator
+export const InvoiceFieldErrorMessage =
+  'Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0';
 type InvoiceValidatorParams = {
   sendingDate?: string;
   validityDate?: string;
