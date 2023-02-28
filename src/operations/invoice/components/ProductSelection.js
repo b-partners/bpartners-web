@@ -2,11 +2,11 @@ import { Add } from '@mui/icons-material';
 import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
-import productProvider from '../../providers/product-provider';
-import { BPButton } from '../../common/components/BPButton';
-import { includesObject } from '../../common/utils/includes-object';
+import productProvider from '../../../providers/product-provider';
+import { BPButton } from '../../../common/components/BPButton';
+import { includesObject } from '../../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
-import { ProductActionType, productValidationHandling } from './utils';
+import { ProductActionType, productValidationHandling } from '../utils';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -70,7 +70,7 @@ export const ProductSelection = ({ name, form }) => {
           selectedProduct.length > 0 &&
           selectedProduct.map(product => <ProductItem key={product.id} product={product} handleProduct={handleProduct} />)}
       </Box>
-      <Box sx={{ width: '100%', marginBottom: 10 }}>
+      <Box sx={{ width: '100%' }}>
         {!state.status ? (
           <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
         ) : (
