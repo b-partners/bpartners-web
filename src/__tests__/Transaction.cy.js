@@ -59,7 +59,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('- 0.05 €');
     cy.contains('+ 5.00 €');
     cy.contains('TVA 20%');
-    cy.contains('18/08/2022 05:34:20');
+    cy.contains('18/08/2022, 05:34:20');
   });
 
   it('should test pagination', () => {
@@ -217,9 +217,10 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@getTransactions5');
 
     cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="AddLinkIcon"] > path').click();
-
     cy.wait('@getConfirmedInvoices');
     cy.wait('@getPaidInvoices');
+    cy.contains(`Lier la transaction`);
+    cy.contains(`à une facture :`);
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const newTransaction = transactions.slice();
