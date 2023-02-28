@@ -13,6 +13,10 @@ export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
 export const PRODUCT_NAME = 'products';
 export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
+export const DEFAULT_GLOBAL_DISCOUNT = 0;
+export const GLOBAL_DISCOUNT = 'globalDiscount';
+export const PERCENT_VALUE = 'percentValue';
+export const GLOBAL_DISCOUNT_PERCENT_VALUE = `${GLOBAL_DISCOUNT}.${PERCENT_VALUE}`;
 
 // invoice validator
 export const InvoiceFieldErrorMessage =
@@ -173,6 +177,10 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: 'CASH',
   paymentRegulations: [],
+  globalDiscount: {
+    percentValue: null,
+    amountValue: null,
+  },
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
