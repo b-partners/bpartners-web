@@ -1,4 +1,4 @@
-import { Invoice, InvoiceStatus } from 'bpartners-react-client';
+import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
 import { TPaymentRegulation } from 'src/operations/invoice/utils';
 import { customers1 } from './customer-api';
 import { products } from './product-api';
@@ -19,13 +19,16 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
       toPayAt: '2022-05-15',
       validityDate: '2022-05-15',
       status: status,
-      paymentType: 'CASH',
       paymentRegulations: [],
       title: 'invoice-title-' + i,
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
-      paymentType: 'CASH',
       totalVat: 2000,
+      paymentType: 'CASH',
+      globalDiscount: {
+        percentValue: 1000,
+        amountValue: null,
+      },
       metadata: {
         submittedAt: '2023-01-10T11:05:22.362Z',
       },
@@ -34,7 +37,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
   return invoices;
 };
 
-export const invoiceWithoutCustomer = {
+export const invoiceWithoutCustomer: Invoice = {
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
   paymentUrl: 'paymentUrl',
@@ -48,13 +51,18 @@ export const invoiceWithoutCustomer = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  paymentType: 'CASH',
+  globalDiscount: {
+    percentValue: 1000,
+    amountValue: null,
+  },
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },
 };
 
-export const invoiceWithoutTitle = {
-  customers: customers1[1],
+export const invoiceWithoutTitle: Invoice = {
+  customer: customers1[1],
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
   paymentUrl: 'paymentUrl',
@@ -68,6 +76,11 @@ export const invoiceWithoutTitle = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  paymentType: 'CASH',
+  globalDiscount: {
+    percentValue: 1000,
+    amountValue: null,
+  },
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },

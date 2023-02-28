@@ -57,6 +57,9 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="title"]').clear().type(newTitle);
     cy.get('[name="ref"]').clear().type(newRef);
 
+    const globalDiscount_percentValue = 100;
+    cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
+
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
@@ -85,6 +88,7 @@ describe(specTitle('Invoice'), () => {
     const paymentComment = 'This is a long comment for testing comment view';
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
+      expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
       expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
       expect(newInvoice.paymentRegulations[0].comment).to.be.equal(paymentComment);
