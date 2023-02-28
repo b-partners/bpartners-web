@@ -31,6 +31,10 @@ import {
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
   validatePaymentRegulation,
+  GLOBAL_DISCOUNT,
+  DEFAULT_GLOBAL_DISCOUNT,
+  GLOBAL_DISCOUNT_PERCENT_VALUE,
+  PERCENT_VALUE,
 } from './utils';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 
@@ -65,6 +69,7 @@ const InvoiceForm = props => {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
       // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
       form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
+      form.setValue(GLOBAL_DISCOUNT_PERCENT_VALUE, percentToMajors(newInvoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT);
     }
   };
 
@@ -85,9 +90,11 @@ const InvoiceForm = props => {
     onPending(InvoiceActionType.START_PENDING);
     const submittedAt = new Date();
     const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
+    const globalDiscount = { percentValue: percentToMinors(parseInt(form.watch(GLOBAL_DISCOUNT_PERCENT_VALUE))) };
 
     const toSubmit = {
       ...form.watch(),
+      globalDiscount,
       delayPenaltyPercent,
       sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00'),
       validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59'),
@@ -162,6 +169,7 @@ const InvoiceForm = props => {
                   form={form}
                 />
               </FormControl>
+              <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
               <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
