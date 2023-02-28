@@ -178,7 +178,7 @@ export const invoiceInitialValue: Invoice = {
   paymentType: 'CASH',
   paymentRegulations: [],
   globalDiscount: {
-    percentValue: null,
+    percentValue: 1000,
     amountValue: null,
   },
 };
