@@ -152,6 +152,8 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('display current balance all the time', () => {
+    const newDate = new Date(2023, 1, 1);
+    cy.clock(newDate);
     mount(<App />);
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
