@@ -28,7 +28,7 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=5`, products).as('getProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=15`, products).as('getProducts');
     cy.intercept('POST', `/accounts/mock-account-id1/products`, products).as('postProducts');
   });
 
@@ -111,7 +111,7 @@ describe(specTitle('Products'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
     cy.contains('Édition de produit');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=5`, newProduct2).as('getModifiedProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=15`, newProduct2).as('getModifiedProducts');
 
     cy.get('#description').clear().type('test description');
     cy.get('#unitPrice').clear().type(1);

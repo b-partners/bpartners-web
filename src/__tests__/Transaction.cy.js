@@ -21,8 +21,8 @@ describe(specTitle('Transactions'), () => {
     cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
 
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=5', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=15', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -206,9 +206,9 @@ describe(specTitle('Transactions'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', transactions).as('getTransactions5');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=1500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=1500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
     cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-id-0`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();
@@ -224,7 +224,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const newTransaction = transactions.slice();
     newTransaction[0].invoice = { fileId: 'file-id-1', invoiceId: 'invoice-id-1' };
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=5', newTransaction).as('getTransactionsWithInvoice5');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', newTransaction).as('getTransactionsWithInvoice5');
 
     cy.get('#link-invoice-button-id').click();
     cy.wait('@linkInvoiceAndTransaction');
