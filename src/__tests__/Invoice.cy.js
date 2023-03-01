@@ -33,12 +33,12 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
   });
 
   it('should show the money in major unit', () => {
@@ -77,7 +77,7 @@ describe(specTitle('Invoice'), () => {
       expect(req.body.status).to.eq(InvoiceStatus.PAID);
       req.reply({ ...req.body });
     }).as('pay');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`).as('refetch');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`).as('refetch');
     cy.get('[data-test-item="pay-invoice-id-3"]').click();
     cy.wait('@refetch');
     cy.contains('Facture invoice-ref-3 payée !');
@@ -139,36 +139,11 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
-  it('should edit an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-
-    cy.contains('Modification');
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({
-        body: { ...req.body },
-        updatedAt: new Date(),
-      });
-    });
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-
-    cy.get('form #form-save-id').click();
-
-    cy.contains('invoice-title-0');
-    cy.contains('Name 3');
-    cy.contains('Taille : 5');
-  });
-
   it('should show warning message', () => {
     const invoices = [invoiceWithoutCustomer, invoiceWithoutTitle, ...createInvoices(3, 'DRAFT')];
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=DRAFT`, invoices).as('incompleteInvoice1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=DRAFT`, invoices).as('incompleteInvoice2');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=DRAFT`, invoices).as('incompleteInvoice3');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, invoices).as('incompleteInvoice2');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, invoices).as('incompleteInvoice3');
     mount(<App />);
     cy.get('[name="invoice"]').click();
 

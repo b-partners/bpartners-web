@@ -1,9 +1,9 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, IconButton, Typography } from '@mui/material';
+import { Box, Card, CardContent, FormControl, IconButton, Typography, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
 import { useEffect } from 'react';
-import { useNotify } from 'react-admin';
+import { useNotify, useRefresh } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
@@ -13,8 +13,8 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import PdfViewer from '../../common/components/PdfViewer';
 import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { ClientSelection } from './ClientSelection';
-import { ProductSelection } from './ProductSelection';
+import { ClientSelection } from './components/ClientSelection';
+import { ProductSelection } from './components/ProductSelection';
 
 import {
   DEFAULT_DELAY_PENALTY_PERCENT,
@@ -23,12 +23,20 @@ import {
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
+  PAYMENT_REGULATIONS,
+  PAYMENT_TYPE,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  validatePaymentRegulation,
+  GLOBAL_DISCOUNT,
+  DEFAULT_GLOBAL_DISCOUNT,
+  GLOBAL_DISCOUNT_PERCENT_VALUE,
+  PERCENT_VALUE,
 } from './utils';
+import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 
 const useStyle = makeStyles(() => ({
   document: { width: '60%', position: 'relative' },
@@ -50,6 +58,7 @@ const InvoiceForm = props => {
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const classes = useStyle();
   const notify = useNotify();
+  const refresh = useRefresh();
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -60,15 +69,15 @@ const InvoiceForm = props => {
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
       // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
       form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
-      // TODO: implement this so we can delete this
-      form.setValue('paymentRegulations', undefined);
+      form.setValue(GLOBAL_DISCOUNT_PERCENT_VALUE, percentToMajors(newInvoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT);
     }
   };
 
   const validateInvoice = ifValid => {
     return form.handleSubmit(data => {
       productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
-      if (!form.formState.errors[PRODUCT_NAME]) {
+      const paymentRegulationError = validatePaymentRegulation(data[PAYMENT_TYPE], data[PAYMENT_REGULATIONS]);
+      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME]) {
         ifValid();
       }
     });
@@ -81,9 +90,11 @@ const InvoiceForm = props => {
     onPending(InvoiceActionType.START_PENDING);
     const submittedAt = new Date();
     const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
+    const globalDiscount = { percentValue: percentToMinors(parseInt(form.watch(GLOBAL_DISCOUNT_PERCENT_VALUE))) };
 
     const toSubmit = {
       ...form.watch(),
+      globalDiscount,
       delayPenaltyPercent,
       sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00'),
       validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59'),
@@ -105,6 +116,7 @@ const InvoiceForm = props => {
       await onSubmit();
       if (Object.keys(form.formState.errors).length !== 0) {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
+        refresh();
       } else {
         onClose(form.watch());
       }
@@ -157,9 +169,11 @@ const InvoiceForm = props => {
                   form={form}
                 />
               </FormControl>
+              <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
               <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
+              <PaymentRegulationsForm form={form} />
               <Box sx={{ display: 'block' }}>
                 <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                   <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>

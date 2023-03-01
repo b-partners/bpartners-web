@@ -22,8 +22,8 @@ describe(specTitle('Customers'), () => {
         })
     );
 
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers1).as('getCustomers1');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=2&pageSize=5', customers1).as('getCustomers1');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers1).as('getCustomers1');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=2&pageSize=15', customers1).as('getCustomers1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
@@ -46,6 +46,20 @@ describe(specTitle('Customers'), () => {
   });
 
   it('Should create customer', () => {
+    cy.intercept('POST', '/accounts/mock-account-id1/customers', req => {
+      const newCustomer = {
+        address: 'Wall Street 2',
+        comment: 'comment',
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+
+      expect(req.body[0]).to.deep.eq(newCustomer);
+      req.reply([customers2[3]]);
+    }).as('modifyCustomers');
+
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
@@ -62,12 +76,13 @@ describe(specTitle('Customers'), () => {
     cy.contains('Ce champ est requis');
 
     cy.get('#lastName').type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers2).as('getCustomers2');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers2).as('getCustomers2');
     cy.get('#firstName').type('FirstName 11');
     cy.get('#address').type('Wall Street 2');
+    cy.get('#comment').type('comment');
     cy.get('#phone').type('55 55 55{enter}');
 
-    cy.intercept('POST', '/accounts/mock-account-id1/customers', [customers2[3]]).as('modifyCustomers');
+    cy.wait('@modifyCustomers');
 
     cy.contains('Bonjour First Name 1 !');
 
@@ -130,15 +145,31 @@ describe(specTitle('Customers'), () => {
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
-    cy.intercept('PUT', '/accounts/mock-account-id1/customers', [customers2[3]]).as('updateCustomers');
+    cy.intercept('PUT', '/accounts/mock-account-id1/customers', req => {
+      const updatedCustomer = {
+        address: 'Wall Street 2',
+        comment: '',
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        id: 'customer1',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+      expect(req.body[0]).to.deep.eq(updatedCustomer);
+      req.reply([customers2[3]]);
+    }).as('updateCustomers');
 
     cy.get('#email').clear().type('test@gmail.com');
 
     cy.get('#lastName').clear().type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=5', customers3).as('getCustomers3');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers3).as('getCustomers3');
     cy.get('#firstName').clear().type('FirstName 11');
     cy.get('#address').clear().type('Wall Street 2');
+    cy.get('#comment').contains('comment customer 1');
+    cy.get('#comment').clear();
     cy.get('#phone').clear().type('55 55 55{enter}');
+
+    cy.wait('@updateCustomers');
 
     cy.contains('Bonjour First Name 1 !');
 

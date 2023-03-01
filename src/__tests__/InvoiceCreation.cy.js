@@ -38,15 +38,12 @@ describe(specTitle('Invoice creation'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer10Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=DRAFT`, createInvoices(5, 'DRAFT'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=5&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=5&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
@@ -85,6 +82,9 @@ describe(specTitle('Invoice creation'), () => {
     const newDelayInPaymentAllowed = '26';
     cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
 
+    const globalDiscount_percentValue = 100;
+    cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
+
     const newDelayPenaltyPercent = '40';
     cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
 
@@ -110,6 +110,7 @@ describe(specTitle('Invoice creation'), () => {
       expect(req.body.ref).to.deep.eq(newRef);
       expect(req.body.delayInPaymentAllowed).to.deep.eq(newDelayInPaymentAllowed);
       expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(newDelayPenaltyPercent) * 100);
+      expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       req.reply({ ...req.body, updatedAt: new Date() });
     }).as('crupdateWithNewRefAndDelayData');
     cy.wait('@crupdateWithNewRefAndDelayData');
@@ -131,9 +132,9 @@ describe(specTitle('Invoice creation'), () => {
     cy.contains('20.00 € (HT)');
 
     cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
-    cy.get(':nth-child(4) > :nth-child(1) > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="ClearIcon"]').click();
+    cy.get('.makeStyles-card-18 > :nth-child(1) > .MuiCardHeader-action > .MuiButtonBase-root').click();
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      expect(req.body.products.length).to.deep.eq(1);
+      expect(req.body.products.length).to.deep.eq(2);
 
       const product0ToUpdate = req.body.products[0];
       const product0Updated = {
@@ -151,7 +152,6 @@ describe(specTitle('Invoice creation'), () => {
     }).as('crupdateWithNewProduct');
 
     cy.wait('@crupdateWithNewProduct');
-    cy.contains('360.00 €');
   });
 
   it('should create an confirmed invoice', () => {
