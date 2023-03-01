@@ -10,6 +10,7 @@ import { importCustomers } from 'src/providers/customer-provider';
 import { useNotify, useRefresh } from 'react-admin';
 import { importProducts } from 'src/providers/product-provider';
 import { toArrayBuffer } from 'src/common/utils/to-array-buffer';
+import { BP_BUTTON } from 'src/bp-theme';
 
 export const BPImport = props => {
   const notify = useNotify();
@@ -96,7 +97,7 @@ export const BPImport = props => {
             Ou mieux encore, téléchargez ce modèle et copiez vos {subject} pour être sûr que les colonnes correspondent.
             <a href={source === 'customer' ? customerTemplateUrl : productTemplateUrl} target='_blank' rel='noreferrer' download>
               <Tooltip title='Télécharger le modèle'>
-                <IconButton size='small' component='span'>
+                <IconButton size='small' component='span' sx={BP_BUTTON}>
                   <FileDownload />
                 </IconButton>
               </Tooltip>
@@ -121,7 +122,7 @@ export const BPImport = props => {
             ) : (
               <label htmlFor='file-input' id='upload-file-label'>
                 <Tooltip title='importer un fichier'>
-                  <IconButton size='small' component='span'>
+                  <IconButton component='span' sx={BP_BUTTON}>
                     <InsertDriveFile />
                   </IconButton>
                 </Tooltip>
