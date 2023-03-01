@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { useListContext } from 'react-admin';
 
-export const pageSize = 5;
+export const pageSize = 15;
 
 const Pagination = () => {
   const [lastPage, setLastPage] = useState(null);
