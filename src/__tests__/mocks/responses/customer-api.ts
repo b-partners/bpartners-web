@@ -8,6 +8,7 @@ export const customers1: Array<Customer> = [
     email: 'Email 1',
     phone: '11 11 11',
     address: '2589 Nelm Street',
+    comment: 'comment customer 1',
   },
   {
     id: 'customer2',
@@ -16,6 +17,7 @@ export const customers1: Array<Customer> = [
     email: 'Email 2',
     phone: '22 22 22',
     address: '4836 Pheasant Ridge Road',
+    comment: 'comment customer 2',
   },
   {
     id: 'customer3',
@@ -24,6 +26,7 @@ export const customers1: Array<Customer> = [
     email: 'Email 3',
     phone: '33 33 33',
     address: '1321 Pyramid Valley Road',
+    comment: 'comment customer 3',
   },
 ];
 
@@ -36,6 +39,7 @@ export const customers2: Array<Customer> = [
     email: 'Email 1',
     phone: '55 55 55',
     address: 'Wall Street 2',
+    comment: 'comment 01',
   },
 ];
 

@@ -10,6 +10,7 @@ const CustomerCreate = props => (
         <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />
         <TextInput name='address' source='address' label='Adresse' validate={required()} />
         <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
+        <TextInput name='comment' source='comment' label='Commentaire' multiline sx={{ width: 220 }} />
       </SimpleForm>
     </Create>
   </BPFormLayout>

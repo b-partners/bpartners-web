@@ -1,9 +1,9 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { prettyPrintMinors } from '../../common/utils/money';
-import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from './utils';
+import { prettyPrintMinors } from '../../../common/utils/money';
+import useGetAccountHolder from '../../../common/hooks/use-get-account-holder';
+import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from '../utils';
 
 const useStyle = makeStyles(() => ({
   card: {

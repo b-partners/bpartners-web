@@ -1,4 +1,4 @@
-import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { CreateAttachment, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from 'bpartners-react-client';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { getFilenameMeta } from '../../common/utils/file';
@@ -12,6 +12,11 @@ import { InvoiceStatusFR } from '../../constants/invoice-status';
 export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
 export const PRODUCT_NAME = 'products';
+export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
+export const DEFAULT_GLOBAL_DISCOUNT = 0;
+export const GLOBAL_DISCOUNT = 'globalDiscount';
+export const PERCENT_VALUE = 'percentValue';
+export const GLOBAL_DISCOUNT_PERCENT_VALUE = `${GLOBAL_DISCOUNT}.${PERCENT_VALUE}`;
 
 // invoice validator
 export const InvoiceFieldErrorMessage =
@@ -160,7 +165,7 @@ const generatedInvoiceRef = () => {
   return `REF-${todayDate}`;
 };
 
-export const invoiceInitialValue: any = {
+export const invoiceInitialValue: Invoice = {
   id: '',
   ref: generatedInvoiceRef(),
   title: 'Nouveau devis',
@@ -170,6 +175,12 @@ export const invoiceInitialValue: any = {
   validityDate: new Date().toLocaleDateString('fr-ca'),
   status: InvoiceStatus.DRAFT,
   comment: '',
+  paymentType: 'CASH',
+  paymentRegulations: [],
+  globalDiscount: {
+    percentValue: 1000,
+    amountValue: null,
+  },
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
@@ -211,4 +222,53 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
       throw e;
     }
   }
+};
+
+// Payment regulation
+export const PAYMENT_TYPE = 'paymentType';
+export const PAYMENT_REGULATIONS = 'paymentRegulations';
+export const DefaultPaymentRegulation: any = {
+  percent: 10,
+  comment: null,
+  maturityDate: new Date().toLocaleDateString('fr-ca'),
+};
+export const ScreenMode = {
+  VIEW: false,
+  EDIT: true,
+};
+export const paymentRegulationErrorMessage = `Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement`;
+export const validatePaymentRegulation = (paymentRegulationType: InvoicePaymentTypeEnum, paymentRegulation: any[]) => {
+  if (paymentRegulationType === InvoicePaymentTypeEnum.IN_INSTALMENT && (paymentRegulation || []).length === 0) {
+    return true;
+  }
+  return false;
+};
+
+export type TPaymentRegulation = {
+  /**TODO: payment regulation type in code gen if different to this**/
+  amount: number;
+  percent: number;
+  comment: string;
+  maturityDate: string;
+};
+
+export const sumOfRegulationsPercentages = (paymentRegulations: TPaymentRegulation[]) => {
+  const paymentRegulationsPercentages = paymentRegulations.map(e => e.percent).reduce((a, b) => a + b, 0);
+  return 100 - paymentRegulationsPercentages;
+};
+
+type ValidateRegulationPercentage = {
+  value: string;
+  paymentRegulations: TPaymentRegulation[];
+};
+export const validateRegulationPercentage = (params: ValidateRegulationPercentage) => {
+  const { paymentRegulations, value } = params;
+  const restOfPercentages = sumOfRegulationsPercentages(paymentRegulations);
+
+  if (value.length === 0) {
+    return 'Ce champ est requis';
+  } else if (+value > restOfPercentages) {
+    return `Les mensualités ne doivent pas dépasser les 100%, veuillez utiliser un mensualité inférieur ou égale a ${restOfPercentages}%`;
+  }
+  return true;
 };

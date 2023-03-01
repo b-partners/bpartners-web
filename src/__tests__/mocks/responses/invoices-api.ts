@@ -1,8 +1,12 @@
+import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
+import { TPaymentRegulation } from 'src/operations/invoice/utils';
 import { customers1 } from './customer-api';
 import { products } from './product-api';
 
-export const createInvoices = (n: number, status: string) => {
-  const invoices = [];
+const paymentRegulations: TPaymentRegulation[] = [{ amount: 0, comment: '', maturityDate: '', percent: 12 }];
+
+export const createInvoices = (n: number, status: InvoiceStatus) => {
+  const invoices: Invoice[] = [];
   for (let i = 0; i < n; i++) {
     invoices.push({
       customer: customers1[i < 2 ? 0 : i < 4 ? 1 : 2],
@@ -15,11 +19,16 @@ export const createInvoices = (n: number, status: string) => {
       toPayAt: '2022-05-15',
       validityDate: '2022-05-15',
       status: status,
+      paymentRegulations: [],
       title: 'invoice-title-' + i,
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
-      paymentType: 'CASH',
       totalVat: 2000,
+      paymentType: 'CASH',
+      globalDiscount: {
+        percentValue: 1000,
+        amountValue: null,
+      },
       metadata: {
         submittedAt: '2023-01-10T11:05:22.362Z',
       },
@@ -28,7 +37,7 @@ export const createInvoices = (n: number, status: string) => {
   return invoices;
 };
 
-export const invoiceWithoutCustomer = {
+export const invoiceWithoutCustomer: Invoice = {
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
   paymentUrl: 'paymentUrl',
@@ -42,13 +51,18 @@ export const invoiceWithoutCustomer = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  paymentType: 'CASH',
+  globalDiscount: {
+    percentValue: 1000,
+    amountValue: null,
+  },
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },
 };
 
-export const invoiceWithoutTitle = {
-  customers: customers1[1],
+export const invoiceWithoutTitle: Invoice = {
+  customer: customers1[1],
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
   paymentUrl: 'paymentUrl',
@@ -62,7 +76,41 @@ export const invoiceWithoutTitle = {
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
+  paymentType: 'CASH',
+  globalDiscount: {
+    percentValue: 1000,
+    amountValue: null,
+  },
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },
 };
+
+export const restInvoiceRegulation = [
+  {
+    maturityDate: '2023-02-22',
+    paymentRequest: {
+      id: 'string',
+      paymentUrl: 'string',
+      amount: 10,
+      payerName: 'string',
+      payerEmail: 'string',
+      label: 'string',
+      reference: 'string',
+      initiatedDatetime: '2023-02-22T11:51:41.097Z',
+    },
+  },
+  {
+    maturityDate: '2023-02-22',
+    paymentRequest: {
+      id: 'string',
+      paymentUrl: 'string',
+      amount: 90,
+      payerName: 'string',
+      payerEmail: 'string',
+      label: 'string',
+      reference: 'string',
+      initiatedDatetime: '2023-02-22T11:51:41.097Z',
+    },
+  },
+];
