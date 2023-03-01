@@ -91,6 +91,7 @@ describe(specTitle('Invoice'), () => {
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
       expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
+      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(8000);
       expect(newInvoice.paymentRegulations[0].comment).to.be.equal(paymentComment);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
@@ -99,7 +100,7 @@ describe(specTitle('Invoice'), () => {
         body: { ...newInvoice },
         updatedAt: new Date(),
       });
-    });
+    }).as('paymentRegulation1');
 
     cy.get('[data-testid="EditIcon"]').click();
     cy.get('[name=percent]').clear().type(20);
@@ -108,7 +109,30 @@ describe(specTitle('Invoice'), () => {
     cy.contains('This is a long comment ...');
     cy.get('[data-testid="ExpandMoreIcon"]').click();
 
+    cy.wait('@paymentRegulation1');
     cy.contains('Commentaire : ');
     cy.contains('This is a long comment for testing comment view');
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      const newInvoice = req.body;
+      expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
+      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
+      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(2000);
+      expect(newInvoice.paymentRegulations[2].percent).to.be.equal(6000);
+
+      newInvoice.paymentRegulations = restInvoiceRegulation;
+
+      req.reply({
+        body: { ...newInvoice },
+        updatedAt: new Date(),
+      });
+    }).as('paymentRegulation2');
+
+    cy.get('#form-create-regulation-id').click();
+    cy.get('[name=percent]').clear().type(20);
+    cy.get('[data-testid=payment-regulation-comment-id]').type(paymentComment);
+    cy.get('#form-regulation-save-id').click();
+
+    cy.wait('@paymentRegulation2');
   });
 });

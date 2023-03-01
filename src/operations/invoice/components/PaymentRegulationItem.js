@@ -57,7 +57,7 @@ const PaymentRegulationItem = props => {
         </Box>
         <Divider sx={{ marginBottom: 1 }} />
         <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography>{haveComment ? commentCutter(comment, !expandState).comment : 'Aucune commentaire'}</Typography>
+          <Typography>{haveComment ? commentCutter(comment, !expandState).comment : 'Aucun commentaire'}</Typography>
           <Box>
             {haveComment && commentCutter(comment).needExpand && (
               <IconButton onClick={handleExpandClick}>{!expandState ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton>
