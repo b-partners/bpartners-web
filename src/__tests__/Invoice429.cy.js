@@ -1,4 +1,5 @@
 import { mount } from '@cypress/react';
+import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -6,7 +7,7 @@ import App from '../App';
 import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
@@ -32,9 +33,12 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, status, page } = req.query;
+      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
+    });
   });
 
   it('should retry on 429', () => {
@@ -43,8 +47,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
 
     cy.get("[name='create-draft-invoice']").click();
-
-    cy.wait('@getDraftsPer5Page1');
 
     const newRef = 'A new ref';
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
@@ -55,7 +57,7 @@ describe(specTitle('Invoice'), () => {
 
     // select customer
     cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
+    cy.get('[data-value="customer-2-id"]').click();
 
     //select product
     cy.get('#invoice-product-selection-button-id').click();
