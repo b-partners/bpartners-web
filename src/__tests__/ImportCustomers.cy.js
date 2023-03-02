@@ -23,6 +23,7 @@ describe(specTitle('Import Customers'), () => {
     );
 
     cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers1).as('getCustomers');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=500', customers1).as('getAllCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');

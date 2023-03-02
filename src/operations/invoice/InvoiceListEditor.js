@@ -38,7 +38,7 @@ const InvoiceListEditor = () => {
   const handleSwitchTab = (_e, newTabIndex) => stateChangeHandling({ tabIndex: newTabIndex });
 
   const returnToList = invoice => {
-    const newTabIndex = invoice && invoice.status == InvoiceStatus.CONFIRMED ? 2 : tabIndex;
+    const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
     stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
   };
 

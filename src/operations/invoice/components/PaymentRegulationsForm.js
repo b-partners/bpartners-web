@@ -1,5 +1,5 @@
 import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/icons-material';
-import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material';
+import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Paper, Select } from '@mui/material';
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -37,7 +37,7 @@ const PaymentRegulationsForm = props => {
   const handleCancel = () => setScreenMode({ screenMode: VIEW, toEditIndex: null });
   const handleSave = data => {
     if (toEditIndex === null) {
-      setValue(PAYMENT_REGULATIONS, [...paymentRegulations, data]);
+      setValue(PAYMENT_REGULATIONS, [...(paymentRegulations ? paymentRegulations : []), data]);
     } else {
       const newPaymentRegulations = paymentRegulations.slice();
       newPaymentRegulations[toEditIndex] = data;

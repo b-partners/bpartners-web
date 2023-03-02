@@ -1,4 +1,4 @@
-import { mount } from '@cypress/react';
+import { mount, unmount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import LoginSuccessPage from '../security/LoginSuccessPage';
@@ -15,6 +15,46 @@ import transactionCategory1 from './mocks/responses/transaction-category-api';
 describe(specTitle('Login'), () => {
   beforeEach(() => {
     cy.stub(Redirect, 'redirect').as('redirect');
+  });
+
+  it('Should log out', () => {
+    cy.intercept('POST', '/token', token1).as('token');
+    cy.intercept('GET', '/whoami', whoami1).as('whoami');
+
+    cy.then(
+      async () =>
+        await authProvider.login('dummy', 'dummy', {
+          redirectionStatusUrls: {
+            successurl: 'dummy',
+            FailureUrl: 'dummy',
+          },
+        })
+    );
+    const date = new Date().toISOString().slice(0, 10);
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=15', transactions).as('getTransactions');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactions**`, transactions).as('getTransactions');
+    cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
+      'getTransactionCategory'
+    );
+
+    mount(<App />);
+
+    cy.wait('@token');
+    cy.wait('@whoami');
+    cy.wait('@getUser1');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[name="logout"]').click();
+
+    cy.intercept('GET', '/**', { statusCode: 403 });
   });
 
   it('MainPage redirects to authUrl on login button clicked', () => {
@@ -50,44 +90,5 @@ describe(specTitle('Login'), () => {
     cy.get('#register').click();
     cy.wait('@onboardingInitiation');
     cy.get('@redirect').should('have.been.calledOnce');
-  });
-
-  it('Should log out', () => {
-    cy.intercept('POST', '/token', token1).as('token');
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-
-    cy.then(
-      async () =>
-        await authProvider.login('dummy', 'dummy', {
-          redirectionStatusUrls: {
-            successurl: 'dummy',
-            FailureUrl: 'dummy',
-          },
-        })
-    );
-    const date = new Date().toISOString().slice(0, 10);
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=15', transactions).as('getTransactions');
-    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
-    cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
-      'getTransactionCategory'
-    );
-
-    mount(<App />);
-
-    cy.wait('@token');
-    cy.wait('@whoami');
-    cy.wait('@getUser1');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-
-    cy.get('[name="logout"]').click();
-
-    cy.intercept('GET', '/whoami', { statusCode: 403 });
   });
 });
