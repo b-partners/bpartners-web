@@ -33,7 +33,7 @@ const dataProvider: RaDataProviderType = {
     }
 
     const filter = params.filter;
-    const result = await getProvider(resourceType).getList(page, perPage, filter);
+    const result = await getProvider(resourceType).getList(page, perPage, filter || {});
     return { data: result, total: Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {

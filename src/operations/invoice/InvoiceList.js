@@ -159,7 +159,7 @@ const InvoiceList = props => {
         resource='invoices'
         filter={{ invoiceTypes }}
         component={ListComponent}
-        pagination={<Pagination />}
+        pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
           <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>

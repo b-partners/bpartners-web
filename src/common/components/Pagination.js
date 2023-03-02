@@ -1,57 +1,61 @@
-import { Button, Toolbar, Typography } from '@mui/material';
+import { Toolbar, Typography, IconButton, Box, TextField, MenuItem } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { useListContext } from 'react-admin';
+import useGetPaginationCount from '../hooks/use-get-pagination-count';
 
 export const pageSize = 15;
 
-const Pagination = () => {
-  const [lastPage, setLastPage] = useState(null);
-  const { data, page, isLoading, setPage } = useListContext();
-  const resourcesCount = data ? data.length : 0;
+const pageSizeList = [10, 15, 30, 50];
 
-  useEffect(() => {
-    if (!lastPage && lastPage !== 0 && !isLoading && resourcesCount === 0 /* TODO(empty-pages): test! */) {
-      setLastPage(page - 1);
-      setPage(lastPage);
-    }
-  }, [resourcesCount]);
-
-  if (lastPage && page === 1) {
-    // react-admin redirects to page 1 if no more data to show
-    // We dont't like that behavior!
-    // Let the user stay on the last page.
-    setPage(lastPage);
-  }
-
-  const onPrevClick = () => {
-    setPage(page - 1);
-    setLastPage(null);
-  };
+const Pagination = props => {
+  const { filter, name } = props;
+  const { page, isLoading, setPage, perPage, setPerPage, resource } = useListContext();
+  const { paginationSize } = useGetPaginationCount(resource, perPage, filter && { filter, name });
 
   if (isLoading) {
     return <Toolbar variant='dense' />;
   }
 
   return (
-    <Toolbar style={{ padding: 0 }}>
-      {page > 1 && (
-        <Button data-testid='pagination-right-id' style={{ marginRight: 6 }} color='primary' key='prev' onClick={onPrevClick}>
+    <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box>
+        <IconButton
+          disabled={page === 1}
+          data-testid='pagination-right-id'
+          style={{ marginRight: 6 }}
+          color='primary'
+          key='prev'
+          onClick={() => setPage(page - 1)}
+        >
           <ChevronLeft />
-          Précédent
-        </Button>
-      )}
-      {(resourcesCount === pageSize || !lastPage || page < lastPage) && (
-        <Button data-testid='pagination-left-id' style={{ marginLeft: 6 }} color='primary' key='next' onClick={() => setPage(page + 1)}>
-          Suivant
+        </IconButton>
+        <IconButton
+          disabled={page === paginationSize}
+          data-testid='pagination-left-id'
+          style={{ marginLeft: 6 }}
+          color='primary'
+          key='next'
+          onClick={() => setPage(page + 1)}
+        >
           <ChevronRight />
-        </Button>
-      )}
-      <div style={{ marginLeft: 'auto' }}>
-        <Typography variant='body2'>
-          Page : {page} &nbsp;&nbsp;Taille : {resourcesCount}
+        </IconButton>
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', height: '100%' }}>
+        <Typography sx={{ marginRight: 1 }} variant='body1'>
+          Page : {page} / {paginationSize}
         </Typography>
-      </div>
+        <Typography sx={{ marginInline: 1 }} variant='body1'>
+          Taille :
+        </Typography>
+        <TextField select sx={{ width: 70, position: 'relative', bottom: 2 }} value={perPage} variant='outlined' type='number'>
+          {pageSizeList.map(option => (
+            <MenuItem key={`pageSize-${option}`} onClick={() => setPerPage(option)} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
     </Toolbar>
   );
 };
