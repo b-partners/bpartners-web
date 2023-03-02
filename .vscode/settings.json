@@ -10,6 +10,11 @@
   },
   "jest.jestCommandLine": "npm test --",
   "prettier.configPath": "./.prettierrc.json",
-  "cSpell.words": ["bpartners", "Crupdate", "Datetime"],
+  "cSpell.words": [
+    "bpartners",
+    "Crupdate",
+    "Datetime",
+    "testid"
+  ],
   "editor.formatOnSave": true
 }
