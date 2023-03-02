@@ -30,6 +30,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2021`, transactionsSummary1).as('getEmptyTransactionSummary');
+    cy.intercept('POST', `accounts/${accounts1[0].id}/transactions/${transactions[0].id}/transactionCategories`, transactions).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
       'getTransactionCategory'
     );
@@ -59,7 +60,8 @@ describe(specTitle('Transactions'), () => {
     cy.contains('- 0.05 €');
     cy.contains('+ 5.00 €');
     cy.contains('TVA 20%');
-    cy.contains('18/08/2022 05:34:20');
+    cy.contains('18/08/2022');
+    cy.contains('05:34:20');
   });
 
   it('should test pagination', () => {
@@ -209,8 +211,8 @@ describe(specTitle('Transactions'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=1500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=1500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
     cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-id-0`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();

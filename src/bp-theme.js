@@ -8,7 +8,7 @@ export const BP_COLOR = {
   solid_grey: 'rgb(0, 0, 0, 0.05)',
 };
 
-const BP_BUTTON = {
+export const BP_BUTTON = {
   color: '#fff',
   backgroundColor: BP_COLOR[20],
   '&:hover, &:active': {
