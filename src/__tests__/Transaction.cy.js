@@ -214,6 +214,8 @@ describe(specTitle('Transactions'), () => {
 
     cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="AddLinkIcon"] > path').click();
 
+    cy.contains(/Lier la transaction (.*) à une facture :/);
+
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const newTransaction = transactions.slice();
     newTransaction[0].invoice = { fileId: 'file-id-1', invoiceId: 'invoice-id-1' };
