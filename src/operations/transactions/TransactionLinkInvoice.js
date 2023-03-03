@@ -47,7 +47,7 @@ const SelectionDialog = props => {
     <Dialog sx={{ height: '80vh', minHeight: '80vh' }} fullWidth={true} maxWidth='md' open={open} onClose={close}>
       <DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-          <Typography>Liée la transaction "{label}" à une facture :</Typography>
+          <Typography>Lier la transaction "{label}" à une facture :</Typography>
           <Tooltip title='Annuler'>
             <IconButton onClick={close}>
               <ClearIcon data-testid='closeIcon' />
@@ -90,7 +90,7 @@ const TransactionLinkInvoice = props => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-      <Tooltip title='Liée à un devis'>
+      <Tooltip title='Lier à un devis'>
         <IconButton>
           <AddLinkIcon onClick={toggleDialog} />
         </IconButton>
