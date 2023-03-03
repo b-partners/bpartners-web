@@ -1,0 +1,60 @@
+import { Prospect } from 'bpartners-react-client';
+
+export const prospects: Prospect[] = [
+  {
+    id: 'prospect1_id',
+    name: 'john doe',
+    phone: '+261340465338',
+    email: 'johnDoe@gmail.com',
+    location: 'paris',
+    status: 'TO_CONTACT',
+  },
+  {
+    id: 'prospect2_id',
+    name: 'jane doe',
+    phone: '+261340465339',
+    email: 'janeDoe@gmail.com',
+    location: 'paris',
+    status: 'CONVERTED',
+  },
+  {
+    id: 'prospect3_id',
+    name: 'markus adams',
+    phone: '+261340465340',
+    email: 'markusAdams@gmail.com',
+    location: 'paris',
+    status: 'TO_CONTACT',
+  },
+  {
+    id: 'prospect4_id',
+    name: 'Alyssa Hain',
+    phone: '+261340465341',
+    email: 'alyssaHain@gmail.com',
+    location: 'paris',
+    status: 'CONTACTED',
+  },
+  {
+    id: 'prospect5_id',
+    name: 'Michele Klaffs',
+    phone: '+261340465342',
+    email: 'micheleKlaffs@gmail.com',
+    location: 'paris',
+    status: 'CONVERTED',
+  },
+  {
+    id: 'prospect6_id',
+    name: 'Michele Klaffs',
+    phone: '+261340465342',
+    email: 'micheleKlaffs@gmail.com',
+    location: 'paris',
+    status: 'CONTACTED',
+  },
+  {
+    id: 'prospect7_id',
+    name: 'Killy Waddilove',
+    phone: '+261340465344',
+    email: 'killyWaddilove@gmail.com',
+    location: 'paris',
+    status: 'CONTACTED',
+  },
+];

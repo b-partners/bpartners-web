@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport } from '@mui/icons-material';
+import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport, ReceiptLong } from '@mui/icons-material';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
@@ -44,6 +44,7 @@ const BpMenu = () => {
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />
+        <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </Menu>
 
