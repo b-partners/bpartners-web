@@ -140,7 +140,7 @@ const InvoiceForm = props => {
   return (
     <Box className={className} sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
       <Box>
-        <Card className={classes.card}>
+        <Card sx={{ border: 'none' }}>
           <CardContent>
             <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
               <FormControl className={classes.formControl}>

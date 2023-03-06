@@ -62,7 +62,7 @@ const InvoiceListEditor = () => {
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (
-        <Card className={classes.card}>
+        <Card sx={{ border: 'none' }}>
           <CardHeader
             title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
             action={<CancelButton onClick={returnToList} />}
