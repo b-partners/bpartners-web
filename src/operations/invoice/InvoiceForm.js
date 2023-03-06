@@ -170,7 +170,7 @@ const InvoiceForm = props => {
                 />
               </FormControl>
               <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
-              <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
+              <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' label='Client' form={form} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <PaymentRegulationsForm form={form} />
