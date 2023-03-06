@@ -143,35 +143,33 @@ const InvoiceForm = props => {
         <Card sx={{ border: 'none' }}>
           <CardContent>
             <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
-              <FormControl className={classes.formControl}>
-                <BPFormField name='title' label='Titre' form={form} />
-                <BPFormField name='ref' label='Référence' form={form} />
-                <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
-                <BPFormField
-                  validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
-                  name='validityDate'
-                  label='Date limite de validité'
-                  type='date'
-                  form={form}
-                />
-                <BPFormField
-                  validate={value => value && value >= 0}
-                  name='delayInPaymentAllowed'
-                  label='Délai de retard de paiement autorisé (jours)'
-                  type='number'
-                  form={form}
-                />
-                <BPFormField
-                  validate={value => value && value >= 0 && value <= 100}
-                  name={DELAY_PENALTY_PERCENT}
-                  label='Pourcentage de penalité de retard'
-                  type='number'
-                  form={form}
-                />
-              </FormControl>
+              <BPFormField name='title' label='Titre' form={form} />
+              <BPFormField name='ref' label='Référence' form={form} />
+              <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
+              <BPFormField
+                validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
+                name='validityDate'
+                label='Date limite de validité'
+                type='date'
+                form={form}
+              />
+              <BPFormField
+                validate={value => value && value >= 0}
+                name='delayInPaymentAllowed'
+                label='Délai de retard de paiement autorisé (jours)'
+                type='number'
+                form={form}
+              />
+              <BPFormField
+                validate={value => value && value >= 0 && value <= 100}
+                name={DELAY_PENALTY_PERCENT}
+                label='Pourcentage de penalité de retard'
+                type='number'
+                form={form}
+              />
               <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
-              <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
               <ClientSelection name='customer' label='Client' form={form} />
+              <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
               <ProductSelection name={PRODUCT_NAME} form={form} />
               <PaymentRegulationsForm form={form} />
               <Box sx={{ display: 'block' }}>
