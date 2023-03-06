@@ -12,7 +12,7 @@ const PaymentRegulationItem = props => {
 
   const haveComment = comment && comment.length > 0;
 
-  const percentValue = paymentRequest ? paymentRequest.amount / totalPriveWithVat : percent;
+  const percentValue = paymentRequest ? (paymentRequest.amount / totalPriveWithVat).toFixed(1) : percent;
 
   const commentCutter = (comment, show = true) => {
     if (comment.length > 23) {
