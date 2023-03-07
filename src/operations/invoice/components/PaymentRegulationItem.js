@@ -4,7 +4,7 @@ import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon, Delete as D
 import { BP_COLOR } from 'src/bp-theme';
 
 const PaymentRegulationItem = props => {
-  const { data, onEdit, onRemove, totalPriveWithVat } = props;
+  const { data, onEdit, onRemove, totalPrice } = props;
   const { comment, maturityDate, percent, paymentRequest } = data;
   const [expandState, setExpandState] = useState(false);
 
@@ -12,7 +12,7 @@ const PaymentRegulationItem = props => {
 
   const haveComment = comment && comment.length > 0;
 
-  const percentValue = paymentRequest ? (paymentRequest.amount / totalPriveWithVat).toFixed(1) : percent;
+  const percentValue = paymentRequest ? (paymentRequest.amount / totalPrice).toFixed(1) : percent;
 
   const commentCutter = (comment, show = true) => {
     if (comment.length > 23) {

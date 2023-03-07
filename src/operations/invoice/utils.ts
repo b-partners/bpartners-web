@@ -13,6 +13,7 @@ export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
 export const PRODUCT_NAME = 'products';
 export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
+export const TOTAL_PRICE_WITHOUT_VAT = 'totalPriceWithoutVat';
 export const DEFAULT_GLOBAL_DISCOUNT = 0;
 export const GLOBAL_DISCOUNT = 'globalDiscount';
 export const PERCENT_VALUE = 'percentValue';

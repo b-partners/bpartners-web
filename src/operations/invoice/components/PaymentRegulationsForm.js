@@ -12,6 +12,7 @@ import {
   PAYMENT_REGULATIONS,
   PAYMENT_TYPE,
   ScreenMode,
+  TOTAL_PRICE_WITHOUT_VAT,
   TOTAL_PRICE_WITH_VAT,
   validatePaymentRegulation,
   validateRegulationPercentage,
@@ -29,7 +30,7 @@ const PaymentRegulationsForm = props => {
 
   const paymentRegulationType = watch(PAYMENT_TYPE);
   const paymentRegulations = watch(PAYMENT_REGULATIONS);
-  const totalPriceWithVat = watch(TOTAL_PRICE_WITH_VAT);
+  const totalPrice = watch(TOTAL_PRICE_WITH_VAT) || watch(TOTAL_PRICE_WITHOUT_VAT);
   const isInInstalment = screenMode === VIEW && paymentRegulationType === IN_INSTALMENT;
 
   const handleEdit = index => setScreenMode({ screenMode: EDIT, toEditIndex: index });
@@ -66,7 +67,7 @@ const PaymentRegulationsForm = props => {
         />
       )}
       {error && <FormHelperText sx={{ width: 300 }}>{paymentRegulationErrorMessage}</FormHelperText>}
-      {isInInstalment && paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove, totalPriceWithVat))}
+      {isInInstalment && paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove, totalPrice))}
       {isInInstalment && (
         <BPButton id='form-create-regulation-id' onClick={handleCreate} label='Ajouter un paiement' icon={<AddIcon />} sx={{ marginBottom: 5, marginTop: 1 }} />
       )}
@@ -74,7 +75,7 @@ const PaymentRegulationsForm = props => {
   );
 };
 
-const paymentRegulationItems = (onEdit, onRemove, totalPriveWithVat) => (paymentRegulation, index) => {
+const paymentRegulationItems = (onEdit, onRemove, totalPrice) => (paymentRegulation, index) => {
   const handleEdit = () => {
     onEdit(index);
   };
@@ -82,7 +83,7 @@ const paymentRegulationItems = (onEdit, onRemove, totalPriveWithVat) => (payment
 
   return (
     <PaymentRegulationItem
-      totalPriveWithVat={totalPriveWithVat}
+      totalPrice={totalPrice}
       key={`paymentRegulation-key-${index}`}
       data={paymentRegulation}
       onEdit={handleEdit}

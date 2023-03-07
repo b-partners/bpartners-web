@@ -1,8 +1,8 @@
-import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, IconButton, Typography, Select } from '@mui/material';
+import { RefreshOutlined as RefreshIcon, Save, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Box, Card, CardContent, FormControl, IconButton, Typography, Select, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import debounce from 'debounce';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
@@ -37,26 +37,12 @@ import {
   PERCENT_VALUE,
 } from './utils';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-
-const useStyle = makeStyles(() => ({
-  document: { width: '60%', position: 'relative' },
-  formControl: {
-    width: 300,
-    justifyContent: 'space-around',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  card: {
-    border: 'none',
-  },
-}));
+import { INVOICE_EDITION } from './style';
+import InvoiceAccordion from './components/InvoiceAccordion';
 
 const InvoiceForm = props => {
-  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
+  const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
-  const classes = useStyle();
   const notify = useNotify();
   const refresh = useRefresh();
 
@@ -136,66 +122,52 @@ const InvoiceForm = props => {
   }, []);
 
   const { companyInfo } = useGetAccountHolder();
+  const [openedAccordion, openAccordion] = useState(1);
+  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
+  const totalPrice = isSubjectToVat ? totalPriceWithVatFromProducts(form.watch().products) : totalPriceWithoutVatFromProducts(form.watch().products);
 
   return (
-    <Box className={className} sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-      <Box>
-        <Card sx={{ border: 'none' }}>
-          <CardContent>
-            <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
-              <BPFormField name='title' label='Titre' form={form} />
-              <BPFormField name='ref' label='Référence' form={form} />
-              <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
-              <BPFormField
-                validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
-                name='validityDate'
-                label='Date limite de validité'
-                type='date'
-                form={form}
-              />
-              <BPFormField
-                validate={value => value && value >= 0}
-                name='delayInPaymentAllowed'
-                label='Délai de retard de paiement autorisé (jours)'
-                type='number'
-                form={form}
-              />
-              <BPFormField
-                validate={value => value && value >= 0 && value <= 100}
-                name={DELAY_PENALTY_PERCENT}
-                label='Pourcentage de penalité de retard'
-                type='number'
-                form={form}
-              />
-              <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
-              <ClientSelection name='customer' label='Client' form={form} />
-              <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
-              <ProductSelection name={PRODUCT_NAME} form={form} />
-              <PaymentRegulationsForm form={form} />
-              <Box sx={{ display: 'block' }}>
-                <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
-                  <Typography variant='h6'>
-                    {prettyPrintMinors(
-                      companyInfo && companyInfo.isSubjectToVat
-                        ? totalPriceWithVatFromProducts(form.watch().products)
-                        : totalPriceWithoutVatFromProducts(form.watch().products)
-                    )}
-                  </Typography>
-                </Box>
-                <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
-      </Box>
-      <PdfViewer
-        width={PDF_EDITION_WIDTH}
-        url={documentUrl}
-        filename={selectedInvoiceRef}
-        isPending={nbPendingInvoiceCrupdate > 0}
-        className={classes.document}
-      >
+    <Box sx={INVOICE_EDITION.LAYOUT}>
+      <form style={INVOICE_EDITION.FORM} onSubmit={form.handleSubmit(onSubmit)}>
+        <InvoiceAccordion label='Information générale' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <BPFormField name='title' label='Titre' form={form} />
+          <BPFormField name='ref' label='Référence' form={form} />
+          <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
+          <BPFormField
+            validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
+            name='validityDate'
+            label='Date limite de validité'
+            type='date'
+            form={form}
+          />
+          <BPFormField
+            validate={value => value && value >= 0}
+            name='delayInPaymentAllowed'
+            label='Délai de retard de paiement autorisé (jours)'
+            type='number'
+            form={form}
+          />
+          <BPFormField
+            validate={value => value && value >= 0 && value <= 100}
+            name={DELAY_PENALTY_PERCENT}
+            label='Pourcentage de penalité de retard'
+            type='number'
+            form={form}
+          />
+          <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
+          <ClientSelection name='customer' label='Client' form={form} />
+          <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
+        </InvoiceAccordion>
+        <InvoiceAccordion sx={INVOICE_EDITION.PRODUCT} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <ProductSelection name={PRODUCT_NAME} form={form} />
+        </InvoiceAccordion>
+        <InvoiceAccordion label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <PaymentRegulationsForm form={form} />
+        </InvoiceAccordion>
+        <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
+        <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
+      </form>
+      <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
         <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />
         </IconButton>
@@ -204,4 +176,13 @@ const InvoiceForm = props => {
   );
 };
 
+const InvoiceTotalPrice = props => {
+  const { isSubjectToVat, totalPrice } = props;
+  return (
+    <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBlock: 5 }}>
+      <Typography variant='h6'>{isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
+      <Typography variant='h6'>{prettyPrintMinors(totalPrice)}</Typography>
+    </Box>
+  );
+};
 export default InvoiceForm;

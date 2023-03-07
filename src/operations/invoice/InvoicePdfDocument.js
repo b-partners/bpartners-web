@@ -5,11 +5,6 @@ import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils';
 
-const useStyle = makeStyles(() => ({
-  card: { border: 'none' },
-  form: { transform: 'translateY(-1rem)' },
-}));
-
 export const CancelButton = ({ onClick }) => (
   <Tooltip title='Retourner a la liste'>
     <IconButton onClick={onClick}>
@@ -20,16 +15,15 @@ export const CancelButton = ({ onClick }) => (
 
 const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
-  const classes = useStyle();
 
   useEffect(() => {
     getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
   }, [selectedInvoice]);
 
   return (
-    <Card className={classes.card}>
+    <Card sx={{ border: 'none' }}>
       <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
-      <CardContent>
+      <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
         <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
       </CardContent>
     </Card>
