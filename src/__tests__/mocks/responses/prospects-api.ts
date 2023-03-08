@@ -15,7 +15,7 @@ export const prospects: Prospect[] = [
     phone: '+261340465339',
     email: 'janeDoe@gmail.com',
     location: 'paris',
-    status: 'CONVERTED',
+    status: 'CONTACTED',
   },
   {
     id: 'prospect3_id',
@@ -39,7 +39,7 @@ export const prospects: Prospect[] = [
     phone: '+261340465342',
     email: 'micheleKlaffs@gmail.com',
     location: 'paris',
-    status: 'CONVERTED',
+    status: 'CONTACTED',
   },
   {
     id: 'prospect6_id',
@@ -56,5 +56,13 @@ export const prospects: Prospect[] = [
     email: 'killyWaddilove@gmail.com',
     location: 'paris',
     status: 'CONTACTED',
+  },
+  {
+    id: 'prospect8_id',
+    name: null,
+    phone: null,
+    email: null,
+    location: 'paris',
+    status: 'TO_CONTACT',
   },
 ];

@@ -26,18 +26,35 @@ describe(specTitle('Customers'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
 
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
   it('are displayed', () => {
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
     cy.wait('@getProspects');
 
-    cy.contains('Cette section est en cours de développement et sera disponible prochainement.');
+    cy.contains('À contacter');
+    cy.contains('Contactés');
+    cy.contains('Convertis');
+
+    cy.contains(/John Doe/gi);
+    cy.contains('johnDoe@gmail.com');
+    cy.contains('+261340465338');
+
+    cy.contains('Non renseigné');
+  });
+
+  it('should show empty list', () => {
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="prospects"]').click();
+
+    cy.contains('Aucun enregistrement à afficher');
   });
 });
