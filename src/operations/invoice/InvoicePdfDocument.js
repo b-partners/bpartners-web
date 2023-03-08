@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/materia
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
-import { getInvoicePdfUrl, PDF_WIDTH } from './utils';
+import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
 
 export const CancelButton = ({ onClick }) => (
   <Tooltip title='Retourner a la liste'>

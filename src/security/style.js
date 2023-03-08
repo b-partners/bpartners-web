@@ -1,5 +1,4 @@
 import { pink, grey } from '@mui/material/colors';
-import { BP_COLOR } from 'src/bp-theme';
 
 export const lightGreyColor = grey[100];
 export const darkGreyColor = grey[800];

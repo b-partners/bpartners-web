@@ -1,18 +1,17 @@
-import { Paper, Box, Typography, Divider, CardActions, CardContent, Collapse, IconButton, Avatar } from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Avatar, Box, CardActions, CardContent, Collapse, Divider, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { BP_COLOR } from 'src/bp-theme';
+import { INVOICE_EDITION } from '../style';
 
 const PaymentRegulationItem = props => {
-  const { data, onEdit, onRemove, totalPrice } = props;
-  const { comment, maturityDate, percent, paymentRequest } = data;
+  const { data, onEdit, onRemove, percentValue } = props;
+  const { comment, maturityDate } = data;
   const [expandState, setExpandState] = useState(false);
 
   const handleExpandClick = () => setExpandState(e => !e);
 
   const haveComment = comment && comment.length > 0;
-
-  const percentValue = paymentRequest ? (paymentRequest.amount / totalPrice).toFixed(1) : percent;
 
   const commentCutter = (comment, show = true) => {
     if (comment.length > 23) {
@@ -21,8 +20,10 @@ const PaymentRegulationItem = props => {
     return { comment, needExpand: false };
   };
 
+  if (!percentValue || percentValue === 0) return;
+
   return (
-    <Box sx={{ width: 300, marginBlock: 1 }}>
+    <Box sx={INVOICE_EDITION.PR_ITEMS}>
       <Paper elevation={3}>
         <Box
           sx={{

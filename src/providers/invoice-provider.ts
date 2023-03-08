@@ -4,30 +4,14 @@ import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
 import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
 import emptyToNull from 'src/common/utils/empty-to-null';
-import { sumOfRegulationsPercentages, TPaymentRegulation } from 'src/operations/invoice/utils';
 import { getNextMonthDate } from 'src/common/utils/date';
 import { toMinors } from 'src/common/utils/percent';
+import { formatPaymentRegulation } from 'src/operations/invoice/utils/payment-regulation-utils';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
   const accountId: any = (await singleAccountGetter(userId)).id;
   return { userId, accountId };
-};
-
-const formatPaymentRegulation = (paymentRegulations: TPaymentRegulation[]) => {
-  if (!paymentRegulations || paymentRegulations.length === 0) return paymentRegulations;
-  const percentage = sumOfRegulationsPercentages(paymentRegulations);
-  const lastDate = paymentRegulations.sort((a, b) => new Date(b.maturityDate).getTime() - new Date(a.maturityDate).getTime())[0].maturityDate;
-  if (percentage !== 0) {
-    const newPaymentRegulation: TPaymentRegulation = {
-      amount: null,
-      percent: toMinors(percentage),
-      comment: null,
-      maturityDate: getNextMonthDate(lastDate),
-    };
-    return [...paymentRegulations.map(e => ({ ...e, percent: toMinors(e.percent) })), newPaymentRegulation];
-  }
-  return paymentRegulations;
 };
 
 export const invoiceProvider: BpDataProviderType = {
@@ -45,7 +29,7 @@ export const invoiceProvider: BpDataProviderType = {
       )
     ).then(listOfLists => listOfLists.flat());
   },
-  getOne: function (id: string): Promise<any> {
+  getOne: function (_id: string): Promise<any> {
     throw new Error('Function not implemented.');
   },
   saveOrUpdate: async function (_invoices: any[]): Promise<any[]> {

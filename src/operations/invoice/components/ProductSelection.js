@@ -6,7 +6,7 @@ import productProvider from '../../../providers/product-provider';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
-import { ProductActionType, productValidationHandling } from '../utils';
+import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
 
 const useStyle = makeStyles(theme => ({

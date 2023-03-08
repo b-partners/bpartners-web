@@ -15,7 +15,7 @@ import TooltipButton from '../../common/components/TooltipButton';
 import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils';
+import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 

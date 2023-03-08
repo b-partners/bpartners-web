@@ -1,25 +1,27 @@
 import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/icons-material';
-import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Paper, Select } from '@mui/material';
+import { Box, FormControl, FormHelperText, Paper } from '@mui/material';
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';
 import BPFormField from 'src/common/components/BPFormField';
-import { PaymentTypeFr } from 'src/constants/payment-type';
+import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
+  formatPaymentRegulation,
+  getPercentValue,
+  missingPaymentRegulation,
   paymentRegulationErrorMessage,
   PAYMENT_REGULATIONS,
   PAYMENT_TYPE,
   ScreenMode,
-  TOTAL_PRICE_WITHOUT_VAT,
-  TOTAL_PRICE_WITH_VAT,
   validatePaymentRegulation,
   validateRegulationPercentage,
-} from '../utils';
+} from '../utils/payment-regulation-utils';
+import { TOTAL_PRICE_WITHOUT_VAT, TOTAL_PRICE_WITH_VAT } from '../utils/utils';
 import PaymentRegulationItem from './PaymentRegulationItem';
 
-const { IN_INSTALMENT, CASH } = InvoicePaymentTypeEnum;
+const { IN_INSTALMENT } = InvoicePaymentTypeEnum;
 
 const PaymentRegulationsForm = props => {
   const { VIEW, EDIT } = ScreenMode;
@@ -51,12 +53,22 @@ const PaymentRegulationsForm = props => {
       PAYMENT_REGULATIONS,
       paymentRegulations.filter((_element, k) => k !== index)
     );
-  const setPaymentType = value => setValue(PAYMENT_TYPE, value);
   const error = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
-
+  const paymentRegulationRest = missingPaymentRegulation(paymentRegulations);
   return (
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
-      <PaymentTypeForm onChange={setPaymentType} value={paymentRegulationType || ''} />
+      {paymentRegulations && paymentRegulations.length > 0 && (
+        <Box sx={INVOICE_EDITION.LONG_LIST}>
+          <PaymentRegulationItem
+            totalPrice={totalPrice}
+            key={`paymentRegulation-key-static`}
+            data={paymentRegulationRest}
+            onEdit={handleEdit}
+            onRemove={handleRemove}
+          />
+          {paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove))}
+        </Box>
+      )}
       {screenMode === EDIT && (
         <RegulationsForm
           paymentRegulations={paymentRegulations}
@@ -67,7 +79,6 @@ const PaymentRegulationsForm = props => {
         />
       )}
       {error && <FormHelperText sx={{ width: 300 }}>{paymentRegulationErrorMessage}</FormHelperText>}
-      {isInInstalment && paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove, totalPrice))}
       {isInInstalment && (
         <BPButton id='form-create-regulation-id' onClick={handleCreate} label='Ajouter un paiement' icon={<AddIcon />} sx={{ marginBottom: 5, marginTop: 1 }} />
       )}
@@ -75,7 +86,7 @@ const PaymentRegulationsForm = props => {
   );
 };
 
-const paymentRegulationItems = (onEdit, onRemove, totalPrice) => (paymentRegulation, index) => {
+const paymentRegulationItems = (onEdit, onRemove) => (paymentRegulation, index) => {
   const handleEdit = () => {
     onEdit(index);
   };
@@ -83,11 +94,11 @@ const paymentRegulationItems = (onEdit, onRemove, totalPrice) => (paymentRegulat
 
   return (
     <PaymentRegulationItem
-      totalPrice={totalPrice}
       key={`paymentRegulation-key-${index}`}
       data={paymentRegulation}
       onEdit={handleEdit}
       onRemove={handleRemove}
+      percentValue={getPercentValue(paymentRegulation)}
     />
   );
 };
@@ -102,32 +113,25 @@ const RegulationsForm = props => {
   return (
     <Paper elevation={3}>
       <FormControl sx={{ margin: 1 }}>
-        <BPFormField validate={validatePercentage} type='number' form={form} name='percent' label='Pourcentage' />
-        <BPFormField type='date' form={form} name='maturityDate' label='Date limite de paiement' />
-        <BPFormField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} data-testid='payment-regulation-comment-id' />
+        <CustomBpField validate={validatePercentage} type='number' form={form} name='percent' label='Pourcentage' />
+        <CustomBpField type='date' form={form} name='maturityDate' label='Date limite de paiement' />
+        <CustomBpField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} data-testid='payment-regulation-comment-id' />
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <BPButton id='form-regulation-save-id' onClick={handleSubmit} label={isCreation ? 'Créer' : 'Modifier'} icon={<SaveIcon />} sx={{ marginBlock: 1 }} />
-          <BPButton id='form-regulation-cancel-id' onClick={onCancel} label='Annuler' icon={<CancelIcon />} sx={{ marginBlock: 1 }} />
+          <BPButton
+            style={{ width: 284 }}
+            id='form-regulation-save-id'
+            onClick={handleSubmit}
+            label={isCreation ? 'Créer' : 'Modifier'}
+            icon={<SaveIcon />}
+            sx={{ marginBlock: 1 }}
+          />
+          <BPButton style={{ width: 284 }} id='form-regulation-cancel-id' onClick={onCancel} label='Annuler' icon={<CancelIcon />} sx={{ marginBlock: 1 }} />
         </Box>
       </FormControl>
     </Paper>
   );
 };
 
-const PaymentTypeForm = props => {
-  const { onChange, value } = props;
-
-  const handleChange = event => onChange(event.target.value);
-
-  return (
-    <FormControl variant='filled' sx={{ width: 300, marginBlock: 3 }}>
-      <InputLabel id='payment-type-selection-id'>Type de paiement</InputLabel>
-      <Select labelId='payment-type-selection-id' value={value} onChange={handleChange}>
-        <MenuItem value={CASH}>{PaymentTypeFr.CASH}</MenuItem>
-        <MenuItem value={IN_INSTALMENT}>{PaymentTypeFr.IN_INSTALMENT}</MenuItem>
-      </Select>
-    </FormControl>
-  );
-};
+const CustomBpField = props => <BPFormField style={{ width: 284 }} {...props} />;
 
 export default PaymentRegulationsForm;

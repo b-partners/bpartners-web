@@ -1,6 +1,5 @@
-import { RefreshOutlined as RefreshIcon, Save, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, IconButton, Typography, Select, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
+import { Box, IconButton, Stack, Switch, Typography, FormControl, FormLabel } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
@@ -8,43 +7,45 @@ import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
 import BPFormField from '../../common/components/BPFormField';
+import PdfViewer from '../../common/components/PdfViewer';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { formatDateTo8601 } from '../../common/utils/date';
 import { prettyPrintMinors } from '../../common/utils/money';
-import PdfViewer from '../../common/components/PdfViewer';
 import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
-import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
+import InvoiceAccordion from './components/InvoiceAccordion';
+import PaymentRegulationsForm from './components/PaymentRegulationsForm';
+import { INVOICE_EDITION } from './style';
 import {
   DEFAULT_DELAY_PENALTY_PERCENT,
+  DEFAULT_GLOBAL_DISCOUNT,
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
+  GLOBAL_DISCOUNT,
+  GLOBAL_DISCOUNT_PERCENT_VALUE,
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  PAYMENT_REGULATIONS,
-  PAYMENT_TYPE,
+  PERCENT_VALUE,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
-  validatePaymentRegulation,
-  GLOBAL_DISCOUNT,
-  DEFAULT_GLOBAL_DISCOUNT,
-  GLOBAL_DISCOUNT_PERCENT_VALUE,
-  PERCENT_VALUE,
-} from './utils';
-import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-import { INVOICE_EDITION } from './style';
-import InvoiceAccordion from './components/InvoiceAccordion';
+} from './utils/utils';
+import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { paymentRegulationToMajor, PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
   const notify = useNotify();
   const refresh = useRefresh();
+  const paymentRegulationType = form.watch(PAYMENT_TYPE);
+  const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
+  const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
 
   const updateInvoiceForm = newInvoice => {
     const actualInvoice = form.watch();
@@ -56,6 +57,7 @@ const InvoiceForm = props => {
       // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
       form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
       form.setValue(GLOBAL_DISCOUNT_PERCENT_VALUE, percentToMajors(newInvoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT);
+      form.setValue(PAYMENT_REGULATIONS, paymentRegulationToMajor(newInvoice[PAYMENT_REGULATIONS]));
     }
   };
 
@@ -68,6 +70,9 @@ const InvoiceForm = props => {
       }
     });
   };
+
+  const isPaymentTypeCash = form.watch(PAYMENT_TYPE) === InvoicePaymentTypeEnum.CASH;
+  const togglePaymentType = () => form.setValue(PAYMENT_TYPE, isPaymentTypeCash ? InvoicePaymentTypeEnum.IN_INSTALMENT : InvoicePaymentTypeEnum.CASH);
 
   const onSubmit = validateInvoice(() => {
     if (nbPendingInvoiceCrupdate > 0) {
@@ -157,13 +162,22 @@ const InvoiceForm = props => {
           <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
           <ClientSelection name='customer' label='Client' form={form} />
           <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
+          <FormControl>
+            <Typography color='text.secondary'>Payer en plusieurs fois :</Typography>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <Switch checked={!isPaymentTypeCash} onChange={togglePaymentType} />
+              <Typography>{isPaymentTypeCash ? 'Non' : 'Oui'}</Typography>
+            </Stack>
+          </FormControl>
         </InvoiceAccordion>
         <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
           <ProductSelection name={PRODUCT_NAME} form={form} />
         </InvoiceAccordion>
-        <InvoiceAccordion label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
-          <PaymentRegulationsForm form={form} />
-        </InvoiceAccordion>
+        {!isPaymentTypeCash && (
+          <InvoiceAccordion error={paymentRegulationsError} label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+            <PaymentRegulationsForm form={form} />
+          </InvoiceAccordion>
+        )}
         <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
         <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
       </form>
