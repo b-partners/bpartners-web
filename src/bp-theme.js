@@ -82,5 +82,18 @@ export const BP_THEME = {
         root: BP_BUTTON,
       },
     },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          '& .Mui-checked': {
+            color: BP_COLOR[10],
+            '& +.MuiSwitch-track': {
+              backgroundColor: BP_COLOR[40],
+              opacity: 1,
+            },
+          },
+        },
+      },
+    },
   },
 };
