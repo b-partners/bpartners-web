@@ -70,3 +70,20 @@ export const DETAIL_CONTAINER_STYLE = {
   color: 'grey',
   width: '100%',
 };
+
+export const MARKETPLACE = {
+  LAYOUT: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  LIST: {
+    height: '100%',
+    flexBasis: '30%',
+  },
+  LIST_CONTENT: {
+    height: '90vh',
+    overflowY: 'scroll',
+  },
+};
