@@ -7,6 +7,7 @@ import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
 import { ProductActionType, productValidationHandling } from '../utils';
+import { INVOICE_EDITION } from '../style';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -65,7 +66,7 @@ export const ProductSelection = ({ name, form }) => {
 
   return (
     <>
-      <Box sx={{ width: '100%' }}>
+      <Box sx={INVOICE_EDITION.LONG_LIST}>
         {selectedProduct &&
           selectedProduct.length > 0 &&
           selectedProduct.map(product => <ProductItem key={product.id} product={product} handleProduct={handleProduct} />)}

@@ -158,7 +158,7 @@ const InvoiceForm = props => {
           <ClientSelection name='customer' label='Client' form={form} />
           <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
         </InvoiceAccordion>
-        <InvoiceAccordion sx={INVOICE_EDITION.PRODUCT} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
+        <InvoiceAccordion label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
           <ProductSelection name={PRODUCT_NAME} form={form} />
         </InvoiceAccordion>
         <InvoiceAccordion label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>

@@ -16,11 +16,22 @@ export const INVOICE_EDITION = {
     marginBlock: 10,
     alignItems: 'center',
   },
-  PRODUCT: {
+  LONG_LIST: {
     maxHeight: 600,
     overflowY: 'scroll',
-    '&::-webkit-scrollbar': { width: 1 },
-    '&::-webkit-scrollbar-thumb': { bgcolor: BP_COLOR[20] },
+    width: '100%',
+    marginBottom: 5,
+    marginTop: 2,
+    paddingBlock: 2,
+    '&::-webkit-scrollbar': {
+      width: 2,
+    },
+    '&::-webkit-scrollbar-track': {
+      boxShadow: `inset 0 0 6px rgba(0, 0, 0, 0.3)`,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: BP_COLOR[30],
+    },
   },
   ACCORDION_DETAILS: {
     position: 'relative',
