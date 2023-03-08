@@ -24,7 +24,7 @@ export const INVOICE_EDITION = {
     marginTop: 2,
     paddingBlock: 2,
     '&::-webkit-scrollbar': {
-      width: 2,
+      width: 3,
     },
     '&::-webkit-scrollbar-track': {
       boxShadow: `inset 0 0 6px rgba(0, 0, 0, 0.3)`,
@@ -35,5 +35,11 @@ export const INVOICE_EDITION = {
   },
   ACCORDION_DETAILS: {
     position: 'relative',
+    width: 302,
   },
+};
+
+export const errorStyle = {
+  border: '2px solid rgba(255, 0, 0, 0.6)',
+  borderRadius: 1,
 };

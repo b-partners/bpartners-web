@@ -129,7 +129,7 @@ const InvoiceForm = props => {
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <form style={INVOICE_EDITION.FORM} onSubmit={form.handleSubmit(onSubmit)}>
-        <InvoiceAccordion label='Information générale' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
+        <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
           <BPFormField name='title' label='Titre' form={form} />
           <BPFormField name='ref' label='Référence' form={form} />
           <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
@@ -158,7 +158,7 @@ const InvoiceForm = props => {
           <ClientSelection name='customer' label='Client' form={form} />
           <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
         </InvoiceAccordion>
-        <InvoiceAccordion label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
+        <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
           <ProductSelection name={PRODUCT_NAME} form={form} />
         </InvoiceAccordion>
         <InvoiceAccordion label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
