@@ -8,7 +8,7 @@ const InvoiceAccordion = props => {
   const handleClick = () => onExpand(lastIndex => (lastIndex === index ? 0 : index));
 
   return (
-    <Accordion sx={error && errorStyle} expanded={isExpanded === index}>
+    <Accordion sx={error ? errorStyle : undefined} expanded={isExpanded === index}>
       <AccordionSummary onClick={handleClick} expandIcon={<ExpandMoreIcon />}>
         {label}
       </AccordionSummary>

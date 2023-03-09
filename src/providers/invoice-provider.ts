@@ -3,7 +3,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
 import { InvoiceStatus } from 'bpartners-react-client';
-import { invoiceToRest } from 'src/operations/invoice/utils/payment-regulation-utils';
+import { invoiceToRest } from 'src/operations/invoice/utils/utils';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;

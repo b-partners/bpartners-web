@@ -55,22 +55,18 @@ const PaymentRegulationsForm = props => {
     );
   const error = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const paymentRegulationRest = missingPaymentRegulation(paymentRegulations);
+  paymentRegulationRest.comment = 'Le reste a payer un mois après le dernier paiement';
   return (
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
       {paymentRegulations && paymentRegulations.length > 0 && (
         <Box sx={INVOICE_EDITION.LONG_LIST}>
-          <PaymentRegulationItem
-            totalPrice={totalPrice}
-            key={`paymentRegulation-key-static`}
-            data={paymentRegulationRest}
-            onEdit={handleEdit}
-            onRemove={handleRemove}
-          />
+          <PaymentRegulationItem data={paymentRegulationRest} percentValue={paymentRegulationRest.percent} />
           {paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove))}
         </Box>
       )}
       {screenMode === EDIT && (
         <RegulationsForm
+          indexOfSkipped={toEditIndex}
           paymentRegulations={paymentRegulations}
           onSave={handleSave}
           onCancel={handleCancel}
@@ -99,16 +95,17 @@ const paymentRegulationItems = (onEdit, onRemove) => (paymentRegulation, index) 
       onEdit={handleEdit}
       onRemove={handleRemove}
       percentValue={getPercentValue(paymentRegulation)}
+      indexOfSkipped={index}
     />
   );
 };
 
 const RegulationsForm = props => {
-  const { toEdit, onSave, isCreation, onCancel, paymentRegulations } = props;
+  const { toEdit, onSave, isCreation, onCancel, paymentRegulations, indexOfSkipped } = props;
   const form = useForm({ mode: 'all', defaultValues: { ...toEdit } });
   const handleSubmit = form.handleSubmit(onSave);
 
-  const validatePercentage = e => validateRegulationPercentage({ paymentRegulations, value: e });
+  const validatePercentage = e => validateRegulationPercentage({ paymentRegulations, value: e, indexOfSkipped });
 
   return (
     <Paper elevation={3}>

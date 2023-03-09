@@ -6,7 +6,8 @@ import { INVOICE_EDITION } from '../style';
 
 const PaymentRegulationItem = props => {
   const { data, onEdit, onRemove, percentValue } = props;
-  const { comment, maturityDate } = data;
+  const { maturityDate } = data;
+  const comment = data.comment || (data.paymentRequest && data.paymentRequest.comment) || '';
   const [expandState, setExpandState] = useState(false);
 
   const handleExpandClick = () => setExpandState(e => !e);
@@ -51,7 +52,7 @@ const PaymentRegulationItem = props => {
             </Typography>
           </Box>
           <Box sx={{ flexBasis: '15%' }}>
-            <IconButton onClick={onRemove}>
+            <IconButton disabled={!onRemove} onClick={onRemove}>
               <DeleteIcon />
             </IconButton>
           </Box>
@@ -63,7 +64,7 @@ const PaymentRegulationItem = props => {
             {haveComment && commentCutter(comment).needExpand && (
               <IconButton onClick={handleExpandClick}>{!expandState ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton>
             )}
-            <IconButton onClick={onEdit}>
+            <IconButton disabled={!onEdit} onClick={onEdit}>
               <EditIcon />
             </IconButton>
           </Box>

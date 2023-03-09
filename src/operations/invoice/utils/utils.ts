@@ -1,8 +1,10 @@
-import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { CreateAttachment, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from 'bpartners-react-client';
+import emptyToNull from 'src/common/utils/empty-to-null';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { getUserInfo } from 'src/providers/invoice-provider';
 import { getFilenameMeta } from '../../../common/utils/file';
 import { InvoiceStatusFR } from '../../../constants/invoice-status';
+import { missingPaymentRegulation, paymentRegulationToMinor } from './payment-regulation-utils';
 
 /**
  * **INVOICE**
@@ -223,4 +225,18 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
       throw e;
     }
   }
+};
+
+export const invoiceToRest = (_invoice: Invoice) => {
+  const invoice = { ..._invoice };
+  if (invoice.paymentType === InvoicePaymentTypeEnum.CASH) {
+    invoice.paymentRegulations = null;
+  } else {
+    const paymentRegulationTo100Percent = missingPaymentRegulation(invoice.paymentRegulations);
+    if (paymentRegulationTo100Percent.percent !== 0) {
+      invoice.paymentRegulations = paymentRegulationToMinor([...invoice.paymentRegulations, paymentRegulationTo100Percent]);
+    }
+  }
+
+  return emptyToNull(invoice);
 };
