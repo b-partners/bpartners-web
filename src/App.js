@@ -16,6 +16,7 @@ import invoice from './operations/invoice';
 import { marketplaces } from './operations/marketplaces';
 import products from './operations/products';
 import transactions from './operations/transactions';
+import { prospects } from './operations/prospects';
 
 import authProvider from './providers/auth-provider';
 import dataProvider from './providers/data-provider';
@@ -43,6 +44,7 @@ export const BpAdmin = () => {
       <Resource name='products' {...products} />
       <Resource name='invoices' {...invoice} />
       <Resource name='marketplaces' {...marketplaces} />
+      <Resource name='prospects' {...prospects} />
       <Resource name='account' />
 
       <CustomRoutes>

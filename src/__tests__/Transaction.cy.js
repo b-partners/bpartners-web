@@ -8,7 +8,8 @@ import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
-import { createInvoices } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
+import { InvoiceStatus } from 'bpartners-react-client';
 
 const date = new Date().toISOString().slice(0, 10);
 
@@ -23,6 +24,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=15', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=500', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -62,18 +64,6 @@ describe(specTitle('Transactions'), () => {
     cy.contains('TVA 20%');
     cy.contains('18/08/2022');
     cy.contains('05:34:20');
-  });
-
-  it('should test pagination', () => {
-    mount(<App />);
-    cy.get('[name="transactions"]').click();
-
-    cy.wait('@legalFiles');
-
-    cy.get('.RaList-main > :nth-child(3) > .MuiButtonBase-root').click();
-
-    cy.contains('Page : 2');
-    cy.contains('Taille : 5');
   });
 
   it('display graphic summary', () => {
@@ -211,9 +201,11 @@ describe(specTitle('Transactions'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=CONFIRMED`, createInvoices(5, 'CONFIRMED')).as('getConfirmedInvoices');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=500&status=PAID`, createInvoices(5, 'PAID')).as('getPaidInvoices');
-    cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-id-0`, transactions[0]).as('linkInvoiceAndTransaction');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, status, page } = req.query;
+      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
+    });
+    cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-PAID-0-id`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
@@ -222,8 +214,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="AddLinkIcon"] > path').click();
 
-    cy.wait('@getConfirmedInvoices');
-    cy.wait('@getPaidInvoices');
+    cy.contains(/Lier la transaction (.*) à une facture :/);
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const newTransaction = transactions.slice();

@@ -253,6 +253,9 @@ export type TPaymentRegulation = {
 };
 
 export const sumOfRegulationsPercentages = (paymentRegulations: TPaymentRegulation[]) => {
+  if (!paymentRegulations) {
+    return 100;
+  }
   const paymentRegulationsPercentages = paymentRegulations.map(e => +e.percent).reduce((a, b) => a + b, 0);
   return 100 - +paymentRegulationsPercentages;
 };

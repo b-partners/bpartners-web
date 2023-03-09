@@ -108,7 +108,7 @@ const InvoiceGridTable = props => {
                     title='Envoyer ou relancer ce devis'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
-                    data-test-item={`relaunch-${data.id}`}
+                    data-testid={`relaunch-${data.id}`}
                   />
                 </>
               )}
@@ -119,14 +119,14 @@ const InvoiceGridTable = props => {
                     title='Marquer comme payée'
                     icon={<DoneAll />}
                     onClick={() => handleInvoicePaid(data)}
-                    data-test-item={`pay-${data.id}`}
+                    data-testid={`pay-${data.id}`}
                   />
                   <TooltipButton
                     disabled={data.status === InvoiceStatus.PAID}
                     title='Envoyer ou relancer cette facture'
                     icon={<TurnRight />}
                     onClick={() => setInvoiceToRelaunch(data)}
-                    data-test-item={`relaunch-${data.id}`}
+                    data-testid={`relaunch-${data.id}`}
                   />
                 </>
               )}
@@ -159,7 +159,7 @@ const InvoiceList = props => {
         resource='invoices'
         filter={{ invoiceTypes }}
         component={ListComponent}
-        pagination={<Pagination />}
+        pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
           <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>

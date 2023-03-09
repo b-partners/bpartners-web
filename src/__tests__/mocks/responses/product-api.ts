@@ -1,47 +1,33 @@
 import { Product } from 'bpartners-react-client';
 
-export const products: Product[] = [
-  {
-    description: 'description1',
-    quantity: 1,
-    unitPrice: 1000,
-    vatPercent: 20,
-    totalVat: 200,
-    totalPriceWithVat: 1200,
-    unitPriceWithVat: 1200,
-    id: 'product1_id',
-  },
-  {
-    description: 'description2',
-    quantity: 1,
-    unitPrice: 2000,
-    vatPercent: 20,
-    totalVat: 400,
-    totalPriceWithVat: 2400,
-    unitPriceWithVat: 2400,
-    id: 'product2_id',
-  },
-  {
-    description: 'description3',
-    quantity: 2,
-    unitPrice: 3000,
-    vatPercent: 10,
-    totalVat: 300,
-    totalPriceWithVat: 6600,
-    unitPriceWithVat: 3300,
-    id: 'product3_id',
-  },
-  {
-    description: 'description3',
-    quantity: 2,
-    unitPrice: 4000,
-    vatPercent: 10,
-    totalVat: 400,
-    totalPriceWithVat: 8800,
-    unitPriceWithVat: 4400,
-    id: 'product4_id',
-  },
-];
+export const createProduct = (n: number) => {
+  const _products = [];
+
+  for (let i = 0; i < n; i++) {
+    _products.push({
+      description: `description ${i}`,
+      quantity: 1,
+      unitPrice: 1000,
+      vatPercent: 20,
+      totalVat: 200,
+      totalPriceWithVat: 1200,
+      unitPriceWithVat: 1200,
+      id: `product-${i}-id`,
+    });
+  }
+  return _products;
+};
+
+export let products: Product[] = createProduct(17);
+
+export const getProducts = (page: number, perPage: number) => products.slice(page * perPage, page * perPage + perPage);
+export const setProduct = (product: Product, index?: number) => {
+  if (index !== undefined) {
+    products[index] = product;
+  } else {
+    products.push({ ...product, id: `new-product-${products.length}` });
+  }
+};
 
 export const newProduct1 = [
   {

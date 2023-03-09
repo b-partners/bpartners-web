@@ -7,6 +7,7 @@ import transactionProvider from './transaction-provider';
 import productProvider from './product-provider';
 import marketplaceProvider from './marketplace-provider';
 import invoiceProvider from './invoice-provider';
+import prospectingProvider from './prospecting-provider';
 import { UpdateParams } from 'react-admin';
 
 export const maxPageSize = 500;
@@ -18,6 +19,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'products') return productProvider;
   if (resourceType === 'customers') return customerProvider;
   if (resourceType === 'marketplaces') return marketplaceProvider;
+  if (resourceType === 'prospects') return prospectingProvider;
   if (resourceType === 'invoices') return invoiceProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
@@ -33,7 +35,7 @@ const dataProvider: RaDataProviderType = {
     }
 
     const filter = params.filter;
-    const result = await getProvider(resourceType).getList(page, perPage, filter);
+    const result = await getProvider(resourceType).getList(page, perPage, filter || {});
     return { data: result, total: Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {

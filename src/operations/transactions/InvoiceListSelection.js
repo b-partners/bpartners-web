@@ -35,7 +35,7 @@ const useInvoiceList = () => {
       }
     };
     getInvoiceList();
-  }, []);
+  }, [notify]);
 
   const data = filter.length > 0 && list.length > 0 ? list.filter(invoice => invoice.title.toLowerCase().includes(filter.toLowerCase())) : list;
 
