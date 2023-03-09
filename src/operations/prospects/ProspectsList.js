@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { List, useListContext } from 'react-admin';
-import { Card, CardContent, Grid, Paper, Stack, Typography } from '@mui/material';
-import { LocalPhoneOutlined, MailOutline } from '@mui/icons-material';
+import { Card, CardContent, Grid, Link, Paper, Stack, Typography } from '@mui/material';
+import { LocalPhoneOutlined, LocationOn, MailOutline, MyLocation } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
@@ -65,6 +65,16 @@ const ProspectColumn = props => {
 };
 
 const ProspectItem = ({ prospect }) => {
+  const geoJsonUrl = location => {
+    const geojsonBaseurl = process.env.REACT_APP_GEOJSON_BASEURL;
+    const data = { coordinates: [location.longitude, location.latitude], type: location.type };
+
+    return encodeURI(`${geojsonBaseurl}${JSON.stringify(data)}`);
+  };
+  if (!prospect.location && !prospect.name && !prospect.email) {
+    return null;
+  }
+
   return (
     <Paper elevation={2} sx={{ p: 1 }}>
       <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
@@ -76,6 +86,17 @@ const ProspectItem = ({ prospect }) => {
       <Typography variant='body2'>
         <LocalPhoneOutlined fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.phone || 'Non renseigné'}
       </Typography>
+      <Typography variant='body2'>
+        <LocationOn fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
+      </Typography>
+      {prospect.location && (
+        <Typography variant='body2'>
+          <MyLocation fontSize='small' sx={{ position: 'relative', top: 4 }} />{' '}
+          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+            Voir sur la carte
+          </Link>
+        </Typography>
+      )}
     </Paper>
   );
 };
