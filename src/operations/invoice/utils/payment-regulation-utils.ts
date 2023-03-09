@@ -1,5 +1,6 @@
-import { InvoicePaymentTypeEnum, PaymentRegulation } from 'bpartners-react-client';
+import { Invoice, InvoicePaymentTypeEnum, PaymentRegulation } from 'bpartners-react-client';
 import { getNextMonthDate } from 'src/common/utils/date';
+import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMajors, toMinors } from 'src/common/utils/percent';
 
 // Payment regulation
@@ -61,22 +62,6 @@ export const validateRegulationPercentage = (params: ValidateRegulationPercentag
   return true;
 };
 
-export const formatPaymentRegulation = (paymentRegulations: TPaymentRegulation[]) => {
-  if (!paymentRegulations || paymentRegulations.length === 0) return paymentRegulations;
-  const percentage = sumOfRegulationsPercentages(paymentRegulations);
-  const lastDate = paymentRegulations.sort((a, b) => new Date(b.maturityDate).getTime() - new Date(a.maturityDate).getTime())[0].maturityDate;
-  if (percentage !== 0) {
-    const newPaymentRegulation: TPaymentRegulation = {
-      amount: null,
-      percent: toMinors(percentage),
-      comment: null,
-      maturityDate: getNextMonthDate(lastDate),
-    };
-    return [...paymentRegulations.map(e => ({ ...e, percent: toMinors(e.percent) })), newPaymentRegulation];
-  }
-  return paymentRegulations;
-};
-
 export const missingPaymentRegulation = (paymentRegulations: any[]): any => {
   const currentDate = new Date().toLocaleDateString('fr-ca');
   let newPaymentRegulation: TPaymentRegulation = {
@@ -100,7 +85,7 @@ export enum MoneyUnity {
   MINOR = 'MINOR',
 }
 
-const restPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation, to: MoneyUnity) => {
+const toDomainPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation, to: MoneyUnity) => {
   const changeUnity = to === MoneyUnity.MAJOR ? toMajors : toMinors;
   return {
     ...paymentRegulation,
@@ -109,7 +94,7 @@ const restPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation, 
   };
 };
 
-const domainPaymentRegulationMoneyUnity = (paymentRegulations: PaymentRegulation, to: MoneyUnity): PaymentRegulation => {
+const toRestPaymentRegulationMoneyUnity = (paymentRegulations: PaymentRegulation, to: MoneyUnity): PaymentRegulation => {
   const changeUnity = to === MoneyUnity.MAJOR ? toMajors : toMinors;
   const {
     paymentRequest: { amount, percentValue },
@@ -122,8 +107,22 @@ const domainPaymentRegulationMoneyUnity = (paymentRegulations: PaymentRegulation
 };
 export const paymentRegulationMoneyUnity = (paymentRegulations: any[], to: MoneyUnity) =>
   paymentRegulations.map(paymentRegulation =>
-    paymentRegulation.amount ? restPaymentRegulationMoneyUnity(paymentRegulation, to) : domainPaymentRegulationMoneyUnity(paymentRegulation, to)
+    paymentRegulation.amount ? toDomainPaymentRegulationMoneyUnity(paymentRegulation, to) : toRestPaymentRegulationMoneyUnity(paymentRegulation, to)
   );
 
 export const paymentRegulationToMajor = (paymentRegulation: any[]) => paymentRegulationMoneyUnity(paymentRegulation, MoneyUnity.MAJOR);
 export const paymentRegulationToMinor = (paymentRegulation: any[]) => paymentRegulationMoneyUnity(paymentRegulation, MoneyUnity.MINOR);
+
+export const invoiceToRest = (_invoice: Invoice) => {
+  const invoice = { ..._invoice };
+  if (invoice.paymentType === InvoicePaymentTypeEnum.CASH) {
+    invoice.paymentRegulations = null;
+  } else {
+    const paymentRegulationTo100Percent = missingPaymentRegulation(invoice.paymentRegulations);
+    if (paymentRegulationTo100Percent.percent !== 0) {
+      invoice.paymentRegulations.push(paymentRegulationTo100Percent);
+    }
+  }
+
+  return emptyToNull(invoice);
+};

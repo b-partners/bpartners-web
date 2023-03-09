@@ -2,11 +2,8 @@ import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { singleAccountGetter } from './account-provider';
-import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
-import emptyToNull from 'src/common/utils/empty-to-null';
-import { getNextMonthDate } from 'src/common/utils/date';
-import { toMinors } from 'src/common/utils/percent';
-import { formatPaymentRegulation } from 'src/operations/invoice/utils/payment-regulation-utils';
+import { InvoiceStatus } from 'bpartners-react-client';
+import { invoiceToRest } from 'src/operations/invoice/utils/payment-regulation-utils';
 
 export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -34,16 +31,10 @@ export const invoiceProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (_invoices: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const invoices = { ..._invoices[0] };
-    const newPaymentRegulations = formatPaymentRegulation(invoices.paymentRegulations);
-    const formattedInvoice = { ...emptyToNull({ ...invoices, paymentRegulations: newPaymentRegulations }) };
-
-    if (formattedInvoice.paymentType === InvoicePaymentTypeEnum.CASH) {
-      formattedInvoice.paymentRegulations = undefined;
-    }
+    const restInvoice = invoiceToRest({ ..._invoices[0] });
 
     return payingApi()
-      .crupdateInvoice(accountId, _invoices[0].id, formattedInvoice)
+      .crupdateInvoice(accountId, _invoices[0].id, restInvoice)
       .then(({ data }) => [data]);
   },
 };
