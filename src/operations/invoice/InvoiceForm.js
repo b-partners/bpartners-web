@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, IconButton, Stack, Switch, Typography, FormControl, FormLabel } from '@mui/material';
+import { Box, IconButton, Stack, Switch, Typography, FormControl } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
@@ -11,7 +11,7 @@ import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { formatDateTo8601 } from '../../common/utils/date';
 import { prettyPrintMinors } from '../../common/utils/money';
-import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
+import { toMinors as percentToMinors } from '../../common/utils/percent';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -19,16 +19,12 @@ import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 import { INVOICE_EDITION } from './style';
 import {
-  DEFAULT_DELAY_PENALTY_PERCENT,
-  DEFAULT_GLOBAL_DISCOUNT,
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
-  GLOBAL_DISCOUNT,
   GLOBAL_DISCOUNT_PERCENT_VALUE,
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  PERCENT_VALUE,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
@@ -36,7 +32,8 @@ import {
   totalPriceWithVatFromProducts,
 } from './utils/utils';
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
-import { paymentRegulationToMajor, PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
+import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
+import { invoiceMapper } from './utils/invoice-utils';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
@@ -47,17 +44,14 @@ const InvoiceForm = props => {
   const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
 
-  const updateInvoiceForm = newInvoice => {
+  const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
     const formHasNewUpdate =
       // Check submittedAt to avoid rolling back to a previous update when an older call finished before a newer call
-      !newInvoice.metadata || !actualInvoice.metadata || new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
+      !_newInvoice.metadata || !actualInvoice.metadata || new Date(_newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
     if (formHasNewUpdate) {
+      const newInvoice = invoiceMapper.toDomain(_newInvoice);
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
-      // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
-      form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
-      form.setValue(GLOBAL_DISCOUNT_PERCENT_VALUE, percentToMajors(newInvoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT);
-      form.setValue(PAYMENT_REGULATIONS, paymentRegulationToMajor(newInvoice[PAYMENT_REGULATIONS]));
     }
   };
 
@@ -80,22 +74,10 @@ const InvoiceForm = props => {
     }
     onPending(InvoiceActionType.START_PENDING);
     const submittedAt = new Date();
-    const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
-    const globalDiscount = { percentValue: percentToMinors(parseInt(form.watch(GLOBAL_DISCOUNT_PERCENT_VALUE))) };
-
-    const toSubmit = {
-      ...form.watch(),
-      globalDiscount,
-      delayPenaltyPercent,
-      sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00'),
-      validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59'),
-      metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
-    };
-
     retryOnError(
       () =>
         invoiceProvider
-          .saveOrUpdate([toSubmit])
+          .saveOrUpdate([form.watch()])
           .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
           .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
       error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))

@@ -20,7 +20,8 @@ export const DEFAULT_GLOBAL_DISCOUNT = 0;
 export const GLOBAL_DISCOUNT = 'globalDiscount';
 export const PERCENT_VALUE = 'percentValue';
 export const GLOBAL_DISCOUNT_PERCENT_VALUE = `${GLOBAL_DISCOUNT}.${PERCENT_VALUE}`;
-
+export const SENDING_DATE = 'sendingDate';
+export const VALIDITY_DATE = 'validityDate';
 // invoice validator
 export const InvoiceFieldErrorMessage =
   'Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0';

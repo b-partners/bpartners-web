@@ -7,7 +7,7 @@ export const PAYMENT_TYPE = 'paymentType';
 export const PAYMENT_REGULATIONS = 'paymentRegulations';
 
 export const DefaultPaymentRegulation: any = {
-  percent: 10,
+  percent: 30,
   comment: null,
   maturityDate: new Date().toLocaleDateString('fr-ca'),
 };
@@ -97,15 +97,15 @@ const domainPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation
   };
 };
 
-const restPaymentRegulationMoneyUnity = (paymentRegulation: PaymentRegulation, to: MoneyUnity) => {
+const restPaymentRegulationMoneyUnity = (paymentRegulation: PaymentRegulation, to: MoneyUnity): PaymentRegulation => {
   const changeUnity = (pR: any) => (to === MoneyUnity.MAJOR ? toMajors(pR) : toMinors(pR));
   const {
-    paymentRequest: { amount, percentValue },
+    paymentRequest: { percentValue },
   } = paymentRegulation;
 
   return {
     ...paymentRegulation,
-    paymentRequest: { ...paymentRegulation.paymentRequest, amount: changeUnity(amount), percentValue: changeUnity(percentValue) },
+    paymentRequest: { ...paymentRegulation.paymentRequest, amount: undefined, percentValue: changeUnity(percentValue) },
   };
 };
 export const paymentRegulationMoneyUnity = (paymentRegulations: any[], to: MoneyUnity) =>
