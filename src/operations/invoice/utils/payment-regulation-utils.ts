@@ -7,7 +7,7 @@ export const PAYMENT_TYPE = 'paymentType';
 export const PAYMENT_REGULATIONS = 'paymentRegulations';
 
 export const DefaultPaymentRegulation: any = {
-  percent: 30,
+  percent: 3000,
   comment: null,
   maturityDate: new Date().toLocaleDateString('fr-ca'),
 };

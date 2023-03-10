@@ -151,7 +151,7 @@ const InvoiceForm = props => {
           <FormControl>
             <Typography color='text.secondary'>Payer en plusieurs fois :</Typography>
             <Stack direction='row' spacing={1} alignItems='center'>
-              <Switch checked={!isPaymentTypeCash} onChange={togglePaymentType} />
+              <Switch data-testid='payment-regulation-switch' checked={!isPaymentTypeCash} onChange={togglePaymentType} />
               <Typography>{isPaymentTypeCash ? 'Non' : 'Oui'}</Typography>
             </Stack>
           </FormControl>
