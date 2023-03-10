@@ -1,8 +1,10 @@
 import { CreateAttachment, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from 'bpartners-react-client';
+import emptyToNull from 'src/common/utils/empty-to-null';
 import { accessTokenItem } from 'src/providers/auth-provider';
 import { getUserInfo } from 'src/providers/invoice-provider';
-import { getFilenameMeta } from '../../common/utils/file';
-import { InvoiceStatusFR } from '../../constants/invoice-status';
+import { getFilenameMeta } from '../../../common/utils/file';
+import { InvoiceStatusFR } from '../../../constants/invoice-status';
+import { missingPaymentRegulation, paymentRegulationToMinor } from './payment-regulation-utils';
 
 /**
  * **INVOICE**
@@ -13,11 +15,13 @@ export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
 export const PRODUCT_NAME = 'products';
 export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
+export const TOTAL_PRICE_WITHOUT_VAT = 'totalPriceWithoutVat';
 export const DEFAULT_GLOBAL_DISCOUNT = 0;
 export const GLOBAL_DISCOUNT = 'globalDiscount';
 export const PERCENT_VALUE = 'percentValue';
 export const GLOBAL_DISCOUNT_PERCENT_VALUE = `${GLOBAL_DISCOUNT}.${PERCENT_VALUE}`;
-
+export const SENDING_DATE = 'sendingDate';
+export const VALIDITY_DATE = 'validityDate';
 // invoice validator
 export const InvoiceFieldErrorMessage =
   'Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0';
@@ -177,10 +181,7 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: 'CASH',
   paymentRegulations: [],
-  globalDiscount: {
-    percentValue: 1000,
-    amountValue: null,
-  },
+  globalDiscount: null,
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
@@ -224,54 +225,16 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
   }
 };
 
-// Payment regulation
-export const PAYMENT_TYPE = 'paymentType';
-export const PAYMENT_REGULATIONS = 'paymentRegulations';
-export const DefaultPaymentRegulation: any = {
-  percent: 10,
-  comment: null,
-  maturityDate: new Date().toLocaleDateString('fr-ca'),
-};
-export const ScreenMode = {
-  VIEW: false,
-  EDIT: true,
-};
-export const paymentRegulationErrorMessage = `Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement`;
-export const validatePaymentRegulation = (paymentRegulationType: InvoicePaymentTypeEnum, paymentRegulation: any[]) => {
-  if (paymentRegulationType === InvoicePaymentTypeEnum.IN_INSTALMENT && (paymentRegulation || []).length === 0) {
-    return true;
+export const invoiceToRest = (_invoice: Invoice) => {
+  const invoice = { ..._invoice };
+  if (invoice.paymentType === InvoicePaymentTypeEnum.CASH) {
+    invoice.paymentRegulations = null;
+  } else {
+    const paymentRegulationTo100Percent = missingPaymentRegulation(invoice.paymentRegulations);
+    if (paymentRegulationTo100Percent.percent !== 0) {
+      invoice.paymentRegulations = paymentRegulationToMinor([...invoice.paymentRegulations, paymentRegulationTo100Percent]);
+    }
   }
-  return false;
-};
 
-export type TPaymentRegulation = {
-  /**TODO: payment regulation type in code gen if different to this**/
-  amount: number;
-  percent: number;
-  comment: string;
-  maturityDate: string;
-};
-
-export const sumOfRegulationsPercentages = (paymentRegulations: TPaymentRegulation[]) => {
-  if (!paymentRegulations) {
-    return 100;
-  }
-  const paymentRegulationsPercentages = paymentRegulations.map(e => +e.percent).reduce((a, b) => a + b, 0);
-  return 100 - +paymentRegulationsPercentages;
-};
-
-type ValidateRegulationPercentage = {
-  value: string;
-  paymentRegulations: TPaymentRegulation[];
-};
-export const validateRegulationPercentage = (params: ValidateRegulationPercentage) => {
-  const { paymentRegulations, value } = params;
-  const restOfPercentages = sumOfRegulationsPercentages(paymentRegulations);
-
-  if (value.length === 0) {
-    return 'Ce champ est requis';
-  } else if (+value > restOfPercentages) {
-    return `Les mensualités ne doivent pas dépasser les 100%, veuillez utiliser un mensualité inférieur ou égale a ${restOfPercentages}%`;
-  }
-  return true;
+  return emptyToNull(invoice);
 };

@@ -28,7 +28,7 @@ import { payingApi } from '../../providers/api';
 import authProvider from '../../providers/auth-provider';
 import { filesToArrayBuffer } from '../../common/utils/file';
 import RichTextEditor from '../../common/components/RichTextEditor';
-import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils';
+import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils/utils';
 
 const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();

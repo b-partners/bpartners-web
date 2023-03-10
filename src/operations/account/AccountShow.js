@@ -15,7 +15,7 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, BP_SWITCH_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 
 const ProfileLayout = () => (
@@ -155,7 +155,7 @@ const SubjectToVatSwitch = data => {
   return (
     <FormGroup>
       <FormControlLabel
-        control={<Switch disabled={isLoading} checked={!data.accountHolder.companyInfo.isSubjectToVat} sx={BP_SWITCH_STYLE} onChange={handleChange} />}
+        control={<Switch disabled={isLoading} checked={!data.accountHolder.companyInfo.isSubjectToVat} onChange={handleChange} />}
         label={!data.accountHolder.companyInfo.isSubjectToVat ? 'Oui' : 'Non'}
       />
     </FormGroup>

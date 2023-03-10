@@ -1,9 +1,9 @@
 import { Clear } from '@mui/icons-material';
-import { Card, CardActions, CardContent, CardHeader, FilledInput, FormControl, IconButton, InputAdornment, Typography } from '@mui/material';
+import { Card, CardActions, CardContent, CardHeader, IconButton, Typography, TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { prettyPrintMinors } from '../../../common/utils/money';
 import useGetAccountHolder from '../../../common/hooks/use-get-account-holder';
-import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from '../utils';
+import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from '../utils/utils';
 
 const useStyle = makeStyles(() => ({
   card: {
@@ -15,12 +15,6 @@ const useStyle = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     alignItems: 'end',
-  },
-  inputAdornment: {
-    transform: 'translateY(0.55rem)',
-  },
-  filledInput: {
-    maxWidth: 280,
   },
 }));
 
@@ -45,7 +39,7 @@ export const ProductItem = ({ product, handleProduct }) => {
           ) + productPriceTTC
         }
         action={
-          <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
+          <IconButton data-testid={`product-${product.id}-clear`} onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
           </IconButton>
         }
@@ -56,21 +50,21 @@ export const ProductItem = ({ product, handleProduct }) => {
         </CardContent>
       )}
       <CardActions className={classes.cardActions}>
-        <FormControl variant='filled'>
-          <FilledInput
-            className={classes.filledInput}
-            value={product.quantity}
-            onChange={handleChange}
-            data-cy-item='quantity-input'
-            endAdornment={
-              <InputAdornment className={classes.inputAdornment} position='end'>
+        <TextField
+          value={product.quantity}
+          onChange={handleChange}
+          sx={{ width: 260 }}
+          data-testid={`product-${product.id}-item`}
+          type='number'
+          label='Nombre du produit'
+          InputProps={{
+            endAdornment: (
+              <Typography sx={{ position: 'relative', top: 10, width: 200 }} variant='body2'>
                 X {prettyPrintMinors(product.unitPrice)} (HT)
-              </InputAdornment>
-            }
-            type='number'
-            label='Nombre du produit'
-          />
-        </FormControl>
+              </Typography>
+            ),
+          }}
+        />
       </CardActions>
     </Card>
   );
