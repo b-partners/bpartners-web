@@ -9,9 +9,7 @@ import { BPButton } from '../../common/components/BPButton';
 import BPFormField from '../../common/components/BPFormField';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { formatDateTo8601 } from '../../common/utils/date';
 import { prettyPrintMinors } from '../../common/utils/money';
-import { toMinors as percentToMinors } from '../../common/utils/percent';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -34,6 +32,7 @@ import {
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import { invoiceMapper } from './utils/invoice-utils';
+import DiscountForm from './components/DiscountForm';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
@@ -66,7 +65,12 @@ const InvoiceForm = props => {
   };
 
   const isPaymentTypeCash = form.watch(PAYMENT_TYPE) === InvoicePaymentTypeEnum.CASH;
-  const togglePaymentType = () => form.setValue(PAYMENT_TYPE, isPaymentTypeCash ? InvoicePaymentTypeEnum.IN_INSTALMENT : InvoicePaymentTypeEnum.CASH);
+  const togglePaymentType = () => {
+    if (!isPaymentTypeCash) {
+      form.setValue(PAYMENT_REGULATIONS, null);
+    }
+    form.setValue(PAYMENT_TYPE, isPaymentTypeCash ? InvoicePaymentTypeEnum.IN_INSTALMENT : InvoicePaymentTypeEnum.CASH);
+  };
 
   const onSubmit = validateInvoice(() => {
     if (nbPendingInvoiceCrupdate > 0) {
@@ -141,7 +145,7 @@ const InvoiceForm = props => {
             type='number'
             form={form}
           />
-          <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
+          <DiscountForm name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
           <ClientSelection name='customer' label='Client' form={form} />
           <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
           <FormControl>
