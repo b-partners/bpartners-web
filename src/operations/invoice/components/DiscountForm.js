@@ -22,7 +22,7 @@ const DiscountForm = props => {
       <FormControl>
         <Typography color='text.secondary'>Ajouter une remise :</Typography>
         <Stack direction='row' spacing={1} alignItems='center'>
-          <Switch checked={state} onChange={toggleDiscount} />
+          <Switch data-testid='global-discount-switch' checked={state} onChange={toggleDiscount} />
           <Typography>{!state ? 'Non' : 'Oui'}</Typography>
         </Stack>
       </FormControl>

@@ -39,7 +39,7 @@ export const ProductItem = ({ product, handleProduct }) => {
           ) + productPriceTTC
         }
         action={
-          <IconButton onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
+          <IconButton data-testid={`product-${product.id}-clear`} onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
             <Clear />
           </IconButton>
         }
