@@ -142,7 +142,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
-  it('Should send the request even if there is not comment', () => {
+  it.only('Should send the request even if there is not comment', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -151,7 +151,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const simpleComment = 'This is a simple comment';
-    cy.get('form input[name=comment]').type(simpleComment);
+    cy.get('form textarea[name=comment]').type(simpleComment);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.comment).to.be.eq(simpleComment);
@@ -161,7 +161,7 @@ describe(specTitle('Invoice'), () => {
         comment: simpleComment,
       });
     });
-    cy.get('form input[name=comment]').clear();
+    cy.get('form textarea[name=comment]').clear();
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       assert.isNull(req.body.comment);

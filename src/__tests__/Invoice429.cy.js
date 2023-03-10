@@ -56,7 +56,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear().type(newRef);
 
     // select customer
-    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
     cy.get('[data-value="customer-2-id"]').click();
 
     //select product

@@ -14,7 +14,14 @@ export const ClientSelection = props => {
   const errorProps = checkError && { error: true, helperText: 'Ce champ est requis' };
 
   return (
-    <TextField {...errorProps} select sx={{ width: 300, marginBlock: '3px', ...sx }} label={label} value={watch(`${name}.id`) || ''}>
+    <TextField
+      {...errorProps}
+      select
+      sx={{ width: 300, marginBlock: '3px', ...sx }}
+      label={label}
+      data-testid='invoice-client-selection'
+      value={watch(`${name}.id`) || ''}
+    >
       {state.clients.length !== 0 ? (
         state.clients.map(client => (
           <MenuItem
