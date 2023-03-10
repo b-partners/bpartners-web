@@ -27,6 +27,7 @@ export const invoiceMapper = {
     invoice[DELAY_PENALTY_PERCENT] = toMajors(_invoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT;
     invoice[GLOBAL_DISCOUNT_PERCENT_VALUE] = toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT;
     invoice[PAYMENT_REGULATIONS] = paymentRegulationToMajor(_invoice[PAYMENT_REGULATIONS] || [DefaultPaymentRegulation]);
+
     return invoice;
   },
   toRest: (_invoice: any): Invoice => {

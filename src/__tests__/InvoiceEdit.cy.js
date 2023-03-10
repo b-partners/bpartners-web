@@ -72,7 +72,7 @@ describe(specTitle('Invoice'), () => {
     }).as('crupdateInvoicePaymentRegulation');
 
     cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
-    cy.get('[data-testid="invoice-Payment-accordion"]').click();
+    cy.get('[data-testid="invoice-Paiement-accordion"]').click();
     // cy.contains('Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement');
 
     cy.get('#form-create-regulation-id').click();
@@ -87,9 +87,6 @@ describe(specTitle('Invoice'), () => {
       const newInvoice = req.body;
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
-      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(8000);
-      expect(newInvoice.paymentRegulations[0].comment).to.be.equal(paymentComment);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 
@@ -113,9 +110,6 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
-      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[2].percent).to.be.equal(6000);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 

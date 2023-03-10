@@ -65,22 +65,19 @@ export const validateRegulationPercentage = (params: ValidateRegulationPercentag
   return true;
 };
 
-export const missingPaymentRegulation = (paymentRegulations: any[]): any => {
-  const currentDate = new Date().toLocaleDateString('fr-ca');
+export const missingPaymentRegulation = (paymentRegulations: any[], date?: string): any => {
   let newPaymentRegulation: TPaymentRegulation = {
     amount: null,
     percent: 100,
     comment: null,
-    maturityDate: getNextMonthDate(currentDate),
+    maturityDate: date,
   };
   if (!paymentRegulations || paymentRegulations.length === 0) {
     return newPaymentRegulation;
   }
   const percent = sumOfRegulationsPercentages(paymentRegulations);
-  const maturityDate = getNextMonthDate(
-    paymentRegulations.sort((a, b) => new Date(b.maturityDate).getTime() - new Date(a.maturityDate).getTime())[0].maturityDate
-  );
-  return { ...newPaymentRegulation, percent, maturityDate };
+
+  return { ...newPaymentRegulation, percent };
 };
 
 export enum MoneyUnity {

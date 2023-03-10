@@ -11,12 +11,14 @@ import {
   getPercentValue,
   missingPaymentRegulation,
   paymentRegulationErrorMessage,
+  paymentRegulationToMajor,
   PAYMENT_REGULATIONS,
   PAYMENT_TYPE,
   ScreenMode,
   validatePaymentRegulation,
   validateRegulationPercentage,
 } from '../utils/payment-regulation-utils';
+import { VALIDITY_DATE } from '../utils/utils';
 import PaymentRegulationItem from './PaymentRegulationItem';
 
 const { IN_INSTALMENT } = InvoicePaymentTypeEnum;
@@ -30,6 +32,7 @@ const PaymentRegulationsForm = props => {
 
   const paymentRegulationType = watch(PAYMENT_TYPE);
   const paymentRegulations = watch(PAYMENT_REGULATIONS);
+  const validityDate = watch(VALIDITY_DATE);
   const isInInstalment = screenMode === VIEW && paymentRegulationType === IN_INSTALMENT;
 
   const handleEdit = index => setScreenMode({ screenMode: EDIT, toEditIndex: index });
@@ -51,14 +54,14 @@ const PaymentRegulationsForm = props => {
       paymentRegulations.filter((_element, k) => k !== index)
     );
   const error = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
-  const paymentRegulationRest = missingPaymentRegulation(paymentRegulations);
+  const paymentRegulationRest = missingPaymentRegulation(paymentRegulations, validityDate);
   paymentRegulationRest.comment = 'Le reste à payer un mois après le dernier paiement, change en fonction des acomptes que vous créerez';
   return (
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
       {(paymentRegulations || []).length > 0 && (
         <Box sx={INVOICE_EDITION.LONG_LIST}>
-          <PaymentRegulationItem data={paymentRegulationRest} percentValue={paymentRegulationRest.percent} />
           {paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove))}
+          <PaymentRegulationItem data={paymentRegulationRest} percentValue={paymentRegulationRest.percent} />
         </Box>
       )}
       {screenMode === EDIT && (
@@ -68,7 +71,7 @@ const PaymentRegulationsForm = props => {
           indexOfSkipped={toEditIndex}
           isCreation={toEditIndex === null}
           paymentRegulations={paymentRegulations}
-          toEdit={toEditIndex !== null ? paymentRegulations[toEditIndex] : DefaultPaymentRegulation}
+          toEdit={toEditIndex !== null ? paymentRegulations[toEditIndex] : paymentRegulationToMajor([DefaultPaymentRegulation])[0]}
         />
       )}
       {error && <FormHelperText sx={{ width: 300 }}>{paymentRegulationErrorMessage}</FormHelperText>}
