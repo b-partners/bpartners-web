@@ -181,10 +181,7 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: 'CASH',
   paymentRegulations: [],
-  globalDiscount: {
-    percentValue: 1000,
-    amountValue: null,
-  },
+  globalDiscount: null,
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview

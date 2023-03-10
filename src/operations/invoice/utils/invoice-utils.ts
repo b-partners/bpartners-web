@@ -25,7 +25,8 @@ export const invoiceMapper = {
   toDomain: (_invoice: any): Invoice => {
     const invoice = { ..._invoice };
     invoice[DELAY_PENALTY_PERCENT] = toMajors(_invoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT;
-    invoice[GLOBAL_DISCOUNT_PERCENT_VALUE] = toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT;
+    invoice[GLOBAL_DISCOUNT] =
+      invoice[GLOBAL_DISCOUNT] && _invoice[GLOBAL_DISCOUNT][PERCENT_VALUE] ? { percentValue: toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) } : null;
     invoice[PAYMENT_REGULATIONS] = paymentRegulationToMajor(_invoice[PAYMENT_REGULATIONS] || [DefaultPaymentRegulation]);
 
     return invoice;
@@ -48,7 +49,7 @@ export const invoiceMapper = {
     if (invoice.paymentType === InvoicePaymentTypeEnum.CASH) {
       invoice.paymentRegulations = null;
     } else {
-      const paymentRegulationTo100Percent = missingPaymentRegulation(invoice.paymentRegulations);
+      const paymentRegulationTo100Percent = { ...missingPaymentRegulation(invoice.paymentRegulations), maturityDate: invoice[VALIDITY_DATE] };
       if (paymentRegulationTo100Percent.percent !== 0) {
         invoice.paymentRegulations = paymentRegulationToMinor([...invoice.paymentRegulations, paymentRegulationTo100Percent]);
       }

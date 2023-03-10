@@ -44,18 +44,28 @@ const PaymentRegulationItem = props => {
             </Avatar>
           </Box>
           <Box sx={{ flexBasis: '60%' }}>
-            <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
-              À payer avant :
-            </Typography>
-            <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
-              {maturityDate}
-            </Typography>
+            {onEdit ? (
+              <>
+                <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                  À payer avant :
+                </Typography>
+                <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                  {maturityDate}
+                </Typography>
+              </>
+            ) : (
+              <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                Reste à payer
+              </Typography>
+            )}
           </Box>
-          <Box sx={{ flexBasis: '15%' }}>
-            <IconButton disabled={!onRemove} onClick={onRemove}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
+          {onRemove && (
+            <Box sx={{ flexBasis: '15%' }}>
+              <IconButton onClick={onRemove}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          )}
         </Box>
         <Divider sx={{ marginBottom: 1 }} />
         <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -64,9 +74,11 @@ const PaymentRegulationItem = props => {
             {haveComment && commentCutter(comment).needExpand && (
               <IconButton onClick={handleExpandClick}>{!expandState ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton>
             )}
-            <IconButton disabled={!onEdit} onClick={onEdit}>
-              <EditIcon />
-            </IconButton>
+            {onEdit && (
+              <IconButton onClick={onEdit}>
+                <EditIcon />
+              </IconButton>
+            )}
           </Box>
         </CardActions>
         <Collapse in={expandState} sx={{ paddingBottom: 0 }} timeout='auto' unmountOnExit>

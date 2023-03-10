@@ -94,16 +94,14 @@ const domainPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation
   };
 };
 
-const restPaymentRegulationMoneyUnity = (paymentRegulation: PaymentRegulation, to: MoneyUnity): PaymentRegulation => {
+const restPaymentRegulationMoneyUnity = (paymentRegulation: PaymentRegulation, to: MoneyUnity): TPaymentRegulation => {
   const changeUnity = (pR: any) => (to === MoneyUnity.MAJOR ? toMajors(pR) : toMinors(pR));
   const {
     paymentRequest: { percentValue },
+    maturityDate,
   } = paymentRegulation;
 
-  return {
-    ...paymentRegulation,
-    paymentRequest: { ...paymentRegulation.paymentRequest, amount: undefined, percentValue: changeUnity(percentValue) },
-  };
+  return { amount: null, percent: changeUnity(percentValue), comment: null, maturityDate };
 };
 export const paymentRegulationMoneyUnity = (paymentRegulations: any[], to: MoneyUnity) =>
   paymentRegulations.map(paymentRegulation =>

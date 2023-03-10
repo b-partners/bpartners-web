@@ -107,7 +107,7 @@ const RegulationsForm = props => {
 
   const validatePercentage = e => validateRegulationPercentage({ paymentRegulations, value: e, indexOfSkipped });
 
-  const percentName = !indexOfSkipped || paymentRegulations[indexOfSkipped].percent ? `percent` : `paymentRequest.percent`;
+  const percentName = !indexOfSkipped || paymentRegulations[indexOfSkipped].percent ? `percent` : `paymentRequest.percentValue`;
 
   return (
     <Paper elevation={3}>
