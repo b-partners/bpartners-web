@@ -3,7 +3,13 @@ import { formatDateTo8601 } from 'src/common/utils/date';
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMajors } from 'src/common/utils/money';
 import { toMinors } from 'src/common/utils/percent';
-import { DefaultPaymentRegulation, missingPaymentRegulation, paymentRegulationToMinor, PAYMENT_REGULATIONS } from './payment-regulation-utils';
+import {
+  DefaultPaymentRegulation,
+  missingPaymentRegulation,
+  paymentRegulationToMajor,
+  paymentRegulationToMinor,
+  PAYMENT_REGULATIONS,
+} from './payment-regulation-utils';
 import {
   DEFAULT_DELAY_PENALTY_PERCENT,
   DEFAULT_GLOBAL_DISCOUNT,
@@ -18,15 +24,15 @@ import {
 export const invoiceMapper = {
   toDomain: (_invoice: any): Invoice => {
     const invoice = { ..._invoice };
-    invoice[DELAY_PENALTY_PERCENT] = toMajors(invoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT;
-    invoice[GLOBAL_DISCOUNT_PERCENT_VALUE] = toMajors(invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT;
-    invoice[PAYMENT_REGULATIONS] = toMajors(invoice[PAYMENT_REGULATIONS] || [DefaultPaymentRegulation]);
+    invoice[DELAY_PENALTY_PERCENT] = toMajors(_invoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT;
+    invoice[GLOBAL_DISCOUNT_PERCENT_VALUE] = toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT;
+    invoice[PAYMENT_REGULATIONS] = paymentRegulationToMajor(_invoice[PAYMENT_REGULATIONS] || [DefaultPaymentRegulation]);
     return invoice;
   },
   toRest: (_invoice: any): Invoice => {
     const submittedAt = new Date();
     const delayPenaltyPercent = toMinors(parseInt(_invoice[DELAY_PENALTY_PERCENT]));
-    const currentGlobalDiscount = _invoice[GLOBAL_DISCOUNT][PERCENT_VALUE];
+    const currentGlobalDiscount = _invoice[GLOBAL_DISCOUNT] && _invoice[GLOBAL_DISCOUNT][PERCENT_VALUE];
     const globalDiscount = isNaN(currentGlobalDiscount) || +currentGlobalDiscount === 0 ? null : { percentValue: toMinors(+currentGlobalDiscount) };
 
     const invoice = {
