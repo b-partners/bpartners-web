@@ -9,7 +9,7 @@ const InvoiceAccordion = props => {
 
   return (
     <Accordion sx={error ? errorStyle : undefined} expanded={isExpanded === index}>
-      <AccordionSummary onClick={handleClick} expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary data-testid={`invoice-${label}-accordion`} onClick={handleClick} expandIcon={<ExpandMoreIcon />}>
         {label}
       </AccordionSummary>
       <AccordionDetails sx={{ ...INVOICE_EDITION.ACCORDION_DETAILS }}>{children}</AccordionDetails>

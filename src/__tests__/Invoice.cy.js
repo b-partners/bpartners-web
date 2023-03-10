@@ -142,7 +142,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
-  it.only('Should send the request even if there is not comment', () => {
+  it('Should send the request even if there is not comment', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -224,7 +224,8 @@ describe(specTitle('Invoice'), () => {
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains('Total TTC').should('not.exist');
     cy.contains('Total HT');
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(2);
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
+    cy.get('[data-testid="product-product-1-id-item"]').clear().type(2);
     // we have now 2 products
     // description1 { quantity: 1, unitPrice: 10 }
     // description2 { quantity: 1, unitPrice: 20 }

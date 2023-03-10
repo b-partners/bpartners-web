@@ -54,7 +54,7 @@ export const ProductItem = ({ product, handleProduct }) => {
           value={product.quantity}
           onChange={handleChange}
           sx={{ width: 260 }}
-          data-cy-item='quantity-input'
+          data-testid={`product-${product.id}-item`}
           type='number'
           label='Nombre du produit'
           InputProps={{
