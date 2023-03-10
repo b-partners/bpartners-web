@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { List, useListContext } from 'react-admin';
-import { Card, CardContent, Grid, Link, Paper, Stack, Typography } from '@mui/material';
-import { LocalPhoneOutlined, LocationOn, MailOutline, MyLocation } from '@mui/icons-material';
+import { Box, Card, CardContent, Grid, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Home, LocalPhoneOutlined, LocationOn, MailOutline } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
@@ -34,7 +34,7 @@ const Prospects = () => {
       <Grid container justifyContent='space-between' spacing={2}>
         <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
         <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
-        <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#33ff33' />
+        <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
       </Grid>
     </>
   ) : (
@@ -77,26 +77,31 @@ const ProspectItem = ({ prospect }) => {
 
   return (
     <Paper elevation={2} sx={{ p: 1 }}>
-      <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
-        {prospect.name || 'Non renseigné'}
-      </Typography>
-      <Typography variant='body2'>
-        <MailOutline fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.email || 'Non renseigné'}
-      </Typography>
-      <Typography variant='body2'>
-        <LocalPhoneOutlined fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.phone || 'Non renseigné'}
-      </Typography>
-      <Typography variant='body2'>
-        <LocationOn fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
-      </Typography>
-      {prospect.location && (
-        <Typography variant='body2'>
-          <MyLocation fontSize='small' sx={{ position: 'relative', top: 4 }} />{' '}
-          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
-            Voir sur la carte
-          </Link>
+      <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
+        <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
+          {prospect.name || 'Non renseigné'}
         </Typography>
-      )}
+        {prospect.location && (
+          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+            <Tooltip title='Voir sur la carte'>
+              <IconButton component='span'>
+                <LocationOn fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          </Link>
+        )}
+      </Stack>
+      <Box sx={{ color: '#4d4d4d' }}>
+        <Typography variant='body2'>
+          <MailOutline fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.email || 'Non renseigné'}
+        </Typography>
+        <Typography variant='body2'>
+          <LocalPhoneOutlined fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.phone || 'Non renseigné'}
+        </Typography>
+        <Typography variant='body2'>
+          <Home fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
+        </Typography>
+      </Box>
     </Paper>
   );
 };
