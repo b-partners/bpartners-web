@@ -160,7 +160,7 @@ const InvoiceForm = props => {
           <ProductSelection name={PRODUCT_NAME} form={form} />
         </InvoiceAccordion>
         {!isPaymentTypeCash && (
-          <InvoiceAccordion error={paymentRegulationsError} label='Payment' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <InvoiceAccordion error={paymentRegulationsError} label='Paiement' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
             <PaymentRegulationsForm form={form} />
           </InvoiceAccordion>
         )}

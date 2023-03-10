@@ -52,7 +52,7 @@ const PaymentRegulationsForm = props => {
     );
   const error = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const paymentRegulationRest = missingPaymentRegulation(paymentRegulations);
-  paymentRegulationRest.comment = 'Le reste a payer un mois après le dernier paiement, change en fonction des acomptes que vous créerez';
+  paymentRegulationRest.comment = 'Le reste à payer un mois après le dernier paiement, change en fonction des acomptes que vous créerez';
   return (
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
       {(paymentRegulations || []).length > 0 && (
