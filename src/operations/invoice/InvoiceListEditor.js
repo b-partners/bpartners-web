@@ -6,7 +6,7 @@ import TabPanel from '../../common/components/TabPanel';
 import InvoiceForm from './InvoiceForm';
 import InvoiceList from './InvoiceList';
 import InvoicePdfDocument, { CancelButton } from './InvoicePdfDocument';
-import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils';
+import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -38,7 +38,7 @@ const InvoiceListEditor = () => {
   const handleSwitchTab = (_e, newTabIndex) => stateChangeHandling({ tabIndex: newTabIndex });
 
   const returnToList = invoice => {
-    const newTabIndex = invoice && invoice.status == InvoiceStatus.CONFIRMED ? 2 : tabIndex;
+    const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
     stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
   };
 
@@ -62,7 +62,7 @@ const InvoiceListEditor = () => {
           </TabPanel>
         </Box>
       ) : viewScreen === viewScreenState.EDITION ? (
-        <Card className={classes.card}>
+        <Card sx={{ border: 'none' }}>
           <CardHeader
             title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
             action={<CancelButton onClick={returnToList} />}

@@ -6,7 +6,8 @@ import productProvider from '../../../providers/product-provider';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
-import { ProductActionType, productValidationHandling } from '../utils';
+import { ProductActionType, productValidationHandling } from '../utils/utils';
+import { INVOICE_EDITION } from '../style';
 
 const useStyle = makeStyles(theme => ({
   formControl: {
@@ -63,28 +64,30 @@ export const ProductSelection = ({ name, form }) => {
     });
   }, []);
 
+  const disponibleProducts = state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id));
+
   return (
     <>
+      {selectedProduct && selectedProduct.length > 0 && (
+        <Box sx={INVOICE_EDITION.LONG_LIST}>
+          {selectedProduct.map(product => (
+            <ProductItem key={product.id} product={product} handleProduct={handleProduct} />
+          ))}
+        </Box>
+      )}
       <Box sx={{ width: '100%' }}>
-        {selectedProduct &&
-          selectedProduct.length > 0 &&
-          selectedProduct.map(product => <ProductItem key={product.id} product={product} handleProduct={handleProduct} />)}
-      </Box>
-      <Box sx={{ width: '100%' }}>
-        {!state.status ? (
+        {!state.status && state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id)).length > 0 && (
           <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
-        ) : (
+        )}
+        {state.status && state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id)).length > 0 && (
           <FormControl variant='filled' value='' className={classes.formControl}>
             <InputLabel id='product-selection-id'>Produit</InputLabel>
             <Select id='product-selection-id'>
-              {state.productsList.length > 0 &&
-                state.productsList
-                  .filter(e => !includesObject(selectedProduct, 'id', e.id))
-                  .map(e => (
-                    <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
-                      {e.description}
-                    </MenuItem>
-                  ))}
+              {disponibleProducts.map(e => (
+                <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
+                  {e.description}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         )}

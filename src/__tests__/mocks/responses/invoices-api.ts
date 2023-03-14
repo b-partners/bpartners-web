@@ -1,9 +1,6 @@
-import { Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
-import { TPaymentRegulation } from 'src/operations/invoice/utils';
+import { Invoice, InvoiceStatus } from 'bpartners-react-client';
 import { customers1 } from './customer-api';
 import { products } from './product-api';
-
-const paymentRegulations: TPaymentRegulation[] = [{ amount: 0, comment: '', maturityDate: '', percent: 12 }];
 
 export const createInvoices = (n: number, status: InvoiceStatus) => {
   const invoices: Invoice[] = [];
@@ -11,7 +8,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
     invoices.push({
       customer: customers1[i < 2 ? 0 : i < 4 ? 1 : 2],
       fileId: 'file-id',
-      id: 'invoice-id-' + i,
+      id: `invoice-${status}-${i}-id`,
       paymentUrl: 'paymentUrl-' + i,
       products: [products[0], products[1]],
       ref: 'invoice-ref-' + i,
@@ -19,7 +16,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
       toPayAt: '2022-05-15',
       validityDate: '2022-05-15',
       status: status,
-      paymentRegulations: [],
+      paymentRegulations: null,
       title: 'invoice-title-' + i,
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
@@ -114,3 +111,14 @@ export const restInvoiceRegulation = [
     },
   },
 ];
+
+const invoiceMock = {
+  ACCEPTED: createInvoices(35, InvoiceStatus.ACCEPTED),
+  CONFIRMED: createInvoices(35, InvoiceStatus.CONFIRMED),
+  DRAFT: createInvoices(35, InvoiceStatus.DRAFT),
+  PAID: createInvoices(35, InvoiceStatus.PAID),
+  PROPOSAL: createInvoices(35, InvoiceStatus.PROPOSAL),
+  PROPOSAL_CONFIRMED: createInvoices(35, InvoiceStatus.PROPOSAL_CONFIRMED),
+};
+
+export const getInvoices = (page: number, perPage: number, status: InvoiceStatus) => invoiceMock[status].slice(page * perPage, page * perPage + perPage);

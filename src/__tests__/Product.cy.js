@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { newProduct2, products } from './mocks/responses/product-api';
+import { getProducts, newProduct2, products, resetData, resetProducts, setProduct } from './mocks/responses/product-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 
@@ -28,21 +28,44 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=15`, products).as('getProducts');
-    cy.intercept('POST', `/accounts/mock-account-id1/products`, products).as('postProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
+      const { page, pageSize } = req.query;
+      req.reply(getProducts(page - 1, pageSize));
+    }).as('getProducts');
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
+      req.reply(req.body);
+    }).as('postProducts');
   });
 
   it('are displayed', () => {
     mount(<App />);
     cy.get('[name="products"]').click();
-    cy.contains('description1');
+    cy.contains('description 1');
+    cy.contains('description 2');
+    cy.contains('description 3');
     cy.contains('12.00 €');
+  });
 
-    cy.contains('description2');
-    cy.contains('24.00 €');
+  it('Should test pagination', () => {
+    mount(<App />);
+    cy.get('[name="products"]').click();
+    cy.contains('description 1');
+    cy.contains('description 2');
+    cy.contains('description 14');
 
-    cy.contains('description3');
-    cy.contains('33.00 €');
+    cy.get(`div .MuiSelect-select`).click();
+    cy.get('[data-value="10"]').click();
+
+    cy.contains('description 1');
+    cy.contains('description 9');
+    cy.contains('description 14').not();
+    cy.contains('Page : 1 / 2');
+
+    cy.get('[data-testid="pagination-left-id"]').click();
+
+    cy.contains('description 10');
+    cy.contains('description 16');
+    cy.contains('Page : 2 / 2');
   });
 
   it('should validate empty input', () => {
@@ -54,7 +77,7 @@ describe(specTitle('Products'), () => {
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
 
-    cy.contains('description1');
+    cy.contains('description 1');
 
     cy.get('[data-testId="create-button"]').click();
 
@@ -74,7 +97,7 @@ describe(specTitle('Products'), () => {
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
 
-    cy.contains('description1');
+    cy.contains('description 1');
 
     cy.get('[data-testId="create-button"]').click();
 
@@ -91,9 +114,14 @@ describe(specTitle('Products'), () => {
           quantity: 1,
         },
       ]);
+      setProduct(req.body[0]);
     }).as('postNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@postNewProduct');
+    cy.get('[data-testid="pagination-left-id"]').click();
+    cy.contains('new description');
+    cy.contains('1.03 €');
+    cy.contains('5.00 %');
   });
 
   it('Should edit a product', () => {
@@ -106,21 +134,25 @@ describe(specTitle('Products'), () => {
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
 
-    cy.contains('description1');
+    cy.contains('description 1');
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
     cy.contains('Édition de produit');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=15`, newProduct2).as('getModifiedProducts');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
+      const editedProduct = [{ description: editionDescription, unitPrice: 1000, vatPercent: '1', id: 'product-0-id' }];
+      expect(req.body).to.deep.equals(editedProduct);
+      setProduct(editedProduct[0], 0);
+      req.reply(editedProduct);
+    });
 
-    cy.get('#description').clear().type('test description');
+    const editionDescription = 'edit this product test';
+    cy.get('#description').clear().type(editionDescription);
     cy.get('#unitPrice').clear().type(1);
     cy.get('#vatPercent').clear().type(1);
-
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
-    cy.wait('@getModifiedProducts');
 
-    cy.contains('test description');
+    cy.contains('edit this product test');
   });
 
   it('VAT references should not displayed', () => {
@@ -161,7 +193,7 @@ describe(specTitle('Products'), () => {
     cy.wait('@getAccountHolder1');
     cy.wait('@getProducts');
 
-    cy.contains('description1');
+    cy.contains('description 1');
 
     cy.get('[data-testId="create-button"]').click();
 

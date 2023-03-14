@@ -19,3 +19,12 @@ export const LOGIN_FORM_BUTTON = {
 };
 
 export const BP_B_LOGO = { width: 100, position: 'absolute', top: '3%', left: '3%' };
+export const REDIRECTION_MESSAGE = {
+  position: 'absolute',
+  bottom: '6.5rem',
+  left: '50%',
+  opacity: '0.5',
+  transform: 'translateX(-50%)',
+  color: '#F5F5F5',
+  display: 'flex',
+};

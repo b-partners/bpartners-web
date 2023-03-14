@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Typography, CircularProgress } from '@mui/material';
 
 import authProvider from '../providers/auth-provider';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
 import { getUrlParams } from '../common/utils/get-params';
 
-import { FLEX_CENTER } from './style.js';
+import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 
 const LoginSuccessPage = () => {
@@ -14,7 +14,10 @@ const LoginSuccessPage = () => {
     async function login() {
       const code = getUrlParams(window.location.search, 'code');
       await authProvider.login({ username: null, password: code, clientMetadata: { redirectionStatusUrls: loginRedirectionUrls } });
-      redirect(window.location.origin);
+      let timeoutId = setTimeout(() => {
+        redirect(window.location.origin);
+        clearTimeout(timeoutId);
+      }, 3000);
     }
     login();
   }, []);
@@ -31,16 +34,40 @@ const LoginSuccessPage = () => {
         backgroundPosition: 'center center',
       }}
     >
-      <Typography
-        sx={{
-          color: '#F5F5F5',
-          position: 'absolute',
-          bottom: '6.5rem',
-        }}
-      >
-        Vous êtes authentifié ! Vous allez être redirigé vers votre espace professionel...
+      <Typography variant='h5' sx={{ color: '#F5F5F5', position: 'absolute', top: '6rem', opacity: '0.5' }} marginX={3}>
+        Vous êtes authentifié !
       </Typography>
+      <Box sx={REDIRECTION_MESSAGE}>
+        <Typography variant='h6'>Redirection vers votre espace professionnel</Typography>
+        <DotLoading />
+      </Box>
     </Box>
+  );
+};
+
+const DotLoading = () => {
+  const [dot, setDot] = useState(1);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDot(dot => (dot !== 5 ? dot + 1 : 1));
+    }, 700);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  return (
+    <Typography
+      sx={{
+        color: '#F5F5F5',
+        width: 0,
+      }}
+      variant='h6'
+    >
+      {'.'.repeat(dot)}
+    </Typography>
   );
 };
 

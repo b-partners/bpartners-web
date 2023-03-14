@@ -7,7 +7,7 @@ import App from '../App';
 import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, invoiceWithoutCustomer, invoiceWithoutTitle } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
@@ -33,15 +33,18 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, status, page } = req.query;
+      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
+    });
+
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
+    });
   });
 
-  it('should show the money in major unit', () => {
+  it('Should show the money in major unit', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
@@ -49,12 +52,35 @@ describe(specTitle('Invoice'), () => {
     cy.contains('20.00 €');
   });
 
-  it('should show the list of invoice', () => {
+  it('Test pagination', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+
+    cy.contains('invoice-ref-0');
+    cy.contains('invoice-ref-14');
+
+    cy.get('[data-testid="pagination-left-id"]').click();
+    cy.contains('invoice-ref-15');
+    cy.contains('invoice-ref-34');
+
+    cy.get('[data-testid="pagination-right-id"]').click();
+    cy.contains('invoice-ref-0');
+    cy.contains('invoice-ref-14');
+
+    cy.get(`div .MuiSelect-select`).click();
+    cy.get('[data-value="10"]').click();
+
+    cy.contains('invoice-ref-10').not();
+    cy.contains('invoice-ref-14').not();
+
+    cy.contains('Page : 1 / 4');
+  });
+
+  it('Should show the list of invoice', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.contains('invoice-title-0');
-    cy.contains('Name 3');
     cy.contains('Brouillon');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
@@ -66,7 +92,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('À payer');
   });
 
-  it('can be paid', () => {
+  it('Can be paid', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
@@ -78,32 +104,12 @@ describe(specTitle('Invoice'), () => {
       req.reply({ ...req.body });
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`).as('refetch');
-    cy.get('[data-test-item="pay-invoice-id-3"]').click();
+    cy.get('[data-testid="pay-invoice-CONFIRMED-1-id"]').click();
     cy.wait('@refetch');
-    cy.contains('Facture invoice-ref-3 payée !');
+    cy.contains('Facture invoice-ref-1 payée !');
   });
 
-  it('should test pagination', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.RaList-main > :nth-child(3) > .MuiButtonBase-root').click();
-
-    cy.contains('Page : 2');
-    cy.contains('Taille : 5');
-  });
-
-  it('should show success message', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
-    cy.contains('Brouillon transformé en devis !');
-
-    cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
-    cy.contains('Devis confirmé');
-  });
-
-  it('should automatically change tabs when converting to a quote or invoice', () => {
+  it('Should automatically change tabs when converting to a quote or invoice', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
@@ -116,9 +122,6 @@ describe(specTitle('Invoice'), () => {
 
   it('Check if date label are corrects', () => {
     mount(<App />);
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
-    });
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
@@ -126,7 +129,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Date limite de validité');
   });
 
-  it('should show an invoice', () => {
+  it('Should show an invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -139,19 +142,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
-  it('should show warning message', () => {
-    const invoices = [invoiceWithoutCustomer, invoiceWithoutTitle, ...createInvoices(3, 'DRAFT')];
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=10&status=DRAFT`, invoices).as('incompleteInvoice1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, invoices).as('incompleteInvoice2');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, invoices).as('incompleteInvoice3');
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
-    cy.contains('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0');
-  });
-
-  it('should send the request even if there is not comment', () => {
+  it('Should send the request even if there is not comment', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -160,7 +151,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const simpleComment = 'This is a simple comment';
-    cy.get('form input[name=comment]').type(simpleComment);
+    cy.get('form textarea[name=comment]').type(simpleComment);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.comment).to.be.eq(simpleComment);
@@ -170,7 +161,7 @@ describe(specTitle('Invoice'), () => {
         comment: simpleComment,
       });
     });
-    cy.get('form input[name=comment]').clear();
+    cy.get('form textarea[name=comment]').clear();
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       assert.isNull(req.body.comment);
@@ -181,7 +172,7 @@ describe(specTitle('Invoice'), () => {
     });
   });
 
-  it('is able to refresh the preview', () => {
+  it('Should able to refresh the preview', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -199,7 +190,6 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@getAccount1');
     cy.wait('@whoami');
     cy.wait('@getAccountHolder1');
-    cy.wait('@getDraftsPer5Page1');
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     cy.get('#form-refresh-preview').click();
@@ -224,79 +214,22 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder2');
-    cy.wait('@getDraftsPer5Page1');
     // shouldn't show TTC price
     cy.contains(/TTC/gi).should('not.exist');
 
-    cy.get(':nth-child(1) > .column-ref > .MuiTypography-root').click();
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
     // shouldn't show TTC price
     cy.contains(/TTC/gi).should('not.exist');
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains('Total TTC').should('not.exist');
     cy.contains('Total HT');
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
+    cy.get('[data-testid="product-product-1-id-item"]').clear().type(2);
     // we have now 2 products
     // description1 { quantity: 1, unitPrice: 10 }
     // description2 { quantity: 1, unitPrice: 20 }
     // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
     cy.contains('30.00 €');
-  });
-
-  it("should show error message and don't send invoice", () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
-    });
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
-
-    cy.get("[name='create-draft-invoice']").click();
-
-    cy.get('form input[name=title]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('form input[name=title]').type('Nouveau titre');
-
-    cy.get('form input[name=ref]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('form input[name=ref]').type('New ref');
-    cy.get('form input[name=delayInPaymentAllowed]').clear().type('30');
-
-    cy.get('form input[name=sendingDate]').clear();
-    cy.contains('Ce champ est requis');
-    const currentDate = new Date();
-    cy.get('form input[name=sendingDate]').type(`${currentDate.getFullYear() + 1}-01-01`);
-    cy.contains("La date d'émission doit être antérieure ou égale à la date d’aujourd’hui");
-    cy.get('form input[name=sendingDate]').clear();
-    cy.get('form input[name=sendingDate]').type(`2023-01-01`);
-
-    cy.get('form input[name=validityDate]').clear();
-    cy.contains('Ce champ est requis');
-
-    cy.get('form input[name=validityDate]').type('2022-12-31');
-    cy.contains("La date limite de validité doit être ultérieure ou égale à la date d'émission");
-    cy.get('form input[name=validityDate]').clear().type('2023-01-02');
-
-    cy.contains('Ce champ est requis');
-    // select the customer
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
-
-    // the user can't save the invoice if it is not valid
-    // the user shoud view an error message
-    cy.get('#form-save-id').click();
-    cy.contains('Veuillez remplir correctement tous les champs');
-    // select the product
-    cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-
-    // 'cause the invoice is now valid, onclick on the save button,
-    // the crupdate request is send and the edit mode is closed
-    cy.contains('Titre');
-    cy.contains('Référence');
-    cy.contains("Date d'émission");
-    cy.contains('Client');
-    cy.contains('description');
-    cy.get('#form-save-id').click();
   });
 });

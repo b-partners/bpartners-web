@@ -8,7 +8,7 @@ import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
-import { createInvoices } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
@@ -32,18 +32,15 @@ describe(specTitle('Invoice creation'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
 
     cy.intercept('POST', '/accounts/mock-account-id1/invoices/invoice-id-1/relaunch', {});
-
     cy.intercept('GET', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch1).as('getInvoiceRelaunch1');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch2).as('getInvoiceRelaunch2');
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, status, page } = req.query;
+      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
+    });
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
 
@@ -83,16 +80,18 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
 
     const globalDiscount_percentValue = 100;
+    cy.get('[data-testid=global-discount-switch]').click();
     cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
 
     const newDelayPenaltyPercent = '40';
     cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
 
     // select the customer
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-value="customer-2-id"]').click();
 
     // select the product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
@@ -116,12 +115,13 @@ describe(specTitle('Invoice creation'), () => {
     cy.wait('@crupdateWithNewRefAndDelayData');
 
     cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
-
+    cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=validityDate]').invoke('removeAttr').type('2022-10-05');
-    cy.get('form input[name=comment]').type('this is a comment for testing');
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
+    cy.get('form textarea[name=comment]').type('this is a comment for testing');
+    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-value="customer-2-id"]').click();
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
 
@@ -129,10 +129,8 @@ describe(specTitle('Invoice creation'), () => {
     cy.contains('24.00 € (TTC)');
     cy.contains('TVA : 0.04 €');
     cy.contains('10.00 € (HT)');
-    cy.contains('20.00 € (HT)');
 
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
-    cy.get('.makeStyles-card-18 > :nth-child(1) > .MuiCardHeader-action > .MuiButtonBase-root').click();
+    cy.get('[data-testid="product-product-1-id-item"] input').clear().type('15');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(2);
 
@@ -165,10 +163,11 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-confirmed-invoice']").click();
 
     // select the customer
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer2"]').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-value="customer-2-id"]').click();
 
     // select the product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();

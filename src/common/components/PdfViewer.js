@@ -1,7 +1,6 @@
 import { DownloadForOffline, Error } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
 import { HorizontalPagination } from './HorizontalPagination';
 
@@ -14,16 +13,12 @@ export const ErrorHandling = ({ errorMessage }) => (
   </Box>
 );
 
-const useStyle = makeStyles(() => ({
-  pdf: {},
-}));
-
 const PdfViewer = props => {
-  const { url, filename, isPending, noData, onLoadError, width, children, ...others } = props;
+  const { url, filename, isPending, noData, onLoadError, children, ...others } = props;
   const loadErrorMessage = 'Échec de chargement du document';
-  const classes = useStyle();
   const [pages, setPages] = useState({ current: 1, last: null });
   const [isLoading, setLoading] = useState(true);
+  const pdfRef = useRef(null);
 
   const stopLoading = () => setLoading(false);
   const startLoading = useCallback(() => setLoading(true), [setLoading]);
@@ -42,7 +37,7 @@ const PdfViewer = props => {
 
   return (
     <Box {...others}>
-      <Card>
+      <Card ref={pdfRef}>
         {isPending && <LinearProgress />}
         <Box display='flex' justifyContent='space-between'>
           <CardHeader title='Justificatif' />
@@ -57,14 +52,18 @@ const PdfViewer = props => {
         <CardContent sx={{ ...(url && !isLoading && { paddingInline: 0 }), justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
           {url ? (
             <Pdf
-              className={classes.pdf}
               noData={noData || <Typography variant='body2'>En attente du document ...</Typography>}
               error={onLoadError || <ErrorHandling errorMessage={loadErrorMessage} />}
               loading={<LoadingMessage />}
               file={!isPending ? url : null}
               onLoadSuccess={setLastPage}
             >
-              <PdfPage loading={<LoadingMessage />} onLoadSuccess={stopLoading} className={classes.pdf} width={width} pageNumber={pages.current} />
+              <PdfPage
+                loading={<LoadingMessage />}
+                onLoadSuccess={stopLoading}
+                width={pdfRef.current && pdfRef.current.clientWidth - 50}
+                pageNumber={pages.current}
+              />
             </Pdf>
           ) : (
             <Typography variant='body2'>En attente du document ...</Typography>

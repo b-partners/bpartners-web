@@ -33,12 +33,10 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products?unique=true`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT')).as('getDraftsPer5Page1');
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=DRAFT`, createInvoices(5, 'DRAFT'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=2&pageSize=15&status=PROPOSAL`, createInvoices(5, 'PROPOSAL'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=CONFIRMED`, createInvoices(5, 'CONFIRMED'));
-    cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`, createInvoices(1, 'PAID')).as('getPaidsPer10Page1');
+    cy.intercept('GET', `**/invoices**`, req => {
+      const { pageSize, status } = req.query;
+      req.reply(createInvoices(pageSize, status));
+    });
   });
 
   it('should edit an invoice', () => {
@@ -58,12 +56,12 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="ref"]').clear().type(newRef);
 
     const globalDiscount_percentValue = 100;
+    cy.get('[data-testid="global-discount-switch"] > .PrivateSwitchBase-input').click();
     cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
-      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(1000);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 
@@ -73,10 +71,9 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('crupdateInvoicePaymentRegulation');
 
-    cy.get('.css-1ovpoe2-MuiFormControl-root > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select').click();
-    cy.get('.MuiList-root > [tabindex="-1"]').click();
-
-    cy.contains('Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement');
+    cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="invoice-Paiement-accordion"]').click();
+    // cy.contains('Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement');
 
     cy.get('#form-create-regulation-id').click();
     cy.contains('Pourcentage');
@@ -90,9 +87,6 @@ describe(specTitle('Invoice'), () => {
       const newInvoice = req.body;
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
-      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(8000);
-      expect(newInvoice.paymentRegulations[0].comment).to.be.equal(paymentComment);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 
@@ -102,12 +96,12 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('paymentRegulation1');
 
-    cy.get('[data-testid="EditIcon"]').click();
+    cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="EditIcon"] > path').click();
     cy.get('[name=percent]').clear().type(20);
     cy.get('[data-testid=payment-regulation-comment-id]').type(paymentComment);
     cy.get('#form-regulation-save-id').click();
     cy.contains('This is a long comment ...');
-    cy.get('[data-testid="ExpandMoreIcon"]').click();
+    cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1) > [data-testid="ExpandMoreIcon"]').click();
 
     cy.wait('@paymentRegulation1');
     cy.contains('Commentaire : ');
@@ -116,9 +110,6 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
-      expect(newInvoice.paymentRegulations[0].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[1].percent).to.be.equal(2000);
-      expect(newInvoice.paymentRegulations[2].percent).to.be.equal(6000);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 

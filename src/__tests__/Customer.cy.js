@@ -4,7 +4,7 @@ import App from 'src/App';
 import authProvider from 'src/providers/auth-provider';
 import * as Redirect from '../common/utils/redirect';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { customers1, customers2, customers3 } from './mocks/responses/customer-api';
+import { customers1, customers2, customers3, getCustomers, setCustomer } from './mocks/responses/customer-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Customers'), () => {
@@ -22,8 +22,10 @@ describe(specTitle('Customers'), () => {
         })
     );
 
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers1).as('getCustomers1');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=2&pageSize=15', customers1).as('getCustomers1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers**`, req => {
+      const { page, pageSize } = req.query;
+      req.reply(getCustomers(page - 1, pageSize));
+    });
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
@@ -36,13 +38,10 @@ describe(specTitle('Customers'), () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
 
     cy.contains('2589 Nelm Street');
-    cy.contains('Name 1');
-    cy.contains('FirstName 1');
-    cy.contains('Email 3');
-    cy.contains('22 22 22');
+    cy.contains('lastName-1');
+    cy.contains('firstName-1');
   });
 
   it('Should create customer', () => {
@@ -63,7 +62,6 @@ describe(specTitle('Customers'), () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
 
     cy.contains('Email');
 
@@ -97,7 +95,6 @@ describe(specTitle('Customers'), () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
     cy.contains('Email');
     cy.get('.MuiTableBody-root > :nth-child(1)').click();
     cy.contains('Édition de client');
@@ -111,7 +108,6 @@ describe(specTitle('Customers'), () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
     cy.contains('Email');
     cy.get('[data-testId="create-button"]').click();
     cy.contains('Création de client');
@@ -124,20 +120,33 @@ describe(specTitle('Customers'), () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
     cy.contains('Email');
-    cy.contains('Page : 1');
+    cy.contains('Page : 1 / 3');
+    cy.contains('lastName-0');
+    cy.contains('lastName-14');
 
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('Page : 2');
-    cy.contains('Taille : 3');
+    cy.contains('Page : 2 / 3');
+    cy.contains('lastName-15');
+    cy.contains('lastName-34');
+
+    cy.get('[data-testid="pagination-right-id"]').click();
+    cy.contains('Page : 1 / 3');
+    cy.contains('lastName-0');
+    cy.contains('lastName-14');
+
+    cy.get(`div .MuiSelect-select`).click();
+    cy.get('[data-value="30"]').click();
+    cy.contains('Page : 1 / 2');
+    cy.contains('lastName-0');
+    cy.contains('lastName-29');
   });
 
   it('Should edit a customer', () => {
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
-    cy.wait('@getCustomers1');
     cy.contains('Email');
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
     cy.contains('Édition de client');
@@ -151,18 +160,18 @@ describe(specTitle('Customers'), () => {
         comment: '',
         email: 'test@gmail.com',
         firstName: 'FirstName 11',
-        id: 'customer1',
+        id: 'customer-0-id',
         lastName: 'LastName 11',
         phone: '55 55 55',
       };
       expect(req.body[0]).to.deep.eq(updatedCustomer);
-      req.reply([customers2[3]]);
+      setCustomer(0, updatedCustomer);
+      req.reply([updatedCustomer]);
     }).as('updateCustomers');
 
     cy.get('#email').clear().type('test@gmail.com');
 
     cy.get('#lastName').clear().type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers3).as('getCustomers3');
     cy.get('#firstName').clear().type('FirstName 11');
     cy.get('#address').clear().type('Wall Street 2');
     cy.get('#comment').contains('comment customer 1');
@@ -170,13 +179,12 @@ describe(specTitle('Customers'), () => {
     cy.get('#phone').clear().type('55 55 55{enter}');
 
     cy.wait('@updateCustomers');
-
     cy.contains('Bonjour First Name 1 !');
 
     cy.contains('Wall Street 2');
     cy.contains('LastName 11');
     cy.contains('FirstName 11');
-    cy.contains('Email 1');
+    cy.contains('test@gmail.com');
     cy.contains('55 55 55');
   });
 });
