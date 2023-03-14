@@ -56,10 +56,11 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear().type(newRef);
 
     // select customer
-    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
     cy.get('[data-value="customer-2-id"]').click();
 
     //select product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();

@@ -97,14 +97,16 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('Ce champ est requis');
     // select the customer
-    cy.get('#invoice-client-selection-id').click();
-    cy.get('[data-value="customer-1-id"]').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-value="customer-2-id"]').click();
 
     // the user can't save the invoice if it is not valid
     // the user shoud view an error message
     cy.get('#form-save-id').click();
     cy.contains('Veuillez remplir correctement tous les champs');
+
     // select the product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();

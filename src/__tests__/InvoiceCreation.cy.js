@@ -80,16 +80,18 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
 
     const globalDiscount_percentValue = 100;
+    cy.get('[data-testid=global-discount-switch]').click();
     cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
 
     const newDelayPenaltyPercent = '40';
     cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
 
     // select the customer
-    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
     cy.get('[data-value="customer-2-id"]').click();
 
     // select the product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
@@ -113,12 +115,13 @@ describe(specTitle('Invoice creation'), () => {
     cy.wait('@crupdateWithNewRefAndDelayData');
 
     cy.get('form input[name=delayPenaltyPercent]').should('have.value', newDelayPenaltyPercent);
-
+    cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=validityDate]').invoke('removeAttr').type('2022-10-05');
-    cy.get('form input[name=comment]').type('this is a comment for testing');
-    cy.get('#invoice-client-selection-id').click();
+    cy.get('form textarea[name=comment]').type('this is a comment for testing');
+    cy.get('[data-testid=invoice-client-selection]').click();
     cy.get('[data-value="customer-2-id"]').click();
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
 
@@ -127,8 +130,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.contains('TVA : 0.04 €');
     cy.contains('10.00 € (HT)');
 
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type('15');
-    cy.get('.makeStyles-card-18 > :nth-child(1) > .MuiCardHeader-action > .MuiButtonBase-root').click();
+    cy.get('[data-testid="product-product-1-id-item"] input').clear().type('15');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.products.length).to.deep.eq(2);
 
@@ -161,10 +163,11 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-confirmed-invoice']").click();
 
     // select the customer
-    cy.get('#invoice-client-selection-id').click();
+    cy.get('[data-testid=invoice-client-selection]').click();
     cy.get('[data-value="customer-2-id"]').click();
 
     // select the product
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();

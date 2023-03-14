@@ -1,18 +1,18 @@
-import { Paper, Box, Typography, Divider, CardActions, CardContent, Collapse, IconButton, Avatar } from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Avatar, Box, CardActions, CardContent, Collapse, Divider, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { BP_COLOR } from 'src/bp-theme';
+import { INVOICE_EDITION } from '../style';
 
 const PaymentRegulationItem = props => {
-  const { data, onEdit, onRemove, totalPriveWithVat } = props;
-  const { comment, maturityDate, percent, paymentRequest } = data;
+  const { data, onEdit, onRemove, percentValue } = props;
+  const { maturityDate } = data;
+  const comment = data.comment || (data.paymentRequest && data.paymentRequest.comment) || '';
   const [expandState, setExpandState] = useState(false);
 
   const handleExpandClick = () => setExpandState(e => !e);
 
   const haveComment = comment && comment.length > 0;
-
-  const percentValue = paymentRequest ? paymentRequest.amount / totalPriveWithVat : percent;
 
   const commentCutter = (comment, show = true) => {
     if (comment.length > 23) {
@@ -21,8 +21,10 @@ const PaymentRegulationItem = props => {
     return { comment, needExpand: false };
   };
 
+  if (!percentValue || percentValue === 0) return;
+
   return (
-    <Box sx={{ width: 300, marginBlock: 1 }}>
+    <Box sx={INVOICE_EDITION.PR_ITEMS}>
       <Paper elevation={3}>
         <Box
           sx={{
@@ -42,18 +44,28 @@ const PaymentRegulationItem = props => {
             </Avatar>
           </Box>
           <Box sx={{ flexBasis: '60%' }}>
-            <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
-              À payer avant :
-            </Typography>
-            <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
-              {maturityDate}
-            </Typography>
+            {onEdit ? (
+              <>
+                <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                  À payer avant :
+                </Typography>
+                <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                  {maturityDate}
+                </Typography>
+              </>
+            ) : (
+              <Typography variant='body2' sx={{ position: 'relative', top: 1 }}>
+                Reste à payer
+              </Typography>
+            )}
           </Box>
-          <Box sx={{ flexBasis: '15%' }}>
-            <IconButton onClick={onRemove}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
+          {onRemove && (
+            <Box sx={{ flexBasis: '15%' }}>
+              <IconButton onClick={onRemove}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          )}
         </Box>
         <Divider sx={{ marginBottom: 1 }} />
         <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -62,9 +74,11 @@ const PaymentRegulationItem = props => {
             {haveComment && commentCutter(comment).needExpand && (
               <IconButton onClick={handleExpandClick}>{!expandState ? <ExpandMoreIcon /> : <ExpandLessIcon />}</IconButton>
             )}
-            <IconButton onClick={onEdit}>
-              <EditIcon />
-            </IconButton>
+            {onEdit && (
+              <IconButton onClick={onEdit}>
+                <EditIcon />
+              </IconButton>
+            )}
           </Box>
         </CardActions>
         <Collapse in={expandState} sx={{ paddingBottom: 0 }} timeout='auto' unmountOnExit>

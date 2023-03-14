@@ -1,75 +1,56 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Card, CardContent, FormControl, IconButton, Typography, Select } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { Box, IconButton, Stack, Switch, Typography, FormControl } from '@mui/material';
 import debounce from 'debounce';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
 import BPFormField from '../../common/components/BPFormField';
-import { formatDateTo8601 } from '../../common/utils/date';
-import { prettyPrintMinors } from '../../common/utils/money';
 import PdfViewer from '../../common/components/PdfViewer';
-import { toMajors as percentToMajors, toMinors as percentToMinors } from '../../common/utils/percent';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import { prettyPrintMinors } from '../../common/utils/money';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
+import InvoiceAccordion from './components/InvoiceAccordion';
+import PaymentRegulationsForm from './components/PaymentRegulationsForm';
+import { INVOICE_EDITION } from './style';
 import {
-  DEFAULT_DELAY_PENALTY_PERCENT,
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
+  GLOBAL_DISCOUNT_PERCENT_VALUE,
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  PAYMENT_REGULATIONS,
-  PAYMENT_TYPE,
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
-  validatePaymentRegulation,
-  GLOBAL_DISCOUNT,
-  DEFAULT_GLOBAL_DISCOUNT,
-  GLOBAL_DISCOUNT_PERCENT_VALUE,
-  PERCENT_VALUE,
-} from './utils';
-import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-
-const useStyle = makeStyles(() => ({
-  document: { width: '60%', position: 'relative' },
-  formControl: {
-    width: 300,
-    justifyContent: 'space-around',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  card: {
-    border: 'none',
-  },
-}));
+} from './utils/utils';
+import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
+import { invoiceMapper } from './utils/invoice-utils';
+import DiscountForm from './components/DiscountForm';
 
 const InvoiceForm = props => {
-  const { toEdit, className, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
+  const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
-  const classes = useStyle();
   const notify = useNotify();
   const refresh = useRefresh();
+  const paymentRegulationType = form.watch(PAYMENT_TYPE);
+  const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
+  const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
 
-  const updateInvoiceForm = newInvoice => {
+  const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
     const formHasNewUpdate =
       // Check submittedAt to avoid rolling back to a previous update when an older call finished before a newer call
-      !newInvoice.metadata || !actualInvoice.metadata || new Date(newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
+      !_newInvoice.metadata || !actualInvoice.metadata || new Date(_newInvoice.metadata.submittedAt) > new Date(actualInvoice.metadata.submittedAt);
     if (formHasNewUpdate) {
+      const newInvoice = invoiceMapper.toDomain(_newInvoice);
       Object.keys(newInvoice).forEach(key => form.setValue(key, newInvoice[key]));
-      // Checking if the `key` is `delayPenaltyPercent` for each iteration may be costly
-      form.setValue(DELAY_PENALTY_PERCENT, percentToMajors(newInvoice[DELAY_PENALTY_PERCENT]) || DEFAULT_DELAY_PENALTY_PERCENT);
-      form.setValue(GLOBAL_DISCOUNT_PERCENT_VALUE, percentToMajors(newInvoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) || DEFAULT_GLOBAL_DISCOUNT);
     }
   };
 
@@ -83,28 +64,24 @@ const InvoiceForm = props => {
     });
   };
 
+  const isPaymentTypeCash = form.watch(PAYMENT_TYPE) == InvoicePaymentTypeEnum.CASH;
+  const togglePaymentType = () => {
+    if (!isPaymentTypeCash) {
+      form.setValue(PAYMENT_REGULATIONS, null);
+    }
+    form.setValue(PAYMENT_TYPE, isPaymentTypeCash ? InvoicePaymentTypeEnum.IN_INSTALMENT : InvoicePaymentTypeEnum.CASH);
+  };
+
   const onSubmit = validateInvoice(() => {
     if (nbPendingInvoiceCrupdate > 0) {
       onPending(InvoiceActionType.STOP_PENDING);
     }
     onPending(InvoiceActionType.START_PENDING);
     const submittedAt = new Date();
-    const delayPenaltyPercent = percentToMinors(parseInt(form.watch(DELAY_PENALTY_PERCENT)));
-    const globalDiscount = { percentValue: percentToMinors(parseInt(form.watch(GLOBAL_DISCOUNT_PERCENT_VALUE))) };
-
-    const toSubmit = {
-      ...form.watch(),
-      globalDiscount,
-      delayPenaltyPercent,
-      sendingDate: formatDateTo8601(form.watch('sendingDate'), '00:00:00'),
-      validityDate: formatDateTo8601(form.watch('validityDate'), '23:59:59'),
-      metadata: { ...form.watch().metadata, submittedAt: submittedAt.toISOString() },
-    };
-
     retryOnError(
       () =>
         invoiceProvider
-          .saveOrUpdate([toSubmit])
+          .saveOrUpdate([form.watch()])
           .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
           .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
       error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
@@ -136,68 +113,61 @@ const InvoiceForm = props => {
   }, []);
 
   const { companyInfo } = useGetAccountHolder();
+  const [openedAccordion, openAccordion] = useState(1);
+  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
+  const totalPrice = isSubjectToVat ? totalPriceWithVatFromProducts(form.watch().products) : totalPriceWithoutVatFromProducts(form.watch().products);
 
   return (
-    <Box className={className} sx={{ display: 'flex', width: 'inherit', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-      <Box>
-        <Card className={classes.card}>
-          <CardContent>
-            <form className={classes.form} onSubmit={form.handleSubmit(onSubmit)}>
-              <FormControl className={classes.formControl}>
-                <BPFormField name='title' label='Titre' form={form} />
-                <BPFormField name='ref' label='Référence' form={form} />
-                <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
-                <BPFormField
-                  validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
-                  name='validityDate'
-                  label='Date limite de validité'
-                  type='date'
-                  form={form}
-                />
-                <BPFormField
-                  validate={value => value && value >= 0}
-                  name='delayInPaymentAllowed'
-                  label='Délai de retard de paiement autorisé (jours)'
-                  type='number'
-                  form={form}
-                />
-                <BPFormField
-                  validate={value => value && value >= 0 && value <= 100}
-                  name={DELAY_PENALTY_PERCENT}
-                  label='Pourcentage de penalité de retard'
-                  type='number'
-                  form={form}
-                />
-              </FormControl>
-              <BPFormField type='number' name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
-              <BPFormField name='comment' label='Commentaire' form={form} shouldValidate={false} />
-              <ClientSelection name='customer' form={form} />
-              <ProductSelection name={PRODUCT_NAME} form={form} />
-              <PaymentRegulationsForm form={form} />
-              <Box sx={{ display: 'block' }}>
-                <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <Typography variant='h6'>{companyInfo && companyInfo.isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
-                  <Typography variant='h6'>
-                    {prettyPrintMinors(
-                      companyInfo && companyInfo.isSubjectToVat
-                        ? totalPriceWithVatFromProducts(form.watch().products)
-                        : totalPriceWithoutVatFromProducts(form.watch().products)
-                    )}
-                  </Typography>
-                </Box>
-                <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
-      </Box>
-      <PdfViewer
-        width={PDF_EDITION_WIDTH}
-        url={documentUrl}
-        filename={selectedInvoiceRef}
-        isPending={nbPendingInvoiceCrupdate > 0}
-        className={classes.document}
-      >
+    <Box sx={INVOICE_EDITION.LAYOUT}>
+      <form style={INVOICE_EDITION.FORM} onSubmit={form.handleSubmit(onSubmit)}>
+        <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <BPFormField name='title' label='Titre' form={form} />
+          <BPFormField name='ref' label='Référence' form={form} />
+          <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
+          <BPFormField
+            validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
+            name='validityDate'
+            label='Date limite de validité'
+            type='date'
+            form={form}
+          />
+          <BPFormField
+            validate={value => value && value >= 0}
+            name='delayInPaymentAllowed'
+            label='Délai de retard de paiement autorisé (jours)'
+            type='number'
+            form={form}
+          />
+          <BPFormField
+            validate={value => value && value >= 0 && value <= 100}
+            name={DELAY_PENALTY_PERCENT}
+            label='Pourcentage de penalité de retard'
+            type='number'
+            form={form}
+          />
+          <DiscountForm name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
+          <ClientSelection name='customer' label='Client' form={form} />
+          <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
+          <FormControl>
+            <Typography color='text.secondary'>Payer en plusieurs fois :</Typography>
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <Switch data-testid='payment-regulation-switch' checked={!isPaymentTypeCash} onChange={togglePaymentType} />
+              <Typography>{isPaymentTypeCash ? 'Non' : 'Oui'}</Typography>
+            </Stack>
+          </FormControl>
+        </InvoiceAccordion>
+        <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <ProductSelection name={PRODUCT_NAME} form={form} />
+        </InvoiceAccordion>
+        {!isPaymentTypeCash && (
+          <InvoiceAccordion error={paymentRegulationsError} label='Paiement' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+            <PaymentRegulationsForm form={form} />
+          </InvoiceAccordion>
+        )}
+        <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
+        <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
+      </form>
+      <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
         <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />
         </IconButton>
@@ -206,4 +176,13 @@ const InvoiceForm = props => {
   );
 };
 
+const InvoiceTotalPrice = props => {
+  const { isSubjectToVat, totalPrice } = props;
+  return (
+    <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBlock: 5 }}>
+      <Typography variant='h6'>{isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
+      <Typography variant='h6'>{prettyPrintMinors(totalPrice)}</Typography>
+    </Box>
+  );
+};
 export default InvoiceForm;

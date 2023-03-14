@@ -151,7 +151,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const simpleComment = 'This is a simple comment';
-    cy.get('form input[name=comment]').type(simpleComment);
+    cy.get('form textarea[name=comment]').type(simpleComment);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.comment).to.be.eq(simpleComment);
@@ -161,7 +161,7 @@ describe(specTitle('Invoice'), () => {
         comment: simpleComment,
       });
     });
-    cy.get('form input[name=comment]').clear();
+    cy.get('form textarea[name=comment]').clear();
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       assert.isNull(req.body.comment);
@@ -224,7 +224,8 @@ describe(specTitle('Invoice'), () => {
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains('Total TTC').should('not.exist');
     cy.contains('Total HT');
-    cy.get(':nth-child(2) > .MuiCardActions-root > .MuiFormControl-root > .MuiInputBase-root > .MuiInputBase-input').clear().type(2);
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
+    cy.get('[data-testid="product-product-1-id-item"]').clear().type(2);
     // we have now 2 products
     // description1 { quantity: 1, unitPrice: 10 }
     // description2 { quantity: 1, unitPrice: 20 }

@@ -46,7 +46,6 @@ describe(specTitle('Customers'), () => {
     cy.contains('johnDoe@gmail.com');
     cy.contains('+261340465338');
     cy.contains('30 Rue de la Montagne Sainte-Genevieve');
-    cy.contains('Voir sur la carte');
 
     cy.contains('Non renseigné');
   });

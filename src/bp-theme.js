@@ -1,5 +1,7 @@
 import { defaultTheme } from 'react-admin';
 
+const important = value => `${value} !important`;
+
 export const BP_COLOR = {
   10: '#7A003D',
   20: '#660033',
@@ -80,6 +82,19 @@ export const BP_THEME = {
     MuiButton: {
       styleOverrides: {
         root: BP_BUTTON,
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          '& .Mui-checked': {
+            color: important(BP_COLOR[10]),
+            '& +.MuiSwitch-track': {
+              backgroundColor: important(BP_COLOR[40]),
+              opacity: 1,
+            },
+          },
+        },
       },
     },
   },

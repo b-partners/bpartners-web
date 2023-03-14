@@ -8,7 +8,6 @@ import emptyGraph from 'src/assets/noData.png';
 
 import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../../common/utils/percent';
 import { prettyPrintMinors } from '../../common/utils/money';
-import { BP_SWITCH_STYLE } from '../account/style';
 import BPDatePicker from '../../common/components/BPDatePicker';
 import { BP_COLOR } from 'src/bp-theme';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
@@ -154,8 +153,7 @@ const TransactionChart = () => {
         </Typography>
         <Box sx={{ textAlign: 'end', paddingX: 10 }}>
           <Typography variant='body1'>
-            Vue mensuelle <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} sx={BP_SWITCH_STYLE} /> Vue
-            annuelle
+            Vue mensuelle <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} /> Vue annuelle
           </Typography>
         </Box>
         <Grid container spacing={1}>
