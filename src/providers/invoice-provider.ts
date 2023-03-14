@@ -29,9 +29,10 @@ export const invoiceProvider: BpDataProviderType = {
   getOne: function (_id: string): Promise<any> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: async function (_invoices: any[]): Promise<any[]> {
+  saveOrUpdate: async function (_invoices: any[], option = {}): Promise<any[]> {
+    const { isEdition } = option;
     const { accountId } = await getUserInfo();
-    const restInvoice = invoiceMapper.toRest({ ..._invoices[0] });
+    const restInvoice = isEdition ? invoiceMapper.toRest({ ..._invoices[0] }) : invoiceMapper.toRest(invoiceMapper.toDomain({ ..._invoices[0] }));
 
     return payingApi()
       .crupdateInvoice(accountId, restInvoice.id, restInvoice)
