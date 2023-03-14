@@ -27,6 +27,7 @@ export const cacheAccountHolder = (accountHolder: any) => {
 
 export const getCachedUser = (): User => JSON.parse(localStorage.getItem(userItem));
 export const getCachedAccount = (): Account => JSON.parse(localStorage.getItem(accountItem));
+
 export const getCachedAccountHolder = (): AccountHolder => JSON.parse(localStorage.getItem(accountHolderItem));
 
 export const singleAccountGetter = async (userId: string): Promise<Account> => {
@@ -45,7 +46,8 @@ export const singleAccountGetter = async (userId: string): Promise<Account> => {
 };
 
 export const accountHoldersGetter = async (): Promise<AccountHolder> => {
-  if (!getCachedAccountHolder()) {
+  if (true) {
+    // TODO: should be !getCachedAccountHolder(), but we force systematic cach resync for now
     const whoami = authProvider.getCachedWhoami();
     const account = await singleAccountGetter(whoami?.user?.id);
     const { data } = await userAccountsApi().getAccountHolders(whoami?.user?.id, account.id);

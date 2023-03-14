@@ -1,10 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport, ReceiptLong } from '@mui/icons-material';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
+import accountProvider from 'src/providers/account-provider';
 
 const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
 
@@ -36,6 +37,30 @@ const BpMenu = () => {
     window.open('mailto:', SUPPORT_EMAIL);
   };
 
+  const [accountHolder, setAccountHolder] = useState(null);
+  useEffect(() => {
+    async function asyncSetAccountHolder() {
+      const account = await accountProvider.getOne(authProvider.getCachedWhoami().user.id);
+      console.log('Setting holder');
+      setAccountHolder(account.accountHolder);
+      console.log(account);
+    }
+    asyncSetAccountHolder();
+  }, []);
+
+  const hasBusinessActivities = accountHolder =>
+    accountHolder != null &&
+    accountHolder.businessActivities != null &&
+    (accountHolder.businessActivities.primary != null || accountHolder.businessActivities.secondary != null);
+  const hasCarreleur = businessActivities =>
+    businessActivities != null && (businessActivities.primary == 'Carreleur' || businessActivities.secondary == 'Carreleur');
+  // The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
+  // then neither Markplaces nor Prospects is diplayed
+  const shouldShowProspects = hasBusinessActivities(accountHolder) && hasCarreleur(accountHolder.businessActivities);
+  const shouldShowMarketplaces = hasBusinessActivities(accountHolder) && !hasCarreleur(accountHolder.businessActivities);
+
+  console.log(accountHolder);
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
       <Menu>
@@ -43,8 +68,8 @@ const BpMenu = () => {
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
-        <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />
-        <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
+        {shouldShowMarketplaces && <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />}
+        {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </Menu>
 

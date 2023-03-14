@@ -24,7 +24,8 @@ describe(specTitle('Customers'), () => {
     );
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
 
     cy.stub(Redirect, 'redirect').as('redirect');
