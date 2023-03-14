@@ -4,7 +4,6 @@ import App from 'src/App';
 import authProvider from 'src/providers/auth-provider';
 import * as Redirect from '../common/utils/redirect';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { marketplaces1 } from './mocks/responses/marketplace-api.ts';
 import { prospects } from './mocks/responses/prospects-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
@@ -32,6 +31,11 @@ describe(specTitle('Customers'), () => {
 
   it('are displayed', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
+      expect(req.body[0].status).deep.eq('CONTACTED');
+
+      req.reply(req.body);
+    }).as('updateStatus');
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
@@ -46,6 +50,13 @@ describe(specTitle('Customers'), () => {
     cy.contains('johnDoe@gmail.com');
     cy.contains('+261340465338');
     cy.contains('30 Rue de la Montagne Sainte-Genevieve');
+
+    cy.get('[data-testid="statusprospect1_id"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();
+
+    cy.wait('@updateStatus');
+
+    cy.contains('Changement effectué');
 
     cy.contains('Non renseigné');
   });

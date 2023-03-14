@@ -1,11 +1,28 @@
 import { useEffect, useState } from 'react';
-import { List, useListContext } from 'react-admin';
-import { Box, Card, CardContent, Grid, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { Home, LocalPhoneOutlined, LocationOn, MailOutline } from '@mui/icons-material';
+import { List, useListContext, useNotify, useRefresh } from 'react-admin';
+import {
+  Box,
+  Card,
+  CardContent,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  Link,
+  Paper,
+  Popover,
+  Radio,
+  RadioGroup,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { Home, LocalPhoneOutlined, LocationOn, MailOutline, MoreVert } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
+import prospectingProvider from 'src/providers/prospecting-provider';
 
 const ProspectsList = () => {
   return (
@@ -29,13 +46,17 @@ const Prospects = () => {
     return null;
   }
 
-  return (data || []).length > 0 && prospects ? (
+  return (data || []).length > 0 ? (
     <>
-      <Grid container justifyContent='space-between' spacing={2}>
-        <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
-        <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
-        <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
-      </Grid>
+      {prospects ? (
+        <Grid container justifyContent='space-between' spacing={2}>
+          <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
+          <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
+          <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
+        </Grid>
+      ) : (
+        <EmptyList content='Les données sont en cours de chargement, veuillez patienter.' />
+      )}
     </>
   ) : (
     <EmptyList />
@@ -65,12 +86,40 @@ const ProspectColumn = props => {
 };
 
 const ProspectItem = ({ prospect }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const notify = useNotify();
+  const refresh = useRefresh();
+
   const geoJsonUrl = location => {
     const geojsonBaseurl = process.env.REACT_APP_GEOJSON_BASEURL;
     const data = { coordinates: [location.longitude, location.latitude], type: location.type };
 
     return encodeURI(`${geojsonBaseurl}${JSON.stringify(data)}`);
   };
+
+  const openPopover = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const changeStatus = async e => {
+    const { value } = e.target;
+    try {
+      await prospectingProvider.saveOrUpdate([{ ...prospect, status: value }]);
+      refresh();
+      closePopover();
+      notify('Changement effectué', { type: 'success' });
+    } catch (error) {
+      notify(`Une erreur s'est produite`, { type: 'error' });
+    }
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
   if (!prospect.location && !prospect.name && !prospect.email) {
     return null;
   }
@@ -81,15 +130,46 @@ const ProspectItem = ({ prospect }) => {
         <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
           {prospect.name || 'Non renseigné'}
         </Typography>
-        {prospect.location && (
-          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
-            <Tooltip title='Voir sur la carte'>
-              <IconButton component='span'>
-                <LocationOn fontSize='small' />
-              </IconButton>
-            </Tooltip>
-          </Link>
-        )}
+        <Stack direction='row' alignItems='center'>
+          {prospect.location && (
+            <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+              <Tooltip title='Voir sur la carte'>
+                <IconButton component='span'>
+                  <LocationOn fontSize='small' />
+                </IconButton>
+              </Tooltip>
+            </Link>
+          )}
+          <Tooltip title='Modifier le status'>
+            <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
+              <MoreVert fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={closePopover}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Box sx={{ m: 2 }}>
+              <FormControl>
+                <RadioGroup aria-labelledby='demo-radio-buttons-group-label' defaultValue={prospect.status} name='radio-buttons-group' onChange={changeStatus}>
+                  <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
+                  <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
+                  <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+          </Popover>
+        </Stack>
       </Stack>
       <Box sx={{ color: '#4d4d4d' }}>
         <Typography variant='body2'>
