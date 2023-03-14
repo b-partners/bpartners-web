@@ -81,7 +81,7 @@ const InvoiceForm = props => {
     retryOnError(
       () =>
         invoiceProvider
-          .saveOrUpdate([form.watch()])
+          .saveOrUpdate([form.watch()], { isEdition: true })
           .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
           .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
       error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))

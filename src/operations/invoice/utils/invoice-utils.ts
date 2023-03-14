@@ -50,9 +50,9 @@ export const invoiceMapper = {
       invoice.paymentRegulations = null;
     } else {
       const paymentRegulationTo100Percent = { ...missingPaymentRegulation(invoice.paymentRegulations), maturityDate: invoice[VALIDITY_DATE] };
-      if (paymentRegulationTo100Percent.percent !== 0) {
-        invoice.paymentRegulations = paymentRegulationToMinor([...invoice.paymentRegulations, paymentRegulationTo100Percent]);
-      }
+      const domainPR =
+        paymentRegulationTo100Percent.percent !== 0 ? [...invoice.paymentRegulations, paymentRegulationTo100Percent] : invoice.paymentRegulations;
+      invoice.paymentRegulations = paymentRegulationToMinor(domainPR);
     }
     return emptyToNull(invoice);
   },
