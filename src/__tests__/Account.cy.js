@@ -121,12 +121,15 @@ describe(specTitle('Account'), () => {
 
     cy.wait('@getUser1');
     cy.get('[name="account"]').click();
-    // because the current accountholder's isSubjectToVat is false,
+    // because the current accountholder's isSubjectToVat is true,
     // the isSubjectToVat switch button shouldn't be activate
     cy.contains('Non');
 
     cy.get('.PrivateSwitchBase-input').click();
-    //now the isSubjectToVat is true
+    //now the isSubjectToVat is false
+    const aHIsSubjectToVat = [{ ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: false } }];
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, aHIsSubjectToVat).as('getAccountHolderSubjectToVat');
+    cy.wait('@getAccountHolderSubjectToVat');
     cy.contains('Oui');
 
     cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
@@ -172,8 +175,8 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    const newRevenueTargets = [{ year: 2023, amountTarget: 23000000 }];
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
-      const newRevenueTargets = [{ year: 2023, amountTarget: 23000000 }];
       expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
       const response = { ...accountHolders1[0] };
       response.revenueTargets = newRevenueTargets;
@@ -200,6 +203,8 @@ describe(specTitle('Account'), () => {
     cy.get('form [name="submitRevenueTargets"]').click();
 
     cy.wait('@updateRevenueTargets');
+    const newAccountHolder = [{ ...accountHolders1[0], revenueTargets: newRevenueTargets }];
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, newAccountHolder).as('getNewAccountHolder');
 
     cy.contains('Changement enregistré');
 

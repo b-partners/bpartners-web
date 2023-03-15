@@ -41,9 +41,7 @@ const BpMenu = () => {
   useEffect(() => {
     async function asyncSetAccountHolder() {
       const account = await accountProvider.getOne(authProvider.getCachedWhoami().user.id);
-      console.log('Setting holder');
       setAccountHolder(account.accountHolder);
-      console.log(account);
     }
     asyncSetAccountHolder();
   }, []);
@@ -58,8 +56,6 @@ const BpMenu = () => {
   // then neither Markplaces nor Prospects is diplayed
   const shouldShowProspects = hasBusinessActivities(accountHolder) && hasCarreleur(accountHolder.businessActivities);
   const shouldShowMarketplaces = hasBusinessActivities(accountHolder) && !hasCarreleur(accountHolder.businessActivities);
-
-  console.log(accountHolder);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: '100%' }}>
