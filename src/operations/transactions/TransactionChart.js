@@ -72,9 +72,9 @@ const TransactionChart = () => {
 
   const [annualSummary, isAnnualSummary] = useState(true);
 
-  const getAccountId = async () => {
+  const getAccount = async () => {
     const userId = authProvider.getCachedWhoami().user.id;
-    return getCachedAccount() ? getCachedAccount().id : (await singleAccountGetter(userId)).id;
+    return getCachedAccount() ? getCachedAccount() : await singleAccountGetter(userId);
   };
 
   const currentDate = { year: new Date().getFullYear(), month: new Date().getMonth() };
@@ -82,11 +82,8 @@ const TransactionChart = () => {
 
   useEffect(() => {
     const updateBalance = async () => {
-      const currentYear = currentDate.year;
-      const currentMonth = currentDate.month;
-      const accountId = await getAccountId();
-      const { data } = await payingApi().getTransactionsSummary(accountId, currentYear);
-      data && setCurrentBalance(data.summary.filter(item => item.month === currentMonth)[0].cashFlow);
+      const { availableBalance } = await getAccount();
+      availableBalance && setCurrentBalance(availableBalance);
     };
     updateBalance();
   }, []);
@@ -94,9 +91,9 @@ const TransactionChart = () => {
   const [date, setDate] = useState(currentDate);
 
   const getTransactionsSummary = async year => {
-    const accountId = await getAccountId();
+    const { id } = await getAccount();
 
-    const { data } = await payingApi().getTransactionsSummary(accountId, year);
+    const { data } = await payingApi().getTransactionsSummary(id, year);
     setTransactionsSummary(data);
   };
 
