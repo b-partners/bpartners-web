@@ -10,16 +10,7 @@ import {
   paymentRegulationToMinor,
   PAYMENT_REGULATIONS,
 } from './payment-regulation-utils';
-import {
-  DEFAULT_DELAY_PENALTY_PERCENT,
-  DEFAULT_GLOBAL_DISCOUNT,
-  DELAY_PENALTY_PERCENT,
-  GLOBAL_DISCOUNT,
-  GLOBAL_DISCOUNT_PERCENT_VALUE,
-  PERCENT_VALUE,
-  SENDING_DATE,
-  VALIDITY_DATE,
-} from './utils';
+import { DEFAULT_DELAY_PENALTY_PERCENT, DELAY_PENALTY_PERCENT, GLOBAL_DISCOUNT, PERCENT_VALUE, SENDING_DATE, VALIDITY_DATE } from './utils';
 
 export const invoiceMapper = {
   toDomain: (_invoice: any): Invoice => {
@@ -49,7 +40,7 @@ export const invoiceMapper = {
     if (invoice.paymentType === InvoicePaymentTypeEnum.CASH) {
       invoice.paymentRegulations = null;
     } else {
-      const paymentRegulationTo100Percent = { ...missingPaymentRegulation(invoice.paymentRegulations), maturityDate: invoice[VALIDITY_DATE] };
+      const paymentRegulationTo100Percent = { ...missingPaymentRegulation(invoice.paymentRegulations) };
       const domainPR =
         paymentRegulationTo100Percent.percent !== 0 ? [...invoice.paymentRegulations, paymentRegulationTo100Percent] : invoice.paymentRegulations;
       invoice.paymentRegulations = paymentRegulationToMinor(domainPR);
