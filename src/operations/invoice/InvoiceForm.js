@@ -17,6 +17,7 @@ import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 import { INVOICE_EDITION } from './style';
 import {
+  CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
   GLOBAL_DISCOUNT_PERCENT_VALUE,
@@ -58,7 +59,7 @@ const InvoiceForm = props => {
     return form.handleSubmit(data => {
       productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
       const paymentRegulationError = validatePaymentRegulation(data[PAYMENT_TYPE], data[PAYMENT_REGULATIONS]);
-      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME]) {
+      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME] && data[CUSTOMER_NAME] !== null) {
         ifValid();
       }
     });

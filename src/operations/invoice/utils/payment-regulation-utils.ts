@@ -36,6 +36,14 @@ export type TPaymentRegulation = {
 
 export const getPercentValue = (paymentRegulation: any) => +(paymentRegulation.percent || paymentRegulation.paymentRequest.percentValue);
 
+export const getNextMaturityDate = (paymentRegulations: TPaymentRegulation[]) => {
+  if (!paymentRegulations || paymentRegulations.length === 0) {
+    return getNextMonthDate(new Date().toISOString());
+  }
+  const lastDate = Math.max(...paymentRegulations.map(e => new Date(e.maturityDate).getTime()));
+  return getNextMonthDate(new Date(lastDate).toISOString());
+};
+
 export const sumOfRegulationsPercentages = (paymentRegulations: TPaymentRegulation[], indexOfSkipped?: number) => {
   if (!paymentRegulations || paymentRegulations.length === 0) {
     return 100;
@@ -65,19 +73,14 @@ export const validateRegulationPercentage = (params: ValidateRegulationPercentag
   return true;
 };
 
-export const missingPaymentRegulation = (paymentRegulations: any[], date?: string): any => {
-  let newPaymentRegulation: TPaymentRegulation = {
-    amount: null,
-    percent: 100,
-    comment: null,
-    maturityDate: date,
-  };
+export const missingPaymentRegulation = (paymentRegulations: any[]): any => {
   if (!paymentRegulations || paymentRegulations.length === 0) {
-    return newPaymentRegulation;
+    return { percent: 100, maturityDate: getNextMaturityDate(paymentRegulations) };
   }
   const percent = sumOfRegulationsPercentages(paymentRegulations);
+  const maturityDate = getNextMaturityDate(paymentRegulations);
 
-  return { ...newPaymentRegulation, percent };
+  return { percent, maturityDate };
 };
 
 export enum MoneyUnity {
