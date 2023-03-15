@@ -7,7 +7,7 @@ import App from '../App';
 import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, invoiceWithoutCustomer, invoiceWithoutTitle, restInvoiceRegulation } from './mocks/responses/invoices-api';
+import { createInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
@@ -73,13 +73,14 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
     cy.get('[data-testid="invoice-Paiement-accordion"]').click();
-    // cy.contains('Si vous choisissez le mode de paiement par acompte, veuillez ajouter au moins un paiement');
+    cy.contains('2023-03-15');
 
     cy.get('#form-create-regulation-id').click();
     cy.contains('Pourcentage');
     cy.contains('Date limite de paiement');
     cy.contains('Commentaire');
 
+    cy.get('input[name="maturityDate"]').should('have.value', '2023-04-15');
     cy.get('#form-regulation-save-id').click();
     cy.wait('@crupdateInvoicePaymentRegulation');
     const paymentComment = 'This is a long comment for testing comment view';
@@ -125,5 +126,23 @@ describe(specTitle('Invoice'), () => {
     cy.get('#form-regulation-save-id').click();
 
     cy.wait('@paymentRegulation2');
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      // check if there is 1 month between all dates
+      const newInvoice = req.body;
+      const expectedDate = ['2023-03-15', '2023-04-15', '2023-05-15', '2023-06-15'];
+      const paymentRegulationsDates = [...req.body.paymentRegulations]
+        .map(e => e.maturityDate)
+        .sort((date1, date2) => new Date(date1).getTime() - new Date(date2).getTime());
+      expect(paymentRegulationsDates).to.deep.eq(expectedDate);
+
+      req.reply({
+        body: { ...newInvoice },
+        updatedAt: new Date(),
+      });
+    }).as('paymentRegulation3');
+
+    cy.get('#form-save-id');
+    cy.wait('@paymentRegulation3');
   });
 });

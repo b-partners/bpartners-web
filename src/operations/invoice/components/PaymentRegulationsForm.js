@@ -8,6 +8,7 @@ import BPFormField from 'src/common/components/BPFormField';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
+  getNextMaturityDate,
   getPercentValue,
   missingPaymentRegulation,
   paymentRegulationErrorMessage,
@@ -102,7 +103,7 @@ const paymentRegulationItems = (onEdit, onRemove) => (paymentRegulation, index) 
 
 const RegulationsForm = props => {
   const { toEdit, onSave, isCreation, onCancel, paymentRegulations, indexOfSkipped } = props;
-  const form = useForm({ mode: 'all', defaultValues: { ...toEdit } });
+  const form = useForm({ mode: 'all', defaultValues: { ...toEdit, maturityDate: isCreation ? getNextMaturityDate(paymentRegulations) : toEdit.maturityDate } });
   const handleSubmit = form.handleSubmit(onSave);
 
   const validatePercentage = e => validateRegulationPercentage({ paymentRegulations, value: e, indexOfSkipped });
