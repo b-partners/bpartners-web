@@ -13,7 +13,7 @@ import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
-    cy.viewport(1326, 514);
+    cy.viewport(1920, 1080);
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(
@@ -73,6 +73,9 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
     cy.get('[data-testid="invoice-Paiement-accordion"]').click();
+    cy.get('[data-testid="EditIcon"]').click();
+    cy.get('input[name="maturityDate"]').invoke('removeAttr').type('2023-03-15');
+    cy.get('#form-regulation-save-id').click();
     cy.contains('2023-03-15');
 
     cy.get('#form-create-regulation-id').click();
