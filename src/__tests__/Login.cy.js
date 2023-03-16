@@ -72,6 +72,7 @@ describe(specTitle('Login'), () => {
     cy.intercept('POST', '/token', token1).as('createToken');
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     mount(<LoginSuccessPage />);
+    cy.contains('Vous êtes authentifiés !');
     cy.wait('@createToken');
     cy.get('@redirect').should('have.been.calledOnce');
   });

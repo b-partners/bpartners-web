@@ -35,7 +35,7 @@ const LoginSuccessPage = () => {
       }}
     >
       <Typography variant='h5' sx={{ color: '#F5F5F5', position: 'absolute', top: '6rem', opacity: '0.5' }} marginX={3}>
-        Vous êtes authentifié !
+        Vous êtes authentifiés !
       </Typography>
       <Box sx={REDIRECTION_MESSAGE}>
         <Typography variant='h6'>Redirection vers votre espace professionnel</Typography>
