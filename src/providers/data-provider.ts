@@ -28,6 +28,7 @@ const dataProvider: RaDataProviderType = {
   async getList(resourceType: string, params: any) {
     const pagination = params.pagination;
     const page = pagination.page === 0 ? 1 /* TODO(empty-pages) */ : pagination.page;
+
     let perPage = pagination.perPage;
     if (perPage > maxPageSize) {
       console.warn(`Page size is too big, truncating to maxPageSize=${maxPageSize}: resourceType=${resourceType}, requested pageSize=${perPage}`);
@@ -35,7 +36,7 @@ const dataProvider: RaDataProviderType = {
     }
 
     const filter = params.filter;
-    const result = await getProvider(resourceType).getList(page, perPage, filter || {});
+    const result = await getProvider(resourceType).getList(page, perPage, { ...filter, sort: params.sort || {} });
     return { data: result, total: Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {

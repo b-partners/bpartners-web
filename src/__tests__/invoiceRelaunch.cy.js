@@ -33,8 +33,8 @@ describe(specTitle('Invoice Relaunch'), () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/invoices/**/relaunch`, {});
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers`, customers1).as('getCustomers');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers**`, customers1).as('getCustomers');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 

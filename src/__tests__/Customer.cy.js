@@ -42,6 +42,39 @@ describe(specTitle('Customers'), () => {
     cy.contains('2589 Nelm Street');
     cy.contains('lastName-1');
     cy.contains('firstName-1');
+
+    cy.get('[data-testid="customer-filter-accordion"]').click();
+
+    const testLastName = 'Doe';
+    cy.get('input[name="lastName"]').type(testLastName);
+
+    const testFirstName = 'John';
+    cy.get('input[name="firstName"]').type(testFirstName);
+
+    const testEmail = 'doe@gmail.com';
+    cy.get('input[name="email"]').type(testEmail);
+
+    const testPhoneNumber = 1234567;
+    cy.get('input[name="phoneNumber"]').type(testPhoneNumber);
+
+    const testCity = 'Paris';
+    cy.get('input[name="city"]').type(testCity);
+
+    const testCountry = 'France';
+    cy.get('input[name="country"]').type(testCountry);
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers**`, req => {
+      const { page, pageSize, lastName, firstName, email, phoneNumber, city, country } = req.query;
+      expect(lastName).to.be.eq(testLastName);
+      expect(firstName).to.be.eq(testFirstName);
+      expect(email).to.be.eq(testEmail);
+      expect(+phoneNumber).to.be.eq(testPhoneNumber);
+      expect(city).to.be.eq(testCity);
+      expect(country).to.be.eq(testCountry);
+
+      req.reply(getCustomers(page - 1, pageSize));
+    }).as('getCustomersFilter');
+    cy.wait('@getCustomersFilter');
   });
 
   it('Should create customer', () => {
@@ -81,6 +114,7 @@ describe(specTitle('Customers'), () => {
     cy.get('#phone').type('55 55 55{enter}');
 
     cy.wait('@modifyCustomers');
+    cy.wait('@getCustomers2');
 
     cy.contains('Bonjour First Name 1 !');
 

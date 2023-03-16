@@ -34,8 +34,8 @@ describe(specTitle('Invoice creation'), () => {
     cy.intercept('POST', '/accounts/mock-account-id1/invoices/invoice-id-1/relaunch', {});
     cy.intercept('GET', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch1).as('getInvoiceRelaunch1');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoiceRelaunch`, invoiceRelaunch2).as('getInvoiceRelaunch2');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true`, products).as('getProducts');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers**', customers1).as('getCustomers');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
       const { pageSize, status, page } = req.query;

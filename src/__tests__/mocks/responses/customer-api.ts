@@ -22,7 +22,6 @@ export const getCustomers = (page: number, perPage: number) => customers1.slice(
 export const setCustomer = (index: number, customer: Customer) => (customers1[index] = customer);
 
 export const customers2: Array<Customer> = [
-  ...customers1,
   {
     id: 'customer1',
     lastName: 'LastName 11',
@@ -32,6 +31,7 @@ export const customers2: Array<Customer> = [
     address: 'Wall Street 2',
     comment: 'comment 01',
   },
+  ...customers1,
 ];
 
 export const customers3: Array<Customer> = [customers2[3], ...customers1.slice(1)];
