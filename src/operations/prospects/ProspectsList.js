@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { List, useListContext } from 'react-admin';
-import { Box, Card, CardContent, Grid, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { Home, LocalPhoneOutlined, LocationOn, MailOutline } from '@mui/icons-material';
+import { Box, Card, CardContent, Grid, IconButton, Link, Modal, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Home, LocalPhoneOutlined, LocationOn, MailOutline, Streetview } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
+import { getCachedAccount } from 'src/providers/account-provider';
+import { accessTokenItem } from 'src/providers/auth-provider';
+import { SATELLITE_IMG_STYLE } from './style';
 
 const ProspectsList = () => {
   return (
@@ -65,11 +68,24 @@ const ProspectColumn = props => {
 };
 
 const ProspectItem = ({ prospect }) => {
+  const [openImg, setOpenImg] = useState(false);
+  const [imgId, setImgId] = useState();
+
+  const handleOpenImg = () => {
+    setOpenImg(true);
+    setImgId(prospect.image.id);
+  };
+
+  const handleCloseImg = () => {
+    setOpenImg(false);
+    setImgId();
+  };
+
   const geoJsonUrl = location => {
     const geojsonBaseurl = process.env.REACT_APP_GEOJSON_BASEURL;
     const data = { coordinates: [location.longitude, location.latitude], type: location.type };
 
-    return encodeURI(`${geojsonBaseurl}${JSON.stringify(data)}`);
+    return encodeURI(`${geojsonBaseurl}/#data=data:application/json,${JSON.stringify(data)}`);
   };
   if (!prospect.location && !prospect.name && !prospect.email) {
     return null;
@@ -81,15 +97,24 @@ const ProspectItem = ({ prospect }) => {
         <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
           {prospect.name || 'Non renseigné'}
         </Typography>
-        {prospect.location && (
-          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
-            <Tooltip title='Voir sur la carte'>
-              <IconButton component='span'>
-                <LocationOn fontSize='small' />
+        <Stack direction='row' alignItems='center'>
+          {prospect.image && (
+            <Tooltip title='Vue satellitaire'>
+              <IconButton component='span' onClick={handleOpenImg}>
+                <Streetview fontSize='small' />
               </IconButton>
             </Tooltip>
-          </Link>
-        )}
+          )}
+          {prospect.area && (
+            <Link href={geoJsonUrl(prospect.area.geojson)} target='_blank' underline='hover'>
+              <Tooltip title='Voir sur la carte'>
+                <IconButton component='span'>
+                  <LocationOn fontSize='small' />
+                </IconButton>
+              </Tooltip>
+            </Link>
+          )}
+        </Stack>
       </Stack>
       <Box sx={{ color: '#4d4d4d' }}>
         <Typography variant='body2'>
@@ -102,7 +127,24 @@ const ProspectItem = ({ prospect }) => {
           <Home fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
         </Typography>
       </Box>
+      <ImgModal open={openImg} handleClose={handleCloseImg} imgId={imgId} />
     </Paper>
+  );
+};
+
+const ImgModal = ({ open, handleClose, imgId }) => {
+  const getImgUrl = imgId => {
+    const accountId = getCachedAccount().id;
+    const accessToken = localStorage.getItem(accessTokenItem);
+    return `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${imgId}/raw?accessToken=${accessToken}&fileType=ATTACHMENT`;
+  };
+
+  return (
+    <Modal open={open} onClose={handleClose}>
+      <Box sx={SATELLITE_IMG_STYLE}>
+        <img src={getImgUrl(imgId)} alt='vue satellite' width='100%' />
+      </Box>
+    </Modal>
   );
 };
 
