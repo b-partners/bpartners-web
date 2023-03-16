@@ -1,4 +1,4 @@
-import { Datagrid, FunctionField, List, useListContext } from 'react-admin';
+import { Datagrid, FunctionField, List, TextInput, useListContext } from 'react-admin';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
 
@@ -10,15 +10,20 @@ import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { BPImport } from 'src/common/components/BPImport';
 
-const ProductList = props => (
+const productFilter = [
+  <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn />,
+  <TextInput label='Filtrer par prix unitaire' source='priceFilter' size='small' alwaysOn />,
+];
+
+const ProductList = () => (
   <List
-    {...props}
     actions={<BPListActions importComponent={<BPImport source='product' />} />}
     resource='products'
     hasCreate={true}
     hasEdit={false}
     hasList={false}
     hasShow={false}
+    filters={productFilter}
     component={ListComponent}
     pagination={<Pagination />}
     perPage={pageSize}

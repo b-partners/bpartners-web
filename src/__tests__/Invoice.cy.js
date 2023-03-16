@@ -30,8 +30,8 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
 
-    cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
-    cy.intercept('GET', `/accounts/mock-account-id1/products?unique=true`, products).as('getProducts');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers**', customers1).as('getCustomers');
+    cy.intercept('GET', `/accounts/mock-account-id1/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
