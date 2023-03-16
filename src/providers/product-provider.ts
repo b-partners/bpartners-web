@@ -4,6 +4,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import emptyToNull from 'src/common/utils/empty-to-null';
+import { toMinors } from 'src/common/utils/money';
 
 const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -22,9 +23,23 @@ const productProvider: BpDataProviderType = {
   async getOne(userId: string) {
     throw new Error('Function not implemented.');
   },
-  getList: async function (page: number, perPage: number, categorized: any): Promise<any[]> {
+  getList: async function (
+    page: number,
+    perPage: number,
+    { descriptionFilter, priceFilter, descriptionOrder, unitPriceOrder, createdAtOrder }
+  ): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().getProducts(accountId, true, undefined, undefined, undefined, page, perPage);
+    const { data } = await payingApi().getProducts(
+      accountId,
+      true,
+      descriptionOrder,
+      unitPriceOrder,
+      createdAtOrder,
+      descriptionFilter,
+      priceFilter ? toMinors(+priceFilter) : undefined,
+      page,
+      perPage
+    );
     return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {

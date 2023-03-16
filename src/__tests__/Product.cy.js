@@ -44,6 +44,26 @@ describe(specTitle('Products'), () => {
     cy.contains('description 2');
     cy.contains('description 3');
     cy.contains('12.00 €');
+
+    const descriptionFilterTest = 'test description';
+    const priceFilterTest = 100;
+
+    cy.get('#descriptionFilter').type(descriptionFilterTest);
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
+      const { page, pageSize, descriptionFilter } = req.query;
+      expect(descriptionFilter).to.be.eq(descriptionFilterTest);
+      req.reply(getProducts(page - 1, pageSize));
+    }).as('getCustomersFilterByDescription');
+    cy.wait('@getCustomersFilterByDescription');
+
+    cy.get('#priceFilter').type(priceFilterTest);
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
+      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
+      expect(descriptionFilter).to.be.eq(descriptionFilterTest);
+      expect(+priceFilter).to.be.eq(priceFilterTest * 100);
+      req.reply(getProducts(page - 1, pageSize));
+    }).as('getCustomersFilterByUnitPrice');
+    cy.wait('@getCustomersFilterByUnitPrice');
   });
 
   it('Should test pagination', () => {
