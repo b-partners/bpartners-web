@@ -2,6 +2,7 @@ import { customerApi } from './api';
 import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
+import { maxPageSize } from './data-provider';
 
 export const importCustomers = async (body: any) => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -11,10 +12,11 @@ export const importCustomers = async (body: any) => {
 };
 
 export const customerProvider: BpDataProviderType = {
-  getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
+  getList: async function (page = 0, perPage = maxPageSize, filters = {}): Promise<any[]> {
+    const { firstName, lastName, email, phoneNumber, city, country } = filters;
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
-    const { data } = await customerApi().getCustomers(accountId, undefined, undefined, undefined, page, perPage);
+    const { data } = await customerApi().getCustomers(accountId, firstName, lastName, email, phoneNumber, city, country, page, perPage);
     return data;
   },
   getOne: function (id: string): Promise<any> {
