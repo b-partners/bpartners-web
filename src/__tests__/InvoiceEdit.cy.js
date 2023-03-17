@@ -55,9 +55,17 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="title"]').clear().type(newTitle);
     cy.get('[name="ref"]').clear().type(newRef);
 
+    const delayInPaymentAllowed = 20;
+    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
+    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed);
+
+    const delayPenaltyPercent = 20;
+    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+    cy.get('input[name="delayPenaltyPercent"]').type(delayPenaltyPercent);
+
     const globalDiscount_percentValue = 100;
-    cy.get('[data-testid="global-discount-switch"] > .PrivateSwitchBase-input').click();
-    cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
+    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
@@ -71,8 +79,8 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('crupdateInvoicePaymentRegulation');
 
-    cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
-    cy.get('[data-testid="invoice-Paiement-accordion"]').click();
+    cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.get('[data-testid="EditIcon"]').click();
     cy.get('input[name="maturityDate"]').invoke('removeAttr').type('2023-03-15');
     cy.get('#form-regulation-save-id').click();
@@ -90,6 +98,8 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
       expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
+      expect(+req.body.delayInPaymentAllowed).to.deep.eq(delayInPaymentAllowed);
+      expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(delayPenaltyPercent) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
@@ -102,7 +112,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="EditIcon"] > path').click();
     cy.get('[name=percent]').clear().type(20);
-    cy.get('[data-testid=payment-regulation-comment-id]').type(paymentComment);
+    cy.get('input[name="comment"]').type(paymentComment);
     cy.get('#form-regulation-save-id').click();
     cy.contains('This is a long comment ...');
     cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1) > [data-testid="ExpandMoreIcon"]').click();
@@ -125,7 +135,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('#form-create-regulation-id').click();
     cy.get('[name=percent]').clear().type(20);
-    cy.get('[data-testid=payment-regulation-comment-id]').type(paymentComment);
+    cy.get('input[name="comment"]').type(paymentComment);
     cy.get('#form-regulation-save-id').click();
 
     cy.wait('@paymentRegulation2');
@@ -147,5 +157,30 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('#form-save-id');
     cy.wait('@paymentRegulation3');
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      req.reply({
+        body: req.body,
+        updatedAt: new Date(),
+      });
+    }).as('paymentRegulation4');
+
+    cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
+
+    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
+
+    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+
+    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
+
+    cy.wait('@paymentRegulation4').then(res => {
+      const newInvoice = res.request.body;
+      const expectedInvoice = res.request.body;
+      expectedInvoice.globalDiscount = null;
+      expectedInvoice.delayInPaymentAllowed = null;
+      expectedInvoice.delayPenaltyPercent = null;
+
+      expect(newInvoice).to.deep.eq(expectedInvoice);
+    });
   });
 });

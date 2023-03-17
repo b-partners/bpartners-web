@@ -64,7 +64,7 @@ const InvoiceListEditor = () => {
       ) : viewScreen === viewScreenState.EDITION ? (
         <Card sx={{ border: 'none' }}>
           <CardHeader
-            title={selectedInvoice.ref && selectedInvoice.ref.length === 0 ? 'Création' : 'Modification'}
+            title={!selectedInvoice.products || selectedInvoice.products.length === 0 ? 'Création' : 'Modification'}
             action={<CancelButton onClick={returnToList} />}
           />
           <CardContent>
