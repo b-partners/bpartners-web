@@ -22,10 +22,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
       totalPriceWithVat: 12000,
       totalVat: 2000,
       paymentType: 'CASH',
-      globalDiscount: {
-        percentValue: 1000,
-        amountValue: null,
-      },
+      globalDiscount: null,
       metadata: {
         submittedAt: '2023-01-10T11:05:22.362Z',
       },
@@ -49,10 +46,7 @@ export const invoiceWithoutCustomer: Invoice = {
   totalPriceWithVat: 12000,
   totalVat: 2000,
   paymentType: 'CASH',
-  globalDiscount: {
-    percentValue: 1000,
-    amountValue: null,
-  },
+  globalDiscount: null,
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },
@@ -74,10 +68,7 @@ export const invoiceWithoutTitle: Invoice = {
   totalPriceWithVat: 12000,
   totalVat: 2000,
   paymentType: 'CASH',
-  globalDiscount: {
-    percentValue: 1000,
-    amountValue: null,
-  },
+  globalDiscount: null,
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
   },

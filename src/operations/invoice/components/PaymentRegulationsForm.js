@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';
 import BPFormField from 'src/common/components/BPFormField';
+import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
@@ -113,9 +114,18 @@ const RegulationsForm = props => {
   return (
     <Paper elevation={3}>
       <FormControl sx={{ margin: 1 }}>
-        <CustomBpField validate={validatePercentage} type='number' form={form} name={percentName} label='Pourcentage' />
+        <CustomBpField
+          validate={validatePercentage}
+          type='number'
+          form={form}
+          name={percentName}
+          label='Pourcentage'
+          InputProps={{
+            endAdornment: <BpTextAdornment label='%' />,
+          }}
+        />
         <CustomBpField type='date' form={form} name='maturityDate' label='Date limite de paiement' />
-        <CustomBpField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} data-testid='payment-regulation-comment-id' />
+        <CustomBpField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} />
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           <BPButton
             style={{ width: 284 }}

@@ -31,6 +31,7 @@ const BPFormField = props => {
       {...others}
       variant='filled'
       {...customRegister}
+      data-testid={`${name}-field-input`}
       type={type || 'text'}
       style={style || textFieldStyle}
       value={watch(name) || ''}
