@@ -12,7 +12,7 @@ export const importCustomers = async (body: any) => {
 };
 
 export const customerProvider: BpDataProviderType = {
-  getList: async function (page = 0, perPage = maxPageSize, filters = {}): Promise<any[]> {
+  getList: async function (page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
     const { firstName, lastName, email, phoneNumber, city, country } = filters;
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
