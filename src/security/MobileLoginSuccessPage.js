@@ -9,7 +9,7 @@ const MobileLoginSuccessPage = () => {
     login();
   }, []);
 
-  return <p>Vous êtes authentifié ! Vous allez être redirigé bpartners://auth{window.location.search}...</p>;
+  return <p>Vous êtes authentifié ! Vous allez être redirigé !</p>;
 };
 
 export default MobileLoginSuccessPage;
