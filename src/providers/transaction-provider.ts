@@ -2,7 +2,11 @@ import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
-import { Transaction } from 'bpartners-react-client';
+import { Transaction, TransactionStatus } from 'bpartners-react-client';
+import { TRANSACTION_STATUSES } from 'src/constants/transaction-status';
+
+const toModelStatus = (status: TransactionStatus): TransactionStatus =>
+  Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
 
 const transactionProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -20,7 +24,8 @@ const transactionProvider: BpDataProviderType = {
         //TODO(implement-backend)
         ({ category }) => !categorized || category == null
       )
-      .filter(transaction => (status ? transaction.status === status : true));
+      .filter(transaction => (status ? transaction.status === status : true))
+      .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));
   },
   saveOrUpdate: function (resources: any[]): Promise<any[]> {
     throw new Error('Function not implemented.');
