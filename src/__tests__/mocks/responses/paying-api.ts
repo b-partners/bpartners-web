@@ -1,6 +1,6 @@
-import { Transaction, TransactionStatus, TransactionTypeEnum, TransactionsSummary } from 'bpartners-react-client';
+import { TransactionStatus, TransactionTypeEnum, TransactionsSummary } from 'bpartners-react-client';
 
-export const transactions: Array<Transaction> = [
+export const transactions: Array<any> = [
   {
     id: 'transaction1',
     label: "Abonnement BPartners - L'essentiel",
@@ -70,6 +70,16 @@ export const transactions: Array<Transaction> = [
     paymentDatetime: new Date('2022-06-18T05:34:20'),
     status: TransactionStatus.UNKNOWN,
     type: TransactionTypeEnum.INCOME,
+    invoice: null,
+  },
+  {
+    id: 'dummy',
+    label: 'Test for forward compatibility of status',
+    reference: 'dummy',
+    amount: 0,
+    paymentDatetime: new Date('2022-06-18T05:34:20'),
+    status: 'A_TOTALLY_UNEXPECTED_STATUS',
+    type: TransactionTypeEnum.INCOME, //TODO: test for forward compatibility
     invoice: null,
   },
 ];

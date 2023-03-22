@@ -11,7 +11,7 @@ import { formatDatetime } from '../../common/utils/date';
 import { coloredPrettyPrintMinors } from '../../common/utils/money';
 
 import Pagination, { pageSize } from '../../common/components/Pagination';
-import { TRANSACTION_STATUSES, TRANSACTION_STATUSES_HANDLED } from '../../constants/transaction-status';
+import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
 import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
@@ -31,6 +31,9 @@ const TransactionList = props => {
     setDocumentState(e => ({ ...e, shouldShowDocument: false }));
   };
 
+  const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
+    .filter(status => status !== 'UNKNOWN')
+    .map((status, k) => ({ id: k, name: TRANSACTION_STATUSES[status].label }));
   return !documentState.shouldShowDocument ? (
     <>
       <TransactionChart />
@@ -43,7 +46,7 @@ const TransactionList = props => {
             pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
             filters={[
-              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={TRANSACTION_STATUSES_HANDLED} alwaysOn resettable />,
+              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
               <BooleanInput key='transaction_list_boolean_filter' label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
             hasCreate={false}

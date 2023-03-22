@@ -10,7 +10,3 @@ export const TRANSACTION_STATUSES = {
     color: 'gray',
   },
 };
-
-export const TRANSACTION_STATUSES_HANDLED = Object.keys(TRANSACTION_STATUSES)
-  .filter(status => status !== 'UNKNOWN')
-  .map((status, k) => ({ id: k, name: TRANSACTION_STATUSES[status].label }));

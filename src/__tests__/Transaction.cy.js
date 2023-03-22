@@ -8,7 +8,7 @@ import { whoami1, token1, user1 } from './mocks/responses/security-api';
 import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
-import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
+import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
 
 const date = new Date().toISOString().slice(0, 10);
