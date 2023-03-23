@@ -45,8 +45,8 @@ const productProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
-    const toSend = { ...emptyToNull(resources[0]) };
-    return [await payingApi().createProducts(accountId, [toSend])];
+    const toSend = resources.map(product => ({ ...emptyToNull(product) }));
+    return [await payingApi().createProducts(accountId, toSend)];
   },
   update: async function (resources: any[]): Promise<any[]> {
     const userId = authProvider.getCachedWhoami().user.id;
@@ -54,6 +54,11 @@ const productProvider: BpDataProviderType = {
     const { data } = await payingApi().crupdateProducts(accountId, resources);
     return data;
   },
+};
+
+export const archiveInvoice = async (resources: any[]) => {
+  const { accountId } = await getUserInfo();
+  return await payingApi().updateProductsStatus(accountId, resources);
 };
 
 export default productProvider;
