@@ -27,7 +27,7 @@ export const HorizontalPagination = ({ maxSteps, activeStep, setActiveStep, boxS
   return (
     <Box sx={{ ...STYLE, ...boxSx }}>
       <IconButton size='small' onClick={handleBack} data-test-item='pdf-prev' disabled={activeStep === 1 || maxSteps === 0}>
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme?.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
 
       <Typography>
@@ -35,7 +35,7 @@ export const HorizontalPagination = ({ maxSteps, activeStep, setActiveStep, boxS
       </Typography>
 
       <IconButton size='small' onClick={handleNext} data-test-item='pdf-next' disabled={activeStep === maxSteps || maxSteps === 0}>
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme?.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
     </Box>
   );

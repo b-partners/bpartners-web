@@ -4,10 +4,10 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import authProvider from '../providers/auth-provider';
-import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { getProducts, newProduct2, products, resetData, resetProducts, setProduct } from './mocks/responses/product-api';
-import { accounts1, accountHolders1 } from './mocks/responses/account-api';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
+import { getProducts, setProduct } from './mocks/responses/product-api';
+import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Products'), () => {
   beforeEach(() => {
@@ -35,6 +35,7 @@ describe(specTitle('Products'), () => {
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       req.reply(req.body);
     }).as('postProducts');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/products/status`, getProducts(0, 2)).as('archiveProduct');
   });
 
   it('are displayed', () => {
@@ -234,5 +235,32 @@ describe(specTitle('Products'), () => {
     cy.get("[data-testid='closeIcon']").click();
     cy.contains('Création de produit').should('not.exist');
     cy.contains('Page : 1');
+  });
+
+  it('Should archive product', () => {
+    mount(<App />);
+
+    cy.get('[name="products"]').click();
+
+    cy.get('[data-testid="archive-products-button"]').should('not.exist');
+    cy.get('.MuiTableBody-root > :nth-child(1) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="archive-products-button"]').should('exist');
+    cy.get(':nth-child(2) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="archive-products-button"]').click();
+
+    cy.contains('Les produits suivants vont être archivés :');
+    cy.contains('edit this product test');
+    cy.contains('description 1');
+
+    cy.get('[data-testid="submit-archive-products"]').click();
+    cy.wait('@archiveProduct').then(res => {
+      const expectedPayload = [
+        { id: 'product-0-id', status: 'DISABLED' },
+        { id: 'product-1-id', status: 'DISABLED' },
+      ];
+      const body = res.request.body;
+      expect(body).to.deep.eq(expectedPayload);
+    });
+    cy.get('[data-testid="archive-products-button"]').should('not.exist');
   });
 });
