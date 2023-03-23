@@ -17,6 +17,7 @@ import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
+import BPLocationView from 'src/common/components/BPLocationView';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -191,13 +192,18 @@ const AccountHolderLayout = props => {
         />
         <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.accountHolder.revenueTargets} />} label='Recette annuelle à réaliser' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
+        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
-      <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
+      <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row', minWidth: '50%', maxWidth: '50%' }}>
         <TextField pb={3} source='accountHolder.contactAddress.city' label='Ville' />
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
-        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
+        <FunctionField
+          pb={3}
+          render={data => <BPLocationView location={data?.accountHolder?.companyInfo?.location} sx={{ width: '23vw', height: '35vh' }} />}
+          label='Localisation'
+        />
       </SimpleShowLayout>
     </Box>
   );

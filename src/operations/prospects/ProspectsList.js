@@ -69,7 +69,7 @@ const ProspectItem = ({ prospect }) => {
     const geojsonBaseurl = process.env.REACT_APP_GEOJSON_BASEURL;
     const data = { coordinates: [location.longitude, location.latitude], type: location.type };
 
-    return encodeURI(`${geojsonBaseurl}${JSON.stringify(data)}`);
+    return encodeURI(`${geojsonBaseurl}/#data=data:application/json,${JSON.stringify(data)}`);
   };
   if (!prospect.location && !prospect.name && !prospect.email) {
     return null;
