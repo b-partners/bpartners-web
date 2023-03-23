@@ -56,6 +56,10 @@ const dataProvider: RaDataProviderType = {
     const result = await getProvider(resourceType).saveOrUpdate([params.data]);
     return { data: result[0] };
   },
+  async archive(resourceType, params) {
+    const result = await getProvider(resourceType).archive(params.data);
+    return { data: result };
+  },
 };
 
 export default dataProvider;
