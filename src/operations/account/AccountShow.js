@@ -197,6 +197,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
+        <TextField pb={3} source='accountHolder.companyInfo.townCode' label='Code de commune' />
         <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
     </Box>

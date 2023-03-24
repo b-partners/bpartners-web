@@ -55,6 +55,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
     cy.contains('101');
+    cy.contains('102010');
 
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
@@ -148,6 +149,9 @@ describe(specTitle('Account'), () => {
     cy.get('form [name="email"]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
+    cy.get('form [name="townCode"]').clear().type(120);
+    cy.contains('Votre code communal doit être à 6 chiffres.');
+    cy.get('form [name="townCode"]').clear().type(123123);
 
     const newCompanyInformation = {
       ...accountHolders1[0].companyInfo,
@@ -155,6 +159,7 @@ describe(specTitle('Account'), () => {
       phone: '+261340465338',
       email: 'joe.doe@bpartnes.app',
       socialCapital: 30100,
+      townCode: 123123,
     };
     const newAccountHolder = { ...accountHolders1[0] };
     newAccountHolder.companyInfo = newCompanyInformation;
@@ -163,6 +168,7 @@ describe(specTitle('Account'), () => {
       expect(req.body.phone).to.deep.eq(newCompanyInformation.phone);
       expect(req.body.email).to.deep.eq(newCompanyInformation.email);
       expect(+req.body.socialCapital).to.deep.eq(newCompanyInformation.socialCapital);
+      expect(req.body.townCode).to.deep.eq(newCompanyInformation.townCode);
       req.reply({ body: newAccountHolder });
     }).as('editCompanyInfo');
 
