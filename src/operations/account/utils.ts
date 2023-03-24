@@ -43,8 +43,8 @@ export const phoneValidator = (phoneNumber: string): any => {
 };
 
 export const townCodeValidator = (townCode: number): any => {
-  if (townCode && `${townCode}`.length !== 6) {
-    return 'Votre code communal doit être à 6 chiffres.';
+  if (townCode && `${townCode}`.length !== 5) {
+    return 'Votre code communal doit être à 5 chiffres.';
   }
   return true;
 };
