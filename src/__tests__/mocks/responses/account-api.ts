@@ -97,3 +97,16 @@ export const legalFiles1: LegalFile[] = [
 ];
 
 export const accountHolders1: AccountHolder[] = [accountHolder1];
+export const accountHolders2: AccountHolder[] = [
+  {
+    ...accountHolder1,
+    companyInfo: {
+      ...accountHolder1.companyInfo,
+      location: {
+        type: 'Point',
+        longitude: 2.347,
+        latitude: 48.8588,
+      },
+    },
+  },
+];

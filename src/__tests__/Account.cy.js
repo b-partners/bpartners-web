@@ -5,7 +5,7 @@ import App from '../App';
 
 import authProvider from '../providers/auth-provider';
 import { whoami1, token1, user1, user2 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities } from './mocks/responses/account-api';
+import { accounts1, accountHolders1, businessActivities, accountHolders2 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {
@@ -218,6 +218,44 @@ describe(specTitle('Account'), () => {
 
     cy.contains('Recette annuelle à réaliser');
     cy.contains('230000.00 €');
+  });
+
+  it('change location', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      const newLongitude = 2.347;
+      const newLatitude = 48.8588;
+      expect(req.body.location.longitude).to.deep.eq(newLongitude);
+      expect(req.body.location.latitude).to.deep.eq(newLatitude);
+      req.reply({ ...accountHolders1[0], companyInfo: req.body });
+    }).as('editCompanyInfoLocation');
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Localisation');
+    cy.contains(`Vous n'avez pas encore renseigné vos coordonnées géographiques.`);
+
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+
+    cy.contains('Localisation');
+    cy.get('[name=latitude]').type('48.8588');
+    cy.get('[name=longitude]').type('2.347');
+
+    cy.get('[name=submitLocation]').click();
+    cy.wait('@editCompanyInfoLocation');
+    cy.contains('Changement enregistré');
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders2).as('getAccountHolder2');
+    cy.get('[data-testid="ClearIcon"]').click();
+
+    cy.contains('Voir sur la carte');
   });
 
   it('unverified user warning', () => {
