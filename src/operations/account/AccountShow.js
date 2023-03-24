@@ -1,5 +1,5 @@
-import { Edit as EditIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Skeleton, Switch, Tab, Tabs, Typography } from '@mui/material';
+import { Edit as EditIcon, LocationOn, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
+import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Link, Skeleton, Switch, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import { green, grey } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
@@ -17,6 +17,7 @@ import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
+import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
 const ProfileLayout = () => (
   <SimpleShowLayout>
@@ -172,6 +173,25 @@ const IncomeTargets = ({ revenueTargets }) => {
   return <span>{currentIncomeTargetValue}</span>;
 };
 
+const BPLocationView = ({ location }) => {
+  return (
+    <>
+      {location ? (
+        <Tooltip title={`lat: ${location.latitude}, lng: ${location.longitude}`}>
+          <Link href={getGeoJsonUrl(location)} target='_blank' underline='hover'>
+            <IconButton component='span'>
+              <LocationOn fontSize='small' />
+            </IconButton>
+            <Typography variant='caption'> Voir sur la carte</Typography>
+          </Link>
+        </Tooltip>
+      ) : (
+        <Typography variant='caption'>Vous n'avez pas encore renseigné vos coordonnées géographiques.</Typography>
+      )}
+    </>
+  );
+};
+
 const AccountHolderLayout = props => {
   const { toggleAccountHolderLayout } = props;
   return (
@@ -191,6 +211,7 @@ const AccountHolderLayout = props => {
         />
         <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.accountHolder.revenueTargets} />} label='Recette annuelle à réaliser' />
         <TextField pb={3} source='accountHolder.siren' label='Siren' />
+        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
         <TextField pb={3} source='accountHolder.contactAddress.city' label='Ville' />
@@ -198,7 +219,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
         <TextField pb={3} source='accountHolder.companyInfo.townCode' label='Code de commune' />
-        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
+        <FunctionField pb={3} render={data => <BPLocationView location={data?.accountHolder?.companyInfo?.location} />} label='Localisation' />
       </SimpleShowLayout>
     </Box>
   );

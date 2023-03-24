@@ -6,6 +6,7 @@ import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
+import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
 const ProspectsList = () => {
   return (
@@ -65,12 +66,6 @@ const ProspectColumn = props => {
 };
 
 const ProspectItem = ({ prospect }) => {
-  const geoJsonUrl = location => {
-    const geojsonBaseurl = process.env.REACT_APP_GEOJSON_BASEURL;
-    const data = { coordinates: [location.longitude, location.latitude], type: location.type };
-
-    return encodeURI(`${geojsonBaseurl}${JSON.stringify(data)}`);
-  };
   if (!prospect.location && !prospect.name && !prospect.email) {
     return null;
   }
@@ -82,7 +77,7 @@ const ProspectItem = ({ prospect }) => {
           {prospect.name || 'Non renseigné'}
         </Typography>
         {prospect.location && (
-          <Link href={geoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+          <Link href={getGeoJsonUrl(prospect.location)} target='_blank' underline='hover'>
             <Tooltip title='Voir sur la carte'>
               <IconButton component='span'>
                 <LocationOn fontSize='small' />

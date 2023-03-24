@@ -3,6 +3,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, 
 import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInfomationForm from './CompanyInformationForm';
 import RevenueTargetForm from './RevenueTargetForm';
+import LocationEdition from './LocationEdition';
 
 const CloseConfigurationButton = ({ onClick }) => (
   <Tooltip title="Fermé l'édition">
@@ -32,6 +33,14 @@ const AccountEditionLayout = ({ onClose }) => {
             </AccordionSummary>
             <AccordionDetails>
               <CompanyInfomationForm />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel4a-content' id='panel4a-header'>
+              <Typography variant='h6'>Localisation</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <LocationEdition />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
