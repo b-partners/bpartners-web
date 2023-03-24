@@ -42,6 +42,13 @@ export const phoneValidator = (phoneNumber: string): any => {
   return true;
 };
 
+export const townCodeValidator = (townCode: number): any => {
+  if (townCode && `${townCode}`.length !== 6) {
+    return 'Votre code communal doit être à 6 chiffres.';
+  }
+  return true;
+};
+
 /**
  * Check if two companyInfo are the same
  * @param currentCompanyInfo
@@ -52,6 +59,7 @@ export const companyInfoDiff = (currentCompanyInfo: CompanyInfo, newCompanyInfo:
   if (
     currentCompanyInfo.email !== newCompanyInfo.email ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
+    currentCompanyInfo.townCode !== newCompanyInfo.townCode ||
     toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
   ) {
     return false;

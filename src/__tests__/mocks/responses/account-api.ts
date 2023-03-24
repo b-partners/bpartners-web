@@ -49,6 +49,8 @@ export const accountHolder1: AccountHolder = {
     socialCapital: 100000,
     tvaNumber: '123',
     isSubjectToVat: true,
+    location: null,
+    townCode: 102010,
   },
   businessActivities: {
     primary: 'activité principale',
