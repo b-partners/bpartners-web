@@ -55,7 +55,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
     cy.contains('101');
-    cy.contains('102010');
+    cy.contains('10201');
 
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
@@ -150,8 +150,8 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
     cy.get('form [name="townCode"]').clear().type(120);
-    cy.contains('Votre code communal doit être à 6 chiffres.');
-    cy.get('form [name="townCode"]').clear().type(123123);
+    cy.contains('Votre code communal doit être à 5 chiffres.');
+    cy.get('form [name="townCode"]').clear().type(12312);
 
     const newCompanyInformation = {
       ...accountHolders1[0].companyInfo,
@@ -159,7 +159,7 @@ describe(specTitle('Account'), () => {
       phone: '+261340465338',
       email: 'joe.doe@bpartnes.app',
       socialCapital: 30100,
-      townCode: 123123,
+      townCode: 12312,
     };
     const newAccountHolder = { ...accountHolders1[0] };
     newAccountHolder.companyInfo = newCompanyInformation;
