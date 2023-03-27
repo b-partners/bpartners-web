@@ -12,22 +12,25 @@ import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
 import { BP_COLOR } from '../bp-theme.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 
+const authUrlFromApi = async () => {
+  const {
+    data: { redirectionUrl },
+  } = await securityApi().initiateAuth({
+    state: uuidv4(),
+    // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
+    phone: 'numéro renseigné',
+    redirectionStatusUrls: loginRedirectionUrls,
+  });
+  return redirectionUrl;
+};
+
+const authUrlFromCognito = `${process.env.REACT_APP_COGNITO_URL}&redirect_url=${loginRedirectionUrls.successUrl}`;
+
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
 
   const initiateAuth = async () => {
-    const {
-      data: { redirectionUrl },
-    } = await securityApi().initiateAuth({
-      state: uuidv4(),
-      // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-      phone: 'numéro renseigné',
-      redirectionStatusUrls: loginRedirectionUrls,
-    });
-    redirect(redirectionUrl);
-  };
-  const onLogin = () => {
-    initiateAuth();
+    redirect(process.env.REACT_APP_FORCE_COGNITO_AUTH === 'true' ? authUrlFromCognito : await authUrlFromApi());
   };
 
   const onRegistration = () => {
@@ -51,7 +54,7 @@ const BpLoginPage = () => {
           <Typography variant='h5' gutterBottom mt={1}>
             Bienvenue !
           </Typography>
-          <Button id='login' onClick={onLogin} sx={LOGIN_FORM_BUTTON}>
+          <Button id='login' onClick={initiateAuth} sx={LOGIN_FORM_BUTTON}>
             Se connecter
           </Button>
           <Button
