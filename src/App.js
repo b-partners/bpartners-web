@@ -25,6 +25,7 @@ import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import LoginPage from './security/LoginPage';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
+import BpFrenchMessages from './common/utils/BpFrenchMessages';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -34,7 +35,7 @@ export const BpAdmin = () => {
       title='BPartners'
       authProvider={authProvider}
       dataProvider={dataProvider}
-      i18nProvider={polyglotI18nProvider(() => frenchMessages, 'fr')}
+      i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       loginPage={false}
       theme={BP_THEME}
       layout={MyLayout}

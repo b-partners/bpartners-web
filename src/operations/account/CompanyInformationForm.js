@@ -5,7 +5,7 @@ import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import accountProvider from 'src/providers/account-provider';
 import BPFormField from '../../common/components/BPFormField';
-import { phoneValidator, companyInfoDiff } from './utils';
+import { phoneValidator, companyInfoDiff, townCodeValidator } from './utils';
 import { toMinors, toMajors } from '../../common/utils/money';
 
 const CompanyInfomationForm = () => {
@@ -39,7 +39,13 @@ const CompanyInfomationForm = () => {
     try {
       setLoading(true);
       await accountProvider.saveOrUpdate([
-        { ...data, isSubjectToVat: record.isSubjectToVat, tvaNumber: record.tvaNumber, socialCapital: toMinors(data.socialCapital) },
+        {
+          ...data,
+          isSubjectToVat: record.isSubjectToVat,
+          tvaNumber: record.tvaNumber,
+          socialCapital: toMinors(data.socialCapital),
+          townCode: +data.townCode !== 0 ? +data.townCode : null,
+        },
       ]);
       notify('Changement enregistré', { type: 'success' });
     } catch (_err) {
@@ -54,6 +60,7 @@ const CompanyInfomationForm = () => {
       <BPFormField style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
       <BPFormField style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
       <BPFormField style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />
+      <BPFormField style={{ width: '45%' }} name='townCode' type='number' form={form} label='Code de commune' validate={townCodeValidator} />
       <Button
         variant='contained'
         size='small'

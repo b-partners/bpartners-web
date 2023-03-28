@@ -10,7 +10,7 @@ import { InvoiceStatusFR } from '../../../constants/invoice-status';
 
 // utility value
 export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
-export const DEFAULT_DELAY_PENALTY_PERCENT = 5;
+export const DELAY_IN_PAYMENT_ALLOWED = 'delayInPaymentAllowed';
 export const PRODUCT_NAME = 'products';
 export const CUSTOMER_NAME = 'customer';
 export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
@@ -169,10 +169,8 @@ const generatedInvoiceRef = () => {
 };
 
 export const invoiceInitialValue: Invoice = {
-  id: '',
   ref: generatedInvoiceRef(),
   title: 'Nouveau devis',
-  customer: null,
   products: [],
   sendingDate: new Date().toLocaleDateString('fr-ca'),
   validityDate: new Date().toLocaleDateString('fr-ca'),
@@ -180,7 +178,6 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: 'CASH',
   paymentRegulations: [],
-  globalDiscount: null,
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview

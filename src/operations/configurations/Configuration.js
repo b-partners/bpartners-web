@@ -7,7 +7,7 @@ export const Configuration = () => {
     <div>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-          <Typography variant='h6'>Frequence de relance</Typography>
+          <Typography variant='h6'>Fréquence de relance</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FrequencyConfig />

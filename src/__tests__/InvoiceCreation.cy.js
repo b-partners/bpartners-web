@@ -14,7 +14,7 @@ import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice creation'), () => {
   beforeEach(() => {
-    cy.viewport(1326, 514);
+    cy.viewport(1920, 1080);
     cy.intercept('POST', '/token', token1);
     cy.intercept('GET', '/whoami', whoami1).as('whoami');
     cy.then(
@@ -55,9 +55,16 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-draft-invoice']").click();
 
     cy.contains('0.00 €');
-    cy.get('form input[name="delayInPaymentAllowed"]').should('have.value', 30);
-    cy.get('form input[name="delayPenaltyPercent"]').should('have.value', 5);
+
     cy.get('form input[name="title"]').should('have.value', 'Nouveau devis');
+    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
+    cy.get('input[name="delayInPaymentAllowed"]').type(30);
+    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+    cy.get('input[name="delayPenaltyPercent"]').type(5);
+    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount.percentValue"]').type(20);
+    cy.get('[data-testid="payment-regulation-checkbox-id"]').click();
+    cy.contains('Acompte');
   });
 
   it('should create an draft invoice', () => {
@@ -77,14 +84,16 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=ref]').clear().type(newRef);
 
     const newDelayInPaymentAllowed = '26';
-    cy.get('form input[name=delayInPaymentAllowed]').clear().type(newDelayInPaymentAllowed);
+    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
+    cy.get('input[name="delayInPaymentAllowed"]').type(newDelayInPaymentAllowed);
 
     const globalDiscount_percentValue = 100;
-    cy.get('[data-testid=global-discount-switch]').click();
-    cy.get('form input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
+    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount.percentValue"]').type(globalDiscount_percentValue);
 
     const newDelayPenaltyPercent = '40';
-    cy.get('form input[name=delayPenaltyPercent]').clear().type(newDelayPenaltyPercent);
+    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+    cy.get('input[name="delayPenaltyPercent"]').type(newDelayPenaltyPercent);
 
     // select the customer
     cy.get('[data-testid=invoice-client-selection]').click();

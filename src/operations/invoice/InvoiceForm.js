@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, IconButton, Stack, Switch, Typography, FormControl } from '@mui/material';
+import { Box, IconButton, Stack, Switch, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
@@ -15,11 +15,12 @@ import { ProductSelection } from './components/ProductSelection';
 
 import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-import { INVOICE_EDITION } from './style';
+import { INVOICE_EDITION, DEFAULT_TEXT_FIELD_WIDTH } from './style';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
+  GLOBAL_DISCOUNT,
   GLOBAL_DISCOUNT_PERCENT_VALUE,
   InvoiceActionType,
   invoiceDateValidator,
@@ -33,11 +34,12 @@ import {
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import { invoiceMapper } from './utils/invoice-utils';
-import DiscountForm from './components/DiscountForm';
+import CheckboxForm from './components/CheckboxForm';
+import BpTextAdornment from 'src/common/components/BpTextAdornment';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
-  const form = useForm({ mode: 'all', defaultValues: { delayInPaymentAllowed: 30 } });
+  const form = useForm({ mode: 'all' });
   const notify = useNotify();
   const refresh = useRefresh();
   const paymentRegulationType = form.watch(PAYMENT_TYPE);
@@ -59,7 +61,7 @@ const InvoiceForm = props => {
     return form.handleSubmit(data => {
       productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
       const paymentRegulationError = validatePaymentRegulation(data[PAYMENT_TYPE], data[PAYMENT_REGULATIONS]);
-      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME] && data[CUSTOMER_NAME] !== null) {
+      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME] && data[CUSTOMER_NAME]) {
         ifValid();
       }
     });
@@ -132,36 +134,50 @@ const InvoiceForm = props => {
             type='date'
             form={form}
           />
-          <BPFormField
-            validate={value => value && value >= 0}
-            name='delayInPaymentAllowed'
-            label='Délai de retard de paiement autorisé (jours)'
-            type='number'
-            form={form}
-          />
-          <BPFormField
-            validate={value => value && value >= 0 && value <= 100}
-            name={DELAY_PENALTY_PERCENT}
-            label='Pourcentage de penalité de retard'
-            type='number'
-            form={form}
-          />
-          <DiscountForm name={GLOBAL_DISCOUNT_PERCENT_VALUE} label='Remise' form={form} />
           <ClientSelection name='customer' label='Client' form={form} />
           <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
-          <FormControl>
-            <Typography color='text.secondary'>Payer en plusieurs fois :</Typography>
-            <Stack direction='row' spacing={1} alignItems='center'>
-              <Switch data-testid='payment-regulation-switch' checked={!isPaymentTypeCash} onChange={togglePaymentType} />
-              <Typography>{isPaymentTypeCash ? 'Non' : 'Oui'}</Typography>
-            </Stack>
-          </FormControl>
+          <CheckboxForm
+            switchLabel='Ajouter un délai de retard de paiement autorisé :'
+            type='number'
+            name='delayInPaymentAllowed'
+            label='Délai de retard'
+            form={form}
+            InputProps={{
+              endAdornment: <BpTextAdornment label='Jour' />,
+            }}
+          />
+          <CheckboxForm
+            switchLabel='Ajouter une pénalité de retard'
+            name={DELAY_PENALTY_PERCENT}
+            label='Pénalité de retard'
+            form={form}
+            InputProps={{
+              endAdornment: <BpTextAdornment label='%' />,
+            }}
+          />
+          <CheckboxForm
+            switchLabel='Ajouter une remise'
+            source={GLOBAL_DISCOUNT}
+            name={GLOBAL_DISCOUNT_PERCENT_VALUE}
+            label='Remise'
+            form={form}
+            InputProps={{
+              endAdornment: <BpTextAdornment label='%' />,
+            }}
+          />
         </InvoiceAccordion>
         <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
           <ProductSelection name={PRODUCT_NAME} form={form} />
         </InvoiceAccordion>
+
+        <FormControl sx={{ width: DEFAULT_TEXT_FIELD_WIDTH }}>
+          <FormControlLabel
+            control={<Checkbox data-testid='payment-regulation-checkbox-id' checked={!isPaymentTypeCash} onChange={togglePaymentType} />}
+            label='Payer en plusieurs fois'
+          />
+        </FormControl>
         {!isPaymentTypeCash && (
-          <InvoiceAccordion error={paymentRegulationsError} label='Paiement' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+          <InvoiceAccordion error={paymentRegulationsError} label='Acompte' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
             <PaymentRegulationsForm form={form} />
           </InvoiceAccordion>
         )}

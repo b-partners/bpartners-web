@@ -53,8 +53,8 @@ describe(specTitle('Invoice'), () => {
 
     // check is payment regulations values are in Minor unity on edit invoice
     // use paymentRegulation
-    cy.get('[data-testid="payment-regulation-switch"] > .PrivateSwitchBase-input').click();
-    cy.get('[data-testid="invoice-Paiement-accordion"]').click();
+    cy.get('[data-testid="payment-regulation-checkbox-id"]').click();
+    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
 
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, req => {
       const crupdateInvoice = { ...req.body };
