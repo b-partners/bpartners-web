@@ -28,7 +28,7 @@ const ArchiveBulkAction = () => {
         handleClose();
         refresh();
         unselectAll();
-        notify(`${translate(`resources.${resource}.name`, { smart_count: 1 })} archiver avec success`, { type: 'success' });
+        notify(`${translate(`resources.${resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
       } catch (_error) {
         setLoading(false);
         notify("Une erreur s'est produite", { type: 'error' });

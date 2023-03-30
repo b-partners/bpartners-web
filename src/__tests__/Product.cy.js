@@ -262,5 +262,6 @@ describe(specTitle('Products'), () => {
       expect(body).to.deep.eq(expectedPayload);
     });
     cy.get('[data-testid="archive-products-button"]').should('not.exist');
+    cy.contains('Produits archivés avec succès');
   });
 });
