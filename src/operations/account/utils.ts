@@ -1,4 +1,4 @@
-import { CompanyBusinessActivity, CompanyInfo } from 'bpartners-react-client';
+import { AccountHolder, CompanyBusinessActivity, CompanyInfo, UpdateAccountHolder } from 'bpartners-react-client';
 import { toMajors } from '../../common/utils/money';
 
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
@@ -61,6 +61,29 @@ export const companyInfoDiff = (currentCompanyInfo: CompanyInfo, newCompanyInfo:
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
     currentCompanyInfo.townCode !== newCompanyInfo.townCode ||
     toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
+  ) {
+    return false;
+  }
+  return true;
+};
+
+export const generalInfoDiff = (currentAccoutHolder: AccountHolder, newGeneralInfo: any) => {
+  const {
+    name,
+    siren,
+    initialCashflow,
+    officialActivityName,
+    contactAddress: { address, city, country, postalCode },
+  } = currentAccoutHolder;
+  if (
+    newGeneralInfo.name !== name ||
+    newGeneralInfo.siren !== siren ||
+    +newGeneralInfo.initialCashflow !== toMajors(initialCashflow) ||
+    newGeneralInfo.officialActivityName !== officialActivityName ||
+    newGeneralInfo.address !== address ||
+    newGeneralInfo.city !== city ||
+    newGeneralInfo.country !== country ||
+    newGeneralInfo.postalCode !== postalCode
   ) {
     return false;
   }

@@ -63,6 +63,68 @@ describe(specTitle('Account'), () => {
     cy.contains(`0€ de coût fixe par mois`);
   });
 
+  it('Change general informations', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
+      const newGlobalInfo = {
+        id: accountHolders1[0].id,
+        name: 'Numer_01',
+        siren: '1001',
+        officialActivityName: 'Activité_officielle',
+        initialCashFlow: 19000000,
+        contactAddress: {
+          address: '40 Rue de la liberté',
+          city: 'Paris',
+          country: 'France',
+          postalCode: 12032,
+        },
+      };
+
+      expect(req.body.id).to.deep.eq(newGlobalInfo.id);
+      expect(req.body.name).to.deep.eq(newGlobalInfo.name);
+      expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
+      expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
+      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
+      expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
+      expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
+      expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
+      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
+      req.reply(accountHolders1[0]);
+    }).as('updateAccountHolder');
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[name="account"]').click();
+
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.contains('Édition de mon compte');
+    cy.contains('Activité');
+    cy.contains('Information sur la société');
+
+    cy.get('[name="name"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="name"]').type('Numer_01');
+    cy.get('[name="siren"]').clear().type(1001);
+    cy.get('[name="officialActivityName"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="officialActivityName"]').type('Activité_officielle');
+    cy.get('[name="initialCashflow"]').clear();
+    cy.get('[name="initialCashflow"]').type(190000);
+    cy.get('[name="address"]').clear().type('40 Rue de la liberté');
+    cy.get('[name="city"]').clear().type('Paris');
+    cy.get('[name="country"]').clear().type('France');
+    cy.get('[name="postalCode"]').clear().type(12032);
+
+    cy.get('form [name="submitGeneralInfo"]').click();
+    cy.wait('@updateAccountHolder');
+    cy.contains('Changement enregistré');
+  });
+
   it('Change business Activity', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
