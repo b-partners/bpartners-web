@@ -78,7 +78,7 @@ export const GeneralConditionOfUse = () => {
       <DialogTitle>
         <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
           <Typography variant='h6'>Votre approbation est requise</Typography>
-          <img src='./logo3292.png' alt='' width={30} />
+          <img src='./logo3292.webp' alt='' width={30} />
         </Stack>
       </DialogTitle>
 

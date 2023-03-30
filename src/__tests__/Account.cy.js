@@ -292,7 +292,7 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
-    cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.png', { force: true });
+    cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.webp', { force: true });
 
     cy.wait('@logoUpload');
     cy.contains('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.');

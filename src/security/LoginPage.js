@@ -44,10 +44,10 @@ const BpLoginPage = () => {
     <BPLoader />
   ) : (
     <Box sx={FLEX_CENTER}>
-      {<img src='./bp-logo-full.png' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
+      {<img src='./bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
         <Box sx={LOGIN_FORM}>
-          <img src='./laborer.png' width={50} height={50} alt='Bienvenue sur BPartners !' />
+          <img src='./laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
           <Typography variant='h5' gutterBottom mt={1}>
             Bienvenue !
           </Typography>
