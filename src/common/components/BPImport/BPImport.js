@@ -77,7 +77,7 @@ export const BPImport = props => {
 
   return (
     <div>
-      <Button data-testId='import-modal-button' variant='contained' startIcon={<FileUpload />} onClick={handleOpen} sx={IMPORT_BUTTON_STYLE}>
+      <Button data-testid='import-modal-button' variant='contained' startIcon={<FileUpload />} onClick={handleOpen} sx={IMPORT_BUTTON_STYLE}>
         Importer
       </Button>
       <Modal open={openModal} onClose={!isLoading && handleClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
@@ -144,7 +144,7 @@ export const BPImport = props => {
             <Button
               disabled={!file || errorMessage || isLoading}
               variant='contained'
-              data-testId='import-button'
+              data-testid='import-button'
               startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <FileUpload />}
               onClick={submitFile}
               sx={IMPORT_BUTTON_STYLE}

@@ -99,7 +99,7 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Email');
 
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
 
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
@@ -135,7 +135,7 @@ describe(specTitle('Customers'), () => {
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.contains('Email');
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
     cy.contains('Création de client');
     cy.get("[data-testid='closeIcon']").click();
     cy.contains('Création de client').should('not.exist');

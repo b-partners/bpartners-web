@@ -74,7 +74,7 @@ const ArchiveBulkAction = ({ source }) => {
               Annuler
             </Button>
             <Button
-              data-testId={`submit-archive-${resource}`}
+              data-testid={`submit-archive-${resource}`}
               disabled={isLoading}
               startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
               onClick={handleSubmit}

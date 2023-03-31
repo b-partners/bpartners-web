@@ -59,7 +59,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name="title"]').should('have.value', 'Nouveau devis');
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
     cy.get('input[name="delayInPaymentAllowed"]').type(30);
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+
     cy.get('input[name="delayPenaltyPercent"]').type(5);
     cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
     cy.get('input[name="globalDiscount.percentValue"]').type(20);
@@ -92,7 +92,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('input[name="globalDiscount.percentValue"]').type(globalDiscount_percentValue);
 
     const newDelayPenaltyPercent = '40';
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+
     cy.get('input[name="delayPenaltyPercent"]').type(newDelayPenaltyPercent);
 
     // select the customer
