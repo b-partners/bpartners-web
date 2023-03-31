@@ -1,14 +1,11 @@
 import { Box, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import { useEffect, useState } from 'react';
-import BPFormField from 'src/common/components/BPFormField';
+import { useFormContext } from 'react-hook-form';
+import { BpFormField } from 'src/common/components';
 
 const CheckboxForm = props => {
-  const {
-    form: { watch, setValue },
-    name,
-    switchLabel,
-    source,
-  } = props;
+  const { watch, setValue } = useFormContext();
+  const { children, name, switchlabel, source } = props;
   const [state, setState] = useState(false);
 
   const isChecked = watch(name) !== null;
@@ -27,9 +24,9 @@ const CheckboxForm = props => {
   return (
     <Box>
       <FormControl>
-        <FormControlLabel control={<Checkbox data-testid={`${name}-checkbox-id`} checked={state} onChange={handleToggle} />} label={switchLabel} />
+        <FormControlLabel control={<Checkbox data-testid={`${name}-checkbox-id`} checked={state} onChange={handleToggle} />} label={switchlabel} />
       </FormControl>
-      {state && <BPFormField shouldValidate={false} {...props} />}
+      {state && (children ? children : <BpFormField shouldValidate={false} {...props} />)}
     </Box>
   );
 };

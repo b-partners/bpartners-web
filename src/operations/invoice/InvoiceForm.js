@@ -1,12 +1,11 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, IconButton, Stack, Switch, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, IconButton, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
-import BPFormField from '../../common/components/BPFormField';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors } from '../../common/utils/money';
@@ -36,6 +35,8 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import { invoiceMapper } from './utils/invoice-utils';
 import CheckboxForm from './components/CheckboxForm';
 import BpTextAdornment from 'src/common/components/BpTextAdornment';
+import { BpFormField } from 'src/common/components';
+import { validateDIPAllowed, validateDPPercent } from './utils';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
@@ -75,21 +76,23 @@ const InvoiceForm = props => {
     form.setValue(PAYMENT_TYPE, isPaymentTypeCash ? InvoicePaymentTypeEnum.IN_INSTALMENT : InvoicePaymentTypeEnum.CASH);
   };
 
-  const onSubmit = validateInvoice(() => {
-    if (nbPendingInvoiceCrupdate > 0) {
-      onPending(InvoiceActionType.STOP_PENDING);
-    }
-    onPending(InvoiceActionType.START_PENDING);
-    const submittedAt = new Date();
-    retryOnError(
-      () =>
-        invoiceProvider
-          .saveOrUpdate([form.watch()], { isEdition: true })
-          .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
-          .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
-      error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
-    );
-  });
+  const onSubmit = form.handleSubmit(
+    validateInvoice(() => {
+      if (nbPendingInvoiceCrupdate > 0) {
+        onPending(InvoiceActionType.STOP_PENDING);
+      }
+      onPending(InvoiceActionType.START_PENDING);
+      const submittedAt = new Date();
+      retryOnError(
+        () =>
+          invoiceProvider
+            .saveOrUpdate([form.watch()], { isEdition: true })
+            .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
+            .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
+        error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
+      );
+    })
+  );
 
   const saveAndClose = () => {
     const synchronousSaveAndClose = async () => {
@@ -122,68 +125,69 @@ const InvoiceForm = props => {
 
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
-      <form style={INVOICE_EDITION.FORM} onSubmit={form.handleSubmit(onSubmit)}>
-        <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
-          <BPFormField name='title' label='Titre' form={form} />
-          <BPFormField name='ref' label='Référence' form={form} />
-          <BPFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' form={form} />
-          <BPFormField
-            validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
-            name='validityDate'
-            label='Date limite de validité'
-            type='date'
-            form={form}
-          />
-          <ClientSelection name='customer' label='Client' form={form} />
-          <BPFormField name='comment' rows={3} multiline label='Commentaire' form={form} shouldValidate={false} />
-          <CheckboxForm
-            switchLabel='Ajouter un délai de retard de paiement autorisé :'
-            type='number'
-            name='delayInPaymentAllowed'
-            label='Délai de retard'
-            form={form}
-            InputProps={{
-              endAdornment: <BpTextAdornment label='Jour' />,
-            }}
-          />
-          <CheckboxForm
-            switchLabel='Ajouter une pénalité de retard'
-            name={DELAY_PENALTY_PERCENT}
-            label='Pénalité de retard'
-            form={form}
-            InputProps={{
-              endAdornment: <BpTextAdornment label='%' />,
-            }}
-          />
-          <CheckboxForm
-            switchLabel='Ajouter une remise'
-            source={GLOBAL_DISCOUNT}
-            name={GLOBAL_DISCOUNT_PERCENT_VALUE}
-            label='Remise'
-            form={form}
-            InputProps={{
-              endAdornment: <BpTextAdornment label='%' />,
-            }}
-          />
-        </InvoiceAccordion>
-        <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
-          <ProductSelection name={PRODUCT_NAME} form={form} />
-        </InvoiceAccordion>
-
-        <FormControl sx={{ width: DEFAULT_TEXT_FIELD_WIDTH }}>
-          <FormControlLabel
-            control={<Checkbox data-testid='payment-regulation-checkbox-id' checked={!isPaymentTypeCash} onChange={togglePaymentType} />}
-            label='Payer en plusieurs fois'
-          />
-        </FormControl>
-        {!isPaymentTypeCash && (
-          <InvoiceAccordion error={paymentRegulationsError} label='Acompte' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
-            <PaymentRegulationsForm form={form} />
+      <FormProvider {...form}>
+        <form style={INVOICE_EDITION.FORM} onSubmit={onSubmit}>
+          <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
+            <BpFormField name='title' label='Titre' />
+            <BpFormField name='ref' label='Référence' />
+            <BpFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' />
+            <BpFormField
+              validate={e => invoiceDateValidator({ validityDate: e, sendingDate: form.watch('sendingDate') })}
+              name='validityDate'
+              label='Date limite de validité'
+              type='date'
+            />
+            <ClientSelection name='customer' label='Client' form={form} />
+            <BpFormField name='comment' rows={3} multiline label='Commentaire' shouldValidate={false} />
+            <CheckboxForm switchlabel='Ajouter un délai de retard de paiement autorisé' type='number' name='delayInPaymentAllowed' label='Délai de retard'>
+              <BpFormField
+                type='number'
+                name='delayInPaymentAllowed'
+                label='Délai de retard'
+                validate={validateDIPAllowed}
+                InputProps={{
+                  endAdornment: <BpTextAdornment label='Jour' />,
+                }}
+              />
+              <BpFormField
+                type='number'
+                name={DELAY_PENALTY_PERCENT}
+                label='Pénalité de retard'
+                validate={validateDPPercent}
+                InputProps={{
+                  endAdornment: <BpTextAdornment label='%' />,
+                }}
+              />
+            </CheckboxForm>
+            <CheckboxForm
+              switchlabel='Ajouter une remise'
+              source={GLOBAL_DISCOUNT}
+              name={GLOBAL_DISCOUNT_PERCENT_VALUE}
+              label='Remise'
+              InputProps={{
+                endAdornment: <BpTextAdornment label='%' />,
+              }}
+            />
           </InvoiceAccordion>
-        )}
-        <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
-        <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
-      </form>
+          <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
+            <ProductSelection name={PRODUCT_NAME} form={form} />
+          </InvoiceAccordion>
+
+          <FormControl sx={{ width: DEFAULT_TEXT_FIELD_WIDTH }}>
+            <FormControlLabel
+              control={<Checkbox data-testid='payment-regulation-checkbox-id' checked={!isPaymentTypeCash} onChange={togglePaymentType} />}
+              label='Payer en plusieurs fois'
+            />
+          </FormControl>
+          {!isPaymentTypeCash && (
+            <InvoiceAccordion error={paymentRegulationsError} label='Acompte' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
+              <PaymentRegulationsForm form={form} />
+            </InvoiceAccordion>
+          )}
+          <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
+          <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
+        </form>
+      </FormProvider>
       <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
         <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />

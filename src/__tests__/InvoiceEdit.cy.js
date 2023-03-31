@@ -57,10 +57,10 @@ describe(specTitle('Invoice'), () => {
 
     const delayInPaymentAllowed = 20;
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
-    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed);
-
+    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed).blur();
+    cy.contains('Ce champ est requis');
     const delayPenaltyPercent = 20;
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+
     cy.get('input[name="delayPenaltyPercent"]').type(delayPenaltyPercent);
 
     const globalDiscount_percentValue = 100;
@@ -78,6 +78,10 @@ describe(specTitle('Invoice'), () => {
         updatedAt: new Date(),
       });
     }).as('crupdateInvoicePaymentRegulation');
+
+    cy.get('input[name="delayInPaymentAllowed"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed).blur();
 
     cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
@@ -168,8 +172,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
 
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
-
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
 
     cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
 

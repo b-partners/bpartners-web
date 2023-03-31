@@ -113,7 +113,7 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description 1');
 
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
 
     cy.get('#description').type('test description').blur();
 
@@ -133,7 +133,7 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description 1');
 
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
 
     cy.get('#description').type('new description');
     cy.get('#unitPrice').type(1.03);
@@ -211,7 +211,7 @@ describe(specTitle('Products'), () => {
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
 
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
 
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
@@ -229,7 +229,7 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description 1');
 
-    cy.get('[data-testId="create-button"]').click();
+    cy.get('[data-testid="create-button"]').click();
 
     cy.contains('Création de produit');
     cy.get("[data-testid='closeIcon']").click();
