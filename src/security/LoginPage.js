@@ -1,9 +1,8 @@
 import { Box, Typography, Button } from '@mui/material';
 
-import { onboardingApi, securityApi } from '../providers/api';
+import { onboardingApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
-import { v4 as uuidv4 } from 'uuid';
 
 import useAuthentication from 'src/common/hooks/use-authentication';
 import BPLoader from 'src/common/components/BPLoader';
