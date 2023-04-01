@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import authProvider from '../providers/auth-provider';
 import loginRedirectionUrls from './login-redirection-urls';

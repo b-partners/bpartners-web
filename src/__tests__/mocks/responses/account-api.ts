@@ -1,6 +1,6 @@
 import { Account, AccountHolder, BusinessActivity, LegalFile } from 'bpartners-react-client';
 
-export const account1: Account = { availableBalance: 22000, BIC: 'BIC', IBAN: 'IBAN', id: 'mock-account-id1', name: 'Numer' };
+export const account1: Account = { availableBalance: 22000, bic: 'BIC', iban: 'IBAN', id: 'mock-account-id1', name: 'Numer', bank: null };
 export const accounts1: Account[] = [account1];
 export const businessActivities: BusinessActivity[] = [
   {
