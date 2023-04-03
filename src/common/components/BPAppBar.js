@@ -2,7 +2,7 @@ import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { SidebarToggleButton } from 'react-admin';
-import bpLogo from '../../assets/bp-logo-full.png';
+import bpLogo from '../../assets/bp-logo-full.webp';
 import accountProvider, { getCachedUser } from '../../providers/account-provider';
 import authProvider from '../../providers/auth-provider';
 import { ShortWarning } from './BPBetaTestWarning';

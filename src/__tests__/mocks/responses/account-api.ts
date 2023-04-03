@@ -50,7 +50,7 @@ export const accountHolder1: AccountHolder = {
     tvaNumber: '123',
     isSubjectToVat: true,
     location: null,
-    townCode: 102010,
+    townCode: 10201,
   },
   businessActivities: {
     primary: 'activité principale',
