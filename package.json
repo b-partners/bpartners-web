@@ -11,7 +11,7 @@
     "@sentry/react": "^7.22.0",
     "@sentry/tracing": "^7.22.0",
     "axios": "^0.27.2",
-    "bpartners-react-client": "^0.10.0",
+    "bpartners-react-client": "^0.12.0",
     "caniuse-lite": "^1.0.30001464",
     "dayjs": "^1.11.7",
     "debounce": "^1.2.1",
