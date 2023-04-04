@@ -7,6 +7,7 @@ import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
+import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 
 const ClientFilter = () => {
   const { setFilters, filterValues } = useListContext();
@@ -46,7 +47,7 @@ const CustomerList = props => (
   <List
     {...props}
     perPage={pageSize}
-    actions={<BPListActions importComponent={<BPImport source='customer' />} />}
+    actions={<BPListActions buttons={<ArchiveBulkAction source='lastName ||| firstName' />} importComponent={<BPImport source='customer' />} />}
     resource='customers'
     hasCreate={true}
     hasEdit={false}
@@ -54,6 +55,9 @@ const CustomerList = props => (
     hasShow={false}
     component={ListComponent}
     pagination={<Pagination />}
+    sx={{
+      '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
+    }}
   >
     <CustomerGrid />
   </List>
@@ -67,7 +71,7 @@ const CustomerGrid = () => {
   return (
     <>
       <ClientFilter />
-      <Datagrid bulkActionButtons={false} rowClick='edit' empty={<EmptyList />}>
+      <Datagrid rowClick='edit' empty={<EmptyList />}>
         <TextField source='lastName' label='Nom' />
         <TextField source='firstName' label='Prénom' />
         <TextField source='email' label='Email' />
