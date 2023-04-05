@@ -44,7 +44,7 @@ export const phoneValidator = (phoneNumber: string): any => {
 
 export const townCodeValidator = (townCode: number): any => {
   if (townCode && `${townCode}`.length !== 5) {
-    return 'Votre code communal doit être à 5 chiffres.';
+    return 'Le code de la commune de prospection doit être à 5 chiffres.';
   }
   return true;
 };
