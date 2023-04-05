@@ -150,7 +150,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
     cy.get('form [name="townCode"]').clear().type(120);
-    cy.contains('Votre code communal doit être à 5 chiffres.');
+    cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
     cy.get('form [name="townCode"]').clear().type(12312);
 
     const newCompanyInformation = {

@@ -60,7 +60,7 @@ const CompanyInfomationForm = () => {
       <BPFormField style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
       <BPFormField style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
       <BPFormField style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />
-      <BPFormField style={{ width: '45%' }} name='townCode' type='number' form={form} label='Code de commune' validate={townCodeValidator} />
+      <BPFormField style={{ width: '45%' }} name='townCode' type='number' form={form} label='Code de la commune de prospection' validate={townCodeValidator} />
       <Button
         variant='contained'
         size='small'
