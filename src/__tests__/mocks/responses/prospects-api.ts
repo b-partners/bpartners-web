@@ -8,6 +8,7 @@ export const prospects: Prospect[] = [
     email: 'johnDoe@gmail.com',
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 21547,
     location: {
       type: 'Point',
       longitude: 2.347,
@@ -21,6 +22,7 @@ export const prospects: Prospect[] = [
     email: 'janeDoe@gmail.com',
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 21547,
   },
   {
     id: 'prospect3_id',
@@ -29,6 +31,7 @@ export const prospects: Prospect[] = [
     email: 'markusAdams@gmail.com',
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 21547,
   },
   {
     id: 'prospect4_id',
@@ -37,6 +40,7 @@ export const prospects: Prospect[] = [
     email: 'alyssaHain@gmail.com',
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: null,
   },
   {
     id: 'prospect5_id',
@@ -45,6 +49,7 @@ export const prospects: Prospect[] = [
     email: 'micheleKlaffs@gmail.com',
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 12345,
     location: {
       type: 'Point',
       longitude: 2.347,
@@ -58,6 +63,7 @@ export const prospects: Prospect[] = [
     email: 'micheleKlaffs@gmail.com',
     status: 'CONVERTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 12345,
   },
   {
     id: 'prospect7_id',
@@ -79,6 +85,7 @@ export const prospects: Prospect[] = [
     email: null,
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: null,
     location: {
       type: 'Point',
       longitude: 2.347,
