@@ -1,5 +1,9 @@
-import { Configuration, Whoami } from 'bpartners-react-client';
-import { securityApi } from './api';
+import { Configuration, SecurityApi, Whoami } from 'bpartners-react-client';
+import { Amplify, Auth } from 'aws-amplify';
+import awsExports from '../aws-exports';
+import loginRedirectionUrls from 'src/security/login-redirection-urls';
+
+Amplify.configure(awsExports);
 
 export const whoamiItem = 'bp_whoami';
 export const accessTokenItem = 'bp_access_token';
@@ -11,10 +15,16 @@ const getCachedUnapprovedFiles = () => localStorage.getItem(unapprovedFiles);
 
 export const getCachedAccessToken = () => localStorage.getItem(accessTokenItem);
 
-const whoami = async (): Promise<Whoami> => {
-  return securityApi()
-    .whoami()
-    .then(({ data }) => data);
+export const whoami = async (): Promise<any> => {
+  const session = await Auth.currentSession();
+
+  const conf = new Configuration();
+  conf.accessToken = session.getIdToken().getJwtToken();
+  cacheTokens(session.getIdToken().getJwtToken(), session.getRefreshToken().getToken());
+
+  const securityApi = new SecurityApi(conf);
+  const { data } = await securityApi.whoami();
+  return data;
 };
 
 const cacheWhoami = (whoami: Whoami): Whoami => {
@@ -53,20 +63,21 @@ const authProvider = {
   // --------------------- ra functions -------------------------------------------
   // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
 
-  login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<void> =>
-    securityApi()
-      .createToken({
-        code: password,
-        redirectionStatusUrls: clientMetadata == null ? null : clientMetadata.redirectionStatusUrls,
-      })
-      .then(({ data: { accessToken, refreshToken, whoami } }) => {
-        cacheTokens(accessToken, refreshToken);
-        cacheWhoami(whoami);
-      }),
+  login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<string> => {
+    try {
+      await Auth.signIn(username as string, password as string);
+      const whoamiData = await whoami();
+      cacheWhoami(whoamiData);
+      return loginRedirectionUrls.successUrl;
+    } catch (error) {
+      console.log(error);
+      return loginRedirectionUrls.failureUrl;
+    }
+  },
 
   logout: async (): Promise<void> => {
+    await Auth.signOut();
     clearCache();
-    //TODO: invalidate token backend side
   },
 
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
