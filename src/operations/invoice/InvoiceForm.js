@@ -68,7 +68,7 @@ const InvoiceForm = props => {
     });
   };
 
-  const isPaymentTypeCash = form.watch(PAYMENT_TYPE) == InvoicePaymentTypeEnum.CASH;
+  const isPaymentTypeCash = form.watch(PAYMENT_TYPE) === InvoicePaymentTypeEnum.CASH;
   const togglePaymentType = () => {
     if (!isPaymentTypeCash) {
       form.setValue(PAYMENT_REGULATIONS, null);

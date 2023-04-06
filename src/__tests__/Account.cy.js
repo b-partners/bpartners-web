@@ -3,29 +3,13 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import authProvider from '../providers/auth-provider';
-import { whoami1, token1, user1, user2 } from './mocks/responses/security-api';
+import { whoami1, user2 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities, accountHolders2 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
-    cy.viewport(1360, 760);
-    cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-
-    cy.then(
-      async () =>
-        await authProvider.login('dummy', 'dummy', {
-          redirectionStatusUrls: {
-            successurl: 'dummy',
-            FailureUrl: 'dummy',
-          },
-        })
-    );
-
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
+    cy.cognitoLogin();
   });
 
   it('is displayed on login', () => {
@@ -33,7 +17,6 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
 
     mount(<App />);
 

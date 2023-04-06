@@ -1,0 +1,15 @@
+{
+  "preprod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-bpartnersweb-preprod-104655-authRole",
+      "UnauthRoleArn": "arn:aws:iam::688605879718:role/amplify-bpartnersweb-preprod-104655-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::688605879718:role/amplify-bpartnersweb-preprod-104655-authRole",
+      "Region": "eu-west-3",
+      "DeploymentBucketName": "amplify-bpartnersweb-preprod-104655-deployment",
+      "UnauthRoleName": "amplify-bpartnersweb-preprod-104655-unauthRole",
+      "StackName": "amplify-bpartnersweb-preprod-104655",
+      "StackId": "arn:aws:cloudformation:eu-west-3:688605879718:stack/amplify-bpartnersweb-preprod-104655/2ede1300-d39f-11ed-b396-0a8a88c86c38",
+      "AmplifyAppId": "d1wtl0q81nazmd"
+    }
+  }
+}

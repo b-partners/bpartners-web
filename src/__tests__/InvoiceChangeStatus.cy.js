@@ -1,31 +1,21 @@
 import { mount } from '@cypress/react';
-import { InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, getInvoices, invoicesToChangeStatus, restInvoiceRegulation } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
-import { token1, user1, whoami1 } from './mocks/responses/security-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.viewport(1326, 514);
-    cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(
-      async () =>
-        await authProvider.login('dummy', 'dummy', {
-          redirectionStatusUrls: {
-            successurl: 'dummy',
-            FailureUrl: 'dummy',
-          },
-        })
-    );
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+
+    cy.cognitoLogin();
+
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');

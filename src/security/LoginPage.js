@@ -11,34 +11,23 @@ import authProvider from 'src/providers/auth-provider';
 import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
 import { BP_COLOR } from '../bp-theme.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
+import { useForm, FormProvider } from 'react-hook-form';
+import { BpFormField } from 'src/common/components';
 
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
 
-  const initiateAuth = async () => {
-    const {
-      data: { redirectionUrl },
-    } = await securityApi().initiateAuth({
-      state: uuidv4(),
-      // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-      phone: 'numéro renseigné',
-      redirectionStatusUrls: loginRedirectionUrls,
-    });
-    redirect(redirectionUrl);
-  };
-  const onLogin = () => {
-    initiateAuth();
-  };
-
-  const onRegistration = () => {
-    const initiateOnboarding = async () => {
-      const {
-        data: { redirectionUrl },
-      } = await onboardingApi().initiateOnboarding({ redirectionStatusUrls: loginRedirectionUrls });
-      redirect(redirectionUrl);
-    };
-    initiateOnboarding();
-  };
+  // const initiateAuth = async () => {
+  //   const {
+  //     data: { redirectionUrl },
+  //   } = await securityApi().initiateAuth({
+  //     state: uuidv4(),
+  //     // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
+  //     phone: 'numéro renseigné',
+  //     redirectionStatusUrls: loginRedirectionUrls,
+  //   });
+  //   redirect(redirectionUrl);
+  // };
 
   return isLoading && authProvider.getCachedWhoami() ? (
     <BPLoader />
@@ -46,36 +35,7 @@ const BpLoginPage = () => {
     <Box sx={FLEX_CENTER}>
       {<img src='./bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
-        <Box sx={LOGIN_FORM}>
-          <img src='./laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
-          <Typography variant='h5' gutterBottom mt={1}>
-            Bienvenue !
-          </Typography>
-          <Button id='login' onClick={onLogin} sx={LOGIN_FORM_BUTTON}>
-            Se connecter
-          </Button>
-          <Button
-            id='register'
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#000',
-              textTransform: 'none',
-              textAlign: 'left',
-              mt: 2,
-              p: 0,
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-                color: BP_COLOR[20],
-              },
-            }}
-            onClick={onRegistration}
-          >
-            <Typography variant='h7' gutterBottom mt={1}>
-              Pas de compte ? <b>C'est par ici</b>
-            </Typography>
-          </Button>
-        </Box>
+        <LoginForm />
       </Box>
       <Box
         width={{ md: '60%', sm: '0%', xs: '0%' }}
@@ -100,6 +60,62 @@ const BpLoginPage = () => {
         </Typography>
       </Box>
     </Box>
+  );
+};
+
+const LoginForm = () => {
+  const onRegistration = () => {
+    const initiateOnboarding = async () => {
+      const {
+        data: { redirectionUrl },
+      } = await onboardingApi().initiateOnboarding({ redirectionStatusUrls: loginRedirectionUrls });
+      redirect(redirectionUrl);
+    };
+    initiateOnboarding();
+  };
+
+  const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
+
+  const login = formState.handleSubmit(async loginState => {
+    const redirectionUrl = await authProvider.login(loginState);
+    redirect(redirectionUrl);
+  });
+
+  return (
+    <FormProvider {...formState}>
+      <form style={LOGIN_FORM} onSubmit={login}>
+        <img src='./laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
+        <Typography variant='h5' gutterBottom mt={1}>
+          Bienvenue !
+        </Typography>
+        <BpFormField name='username' label="Nom d'utilisateur" />
+        <BpFormField name='password' type='password' label='Mot de passe' />
+        <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' onClick={() => {}} sx={LOGIN_FORM_BUTTON}>
+          Se connecter
+        </Button>
+        <Button
+          id='register'
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#000',
+            textTransform: 'none',
+            textAlign: 'left',
+            mt: 2,
+            p: 0,
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+              color: BP_COLOR[20],
+            },
+          }}
+          onClick={onRegistration}
+        >
+          <Typography variant='h7' gutterBottom mt={1}>
+            Pas de compte ? <b>C'est par ici</b>
+          </Typography>
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 
