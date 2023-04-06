@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Home, LocalPhoneOutlined, LocationOn, MailOutline, MoreVert } from '@mui/icons-material';
+import { Home, LocalPhoneOutlined, LocationCity, LocationOn, MailOutline, MoreVert } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
@@ -174,6 +174,9 @@ const ProspectItem = ({ prospect }) => {
         </Typography>
         <Typography variant='body2'>
           <Home fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
+        </Typography>
+        <Typography variant='body2'>
+          <LocationCity fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.townCode || 'Non renseigné'}
         </Typography>
       </Box>
     </Paper>
