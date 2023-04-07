@@ -81,7 +81,7 @@ const LoginForm = () => {
         <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' onClick={() => {}} sx={LOGIN_FORM_BUTTON}>
           Se connecter
         </Button>
-        { /* // TODO(cognito-signup): reactivate when cognito signup is ready
+        {/* // TODO(cognito-signup): reactivate when cognito signup is ready
         <Button
           id='register'
           sx={{
@@ -103,7 +103,7 @@ const LoginForm = () => {
             Pas de compte ? <b>C'est par ici</b>
           </Typography>
         </Button>
-        */ }
+        */}
       </form>
     </FormProvider>
   );

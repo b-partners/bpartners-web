@@ -51,14 +51,17 @@ const GeneralInfoForm = () => {
     try {
       setLoading(true);
       const { name, siren, officialActivityName, initialCashflow, address, city, country, postalCode } = data;
-      const { id } = record.accountHolder;
+      const {
+        id,
+        contactAddress: { prospectingPerimeter },
+      } = record.accountHolder;
       const newGlobalInfo = {
         id: id,
         name: name,
         siren: siren,
         officialActivityName: officialActivityName,
         initialCashFlow: toMinors(initialCashflow),
-        contactAddress: { address: address, city: city, country: country, postalCode: +postalCode },
+        contactAddress: { address: address, city: city, country: country, postalCode: +postalCode, prospectingPerimeter: prospectingPerimeter },
       };
       await updateGlobalInformation(newGlobalInfo);
       notify('Changement enregistré', { type: 'success' });

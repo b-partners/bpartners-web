@@ -50,6 +50,33 @@ describe(specTitle('Customers'), () => {
     cy.contains('Non renseigné');
   });
 
+  it('change prospecting perimeter', () => {
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
+      expect(req.body.contactAddress.prospectingPerimeter).to.deep.eq(5);
+
+      req.reply(accountHolders1[0]);
+    }).as('updateProspectingPerimeter');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="prospects"]').click();
+    cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click();
+
+    cy.contains('Configurer le périmètre de prospection.');
+    cy.contains('0 km');
+    cy.contains('4');
+    cy.contains('10 km');
+
+    cy.get('[data-testid="perimeterSlider"]').invoke('val', 5).trigger('change').click({ force: true });
+
+    cy.contains('5');
+
+    cy.wait('@updateProspectingPerimeter');
+
+    cy.contains('Changement enregistré');
+  });
+
   it('should show empty list', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
     mount(<App />);

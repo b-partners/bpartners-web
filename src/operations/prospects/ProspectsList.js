@@ -14,6 +14,8 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Tab,
+  Tabs,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -24,13 +26,35 @@ import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 import prospectingProvider from 'src/providers/prospecting-provider';
+import TabPanel from 'src/common/components/TabPanel';
+import { TAB_STYLE } from '../account/style';
+import ProspectsConfiguration from './ProspectsConfiguration';
 
 const ProspectsList = () => {
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const handleTabChange = (event, newTabIndex) => {
+    setTabIndex(newTabIndex);
+  };
+
   return (
     <>
-      <List pagination={false} component={ListComponent} actions={false}>
-        <Prospects />
-      </List>
+      <Box sx={{ p: 2 }}>
+        <Tabs value={tabIndex} onChange={handleTabChange} sx={TAB_STYLE}>
+          <Tab label='Mes prospects' />
+          <Tab label='Configuration' />
+        </Tabs>
+
+        <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
+          <List pagination={false} component={ListComponent} actions={false}>
+            <Prospects />
+          </List>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
+          <ProspectsConfiguration />
+        </TabPanel>
+      </Box>
     </>
   );
 };
