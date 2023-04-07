@@ -1,11 +1,13 @@
 import {
   Account,
   AccountHolder,
+  BankConnectionRedirection,
   BusinessActivity,
   CompanyBusinessActivity,
   CompanyInfo,
   CreateAnnualRevenueTarget,
   UpdateAccountHolder,
+  UpdateAccountIdentity,
   User,
 } from 'bpartners-react-client';
 
@@ -14,6 +16,7 @@ import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
+import { createRedirectionUrl } from 'src/common/utils/createRedirectionUrl';
 
 const userItem = 'bp_user';
 const accountItem = 'bp_account';
@@ -28,6 +31,8 @@ export const cacheAccount = (account: any) => {
   localStorage.setItem(accountItem, JSON.stringify(account));
   return account;
 };
+
+export const clearCachedAccount = () => localStorage.removeItem(accountItem);
 
 export const cacheAccountHolder = (accountHolder: any) => {
   localStorage.setItem(accountHolderItem, JSON.stringify(accountHolder));
@@ -120,6 +125,24 @@ export const updateGlobalInformation = async (resources: UpdateAccountHolder): P
   const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, ahId, resources);
   cacheAccountHolder(data);
   return data;
+};
+
+export const initiateBankConnection = async (): Promise<BankConnectionRedirection> => {
+  const user = getCachedUser();
+  const account = getCachedAccount();
+  const redirectionUrl = createRedirectionUrl('/bank', '/error');
+  const { data } = await userAccountsApi().initiateBankConnection(user?.id, account?.id, redirectionUrl);
+  clearCachedAccount();
+  return data;
+};
+
+export const updateBankInformation = async (resource: UpdateAccountIdentity) => {
+  const user = getCachedUser();
+  const account = getCachedAccount();
+  await userAccountsApi().updateAccountIdentity(user.id, account.id, resource);
+  const { data } = await userAccountsApi().getAccountsByUserId(user.id);
+  cacheAccount(data[0]);
+  return data[0];
 };
 
 export default accountProvider;

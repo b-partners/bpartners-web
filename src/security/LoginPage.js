@@ -1,9 +1,8 @@
 import { Box, Typography, Button } from '@mui/material';
 
-import { onboardingApi, securityApi } from '../providers/api';
+import { onboardingApi } from '../providers/api';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
-import { v4 as uuidv4 } from 'uuid';
 
 import useAuthentication from 'src/common/hooks/use-authentication';
 import BPLoader from 'src/common/components/BPLoader';
@@ -81,7 +80,7 @@ const LoginForm = () => {
         <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' onClick={() => {}} sx={LOGIN_FORM_BUTTON}>
           Se connecter
         </Button>
-        { /* // TODO(cognito-signup): reactivate when cognito signup is ready
+        {/* // TODO(cognito-signup): reactivate when cognito signup is ready
         <Button
           id='register'
           sx={{
@@ -103,7 +102,7 @@ const LoginForm = () => {
             Pas de compte ? <b>C'est par ici</b>
           </Typography>
         </Button>
-        */ }
+        */}
       </form>
     </FormProvider>
   );

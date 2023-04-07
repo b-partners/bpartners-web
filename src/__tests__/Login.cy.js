@@ -17,7 +17,8 @@ describe(specTitle('Login'), () => {
     cy.get('@redirect').should('have.been.calledOnce');
   });
 
-  it.skip('MainPage redirects to onboarding url', () => { // TODO(cognito-signup)
+  it.skip('MainPage redirects to onboarding url', () => {
+    // TODO(cognito-signup)
     mount(<App />);
     cy.intercept('POST', '/onboardingInitiation', { redirectionUrl: 'https://authUrl.com' }).as('onboardingInitiation');
     cy.get('#register').contains(`Pas de compte ? C'est par ici`);

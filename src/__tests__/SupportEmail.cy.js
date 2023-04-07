@@ -3,7 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1, user1 } from './mocks/responses/security-api';
+import { whoami1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Frequency relaunch'), () => {
@@ -31,6 +31,6 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.contains("Contactez-nous à l'adresse email");
     cy.contains('Pour utiliser votre client email, cliquez ici.');
-    cy.get('.MuiDialogContent-root > a').click();
+    cy.get('.MuiDialogContent-root > span').click();
   });
 });
