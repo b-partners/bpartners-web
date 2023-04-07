@@ -45,14 +45,6 @@ const AccountEditionLayout = ({ onClose }) => {
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel4a-content' id='panel4a-header'>
-              <Typography variant='h6'>Localisation</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <LocationEdition />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel3a-content' id='panel3a-header'>
               <Typography variant='h6'>Recette annuelle à réaliser</Typography>
             </AccordionSummary>

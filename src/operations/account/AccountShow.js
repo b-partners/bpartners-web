@@ -219,7 +219,6 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
         <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
         <TextField pb={3} source='accountHolder.companyInfo.townCode' label='Code de la commune de prospection' />
-        <FunctionField pb={3} render={data => <BPLocationView location={data?.accountHolder?.companyInfo?.location} />} label='Localisation' />
       </SimpleShowLayout>
     </Box>
   );
