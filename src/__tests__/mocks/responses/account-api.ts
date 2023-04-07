@@ -42,6 +42,7 @@ export const accountHolder1: AccountHolder = {
     city: 'Ivandry',
     country: 'Madagascar',
     postalCode: '101',
+    prospectingPerimeter: 4,
   },
   companyInfo: {
     phone: '+261 34 xx xxx xx',
