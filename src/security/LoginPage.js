@@ -17,18 +17,6 @@ import { BpFormField } from 'src/common/components';
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
 
-  // const initiateAuth = async () => {
-  //   const {
-  //     data: { redirectionUrl },
-  //   } = await securityApi().initiateAuth({
-  //     state: uuidv4(),
-  //     // as we don'h handle phone prefixes (eg MG and FR), Swan will re-ask us phone anyway ==> use dummy
-  //     phone: 'numéro renseigné',
-  //     redirectionStatusUrls: loginRedirectionUrls,
-  //   });
-  //   redirect(redirectionUrl);
-  // };
-
   return isLoading && authProvider.getCachedWhoami() ? (
     <BPLoader />
   ) : (
