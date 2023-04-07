@@ -100,7 +100,7 @@ const Bank = ({ account, setAccount }) => (
           // eslint-disable-next-line jsx-a11y/alt-text
           <img src={account.bank.logoUrl} style={BANK_LOGO} />
         }
-        <Typography variant='h4'>BMOI</Typography>
+        <Typography variant='h4'>{account.bank.name}</Typography>
         <br />
         <Typography variant='p'>Nom du compte</Typography>
         <br />
