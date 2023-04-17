@@ -5,6 +5,7 @@ import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
 
 import useAuthentication from 'src/common/hooks/use-authentication';
+import CompletePasswordPage from './CompletePasswordPage';
 import BPLoader from 'src/common/components/BPLoader';
 import authProvider from 'src/providers/auth-provider';
 import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
@@ -22,7 +23,7 @@ const BpLoginPage = () => {
     <Box sx={FLEX_CENTER}>
       {<img src='./bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
-        <LoginForm />
+        <PasswordChangeableLogin />
       </Box>
       <Box
         width={{ md: '60%', sm: '0%', xs: '0%' }}
@@ -107,5 +108,8 @@ const LoginForm = () => {
     </FormProvider>
   );
 };
+
+const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
+const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <LoginForm />);
 
 export default BpLoginPage;
