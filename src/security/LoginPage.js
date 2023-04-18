@@ -1,7 +1,5 @@
 import { Box, Typography, Button } from '@mui/material';
 
-import { onboardingApi } from '../providers/api';
-import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
 
 import useAuthentication from 'src/common/hooks/use-authentication';
@@ -9,7 +7,6 @@ import CompletePasswordPage from './CompletePasswordPage';
 import BPLoader from 'src/common/components/BPLoader';
 import authProvider from 'src/providers/auth-provider';
 import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
-import { BP_COLOR } from '../bp-theme.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { useForm, FormProvider } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
@@ -52,16 +49,6 @@ const BpLoginPage = () => {
 };
 
 const LoginForm = () => {
-  const onRegistration = () => {
-    const initiateOnboarding = async () => {
-      const {
-        data: { redirectionUrl },
-      } = await onboardingApi().initiateOnboarding({ redirectionStatusUrls: loginRedirectionUrls });
-      redirect(redirectionUrl);
-    };
-    initiateOnboarding();
-  };
-
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
 
   const login = formState.handleSubmit(async loginState => {
@@ -76,9 +63,9 @@ const LoginForm = () => {
         <Typography variant='h5' gutterBottom mt={1}>
           Bienvenue !
         </Typography>
-        <BpFormField name='username' label="Nom d'utilisateur" />
+        <BpFormField name='username' label='Votre email' />
         <BpFormField name='password' type='password' label='Mot de passe' />
-        <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' onClick={() => {}} sx={LOGIN_FORM_BUTTON}>
+        <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' sx={LOGIN_FORM_BUTTON}>
           Se connecter
         </Button>
         {/* // TODO(cognito-signup): reactivate when cognito signup is ready

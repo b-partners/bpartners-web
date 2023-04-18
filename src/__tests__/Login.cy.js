@@ -29,6 +29,7 @@ describe(specTitle('Login'), () => {
 
   it('Test Login form', () => {
     mount(<App />);
+    cy.contains('Votre email');
     cy.get("[name='username']").type('dummy{enter}');
     cy.contains('Ce champ est requis');
     cy.get("[name='password']").type('dummy');
