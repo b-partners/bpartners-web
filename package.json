@@ -10,8 +10,9 @@
     "@react-admin/ra-rbac": "^4.0.1",
     "@sentry/react": "^7.22.0",
     "@sentry/tracing": "^7.22.0",
+    "aws-amplify": "^5.0.24",
     "axios": "^0.27.2",
-    "bpartners-react-client": "^0.10.0",
+    "bpartners-react-client": "^0.13.0",
     "caniuse-lite": "^1.0.30001464",
     "dayjs": "^1.11.7",
     "debounce": "^1.2.1",
@@ -49,7 +50,7 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "start": "export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "cypress run-ct",
     "cy:open": "cypress open-ct",

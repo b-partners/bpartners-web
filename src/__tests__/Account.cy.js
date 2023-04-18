@@ -3,29 +3,13 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import authProvider from '../providers/auth-provider';
-import { whoami1, token1, user1, user2 } from './mocks/responses/security-api';
+import { whoami1, user2 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities, accountHolders2 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
-    cy.viewport(1360, 760);
-    cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-
-    cy.then(
-      async () =>
-        await authProvider.login('dummy', 'dummy', {
-          redirectionStatusUrls: {
-            successurl: 'dummy',
-            FailureUrl: 'dummy',
-          },
-        })
-    );
-
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
+    cy.cognitoLogin();
   });
 
   it('is displayed on login', () => {
@@ -33,7 +17,6 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
 
     mount(<App />);
 
@@ -61,6 +44,68 @@ describe(specTitle('Account'), () => {
     cy.contains('Mon abonnement');
     cy.contains(`L'essentiel`);
     cy.contains(`0€ de coût fixe par mois`);
+  });
+
+  it('Change general informations', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
+      const newGlobalInfo = {
+        id: accountHolders1[0].id,
+        name: 'Numer_01',
+        siren: '1001',
+        officialActivityName: 'Activité_officielle',
+        initialCashFlow: 19000000,
+        contactAddress: {
+          address: '40 Rue de la liberté',
+          city: 'Paris',
+          country: 'France',
+          postalCode: 12032,
+        },
+      };
+
+      expect(req.body.id).to.deep.eq(newGlobalInfo.id);
+      expect(req.body.name).to.deep.eq(newGlobalInfo.name);
+      expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
+      expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
+      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
+      expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
+      expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
+      expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
+      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
+      req.reply(accountHolders1[0]);
+    }).as('updateAccountHolder');
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[name="account"]').click();
+
+    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.contains('Édition de mon compte');
+    cy.contains('Activité');
+    cy.contains('Information sur la société');
+
+    cy.get('[name="name"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="name"]').type('Numer_01');
+    cy.get('[name="siren"]').clear().type(1001);
+    cy.get('[name="officialActivityName"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="officialActivityName"]').type('Activité_officielle');
+    cy.get('[name="initialCashflow"]').clear();
+    cy.get('[name="initialCashflow"]').type(190000);
+    cy.get('[name="address"]').clear().type('40 Rue de la liberté');
+    cy.get('[name="city"]').clear().type('Paris');
+    cy.get('[name="country"]').clear().type('France');
+    cy.get('[name="postalCode"]').clear().type(12032);
+
+    cy.get('form [name="submitGeneralInfo"]').click();
+    cy.wait('@updateAccountHolder');
+    cy.contains('Changement enregistré');
   });
 
   it('Change business Activity', () => {
@@ -126,10 +171,10 @@ describe(specTitle('Account'), () => {
     // the isSubjectToVat switch button shouldn't be activate
     cy.contains('Non');
 
-    cy.get('.PrivateSwitchBase-input').click();
-    //now the isSubjectToVat is false
     const aHIsSubjectToVat = [{ ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: false } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, aHIsSubjectToVat).as('getAccountHolderSubjectToVat');
+    cy.get('.PrivateSwitchBase-input').click();
+    //now the isSubjectToVat is false
     cy.wait('@getAccountHolderSubjectToVat');
     cy.contains('Oui');
 
@@ -150,7 +195,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
     cy.get('form [name="townCode"]').clear().type(120);
-    cy.contains('Votre code communal doit être à 5 chiffres.');
+    cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
     cy.get('form [name="townCode"]').clear().type(12312);
 
     const newCompanyInformation = {
@@ -218,44 +263,6 @@ describe(specTitle('Account'), () => {
 
     cy.contains('Recette annuelle à réaliser');
     cy.contains('230000.00 €');
-  });
-
-  it('change location', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
-      const newLongitude = 2.347;
-      const newLatitude = 48.8588;
-      expect(req.body.location.longitude).to.deep.eq(newLongitude);
-      expect(req.body.location.latitude).to.deep.eq(newLatitude);
-      req.reply({ ...accountHolders1[0], companyInfo: req.body });
-    }).as('editCompanyInfoLocation');
-
-    mount(<App />);
-
-    cy.wait('@getUser1');
-    cy.get('[name="account"]').click();
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder1');
-
-    cy.contains('Localisation');
-    cy.contains(`Vous n'avez pas encore renseigné vos coordonnées géographiques.`);
-
-    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
-
-    cy.contains('Localisation');
-    cy.get('[name=latitude]').type('48.8588');
-    cy.get('[name=longitude]').type('2.347');
-
-    cy.get('[name=submitLocation]').click();
-    cy.wait('@editCompanyInfoLocation');
-    cy.contains('Changement enregistré');
-
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders2).as('getAccountHolder2');
-    cy.get('[data-testid="ClearIcon"]').click();
-
-    cy.contains('Voir sur la carte');
   });
 
   it('unverified user warning', () => {

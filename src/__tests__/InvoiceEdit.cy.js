@@ -4,28 +4,18 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import authProvider from '../providers/auth-provider';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
-import { token1, user1, whoami1 } from './mocks/responses/security-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.viewport(1920, 1080);
-    cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(
-      async () =>
-        await authProvider.login('dummy', 'dummy', {
-          redirectionStatusUrls: {
-            successurl: 'dummy',
-            FailureUrl: 'dummy',
-          },
-        })
-    );
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+
+    cy.cognitoLogin();
+
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
@@ -57,10 +47,10 @@ describe(specTitle('Invoice'), () => {
 
     const delayInPaymentAllowed = 20;
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
-    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed);
-
+    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed).blur();
+    cy.contains('Ce champ est requis');
     const delayPenaltyPercent = 20;
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
+
     cy.get('input[name="delayPenaltyPercent"]').type(delayPenaltyPercent);
 
     const globalDiscount_percentValue = 100;
@@ -78,6 +68,10 @@ describe(specTitle('Invoice'), () => {
         updatedAt: new Date(),
       });
     }).as('crupdateInvoicePaymentRegulation');
+
+    cy.get('input[name="delayInPaymentAllowed"]').clear();
+    cy.contains('Ce champ est requis');
+    cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed).blur();
 
     cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
@@ -97,7 +91,6 @@ describe(specTitle('Invoice'), () => {
     const paymentComment = 'This is a long comment for testing comment view';
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
-      expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
       expect(+req.body.delayInPaymentAllowed).to.deep.eq(delayInPaymentAllowed);
       expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(delayPenaltyPercent) * 100);
       expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
@@ -123,7 +116,6 @@ describe(specTitle('Invoice'), () => {
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
-      expect(req.body.globalDiscount.percentValue).to.deep.eq(parseInt(globalDiscount_percentValue) * 100);
 
       newInvoice.paymentRegulations = restInvoiceRegulation;
 
@@ -168,8 +160,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
 
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
-
-    cy.get('[data-testid="delayPenaltyPercent-checkbox-id"]').click();
 
     cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
 

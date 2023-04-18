@@ -7,7 +7,15 @@ import { ProductStatus } from 'bpartners-react-client';
 import { BPButton } from 'src/common/components/BPButton';
 import dataProvider from 'src/providers/data-provider';
 
-const ArchiveBulkAction = () => {
+const getValueFromSource = (resource, source) => {
+  if (source.includes('|||')) {
+    const [s1, s2] = source.split(' ||| ');
+    return `${resource[s1]} ${resource[s2]}`;
+  }
+  return resource[source];
+};
+
+const ArchiveBulkAction = ({ source }) => {
   const { selectedIds, data, resource } = useListContext();
   const [isDialogOpen, setDialogState] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -54,9 +62,9 @@ const ArchiveBulkAction = () => {
             <DialogContentText>
               <ul>
                 {(data || [])
-                  .filter(product => selectedIds.includes(product.id))
-                  .map(product => (
-                    <li>{product.description}</li>
+                  .filter(resource => selectedIds.includes(resource.id))
+                  .map(resource => (
+                    <li>{getValueFromSource(resource, source || 'description')}</li>
                   ))}
               </ul>
             </DialogContentText>
@@ -66,7 +74,7 @@ const ArchiveBulkAction = () => {
               Annuler
             </Button>
             <Button
-              data-testId={`submit-archive-${resource}`}
+              data-testid={`submit-archive-${resource}`}
               disabled={isLoading}
               startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
               onClick={handleSubmit}

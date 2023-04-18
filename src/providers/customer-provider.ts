@@ -3,6 +3,8 @@ import authProvider from './auth-provider';
 import { singleAccountGetter } from './account-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { maxPageSize } from './data-provider';
+import { getUserInfo } from './invoice-provider';
+import { CustomerStatus } from 'bpartners-react-client';
 
 export const importCustomers = async (body: any) => {
   const userId = authProvider.getCachedWhoami().user.id;
@@ -16,7 +18,7 @@ export const customerProvider: BpDataProviderType = {
     const { firstName, lastName, email, phoneNumber, city, country } = filters;
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
-    const { data } = await customerApi().getCustomers(accountId, firstName, lastName, email, phoneNumber, city, country, page, perPage);
+    const { data } = await customerApi().getCustomers(accountId, firstName, lastName, email, phoneNumber, city, country, CustomerStatus.ENABLED, page, perPage);
     return data;
   },
   getOne: function (id: string): Promise<any> {
@@ -32,6 +34,11 @@ export const customerProvider: BpDataProviderType = {
     const userId = authProvider.getCachedWhoami().user.id;
     const accountId = (await singleAccountGetter(userId)).id;
     const { data } = await customerApi().updateCustomers(accountId, customers);
+    return data;
+  },
+  archive: async (resources: any[]) => {
+    const { accountId } = await getUserInfo();
+    const { data } = await customerApi().updateCustomerStatus(accountId, resources);
     return data;
   },
 };

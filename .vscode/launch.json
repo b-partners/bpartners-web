@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:3000",
@@ -10,11 +10,11 @@
     },
     {
       "type": "node",
+      "runtimeVersion": "16",
       "name": "vscode-jest-tests",
       "request": "launch",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "disableOptimisticBPs": true,
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "npm",
       "args": ["test", "--", "--runInBand", "--watchAll=false"]

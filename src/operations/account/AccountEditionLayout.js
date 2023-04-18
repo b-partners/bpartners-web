@@ -4,6 +4,7 @@ import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInfomationForm from './CompanyInformationForm';
 import RevenueTargetForm from './RevenueTargetForm';
 import LocationEdition from './LocationEdition';
+import GeneralInfoForm from './GeneralInfoForm';
 
 const CloseConfigurationButton = ({ onClick }) => (
   <Tooltip title="Fermé l'édition">
@@ -20,6 +21,14 @@ const AccountEditionLayout = ({ onClose }) => {
       <CardContent>
         <Box>
           <Accordion defaultExpanded={true}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel0a-content' id='panel0a-header'>
+              <Typography variant='h6'>Information Générale</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <GeneralInfoForm />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
               <Typography variant='h6'>Activité</Typography>
             </AccordionSummary>
@@ -33,14 +42,6 @@ const AccountEditionLayout = ({ onClose }) => {
             </AccordionSummary>
             <AccordionDetails>
               <CompanyInfomationForm />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel4a-content' id='panel4a-header'>
-              <Typography variant='h6'>Localisation</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <LocationEdition />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={true} sx={{ mt: 1 }}>

@@ -21,10 +21,6 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
-  const redirectToSwan = useCallback(() => {
-    const swanUrl = 'https://banking.swan.io/login';
-    window.open(swanUrl, '_blank', 'noopener');
-  }, []);
 
   const toggleDialogState = () => setDialogState(e => !e);
   const contactSupport = e => {
@@ -76,9 +72,9 @@ const BpMenu = () => {
             Contactez-nous à l'adresse email <b>{SUPPORT_EMAIL}</b>.<br />
             <br />
             Pour utiliser votre client email, cliquez{' '}
-            <a style={{ color: blue[800], cursor: 'pointer' }} onClick={openMailService}>
+            <span style={{ color: blue[800], cursor: 'pointer' }} onClick={openMailService}>
               ici
-            </a>
+            </span>
             .
           </DialogContent>
           <DialogActions>
@@ -88,7 +84,7 @@ const BpMenu = () => {
           </DialogActions>
         </Dialog>
         <Menu>
-          <Menu.Item to='/' onClick={redirectToSwan} primaryText='Ma banque' name='swan' leftIcon={<AccountBalance />} />
+          <Menu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />
           <Menu.Item to='/' onClick={contactSupport} primaryText='Contacter le support' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />

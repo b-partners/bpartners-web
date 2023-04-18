@@ -3,6 +3,9 @@ const BpFrenchMessages = {
     products: {
       name: 'Produit |||| Produits',
     },
+    customers: {
+      name: 'Client |||| Clients',
+    },
   },
 };
 

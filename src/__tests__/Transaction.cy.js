@@ -3,8 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import authProvider from '../providers/auth-provider';
-import { whoami1, token1, user1 } from './mocks/responses/security-api';
+import { whoami1, user1 } from './mocks/responses/security-api';
 import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
@@ -16,10 +15,8 @@ const date = new Date().toISOString().slice(0, 10);
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
     cy.viewport(1326, 514);
-    //note(login-user1)
-    cy.intercept('POST', '/token', token1);
-    cy.intercept('GET', '/whoami', whoami1).as('whoami');
-    cy.then(async () => await authProvider.login('dummy', 'dummy', { redirectionStatusUrls: { successurl: 'dummy', FailureUrl: 'dummy' } }));
+
+    cy.cognitoLogin();
 
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
@@ -28,7 +25,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=${new Date().getFullYear()}`, transactionsSummary).as('getTransactionsSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2021`, transactionsSummary1).as('getEmptyTransactionSummary');
