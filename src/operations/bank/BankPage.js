@@ -1,13 +1,13 @@
-import { Backdrop, Box, Paper, Typography, Card, CardHeader, CardContent, Button, CardActions } from '@mui/material';
 import { AccountBalance as AccountBalanceIcon, Save as SaveIcon } from '@mui/icons-material';
-import { BANK_CARD, HERE_LINK, BALANCE_ICON, BANK_LOGO } from './style';
+import { Backdrop, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Modal, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { initiateBankConnection, singleAccountGetter, updateBankInformation } from 'src/providers/account-provider';
-import { redirect } from 'src/common/utils/redirect';
+import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
+import { redirect } from 'src/common/utils/redirect';
+import { initiateBankConnection, singleAccountGetter, updateBankInformation } from 'src/providers/account-provider';
 import authProvider from 'src/providers/auth-provider';
-import { useNotify, useRefresh } from 'react-admin';
+import { BALANCE_ICON, BANK_CARD, BANK_INFORMATION_CONTAINER, BANK_LOGO, BIC_MESSAGE_CONTAINER, HERE_LINK } from './style';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(null);
@@ -54,14 +54,21 @@ const BankInformation = props => {
   });
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        <BpFormField name='bic' label='BIC' />
-        <Button type='submit' sx={{ width: 300, marginTop: 1 }} disabled={isLoading} startIcon={<SaveIcon />}>
-          Enregistrer
-        </Button>
-      </form>
-    </FormProvider>
+    <Box sx={BANK_INFORMATION_CONTAINER}>
+      <Paper sx={BIC_MESSAGE_CONTAINER}>
+        <Typography variant='p' component='div' sx={{ margin: 2 }}>
+          Pour finaliser votre synchronisation de compte bancaire, veuillez renseigner votre BIC présent sur votre RIB et enregistrer.
+        </Typography>
+      </Paper>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+          <BpFormField name='bic' label='BIC' />
+          <Button type='submit' sx={{ width: 300, marginTop: 1 }} disabled={isLoading} startIcon={<SaveIcon />}>
+            Enregistrer
+          </Button>
+        </form>
+      </FormProvider>
+    </Box>
   );
 };
 const NoBank = () => {
@@ -87,6 +94,11 @@ const NoBank = () => {
         </Typography>
       </Paper>
       <Backdrop open={isLoading} />
+      <Modal open={isLoading}>
+        <Backdrop open={isLoading} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1999 }}>
+          <CircularProgress />
+        </Backdrop>
+      </Modal>
     </Box>
   );
 };
@@ -100,8 +112,10 @@ const Bank = ({ account, setAccount }) => (
           // eslint-disable-next-line jsx-a11y/alt-text
           <img src={account.bank.logoUrl} style={BANK_LOGO} />
         }
-        <Typography variant='h4'>{account.bank.name}</Typography>
-        <br />
+        <Typography mt={1} variant='h4'>
+          {account.bank.name}
+        </Typography>
+        <div style={{ height: '3rem' }}></div>
         <Typography variant='p'>Nom du compte</Typography>
         <br />
         <Typography variant='h6'>
@@ -121,7 +135,7 @@ const Bank = ({ account, setAccount }) => (
         </Typography>
       </Paper>
     </CardContent>
-    <CardActions sx={{ marginLeft: 1 }}>
+    <CardActions>
       <BankInformation setAccount={setAccount} account={account} />
     </CardActions>
   </Card>
