@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { whoami1, user2 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities, accountHolders2 } from './mocks/responses/account-api';
+import { accounts1, accountHolders1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {

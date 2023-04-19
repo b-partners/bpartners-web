@@ -8,7 +8,7 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
-import { user1, whoami1 } from './mocks/responses/security-api';
+import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
@@ -54,8 +54,8 @@ describe(specTitle('Invoice'), () => {
     cy.get('input[name="delayPenaltyPercent"]').type(delayPenaltyPercent);
 
     const globalDiscount_percentValue = 100;
-    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
-    cy.get('input[name="globalDiscount.percentValue"]').clear().type(globalDiscount_percentValue);
+    cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount"]').clear().type(globalDiscount_percentValue);
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       const newInvoice = req.body;
@@ -161,7 +161,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
 
-    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
+    cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
 
     cy.wait('@paymentRegulation4').then(res => {
       const newInvoice = res.request.body;

@@ -159,15 +159,16 @@ const InvoiceForm = props => {
                 }}
               />
             </CheckboxForm>
-            <CheckboxForm
-              switchlabel='Ajouter une remise'
-              source={GLOBAL_DISCOUNT}
-              name={GLOBAL_DISCOUNT_PERCENT_VALUE}
-              label='Remise'
-              InputProps={{
-                endAdornment: <BpTextAdornment label='%' />,
-              }}
-            />
+            <CheckboxForm switchlabel='Ajouter une remise' source={GLOBAL_DISCOUNT}>
+              <BpFormField
+                type='number'
+                label='Remise'
+                name={GLOBAL_DISCOUNT}
+                InputProps={{
+                  endAdornment: <BpTextAdornment label='%' />,
+                }}
+              />
+            </CheckboxForm>
           </InvoiceAccordion>
           <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
             <ProductSelection name={PRODUCT_NAME} form={form} />

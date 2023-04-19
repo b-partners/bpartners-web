@@ -8,7 +8,7 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, getInvoices, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
-import { user1, whoami1 } from './mocks/responses/security-api';
+import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {

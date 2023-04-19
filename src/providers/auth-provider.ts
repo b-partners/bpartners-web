@@ -73,7 +73,6 @@ const authProvider = {
   login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<string> => {
     try {
       const user = await Auth.signIn(username as string, password as string);
-      console.log(user.challengeName);
       if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
         const encodedUsername = encodeURIComponent(toBase64(username as string));
         const encodedPassword = encodeURIComponent(toBase64(password as string));
@@ -83,7 +82,6 @@ const authProvider = {
       cacheWhoami(whoamiData);
       return loginRedirectionUrls.successUrl;
     } catch (error) {
-      console.log(error);
       return loginRedirectionUrls.failureUrl;
     }
   },
@@ -125,7 +123,6 @@ const authProvider = {
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
     const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
     const user = await Auth.signIn(username, temporaryPassword);
-    console.log(user);
     await Auth.completeNewPassword(user, newPassword, { phone_number: '+33648492113' /*TODO*/ });
     window.location.replace('/');
   },
