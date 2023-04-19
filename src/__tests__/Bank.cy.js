@@ -48,6 +48,8 @@ describe(specTitle('Account'), () => {
       request.reply({ body: newAccount2 });
     }).as('updateBankInfo');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccount2);
+
+    cy.contains('Pour finaliser votre synchronisation de compte bancaire, veuillez renseigner votre BIC présent sur votre RIB et enregistrer.');
     cy.get("[name='bic']").type('newBic1234{enter}');
 
     cy.contains('newBic1234');
