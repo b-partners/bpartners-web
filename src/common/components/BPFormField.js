@@ -8,9 +8,7 @@ const textFieldStyle = {
   width: 300,
 };
 
-/**
- * input to use with react-hook-form only
- */
+// input to use with react-hook-form only
 const BPFormField = props => {
   const { name, label, form, type, validate, style, shouldValidate, ...others } = props;
   const {

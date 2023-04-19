@@ -3,7 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1, token1, user1 } from './mocks/responses/security-api';
+import { whoami1, token1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
 
