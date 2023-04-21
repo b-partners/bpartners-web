@@ -12,20 +12,22 @@ import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 const useStyle = makeStyles(() => ({
   LOGO: {
     height: '2.7rem',
+    marginLeft: 25,
   },
   TOOLBAR: {
     zIndex: '999',
-    height: '3.5rem',
+    height: '3.2rem',
     position: 'fixed',
     left: 0,
     top: 0,
     width: '100%',
-    backgroundColor: '#fff',
-    boxShadow: 2,
-
+    background: `#fff`,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1) !important',
+    border: 'none',
+    outline: 'none',
   },
   sidebarToggleButton: {
     height: '2.5rem',

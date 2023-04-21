@@ -27,7 +27,6 @@ import { BP_COLOR } from 'src/bp-theme';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 import prospectingProvider from 'src/providers/prospecting-provider';
 import TabPanel from 'src/common/components/TabPanel';
-import { TAB_STYLE } from '../account/style';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
 const ProspectsList = () => {
@@ -40,7 +39,7 @@ const ProspectsList = () => {
   return (
     <>
       <Box sx={{ p: 2 }}>
-        <Tabs value={tabIndex} onChange={handleTabChange} sx={TAB_STYLE}>
+        <Tabs value={tabIndex} onChange={handleTabChange}>
           <Tab label='Mes prospects' />
           <Tab label='Configuration' />
         </Tabs>

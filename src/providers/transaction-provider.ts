@@ -1,9 +1,8 @@
-import authProvider from './auth-provider';
-import { singleAccountGetter } from './account-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
 import { Transaction, TransactionStatus } from 'bpartners-react-client';
 import { TRANSACTION_STATUSES } from 'src/constants/transaction-status';
+import { getUserInfo } from './utils';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
@@ -13,8 +12,7 @@ const transactionProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, { categorized, status }: any): Promise<any[]> {
-    const userId = authProvider.getCachedWhoami().user.id;
-    const accountId = (await singleAccountGetter(userId)).id;
+    const { accountId } = await getUserInfo();
     //TODO: implements transaction pagination on the back side
     const { data } = await payingApi().getTransactions(accountId, page, perPage);
 
@@ -33,8 +31,7 @@ const transactionProvider: BpDataProviderType = {
 };
 
 export const justifyTransaction = async (transactionId: string, invoiceId: string): Promise<Transaction> => {
-  const userId = authProvider.getCachedWhoami().user.id;
-  const accountId = (await singleAccountGetter(userId)).id;
+  const { accountId } = await getUserInfo();
   return (await payingApi().justifyTransaction(accountId, transactionId, invoiceId)).data;
 };
 
