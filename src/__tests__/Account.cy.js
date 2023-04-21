@@ -43,7 +43,11 @@ describe(specTitle('Account'), () => {
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
     cy.contains(`L'essentiel`);
-    cy.contains(`0€ de coût fixe par mois`);
+    cy.contains('Pour 7€ HT par mois');
+    cy.contains("Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant");
+    cy.contains('Accès aux outils de devis/facturation personnalisé');
+    cy.contains('Initiez la collecte de vos encaissements');
+    cy.contains('Support 7/7');
   });
 
   it('Change general informations', () => {

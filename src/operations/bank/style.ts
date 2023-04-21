@@ -55,7 +55,7 @@ export const EMPTY_LIST_STYLE = {
 };
 
 export const BALANCE_ICON = {
-  color: BP_COLOR.solid_grey,
+  color: BP_COLOR['solid_grey'],
   fontSize: '20rem',
   position: 'absolute',
   top: 0,
