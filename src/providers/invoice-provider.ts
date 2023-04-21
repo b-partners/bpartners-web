@@ -1,15 +1,8 @@
-import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { payingApi } from './api';
-import { singleAccountGetter } from './account-provider';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { invoiceMapper } from 'src/operations/invoice/utils/invoice-utils';
-
-export const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
-  const userId = authProvider.getCachedWhoami().user.id;
-  const accountId: any = (await singleAccountGetter(userId)).id;
-  return { userId, accountId };
-};
+import { getUserInfo } from './utils';
 
 export const invoiceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {

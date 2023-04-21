@@ -1,8 +1,8 @@
 import { mount } from '@cypress/react';
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { HorizontalPagination } from 'src/common/components/HorizontalPagination';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
-describe(specTitle('RichTextEditor'), () => {
+describe(specTitle('Pagination test'), () => {
   it('should test next button', () => {
     let activeStep = 1;
     mount(<HorizontalPagination activeStep={activeStep} maxSteps={10} setActiveStep={a => expect(a(activeStep)).to.eq(2)} />);

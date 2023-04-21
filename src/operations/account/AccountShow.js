@@ -15,7 +15,7 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
@@ -234,7 +234,7 @@ const AdditionalInformation = props => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth' sx={TAB_STYLE}>
+      <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth'>
         <Tab label='Ma société' />
         <Tab label='Mon abonnement' />
       </Tabs>

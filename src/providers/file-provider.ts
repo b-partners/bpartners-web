@@ -2,7 +2,7 @@ import { FileApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { toArrayBuffer } from '../common/utils/to-array-buffer';
 import { getMimeType } from '../common/utils/get-mime-type';
-import { getUserInfo } from './invoice-provider';
+import { getUserInfo } from './utils';
 
 export const fileProvider: BpDataProviderType = {
   async getOne(id: string) {
