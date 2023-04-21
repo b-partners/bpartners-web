@@ -17,6 +17,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 
 import profileProvider from './profile-provider';
 import { createRedirectionUrl } from 'src/common/utils/createRedirectionUrl';
+import { getUserInfo } from './utils';
 
 const userItem = 'bp_user';
 const accountItem = 'bp_account';
@@ -81,10 +82,8 @@ const accountProvider: BpDataProviderType = {
     };
   },
   async saveOrUpdate(resources: CompanyInfo[]): Promise<AccountHolder[]> {
-    const user = getCachedUser();
-    const account = getCachedAccount();
-    const accountHolder = await accountHoldersGetter();
-    const { data } = await userAccountsApi().updateCompanyInfo(user?.id, account?.id, accountHolder?.id, resources[0]);
+    const { accountHId, accountId, userId } = await getUserInfo();
+    const { data } = await userAccountsApi().updateCompanyInfo(userId, accountId, accountHId, resources[0]);
     cacheAccountHolder(data);
     return [data];
   },
@@ -95,10 +94,8 @@ const accountProvider: BpDataProviderType = {
 
 export const businessActivitiesProvider = {
   update: async (resources: CompanyBusinessActivity): Promise<AccountHolder> => {
-    const user = getCachedUser();
-    const account = getCachedAccount();
-    const accountHolder = await accountHoldersGetter();
-    const { data } = await userAccountsApi().updateBusinessActivities(user?.id, account?.id, accountHolder?.id, resources);
+    const { accountHId, accountId, userId } = await getUserInfo();
+    const { data } = await userAccountsApi().updateBusinessActivities(userId, accountId, accountHId, resources);
     cacheAccountHolder(data);
     return data;
   },
@@ -109,38 +106,32 @@ export const businessActivitiesProvider = {
 
 export const revenueTargetsProvider = {
   update: async (resources: CreateAnnualRevenueTarget[]): Promise<AccountHolder> => {
-    const user = getCachedUser();
-    const account = getCachedAccount();
-    const accountHolder = await accountHoldersGetter();
-    const { data } = await userAccountsApi().updateRevenueTargets(user?.id, account?.id, accountHolder?.id, resources);
+    const { accountHId, accountId, userId } = await getUserInfo();
+    const { data } = await userAccountsApi().updateRevenueTargets(userId, accountId, accountHId, resources);
     cacheAccountHolder(data);
     return data;
   },
 };
 
 export const updateGlobalInformation = async (resources: UpdateAccountHolder): Promise<AccountHolder> => {
-  const userId = getCachedUser().id;
-  const accountId = getCachedAccount().id;
-  const ahId = (await accountHoldersGetter()).id;
-  const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, ahId, resources);
+  const { userId, accountId, accountHId } = await getUserInfo();
+  const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, accountHId, resources);
   cacheAccountHolder(data);
   return data;
 };
 
 export const initiateBankConnection = async (): Promise<BankConnectionRedirection> => {
-  const user = getCachedUser();
-  const account = getCachedAccount();
+  const { userId, accountId } = await getUserInfo();
   const redirectionUrl = createRedirectionUrl('/bank', '/error');
-  const { data } = await userAccountsApi().initiateBankConnection(user?.id, account?.id, redirectionUrl);
+  const { data } = await userAccountsApi().initiateBankConnection(userId, accountId, redirectionUrl);
   clearCachedAccount();
   return data;
 };
 
 export const updateBankInformation = async (resource: UpdateAccountIdentity) => {
-  const user = getCachedUser();
-  const account = getCachedAccount();
-  await userAccountsApi().updateAccountIdentity(user.id, account.id, resource);
-  const { data } = await userAccountsApi().getAccountsByUserId(user.id);
+  const { userId, accountId } = await getUserInfo();
+  await userAccountsApi().updateAccountIdentity(userId, accountId, resource);
+  const { data } = await userAccountsApi().getAccountsByUserId(userId);
   cacheAccount(data[0]);
   return data[0];
 };

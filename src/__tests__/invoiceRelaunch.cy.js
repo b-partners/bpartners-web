@@ -7,7 +7,7 @@ import { customers1 } from './mocks/responses/customer-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
 import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
-import { user1, whoami1 } from './mocks/responses/security-api';
+import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice Relaunch'), () => {
   beforeEach(() => {

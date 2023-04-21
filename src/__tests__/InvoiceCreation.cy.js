@@ -51,8 +51,8 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('input[name="delayInPaymentAllowed"]').type(30);
 
     cy.get('input[name="delayPenaltyPercent"]').type(5);
-    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
-    cy.get('input[name="globalDiscount.percentValue"]').type(20);
+    cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount"]').type(20);
     cy.get('[data-testid="payment-regulation-checkbox-id"]').click();
     cy.contains('Acompte');
   });
@@ -78,8 +78,8 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('input[name="delayInPaymentAllowed"]').type(newDelayInPaymentAllowed);
 
     const globalDiscount_percentValue = 100;
-    cy.get('[data-testid="globalDiscount.percentValue-checkbox-id"]').click();
-    cy.get('input[name="globalDiscount.percentValue"]').type(globalDiscount_percentValue);
+    cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
+    cy.get('input[name="globalDiscount"]').type(globalDiscount_percentValue);
 
     const newDelayPenaltyPercent = '40';
 

@@ -33,18 +33,9 @@ export const BACKDROP_STYLE = {
   position: 'absolute',
   top: '0',
   left: '0',
-  height: '22%',
+  height: '25%',
   width: '100%',
-  backgroundColor: BP_COLOR[10],
+  background: 'linear-gradient(25deg, #ab0056 40% , #7A003DE0 100% )',
   zIndex: -1,
-};
-
-export const TAB_STYLE = {
-  '& 	.MuiTabs-indicator': {
-    backgroundColor: BP_COLOR[30],
-  },
-  '& .Mui-selected': {
-    color: `${BP_COLOR[10]} !important`,
-  },
-  borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
+  borderRadius: '10px 10px 0 0',
 };

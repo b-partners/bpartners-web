@@ -1,22 +1,13 @@
 import { payingApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 
-import authProvider from './auth-provider';
-import { singleAccountGetter } from './account-provider';
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMinors } from 'src/common/utils/money';
-
-const getUserInfo = async (): Promise<{ accountId: string; userId: string }> => {
-  const userId = authProvider.getCachedWhoami().user.id;
-  const accountId = (await singleAccountGetter(userId)).id;
-  return { userId, accountId };
-};
+import { getUserInfo } from './utils';
 
 export const importProducts = async (body: any) => {
-  const userId = authProvider.getCachedWhoami().user.id;
-  const accountId = (await singleAccountGetter(userId)).id;
-  const { data } = await payingApi().importProducts(accountId, body);
-  return data;
+  const { accountId } = await getUserInfo();
+  return (await payingApi().importProducts(accountId, body)).data;
 };
 
 const productProvider: BpDataProviderType = {
@@ -30,18 +21,19 @@ const productProvider: BpDataProviderType = {
       sort: { field, order },
     } = filters;
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().getProducts(
-      accountId,
-      true,
-      field === 'description' ? order : undefined,
-      field === 'unitPrice' ? order : undefined,
-      undefined,
-      descriptionFilter,
-      priceFilter ? toMinors(+priceFilter) : undefined,
-      page,
-      perPage
-    );
-    return data;
+    return (
+      await payingApi().getProducts(
+        accountId,
+        true,
+        field === 'description' ? order : undefined,
+        field === 'unitPrice' ? order : undefined,
+        undefined,
+        descriptionFilter,
+        priceFilter ? toMinors(+priceFilter) : undefined,
+        page,
+        perPage
+      )
+    ).data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = await getUserInfo();
@@ -49,21 +41,13 @@ const productProvider: BpDataProviderType = {
     return [await payingApi().createProducts(accountId, toSend)];
   },
   update: async function (resources: any[]): Promise<any[]> {
-    const userId = authProvider.getCachedWhoami().user.id;
-    const accountId = (await singleAccountGetter(userId)).id;
-    const { data } = await payingApi().crupdateProducts(accountId, resources);
-    return data;
+    const { accountId } = await getUserInfo();
+    return (await payingApi().crupdateProducts(accountId, resources)).data;
   },
   archive: async (resources: any[]) => {
     const { accountId } = await getUserInfo();
-    const { data } = await payingApi().updateProductsStatus(accountId, resources);
-    return data;
+    return (await payingApi().updateProductsStatus(accountId, resources)).data;
   },
-};
-
-export const archiveInvoice = async (resources: any[]) => {
-  const { accountId } = await getUserInfo();
-  return await payingApi().updateProductsStatus(accountId, resources);
 };
 
 export default productProvider;

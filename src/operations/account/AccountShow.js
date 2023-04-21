@@ -1,6 +1,14 @@
-import { Edit as EditIcon, LocationOn, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
-import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Link, Skeleton, Switch, Tab, Tabs, Tooltip, Typography } from '@mui/material';
-import { green, grey } from '@mui/material/colors';
+import {
+  Edit as EditIcon,
+  LocationOn,
+  PhotoCamera as PhotoCameraIcon,
+  AccessTime as AccessTimeIcon,
+  SmartToy as SmartToyIcon,
+  Handyman as HandymanIcon,
+  QrCode as QrCodeIcon,
+} from '@mui/icons-material';
+import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Link, Skeleton, Switch, Tab, Tabs, Tooltip, Typography, Paper } from '@mui/material';
+import { grey, yellow, green } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
 import { FileType } from 'bpartners-react-client';
@@ -15,7 +23,7 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
-import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE, TAB_STYLE } from './style';
+import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
@@ -27,28 +35,58 @@ const ProfileLayout = () => (
   </SimpleShowLayout>
 );
 
+const InfoShow = ({ content, icon, color, ...others }) => {
+  return (
+    <Paper
+      sx={{ p: 2, background: BP_COLOR['solid_grey'], display: 'flex', justifyContent: 'flex-start', alignItems: 'center', outline: 'none', border: 'none' }}
+    >
+      <IconButton size='large' sx={{ color, cursor: 'auto' }}>
+        {icon}
+      </IconButton>
+      <Typography ml={3} textAlign='justify' variant='p' {...others}>
+        {content}
+      </Typography>
+    </Paper>
+  );
+};
+
 const SubscriptionLayout = () => (
   <SimpleShowLayout>
-    <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2 }}>
-      <Avatar variant='rounded' alt='Votre abonnement' src='https://www.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png' />
-      <Typography ml={2} variant='h6'>
-        L'essentiel
-      </Typography>
+    <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2, mb: 2 }}>
+      <Avatar
+        variant='rounded'
+        sx={{ background: BP_COLOR[5] }}
+        alt='Votre abonnement'
+        src='https://www.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png'
+      />
+      <Box ml={2}>
+        <Typography variant='h5'>L'essentiel</Typography>
+        <Typography color='text.secondary' variant='b'>
+          Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant
+        </Typography>
+      </Box>
     </Box>
 
-    <Box>
-      <Typography variant='h7' style={{ color: green[500], mb: 3 }}>
-        <b>0€</b> de coût fixe par mois, au lieu de 7€, car vous avez accepté d'être beta-testeur !
-      </Typography>
-
-      <Typography variant='body2' sx={{ lineHeight: '2' }}>
-        <b>0%</b> de frais sur les encaissements par mail et QR code sous 1k€, puis 1.5% si au-delà <br />
-        <b>0€</b> sur les 20 premières initiations de virements, puis 0.40€ par virement si au-delà <br />
-        <b>0%</b> de commission sur les mouvements annuels sous 60k€, puis 0.15% si au-delà <br />
-        <b>1 Mastercard</b> offerte, puis 5€ par mois par carte supplémentaire <br />
-        <b>1 assistant virtuel</b> pour développer votre activité <br />
-      </Typography>
-    </Box>
+    <Typography variant='h6'>Pour 7€ HT par mois:</Typography>
+    <InfoShow
+      content='Activation de notre Intelligence artificielle qui génère des prospects en temps réel pour développer votre activité et obtenir de nouveaux clients.'
+      icon={<SmartToyIcon />}
+      color={grey[500]}
+    />
+    <InfoShow
+      content='Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi
+      de trésorerie.Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation
+      bancaire et suivi de trésorerie.'
+      icon={<HandymanIcon />}
+      color={yellow[800]}
+    />
+    <InfoShow
+      content='Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement
+      0,99%'
+      icon={<QrCodeIcon />}
+      color='#000'
+    />
+    <InfoShow content='Support 7/7' icon={<AccessTimeIcon />} color={green[500]} />
   </SimpleShowLayout>
 );
 
@@ -234,7 +272,7 @@ const AdditionalInformation = props => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth' sx={TAB_STYLE}>
+      <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth'>
         <Tab label='Ma société' />
         <Tab label='Mon abonnement' />
       </Tabs>

@@ -19,10 +19,8 @@ export const invoiceMapper = {
 
     const delayPenaltyPercent = !isBlankNumber(_invoice[DELAY_PENALTY_PERCENT]) ? toMajors(_invoice[DELAY_PENALTY_PERCENT]) : null;
 
-    const globalDiscount = {
-      percentValue:
-        invoice[GLOBAL_DISCOUNT] && !isBlankNumber(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) ? toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE]) : null,
-    };
+    const globalDiscount =
+      invoice[GLOBAL_DISCOUNT] && invoice[GLOBAL_DISCOUNT][PERCENT_VALUE] !== 0 ? `${toMajors(_invoice[GLOBAL_DISCOUNT][PERCENT_VALUE])}` : null;
 
     const paymentRegulations = paymentRegulationToMajor(_invoice[PAYMENT_REGULATIONS] || [DefaultPaymentRegulation]);
     const delayInPaymentAllowed = !isBlankNumber(_invoice[DELAY_IN_PAYMENT_ALLOWED]) ? _invoice[DELAY_IN_PAYMENT_ALLOWED] : null;
@@ -31,8 +29,7 @@ export const invoiceMapper = {
   toRest: (_invoice: any): Invoice => {
     const submittedAt = new Date();
     const delayPenaltyPercent = toMinors(parseInt(_invoice[DELAY_PENALTY_PERCENT]));
-    const currentGlobalDiscount = _invoice[GLOBAL_DISCOUNT] && _invoice[GLOBAL_DISCOUNT][PERCENT_VALUE];
-    const globalDiscount = isNaN(currentGlobalDiscount) || +currentGlobalDiscount === 0 ? null : { percentValue: toMinors(+currentGlobalDiscount) };
+    const globalDiscount = _invoice[GLOBAL_DISCOUNT] !== null ? { percentValue: toMinors(_invoice[GLOBAL_DISCOUNT]) } : null;
 
     const invoice = {
       ..._invoice,

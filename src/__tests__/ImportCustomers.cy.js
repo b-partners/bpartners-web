@@ -4,7 +4,7 @@ import App from 'src/App';
 import * as Redirect from '../common/utils/redirect';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { user1, whoami1 } from './mocks/responses/security-api';
+import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Import Customers'), () => {
   beforeEach(() => {

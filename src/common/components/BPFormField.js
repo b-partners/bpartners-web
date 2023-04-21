@@ -1,4 +1,4 @@
-import { TextField, FormControl, InputLabel, Input, InputAdornment, IconButton } from '@mui/material';
+import { TextField, IconButton } from '@mui/material';
 import { VisibilityOff as VisibilityOffIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useState } from 'react';
@@ -8,9 +8,7 @@ const textFieldStyle = {
   width: 300,
 };
 
-/**
- * input to use with react-hook-form only
- */
+// input to use with react-hook-form only
 const BPFormField = props => {
   const { name, label, form, type, validate, style, shouldValidate, ...others } = props;
   const {
@@ -67,6 +65,15 @@ export const BpFormField = props => {
 
   return (
     <TextField
+      sx={{
+        '.MuiInputBase-root': {
+          padding: 0,
+        },
+        '.MuiIconButton-root': {
+          position: 'absolute',
+          right: '0.4rem',
+        },
+      }}
       label={label}
       {...dateProps}
       {...errorStyle}
