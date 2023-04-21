@@ -3,6 +3,7 @@ import { defaultTheme } from 'react-admin';
 const important = value => `${value} !important`;
 
 export const BP_COLOR = {
+  2: '#ab005650',
   5: '#ab0056',
   10: '#7A003D',
   20: '#660033',
@@ -94,6 +95,17 @@ export const BP_THEME = {
         },
       },
     },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          backgroundColor: BP_COLOR[2],
+        },
+        barColorSecondary: {
+          backgroundColor: BP_COLOR[5],
+          color: BP_COLOR[5],
+        },
+      },
+    },
     MuiTableRow: {
       styleOverrides: {
         root: {
@@ -107,6 +119,9 @@ export const BP_THEME = {
           '&.MuiTableCell-head': {
             backgroundColor: BP_COLOR[10],
             color: 'white',
+            '.MuiCheckbox-root': {
+              color: '#fff',
+            },
           },
         },
       },
@@ -151,7 +166,7 @@ export const BP_THEME = {
             backgroundColor: BP_COLOR[5],
           },
           '& .Mui-selected': {
-            color: `${BP_COLOR[10]} !important`,
+            color: important(BP_COLOR[10]),
           },
           borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
         },
@@ -161,7 +176,7 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '&.Mui-checked': {
-            color: `${BP_COLOR[5]} !important`,
+            color: important(BP_COLOR[5]),
           },
         },
       },
