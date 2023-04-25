@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { whoami1, user2 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities } from './mocks/responses/account-api';
+import { accounts1, accountHolders1, businessActivities, accountHolder1 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 
 describe(specTitle('Account'), () => {
@@ -48,6 +48,32 @@ describe(specTitle('Account'), () => {
     cy.contains('Accès aux outils de devis/facturation personnalisé');
     cy.contains('Initiez la collecte de vos encaissements');
     cy.contains('Support 7/7');
+  });
+
+  it('Should show emptyText when source is null', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, [
+      {
+        ...accountHolder1,
+        contactAddress: {
+          address: null,
+          city: null,
+          country: null,
+          postalCode: null,
+          prospectingPerimeter: null,
+        },
+      },
+    ]).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    mount(<App />);
+
+    cy.wait('@getUser1');
+    cy.wait('@getAccountHolder1');
+
+    cy.get('[name="account"]').click();
+
+    cy.contains('VIDE');
   });
 
   it('Change general informations', () => {
