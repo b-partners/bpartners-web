@@ -74,9 +74,7 @@ const SubscriptionLayout = () => (
       color={grey[500]}
     />
     <InfoShow
-      content='Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi
-      de trésorerie.Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation
-      bancaire et suivi de trésorerie.'
+      content='Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.'
       icon={<HandymanIcon />}
       color={yellow[800]}
     />
