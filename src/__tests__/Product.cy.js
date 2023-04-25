@@ -164,7 +164,7 @@ describe(specTitle('Products'), () => {
     cy.contains('Édition de produit');
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
-      const editedProduct = [{ description: editionDescription, unitPrice: 1000, vatPercent: '1', id: 'product-0-id' }];
+      const editedProduct = [{ description: editionDescription, unitPrice: 100, vatPercent: 100, id: 'product-0-id', quantity: 1 }];
       expect(req.body).to.deep.equals(editedProduct);
       setProduct(editedProduct[0], 0);
       req.reply(editedProduct);
