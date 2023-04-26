@@ -1,4 +1,5 @@
 import { pink, grey } from '@mui/material/colors';
+import { BP_COLOR } from 'src/bp-theme';
 
 export const lightGreyColor = grey[100];
 export const darkGreyColor = grey[800];
@@ -14,7 +15,12 @@ export const LOGIN_FORM_BUTTON = {
   color: whiteColor,
   width: '300px',
   '&:hover': {
+    background: BP_COLOR[5],
+    opacity: 1,
+  },
+  '&:disabled': {
     background: darkGreyColor,
+    color: whiteColor,
   },
 };
 
