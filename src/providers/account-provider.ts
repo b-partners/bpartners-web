@@ -11,7 +11,7 @@ import {
   User,
 } from 'bpartners-react-client';
 
-import { userAccountsApi } from './api';
+import { onboardingApi, userAccountsApi } from './api';
 import authProvider from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 
@@ -135,5 +135,7 @@ export const updateBankInformation = async (resource: UpdateAccountIdentity) => 
   cacheAccount(data[0]);
   return data[0];
 };
+
+export const onboarding = async (resources: any[]) => await onboardingApi().onboardUsers(resources);
 
 export default accountProvider;
