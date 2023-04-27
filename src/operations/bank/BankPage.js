@@ -1,5 +1,5 @@
 import { AccountBalance as AccountBalanceIcon, Save as SaveIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Modal, Paper, Stack, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Card, CardContent, CardHeader, CircularProgress, Modal, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { BpFormField } from 'src/common/components';
 import { redirect } from 'src/common/utils/redirect';
 import { initiateBankConnection, singleAccountGetter, updateBankInformation } from 'src/providers/account-provider';
 import authProvider from 'src/providers/auth-provider';
-import { BALANCE_ICON, BANK_CARD, BANK_INFORMATION_CONTAINER, BANK_LOGO, BIC_MESSAGE_CONTAINER, HERE_LINK } from './style';
+import { BALANCE_ICON, BANK_CARD, BANK_LOGO, BIC_MESSAGE_CONTAINER, HERE_LINK } from './style';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(null);
@@ -102,7 +102,12 @@ const NoBank = () => {
 };
 
 const Bank = ({ account, setAccount }) => (
-  <Card>
+  <Card
+    sx={{
+      border: 'none',
+      outline: 'none',
+    }}
+  >
     <CardHeader title='Ma banque' />
     <CardContent>
       <Stack direction='row' spacing={2}>
