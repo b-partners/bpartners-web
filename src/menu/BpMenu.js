@@ -1,5 +1,18 @@
 import { useCallback, useState, useEffect } from 'react';
-import { AccountCircle, AccountBalance, Category, Euro, Lock, People, Receipt, Settings, Store, ContactSupport, ReceiptLong } from '@mui/icons-material';
+import {
+  AccountCircle,
+  AccountBalance,
+  Category,
+  Euro,
+  Lock,
+  People,
+  Receipt,
+  Settings,
+  Store,
+  ContactSupport,
+  ReceiptLong,
+  Handshake,
+} from '@mui/icons-material';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
@@ -47,7 +60,7 @@ const BpMenu = () => {
     accountHolder.businessActivities != null &&
     (accountHolder.businessActivities.primary != null || accountHolder.businessActivities.secondary != null);
   const hasCarreleur = businessActivities =>
-    businessActivities != null && (businessActivities.primary == 'Carreleur' || businessActivities.secondary == 'Carreleur');
+    businessActivities != null && (businessActivities.primary === 'Carreleur' || businessActivities.secondary === 'Carreleur');
   // The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
   // then neither Markplaces nor Prospects is diplayed
   const shouldShowProspects = hasBusinessActivities(accountHolder) && hasCarreleur(accountHolder.businessActivities);
@@ -59,7 +72,7 @@ const BpMenu = () => {
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'column',
-        height: '96%',
+        height: '95%',
         position: 'fixed',
         top: 60,
       }}
@@ -93,6 +106,7 @@ const BpMenu = () => {
           </DialogActions>
         </Dialog>
         <Menu>
+          <Menu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
           <Menu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />
           <Menu.Item to='/' onClick={contactSupport} primaryText='Contacter le support' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />

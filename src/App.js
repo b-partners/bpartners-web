@@ -27,6 +27,7 @@ import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
 import BpFrenchMessages from './common/utils/BpFrenchMessages';
 import { BankPage } from './operations/bank';
+import { PartnersPage } from './operations/partners/PartnersPage';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -53,6 +54,7 @@ export const BpAdmin = () => {
         <Route exact path='/account' element={<account.show />} />
         <Route exact path='/configurations' element={<Configuration />} />
         <Route exact path='/bank' element={<BankPage />} />
+        <Route exact path='/partners' element={<PartnersPage />} />
         <Route exact path='/error' element={<BPErrorPage />} />
       </CustomRoutes>
     </Admin>
