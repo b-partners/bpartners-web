@@ -27,13 +27,17 @@ import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_ST
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
-const ProfileLayout = () => (
-  <SimpleShowLayout>
-    <TextField source='user.firstName' id='firstName' label='Prénom' />
-    <TextField source='user.lastName' id='lastName' label='Nom' />
-    <TextField source='user.phone' id='phone' label='Téléphone' />
-  </SimpleShowLayout>
-);
+const ProfileLayout = () => {
+  const emptyText = 'VIDE';
+
+  return (
+    <SimpleShowLayout>
+      <TextField source='user.firstName' emptyText={emptyText} id='firstName' label='Prénom' />
+      <TextField source='user.lastName' emptyText={emptyText} id='lastName' label='Nom' />
+      <TextField source='user.phone' emptyText={emptyText} id='phone' label='Téléphone' />
+    </SimpleShowLayout>
+  );
+};
 
 const InfoShow = ({ content, icon, color, ...others }) => {
   return (
@@ -74,9 +78,7 @@ const SubscriptionLayout = () => (
       color={grey[500]}
     />
     <InfoShow
-      content='Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi
-      de trésorerie.Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation
-      bancaire et suivi de trésorerie.'
+      content='Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.'
       icon={<HandymanIcon />}
       color={yellow[800]}
     />
@@ -232,16 +234,18 @@ const BPLocationView = ({ location }) => {
 
 const AccountHolderLayout = props => {
   const { toggleAccountHolderLayout } = props;
+  const emptyText = 'VIDE';
+
   return (
     <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
       <IconButton onClick={toggleAccountHolderLayout} sx={{ position: 'absolute', top: '1rem', right: '1rem' }}>
         <EditIcon />
       </IconButton>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
-        <TextField pb={3} source='accountHolder.name' label='Raison sociale' />
-        <TextField pb={3} source='accountHolder.businessActivities.primary' label='Activité principale' />
-        <TextField pb={3} source='accountHolder.businessActivities.secondary' label='Activité secondaire' />
-        <TextField pb={3} source='accountHolder.officialActivityName' label='Activité officielle' />
+        <TextField pb={3} source='accountHolder.name' emptyText={emptyText} label='Raison sociale' />
+        <TextField pb={3} source='accountHolder.businessActivities.primary' emptyText={emptyText} label='Activité principale' />
+        <TextField pb={3} source='accountHolder.businessActivities.secondary' emptyText={emptyText} label='Activité secondaire' />
+        <TextField pb={3} source='accountHolder.officialActivityName' emptyText={emptyText} label='Activité officielle' />
         <FunctionField
           pb={3}
           render={data => <Typography>{prettyPrintMinors(data.accountHolder.companyInfo.socialCapital)}</Typography>}
@@ -252,11 +256,11 @@ const AccountHolderLayout = props => {
         <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
-        <TextField pb={3} source='accountHolder.contactAddress.city' label='Ville' />
-        <TextField pb={3} source='accountHolder.contactAddress.country' label='Pays' />
-        <TextField pb={3} source='accountHolder.contactAddress.address' label='Adresse' />
-        <TextField pb={3} source='accountHolder.contactAddress.postalCode' label='Code postal' />
-        <TextField pb={3} source='accountHolder.companyInfo.townCode' label='Code de la commune de prospection' />
+        <TextField pb={3} source='accountHolder.contactAddress.city' emptyText={emptyText} label='Ville' />
+        <TextField pb={3} source='accountHolder.contactAddress.country' emptyText={emptyText} label='Pays' />
+        <TextField pb={3} source='accountHolder.contactAddress.address' emptyText={emptyText} label='Adresse' />
+        <TextField pb={3} source='accountHolder.contactAddress.postalCode' emptyText={emptyText} label='Code postal' />
+        <TextField pb={3} source='accountHolder.companyInfo.townCode' emptyText={emptyText} label='Code de la commune de prospection' />
       </SimpleShowLayout>
     </Box>
   );

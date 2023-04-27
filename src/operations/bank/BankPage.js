@@ -1,5 +1,5 @@
 import { AccountBalance as AccountBalanceIcon, Save as SaveIcon } from '@mui/icons-material';
-import { Backdrop, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Modal, Paper, Typography } from '@mui/material';
+import { Backdrop, Box, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Modal, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -28,11 +28,7 @@ export const BankPage = () => {
 
 const BankInformation = props => {
   const {
-    account: {
-      bank: { name },
-      bic,
-      iban,
-    },
+    account: { name, bic, iban },
     setAccount,
   } = props;
   const form = useForm({ mode: 'all', defaultValues: { name, bic, iban } });
@@ -54,7 +50,7 @@ const BankInformation = props => {
   });
 
   return (
-    <Box sx={BANK_INFORMATION_CONTAINER}>
+    <Box>
       <Paper sx={BIC_MESSAGE_CONTAINER}>
         <Typography variant='p' component='div' sx={{ margin: 2 }}>
           Pour finaliser votre synchronisation de compte bancaire, veuillez renseigner votre BIC présent sur votre RIB et enregistrer.
@@ -62,7 +58,9 @@ const BankInformation = props => {
       </Paper>
       <FormProvider {...form}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+          <BpFormField name='name' label='Nom du compte' />
           <BpFormField name='bic' label='BIC' />
+          <BpFormField name='iban' label='IBAN' />
           <Button type='submit' sx={{ width: 300, marginTop: 1 }} disabled={isLoading} startIcon={<SaveIcon />}>
             Enregistrer
           </Button>
@@ -107,36 +105,36 @@ const Bank = ({ account, setAccount }) => (
   <Card>
     <CardHeader title='Ma banque' />
     <CardContent>
-      <Paper sx={BANK_CARD}>
-        {
-          // eslint-disable-next-line jsx-a11y/alt-text
-          <img src={account.bank.logoUrl} style={BANK_LOGO} />
-        }
-        <Typography mt={1} variant='h4'>
-          {account.bank.name}
-        </Typography>
-        <div style={{ height: '3rem' }}></div>
-        <Typography variant='p'>Nom du compte</Typography>
-        <br />
-        <Typography variant='h6'>
-          <b>{account.name}</b>
-        </Typography>
-        <br />
-        <Typography variant='p'>BIC</Typography>
-        <br />
-        <Typography variant='h6'>
-          <b>{account.bic}</b>
-        </Typography>
-        <br />
-        <Typography variant='p'>IBAN</Typography>
-        <br />
-        <Typography variant='h6'>
-          <b>{account.iban}</b>
-        </Typography>
-      </Paper>
+      <Stack direction='row' spacing={2}>
+        <Paper sx={BANK_CARD}>
+          {
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <img src={account.bank.logoUrl} style={BANK_LOGO} />
+          }
+          <Typography mt={1} variant='h4'>
+            {account.bank.name}
+          </Typography>
+          <div style={{ height: '3rem' }}></div>
+          <Typography variant='p'>Nom du compte</Typography>
+          <br />
+          <Typography variant='h6'>
+            <b>{account.name}</b>
+          </Typography>
+          <br />
+          <Typography variant='p'>BIC</Typography>
+          <br />
+          <Typography variant='h6'>
+            <b>{account.bic}</b>
+          </Typography>
+          <br />
+          <Typography variant='p'>IBAN</Typography>
+          <br />
+          <Typography variant='h6'>
+            <b>{account.iban}</b>
+          </Typography>
+        </Paper>
+        <BankInformation setAccount={setAccount} account={account} />
+      </Stack>
     </CardContent>
-    <CardActions>
-      <BankInformation setAccount={setAccount} account={account} />
-    </CardActions>
   </Card>
 );

@@ -4,6 +4,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMinors } from 'src/common/utils/money';
 import { getUserInfo } from './utils';
+import { ProductStatus } from 'bpartners-react-client';
 
 export const importProducts = async (body: any) => {
   const { accountId } = await getUserInfo();
@@ -30,6 +31,8 @@ const productProvider: BpDataProviderType = {
         undefined,
         descriptionFilter,
         priceFilter ? toMinors(+priceFilter) : undefined,
+        //TODO: use status from filter instead of static product status
+        ProductStatus.ENABLED,
         page,
         perPage
       )

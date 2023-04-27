@@ -27,19 +27,6 @@ export const BP_BUTTON = {
 export const BP_THEME = {
   ...defaultTheme,
   components: {
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '.MuiInputBase-root': {
-            padding: 0,
-          },
-          '.MuiIconButton-root': {
-            position: 'absolute',
-            right: '0.4rem',
-          },
-        },
-      },
-    },
     MuiSideBar: {
       styleOverrides: {
         root: {

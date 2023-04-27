@@ -15,8 +15,8 @@ describe(specTitle('Import Products'), () => {
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=15`, products).as('getProducts');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&page=1&pageSize=500`, products).as('getAllProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&status=ENABLED&page=1&pageSize=15`, products).as('getProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?unique=true&status=ENABLED&page=1&pageSize=500`, products).as('getAllProducts');
   });
 
   it('Import wrong products file', () => {

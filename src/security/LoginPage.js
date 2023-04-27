@@ -10,9 +10,15 @@ import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { useForm, FormProvider } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
+import { BP_COLOR } from 'src/bp-theme';
+import { useState } from 'react';
+import { SignUpForm } from './SignUpForm';
 
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
+  const [isLogin, setFormState] = useState(true);
+
+  const toggleForm = () => setFormState(!isLogin);
 
   return isLoading && authProvider.getCachedWhoami() ? (
     <BPLoader />
@@ -20,7 +26,7 @@ const BpLoginPage = () => {
     <Box sx={FLEX_CENTER}>
       {<img src='./bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
-        <PasswordChangeableLogin />
+        {isLogin ? <PasswordChangeableLogin onSignUp={toggleForm} /> : <SignUpForm onSignIn={toggleForm} />}
       </Box>
       <Box
         width={{ md: '60%', sm: '0%', xs: '0%' }}
@@ -48,7 +54,7 @@ const BpLoginPage = () => {
   );
 };
 
-const LoginForm = () => {
+const SignInForm = ({ onSignUp }) => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
 
   const login = formState.handleSubmit(async loginState => {
@@ -68,7 +74,6 @@ const LoginForm = () => {
         <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' sx={LOGIN_FORM_BUTTON}>
           Se connecter
         </Button>
-        {/* // TODO(cognito-signup): reactivate when cognito signup is ready
         <Button
           id='register'
           sx={{
@@ -84,19 +89,18 @@ const LoginForm = () => {
               color: BP_COLOR[20],
             },
           }}
-          onClick={onRegistration}
+          onClick={onSignUp}
         >
           <Typography variant='h7' gutterBottom mt={1}>
             Pas de compte ? <b>C'est par ici</b>
           </Typography>
         </Button>
-        */}
       </form>
     </FormProvider>
   );
 };
 
 const ResponsiveCompletePassword = () => <CompletePasswordPage style={{ backgroundImage: 'inherit' }} />;
-const PasswordChangeableLogin = () => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <LoginForm />);
+const PasswordChangeableLogin = ({ onSignUp }) => (authProvider.isTemporaryPassword() ? <ResponsiveCompletePassword /> : <SignInForm onSignUp={onSignUp} />);
 
 export default BpLoginPage;

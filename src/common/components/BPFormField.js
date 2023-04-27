@@ -65,15 +65,17 @@ export const BpFormField = props => {
 
   return (
     <TextField
-      sx={{
-        '.MuiInputBase-root': {
-          padding: 0,
-        },
-        '.MuiIconButton-root': {
-          position: 'absolute',
-          right: '0.4rem',
-        },
-      }}
+      sx={
+        type === 'password' && {
+          '.MuiInputBase-root': {
+            padding: 0,
+          },
+          '.MuiIconButton-root': {
+            position: 'absolute',
+            right: '0.4rem',
+          },
+        }
+      }
       label={label}
       {...dateProps}
       {...errorStyle}

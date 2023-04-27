@@ -42,7 +42,7 @@ describe(specTitle('Account'), () => {
     const newAccount2 = [{ ...account1, bic: 'newBic1234', iban: 'iban1234', bank: { name: 'BMOI' } }];
     cy.intercept('PUT', `/users/mock-user-id1/accounts/mock-account-id1/identity`, request => {
       const bankInfo = request.body;
-      expect(bankInfo.name).to.eq('BMOI');
+      expect(bankInfo.name).to.eq('Numer');
       expect(bankInfo.bic).to.eq('newBic1234');
       expect(bankInfo.iban).to.eq('iban1234');
       request.reply({ body: newAccount2 });
@@ -53,5 +53,29 @@ describe(specTitle('Account'), () => {
     cy.get("[name='bic']").type('newBic1234{enter}');
 
     cy.contains('newBic1234');
+  });
+
+  it('Should update account name and iban', () => {
+    mount(<App />);
+    cy.get('[name="bank"]').click();
+
+    cy.contains('Numer');
+    cy.contains('bic123');
+    cy.contains('iban123');
+
+    cy.get("[name='name']").clear();
+    cy.contains('Ce champ est requis');
+    cy.get("[name='name']").type('newName');
+    cy.get("[name='bic']").clear().type('newBic1234');
+    cy.get("[name='iban']").clear().type('newIban1234{enter}');
+
+    cy.intercept('PUT', `/users/mock-user-id1/accounts/mock-account-id1/identity`, request => {
+      const bankInfo = request.body;
+      const newAccount2 = [{ ...bankInfo, bank: { name: 'BMOI' } }];
+      expect(bankInfo.name).to.eq('newName');
+      expect(bankInfo.bic).to.eq('newBic1234');
+      expect(bankInfo.iban).to.eq('newIban1234');
+      request.reply({ body: newAccount2 });
+    }).as('updateBankInfo');
   });
 });

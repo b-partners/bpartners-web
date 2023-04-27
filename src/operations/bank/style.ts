@@ -23,7 +23,15 @@ export const BANK_CARD: SxProps<Theme> = {
 };
 
 export const BANK_INFORMATION_CONTAINER: SxProps<Theme> = { display: 'flex', alignItems: 'center', justifyContent: 'space-around', width: 630 };
-export const BIC_MESSAGE_CONTAINER: SxProps<Theme> = { width: 300, marginBlock: 1, background: 'rgb(0, 0, 0, 0.03)', outline: 'none', border: 'none' };
+export const BIC_MESSAGE_CONTAINER: SxProps<Theme> = {
+  width: 300,
+  marginBottom: 1,
+  paddingY: 0.5,
+  background: 'rgb(0, 0, 0, 0.03)',
+  outline: 'none',
+  border: 'none',
+  borderRadius: 2,
+};
 
 export const USER_CARD = {
   ...BANK_CARD,
