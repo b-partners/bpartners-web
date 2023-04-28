@@ -9,17 +9,31 @@ export const LAYOUT: SxProps<Theme> = {
   flexWrap: 'wrap',
 };
 
+export const TEXT_MESSAGE: SxProps<Theme> = {
+  fontWeight: 'bold',
+  marginBottom: 10,
+};
+
 export const BANK_CARD: SxProps<Theme> = {
   position: 'relative',
-  width: 500,
-  height: 250,
-  borderRadius: 3,
-  padding: 10,
-  paddingTop: 5,
+  width: 440,
+  height: 300,
   paddingLeft: 5,
+  borderRadius: 3,
   background: 'rgb(0, 0, 0, 0.03)',
   outline: 'none',
   border: 'none',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+};
+
+export const NO_BANK_CARD: SxProps<Theme> = {
+  ...BANK_CARD,
+  alignItems: 'flex-start',
+  justifyContent: 'flex-start',
+  padding: 0,
+  width: 450,
 };
 
 export const BANK_INFORMATION_CONTAINER: SxProps<Theme> = { display: 'flex', alignItems: 'center', justifyContent: 'space-around', width: 630 };
@@ -42,9 +56,19 @@ export const USER_CARD = {
 export const BANK_LOGO = {
   position: 'absolute',
   top: '1.5rem',
-  right: '-1rem',
+  right: 0,
   borderRadius: '0.5rem',
-  height: '6rem',
+  height: '4rem',
+};
+
+export const DISCONNECT_BANK_LOGO = {
+  position: 'absolute',
+  bottom: '1rem',
+  top: 'none',
+  right: '2rem',
+  '.MuiSvgIcon-root': {
+    fontSize: '2.5rem',
+  },
 };
 
 export const NO_BANK_LAYOUT: SxProps<Theme> = {
@@ -66,10 +90,9 @@ export const BALANCE_ICON = {
   color: BP_COLOR['solid_grey'],
   fontSize: '20rem',
   position: 'absolute',
-  top: 0,
+  top: '50%',
   left: '50%',
-  transform: 'translateX(-50%)',
-  zIndex: -1,
+  transform: 'translate(-50%, -50%)',
 };
 
 export const HERE_LINK = { textDecorationLine: 'underline', cursor: 'pointer', fontWeight: 'bold', color: BP_COLOR[10] };

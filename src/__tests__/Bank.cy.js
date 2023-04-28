@@ -78,4 +78,16 @@ describe(specTitle('Account'), () => {
       request.reply({ body: newAccount2 });
     }).as('updateBankInfo');
   });
+
+  it('Should disconnect bank', () => {
+    mount(<App />);
+    cy.get('[name="bank"]').click();
+    cy.get('[data-testid="LinkOffIcon"]').click();
+    cy.contains('Confirmation');
+    cy.contains('Voulez vous déconnecter la banque BMOI ?');
+    cy.get("[data-testid='bank-disconnection-button']").click();
+    cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
+    cy.contains('Aucune banque associée.');
+    cy.contains('Cliquez ici pour associée une banque.');
+  });
 });
