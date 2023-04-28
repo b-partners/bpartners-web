@@ -57,7 +57,7 @@ const SelectionDialog = props => {
         <Card>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 0, padding: 0 }}>
-              {invoiceToLink ? <SelectedInvoiceTable invoice={invoiceToLink} /> : <Typography>Veuillez sélectionner un devis</Typography>}
+              {invoiceToLink ? <SelectedInvoiceTable invoice={invoiceToLink} /> : <Typography>Veuillez sélectionner une facture</Typography>}
             </Box>
           </CardContent>
         </Card>
