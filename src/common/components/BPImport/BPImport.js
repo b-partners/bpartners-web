@@ -63,10 +63,10 @@ export const BPImport = props => {
         let frenchMessage = message.replaceAll('instead of', 'à la place de');
         frenchMessage = frenchMessage.replaceAll('at column', 'à la colonne');
         const endOfMessage = frenchMessage.indexOf('at the last column');
-        frenchMessage = endOfMessage != -1 ? `${frenchMessage.slice(0, endOfMessage)} à la dernière colonne.` : frenchMessage;
+        frenchMessage = endOfMessage !== -1 ? `${frenchMessage.slice(0, endOfMessage)} à la dernière colonne.` : frenchMessage;
         frenchMessage = frenchMessage.split('. ');
 
-        setErrorMessage(frenchMessage.filter(item => item != ''));
+        setErrorMessage(frenchMessage.filter(item => item !== ''));
       }
 
       notify(`Une erreur s'est produite lors de l'importation.`, { type: 'error' });

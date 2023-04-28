@@ -1,13 +1,12 @@
 import {
   Edit as EditIcon,
-  LocationOn,
   PhotoCamera as PhotoCameraIcon,
   AccessTime as AccessTimeIcon,
   SmartToy as SmartToyIcon,
   Handyman as HandymanIcon,
   QrCode as QrCodeIcon,
 } from '@mui/icons-material';
-import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Link, Skeleton, Switch, Tab, Tabs, Tooltip, Typography, Paper } from '@mui/material';
+import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Skeleton, Switch, Tab, Tabs, Typography, Paper } from '@mui/material';
 import { grey, yellow, green } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
@@ -25,7 +24,6 @@ import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
-import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 
 const ProfileLayout = () => {
   const emptyText = 'VIDE';
@@ -211,25 +209,6 @@ const IncomeTargets = ({ revenueTargets }) => {
     : `Vous n'avez pas encore défini votre objectif pour cette année.`;
 
   return <span>{currentIncomeTargetValue}</span>;
-};
-
-const BPLocationView = ({ location }) => {
-  return (
-    <>
-      {location ? (
-        <Tooltip title={`lat: ${location.latitude}, lng: ${location.longitude}`}>
-          <Link href={getGeoJsonUrl(location)} target='_blank' underline='hover'>
-            <IconButton component='span'>
-              <LocationOn fontSize='small' />
-            </IconButton>
-            <Typography variant='caption'> Voir sur la carte</Typography>
-          </Link>
-        </Tooltip>
-      ) : (
-        <Typography variant='caption'>Vous n'avez pas encore renseigné vos coordonnées géographiques.</Typography>
-      )}
-    </>
-  );
 };
 
 const AccountHolderLayout = props => {

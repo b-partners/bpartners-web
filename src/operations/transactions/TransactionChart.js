@@ -134,10 +134,12 @@ const TransactionChart = () => {
 
   useEffect(() => {
     checkTransactionsSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date, annualSummary]);
 
   useEffect(() => {
     transactionsSummary && annualSummary ? getAnnualSummary() : getMonthlyTransaction(date.month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionsSummary]);
 
   const COLORS = ['#1D9661', '#B30000', '#003D7A'];
