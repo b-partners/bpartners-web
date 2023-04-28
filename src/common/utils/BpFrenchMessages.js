@@ -7,6 +7,14 @@ const BpFrenchMessages = {
       name: 'Client |||| Clients',
     },
   },
+  messages: {
+    disconnection: {
+      success: 'Déconnexion effectuer avec succès.',
+    },
+    global: {
+      error: "Une erreur s'est produite.",
+    },
+  },
 };
 
 export default BpFrenchMessages;

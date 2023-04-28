@@ -128,6 +128,13 @@ export const initiateBankConnection = async (): Promise<BankConnectionRedirectio
   return data;
 };
 
+export const disconnectBank = async (): Promise<Account> => {
+  clearCachedAccount();
+  const { userId } = await getUserInfo();
+  const { data: account } = await userAccountsApi().disconnectBank(userId);
+  return cacheAccount(account);
+};
+
 export const updateBankInformation = async (resource: UpdateAccountIdentity) => {
   const { userId, accountId } = await getUserInfo();
   await userAccountsApi().updateAccountIdentity(userId, accountId, resource);
