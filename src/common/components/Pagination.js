@@ -1,6 +1,5 @@
 import { Toolbar, Typography, IconButton, Box, TextField, MenuItem } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
 import { useListContext } from 'react-admin';
 import useGetPaginationCount from '../hooks/use-get-pagination-count';
 

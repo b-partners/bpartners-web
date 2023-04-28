@@ -3,7 +3,6 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, 
 import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInfomationForm from './CompanyInformationForm';
 import RevenueTargetForm from './RevenueTargetForm';
-import LocationEdition from './LocationEdition';
 import GeneralInfoForm from './GeneralInfoForm';
 
 const CloseConfigurationButton = ({ onClick }) => (

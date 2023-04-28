@@ -19,6 +19,7 @@ const BPDatePicker = props => {
       }
     };
     checkDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   return (
