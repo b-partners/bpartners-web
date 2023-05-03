@@ -90,8 +90,8 @@ const TransactionLinkInvoice = props => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
       <Tooltip title='Lier à un devis'>
-        <IconButton>
-          <AddLinkIcon onClick={toggleDialog} />
+        <IconButton data-testid={`${transaction.id}-link-invoice-button`} onClick={toggleDialog}>
+          <AddLinkIcon />
         </IconButton>
       </Tooltip>
       <SelectionDialog transaction={transaction} open={dialogState} close={toggleDialog} />

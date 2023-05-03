@@ -1,10 +1,9 @@
-import { prospectingApi } from './api';
+import { asyncGetUserInfo, prospectingApi } from '.';
 import { BpDataProviderType } from './bp-data-provider-type';
-import { getUserInfo } from './utils';
 
 export const marketplaceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
-    const { accountId } = await getUserInfo();
+    const { accountId } = await asyncGetUserInfo();
     return (await prospectingApi().getMarketplaces(accountId, page, perPage)).data;
   },
   getOne: function (id: string): Promise<any> {
@@ -14,5 +13,3 @@ export const marketplaceProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
 };
-
-export default marketplaceProvider;

@@ -6,7 +6,6 @@ import App from '../App';
 import { whoami1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities, account1 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
-import * as accountProvider from 'src/providers/account-provider';
 import * as Redirect from 'src/common/utils/redirect';
 
 const redirectionUrl = {
@@ -28,7 +27,6 @@ describe(specTitle('Account'), () => {
 
   it('Test partners', () => {
     cy.stub(Redirect, 'redirect');
-    cy.stub(accountProvider, 'clearCachedAccount');
 
     mount(<App />);
     cy.get('[name="partners"]').click();

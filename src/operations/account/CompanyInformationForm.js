@@ -3,15 +3,15 @@ import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
-import accountProvider from 'src/providers/account-provider';
 import BPFormField from '../../common/components/BPFormField';
 import { phoneValidator, companyInfoDiff, townCodeValidator } from './utils';
 import { toMinors, toMajors } from '../../common/utils/money';
 import { handleSubmit } from 'src/common/utils';
+import { accountHolderProvider } from 'src/providers';
 
-const CompanyInfomationForm = () => {
+const CompanyInformationForm = () => {
   const { record } = useShowContext();
-  const form = useForm({ mode: 'all' });
+  const form = useForm({ mode: 'all', defaultValues: {} });
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
   const notify = useNotify();
 
@@ -22,15 +22,15 @@ const CompanyInfomationForm = () => {
   useEffect(() => {
     // set form default value
     if (record) {
-      const currentCompanyInfo = { ...record.accountHolder.companyInfo };
+      const currentCompanyInfo = { ...record.companyInfo };
       Object.keys(currentCompanyInfo).forEach(key => form.setValue(key, currentCompanyInfo[key]));
       // format social capital to majors
       form.setValue('socialCapital', toMajors(currentCompanyInfo['socialCapital']));
 
-      setTools(properties => ({ ...properties, buttonDisable: companyInfoDiff(record.accountHolder.companyInfo, form.watch()) }));
+      setTools(properties => ({ ...properties, buttonDisable: companyInfoDiff(record.companyInfo, form.watch()) }));
 
       form.watch(data => {
-        const isDifferent = companyInfoDiff(record.accountHolder.companyInfo, data);
+        const isDifferent = companyInfoDiff(record.companyInfo, data);
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
@@ -39,7 +39,7 @@ const CompanyInfomationForm = () => {
 
   const saveOrUpdateAccountSubmit = form.handleSubmit(data => {
     const fetch = async () => {
-      await accountProvider.saveOrUpdate([
+      await accountHolderProvider.saveOrUpdate([
         {
           ...data,
           isSubjectToVat: record.isSubjectToVat,
@@ -78,4 +78,4 @@ const CompanyInfomationForm = () => {
   );
 };
 
-export default CompanyInfomationForm;
+export default CompanyInformationForm;

@@ -3,12 +3,10 @@ import { Box, Button, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
-import invoiceProvider from 'src/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
 
 import { formatDate } from '../../common/utils/date';
 import ListComponent from '../../common/components/ListComponent';
-import { prettyPrintMinors } from '../../common/utils/money';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
 
@@ -17,6 +15,8 @@ import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
 import { printError } from 'src/common/utils';
+import { invoiceProvider } from 'src/providers/invoice-provider';
+import { RaMoneyField } from 'src/common/components';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -37,7 +37,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 };
 
 const InvoiceGridTable = props => {
-  const { createOrUpdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
+  const { crupdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
   const { isLoading, refetch } = useListContext();
   const notify = useNotify();
 
@@ -71,16 +71,11 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid
-        bulkActionButtons={false}
-        rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && createOrUpdateInvoice({ ...record })}
-      >
+      <Datagrid bulkActionButtons={false} rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && crupdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <FunctionField render={nameRenderer} label='Client' />
-        {companyInfo && companyInfo.isSubjectToVat && (
-          <FunctionField render={data => <Typography variant='body2'>{prettyPrintMinors(data.totalPriceWithVat)}</Typography>} label='Prix TTC' />
-        )}
+        {companyInfo && companyInfo.isSubjectToVat && <RaMoneyField render={data => data.totalPriceWithVat} label='Prix TTC' variant='body2' />}
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
@@ -147,7 +142,7 @@ const InvoiceList = props => {
   const { onStateChange, invoiceTypes, handleSwitchTab } = props;
 
   const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
-  const createOrUpdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
+  const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
   const viewPdf = (event, selectedInvoice) => {
     event.stopPropagation();
     onStateChange({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
@@ -167,14 +162,14 @@ const InvoiceList = props => {
             <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Button
                 name='create-draft-invoice'
-                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+                onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid() })}
                 sx={{ margin: 1, display: 'block', width: '12rem' }}
               >
                 Créer un devis
               </Button>
               <Button
                 name='create-confirmed-invoice'
-                onClick={() => createOrUpdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
+                onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
                 sx={{ margin: 1, display: 'block', width: '12rem' }}
               >
                 Créer une facture
@@ -183,12 +178,7 @@ const InvoiceList = props => {
           </PopoverButton>
         }
       >
-        <InvoiceGridTable
-          createOrUpdateInvoice={createOrUpdateInvoice}
-          viewPdf={viewPdf}
-          convertToProposal={sendInvoice}
-          setInvoiceToRelaunch={setInvoiceToRelaunch}
-        />
+        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />
       </List>
 
       <InvoiceRelaunchModal invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />

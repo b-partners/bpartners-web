@@ -1,17 +1,15 @@
-import { payingApi } from './api';
-import { BpDataProviderType } from './bp-data-provider-type';
+import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
 
+import { ProductStatus } from 'bpartners-react-client';
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMinors } from 'src/common/utils/money';
-import { getUserInfo } from './utils';
-import { ProductStatus } from 'bpartners-react-client';
 
 export const importProducts = async (body: any) => {
-  const { accountId } = await getUserInfo();
+  const { accountId } = getCached.userInfo();
   return (await payingApi().importProducts(accountId, body)).data;
 };
 
-const productProvider: BpDataProviderType = {
+export const productProvider: BpDataProviderType = {
   async getOne(userId: string) {
     throw new Error('Function not implemented.');
   },
@@ -21,7 +19,7 @@ const productProvider: BpDataProviderType = {
       priceFilter,
       sort: { field, order },
     } = filters;
-    const { accountId } = await getUserInfo();
+    const { accountId } = await asyncGetUserInfo();
     return (
       await payingApi().getProducts(
         accountId,
@@ -39,18 +37,16 @@ const productProvider: BpDataProviderType = {
     ).data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     const toSend = resources.map(product => ({ ...emptyToNull(product) }));
     return [await payingApi().createProducts(accountId, toSend)];
   },
   update: async function (resources: any[]): Promise<any[]> {
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     return (await payingApi().crupdateProducts(accountId, resources)).data;
   },
   archive: async (resources: any[]) => {
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     return (await payingApi().updateProductsStatus(accountId, resources)).data;
   },
 };
-
-export default productProvider;

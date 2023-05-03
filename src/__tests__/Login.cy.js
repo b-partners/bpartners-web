@@ -32,7 +32,7 @@ describe(specTitle('Login'), () => {
     cy.get("[name='phoneNumber']").type('123456789');
     cy.get("[name='companyName']").type('Numer');
     cy.get("[type='submit']").click();
-    cy.contains('Pour finaliser votre inscription, un mail vous a été envoyer.');
+    cy.contains('Pour finaliser votre inscription, un mail vous a été envoyé.');
     cy.get("[data-testid='close-modal-id']").click();
     cy.contains('Bienvenue !');
     cy.contains("Pas de compte ? C'est par ici");

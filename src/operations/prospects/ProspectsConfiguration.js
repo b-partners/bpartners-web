@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
-import { accountHoldersGetter, getCachedAccountHolder, updateGlobalInformation } from 'src/providers/account-provider';
 import { printError } from 'src/common/utils';
+import { getCached } from 'src/providers/cache';
+import { accountHolderProvider, updateGlobalInformation } from '../../providers';
 
 const ProspectsConfiguration = () => {
   const notify = useNotify();
   const {
     contactAddress: { prospectingPerimeter },
-  } = getCachedAccountHolder();
+  } = getCached.accountHolder();
 
   const maxProspectingPerimeter = 10;
   const [newProspectingPerimeter, setNewProspectingPerimeter] = useState(prospectingPerimeter);
@@ -33,7 +34,7 @@ const ProspectsConfiguration = () => {
 
   const updateProspectingPerimeter = async newPerimeter => {
     try {
-      const { id, name, officialActivityName, initialCashflow, siren, contactAddress } = await accountHoldersGetter();
+      const { id, name, officialActivityName, initialCashflow, siren, contactAddress } = await accountHolderProvider.getOne();
       const newGlobalInfo = {
         id: id,
         name: name,

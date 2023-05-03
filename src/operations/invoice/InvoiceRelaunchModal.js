@@ -23,13 +23,11 @@ import {
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { BP_COLOR } from '../../bp-theme';
-import { singleAccountGetter } from '../../providers/account-provider';
-import { payingApi } from '../../providers/api';
-import authProvider from '../../providers/auth-provider';
 import { filesToArrayBuffer } from '../../common/utils/file';
 import RichTextEditor from '../../common/components/RichTextEditor';
 import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils/utils';
 import { handleSubmit } from 'src/common/utils';
+import { authProvider, getCached, payingApi } from 'src/providers';
 
 const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();
@@ -51,8 +49,8 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
       setIsLoading(true);
 
       try {
-        const aId = (await singleAccountGetter(userId)).id;
-        await payingApi().relaunchInvoice(aId, invoice.id, { message, subject, attachments });
+        const { accountId } = getCached.userInfo();
+        await payingApi().relaunchInvoice(accountId, invoice.id, { message, subject, attachments });
         notify(
           `${getContext({
             devis: 'Le',

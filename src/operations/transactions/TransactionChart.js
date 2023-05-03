@@ -1,9 +1,6 @@
 import { Box, Card, CardContent, Grid, LinearProgress, Typography, Skeleton, Switch } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
-import { payingApi } from 'src/providers/api';
-import authProvider from 'src/providers/auth-provider';
-import { getCachedAccount, singleAccountGetter } from 'src/providers/account-provider';
 import emptyGraph from 'src/assets/noData.png';
 
 import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../../common/utils/percent';
@@ -12,6 +9,7 @@ import BPDatePicker from '../../common/components/BPDatePicker';
 import { BP_COLOR } from 'src/bp-theme';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { printError } from 'src/common/utils';
+import { accountProvider, payingApi } from 'src/providers';
 
 const AnnualTargetGraph = ({ year }) => {
   const revenueTargets = useGetAccountHolder().revenueTargets;
@@ -73,17 +71,12 @@ const TransactionChart = () => {
 
   const [annualSummary, isAnnualSummary] = useState(true);
 
-  const getAccount = async () => {
-    const userId = authProvider.getCachedWhoami().user.id;
-    return getCachedAccount() ? getCachedAccount() : await singleAccountGetter(userId);
-  };
-
   const currentDate = { year: new Date().getFullYear(), month: new Date().getMonth() };
   const [currentBalance, setCurrentBalance] = useState();
 
   useEffect(() => {
     const updateBalance = async () => {
-      const { availableBalance } = await getAccount();
+      const { availableBalance } = await accountProvider.getOne();
       availableBalance && setCurrentBalance(availableBalance);
     };
     updateBalance().catch(printError);
@@ -92,7 +85,7 @@ const TransactionChart = () => {
   const [date, setDate] = useState(currentDate);
 
   const getTransactionsSummary = async year => {
-    const { id } = await getAccount();
+    const { id } = await accountProvider.getOne();
 
     const { data } = await payingApi().getTransactionsSummary(id, year);
     setTransactionsSummary(data);
@@ -113,7 +106,7 @@ const TransactionChart = () => {
 
   const getAnnualSummary = () => {
     setLastUpdateDate(transactionsSummary && transactionsSummary.updatedAt);
-    transactionsSummary && transactionsSummary.summary.length !== 0
+    transactionsSummary && transactionsSummary.summary && transactionsSummary.summary.length !== 0
       ? setData([
           { name: `Recette ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
           { name: `Dépense ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
@@ -153,7 +146,7 @@ const TransactionChart = () => {
         </Typography>
         <Box sx={{ textAlign: 'end', paddingX: 10 }}>
           <Typography variant='body1'>
-            Vue mensuelle <Switch checked={annualSummary} id='annualSummarySwitch' onChange={e => isAnnualSummary(e.target.checked)} /> Vue annuelle
+            Vue mensuelle <Switch checked={annualSummary} id='annualSummarySwitch' onChange={(_event, checked) => isAnnualSummary(checked)} /> Vue annuelle
           </Typography>
         </Box>
         <Grid container spacing={1}>

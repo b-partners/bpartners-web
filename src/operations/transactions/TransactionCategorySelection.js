@@ -2,18 +2,16 @@ import { useState, useEffect } from 'react';
 import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, DialogContent, TextField, Typography, CircularProgress } from '@mui/material';
 import { useNotify, useRefresh } from 'react-admin';
-import transactionCategoryProvider from 'src/providers/transaction-category-provider';
 import { BP_COLOR } from 'src/bp-theme';
 import { printError } from 'src/common/utils';
+import { transactionCategoryProvider } from 'src/providers';
 
 const ICON_STYLE = {
   color: BP_COLOR[30],
   cursor: 'pointer',
 };
 
-const successMessage = category => {
-  return !category ? 'La catégorie a bien été ajoutée' : 'La catégorie a bien été modifiée';
-};
+const successMessage = category => `resources.transactions.category.${!category ? 'add' : 'edit'}`;
 
 const CustomsAutocomplete = props => {
   const { onChange, transactionType } = props;
@@ -92,13 +90,15 @@ const SelectionDialog = props => {
       </DialogTitle>
       <DialogContent>
         {category &&
-          category.map(({ description, comment }) => <Chip sx={{ margin: '0.1rem' }} label={description || comment} variant='outlined' size='small' />)}
+          category.map(({ description, comment }, k) => (
+            <Chip key={`chip-category-key-${k}`} sx={{ margin: '0.1rem' }} label={description || comment} variant='outlined' size='small' />
+          ))}
         <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 1 }}>
           <CustomsAutocomplete transactionType={type} onChange={setSelectedCategory} />
           {selectedCategory !== null && selectedCategory.isOther && (
             <>
-              <TextField value={selectedCategory.comment} required onChange={handleChange} name='comment' label='Commentaire' />
-              <TextField value={selectedCategory.vat} required onChange={handleChange} type='number' name='vat' label='TVA customisé' />
+              <TextField value={selectedCategory.comment || ''} required onChange={handleChange} name='comment' label='Commentaire' />
+              <TextField value={selectedCategory.vat || ''} required onChange={handleChange} type='number' name='vat' label='TVA customisé' />
             </>
           )}
         </Box>
@@ -124,8 +124,12 @@ const TransactionCategorySelection = props => {
 
   return (
     <Box sx={{ width: '10vw', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-      {category && category.map(cat => <Chip label={cat.type} variant='outlined' size='small' />)}
-      {!category ? <AddCircleOutlineRounded onClick={toggleDialog} sx={ICON_STYLE} /> : <Edit onClick={toggleDialog} sx={ICON_STYLE} />}
+      {category && category.map((cat, k) => <Chip label={cat.type} key={`${cat}-${k}`} variant='outlined' size='small' />)}
+      {!category ? (
+        <AddCircleOutlineRounded data-testid={`transaction-add-category-${transaction.id}`} onClick={toggleDialog} sx={ICON_STYLE} />
+      ) : (
+        <Edit data-testid={`transaction-edit-category-${transaction.id}`} onClick={toggleDialog} sx={ICON_STYLE} />
+      )}
       <SelectionDialog transaction={transaction} open={dialogState} close={toggleDialog} />
     </Box>
   );

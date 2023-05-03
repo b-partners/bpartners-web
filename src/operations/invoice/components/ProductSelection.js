@@ -2,12 +2,12 @@ import { Add } from '@mui/icons-material';
 import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
-import productProvider from '../../../providers/product-provider';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils/includes-object';
 import { ProductItem } from './ProductItem';
 import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
+import { productProvider } from 'src/providers';
 
 const useStyle = makeStyles(theme => ({
   formControl: {

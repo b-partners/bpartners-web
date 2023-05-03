@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
-import authProvider from '../providers/auth-provider';
 import loginRedirectionUrls from './login-redirection-urls';
 import { redirect } from '../common/utils/redirect';
 import { getUrlParams } from '../common/utils/get-params';
@@ -9,6 +8,7 @@ import { getUrlParams } from '../common/utils/get-params';
 import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { printError } from 'src/common/utils';
+import { authProvider } from 'src/providers';
 
 const LoginSuccessPage = () => {
   useEffect(() => {

@@ -9,8 +9,6 @@ import { images1 } from './mocks/responses/file-api';
 
 xdescribe(specTitle('Error handling'), () => {
   beforeEach(() => {
-    cy.viewport(1360, 760);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');

@@ -55,7 +55,7 @@ export const townCodeValidator = (townCode: number): any => {
  * @param newCompanyInfo
  * @returns true is two companyInfo are same, else false
  */
-export const companyInfoDiff = (currentCompanyInfo: CompanyInfo, newCompanyInfo: CompanyInfo) => {
+export const companyInfoDiff = (currentCompanyInfo = {} as CompanyInfo, newCompanyInfo = {} as CompanyInfo) => {
   if (
     currentCompanyInfo.email !== newCompanyInfo.email ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
@@ -67,14 +67,9 @@ export const companyInfoDiff = (currentCompanyInfo: CompanyInfo, newCompanyInfo:
   return true;
 };
 
-export const generalInfoDiff = (currentAccoutHolder: AccountHolder, newGeneralInfo: any) => {
-  const {
-    name,
-    siren,
-    initialCashflow,
-    officialActivityName,
-    contactAddress: { address, city, country, postalCode },
-  } = currentAccoutHolder;
+export const generalInfoDiff = (currentAccountHolder: AccountHolder, newGeneralInfo: any) => {
+  const { name, siren, initialCashflow, officialActivityName, contactAddress } = currentAccountHolder;
+  const { address, city, country, postalCode } = contactAddress || {};
   if (
     newGeneralInfo.name !== name ||
     newGeneralInfo.siren !== siren ||

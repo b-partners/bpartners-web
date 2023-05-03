@@ -1,12 +1,11 @@
-import { FileApi } from './api';
-import { BpDataProviderType } from './bp-data-provider-type';
-import { toArrayBuffer } from '../common/utils/to-array-buffer';
+import { FileApi, getCached } from '.';
 import { getMimeType } from '../common/utils/get-mime-type';
-import { getUserInfo } from './utils';
+import { toArrayBuffer } from '../common/utils/to-array-buffer';
+import { BpDataProviderType } from './bp-data-provider-type';
 
 export const fileProvider: BpDataProviderType = {
   async getOne(id: string) {
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     return FileApi()
       .getFileById(accountId, id)
       .then(({ data }) => data);
@@ -17,7 +16,7 @@ export const fileProvider: BpDataProviderType = {
   async saveOrUpdate(resources: any): Promise<any[]> {
     const { files, fileId, fileType } = resources;
 
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     const binaryFile = await toArrayBuffer(files);
     const type = getMimeType(files);
 

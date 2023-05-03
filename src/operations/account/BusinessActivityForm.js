@@ -2,13 +2,12 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { Autocomplete, Box, Button, CircularProgress, Tooltip, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-
-import { accountHoldersGetter, businessActivitiesProvider } from 'src/providers/account-provider';
 import { ACTIVITY_TOOLTIP_TITLE, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
 import { printError } from 'src/common/utils';
+import { accountHolderProvider, businessActivitiesProvider } from 'src/providers';
 
 const CustomAutocomplete = props => {
-  const { label, onChange, name, resource, options, style } = props;
+  const { label, onChange, name, resource = {}, options, style } = props;
   return (
     <Tooltip title={ACTIVITY_TOOLTIP_TITLE}>
       <Autocomplete
@@ -26,7 +25,7 @@ const CustomAutocomplete = props => {
 
 const BusinessActivitiesInputs = () => {
   const notify = useNotify();
-  const [jobList, setJoblist] = useState(null);
+  const [jobList, setJobList] = useState(null);
   // tools for the preview
   const [tools, setTools] = useState({ isLoading: false, isButtonDisable: true });
   const [businessActivities, setBusinessActivities] = useState(businessActivityDefaultValues);
@@ -49,11 +48,11 @@ const BusinessActivitiesInputs = () => {
 
   useEffect(() => {
     // get all job lists
-    const getJobList = async () => setJoblist((await businessActivitiesProvider.getJobList()).map(({ name }) => name));
+    const getJobList = async () => setJobList((await businessActivitiesProvider.getJobList()).map(({ name }) => name));
     getJobList().catch(printError);
     // get the current businessActivities
     const getAccountHolder = async () => {
-      const currentBusinessActivities = (await accountHoldersGetter())?.businessActivities;
+      const currentBusinessActivities = (await accountHolderProvider.getOne())?.businessActivities;
       setBusinessActivities({ new: currentBusinessActivities, current: currentBusinessActivities });
     };
     getAccountHolder().catch(printError);

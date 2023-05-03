@@ -1,9 +1,8 @@
 import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
-import { accessTokenItem } from 'src/providers/auth-provider';
 import { getFilenameMeta } from '../../../common/utils/file';
 import { InvoiceStatusFR } from '../../../constants/invoice-status';
-import { getUserInfo } from 'src/providers/utils';
 import { printError } from 'src/common/utils';
+import { getCached } from 'src/providers/cache';
 
 /**
  * **INVOICE**
@@ -104,8 +103,8 @@ export const productValidationHandling = (product: Product[], name: string, setE
 };
 
 export const getInvoicePdfUrl = async (id: string) => {
-  const { accountId } = await getUserInfo();
-  const accessToken = localStorage.getItem(accessTokenItem) || '';
+  const { accountId } = getCached.userInfo();
+  const { accessToken } = getCached.token();
   return `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${id}/raw?accessToken=${accessToken}&fileType=INVOICE`;
 };
 

@@ -13,11 +13,8 @@ import { useEffect, useState } from 'react';
 import { FileType } from 'bpartners-react-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bp-theme';
-import { fileProvider } from 'src/providers/file-provider';
 import { getMimeType } from 'src/common/utils/get-mime-type';
 import { v4 as uuid } from 'uuid';
-import accountProvider, { cacheUser, getCachedUser, singleAccountGetter } from '../../providers/account-provider';
-import authProvider from '../../providers/auth-provider';
 import { prettyPrintMinors } from '../../common/utils/money';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
@@ -25,6 +22,8 @@ import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import { printError } from 'src/common/utils';
+import { accountHolderProvider, fileProvider, getAccountLogoUrl } from 'src/providers';
+import { RaMoneyField } from 'src/common/components';
 
 const ProfileLayout = () => {
   const emptyText = 'VIDE';
@@ -97,29 +96,20 @@ const LogoLayout = () => {
   const [logoLoading, setLogoLoading] = useState(false);
 
   const getLogo = async () => {
-    const {
-      user: { id: userId },
-    } = authProvider.getCachedWhoami();
-    const logoFileId = getCachedUser() && getCachedUser().logoFileId;
-
-    if (!logoFileId) {
-      return;
+    const logoUrl = getAccountLogoUrl();
+    if (logoUrl) {
+      try {
+        setLogoLoading(true);
+        const result = await fetch(logoUrl);
+        const blob = await result.blob();
+        setLogo(URL.createObjectURL(blob));
+      } catch (e) {
+        throw e;
+      } finally {
+        setLogoLoading(false);
+      }
     }
-
-    const { accessToken } = authProvider.getCachedAuthConf();
-    const accountId = (await singleAccountGetter(userId)).id;
-    const url = `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`;
-
-    try {
-      setLogoLoading(true);
-      const result = await fetch(url);
-      const blob = await result.blob();
-      setLogo(URL.createObjectURL(blob));
-    } catch (e) {
-      throw e;
-    } finally {
-      setLogoLoading(false);
-    }
+    return null;
   };
 
   const handleUpdateLogo = files => {
@@ -128,15 +118,13 @@ const LogoLayout = () => {
       const type = getMimeType(files);
       const [, logoExtension] = type.split('/');
       const logoFileId = `${uuid()}.${logoExtension}`;
-      const user = getCachedUser();
 
       const resources = { files: files, fileId: logoFileId, fileType: FileType.LOGO };
-
       await fileProvider.saveOrUpdate(resources);
 
       notify('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.', { type: 'success' });
 
-      cacheUser({ ...user, logoFileId: logoFileId });
+      // cacheUser({ ...user, logoFileId: logoFileId });
     };
 
     updateLogo()
@@ -169,7 +157,7 @@ const LogoLayout = () => {
               }}
             />
           ) : (
-            <Skeleton animaiton='wave' variant='circular' width={128} height={128} sx={{ bgcolor: grey[400] }} />
+            <Skeleton animation='wave' variant='circular' width={128} height={128} sx={{ bgcolor: grey[400] }} />
           )}
         </Badge>
       </label>
@@ -177,14 +165,14 @@ const LogoLayout = () => {
   );
 };
 
-const SubjectToVatSwitch = data => {
+const SubjectToVatSwitch = ({ data }) => {
   const [isLoading, setLoading] = useState(false);
   const notify = useNotify();
   const refresh = useRefresh();
 
   const handleChange = (_event, checked) => {
     const fetch = async () => {
-      await accountProvider.saveOrUpdate([{ ...data.accountHolder.companyInfo, isSubjectToVat: !checked }]);
+      await accountHolderProvider.saveOrUpdate([{ ...data?.accountHolder?.companyInfo, isSubjectToVat: !checked }]);
       refresh();
     };
     setLoading(true);
@@ -196,8 +184,8 @@ const SubjectToVatSwitch = data => {
   return (
     <FormGroup>
       <FormControlLabel
-        control={<Switch disabled={isLoading} checked={!data.accountHolder.companyInfo.isSubjectToVat} onChange={handleChange} />}
-        label={!data.accountHolder.companyInfo.isSubjectToVat ? 'Oui' : 'Non'}
+        control={<Switch disabled={isLoading} checked={!data?.companyInfo?.isSubjectToVat} onChange={handleChange} />}
+        label={!data?.companyInfo?.isSubjectToVat ? 'Oui' : 'Non'}
       />
     </FormGroup>
   );
@@ -205,10 +193,11 @@ const SubjectToVatSwitch = data => {
 
 const IncomeTargets = ({ revenueTargets }) => {
   const currentYear = new Date().getFullYear();
-  const currentIncomeTarget = revenueTargets.filter(item => item.year === currentYear);
-  const currentIncomeTargetValue = currentIncomeTarget[0]
-    ? prettyPrintMinors(currentIncomeTarget[0].amountTarget)
-    : `Vous n'avez pas encore défini votre objectif pour cette année.`;
+  const currentIncomeTarget = revenueTargets?.filter(item => item.year === currentYear);
+  const currentIncomeTargetValue =
+    currentIncomeTarget && currentIncomeTarget[0]
+      ? prettyPrintMinors(currentIncomeTarget[0].amountTarget)
+      : `Vous n'avez pas encore défini votre objectif pour cette année.`;
 
   return <span>{currentIncomeTargetValue}</span>;
 };
@@ -223,25 +212,21 @@ const AccountHolderLayout = props => {
         <EditIcon />
       </IconButton>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
-        <TextField pb={3} source='accountHolder.name' emptyText={emptyText} label='Raison sociale' />
-        <TextField pb={3} source='accountHolder.businessActivities.primary' emptyText={emptyText} label='Activité principale' />
-        <TextField pb={3} source='accountHolder.businessActivities.secondary' emptyText={emptyText} label='Activité secondaire' />
-        <TextField pb={3} source='accountHolder.officialActivityName' emptyText={emptyText} label='Activité officielle' />
-        <FunctionField
-          pb={3}
-          render={data => <Typography>{prettyPrintMinors(data.accountHolder.companyInfo.socialCapital)}</Typography>}
-          label='Capital social'
-        />
-        <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.accountHolder.revenueTargets} />} label='Recette annuelle à réaliser' />
-        <TextField pb={3} source='accountHolder.siren' label='Siren' />
-        <FunctionField pb={3} render={SubjectToVatSwitch} label='Micro-entreprise exonérée de TVA' />
+        <TextField pb={3} source='name' emptyText={emptyText} label='Raison sociale' />
+        <TextField pb={3} source='businessActivities.primary' emptyText={emptyText} label='Activité principale' />
+        <TextField pb={3} source='businessActivities.secondary' emptyText={emptyText} label='Activité secondaire' />
+        <TextField pb={3} source='officialActivityName' emptyText={emptyText} label='Activité officielle' />
+        <RaMoneyField pb={3} render={data => data?.companyInfo?.socialCapital} label='Capital social' />
+        <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.revenueTargets} />} label='Recette annuelle à réaliser' />
+        <TextField pb={3} source='siren' label='Siren' />
+        <FunctionField pb={3} render={data => <SubjectToVatSwitch data={data} />} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>
       <SimpleShowLayout sx={{ display: 'flex', flexDirection: 'row' }}>
-        <TextField pb={3} source='accountHolder.contactAddress.city' emptyText={emptyText} label='Ville' />
-        <TextField pb={3} source='accountHolder.contactAddress.country' emptyText={emptyText} label='Pays' />
-        <TextField pb={3} source='accountHolder.contactAddress.address' emptyText={emptyText} label='Adresse' />
-        <TextField pb={3} source='accountHolder.contactAddress.postalCode' emptyText={emptyText} label='Code postal' />
-        <TextField pb={3} source='accountHolder.companyInfo.townCode' emptyText={emptyText} label='Code de la commune de prospection' />
+        <TextField pb={3} source='contactAddress.city' emptyText={emptyText} label='Ville' />
+        <TextField pb={3} source='contactAddress.country' emptyText={emptyText} label='Pays' />
+        <TextField pb={3} source='contactAddress.address' emptyText={emptyText} label='Adresse' />
+        <TextField pb={3} source='contactAddress.postalCode' emptyText={emptyText} label='Code postal' />
+        <TextField pb={3} source='companyInfo.townCode' emptyText={emptyText} label='Code de la commune de prospection' />
       </SimpleShowLayout>
     </Box>
   );
@@ -251,7 +236,7 @@ const AdditionalInformation = props => {
   const { toggleAccountHolderLayout } = props;
   const [tabIndex, setTabIndex] = useState(0);
 
-  const handleTabChange = (event, newTabIndex) => {
+  const handleTabChange = (_event, newTabIndex) => {
     setTabIndex(newTabIndex);
   };
 
@@ -274,7 +259,6 @@ const AdditionalInformation = props => {
 };
 
 const AccountShow = () => {
-  const userId = authProvider.getCachedWhoami().user.id;
   const [layout, setLayout] = useState(ACCOUNT_HOLDER_LAYOUT.VIEW);
   const refresh = useRefresh();
 
@@ -284,7 +268,7 @@ const AccountShow = () => {
   };
 
   return (
-    <ShowBase resource='account' basePath='/account' id={userId}>
+    <ShowBase resource='accountHolder' basePath='/account'>
       {layout === ACCOUNT_HOLDER_LAYOUT.VIEW ? (
         <Box sx={SHOW_LAYOUT_STYLE}>
           <Box sx={BOX_CONTENT_STYLE}>
