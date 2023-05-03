@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FormProvider, useForm } from 'react-hook-form';
 import { Button, CircularProgress, Typography } from '@mui/material';
-import authProvider from '../providers/auth-provider';
-import { redirect } from '../common/utils/redirect';
-import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
-import { handleSubmit } from '../common/utils';
-import { BpFormField } from '../common/components';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { authProvider } from 'src/providers';
 import { BP_COLOR } from '../bp-theme';
+import { BpFormField } from '../common/components';
+import { handleSubmit } from '../common/utils';
+import { redirect } from '../common/utils/redirect';
 import CompletePasswordPage from './CompletePasswordPage';
+import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 
 const SignInForm = () => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });

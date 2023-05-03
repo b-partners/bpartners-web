@@ -7,7 +7,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BPErrorPage from './common/components/BPErrorPage';
 
 import MyLayout from './common/components/BPLayout';
-import { BP_THEME } from './bp-theme';
 
 import account from './operations/account';
 import { Configuration } from './operations/configurations';
@@ -18,8 +17,6 @@ import products from './operations/products';
 import transactions from './operations/transactions';
 import { prospects } from './operations/prospects';
 
-import authProvider from './providers/auth-provider';
-import dataProvider from './providers/data-provider';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
 import BpLoginPageLayout from './security/LoginPageLayout';
@@ -30,6 +27,8 @@ import { BankPage } from './operations/bank';
 import { PartnersPage } from './operations/partners/PartnersPage';
 import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
+import { BP_THEME } from './bp-theme';
+import { authProvider, dataProvider } from './providers';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -50,7 +49,7 @@ export const BpAdmin = () => {
       <Resource name='invoices' {...invoice} />
       <Resource name='marketplaces' {...marketplaces} />
       <Resource name='prospects' {...prospects} />
-      <Resource name='account' />
+      <Resource name='accountHolder' />
 
       <CustomRoutes>
         <Route exact path='/account' element={<account.show />} />

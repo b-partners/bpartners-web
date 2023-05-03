@@ -1,5 +1,5 @@
 import { Auth } from 'aws-amplify';
-import authProvider from '../../src/providers/auth-provider';
+import { authProvider } from '../../src/providers';
 import { whoami1, user1 } from '../../src/__tests__/mocks/responses/security-api';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 

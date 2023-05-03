@@ -1,7 +1,7 @@
 import { Clear as ClearIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, CardHeader, IconButton, Tooltip, Typography } from '@mui/material';
 import BusinessActivitiesInputs from './BusinessActivityForm';
-import CompanyInfomationForm from './CompanyInformationForm';
+import CompanyInformationForm from './CompanyInformationForm';
 import RevenueTargetForm from './RevenueTargetForm';
 import GeneralInfoForm from './GeneralInfoForm';
 
@@ -40,7 +40,7 @@ const AccountEditionLayout = ({ onClose }) => {
               <Typography variant='h6'>Information sur la société</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <CompanyInfomationForm />
+              <CompanyInformationForm />
             </AccordionDetails>
           </Accordion>
           <Accordion defaultExpanded={true} sx={{ mt: 1 }}>

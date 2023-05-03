@@ -2,14 +2,14 @@ import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import BPFormField from 'src/common/components/BPFormField';
 import { phoneValidator } from 'src/operations/account/utils';
-import { BP_COLOR } from '../bp-theme.js';
-import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
-import { onboarding } from 'src/providers/account-provider';
+import { BP_COLOR } from '../bp-theme';
+import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 import { useNotify } from 'react-admin';
 import { useState } from 'react';
-import { DialogSuccessSignUp } from './DialogSuccessSignUp.js';
 import { handleSubmit } from 'src/common/utils';
 import { useNavigate } from 'react-router-dom';
+import { DialogSuccessSignUp } from './DialogSuccessSignUp';
+import { onboarding } from 'src/providers/account-provider';
 
 export const SignUpForm = () => {
   const notify = useNotify();

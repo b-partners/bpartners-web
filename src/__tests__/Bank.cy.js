@@ -6,7 +6,6 @@ import App from '../App';
 import { whoami1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities, account1 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
-import * as accountProvider from 'src/providers/account-provider';
 import * as Redirect from 'src/common/utils/redirect';
 
 const redirectionUrl = {
@@ -28,7 +27,6 @@ describe(specTitle('Account'), () => {
 
   it('Test bank', () => {
     cy.stub(Redirect, 'redirect');
-    cy.stub(accountProvider, 'clearCachedAccount');
 
     mount(<App />);
     cy.get('[name="bank"]').click();
@@ -45,7 +43,7 @@ describe(specTitle('Account'), () => {
       expect(bankInfo.name).to.eq('Numer');
       expect(bankInfo.bic).to.eq('newBic1234');
       expect(bankInfo.iban).to.eq('iban1234');
-      request.reply({ body: newAccount2 });
+      request.reply({ body: newAccount2[0] });
     }).as('updateBankInfo');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccount2);
 
@@ -81,12 +79,12 @@ describe(specTitle('Account'), () => {
 
   it('Should disconnect bank', () => {
     mount(<App />);
+    cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.get('[name="bank"]').click();
     cy.get('[data-testid="bank-disconnection-front-button"]').click();
     cy.contains('Confirmation');
     cy.contains('Voulez vous déconnecter la banque BMOI ?');
     cy.get("[data-testid='bank-disconnection-button']").click();
-    cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.contains('Aucune banque associée.');
     cy.contains('Cliquez ici pour associer une banque.');
   });

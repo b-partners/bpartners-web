@@ -15,12 +15,13 @@ export const BP_COLOR = {
 export const BP_BUTTON = {
   color: '#fff',
   backgroundColor: BP_COLOR[10],
+  textTransform: 'capitalize',
   '&:hover, &:active': {
     backgroundColor: BP_COLOR['20'],
-    textDecoration: 'underline',
+    cursor: 'pointer',
   },
   '&:disabled': {
-    backgroundColor: BP_COLOR[40],
+    backgroundColor: BP_COLOR['solid_grey'],
   },
 };
 
@@ -62,11 +63,14 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           paddingLeft: 2,
-          '& .RaLayout-content': {
+          '&. RaLayout-content': {
             marginTop: '1rem',
             zIndex: 1,
             width: '98%',
             padding: '1%',
+          },
+          '&. RaLayout-contentWithSidebar': {
+            overflowY: important('scroll'),
           },
         },
       },
@@ -107,6 +111,9 @@ export const BP_THEME = {
             backgroundColor: BP_COLOR[10],
             color: 'white',
             '.MuiCheckbox-root': {
+              color: '#fff',
+            },
+            '.Mui-active': {
               color: '#fff',
             },
           },

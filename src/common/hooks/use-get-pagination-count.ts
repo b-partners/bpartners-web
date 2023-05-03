@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import dataProvider, { maxPageSize } from 'src/providers/data-provider';
+import { dataProvider, maxPageSize } from 'src/providers';
 
 const listSizeName = (source: string, filter?: string) => `bp-${source}-list-Size-filter-by-${filter || 'none'}`;
 const cacheListSize = (source: string, filterName: string, Size: number) => localStorage.setItem(listSizeName(source, filterName), Size.toString());

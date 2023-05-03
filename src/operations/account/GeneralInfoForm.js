@@ -6,8 +6,8 @@ import { Button, CircularProgress } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { generalInfoDiff } from './utils';
 import { toMajors, toMinors } from 'src/common/utils/money';
-import { updateGlobalInformation } from 'src/providers/account-provider';
-import { handleSubmit } from 'src/common/utils';
+import { handleSubmit, printError } from 'src/common/utils';
+import { updateGlobalInformation } from 'src/providers/account-holder-Provider';
 
 const GeneralInfoForm = () => {
   const { record } = useShowContext();
@@ -21,13 +21,8 @@ const GeneralInfoForm = () => {
 
   useEffect(() => {
     if (record) {
-      const {
-        name,
-        siren,
-        officialActivityName,
-        initialCashflow,
-        contactAddress: { address, city, country, postalCode },
-      } = record.accountHolder;
+      const { name, siren, officialActivityName, initialCashflow, contactAddress } = record;
+      const { address, city, country, postalCode } = contactAddress || {};
       const currentAccountHolder = {
         name: name,
         siren: siren,
@@ -40,10 +35,10 @@ const GeneralInfoForm = () => {
       };
       Object.keys(currentAccountHolder).forEach(key => form.setValue(key, currentAccountHolder[key]));
 
-      setTools(properties => ({ ...properties, buttonDisable: generalInfoDiff(record.accountHolder, form.watch()) }));
+      setTools(properties => ({ ...properties, buttonDisable: generalInfoDiff(record, form.watch()) }));
 
       form.watch(data => {
-        const isDifferent = generalInfoDiff(record.accountHolder, data);
+        const isDifferent = generalInfoDiff(record, data);
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
@@ -53,10 +48,8 @@ const GeneralInfoForm = () => {
   const updateGlobalInformationSubmit = form.handleSubmit(data => {
     const fetch = async () => {
       const { name, siren, officialActivityName, initialCashflow, address, city, country, postalCode } = data;
-      const {
-        id,
-        contactAddress: { prospectingPerimeter },
-      } = record.accountHolder;
+      const { id, contactAddress } = record;
+      const { prospectingPerimeter } = contactAddress || {};
       const newGlobalInfo = {
         id: id,
         name: name,
@@ -71,7 +64,7 @@ const GeneralInfoForm = () => {
 
     setLoading(true);
     fetch()
-      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .catch(printError)
       .finally(() => setLoading(false));
   });
 

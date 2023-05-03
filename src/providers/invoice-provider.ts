@@ -1,12 +1,11 @@
-import { BpDataProviderType } from './bp-data-provider-type';
-import { payingApi } from './api';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { invoiceMapper } from 'src/operations/invoice/utils/invoice-utils';
-import { getUserInfo } from './utils';
+import { asyncGetAccountId, getCached, payingApi } from '.';
+import { BpDataProviderType } from './bp-data-provider-type';
 
 export const invoiceProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filter: any): Promise<any[]> {
-    const { accountId } = await getUserInfo();
+    const accountId = await asyncGetAccountId();
     const invoiceTypes: Array<InvoiceStatus> = filter.invoiceTypes;
 
     return Promise.all(
@@ -24,7 +23,7 @@ export const invoiceProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (_invoices: any[], option = {}): Promise<any[]> {
     const { isEdition } = option;
-    const { accountId } = await getUserInfo();
+    const { accountId } = getCached.userInfo();
     const restInvoice = isEdition ? invoiceMapper.toRest({ ..._invoices[0] }) : invoiceMapper.toRest(invoiceMapper.toDomain({ ..._invoices[0] }));
 
     return payingApi()
@@ -32,5 +31,3 @@ export const invoiceProvider: BpDataProviderType = {
       .then(({ data }) => [data]);
   },
 };
-
-export default invoiceProvider;

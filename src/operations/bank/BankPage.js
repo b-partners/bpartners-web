@@ -19,23 +19,19 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useNotify } from 'react-admin';
-import { handleSubmit, printError } from 'src/common/utils';
 import { redirect } from 'src/common/utils/redirect';
-import { disconnectBank, initiateBankConnection, singleAccountGetter } from 'src/providers/account-provider';
-import authProvider from 'src/providers/auth-provider';
 import { BankInformationForm } from './BankInformationForm';
 import { BALANCE_ICON, BANK_CARD, BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
+import { useNotify } from 'react-admin';
+import { handleSubmit, printError } from 'src/common/utils';
+import { accountProvider, bankProvider, getCached } from 'src/providers';
 
 export const BankPage = () => {
-  const [account, setAccount] = useState(null);
+  const [account, setAccount] = useState(getCached.account());
 
   useEffect(() => {
     const updateAccount = async () => {
-      const {
-        user: { id },
-      } = authProvider.getCachedWhoami();
-      const currentAccount = await singleAccountGetter(id);
+      const currentAccount = await accountProvider.getOne();
       setAccount(currentAccount);
     };
     updateAccount().catch(printError);
@@ -50,7 +46,7 @@ const NoBank = () => {
   const initiateBankConnectionAsync = () => {
     const fetch = async () => {
       setLoading(true);
-      const redirectionUrl = await initiateBankConnection();
+      const redirectionUrl = await bankProvider.initiateConnection();
       redirect(redirectionUrl.redirectionUrl);
     };
     fetch().catch(printError);
@@ -157,7 +153,7 @@ const BankDisconnection = ({ isOpen, onClose, bank, setAccount }) => {
   const handleDisconnectBank = async () => {
     setLoading(true);
     const fetch = async () => {
-      const newAccount = await disconnectBank();
+      const newAccount = await bankProvider.endConnection();
       setAccount(newAccount);
       onClose();
       notify('messages.disconnection.success', { type: 'success' });

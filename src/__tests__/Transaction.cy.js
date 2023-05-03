@@ -10,12 +10,8 @@ import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
 
-const date = new Date().toISOString().slice(0, 10);
-
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
-    cy.viewport(1326, 514);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
@@ -30,9 +26,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2022`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/transactionsSummary?year=2021`, transactionsSummary1).as('getEmptyTransactionSummary');
     cy.intercept('POST', `accounts/${accounts1[0].id}/transactions/${transactions[0].id}/transactionCategories`, transactions).as('getEmptyTransactionSummary');
-    cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories?transactionType=INCOME&from=${date}&to=${date}`, transactionCategory1).as(
-      'getTransactionCategory'
-    );
+    cy.intercept('GET', `/accounts/mock-account-id1/transactionCategories**`, transactionCategory1).as('getTransactionCategory');
   });
 
   it('can be categorized', () => {
@@ -40,7 +34,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
-    cy.get(':nth-child(1) > :nth-child(3) > .MuiTypography-root > .MuiBox-root > [data-testid="EditIcon"]').click();
+    cy.get('[data-testid="transaction-add-category-transaction3"]').click();
     cy.wait('@getTransactionCategory');
     cy.get('.MuiButtonBase-root > [data-testid="ArrowDropDownIcon"]').click();
     cy.contains('Autres dépenses').click();
@@ -56,11 +50,15 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.contains("Abonnement BPartners - L'essentiel");
-    cy.contains('- 0.05 €');
-    cy.contains('+ 5.00 €');
-    cy.contains('TVA 20%');
+    cy.contains('- 0,05 €');
+    cy.contains('+ 0,05 €');
     cy.contains('18/08/2022');
     cy.contains('05:34:20');
+    cy.contains('Acceptée');
+    cy.get('#categorized').click();
+    cy.contains('En attente');
+    cy.contains('Rejetée');
+    cy.contains('En traitement');
   });
 
   it('display graphic summary', () => {
@@ -81,9 +79,9 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Recette 2023');
     cy.contains('Trésorerie 2023');
 
-    cy.contains('2100.00 €');
-    cy.contains('1000.00 €');
-    cy.contains('1100.00 €');
+    cy.contains('2100,00 €');
+    cy.contains('1000,00 €');
+    cy.contains('1100,00 €');
 
     cy.get('[name="datePicker"]').clear().type(2022);
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
@@ -95,8 +93,8 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('[name="datePicker"]').clear().type('janvier 2023');
 
-    cy.contains('120.00 €');
-    cy.contains('0.00 €');
+    cy.contains('120,00 €');
+    cy.contains('0,00 €');
 
     cy.contains('Dépense');
     cy.contains('Recette');
@@ -106,9 +104,9 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('[name="datePicker"]').clear().type('avril 2023');
 
-    cy.contains('130.00 €');
-    cy.contains('10.00 €');
-    cy.contains('330.00 €');
+    cy.contains('130,00 €');
+    cy.contains('10,00 €');
+    cy.contains('330,00 €');
 
     cy.get('[name="datePicker"]').clear().type('décembre 2023');
 
@@ -129,15 +127,15 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="datePicker"]').clear().type(2023);
 
     cy.contains('Objectif annuel (10.00 % atteint)');
-    cy.contains('Recette de cette année : 12000.00 €');
-    cy.contains('120000.00 €');
+    cy.contains('Recette de cette année : 12000,00 €');
+    cy.contains('120000,00 €');
 
     cy.get('[name="datePicker"]').clear().type(2022);
     cy.contains(`Vous n'avez pas défini d'objectif pour cette année. Veuillez accéder à l'onglet mon compte pour définir votre objectif annuel.`);
 
     cy.get('[name="datePicker"]').clear().type(2021);
     cy.contains('Objectif annuel (100 % atteint. +8.33 %)');
-    cy.contains('Recette de cette année : 130000.00 €');
+    cy.contains('Recette de cette année : 130000,00 €');
   });
 
   it('display current balance all the time', () => {
@@ -148,28 +146,16 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.wait('@getTransactionsSummary');
-    cy.contains('Solde du jour : 220.00 €');
+    cy.contains('Solde du jour : 220,00 €');
 
     cy.get('#annualSummarySwitch').click();
 
     cy.get('[name="datePicker"]').clear().type('janvier 2023');
-    cy.contains('Solde du jour : 220.00 €');
+    cy.contains('Solde du jour : 220,00 €');
     cy.contains('Trésorerie');
     cy.get('[name="datePicker"]').clear().type('décembre 2023');
-    cy.contains('Solde du jour : 220.00 €');
+    cy.contains('Solde du jour : 220,00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
-  });
-
-  it('display statuses correctly', () => {
-    mount(<App />);
-    cy.get('[name="transactions"]').click();
-
-    cy.wait('@legalFiles');
-
-    cy.contains('En attente');
-    cy.contains('Acceptée');
-    cy.contains('Rejetée');
-    cy.contains('En traitement');
   });
 
   it('are filterable', () => {
@@ -202,26 +188,27 @@ describe(specTitle('Transactions'), () => {
       const { pageSize, status, page } = req.query;
       req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
     });
-    cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction1/invoices/invoice-PAID-0-id`, transactions[0]).as('linkInvoiceAndTransaction');
+    cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction3/invoices/invoice-PAID-0-id`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
     cy.wait('@getTransactions5');
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="AddLinkIcon"] > path').click();
+    cy.get('[data-testid="transaction3-link-invoice-button"]').click();
 
     cy.contains(/Lier la transaction (.*) à une facture :/);
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const newTransaction = transactions.slice();
     newTransaction[0].invoice = { fileId: 'file-id-1', invoiceId: 'invoice-id-1' };
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', newTransaction).as('getTransactionsWithInvoice5');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions**', newTransaction).as('getTransactionsWithInvoice5');
 
     cy.get('#link-invoice-button-id').click();
     cy.wait('@linkInvoiceAndTransaction');
     cy.wait('@getTransactionsWithInvoice5');
 
+    cy.get('#categorized').click();
     cy.get('#document-button-transaction1').click();
     cy.contains('Justificatif');
     cy.get('[data-testid="ClearIcon"]').click();

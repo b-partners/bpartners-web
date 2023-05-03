@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const BPDialog = props => {
-  const { title, content, btnLabel, handleClick, open = false, onClose = false, closeBtnLabel = false } = props;
+  const { title, content, btnLabel, handleClick, open = false, onClose = () => {}, closeBtnLabel = false } = props;
 
   return (
     <div>
@@ -9,7 +9,9 @@ const BPDialog = props => {
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <DialogContent>
           {content.map((text, index) => (
-            <DialogContentText id={`text_${index}`}>{text}</DialogContentText>
+            <DialogContentText key={`${title}_text_key_${index}`} id={`text_${index}`}>
+              {text}
+            </DialogContentText>
           ))}
         </DialogContent>
         <DialogActions>

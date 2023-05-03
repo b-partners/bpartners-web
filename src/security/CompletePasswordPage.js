@@ -1,10 +1,9 @@
-import authProvider from 'src/providers/auth-provider';
-
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
 import { Button, Typography } from '@mui/material';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { BP_BUTTON } from 'src/bp-theme';
+import { BpFormField } from 'src/common/components';
 import { handleSubmit } from 'src/common/utils';
+import { authProvider } from 'src/providers';
 
 const CompletePasswordForm = () => {
   const form = useForm({ defaultValues: { newPassword: '', confirmedPassword: '' }, mode: 'all' });

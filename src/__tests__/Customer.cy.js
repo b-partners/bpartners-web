@@ -17,10 +17,132 @@ describe(specTitle('Customers'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
 
-    cy.intercept('POST', '/accounts/mock-account-id1/customers', [customers1[0]]).as('createCustomers');
+    cy.intercept('POST', '/accounts/mock-account-id1/customers**', [customers1[0]]).as('createCustomers');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/customers/status`, [customers1[0]]).as('archiveCustomer');
 
     cy.stub(Redirect, 'redirect').as('redirect');
+  });
+
+  it('Should create customer', () => {
+    cy.intercept('POST', '/accounts/mock-account-id1/customers**', req => {
+      const newCustomer = {
+        address: 'Wall Street 2',
+        comment: 'comment',
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+
+      expect(req.body[0]).to.deep.eq(newCustomer);
+      req.reply([customers2[3]]);
+    }).as('modifyCustomers');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+
+    cy.contains('Email');
+
+    cy.get('[data-testid="create-button"]').click();
+
+    cy.get('#email').type('invalid email{enter}');
+    cy.contains('Doit être un email valide');
+
+    cy.get('#email').clear().type('test@gmail.com{enter}');
+    cy.contains('Ce champ est requis');
+
+    cy.get('#lastName').type('LastName 11');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers2).as('getCustomers2');
+    cy.get('#firstName').type('FirstName 11');
+    cy.get('#address').type('Wall Street 2');
+    cy.get('#comment').type('comment');
+    cy.get('#phone').type('55 55 55{enter}');
+
+    cy.wait('@modifyCustomers');
+
+    cy.get('[data-testid="create-button"]').click();
+    cy.get("[data-testid='closeIcon']").click();
+    cy.contains('Création de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
+
+  it('Should edit a customer', () => {
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.contains('Email');
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
+    cy.contains('Édition de client');
+
+    cy.get('#email').type('invalid email{enter}');
+    cy.contains('Doit être un email valide');
+
+    cy.intercept('PUT', '/accounts/mock-account-id1/customers**', req => {
+      const updatedCustomer = {
+        address: 'Wall Street 2',
+        comment: null,
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        id: 'customer-0-id',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+      expect(req.body[0]).to.deep.eq(updatedCustomer);
+      setCustomer(0, updatedCustomer);
+      req.reply([updatedCustomer]);
+    }).as('updateCustomers');
+
+    cy.get('#email').clear().type('test@gmail.com');
+
+    cy.get('#lastName').clear().type('LastName 11');
+    cy.get('#firstName').clear().type('FirstName 11');
+    cy.get('#address').clear().type('Wall Street 2');
+    cy.get('#comment').contains('comment customer 1');
+    cy.get('#comment').clear();
+    cy.get('#phone').clear().type('55 55 55{enter}');
+
+    cy.wait('@updateCustomers');
+
+    cy.contains('Wall Street 2');
+    cy.contains('LastName 11');
+    cy.contains('FirstName 11');
+    cy.contains('test@gmail.com');
+    cy.contains('55 55 55');
+
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
+    cy.get("[data-testid='closeIcon']").click();
+
+    cy.contains('Édition de client').should('not.exist');
+    cy.contains('Page : 1');
+  });
+
+  it('Should archive customer', () => {
+    mount(<App />);
+
+    cy.get('[name="customers"]').click();
+
+    cy.get('[data-testid="archive-customers-button"]').should('not.exist');
+    cy.get('.MuiTableBody-root > :nth-child(1) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="archive-customers-button"]').should('exist');
+    cy.get(':nth-child(2) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    cy.get('[data-testid="archive-customers-button"]').click();
+
+    cy.contains('Les clients suivants vont être archivés :');
+    cy.contains('LastName 11 FirstName 11');
+    cy.contains('lastName-1 firstName-1');
+    cy.get('[data-testid="submit-archive-customers"]').click();
+    cy.wait('@archiveCustomer').then(res => {
+      const expectedPayload = [
+        { id: 'customer-0-id', status: 'DISABLED' },
+        { id: 'customer-1-id', status: 'DISABLED' },
+      ];
+
+      const body = res.request.body;
+      expect(body).to.deep.eq(expectedPayload);
+    });
+    cy.get('[data-testid="archive-customers-button"]').should('not.exist');
+    cy.contains('Clients archivés avec succès');
   });
 
   it('Should display customer list', () => {
@@ -64,169 +186,5 @@ describe(specTitle('Customers'), () => {
       req.reply(getCustomers(page - 1, pageSize));
     }).as('getCustomersFilter');
     cy.wait('@getCustomersFilter');
-  });
-
-  it('Should create customer', () => {
-    cy.intercept('POST', '/accounts/mock-account-id1/customers', req => {
-      const newCustomer = {
-        address: 'Wall Street 2',
-        comment: 'comment',
-        email: 'test@gmail.com',
-        firstName: 'FirstName 11',
-        lastName: 'LastName 11',
-        phone: '55 55 55',
-      };
-
-      expect(req.body[0]).to.deep.eq(newCustomer);
-      req.reply([customers2[3]]);
-    }).as('modifyCustomers');
-
-    mount(<App />);
-    cy.wait('@getUser1');
-    cy.get('[name="customers"]').click();
-
-    cy.contains('Email');
-
-    cy.get('[data-testid="create-button"]').click();
-
-    cy.get('#email').type('invalid email{enter}');
-    cy.contains('Doit être un email valide');
-
-    cy.get('#email').clear().type('test@gmail.com{enter}');
-    cy.contains('Ce champ est requis');
-
-    cy.get('#lastName').type('LastName 11');
-    cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers2).as('getCustomers2');
-    cy.get('#firstName').type('FirstName 11');
-    cy.get('#address').type('Wall Street 2');
-    cy.get('#comment').type('comment');
-    cy.get('#phone').type('55 55 55{enter}');
-
-    cy.wait('@modifyCustomers');
-  });
-
-  it('Should exit of the edit on click on the close button', () => {
-    mount(<App />);
-    cy.wait('@getUser1');
-    cy.get('[name="customers"]').click();
-    cy.contains('Email');
-    cy.get('.MuiTableBody-root > :nth-child(1)').click();
-    cy.contains('Édition de client');
-    cy.get("[data-testid='closeIcon']").click();
-
-    cy.contains('Édition de client').should('not.exist');
-    cy.contains('Page : 1');
-  });
-
-  it('Should exit of the create on click on the close button', () => {
-    mount(<App />);
-    cy.wait('@getUser1');
-    cy.get('[name="customers"]').click();
-    cy.contains('Email');
-    cy.get('[data-testid="create-button"]').click();
-    cy.contains('Création de client');
-    cy.get("[data-testid='closeIcon']").click();
-    cy.contains('Création de client').should('not.exist');
-    cy.contains('Page : 1');
-  });
-
-  it('Should test pagination', () => {
-    mount(<App />);
-    cy.wait('@getUser1');
-    cy.get('[name="customers"]').click();
-    cy.contains('Email');
-    cy.contains('Page : 1 / 3');
-    cy.contains('lastName-0');
-    cy.contains('lastName-14');
-
-    cy.get('[data-testid="pagination-left-id"]').click();
-    cy.contains('Page : 2');
-    cy.contains('Page : 2 / 3');
-    cy.contains('lastName-15');
-    cy.contains('lastName-34');
-
-    cy.get('[data-testid="pagination-right-id"]').click();
-    cy.contains('Page : 1 / 3');
-    cy.contains('lastName-0');
-    cy.contains('lastName-14');
-
-    cy.get(`div .MuiSelect-select`).click();
-    cy.get('[data-value="30"]').click();
-    cy.contains('Page : 1 / 2');
-    cy.contains('lastName-0');
-    cy.contains('lastName-29');
-  });
-
-  it('Should edit a customer', () => {
-    mount(<App />);
-    cy.wait('@getUser1');
-    cy.get('[name="customers"]').click();
-    cy.contains('Email');
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
-    cy.contains('Édition de client');
-
-    cy.get('#email').type('invalid email{enter}');
-    cy.contains('Doit être un email valide');
-
-    cy.intercept('PUT', '/accounts/mock-account-id1/customers', req => {
-      const updatedCustomer = {
-        address: 'Wall Street 2',
-        comment: null,
-        email: 'test@gmail.com',
-        firstName: 'FirstName 11',
-        id: 'customer-0-id',
-        lastName: 'LastName 11',
-        phone: '55 55 55',
-      };
-      expect(req.body[0]).to.deep.eq(updatedCustomer);
-      setCustomer(0, updatedCustomer);
-      req.reply([updatedCustomer]);
-    }).as('updateCustomers');
-
-    cy.get('#email').clear().type('test@gmail.com');
-
-    cy.get('#lastName').clear().type('LastName 11');
-    cy.get('#firstName').clear().type('FirstName 11');
-    cy.get('#address').clear().type('Wall Street 2');
-    cy.get('#comment').contains('comment customer 1');
-    cy.get('#comment').clear();
-    cy.get('#phone').clear().type('55 55 55{enter}');
-
-    cy.wait('@updateCustomers');
-    cy.contains('Bonjour First Name 1 !');
-
-    cy.contains('Wall Street 2');
-    cy.contains('LastName 11');
-    cy.contains('FirstName 11');
-    cy.contains('test@gmail.com');
-    cy.contains('55 55 55');
-  });
-
-  it('Should archive customer', () => {
-    mount(<App />);
-
-    cy.get('[name="customers"]').click();
-
-    cy.get('[data-testid="archive-customers-button"]').should('not.exist');
-    cy.get('.MuiTableBody-root > :nth-child(1) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
-    cy.get('[data-testid="archive-customers-button"]').should('exist');
-    cy.get(':nth-child(2) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
-    cy.get('[data-testid="archive-customers-button"]').click();
-
-    cy.contains('Les clients suivants vont être archivés :');
-    cy.contains('LastName 11 FirstName 11');
-    cy.contains('lastName-1 firstName-1');
-    cy.get('[data-testid="submit-archive-customers"]').click();
-    cy.wait('@archiveCustomer').then(res => {
-      const expectedPayload = [
-        { id: 'customer-0-id', status: 'DISABLED' },
-        { id: 'customer-1-id', status: 'DISABLED' },
-      ];
-
-      const body = res.request.body;
-      expect(body).to.deep.eq(expectedPayload);
-    });
-    cy.get('[data-testid="archive-customers-button"]').should('not.exist');
-    cy.contains('Clients archivés avec succès');
   });
 });

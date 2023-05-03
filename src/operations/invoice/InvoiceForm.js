@@ -4,7 +4,6 @@ import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import invoiceProvider from 'src/providers/invoice-provider';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
@@ -37,6 +36,7 @@ import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { BpFormField } from 'src/common/components';
 import { validateDIPAllowed, validateDPPercent } from './utils';
 import { handleSubmit, printError } from 'src/common/utils';
+import { invoiceProvider } from 'src/providers/invoice-provider';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
@@ -141,7 +141,7 @@ const InvoiceForm = props => {
               label='Date limite de validité'
               type='date'
             />
-            <ClientSelection name='customer' label='Client' form={form} />
+            <ClientSelection name='customer' label='Client' />
             <BpFormField name='comment' rows={3} multiline label='Commentaire' shouldValidate={false} />
             <CheckboxForm switchlabel='Ajouter un délai de retard de paiement autorisé' type='number' name='delayInPaymentAllowed' label='Délai de retard'>
               <BpFormField

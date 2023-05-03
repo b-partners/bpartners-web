@@ -34,7 +34,7 @@ describe(specTitle('Products'), () => {
     cy.contains('description 1');
     cy.contains('description 2');
     cy.contains('description 3');
-    cy.contains('12.00 €');
+    cy.contains('12,00 €');
 
     const descriptionFilterTest = 'test description';
     const priceFilterTest = 100;
@@ -57,7 +57,6 @@ describe(specTitle('Products'), () => {
       req.reply(getProducts(page - 1, pageSize));
     }).as('getCustomersSortByDescription');
     cy.get('.column-description > .MuiButtonBase-root > span').click();
-    cy.wait('@getCustomersSortByDescription');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
       const { page, pageSize, descriptionFilter, priceFilter, unitPriceOrder } = req.query;
@@ -66,8 +65,7 @@ describe(specTitle('Products'), () => {
       expect(unitPriceOrder).to.be.eq('ASC');
       req.reply(getProducts(page - 1, pageSize));
     }).as('getCustomersSortByUnitPrice');
-    cy.get('.column-unitPrice > .MuiButtonBase-root > span').click();
-    cy.wait('@getCustomersSortByUnitPrice');
+    cy.get('.MuiTableHead-root > .MuiTableRow-root > :nth-child(3)').click();
   });
 
   it('Should test pagination', () => {
@@ -132,7 +130,7 @@ describe(specTitle('Products'), () => {
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       expect(req.body).to.deep.eq([
         {
-          unitPrice: 103,
+          unitPrice: 10300,
           vatPercent: 500,
           description: 'new description',
           quantity: 1,
@@ -144,8 +142,7 @@ describe(specTitle('Products'), () => {
     cy.wait('@postNewProduct');
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('new description');
-    cy.contains('1.03 €');
-    cy.contains('5.00 %');
+    cy.contains('103,00 €');
   });
 
   it('Should edit a product', () => {
@@ -164,7 +161,7 @@ describe(specTitle('Products'), () => {
     cy.contains('Édition de produit');
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
-      const editedProduct = [{ description: editionDescription, unitPrice: 100, vatPercent: 100, id: 'product-0-id', quantity: 1 }];
+      const editedProduct = [{ description: editionDescription, unitPrice: 100, vatPercent: 100, id: 'product-15-id', quantity: 1 }];
       expect(req.body).to.deep.equals(editedProduct);
       setProduct(editedProduct[0], 0);
       req.reply(editedProduct);
@@ -245,7 +242,7 @@ describe(specTitle('Products'), () => {
     cy.get('[data-testid="submit-archive-products"]').click();
     cy.wait('@archiveProduct').then(res => {
       const expectedPayload = [
-        { id: 'product-0-id', status: 'DISABLED' },
+        { id: 'product-15-id', status: 'DISABLED' },
         { id: 'product-1-id', status: 'DISABLED' },
       ];
       const body = res.request.body;

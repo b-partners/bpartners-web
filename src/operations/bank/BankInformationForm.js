@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
-import { updateBankInformation } from 'src/providers/account-provider';
 import { BIC_MESSAGE_CONTAINER } from './style';
 import { handleSubmit } from 'src/common/utils';
+import { accountProvider } from 'src/providers';
 
 export const BankInformationForm = props => {
   const {
@@ -20,7 +20,7 @@ export const BankInformationForm = props => {
 
   const updateBankInfoSubmit = form.handleSubmit(bankInfo => {
     const fetch = async () => {
-      const newAccount = await updateBankInformation(bankInfo);
+      const newAccount = await accountProvider.updateOne(bankInfo);
       refresh();
       setAccount(newAccount);
     };

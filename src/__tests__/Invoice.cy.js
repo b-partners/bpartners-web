@@ -12,8 +12,6 @@ import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
-    cy.viewport(1326, 514);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
@@ -38,8 +36,8 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
-    cy.contains('120.00 €');
-    cy.contains('20.00 €');
+    cy.contains('120,00 €');
+    cy.contains('20,00 €');
   });
 
   it('Test pagination', () => {
@@ -220,6 +218,6 @@ describe(specTitle('Invoice'), () => {
     // description1 { quantity: 1, unitPrice: 10 }
     // description2 { quantity: 1, unitPrice: 20 }
     // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
-    cy.contains('30.00 €');
+    cy.contains('30,00 €');
   });
 });

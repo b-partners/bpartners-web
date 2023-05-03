@@ -1,155 +1,45 @@
-import {
-  Account,
-  AccountHolder,
-  BankConnectionRedirection,
-  BusinessActivity,
-  CompanyBusinessActivity,
-  CompanyInfo,
-  CreateAnnualRevenueTarget,
-  UpdateAccountHolder,
-  UpdateAccountIdentity,
-  User,
-} from 'bpartners-react-client';
-
-import { onboardingApi, userAccountsApi } from './api';
-import authProvider from './auth-provider';
-import { BpDataProviderType } from './bp-data-provider-type';
-
-import profileProvider from './profile-provider';
-import { createRedirectionUrl } from 'src/common/utils/createRedirectionUrl';
-import { getUserInfo } from './utils';
+import { Account, AccountValidationRedirection, UpdateAccountIdentity } from 'bpartners-react-client';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
+import { BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
-const userItem = 'bp_user';
-const accountItem = 'bp_account';
-const accountHolderItem = 'bp_accountHolder';
-
-export const cacheUser = (user: any) => {
-  localStorage.setItem(userItem, JSON.stringify(user));
-  return user;
-};
-
-export const cacheAccount = (account: any) => {
-  localStorage.setItem(accountItem, JSON.stringify(account));
-  return account;
-};
-
-export const clearCachedAccount = () => localStorage.removeItem(accountItem);
-
-export const cacheAccountHolder = (accountHolder: any) => {
-  localStorage.setItem(accountHolderItem, JSON.stringify(accountHolder));
-  return accountHolder;
-};
-
-export const getCachedUser = (): User => JSON.parse(localStorage.getItem(userItem));
-export const getCachedAccount = (): Account => JSON.parse(localStorage.getItem(accountItem));
-
-export const getCachedAccountHolder = (): AccountHolder => JSON.parse(localStorage.getItem(accountHolderItem));
-
-export const singleAccountGetter = async (userId: string): Promise<Account> => {
-  const hasOnlyOneAccount = (accounts: Account[]) => {
-    if (accounts.length > 1) {
-      throw new Error("NotImplemented('Only 1 user with only 1 account and only 1 accountHolder is supported')");
-    }
-  };
-
-  if (!getCachedAccount()) {
-    const { data } = await userAccountsApi().getAccountsByUserId(userId);
-    hasOnlyOneAccount(data);
-    return cacheAccount(data[0]);
-  }
-  return getCachedAccount();
-};
-
-export const accountHoldersGetter = async (): Promise<AccountHolder> => {
-  if (true) {
-    // TODO: should be !getCachedAccountHolder(), but we force systematic cach resync for now
-    const whoami = authProvider.getCachedWhoami();
-    const account = await singleAccountGetter(whoami?.user?.id);
-    const { data } = await userAccountsApi().getAccountHolders(whoami?.user?.id, account.id);
-    cacheAccountHolder(data[0]);
-  }
-  return getCachedAccountHolder();
-};
-
-export const userGetter = async (userId: string) => getCachedUser() || cacheUser(await profileProvider.getOne(userId));
-
-const accountProvider: BpDataProviderType = {
-  async getOne(userId: string) {
-    return {
-      id: userId,
-      user: await userGetter(userId),
-      accountHolder: await accountHoldersGetter(),
-    };
+export const accountProvider: BpDataProviderType = {
+  async getOne(_userId?: string) {
+    // TODO: return the account with the attribut current = true but wait for the backend to implement it
+    const { userId } = getCached.userInfo();
+    const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId);
+    const account: Account = data[0];
+    return cache.account(account);
   },
-  async saveOrUpdate(resources: CompanyInfo[]): Promise<AccountHolder[]> {
-    const { accountHId, accountId, userId } = await getUserInfo();
-    const { data } = await userAccountsApi().updateCompanyInfo(userId, accountId, accountHId, resources[0]);
-    cacheAccountHolder(data);
-    return [data];
+  async saveOrUpdate(resources: any) {
+    throw new Error('Function not implemented.');
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
-};
-
-export const businessActivitiesProvider = {
-  update: async (resources: CompanyBusinessActivity): Promise<AccountHolder> => {
-    const { accountHId, accountId, userId } = await getUserInfo();
-    const { data } = await userAccountsApi().updateBusinessActivities(userId, accountId, accountHId, resources);
-    cacheAccountHolder(data);
-    return data;
-  },
-  getJobList: async (): Promise<BusinessActivity[]> => {
-    return (await userAccountsApi().getBusinessActivities(1, 100)).data;
+  async updateOne(resource: UpdateAccountIdentity) {
+    const { userId, accountId } = getCached.userInfo();
+    const {
+      data: { name, iban, bic },
+    } = await userAccountsApi().updateAccountIdentity(userId, accountId, resource);
+    return cache.account({ ...getCached.account(), name, iban, bic });
   },
 };
 
-export const revenueTargetsProvider = {
-  update: async (resources: CreateAnnualRevenueTarget[]): Promise<AccountHolder> => {
-    const { accountHId, accountId, userId } = await getUserInfo();
-    const { data } = await userAccountsApi().updateRevenueTargets(userId, accountId, accountHId, resources);
-    cacheAccountHolder(data);
-    return data;
-  },
-};
-
-export const updateGlobalInformation = async (resources: UpdateAccountHolder): Promise<AccountHolder> => {
-  const { userId, accountId, accountHId } = await getUserInfo();
-  const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, accountHId, resources);
-  cacheAccountHolder(data);
-  return data;
-};
-
-export const initiateBankConnection = async (): Promise<BankConnectionRedirection> => {
-  const { userId, accountId } = await getUserInfo();
-  const redirectionUrl = createRedirectionUrl('/bank', '/error');
-  const { data } = await userAccountsApi().initiateBankConnection(userId, accountId, redirectionUrl);
-  clearCachedAccount();
-  return data;
-};
-
-export const disconnectBank = async (): Promise<Account> => {
-  clearCachedAccount();
-  const { userId } = await getUserInfo();
-  const { data: account } = await userAccountsApi().disconnectBank(userId);
-  return cacheAccount(account);
-};
-
-export const updateBankInformation = async (resource: UpdateAccountIdentity) => {
-  const { userId, accountId } = await getUserInfo();
-  await userAccountsApi().updateAccountIdentity(userId, accountId, resource);
-  const { data } = await userAccountsApi().getAccountsByUserId(userId);
-  cacheAccount(data[0]);
-  return data[0];
-};
-
-export const initiateAccountValidation = async () => {
-  const { userId, accountId } = await getUserInfo();
+export const initiateAccountValidation = async (): Promise<AccountValidationRedirection> => {
+  const { userId, accountId } = getCached.userInfo();
   const { data } = await userAccountsApi().initiateAccountValidation(userId, accountId, loginRedirectionUrls);
   return data;
 };
 
 export const onboarding = async (resources: any[]) => await onboardingApi().onboardUsers(resources);
 
-export default accountProvider;
+export const getAccountLogoUrl = () => {
+  const { accessToken } = getCached.token();
+  const { accountId } = getCached.userInfo();
+  const {
+    user: { logoFileId },
+  } = getCached.whoami();
+  return logoFileId
+    ? `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`
+    : null;
+};

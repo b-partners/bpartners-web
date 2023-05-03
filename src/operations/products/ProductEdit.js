@@ -2,6 +2,7 @@ import { Edit, required, SimpleForm, TextInput } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { transformProduct } from './utils';
+import { RaNumberInput } from 'src/common/components';
 
 const ProductEdit = () => {
   const { companyInfo } = useGetAccountHolder();
@@ -12,8 +13,8 @@ const ProductEdit = () => {
       <Edit transform={transformProduct} mutationMode='pessimistic'>
         <SimpleForm title='Édition de produit'>
           <TextInput name='description' source='description' label='Description' validate={required()} />
-          <TextInput name='unitPrice' source='unitPrice' label='Prix unitaire HT' />
-          {isSubjectToVat && <TextInput source='vatPercent' label='TVA' />}
+          <RaNumberInput name='unitPrice' source='unitPrice' label='Prix unitaire HT' endText='€' />
+          {isSubjectToVat && <RaNumberInput source='vatPercent' label='TVA' endText='%' />}
         </SimpleForm>
       </Edit>
     </BPFormLayout>
