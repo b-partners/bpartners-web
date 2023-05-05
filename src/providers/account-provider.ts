@@ -18,6 +18,7 @@ import { BpDataProviderType } from './bp-data-provider-type';
 import profileProvider from './profile-provider';
 import { createRedirectionUrl } from 'src/common/utils/createRedirectionUrl';
 import { getUserInfo } from './utils';
+import loginRedirectionUrls from 'src/security/login-redirection-urls';
 
 const userItem = 'bp_user';
 const accountItem = 'bp_account';
@@ -141,6 +142,12 @@ export const updateBankInformation = async (resource: UpdateAccountIdentity) => 
   const { data } = await userAccountsApi().getAccountsByUserId(userId);
   cacheAccount(data[0]);
   return data[0];
+};
+
+export const initiateAccountValidation = async () => {
+  const { userId, accountId } = await getUserInfo();
+  const { data } = await userAccountsApi().initiateAccountValidation(userId, accountId, loginRedirectionUrls);
+  return data;
 };
 
 export const onboarding = async (resources: any[]) => await onboardingApi().onboardUsers(resources);
