@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
 import { redirect } from '../common/utils/redirect';
 
@@ -56,8 +56,10 @@ const BpLoginPage = () => {
 
 const SignInForm = ({ onSignUp }) => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
+  const [isLoading, setLoading] = useState(false);
 
   const login = formState.handleSubmit(async loginState => {
+    setLoading(true);
     const redirectionUrl = await authProvider.login(loginState);
     redirect(redirectionUrl);
   });
@@ -71,7 +73,14 @@ const SignInForm = ({ onSignUp }) => {
         </Typography>
         <BpFormField name='username' label='Votre email' />
         <BpFormField name='password' type='password' label='Mot de passe' />
-        <Button id='login' style={{ marginTop: '0.5rem' }} type='submit' sx={LOGIN_FORM_BUTTON}>
+        <Button
+          id='login'
+          endIcon={isLoading && <CircularProgress size={20} color='inherit' />}
+          disabled={isLoading}
+          style={{ marginTop: '0.5rem' }}
+          type='submit'
+          sx={LOGIN_FORM_BUTTON}
+        >
           Se connecter
         </Button>
         <Button
