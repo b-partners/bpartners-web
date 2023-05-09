@@ -1,6 +1,5 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';

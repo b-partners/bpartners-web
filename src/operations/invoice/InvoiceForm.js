@@ -20,7 +20,6 @@ import {
   DELAY_PENALTY_PERCENT,
   getInvoicePdfUrl,
   GLOBAL_DISCOUNT,
-  GLOBAL_DISCOUNT_PERCENT_VALUE,
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
@@ -111,11 +110,13 @@ const InvoiceForm = props => {
   useEffect(() => {
     getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
     updateInvoiceForm(toEdit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);
 
   useEffect(() => {
     const onSubmitDebounced = debounce(onSubmit, 1000);
     form.watch(() => onSubmitDebounced());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { companyInfo } = useGetAccountHolder();

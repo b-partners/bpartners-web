@@ -37,6 +37,7 @@ const useGetPaginationCount = (source: string, perPage: number, resourceFilter?:
     } else {
       fetchListSize();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

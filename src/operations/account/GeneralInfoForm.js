@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import BPFormField from 'src/common/components/BPFormField';
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { generalInfoDiff } from './utils';
 import { toMajors, toMinors } from 'src/common/utils/money';
@@ -46,6 +46,7 @@ const GeneralInfoForm = () => {
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleSubmit = form.handleSubmit(async data => {
     try {

@@ -47,7 +47,7 @@ export const SignUpForm = props => {
           <BPFormField label='Prénom' name='firstName' form={form} />
           <BPFormField label='Adresse mail' name='email' form={form} />
           <BPFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
-          <BPFormField label='Raison sociale' name='companyName' form={form} />
+          <BPFormField label='Nom de la société' name='companyName' form={form} />
           <Button disabled={isLoading} id='login' type='submit' sx={{ ...LOGIN_FORM_BUTTON, marginTop: 3 }}>
             S'inscrire
           </Button>
