@@ -7,6 +7,7 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { generalInfoDiff } from './utils';
 import { toMajors, toMinors } from 'src/common/utils/money';
 import { updateGlobalInformation } from 'src/providers/account-provider';
+import { handleSubmit } from 'src/common/utils';
 
 const GeneralInfoForm = () => {
   const { record } = useShowContext();
@@ -48,9 +49,9 @@ const GeneralInfoForm = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const handleSubmit = form.handleSubmit(async data => {
-    try {
-      setLoading(true);
+
+  const updateGlobalInformationSubmit = form.handleSubmit(data => {
+    const fetch = async () => {
       const { name, siren, officialActivityName, initialCashflow, address, city, country, postalCode } = data;
       const {
         id,
@@ -66,15 +67,16 @@ const GeneralInfoForm = () => {
       };
       await updateGlobalInformation(newGlobalInfo);
       notify('Changement enregistré', { type: 'success' });
-    } catch (_err) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   });
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+    <form onSubmit={handleSubmit(updateGlobalInformationSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
       <BPFormField style={{ width: '45%' }} name='name' type='text' form={form} label='Raison Sociale' />
       <BPFormField style={{ width: '45%' }} name='siren' type='number' form={form} label='Siren' />
       <BPFormField style={{ width: '45%' }} name='officialActivityName' type='text' form={form} label='Activité Officielle' />

@@ -35,7 +35,7 @@ const useGetPaginationCount = (source: string, perPage: number, resourceFilter?:
     if (cachedPageSize) {
       setListSize(+cachedPageSize);
     } else {
-      fetchListSize();
+      fetchListSize().catch(err => console.error(err));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

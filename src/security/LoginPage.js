@@ -13,6 +13,7 @@ import { BpFormField } from 'src/common/components';
 import { BP_COLOR } from 'src/bp-theme';
 import { useState } from 'react';
 import { SignUpForm } from './SignUpForm';
+import { handleSubmit } from 'src/common/utils';
 
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
@@ -66,7 +67,7 @@ const SignInForm = ({ onSignUp }) => {
 
   return (
     <FormProvider {...formState}>
-      <form style={LOGIN_FORM} onSubmit={login}>
+      <form style={LOGIN_FORM} onSubmit={handleSubmit(login)}>
         <img src='./laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
         <Typography variant='h5' gutterBottom mt={1}>
           Bienvenue !

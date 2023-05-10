@@ -29,6 +29,7 @@ import authProvider from '../../providers/auth-provider';
 import { filesToArrayBuffer } from '../../common/utils/file';
 import RichTextEditor from '../../common/components/RichTextEditor';
 import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils/utils';
+import { handleSubmit } from 'src/common/utils';
 
 const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();
@@ -44,7 +45,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
 
   const getContext = ({ devis, facture }) => (invoice.status === 'PROPOSAL' ? `${devis} devis` : `${facture} facture`);
 
-  const handleSubmit = async () => {
+  const relaunchInvoiceSubmit = async _event => {
     const userId = authProvider.getCachedWhoami().user.id;
     if (userId) {
       setIsLoading(true);
@@ -61,7 +62,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
         );
         resetInvoice();
       } catch (e) {
-        notify("Une erreur s'est produite", { type: 'error' });
+        notify('messages.global.error', { type: 'error' });
       }
       setIsLoading(false);
     }
@@ -80,7 +81,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
         <DialogActions sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <Button
             disabled={isLoading}
-            onClick={handleSubmit}
+            onClick={handleSubmit(relaunchInvoiceSubmit)}
             data-cy='invoice-relaunch-submit'
             startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
           >
@@ -170,7 +171,7 @@ const InvoiceRelaunchForm = ({ setMessage, setSubject, attachments, setAttachmen
               <InsertDriveFile />
             </IconButton>
           </Tooltip>
-          <input type='file' id='attachment-input' style={{ display: 'none' }} multiple onChange={handleAttachFile} />
+          <input type='file' id='attachment-input' style={{ display: 'none' }} multiple onChange={handleSubmit(handleAttachFile)} />
         </label>
       </AccordionActions>
 

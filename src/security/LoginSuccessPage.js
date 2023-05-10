@@ -8,6 +8,7 @@ import { getUrlParams } from '../common/utils/get-params';
 
 import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
+import { printError } from 'src/common/utils';
 
 const LoginSuccessPage = () => {
   useEffect(() => {
@@ -19,7 +20,7 @@ const LoginSuccessPage = () => {
         clearTimeout(timeoutId);
       }, 3000);
     }
-    login();
+    login().catch(printError);
   }, []);
 
   return (

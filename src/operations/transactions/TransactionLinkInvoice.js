@@ -29,18 +29,17 @@ const SelectionDialog = props => {
   const [isLoading, setLoading] = useState(false);
   const [invoiceToLink, setInvoiceToLink] = useState(null);
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
+  const handleSubmit = () => {
+    const fetch = async () => {
       await justifyTransaction(id, invoiceToLink.id);
       notify(`La transaction "${label}" à été associer au devis "${invoiceToLink.title}"`, { type: 'success' });
       close();
       refresh();
-    } catch (e) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   };
 
   return (

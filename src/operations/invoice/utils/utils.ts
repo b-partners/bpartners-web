@@ -3,6 +3,7 @@ import { accessTokenItem } from 'src/providers/auth-provider';
 import { getFilenameMeta } from '../../../common/utils/file';
 import { InvoiceStatusFR } from '../../../constants/invoice-status';
 import { getUserInfo } from 'src/providers/utils';
+import { printError } from 'src/common/utils';
 
 /**
  * **INVOICE**
@@ -214,7 +215,7 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
   } catch (e) {
     if (isErrorRetriable(e)) {
       await new Promise(r => setTimeout(r, backoffMillis));
-      retryOnError(f, isErrorRetriable, 2 * backoffMillis);
+      retryOnError(f, isErrorRetriable, 2 * backoffMillis).catch(printError);
     } else {
       throw e;
     }

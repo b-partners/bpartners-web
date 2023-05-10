@@ -10,11 +10,11 @@ body {
 body::-webkit-scrollbar {
   width: 6px;
 }
- 
+
 body::-webkit-scrollbar-track {
   box-shadow: inset 1px 1px 6px rgba(255, 0, 0, 0.3);
 }
- 
+
 body::-webkit-scrollbar-thumb {
   background-color: darkgrey;
 }

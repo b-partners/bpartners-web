@@ -22,6 +22,7 @@ import {
 } from '../utils/payment-regulation-utils';
 import { VALIDITY_DATE } from '../utils/utils';
 import PaymentRegulationItem from './PaymentRegulationItem';
+import { handleSubmit } from 'src/common/utils';
 
 const { IN_INSTALMENT } = InvoicePaymentTypeEnum;
 
@@ -105,7 +106,7 @@ const paymentRegulationItems = (onEdit, onRemove) => (paymentRegulation, index) 
 const RegulationsForm = props => {
   const { toEdit, onSave, isCreation, onCancel, paymentRegulations, indexOfSkipped } = props;
   const form = useForm({ mode: 'all', defaultValues: { ...toEdit, maturityDate: isCreation ? getNextMaturityDate(paymentRegulations) : toEdit.maturityDate } });
-  const handleSubmit = form.handleSubmit(onSave);
+  const onSaveSubmit = form.handleSubmit(onSave);
 
   const validatePercentage = e => validateRegulationPercentage({ paymentRegulations, value: e, indexOfSkipped });
 
@@ -130,7 +131,7 @@ const RegulationsForm = props => {
           <BPButton
             style={{ width: 284 }}
             id='form-regulation-save-id'
-            onClick={handleSubmit}
+            onClick={handleSubmit(onSaveSubmit)}
             label={isCreation ? 'Créer' : 'Modifier'}
             icon={<SaveIcon />}
             sx={{ marginBlock: 1 }}

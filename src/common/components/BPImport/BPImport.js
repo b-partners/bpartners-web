@@ -32,12 +32,15 @@ export const BPImport = props => {
   const [errorMessage, setErrorMessage] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = async event => {
+  const handleChange = event => {
     const { files } = event.target;
-    const binary = await toArrayBuffer(event);
+    const fetch = async () => {
+      const binary = await toArrayBuffer(event);
 
-    setFile(binary);
-    setFileName(files[0].name);
+      setFile(binary);
+      setFileName(files[0].name);
+    };
+    fetch().catch(() => notify('messages.global.error', { type: 'error' }));
   };
 
   const handleDelete = () => {
@@ -46,33 +49,35 @@ export const BPImport = props => {
     setErrorMessage();
   };
 
-  const submitFile = async () => {
-    try {
+  const submitFile = () => {
+    const fetch = async () => {
       setIsLoading(true);
       source === 'customer' ? await importCustomers(file) : await importProducts(file);
       notify('Importation effectuée avec succès.', { type: 'success' });
       handleClose();
       refresh();
-    } catch ({ response }) {
-      const {
-        data: { message },
-        status,
-      } = response;
+    };
+    fetch()
+      .catch(({ response }) => {
+        const {
+          data: { message },
+          status,
+        } = response;
 
-      if (status === 400) {
-        let frenchMessage = message.replaceAll('instead of', 'à la place de');
-        frenchMessage = frenchMessage.replaceAll('at column', 'à la colonne');
-        const endOfMessage = frenchMessage.indexOf('at the last column');
-        frenchMessage = endOfMessage !== -1 ? `${frenchMessage.slice(0, endOfMessage)} à la dernière colonne.` : frenchMessage;
-        frenchMessage = frenchMessage.split('. ');
+        if (status === 400) {
+          let frenchMessage = message.replaceAll('instead of', 'à la place de');
+          frenchMessage = frenchMessage.replaceAll('at column', 'à la colonne');
+          const endOfMessage = frenchMessage.indexOf('at the last column');
+          frenchMessage = endOfMessage !== -1 ? `${frenchMessage.slice(0, endOfMessage)} à la dernière colonne.` : frenchMessage;
+          frenchMessage = frenchMessage.split('. ');
 
-        setErrorMessage(frenchMessage.filter(item => item !== ''));
-      }
-
-      notify(`Une erreur s'est produite lors de l'importation.`, { type: 'error' });
-    } finally {
-      setIsLoading(false);
-    }
+          setErrorMessage(frenchMessage.filter(item => item !== ''));
+        }
+        notify(`Une erreur s'est produite lors de l'importation.`, { type: 'error' });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (

@@ -4,6 +4,7 @@ import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, Di
 import { useNotify, useRefresh } from 'react-admin';
 import transactionCategoryProvider from 'src/providers/transaction-category-provider';
 import { BP_COLOR } from 'src/bp-theme';
+import { printError } from 'src/common/utils';
 
 const ICON_STYLE = {
   color: BP_COLOR[30],
@@ -24,7 +25,7 @@ const CustomsAutocomplete = props => {
       const transactionCategoryList = await transactionCategoryProvider.getList(dateFilter, dateFilter, transactionType);
       setAutocompleteData(transactionCategoryList);
     };
-    getTransactionCategory();
+    getTransactionCategory().catch(printError);
   }, [transactionType]);
 
   const handleChange = (e, value) => {
@@ -66,19 +67,21 @@ const SelectionDialog = props => {
     return false;
   };
 
-  const onSubmit = async () => {
-    try {
-      setLoading(true);
+  const onSubmit = () => {
+    const fetch = async () => {
       const { comment, type, vat } = selectedCategory;
       await transactionCategoryProvider.saveOrUpdate(id, { vat: vat * 100, type, comment });
       notify(successMessage(category), { type: 'success' });
       refresh();
-    } catch {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      close();
-      setLoading(false);
-    }
+    };
+
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => {
+        close();
+        setLoading(false);
+      });
   };
 
   return (

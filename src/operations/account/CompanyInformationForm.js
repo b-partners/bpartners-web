@@ -7,6 +7,7 @@ import accountProvider from 'src/providers/account-provider';
 import BPFormField from '../../common/components/BPFormField';
 import { phoneValidator, companyInfoDiff, townCodeValidator } from './utils';
 import { toMinors, toMajors } from '../../common/utils/money';
+import { handleSubmit } from 'src/common/utils';
 
 const CompanyInfomationForm = () => {
   const { record } = useShowContext();
@@ -36,9 +37,8 @@ const CompanyInfomationForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = form.handleSubmit(async data => {
-    try {
-      setLoading(true);
+  const saveOrUpdateAccountSubmit = form.handleSubmit(data => {
+    const fetch = async () => {
       await accountProvider.saveOrUpdate([
         {
           ...data,
@@ -49,15 +49,16 @@ const CompanyInfomationForm = () => {
         },
       ]);
       notify('Changement enregistré', { type: 'success' });
-    } catch (_err) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   });
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+    <form onSubmit={handleSubmit(saveOrUpdateAccountSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
       <BPFormField style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
       <BPFormField style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
       <BPFormField style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />

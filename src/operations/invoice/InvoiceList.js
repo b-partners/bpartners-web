@@ -16,6 +16,7 @@ import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
+import { printError } from 'src/common/utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -31,7 +32,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
       refresh();
     })
     .catch(() => {
-      notify("Une erreur s'est produite", { type: 'error' });
+      notify('messages.global.error', { type: 'error' });
     });
 };
 
@@ -60,7 +61,7 @@ const InvoiceGridTable = props => {
   const handleInvoicePaid = invoice => {
     invoiceProvider.saveOrUpdate([{ ...invoice, status: InvoiceStatus.PAID }]).then(() => {
       notify(`Facture ${invoice.ref} payée !`);
-      refetch();
+      refetch().catch(printError);
     });
   };
 

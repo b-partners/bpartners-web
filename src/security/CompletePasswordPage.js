@@ -4,6 +4,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
 import { Button, Typography } from '@mui/material';
 import { BP_BUTTON } from 'src/bp-theme';
+import { handleSubmit } from 'src/common/utils';
 
 const CompletePasswordForm = () => {
   const form = useForm({ defaultValues: { newPassword: '', confirmedPassword: '' }, mode: 'all' });
@@ -23,7 +24,7 @@ const CompletePasswordForm = () => {
     return true;
   };
 
-  const handleSubmit = form.handleSubmit(passwords => {
+  const setNewPasswordSubmit = form.handleSubmit(passwords => {
     authProvider.setNewPassword(passwords.newPassword);
   });
 
@@ -44,7 +45,7 @@ const CompletePasswordForm = () => {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
+      <form onSubmit={handleSubmit(setNewPasswordSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
         <Typography component='div' variant='h5'>
           Première connexion ?
         </Typography>

@@ -24,6 +24,7 @@ import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
+import { printError } from 'src/common/utils';
 
 const ProfileLayout = () => {
   const emptyText = 'VIDE';
@@ -121,8 +122,8 @@ const LogoLayout = () => {
     }
   };
 
-  const updateLogo = async files => {
-    try {
+  const handleUpdateLogo = files => {
+    const updateLogo = async () => {
       setLogoLoading(true);
       const type = getMimeType(files);
       const [, logoExtension] = type.split('/');
@@ -136,21 +137,23 @@ const LogoLayout = () => {
       notify('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.', { type: 'success' });
 
       cacheUser({ ...user, logoFileId: logoFileId });
-    } catch (err) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      await getLogo();
-    }
+    };
+
+    updateLogo()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => {
+        getLogo().catch(printError);
+      });
   };
 
   useEffect(() => {
-    getLogo();
+    getLogo().catch(printError);
   }, []);
 
   return (
     <Box sx={ACCOUNT_HOLDER_STYLE}>
       <label htmlFor='upload-photo' id='upload-photo-label'>
-        <input style={{ display: 'none' }} id='upload-photo' name='upload-photo' type='file' onChange={updateLogo} />
+        <input style={{ display: 'none' }} id='upload-photo' name='upload-photo' type='file' onChange={handleUpdateLogo} />
         <Badge
           overlap='circular'
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -179,16 +182,15 @@ const SubjectToVatSwitch = data => {
   const notify = useNotify();
   const refresh = useRefresh();
 
-  const handleChange = async (_event, checked) => {
-    try {
-      setLoading(true);
+  const handleChange = (_event, checked) => {
+    const fetch = async () => {
       await accountProvider.saveOrUpdate([{ ...data.accountHolder.companyInfo, isSubjectToVat: !checked }]);
       refresh();
-    } catch (_err) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   };
 
   return (

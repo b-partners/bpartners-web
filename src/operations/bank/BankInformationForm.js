@@ -6,6 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
 import { updateBankInformation } from 'src/providers/account-provider';
 import { BIC_MESSAGE_CONTAINER } from './style';
+import { handleSubmit } from 'src/common/utils';
 
 export const BankInformationForm = props => {
   const {
@@ -17,17 +18,16 @@ export const BankInformationForm = props => {
   const notify = useNotify();
   const refresh = useRefresh();
 
-  const handleSubmit = form.handleSubmit(async bankInfo => {
-    setLoading(true);
-    try {
+  const updateBankInfoSubmit = form.handleSubmit(bankInfo => {
+    const fetch = async () => {
       const newAccount = await updateBankInformation(bankInfo);
       refresh();
       setAccount(newAccount);
-    } catch {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   });
 
   return (
@@ -38,7 +38,7 @@ export const BankInformationForm = props => {
         </Typography>
       </Paper>
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+        <form onSubmit={handleSubmit(updateBankInfoSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
           <BpFormField name='name' label='Nom du compte' />
           <BpFormField name='bic' label='BIC' />
           <BpFormField name='iban' label='IBAN' />
