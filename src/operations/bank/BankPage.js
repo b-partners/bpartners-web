@@ -25,6 +25,7 @@ import authProvider from 'src/providers/auth-provider';
 import { BankInformationForm } from './BankInformationForm';
 import { BALANCE_ICON, BANK_CARD, BANK_LOGO, DISCONNECT_BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 import { useNotify } from 'react-admin';
+import { handleSubmit, printError } from 'src/common/utils';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(null);
@@ -37,7 +38,7 @@ export const BankPage = () => {
       const currentAccount = await singleAccountGetter(id);
       setAccount(currentAccount);
     };
-    updateAccount();
+    updateAccount().catch(printError);
   }, []);
 
   return account && account.bank ? <Bank account={account} setAccount={setAccount} /> : <NoBank account={account} />;
@@ -46,10 +47,13 @@ export const BankPage = () => {
 const NoBank = () => {
   const [isLoading, setLoading] = useState(false);
 
-  const initiateBankConnectionAsync = async () => {
-    setLoading(true);
-    const redirectionUrl = await initiateBankConnection();
-    redirect(redirectionUrl.redirectionUrl);
+  const initiateBankConnectionAsync = () => {
+    const fetch = async () => {
+      setLoading(true);
+      const redirectionUrl = await initiateBankConnection();
+      redirect(redirectionUrl.redirectionUrl);
+    };
+    fetch().catch(printError);
   };
 
   return (
@@ -142,16 +146,15 @@ const BankDisconnection = ({ isOpen, onClose, bank, setAccount }) => {
   const notify = useNotify();
   const handleDisconnectBank = async () => {
     setLoading(true);
-    try {
+    const fetch = async () => {
       const newAccount = await disconnectBank();
       setAccount(newAccount);
       onClose();
       notify('messages.disconnection.success', { type: 'success' });
-    } catch (e) {
-      notify('messages.global.error', { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   };
   return (
     <Dialog open={isOpen} onClose={onClose}>
@@ -162,7 +165,7 @@ const BankDisconnection = ({ isOpen, onClose, bank, setAccount }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button disabled={isLoading} onClick={handleDisconnectBank} data-testid='bank-disconnection-button'>
+        <Button disabled={isLoading} onClick={handleSubmit(handleDisconnectBank)} data-testid='bank-disconnection-button'>
           Déconnecter
         </Button>
         <Button disabled={isLoading} onClick={onClose}>

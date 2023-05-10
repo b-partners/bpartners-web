@@ -19,15 +19,19 @@ import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
 import authProvider from '../providers/auth-provider';
 import accountProvider from 'src/providers/account-provider';
+import { printError } from 'src/common/utils';
 
 const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
   const logout = useCallback(() => {
-    authProvider.logout().then(() => {
-      navigate('/login');
-    });
+    authProvider
+      .logout()
+      .then(() => {
+        navigate('/login');
+      })
+      .catch(printError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <Menu.Item to='#' onClick={logout} name='logout' primaryText='Se déconnecter' leftIcon={<Lock />} />;
@@ -49,11 +53,11 @@ const BpMenu = () => {
 
   const [accountHolder, setAccountHolder] = useState(null);
   useEffect(() => {
-    async function asyncSetAccountHolder() {
+    const asyncSetAccountHolder = async () => {
       const account = await accountProvider.getOne(authProvider.getCachedWhoami().user.id);
       setAccountHolder(account.accountHolder);
-    }
-    asyncSetAccountHolder();
+    };
+    asyncSetAccountHolder().catch(printError);
   }, []);
 
   const hasBusinessActivities = accountHolder =>

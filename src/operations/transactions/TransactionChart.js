@@ -11,6 +11,7 @@ import { prettyPrintMinors } from '../../common/utils/money';
 import BPDatePicker from '../../common/components/BPDatePicker';
 import { BP_COLOR } from 'src/bp-theme';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import { printError } from 'src/common/utils';
 
 const AnnualTargetGraph = ({ year }) => {
   const revenueTargets = useGetAccountHolder().revenueTargets;
@@ -85,7 +86,7 @@ const TransactionChart = () => {
       const { availableBalance } = await getAccount();
       availableBalance && setCurrentBalance(availableBalance);
     };
-    updateBalance();
+    updateBalance().catch(printError);
   }, []);
 
   const [date, setDate] = useState(currentDate);
@@ -126,7 +127,7 @@ const TransactionChart = () => {
     const { year, month } = date;
 
     if (currentYear !== year && `${year}`.length === 4) {
-      getTransactionsSummary(year);
+      getTransactionsSummary(year).catch(printError);
     } else {
       annualSummary ? getAnnualSummary() : getMonthlyTransaction(month);
     }

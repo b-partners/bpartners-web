@@ -25,16 +25,12 @@ const useInvoiceList = () => {
 
   useEffect(() => {
     const getInvoiceList = async () => {
-      try {
-        setLoading(true);
-        const { data } = await dataProvider.getList('invoices', PARAMETERS);
-        setList(data);
-        setLoading(false);
-      } catch {
-        notify("Une erreur s'est produite", { type: 'error' });
-      }
+      setLoading(true);
+      const { data } = await dataProvider.getList('invoices', PARAMETERS);
+      setList(data);
+      setLoading(false);
     };
-    getInvoiceList();
+    getInvoiceList().catch(() => notify('messages.global.error', { type: 'error' }));
   }, [notify]);
 
   const data = filter.length > 0 && list.length > 0 ? list.filter(invoice => invoice.title.toLowerCase().includes(filter.toLowerCase())) : list;

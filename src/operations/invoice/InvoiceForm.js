@@ -36,6 +36,7 @@ import CheckboxForm from './components/CheckboxForm';
 import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { BpFormField } from 'src/common/components';
 import { validateDIPAllowed, validateDPPercent } from './utils';
+import { handleSubmit, printError } from 'src/common/utils';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
@@ -89,7 +90,7 @@ const InvoiceForm = props => {
             .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
             .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
         error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
-      );
+      ).catch(printError);
     })
   );
 
@@ -104,11 +105,13 @@ const InvoiceForm = props => {
       }
     };
 
-    synchronousSaveAndClose();
+    synchronousSaveAndClose().catch(printError);
   };
 
   useEffect(() => {
-    getInvoicePdfUrl(toEdit.fileId).then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl));
+    getInvoicePdfUrl(toEdit.fileId)
+      .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl))
+      .catch(printError);
     updateInvoiceForm(toEdit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);
@@ -127,7 +130,7 @@ const InvoiceForm = props => {
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <FormProvider {...form}>
-        <form style={INVOICE_EDITION.FORM} onSubmit={onSubmit}>
+        <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
             <BpFormField name='title' label='Titre' />
             <BpFormField name='ref' label='Référence' />
@@ -191,7 +194,7 @@ const InvoiceForm = props => {
         </form>
       </FormProvider>
       <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
-        <IconButton id='form-refresh-preview' onClick={form.handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
+        <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
           <RefreshIcon />
         </IconButton>
       </PdfViewer>

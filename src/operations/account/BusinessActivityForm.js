@@ -5,6 +5,7 @@ import { useNotify } from 'react-admin';
 
 import { accountHoldersGetter, businessActivitiesProvider } from 'src/providers/account-provider';
 import { ACTIVITY_TOOLTIP_TITLE, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
+import { printError } from 'src/common/utils';
 
 const CustomAutocomplete = props => {
   const { label, onChange, name, resource, options, style } = props;
@@ -49,25 +50,24 @@ const BusinessActivitiesInputs = () => {
   useEffect(() => {
     // get all job lists
     const getJobList = async () => setJoblist((await businessActivitiesProvider.getJobList()).map(({ name }) => name));
-    getJobList();
+    getJobList().catch(printError);
     // get the current businessActivities
     const getAccountHolder = async () => {
       const currentBusinessActivities = (await accountHoldersGetter())?.businessActivities;
       setBusinessActivities({ new: currentBusinessActivities, current: currentBusinessActivities });
     };
-    getAccountHolder();
+    getAccountHolder().catch(printError);
   }, []);
 
-  const updateBusinessActivities = async () => {
-    setLoading(true);
-    try {
+  const updateBusinessActivities = () => {
+    const fetch = async () => {
       await businessActivitiesProvider.update(businessActivities.new);
       notify('Changement enregistré', { type: 'success' });
-    } catch (error) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   };
 
   return (

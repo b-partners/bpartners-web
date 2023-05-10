@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
 import { accountHoldersGetter, getCachedAccountHolder, updateGlobalInformation } from 'src/providers/account-provider';
+import { printError } from 'src/common/utils';
 
 const ProspectsConfiguration = () => {
   const notify = useNotify();
@@ -20,7 +21,7 @@ const ProspectsConfiguration = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (prospectingPerimeter !== newProspectingPerimeter) {
-        updateProspectingPerimeter(newProspectingPerimeter);
+        updateProspectingPerimeter(newProspectingPerimeter).catch(printError);
       }
     }, 1000);
 
@@ -45,7 +46,7 @@ const ProspectsConfiguration = () => {
       await updateGlobalInformation(newGlobalInfo);
       notify('Changement enregistré', { type: 'success' });
     } catch (_err) {
-      notify("Une erreur s'est produite", { type: 'error' });
+      notify('messages.global.error', { type: 'error' });
     }
   };
 

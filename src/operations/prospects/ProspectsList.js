@@ -28,6 +28,7 @@ import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
 import prospectingProvider from 'src/providers/prospecting-provider';
 import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
+import { handleSubmit } from 'src/common/utils';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -178,7 +179,12 @@ const ProspectItem = ({ prospect }) => {
           >
             <Box sx={{ m: 2 }}>
               <FormControl>
-                <RadioGroup aria-labelledby='demo-radio-buttons-group-label' defaultValue={prospect.status} name='radio-buttons-group' onChange={changeStatus}>
+                <RadioGroup
+                  aria-labelledby='demo-radio-buttons-group-label'
+                  defaultValue={prospect.status}
+                  name='radio-buttons-group'
+                  onChange={handleSubmit(changeStatus)}
+                >
                   <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
                   <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
                   <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
