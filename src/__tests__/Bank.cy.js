@@ -88,6 +88,6 @@ describe(specTitle('Account'), () => {
     cy.get("[data-testid='bank-disconnection-button']").click();
     cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.contains('Aucune banque associée.');
-    cy.contains('Cliquez ici pour associée une banque.');
+    cy.contains('Cliquez ici pour associer une banque.');
   });
 });
