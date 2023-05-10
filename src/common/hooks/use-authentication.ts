@@ -24,8 +24,10 @@ const useAuthentication = () => {
         })
         .catch(() => {
           navigate('/login');
-          authProvider.logout();
-          setState(false);
+          authProvider
+            .logout()
+            .catch(err => console.error(err))
+            .finally(() => setState(false));
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

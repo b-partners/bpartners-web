@@ -3,6 +3,7 @@ import { useNotify } from 'react-admin';
 import { Button, CircularProgress, Stack, TextField } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
 import accountProvider, { accountHoldersGetter } from 'src/providers/account-provider';
+import { printError } from 'src/common/utils';
 
 const LocationEdition = () => {
   const notify = useNotify();
@@ -14,7 +15,7 @@ const LocationEdition = () => {
       setCompanyInfo(currentCompanyInfo);
     };
 
-    getAccountHolder();
+    getAccountHolder().catch(printError);
   }, []);
 
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
@@ -38,19 +39,18 @@ const LocationEdition = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newLocation.longitude, newLocation.latitude]);
 
-  const submitLocation = async () => {
+  const submitLocation = () => {
     const newCompanyInfo = { ...companyInfo, location: { type: 'Point', longitude: +newLocation.longitude, latitude: +newLocation.latitude } };
-
-    try {
-      setLoading(true);
+    const fetch = async () => {
       await accountProvider.saveOrUpdate([newCompanyInfo]);
       notify('Changement enregistré', { type: 'success' });
       setTools({ ...tools, buttonDisable: true });
-    } catch (error) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   };
   return (
     <>

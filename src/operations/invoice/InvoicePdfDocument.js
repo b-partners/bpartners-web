@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/materia
 import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
+import { printError } from 'src/common/utils';
 
 export const CancelButton = ({ onClick }) => (
   <Tooltip title='Retourner a la liste'>
@@ -16,7 +17,9 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
 
   useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId).then(pdfUrl => setDocumentUrl(pdfUrl));
+    getInvoicePdfUrl(selectedInvoice.fileId)
+      .then(pdfUrl => setDocumentUrl(pdfUrl))
+      .catch(printError);
   }, [selectedInvoice]);
 
   return (

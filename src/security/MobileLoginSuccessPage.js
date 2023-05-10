@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { printError } from 'src/common/utils';
 
 const MobileLoginSuccessPage = () => {
   useEffect(() => {
@@ -6,7 +7,7 @@ const MobileLoginSuccessPage = () => {
       window.location.assign(`bpartners://auth${window.location.search}`);
     }
 
-    login();
+    login().catch(printError);
   }, []);
 
   return <p>Vous êtes authentifié ! Vous allez être redirigé !</p>;

@@ -8,6 +8,7 @@ import { onboarding } from 'src/providers/account-provider';
 import { useNotify } from 'react-admin';
 import { useState } from 'react';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp.js';
+import { handleSubmit } from 'src/common/utils';
 
 export const SignUpForm = props => {
   const { onSignIn } = props;
@@ -22,17 +23,17 @@ export const SignUpForm = props => {
   };
   const handleOpenModal = () => setModalState(true);
 
-  const onSubmit = async data => {
+  const onSubmit = form.handleSubmit(async data => {
     try {
       setLoading(true);
       await onboarding([data]);
       handleOpenModal();
     } catch {
-      notify("Une erreur s'est produite", { type: 'error' });
+      notify('messages.global.error', { type: 'error' });
     } finally {
       setLoading(false);
     }
-  };
+  });
 
   return (
     <>
@@ -42,7 +43,7 @@ export const SignUpForm = props => {
         <Typography variant='h5' gutterBottom mt={1}>
           Inscription
         </Typography>
-        <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={form.handleSubmit(onSubmit)}>
+        <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={handleSubmit(onSubmit)}>
           <BPFormField label='Nom' name='lastName' form={form} />
           <BPFormField label='Prénom' name='firstName' form={form} />
           <BPFormField label='Adresse mail' name='email' form={form} />

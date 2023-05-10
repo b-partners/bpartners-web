@@ -29,20 +29,19 @@ const ArchiveBulkAction = ({ source }) => {
   const handleSubmit = () => {
     setLoading(true);
     const archive = async () => {
-      try {
-        const data = selectedIds.map(id => ({ id, status: ProductStatus.DISABLED }));
-        await dataProvider.archive(resource, { data });
-        setLoading(false);
-        handleClose();
-        refresh();
-        unselectAll();
-        notify(`${translate(`resources.${resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
-      } catch (_error) {
-        setLoading(false);
-        notify("Une erreur s'est produite", { type: 'error' });
-      }
+      const data = selectedIds.map(id => ({ id, status: ProductStatus.DISABLED }));
+      await dataProvider.archive(resource, { data });
+      setLoading(false);
+      handleClose();
+      refresh();
+      unselectAll();
+      notify(`${translate(`resources.${resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
     };
-    archive();
+
+    archive().catch(() => {
+      setLoading(false);
+      notify('messages.global.error', { type: 'error' });
+    });
   };
 
   return (

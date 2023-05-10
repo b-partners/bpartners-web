@@ -1,6 +1,6 @@
 import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SidebarToggleButton, useNotify } from 'react-admin';
 import bpLogo from '../../assets/bp-logo-full.webp';
 import accountProvider, { getCachedUser, initiateAccountValidation, singleAccountGetter } from '../../providers/account-provider';
@@ -47,18 +47,19 @@ const BPAppBar = props => {
   const isVerifiedUser = getCachedUser() && getCachedUser().idVerified;
   const notify = useNotify();
 
-  const getFirstName = useCallback(() => {
-    userId && accountProvider.getOne(userId).then(data => setName(data.user.firstName));
-  }, [userId]);
-
-  const getAccountStatus = useCallback(() => {
-    userId && singleAccountGetter(userId).then(data => setStatus(data.status));
-  }, [userId]);
-
   useEffect(() => {
-    getFirstName();
-    getAccountStatus();
-  }, [getFirstName, getAccountStatus]);
+    const fetch = async () => {
+      if (userId) {
+        const {
+          user: { firstName },
+        } = await accountProvider.getOne(userId);
+        const { status } = await singleAccountGetter(userId);
+        setName(firstName);
+        setStatus(status);
+      }
+    };
+    fetch().catch(() => console.error('Error'));
+  }, [userId]);
 
   useEffect(() => {
     const isAccountValidated = () => {

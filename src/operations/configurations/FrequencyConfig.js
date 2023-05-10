@@ -28,20 +28,17 @@ const FrequencyConfig = () => {
     });
   };
 
-  const submitChange = async e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    relaunchProvider
-      .updateConf(frequency)
-      .then(() => {
-        notify('Changements enregistrer', { type: 'success' });
-      })
-      .catch(() => {
-        notify("Une erreur s'est produite", { type: 'error' });
-      });
+    const fetch = async () => {
+      await relaunchProvider.updateConf(frequency);
+      notify('Changements enregistrer', { type: 'success' });
+    };
+    fetch().catch(() => notify('messages.global.error', { type: 'error' }));
   };
 
   return (
-    <form onSubmit={submitChange}>
+    <form onSubmit={handleSubmit}>
       <Box my={2}>
         <Typography variant='body1'>Devis non confirmé (en jour)</Typography>
         <TextField

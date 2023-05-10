@@ -9,6 +9,7 @@ import { reload } from '../../common/utils/reload';
 import { EmptyList } from '../../common/components/EmptyList';
 import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
+import { handleSubmit } from 'src/common/utils';
 
 const INIT_LEGALFILE = {
   id: '',
@@ -30,42 +31,38 @@ export const GeneralConditionOfUse = () => {
   useEffect(() => {
     const fetchLegalFiles = async () => {
       if (userId) {
-        try {
-          setLoading(true);
+        setLoading(true);
 
-          const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
+        const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
 
-          const onlyNotApprovedLegalFiles = lfTemp.filter(legaFile => legaFile.toBeConfirmed && !legaFile.approvalDatetime);
+        const onlyNotApprovedLegalFiles = lfTemp.filter(legaFile => legaFile.toBeConfirmed && !legaFile.approvalDatetime);
 
-          cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
+        cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
 
-          setLegalFiles([...onlyNotApprovedLegalFiles]);
+        setLegalFiles([...onlyNotApprovedLegalFiles]);
 
-          if (onlyNotApprovedLegalFiles.length > 0) {
-            setCguDialogStatus(true);
-          }
-        } catch (e) {
-          notify("Une erreur s'est produite", { type: 'error' });
-        } finally {
-          setLoading(false);
+        if (onlyNotApprovedLegalFiles.length > 0) {
+          setCguDialogStatus(true);
         }
       }
     };
-    fetchLegalFiles();
+    fetchLegalFiles()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   }, [userId, notify]);
 
   useEffect(() => {
     setLegalFile(legalFiles[activeLfIndex]);
   }, [activeLfIndex, legalFiles]);
 
-  const handleSubmit = async () => {
+  const approveLegalFileSubmit = async () => {
     try {
       setLoading(true);
       await approveLegalFile();
 
       activeLfIndex === legalFiles.length - 1 ? reload() : setActiveLfIndex(prevActiveLf => prevActiveLf + 1);
     } catch (e) {
-      notify("Une erreur s'est produite", { type: 'error' });
+      notify('messages.global.error', { type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -87,7 +84,7 @@ export const GeneralConditionOfUse = () => {
       </DialogContent>
 
       <DialogActions>
-        <Button name='lf-next-button' type='button' disabled={false} onClick={handleSubmit}>
+        <Button name='lf-next-button' type='button' disabled={false} onClick={handleSubmit(approveLegalFileSubmit)}>
           {activeLfIndex === legalFiles.length - 1 ? 'Accepter' : 'Accepter et continuer'}
         </Button>
       </DialogActions>

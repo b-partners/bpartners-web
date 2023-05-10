@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { revenueTargetsProvider } from 'src/providers/account-provider';
 import BPFormField from '../../common/components/BPFormField';
 import { toMajors, toMinors } from '../../common/utils/money';
+import { handleSubmit } from 'src/common/utils';
 
 const RevenueTargetForm = () => {
   const currentYear = new Date().getFullYear();
@@ -45,22 +46,21 @@ const RevenueTargetForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = form.handleSubmit(async data => {
+  const updateRevenuTargetSubmit = form.handleSubmit(data => {
     const newRevenueTarget = { amountTarget: toMinors(data.amountTarget), year: currentYear };
 
-    try {
-      setLoading(true);
+    const fetch = async () => {
       await revenueTargetsProvider.update([newRevenueTarget]);
       notify('Changement enregistré', { type: 'success' });
-    } catch (error) {
-      notify("Une erreur s'est produite", { type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+    };
+    setLoading(true);
+    fetch()
+      .catch(() => notify('messages.global.error', { type: 'error' }))
+      .finally(() => setLoading(false));
   });
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+    <form onSubmit={handleSubmit(updateRevenuTargetSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
       <BPFormField
         style={{ width: '45%' }}
         name='amountTarget'
