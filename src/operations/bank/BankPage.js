@@ -71,7 +71,7 @@ const NoBank = () => {
               <span data-testid='initiate-bank-connection-button' style={HERE_LINK} onClick={initiateBankConnectionAsync}>
                 ici
               </span>{' '}
-              pour associée une banque.
+              pour associer une banque.
             </Typography>
           </Box>
         </Paper>
