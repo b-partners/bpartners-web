@@ -171,7 +171,7 @@ describe(specTitle('Customers'), () => {
     cy.intercept('PUT', '/accounts/mock-account-id1/customers', req => {
       const updatedCustomer = {
         address: 'Wall Street 2',
-        comment: '',
+        comment: null,
         email: 'test@gmail.com',
         firstName: 'FirstName 11',
         id: 'customer-0-id',
