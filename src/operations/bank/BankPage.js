@@ -1,7 +1,8 @@
-import { AccountBalance as AccountBalanceIcon, LinkOff as LinkOffIcon } from '@mui/icons-material';
+import { AccountBalance as AccountBalanceIcon } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -11,21 +12,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Modal,
   Paper,
   Stack,
+  Toolbar,
   Typography,
-  Button,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNotify } from 'react-admin';
+import { handleSubmit, printError } from 'src/common/utils';
 import { redirect } from 'src/common/utils/redirect';
 import { disconnectBank, initiateBankConnection, singleAccountGetter } from 'src/providers/account-provider';
 import authProvider from 'src/providers/auth-provider';
 import { BankInformationForm } from './BankInformationForm';
-import { BALANCE_ICON, BANK_CARD, BANK_LOGO, DISCONNECT_BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
-import { useNotify } from 'react-admin';
-import { handleSubmit, printError } from 'src/common/utils';
+import { BALANCE_ICON, BANK_CARD, BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(null);
@@ -105,14 +105,24 @@ const Bank = ({ account, setAccount }) => {
           outline: 'none',
         }}
       >
-        <CardHeader title='Ma banque' />
+        <CardHeader
+          title='Ma banque'
+          action={
+            <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <Button
+                data-testid='bank-disconnection-front-button'
+                endIcon={<AccountBalanceIcon sx={{ mx: 1, transform: 'translateY(-2px)' }} />}
+                onClick={handleOpenDialog}
+              >
+                Déconnecter ma banque
+              </Button>
+            </Toolbar>
+          }
+        />
         <CardContent>
           <Stack direction='row' spacing={2}>
             <Paper sx={BANK_CARD}>
               <img src={account.bank.logoUrl} style={BANK_LOGO} alt='bank-logo' />
-              <IconButton sx={DISCONNECT_BANK_LOGO} title='Déconnecter cette banque.' onClick={handleOpenDialog}>
-                <LinkOffIcon />
-              </IconButton>
               <Typography mt={1} variant='h4'>
                 {account.bank.name}
               </Typography>
