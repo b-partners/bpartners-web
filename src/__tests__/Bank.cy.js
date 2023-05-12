@@ -82,7 +82,7 @@ describe(specTitle('Account'), () => {
   it('Should disconnect bank', () => {
     mount(<App />);
     cy.get('[name="bank"]').click();
-    cy.get('[data-testid="LinkOffIcon"]').click();
+    cy.get('[data-testid="bank-disconnection-front-button"]').click();
     cy.contains('Confirmation');
     cy.contains('Voulez vous déconnecter la banque BMOI ?');
     cy.get("[data-testid='bank-disconnection-button']").click();
