@@ -38,7 +38,6 @@ export const INVOICE_EDITION = {
   },
   ACCORDION_DETAILS: {
     position: 'relative',
-    width: 302,
   },
   PR_ITEMS: {
     width: DEFAULT_ITEMS_WIDTH,
