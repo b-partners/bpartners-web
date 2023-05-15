@@ -17,7 +17,7 @@ const MarketplaceList = () => (
         position: 'fixed',
         top: '4rem',
         right: '1rem',
-        height: '2rem',
+        height: '3rem',
         minWidth: '20rem',
       }}
     >
@@ -64,9 +64,9 @@ const Marketplace = () => {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ ...DETAIL_CONTAINER_STYLE, borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, mt: 1 }}>
+                  <Box sx={{ ...DETAIL_CONTAINER_STYLE, borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, mt: 2.5 }}>
                     <Typography variant='caption'>
-                      site web:{' '}
+                      Site web :{' '}
                       <Link data-testid={`link-${websiteUrl}`} href={websiteUrl} target='_blank' rel='noreferrer' sx={LINK_STYLE}>
                         {name}
                       </Link>
