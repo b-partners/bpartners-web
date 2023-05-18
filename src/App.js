@@ -22,12 +22,14 @@ import authProvider from './providers/auth-provider';
 import dataProvider from './providers/data-provider';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
-import LoginPage from './security/LoginPage';
+import BpLoginPageLayout from './security/LoginPageLayout';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
 import BpFrenchMessages from './common/utils/BpFrenchMessages';
 import { BankPage } from './operations/bank';
 import { PartnersPage } from './operations/partners/PartnersPage';
+import { PasswordChangeableLogin } from './security/SignInForm';
+import { SignUpForm } from './security/SignUpForm';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -66,7 +68,24 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
-        <Route exact path='/login' element={<LoginPage />} />
+        <Route
+          exact
+          path='/login'
+          element={
+            <BpLoginPageLayout>
+              <PasswordChangeableLogin />
+            </BpLoginPageLayout>
+          }
+        />
+        <Route
+          exact
+          path='/sign-up'
+          element={
+            <BpLoginPageLayout>
+              <SignUpForm />
+            </BpLoginPageLayout>
+          }
+        />
         <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
         <Route exact path='*' element={<BpAdmin />} />
       </Routes>

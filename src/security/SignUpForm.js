@@ -9,17 +9,18 @@ import { useNotify } from 'react-admin';
 import { useState } from 'react';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp.js';
 import { handleSubmit } from 'src/common/utils';
+import { useNavigate } from 'react-router-dom';
 
-export const SignUpForm = props => {
-  const { onSignIn } = props;
+export const SignUpForm = () => {
   const notify = useNotify();
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [isModalOpen, setModalState] = useState(false);
   const form = useForm({ mode: 'all' });
 
   const handleCloseModal = () => {
-    onSignIn();
     setModalState(false);
+    navigate('/login');
   };
   const handleOpenModal = () => setModalState(true);
 
@@ -68,7 +69,9 @@ export const SignUpForm = props => {
               color: BP_COLOR[20],
             },
           }}
-          onClick={onSignIn}
+          onClick={() => {
+            navigate('/login');
+          }}
         >
           <Typography variant='h7' gutterBottom mt={1}>
             Vous avez déjà un compte ? <b>Se connecter</b>
