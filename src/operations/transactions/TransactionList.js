@@ -45,16 +45,12 @@ const TransactionList = props => {
             perPage={pageSize}
             pagination={<Pagination /> /*TODO: test that it appears when resourcesCount == 12 */}
             actions={null}
+            filterDefaultValues={{ categorized: true }}
             filters={[
               <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
               <BooleanInput key='transaction_list_boolean_filter' label='Non catégorisées' source='categorized' alwaysOn />,
             ]}
-            hasCreate={false}
-            hasEdit={false}
             component={ListComponent}
-            hasList={false}
-            hasShow={false}
-            aside={false}
           >
             <TransactionGrid onDocumentIconClicked={onDocumentIconClicked} />
           </List>

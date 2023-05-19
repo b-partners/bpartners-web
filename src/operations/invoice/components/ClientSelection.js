@@ -1,12 +1,15 @@
 import { MenuItem, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import customerProvider from 'src/providers/customer-provider';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { customerProvider } from 'src/providers';
 
 export const ClientSelection = props => {
-  const { form, name, label, sx } = props;
-  const { watch, setValue } = form;
-  const [state, setState] = useState({ clients: [], clientSelected: watch(`${name}.name`) || '' });
-  const checkError = !watch(name);
+  const { name, label, sx } = props;
+  const { setValue } = useFormContext();
+  const clientWatch = useWatch({ name });
+  const [state, setState] = useState({ clients: [], clientSelected: `${clientWatch?.lastName} ${clientWatch?.firstName}` || '' });
+  const checkError = !clientWatch;
+
   useEffect(() => {
     customerProvider.getList().then(data => setState({ clients: data }));
   }, []);
@@ -20,7 +23,7 @@ export const ClientSelection = props => {
       sx={{ width: 300, marginBlock: '3px', ...sx }}
       label={label}
       data-testid='invoice-client-selection'
-      value={watch(`${name}.id`) || ''}
+      value={clientWatch?.id || ''}
     >
       {state.clients.length !== 0 ? (
         state.clients.map(client => (

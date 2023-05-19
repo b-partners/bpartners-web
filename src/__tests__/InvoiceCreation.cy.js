@@ -13,8 +13,6 @@ import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice creation'), () => {
   beforeEach(() => {
-    cy.viewport(1920, 1080);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
@@ -40,11 +38,11 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 
-    cy.contains('0.00 €');
+    cy.contains('0,00 €');
 
     cy.get('form input[name="title"]').should('have.value', 'Nouveau devis');
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
@@ -63,7 +61,7 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 
@@ -124,9 +122,9 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('.MuiInputBase-root > #product-selection-id').click();
 
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
-    cy.contains('24.00 € (TTC)');
-    cy.contains('TVA : 0.04 €');
-    cy.contains('10.00 € (HT)');
+    cy.contains('24,00 € (TTC)');
+    cy.contains('TVA : 0,04 €');
+    cy.contains('10,00 € (HT)');
 
     cy.get('[data-testid="product-product-1-id-item"] input').clear().type('15');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
@@ -156,7 +154,7 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-confirmed-invoice']").click();
 

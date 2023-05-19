@@ -1,11 +1,10 @@
 import { useListContext, useNotify, useRefresh, useUnselectAll, useTranslate } from 'react-admin';
-
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { ProductStatus } from 'bpartners-react-client';
+import { ProductStatus as ArchiveStatus } from 'bpartners-react-client';
 import { BPButton } from 'src/common/components/BPButton';
-import dataProvider from 'src/providers/data-provider';
+import { dataProvider } from 'src/providers';
 
 const getValueFromSource = (resource, source) => {
   if (source.includes('|||')) {
@@ -15,7 +14,7 @@ const getValueFromSource = (resource, source) => {
   return resource[source];
 };
 
-const ArchiveBulkAction = ({ source }) => {
+const ArchiveBulkAction = ({ source, statusName }) => {
   const { selectedIds, data, resource } = useListContext();
   const [isDialogOpen, setDialogState] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -29,7 +28,7 @@ const ArchiveBulkAction = ({ source }) => {
   const handleSubmit = () => {
     setLoading(true);
     const archive = async () => {
-      const data = selectedIds.map(id => ({ id, status: ProductStatus.DISABLED }));
+      const data = selectedIds.map(id => ({ id, [statusName || 'status']: ArchiveStatus.DISABLED }));
       await dataProvider.archive(resource, { data });
       setLoading(false);
       handleClose();

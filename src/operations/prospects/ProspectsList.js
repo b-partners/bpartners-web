@@ -25,10 +25,10 @@ import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
 import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
-import prospectingProvider from 'src/providers/prospecting-provider';
 import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
 import { handleSubmit } from 'src/common/utils';
+import { prospectingProvider } from 'src/providers';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -101,7 +101,7 @@ const ProspectColumn = props => {
               </Typography>
             </Paper>
             <Stack spacing={1} sx={{ overflowY: 'scroll', height: '75vh', '&::-webkit-scrollbar': { display: 'none' } }}>
-              {list && list.map(item => <ProspectItem prospect={item} />)}
+              {list && list.map(item => <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />)}
             </Stack>
           </Stack>
         </CardContent>

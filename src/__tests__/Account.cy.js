@@ -20,7 +20,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccount1');
@@ -33,7 +32,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ma société');
     cy.contains('Numer');
     cy.contains('activité officielle');
-    cy.contains('1000.00 €');
+    cy.contains('1000,00 €');
     cy.contains('Ivandry');
     cy.contains('Madagascar');
     cy.contains('6 rue Paul Langevin');
@@ -68,7 +67,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.wait('@getAccountHolder1');
 
     cy.get('[name="account"]').click();
@@ -95,7 +93,6 @@ describe(specTitle('Account'), () => {
         },
       };
 
-      expect(req.body.id).to.deep.eq(newGlobalInfo.id);
       expect(req.body.name).to.deep.eq(newGlobalInfo.name);
       expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
       expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
@@ -109,7 +106,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.wait('@getAccountHolder1');
 
     cy.get('[name="account"]').click();
@@ -146,7 +142,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.wait('@getAccountHolder1');
 
     cy.get('[name="account"]').click();
@@ -195,7 +190,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.get('[name="account"]').click();
     // because the current accountholder's isSubjectToVat is true,
     // the isSubjectToVat switch button shouldn't be activate
@@ -205,7 +199,6 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, aHIsSubjectToVat).as('getAccountHolderSubjectToVat');
     cy.get('.PrivateSwitchBase-input').click();
     //now the isSubjectToVat is false
-    cy.wait('@getAccountHolderSubjectToVat');
     cy.contains('Oui');
 
     cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
@@ -266,13 +259,12 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.get('[name="account"]').click();
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
     cy.contains('Recette annuelle à réaliser');
-    cy.contains('120000.00 €');
+    cy.contains('120000,00 €');
 
     cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
 
@@ -292,18 +284,17 @@ describe(specTitle('Account'), () => {
     cy.get('[data-testid="ClearIcon"]').click();
 
     cy.contains('Recette annuelle à réaliser');
-    cy.contains('230000.00 €');
+    cy.contains('230000,00 €');
   });
 
   it('unverified user warning', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}`, user2).as('getUser2');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user2).as('getUser2');
 
     mount(<App />);
-    cy.wait('@getUser2');
 
     cy.contains('Avertissement');
     cy.contains(`Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au support.`);
@@ -323,7 +314,6 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
 
-    cy.wait('@getUser1');
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccount1');

@@ -1,6 +1,6 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import authProvider from 'src/providers/auth-provider';
+import { authProvider } from 'src/providers';
 import CompletePasswordPage from 'src/security/CompletePasswordPage';
 
 describe(specTitle('Complete password page'), () => {

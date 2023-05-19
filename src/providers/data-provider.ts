@@ -1,14 +1,17 @@
-import { BpDataProviderType } from './bp-data-provider-type';
-import { RaDataProviderType } from './ra-data-provider-type';
-import profileProvider from './profile-provider';
-import accountProvider from './account-provider';
-import customerProvider from './customer-provider';
-import transactionProvider from './transaction-provider';
-import productProvider from './product-provider';
-import marketplaceProvider from './marketplace-provider';
-import invoiceProvider from './invoice-provider';
-import prospectingProvider from './prospecting-provider';
 import { UpdateParams } from 'react-admin';
+import {
+  accountHolderProvider,
+  accountProvider,
+  BpDataProviderType,
+  customerProvider,
+  marketplaceProvider,
+  productProvider,
+  profileProvider,
+  prospectingProvider,
+  RaDataProviderType,
+  transactionProvider,
+} from '.';
+import { invoiceProvider } from './invoice-provider';
 
 export const maxPageSize = 500;
 
@@ -21,10 +24,11 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'marketplaces') return marketplaceProvider;
   if (resourceType === 'prospects') return prospectingProvider;
   if (resourceType === 'invoices') return invoiceProvider;
+  if (resourceType === 'accountHolder') return accountHolderProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
-const dataProvider: RaDataProviderType = {
+export const dataProvider: RaDataProviderType = {
   async getList(resourceType: string, params: any) {
     const pagination = params.pagination;
     const page = pagination.page === 0 ? 1 /* TODO(empty-pages) */ : pagination.page;
@@ -61,5 +65,3 @@ const dataProvider: RaDataProviderType = {
     return { data: result };
   },
 };
-
-export default dataProvider;

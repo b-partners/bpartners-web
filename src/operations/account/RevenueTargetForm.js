@@ -3,10 +3,10 @@ import { Button, CircularProgress, InputAdornment } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { useForm } from 'react-hook-form';
-import { revenueTargetsProvider } from 'src/providers/account-provider';
 import BPFormField from '../../common/components/BPFormField';
 import { toMajors, toMinors } from '../../common/utils/money';
 import { handleSubmit } from 'src/common/utils';
+import { revenueTargetsProvider } from 'src/providers/account-holder-Provider';
 
 const RevenueTargetForm = () => {
   const currentYear = new Date().getFullYear();
@@ -30,7 +30,7 @@ const RevenueTargetForm = () => {
   useEffect(() => {
     // set form default value
     if (record) {
-      const revenueTargets = [...record.accountHolder.revenueTargets];
+      const revenueTargets = [...(record.revenueTargets || [])];
 
       const filteredRevenueTargets = revenueTargets.filter(item => item.year === currentYear)[0];
 

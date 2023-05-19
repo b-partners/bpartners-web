@@ -1,25 +1,24 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  AccountCircle,
   AccountBalance,
+  AccountCircle,
   Category,
+  ContactSupport,
   Euro,
+  Handshake,
   Lock,
   People,
   Receipt,
+  ReceiptLong,
   Settings,
   Store,
-  ContactSupport,
-  ReceiptLong,
-  Handshake,
 } from '@mui/icons-material';
-import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
-import authProvider from '../providers/auth-provider';
-import accountProvider from 'src/providers/account-provider';
 import { printError } from 'src/common/utils';
+import { accountHolderProvider, authProvider } from '../providers';
 
 const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
 
@@ -53,10 +52,11 @@ const BpMenu = () => {
 
   const [accountHolder, setAccountHolder] = useState(null);
   useEffect(() => {
-    const asyncSetAccountHolder = async () => {
-      const account = await accountProvider.getOne(authProvider.getCachedWhoami().user.id);
-      setAccountHolder(account.accountHolder);
-    };
+    async function asyncSetAccountHolder() {
+      const fetchedAccountHolder = await accountHolderProvider.getOne();
+      setAccountHolder(fetchedAccountHolder);
+    }
+
     asyncSetAccountHolder().catch(printError);
   }, []);
 

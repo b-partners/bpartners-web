@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { makeStyles } from '@mui/styles';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
-import { userAccountsApi } from '../../providers/api';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import AuthProvider, { cacheUnapprovedFiles } from '../../providers/auth-provider';
 import { reload } from '../../common/utils/reload';
 import { EmptyList } from '../../common/components/EmptyList';
 import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 import { handleSubmit } from 'src/common/utils';
+import { authProvider, cache, userAccountsApi } from '../../providers';
 
 const INIT_LEGALFILE = {
   id: '',
@@ -19,7 +18,7 @@ const INIT_LEGALFILE = {
 };
 
 export const GeneralConditionOfUse = () => {
-  const userId = AuthProvider.getCachedWhoami()?.user?.id;
+  const userId = authProvider.getCachedWhoami()?.user?.id;
   const notify = useNotify();
 
   const [loading, setLoading] = useState(false);
@@ -35,9 +34,9 @@ export const GeneralConditionOfUse = () => {
 
         const lfTemp = (await userAccountsApi().getLegalFiles(userId)).data;
 
-        const onlyNotApprovedLegalFiles = lfTemp.filter(legaFile => legaFile.toBeConfirmed && !legaFile.approvalDatetime);
+        const onlyNotApprovedLegalFiles = lfTemp.filter(legalFile => legalFile.toBeConfirmed && !legalFile.approvalDatetime);
 
-        cacheUnapprovedFiles(onlyNotApprovedLegalFiles);
+        cache.unapprovedFiles(onlyNotApprovedLegalFiles.length);
 
         setLegalFiles([...onlyNotApprovedLegalFiles]);
 

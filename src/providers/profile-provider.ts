@@ -1,11 +1,9 @@
-import { BpDataProviderType } from './bp-data-provider-type';
-import { userAccountsApi } from './api';
+import { BpDataProviderType, cache, userAccountsApi } from '.';
 
-const profileProvider: BpDataProviderType = {
+export const profileProvider: BpDataProviderType = {
   async getOne(id: string) {
-    return userAccountsApi()
-      .getUserById(id)
-      .then(({ data }) => data);
+    const { data: user } = await userAccountsApi().getUserById(id);
+    return cache.user(user);
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
@@ -14,5 +12,3 @@ const profileProvider: BpDataProviderType = {
     throw new Error('Function not implemented.');
   },
 };
-
-export default profileProvider;

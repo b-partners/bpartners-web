@@ -12,8 +12,6 @@ import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
-    cy.viewport(1920, 1080);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');

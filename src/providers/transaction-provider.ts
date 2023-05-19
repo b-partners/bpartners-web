@@ -1,18 +1,16 @@
-import { BpDataProviderType } from './bp-data-provider-type';
-import { payingApi } from './api';
 import { Transaction, TransactionStatus } from 'bpartners-react-client';
-import { TRANSACTION_STATUSES } from 'src/constants/transaction-status';
-import { getUserInfo } from './utils';
+import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
+import { TRANSACTION_STATUSES } from '../constants/transaction-status';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
 
-const transactionProvider: BpDataProviderType = {
+export const transactionProvider: BpDataProviderType = {
   async getOne(id: string) {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, { categorized, status }: any): Promise<any[]> {
-    const { accountId } = await getUserInfo();
+    const { accountId } = await asyncGetUserInfo();
     //TODO: implements transaction pagination on the back side
     const { data } = await payingApi().getTransactions(accountId, page, perPage);
 
@@ -20,7 +18,7 @@ const transactionProvider: BpDataProviderType = {
       .filter(
         //TODO: following filter can be expressed in a single, well-known, logic operator. What is it?
         //TODO(implement-backend)
-        ({ category }) => !categorized || category == null
+        ({ category }) => (categorized ? category == null : !!category)
       )
       .filter(transaction => (status ? transaction.status === status : true))
       .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));
@@ -31,8 +29,6 @@ const transactionProvider: BpDataProviderType = {
 };
 
 export const justifyTransaction = async (transactionId: string, invoiceId: string): Promise<Transaction> => {
-  const { accountId } = await getUserInfo();
+  const { accountId } = getCached.userInfo();
   return (await payingApi().justifyTransaction(accountId, transactionId, invoiceId)).data;
 };
-
-export default transactionProvider;

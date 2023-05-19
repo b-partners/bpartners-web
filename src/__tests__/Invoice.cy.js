@@ -12,8 +12,6 @@ import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
-    cy.viewport(1326, 514);
-
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
@@ -38,8 +36,8 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
-    cy.contains('120.00 €');
-    cy.contains('20.00 €');
+    cy.contains('120,00 €');
+    cy.contains('20,00 €');
   });
 
   it('Test pagination', () => {
@@ -103,11 +101,13 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
     cy.contains('À confirmer');
+    cy.contains('Brouillon transformé en devis !');
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
     cy.contains('À payer');
+    cy.contains('Devis confirmé');
   });
 
   it('Check if date label are corrects', () => {
@@ -125,7 +125,7 @@ describe(specTitle('Invoice'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"] > .MuiSvgIcon-root').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');
@@ -220,6 +220,6 @@ describe(specTitle('Invoice'), () => {
     // description1 { quantity: 1, unitPrice: 10 }
     // description2 { quantity: 1, unitPrice: 20 }
     // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
-    cy.contains('30.00 €');
+    cy.contains('30,00 €');
   });
 });

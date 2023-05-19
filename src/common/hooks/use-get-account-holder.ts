@@ -1,19 +1,25 @@
 import { AccountHolder } from 'bpartners-react-client';
 import { useEffect, useState } from 'react';
-import { accountHoldersGetter } from 'src/providers/account-provider';
+import { accountHolderProvider, getCached } from '../../providers';
+import { printError } from '../utils';
 
 const useGetAccountHolder = (): AccountHolder => {
-  const [accountHodler, setAccountHolder] = useState<AccountHolder>({});
+  const [accountHolder, setAccountHolder] = useState<AccountHolder>({});
 
   useEffect(() => {
     const getAH = async () => {
-      const aH = await accountHoldersGetter();
-      setAccountHolder(aH);
+      const cached = getCached.accountHolder();
+      if (cached && cached.id) {
+        setAccountHolder(cached);
+      } else {
+        const aH = await accountHolderProvider.getOne();
+        setAccountHolder(aH);
+      }
     };
-    getAH();
+    getAH().catch(printError);
   }, []);
 
-  return accountHodler;
+  return accountHolder;
 };
 
 export default useGetAccountHolder;

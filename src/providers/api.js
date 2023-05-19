@@ -1,5 +1,5 @@
 import { CustomersApi, FilesApi, OnboardingApi, PayingApi, ProspectingApi, SecurityApi, UserAccountsApi } from 'bpartners-react-client';
-import authProvider from './auth-provider';
+import { authProvider } from '.';
 
 export const securityApi = () => new SecurityApi(authProvider.getCachedAuthConf());
 export const userAccountsApi = () => new UserAccountsApi(authProvider.getCachedAuthConf());

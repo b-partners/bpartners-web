@@ -1,56 +1,40 @@
-import { Configuration, SecurityApi, Whoami } from 'bpartners-react-client';
 import { Amplify, Auth } from 'aws-amplify';
-import awsExports from '../aws-exports';
+import { Configuration, SecurityApi } from 'bpartners-react-client';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
-
+import awsExports from '../aws-exports';
+import { cache, clearCache, getCached } from './cache';
+import { accountProvider } from './account-provider';
+import { accountHolderProvider } from './account-holder-Provider';
+import { profileProvider } from './profile-provider';
 Amplify.configure(awsExports);
 
-export const whoamiItem = 'bp_whoami';
-export const accessTokenItem = 'bp_access_token';
-export const refreshTokenItem = 'bp_refresh_token';
-export const unapprovedFiles = 'bp_unapproved_Files';
-
-export const cacheUnapprovedFiles = (onlyNotApprovedLegalFiles: any) => localStorage.setItem(unapprovedFiles, onlyNotApprovedLegalFiles.length);
-const getCachedUnapprovedFiles = () => localStorage.getItem(unapprovedFiles);
-
-export const getCachedAccessToken = () => localStorage.getItem(accessTokenItem);
+const cacheAccounts = async () => {
+  // is there is not account or account holder in the local storage,
+  // this function will refetch them otherwise it do nothing
+  if (!getCached.account() || !getCached.account().id || !getCached.accountHolder() || !getCached.accountHolder().id) {
+    await accountProvider.getOne();
+    await accountHolderProvider.getOne();
+    await profileProvider.getOne(getCached.whoami().user.id);
+  }
+};
 
 export const whoami = async (): Promise<any> => {
   const session = await Auth.currentSession();
 
   const conf = new Configuration();
   conf.accessToken = session.getIdToken().getJwtToken();
-  cacheTokens(session.getIdToken().getJwtToken(), session.getRefreshToken().getToken());
-
+  if (!session.getIdToken().getJwtToken()) {
+    return null;
+  }
+  cache.token(session.getIdToken().getJwtToken(), session.getRefreshToken().getToken());
+  if (getCached.whoami()) {
+    return getCached.whoami();
+  }
   const securityApi = new SecurityApi(conf);
   const { data } = await securityApi.whoami();
+  cache.whoami(data);
+  await cacheAccounts();
   return data;
-};
-
-const cacheWhoami = (whoami: Whoami): Whoami => {
-  localStorage.setItem(whoamiItem, JSON.stringify(whoami));
-  return whoami;
-};
-
-const cacheTokens = (accessToken: string, refreshToken: string): void => {
-  //TODO: localStorage does not work on private browsing
-  localStorage.setItem(accessTokenItem, accessToken);
-
-  localStorage.setItem(refreshTokenItem, refreshToken);
-};
-
-const getCachedWhoami = (): Whoami => JSON.parse(localStorage.getItem(whoamiItem));
-
-const getCachedAuthConf = (): Configuration => {
-  const accessToken = localStorage.getItem(accessTokenItem);
-  const conf = new Configuration({ accessToken });
-  conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
-  return conf;
-};
-
-const clearCache = () => {
-  localStorage.clear();
-  sessionStorage.clear();
 };
 
 type RaPermission = {
@@ -66,7 +50,7 @@ const paramTemporaryPassword = 'p';
 const toBase64 = (param: string) => Buffer.from(param).toString('base64');
 const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii');
 
-const authProvider = {
+export const authProvider = {
   // --------------------- ra functions -------------------------------------------
   // https://marmelab.com/react-admin/Authentication.html#anatomy-of-an-authprovider
 
@@ -78,8 +62,7 @@ const authProvider = {
         const encodedPassword = encodeURIComponent(toBase64(password as string));
         return `/login?${paramIsTemporaryPassword}=true&${paramUsername}=${encodedUsername}&${paramTemporaryPassword}=${encodedPassword}`;
       }
-      const whoamiData = await whoami();
-      cacheWhoami(whoamiData);
+      await whoami();
       return loginRedirectionUrls.successUrl;
     } catch (error) {
       return loginRedirectionUrls.failureUrl;
@@ -94,7 +77,7 @@ const authProvider = {
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
 
   checkError: ({ status }: any): Promise<any> => {
-    const unapprovedFiles = +getCachedUnapprovedFiles();
+    const unapprovedFiles = getCached.unapprovedFiles();
 
     if ((status === 401 || status === 403) && (!unapprovedFiles || unapprovedFiles === 0)) {
       return Promise.reject();
@@ -110,8 +93,13 @@ const authProvider = {
 
   // --------------------- non-ra functions ----------------------------------------
 
-  getCachedWhoami: getCachedWhoami,
-  getCachedAuthConf: getCachedAuthConf,
+  getCachedWhoami: getCached.whoami,
+  getCachedAuthConf: () => {
+    const { accessToken } = getCached.token();
+    const conf = new Configuration({ accessToken });
+    conf.baseOptions = { headers: { Authorization: `Bearer ${accessToken}` } };
+    return conf;
+  },
   isTemporaryPassword: (): boolean => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -127,5 +115,3 @@ const authProvider = {
     window.location.replace('/');
   },
 };
-
-export default authProvider;

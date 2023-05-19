@@ -20,7 +20,7 @@ export const DialogSuccessSignUp = props => {
       <Dialog open={isOpen} onClose={onClose}>
         <DialogTitle>Confirmation</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>Pour finaliser votre inscription, un mail vous a été envoyer.</DialogContentText>
+          <DialogContentText id='alert-dialog-description'>Pour finaliser votre inscription, un mail vous a été envoyé.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button data-testid='close-modal-id' onClick={onClose}>

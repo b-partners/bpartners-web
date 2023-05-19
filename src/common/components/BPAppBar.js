@@ -3,13 +3,13 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { SidebarToggleButton, useNotify } from 'react-admin';
 import bpLogo from '../../assets/bp-logo-full.webp';
-import accountProvider, { getCachedUser, initiateAccountValidation, singleAccountGetter } from '../../providers/account-provider';
-import authProvider from '../../providers/auth-provider';
 import { ShortWarning } from './BPBetaTestWarning';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 import BPDialog from './BPDialog';
 import { redirect } from '../utils/redirect';
+import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from 'src/providers';
+import { printError } from '../utils';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -37,28 +37,28 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const BPAppBar = props => {
+const BPAppBar = () => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
   const [status, setStatus] = useState('');
-  const [openDialog, setOpenDialog] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
   const isBeta = process.env.REACT_APP_BETA !== 'false';
-  const isVerifiedUser = getCachedUser() && getCachedUser().idVerified;
+  const cachedUser = getCached.user();
+  const isVerifiedUser = cachedUser && cachedUser.idVerified;
   const notify = useNotify();
 
   useEffect(() => {
     const fetch = async () => {
       if (userId) {
-        const {
-          user: { firstName },
-        } = await accountProvider.getOne(userId);
-        const { status } = await singleAccountGetter(userId);
+        const { firstName } = getCached.user() || (await whoami()).user;
+        const { status } = getCached.account() || (await accountProvider.getOne());
+
         setName(firstName);
         setStatus(status);
       }
     };
-    fetch().catch(() => console.error('Error'));
+    fetch().catch(printError);
   }, [userId]);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const BPAppBar = props => {
 
   return (
     <>
-      <Box {...props} className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
+      <Box className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
         <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
@@ -101,7 +101,7 @@ const BPAppBar = props => {
         handleClick={accountValidation}
       />
       <GeneralConditionOfUse />
-      {getCachedUser() && <UnverifiedUser />}
+      {getCached.user() && <UnverifiedUser />}
     </>
   );
 };

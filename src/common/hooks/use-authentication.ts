@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import authProvider, { getCachedAccessToken } from 'src/providers/auth-provider';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { authProvider, getCached } from 'src/providers';
 
 /**
  * function that check is the user is authenticated or not (react admin has the same function but it seems not work)
@@ -12,7 +12,8 @@ const useAuthentication = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (getCachedAccessToken()) {
+    const { accessToken } = getCached.token();
+    if (accessToken) {
       setState(true);
       authProvider
         .checkAuth()
