@@ -9,6 +9,15 @@ const BpFrenchMessages = {
     transactions: {
       category: { add: 'La catégorie a bien été ajoutée', edit: 'La catégorie a bien été modifiée' },
     },
+    invoices: {
+      name: 'Facture |||| Factures',
+      status: {
+        draft: 'Brouillon |||| Brouillons',
+        proposal: 'Devis |||| Devis',
+        confirmed: 'Facture |||| Factures',
+        paid: 'Facture |||| Factures',
+      },
+    },
   },
   messages: {
     disconnection: {

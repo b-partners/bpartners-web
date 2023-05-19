@@ -17,6 +17,8 @@ import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, 
 import { printError } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { RaMoneyField } from 'src/common/components';
+import BPListActions from 'src/common/components/BPListActions';
+import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -71,7 +73,7 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid bulkActionButtons={false} rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && crupdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && crupdateInvoice({ ...record })}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <FunctionField render={nameRenderer} label='Client' />
@@ -151,6 +153,9 @@ const InvoiceList = props => {
   return (
     <>
       <List
+        sx={{
+          '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
+        }}
         exporter={false}
         resource='invoices'
         filter={{ invoiceTypes }}
@@ -158,24 +163,33 @@ const InvoiceList = props => {
         pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
-          <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
-            <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Button
-                name='create-draft-invoice'
-                onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid() })}
-                sx={{ margin: 1, display: 'block', width: '12rem' }}
-              >
-                Créer un devis
-              </Button>
-              <Button
-                name='create-confirmed-invoice'
-                onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
-                sx={{ margin: 1, display: 'block', width: '12rem' }}
-              >
-                Créer une facture
-              </Button>
-            </Box>
-          </PopoverButton>
+          <BPListActions
+            hasCreate={false}
+            hasExport={false}
+            buttons={
+              <>
+                <ArchiveBulkAction source='title' statusName='archiveStatus' />
+                <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
+                  <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Button
+                      name='create-draft-invoice'
+                      onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid() })}
+                      sx={{ margin: 1, display: 'block', width: '12rem' }}
+                    >
+                      Créer un devis
+                    </Button>
+                    <Button
+                      name='create-confirmed-invoice'
+                      onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
+                      sx={{ margin: 1, display: 'block', width: '12rem' }}
+                    >
+                      Créer une facture
+                    </Button>
+                  </Box>
+                </PopoverButton>
+              </>
+            }
+          />
         }
       >
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />

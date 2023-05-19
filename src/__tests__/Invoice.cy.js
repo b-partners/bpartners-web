@@ -101,11 +101,13 @@ describe(specTitle('Invoice'), () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
     cy.contains('À confirmer');
+    cy.contains('Brouillon transformé en devis !');
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
     cy.contains('À payer');
+    cy.contains('Devis confirmé');
   });
 
   it('Check if date label are corrects', () => {
@@ -123,7 +125,7 @@ describe(specTitle('Invoice'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"] > .MuiSvgIcon-root').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
     cy.contains('invoice-title-0');
     cy.contains('Justificatif');

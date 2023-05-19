@@ -28,24 +28,13 @@ describe(specTitle('Invoice'), () => {
     });
   });
 
-  it('Should show success message', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
-    cy.contains('Brouillon transformé en devis !');
-
-    cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
-    cy.contains('Devis confirmé');
-  });
-
   it('Should show warning message', () => {
     const invoices = [invoiceWithoutCustomer, invoiceWithoutTitle, ...createInvoices(3, 'DRAFT')];
     cy.intercept('GET', `/accounts/mock-account-id1/invoices**`, invoices);
     mount(<App />);
     cy.get('[name="invoice"]').click();
 
-    cy.get(':nth-child(1) > :nth-child(7) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
     cy.contains('Veuillez vérifier que tous les champs ont été remplis correctement. Notamment chaque produit doit avoir une quantité supérieure à 0');
   });
 
@@ -55,7 +44,7 @@ describe(specTitle('Invoice'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 
