@@ -38,7 +38,7 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 
@@ -61,7 +61,7 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 
@@ -154,7 +154,7 @@ describe(specTitle('Invoice creation'), () => {
     });
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-confirmed-invoice']").click();
 

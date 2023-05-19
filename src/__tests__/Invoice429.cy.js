@@ -32,7 +32,7 @@ describe(specTitle('Invoice'), () => {
   it('should retry on 429', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
-    cy.get('.css-1lsi523-MuiToolbar-root-RaListToolbar-root > .MuiButtonBase-root > .MuiSvgIcon-root').click();
+    cy.get('[data-testid="open-popover"]').click();
 
     cy.get("[name='create-draft-invoice']").click();
 

@@ -23,6 +23,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
       totalVat: 2000,
       paymentType: 'CASH',
       globalDiscount: null,
+      archiveStatus: 'ENABLED',
       metadata: {
         submittedAt: '2023-01-10T11:05:22.362Z',
       },
