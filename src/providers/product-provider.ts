@@ -1,8 +1,8 @@
 import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
 
 import { ProductStatus } from 'bpartners-react-client';
-import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMinors } from 'src/common/utils/money';
+import { productMapper } from './mappers';
 
 export const importProducts = async (body: any) => {
   const { accountId } = getCached.userInfo();
@@ -20,7 +20,7 @@ export const productProvider: BpDataProviderType = {
       sort: { field, order },
     } = filters;
     const { accountId } = await asyncGetUserInfo();
-    return (
+    const products = (
       await payingApi().getProducts(
         accountId,
         true,
@@ -35,15 +35,21 @@ export const productProvider: BpDataProviderType = {
         perPage
       )
     ).data;
+
+    return products.map(productMapper.toDomain);
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
-    const toSend = resources.map(product => ({ ...emptyToNull(product) }));
-    return [await payingApi().createProducts(accountId, toSend)];
+    const toSend = resources.map(productMapper.toRest);
+
+    const products = (await payingApi().createProducts(accountId, toSend)).data;
+    return products.map(productMapper.toDomain);
   },
   update: async function (resources: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
-    return (await payingApi().crupdateProducts(accountId, resources)).data;
+    const toSend = resources.map(productMapper.toRest);
+    const products = (await payingApi().crupdateProducts(accountId, toSend)).data;
+    return products.map(productMapper.toDomain);
   },
   archive: async (resources: any[]) => {
     const { accountId } = getCached.userInfo();

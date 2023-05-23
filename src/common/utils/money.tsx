@@ -21,8 +21,16 @@ export const coloredPrettyPrintMinors = (amount: number, type?: TransactionTypeE
 
 export const prettyPrintPercentMinors = (value: number): string => ((value / 100).toFixed(2) + ' %').replace('.', ',');
 
-export const toMinors = (amount: number): number => (isNaN(amount * 100) ? 0 : amount * 100);
+export const toMinors = (_amount: number | string): number => {
+  const amount = +_amount || 0;
+  return amount * 100;
+};
 // used for format input values
 export const toMajors = (amount: number): number =>
   //TODO: subject to rounding errors, should use lib like Dinero
   isNaN(amount / 100) ? 0 : amount / 100;
+
+export const prettyPrintMoney = (_money: string | number) => {
+  const money = (+_money).toFixed(2);
+  return `${money} ${Currency.EUR}`.replace('.', ',');
+};

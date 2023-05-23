@@ -5,9 +5,9 @@
  * @param obj
  * @returns mappedObject
  */
-const emptyToNull = (obj: any): any => {
+export const emptyToNull = <T extends Record<string, any>>(obj: T) => {
   let mappedObject = { ...obj };
-  Object.keys(mappedObject).forEach(e => {
+  Object.keys(mappedObject).forEach((e: keyof T) => {
     if (!mappedObject[e] || (typeof mappedObject[e] === 'string' && mappedObject[e].length === 0)) {
       mappedObject[e] = null;
     } else if (typeof mappedObject[e] === 'object' && !mappedObject[e].length) {
@@ -16,5 +16,3 @@ const emptyToNull = (obj: any): any => {
   });
   return mappedObject;
 };
-
-export default emptyToNull;

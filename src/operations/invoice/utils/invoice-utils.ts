@@ -1,6 +1,5 @@
 import { Invoice, InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { formatDateTo8601 } from 'src/common/utils/date';
-import emptyToNull from 'src/common/utils/empty-to-null';
 import isBlankNumber from 'src/common/utils/isBlank';
 import { toMajors, toMinors } from 'src/common/utils/money';
 import {
@@ -11,6 +10,7 @@ import {
   PAYMENT_REGULATIONS,
 } from './payment-regulation-utils';
 import { DELAY_IN_PAYMENT_ALLOWED, DELAY_PENALTY_PERCENT, GLOBAL_DISCOUNT, PERCENT_VALUE, SENDING_DATE, VALIDITY_DATE } from './utils';
+import { emptyToNull } from 'src/common/utils';
 
 export const invoiceMapper = {
   toDomain: (_invoice: any): Invoice => {
