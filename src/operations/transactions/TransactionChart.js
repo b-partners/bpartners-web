@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import emptyGraph from 'src/assets/noData.png';
 
-import { toMajors, prettyPrintMinors as prettyPrintPercentMinors, toMinors } from '../../common/utils/percent';
+import { toMajors, prettyPrintPercentMinors, toMinors } from '../../common/utils/money';
 import { prettyPrintMinors } from '../../common/utils/money';
 import BPDatePicker from '../../common/components/BPDatePicker';
 import { BP_COLOR } from 'src/bp-theme';
