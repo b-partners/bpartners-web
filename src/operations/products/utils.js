@@ -1,9 +1,8 @@
-import { toMinors as moneyToMinors } from '../../common/utils/money';
-import { toMinors as vatToMinors } from '../../common/utils/vat';
+import { toMinors } from '../../common/utils';
 
 export const transformProduct = record => ({
   ...record,
   quantity: 1,
-  unitPrice: moneyToMinors(record.unitPrice),
-  vatPercent: vatToMinors(record.vatPercent),
+  unitPrice: toMinors(record.unitPrice),
+  vatPercent: toMinors(record.vatPercent),
 });

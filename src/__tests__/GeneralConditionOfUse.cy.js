@@ -6,7 +6,7 @@ import App from '../App';
 import { whoami1, user1 } from './mocks/responses/security-api';
 import { products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
-import * as Reload from '../common/utils/reload';
+import * as Reload from '../common/utils';
 
 describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {

@@ -32,7 +32,7 @@ export const BpNumberField = ({ name, icon, onClickOnIcon, ...others }) => {
   const handleChange = event => {
     const value = event.target.value;
     if (!/[^\d,+-]/.test(value)) {
-      setValue(name, value.replace(',', '.'));
+      setValue(name, `${value}`.replace(',', '.'));
     }
   };
 
@@ -45,12 +45,16 @@ export const BpNumberField = ({ name, icon, onClickOnIcon, ...others }) => {
       sx={BP_TEXT_FIELD}
       value={`${value || ''}`.replace('.', ',')}
       variant='filled'
-      error={errors[name]}
+      error={errors[name] && !errors[name].message.includes('Expected string')}
       inputProps={{ icon }}
-      helperText={errors[name]?.message}
+      helperText={errors[name] && !errors[name].message.includes('Expected string') && errors[name]?.message}
       data-testid={`${name}-field-input`}
       InputProps={{
-        endAdornment: icon && <IconButton onClick={onClickOnIcon}>{icon}</IconButton>,
+        endAdornment: icon && (
+          <IconButton sx={{ background: 'transparent !important' }} onClick={onClickOnIcon}>
+            {icon}
+          </IconButton>
+        ),
       }}
     />
   );

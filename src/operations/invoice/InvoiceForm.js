@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { prettyPrintMinors } from '../../common/utils/money';
+import { prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 

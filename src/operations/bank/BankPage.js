@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { redirect } from 'src/common/utils/redirect';
+import { redirect } from 'src/common/utils';
 import { BankInformationForm } from './BankInformationForm';
 import { BALANCE_ICON, BANK_CARD, BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 import { useNotify } from 'react-admin';

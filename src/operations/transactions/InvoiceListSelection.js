@@ -3,7 +3,7 @@ import { InvoiceStatus } from 'bpartners-react-client';
 import { useEffect, useMemo, useState } from 'react';
 import { Datagrid, FunctionField, ListContextProvider, TextField, useList, useNotify } from 'react-admin';
 import useGetAccountHolder from 'src/common/hooks/use-get-account-holder';
-import { prettyPrintMinors } from 'src/common/utils/money';
+import { prettyPrintMinors } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers';
 
 const MAX_PER_PAGE = 500;

@@ -1,7 +1,7 @@
 import { Box, Paper, Typography, Divider, Stack, IconButton } from '@mui/material';
 import { Phone as PhoneIcon, Email as EmailIcon } from '@mui/icons-material';
 import { CARD_CONTACT, CARD_CONTACT_STACK, CARD_MESSAGE, CARD_NAME, CARD_NAME_UNDERLINE, LINK, LOGO, P_CARD } from './style';
-import { mailTo, phoneTo } from 'src/common/utils/redirect';
+import { mailTo, phoneTo } from 'src/common/utils';
 
 export const PartnersContainer = ({ partner }) => {
   const { imageSrc, name, message, phone, email } = partner;

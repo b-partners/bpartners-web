@@ -1,6 +1,6 @@
 import { Account, BankConnectionRedirection } from 'bpartners-react-client';
-import { createRedirectionUrl } from 'src/common/utils/createRedirectionUrl';
-import { cache, getCached } from '.';
+import { cache, getCached } from './cache';
+import { createRedirectionUrl } from '../common/utils';
 import { userAccountsApi } from './api';
 
 export const bankProvider = {

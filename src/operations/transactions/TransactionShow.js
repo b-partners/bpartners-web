@@ -1,8 +1,7 @@
 import React from 'react';
 import { Show, SimpleShowLayout, TextField, FunctionField } from 'react-admin';
 
-import { prettyPrintMinors } from '../../common/utils/money';
-import { formatDatetime } from '../../common/utils/date';
+import { prettyPrintMinors, formatDatetime } from '../../common/utils';
 
 export const TransactionLayout = () => {
   return (
