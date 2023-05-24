@@ -3,7 +3,7 @@ import { useNotify } from 'react-admin';
 import { makeStyles } from '@mui/styles';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { reload } from '../../common/utils/reload';
+import { reload } from '../../common/utils';
 import { EmptyList } from '../../common/components/EmptyList';
 import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';

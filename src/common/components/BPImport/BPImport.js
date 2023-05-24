@@ -9,7 +9,7 @@ import { importCustomers } from 'src/providers/customer-provider';
 
 import { useNotify, useRefresh } from 'react-admin';
 import { importProducts } from 'src/providers/product-provider';
-import { toArrayBuffer } from 'src/common/utils/to-array-buffer';
+import { toArrayBuffer } from 'src/common/utils';
 import { BP_BUTTON } from 'src/bp-theme';
 
 export const BPImport = props => {

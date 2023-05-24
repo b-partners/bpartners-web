@@ -1,5 +1,5 @@
 import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
-import { getFilenameMeta } from '../../../common/utils/file';
+import { getFilenameMeta } from '../../../common/utils';
 import { InvoiceStatusFR } from '../../../constants/invoice-status';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';

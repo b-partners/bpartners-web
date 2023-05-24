@@ -1,4 +1,4 @@
-const BpFrenchMessages = {
+export const BpFrenchMessages = {
   resources: {
     products: {
       name: 'Produit |||| Produits',
@@ -25,8 +25,7 @@ const BpFrenchMessages = {
     },
     global: {
       error: "Une erreur s'est produite.",
+      changesSaved: 'Changement enregistré',
     },
   },
 };
-
-export default BpFrenchMessages;

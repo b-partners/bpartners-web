@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
 import loginRedirectionUrls from './login-redirection-urls';
-import { redirect } from '../common/utils/redirect';
-import { getUrlParams } from '../common/utils/get-params';
+import { redirect, getUrlParams } from '../common/utils';
 
 import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 import BpBackgroundImage from '../assets/bp-bg-image.png';

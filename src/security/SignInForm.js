@@ -6,7 +6,7 @@ import { authProvider } from 'src/providers';
 import { BP_COLOR } from '../bp-theme';
 import { BpFormField } from '../common/components';
 import { handleSubmit } from '../common/utils';
-import { redirect } from '../common/utils/redirect';
+import { redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 

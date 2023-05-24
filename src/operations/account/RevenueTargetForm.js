@@ -1,18 +1,20 @@
 import { Save as SaveIcon } from '@mui/icons-material';
-import { Button, CircularProgress, InputAdornment } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
-import { useForm } from 'react-hook-form';
-import BPFormField from '../../common/components/BPFormField';
-import { toMajors, toMinors } from '../../common/utils/money';
+import { useForm, FormProvider } from 'react-hook-form';
+import { toMajors, toMinors } from '../../common/utils';
 import { handleSubmit } from 'src/common/utils';
 import { revenueTargetsProvider } from 'src/providers/account-holder-Provider';
+import { BpNumberField } from 'src/common/components';
+import { Euro as EuroIcon } from '@mui/icons-material';
+import { revenueTargetResolver } from 'src/common/resolvers';
 
 const RevenueTargetForm = () => {
   const currentYear = new Date().getFullYear();
 
   const { record } = useShowContext();
-  const form = useForm({ mode: 'all' });
+  const form = useForm({ mode: 'all', resolver: revenueTargetResolver });
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
   const notify = useNotify();
 
@@ -51,7 +53,8 @@ const RevenueTargetForm = () => {
 
     const fetch = async () => {
       await revenueTargetsProvider.update([newRevenueTarget]);
-      notify('Changement enregistré', { type: 'success' });
+      notify('messages.global.changesSaved', { type: 'success' });
+      setTools(properties => ({ ...properties, buttonDisable: true }));
     };
     setLoading(true);
     fetch()
@@ -60,29 +63,22 @@ const RevenueTargetForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit(updateRevenuTargetSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-      <BPFormField
-        style={{ width: '45%' }}
-        name='amountTarget'
-        type='number'
-        form={form}
-        label='Objectif de cette année'
-        InputProps={{
-          startAdornment: <InputAdornment position='start'>€</InputAdornment>,
-        }}
-      />
-      <Button
-        name='submitRevenueTargets'
-        variant='contained'
-        size='small'
-        startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
-        disabled={tools.isLoading || tools.buttonDisable}
-        type='submit'
-        sx={{ width: 'min-content', mt: 1 }}
-      >
-        Enregistrer
-      </Button>
-    </form>
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(updateRevenuTargetSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+        <BpNumberField style={{ width: '45%' }} name='amountTarget' label='Objectif de cette année' icon={<EuroIcon />} />
+        <Button
+          name='submitRevenueTargets'
+          variant='contained'
+          size='small'
+          startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
+          disabled={tools.isLoading || tools.buttonDisable}
+          type='submit'
+          sx={{ width: 'min-content', mt: 1 }}
+        >
+          Enregistrer
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 

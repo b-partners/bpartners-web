@@ -1,6 +1,5 @@
 import { FileApi, getCached } from '.';
-import { getMimeType } from '../common/utils/get-mime-type';
-import { toArrayBuffer } from '../common/utils/to-array-buffer';
+import { getMimeType, toArrayBuffer } from '../common/utils';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 export const fileProvider: BpDataProviderType = {

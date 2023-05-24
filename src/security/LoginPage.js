@@ -1,6 +1,6 @@
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
-import { redirect } from '../common/utils/redirect';
+import { redirect } from '../common/utils';
 
 import useAuthentication from 'src/common/hooks/use-authentication';
 import CompletePasswordPage from './CompletePasswordPage';
