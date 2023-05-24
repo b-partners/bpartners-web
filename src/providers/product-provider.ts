@@ -3,6 +3,7 @@ import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
 import { ProductStatus } from 'bpartners-react-client';
 import emptyToNull from 'src/common/utils/empty-to-null';
 import { toMinors } from 'src/common/utils/money';
+import { productMapper } from './mappers';
 
 export const importProducts = async (body: any) => {
   const { accountId } = getCached.userInfo();
@@ -20,7 +21,7 @@ export const productProvider: BpDataProviderType = {
       sort: { field, order },
     } = filters;
     const { accountId } = await asyncGetUserInfo();
-    return (
+    const data = (
       await payingApi().getProducts(
         accountId,
         true,
@@ -35,6 +36,11 @@ export const productProvider: BpDataProviderType = {
         perPage
       )
     ).data;
+
+    if (filters.mapped) {
+      return data.map(productMapper.toDomain);
+    }
+    return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();

@@ -15,6 +15,11 @@ export const prettyPrintMinors = (amount: number, type?: TransactionTypeEnum): s
   return optionalSign + ` ${toMajors(amount).toFixed(2).toLocaleString()} ${Currency.EUR}`.replace('.', ',');
 };
 
+export const prettyPrintMoney = (_amount: number, mapToMajor = true) => {
+  let amount = mapToMajor ? toMajors(+_amount || 0) : +_amount || 0;
+  return `${amount.toFixed(2).toLocaleString()} ${Currency.EUR}`.replace('.', ',');
+};
+
 export const coloredPrettyPrintMinors = (amount: number, type?: TransactionTypeEnum): ReactElement => (
   <b style={{ color: type === TransactionTypeEnum.INCOME ? green[500] : red[500] }}> {prettyPrintMinors(amount, type)} </b>
 );

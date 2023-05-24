@@ -22,6 +22,7 @@ const ProductList = () => (
     hasList={false}
     hasShow={false}
     filters={productFilter}
+    filter={{ mapped: true }}
     component={ListComponent}
     pagination={<Pagination />}
     perPage={pageSize}
@@ -48,9 +49,9 @@ const Product = () => {
             description.length < 60 ? description : description.slice(0, 60) + '...'
           }
         />
-        <RaMoneyField label='Prix unitaire HT' source='unitPrice' render={data => data?.unitPrice} />
-        {isSubjectToVat && <RaMoneyField label='TVA' source='vatPercent' render={data => data?.vatPercent} />}
-        {isSubjectToVat && <RaMoneyField label='Prix unitaire TTC' source='unitPriceWithVat' render={data => data?.unitPriceWithVat} />}
+        <RaMoneyField map={false} label='Prix unitaire HT' source='unitPrice' render={data => data?.unitPrice} />
+        {isSubjectToVat && <RaMoneyField map={false} label='TVA' source='vatPercent' render={data => data?.vatPercent} />}
+        {isSubjectToVat && <RaMoneyField map={false} label='Prix unitaire TTC' source='unitPriceWithVat' render={data => data?.unitPriceWithVat} />}
       </Datagrid>
     )
   );
