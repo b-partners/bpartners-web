@@ -1,7 +1,7 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, IconButton, Typography, TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { prettyPrintMinors } from '../../../common/utils/money';
+import { prettyPrintMinors } from '../../../common/utils';
 import useGetAccountHolder from '../../../common/hooks/use-get-account-holder';
 import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from '../utils/utils';
 

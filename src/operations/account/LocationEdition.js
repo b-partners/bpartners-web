@@ -43,7 +43,7 @@ const LocationEdition = () => {
     const newCompanyInfo = { ...companyInfo, location: { type: 'Point', longitude: +newLocation.longitude, latitude: +newLocation.latitude } };
     const fetch = async () => {
       await accountProvider.saveOrUpdate([newCompanyInfo]);
-      notify('Changement enregistré', { type: 'success' });
+      notify('messages.global.changesSaved', { type: 'success' });
       setTools({ ...tools, buttonDisable: true });
     };
 

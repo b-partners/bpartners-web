@@ -208,7 +208,7 @@ describe(specTitle('Account'), () => {
     // close business activity edition
     cy.get('#panel1a-header > .MuiAccordionSummary-expandIconWrapper > [data-testid="ExpandMoreIcon"]').click();
 
-    cy.get('form [name="socialCapital"]').clear();
+    cy.get('form [name="socialCapital"]').clear().type('{enter}');
     cy.contains('Ce champ est requis');
     cy.get('form [name="socialCapital"]').type(301);
     cy.get('form [name="phone"]').clear().type('+261 not valid phone number');
@@ -217,7 +217,7 @@ describe(specTitle('Account'), () => {
     cy.get('form [name="email"]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
-    cy.get('form [name="townCode"]').clear().type(120);
+    cy.get('form [name="townCode"]').clear().type(`120{enter}`);
     cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
     cy.get('form [name="townCode"]').clear().type(12312);
 
@@ -269,7 +269,7 @@ describe(specTitle('Account'), () => {
     cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
 
     cy.contains('Recette annuelle à réaliser');
-    cy.get('[name="amountTarget"]').clear();
+    cy.get('[name="amountTarget"]').clear().type(`{enter}`);
     cy.contains('Ce champ est requis');
     cy.get('[name="amountTarget"]').type(230000);
 
