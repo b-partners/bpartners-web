@@ -11,11 +11,9 @@ Amplify.configure(awsExports);
 const cacheAccounts = async () => {
   // is there is not account or account holder in the local storage,
   // this function will refetch them otherwise it do nothing
-  if (!getCached.account() || !getCached.account().id || !getCached.accountHolder() || !getCached.accountHolder().id) {
-    await accountProvider.getOne();
-    await accountHolderProvider.getOne();
-    await profileProvider.getOne(getCached.whoami().user.id);
-  }
+  await accountProvider.getOne();
+  await accountHolderProvider.getOne();
+  await profileProvider.getOne(getCached.whoami().user.id);
 };
 
 export const whoami = async (): Promise<any> => {
