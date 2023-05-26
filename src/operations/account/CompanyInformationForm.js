@@ -2,16 +2,17 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
-import { useForm } from 'react-hook-form';
-import BPFormField from '../../common/components/BPFormField';
-import { phoneValidator, companyInfoDiff, townCodeValidator } from './utils';
-import { toMinors, toMajors } from '../../common/utils/money';
+import { useForm, FormProvider } from 'react-hook-form';
 import { handleSubmit } from 'src/common/utils';
 import { accountHolderProvider } from 'src/providers';
+import { toMajors, toMinors } from '../../common/utils';
+import { companyInfoDiff } from './utils';
+import { BpFormField, BpNumberField } from 'src/common/components';
+import { companyInfoResolver } from 'src/common/resolvers';
 
 const CompanyInformationForm = () => {
   const { record } = useShowContext();
-  const form = useForm({ mode: 'all', defaultValues: {} });
+  const form = useForm({ mode: 'all', defaultValues: {}, resolver: companyInfoResolver });
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
   const notify = useNotify();
 
@@ -48,7 +49,9 @@ const CompanyInformationForm = () => {
           townCode: +data.townCode !== 0 ? +data.townCode : null,
         },
       ]);
-      notify('Changement enregistré', { type: 'success' });
+
+      setTools(properties => ({ ...properties, buttonDisable: true }));
+      notify('messages.global.changesSaved', { type: 'success' });
     };
 
     setLoading(true);
@@ -58,23 +61,25 @@ const CompanyInformationForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit(saveOrUpdateAccountSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-      <BPFormField style={{ width: '45%' }} name='socialCapital' type='number' form={form} label='Capital Social (€)' />
-      <BPFormField style={{ width: '45%' }} name='phone' type='tel' form={form} label='Téléphone' validate={phoneValidator} />
-      <BPFormField style={{ width: '45%' }} name='email' type='email' form={form} label='Email' />
-      <BPFormField style={{ width: '45%' }} name='townCode' type='number' form={form} label='Code de la commune de prospection' validate={townCodeValidator} />
-      <Button
-        variant='contained'
-        size='small'
-        startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
-        disabled={tools.isLoading || tools.buttonDisable}
-        type='submit'
-        name='submitCompanyInfo'
-        sx={{ width: 'min-content', mt: 1 }}
-      >
-        Enregistrer
-      </Button>
-    </form>
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(saveOrUpdateAccountSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+        <BpNumberField style={{ width: '45%' }} name='socialCapital' label='Capital Social (€)' />
+        <BpNumberField style={{ width: '45%' }} name='phone' label='Téléphone' />
+        <BpFormField style={{ width: '45%' }} name='email' type='email' label='Email' />
+        <BpNumberField style={{ width: '45%' }} name='townCode' label='Code de la commune de prospection' />
+        <Button
+          variant='contained'
+          size='small'
+          startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
+          disabled={tools.isLoading || tools.buttonDisable}
+          type='submit'
+          name='submitCompanyInfo'
+          sx={{ width: 'min-content', mt: 1 }}
+        >
+          Enregistrer
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 

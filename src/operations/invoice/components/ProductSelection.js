@@ -3,7 +3,7 @@ import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { BPButton } from '../../../common/components/BPButton';
-import { includesObject } from '../../../common/utils/includes-object';
+import { includesObject } from '../../../common/utils';
 import { ProductItem } from './ProductItem';
 import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';

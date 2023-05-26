@@ -1,6 +1,5 @@
 import { InvoicePaymentTypeEnum, PaymentRegulation } from 'bpartners-react-client';
-import { getNextMonthDate } from 'src/common/utils/date';
-import { toMajors, toMinors } from 'src/common/utils/percent';
+import { getNextMonthDate, toMajors, toMinors } from 'src/common/utils';
 
 // Payment regulation
 export const PAYMENT_TYPE = 'paymentType';

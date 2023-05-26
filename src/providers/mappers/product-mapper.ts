@@ -1,6 +1,6 @@
 import { Product } from 'bpartners-react-client';
 import { objectMapper } from './objectMapper';
-import { toMajors, toMinors } from 'src/common/utils/money';
+import { toMajors, toMinors } from 'src/common/utils';
 
 export const productMapper = {
   toDomain(product: Product) {

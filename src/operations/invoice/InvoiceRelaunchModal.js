@@ -23,7 +23,7 @@ import {
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { BP_COLOR } from '../../bp-theme';
-import { filesToArrayBuffer } from '../../common/utils/file';
+import { filesToArrayBuffer } from '../../common/utils';
 import RichTextEditor from '../../common/components/RichTextEditor';
 import { fileToAttachmentApi, MAX_ATTACHMENT_NAME_LENGTH } from './utils/utils';
 import { handleSubmit } from 'src/common/utils';

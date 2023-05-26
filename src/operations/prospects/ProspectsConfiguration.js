@@ -45,7 +45,7 @@ const ProspectsConfiguration = () => {
       };
 
       await updateGlobalInformation(newGlobalInfo);
-      notify('Changement enregistré', { type: 'success' });
+      notify('messages.global.changesSaved', { type: 'success' });
     } catch (_err) {
       notify('messages.global.error', { type: 'error' });
     }

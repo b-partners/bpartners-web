@@ -61,7 +61,7 @@ const BusinessActivitiesInputs = () => {
   const updateBusinessActivities = () => {
     const fetch = async () => {
       await businessActivitiesProvider.update(businessActivities.new);
-      notify('Changement enregistré', { type: 'success' });
+      notify('messages.global.changesSaved', { type: 'success' });
     };
     setLoading(true);
     fetch()

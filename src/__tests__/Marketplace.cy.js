@@ -1,7 +1,7 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import * as Redirect from '../common/utils/redirect';
+import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { marketplaces1 } from './mocks/responses/marketplace-api.ts';
 import { whoami1 } from './mocks/responses/security-api';

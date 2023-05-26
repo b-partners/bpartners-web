@@ -22,7 +22,7 @@ import { loginSuccessRelUrl } from './security/login-redirection-urls';
 import BpLoginPageLayout from './security/LoginPageLayout';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
-import BpFrenchMessages from './common/utils/BpFrenchMessages';
+import { BpFrenchMessages } from './common/utils';
 import { BankPage } from './operations/bank';
 import { PartnersPage } from './operations/partners/PartnersPage';
 import { PasswordChangeableLogin } from './security/SignInForm';

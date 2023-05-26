@@ -24,7 +24,7 @@ import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
 import { BP_COLOR } from 'src/bp-theme';
-import { getGeoJsonUrl } from 'src/common/utils/get-geojson-url';
+import { getGeoJsonUrl } from 'src/common/utils';
 import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
 import { handleSubmit } from 'src/common/utils';

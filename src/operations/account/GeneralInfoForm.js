@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
-import { useForm } from 'react-hook-form';
-import BPFormField from 'src/common/components/BPFormField';
+import { useForm, FormProvider } from 'react-hook-form';
 import { Button, CircularProgress } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { generalInfoDiff } from './utils';
-import { toMajors, toMinors } from 'src/common/utils/money';
+import { toMajors, toMinors } from 'src/common/utils';
 import { handleSubmit, printError } from 'src/common/utils';
 import { updateGlobalInformation } from 'src/providers/account-holder-Provider';
+import { BpFormField, BpNumberField } from 'src/common/components';
+import { generalInfoResolver } from 'src/common/resolvers';
 
 const GeneralInfoForm = () => {
   const { record } = useShowContext();
-  const form = useForm({ mode: 'all' });
+  const form = useForm({ mode: 'all', resolver: generalInfoResolver });
   const notify = useNotify();
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
 
@@ -51,15 +52,16 @@ const GeneralInfoForm = () => {
       const { id, contactAddress } = record;
       const { prospectingPerimeter } = contactAddress || {};
       const newGlobalInfo = {
-        id: id,
-        name: name,
-        siren: siren,
-        officialActivityName: officialActivityName,
+        id,
+        name,
+        siren,
+        officialActivityName,
         initialCashFlow: toMinors(initialCashflow),
-        contactAddress: { address: address, city: city, country: country, postalCode: +postalCode, prospectingPerimeter: prospectingPerimeter },
+        contactAddress: { address, city, country, postalCode: +postalCode, prospectingPerimeter },
       };
       await updateGlobalInformation(newGlobalInfo);
-      notify('Changement enregistré', { type: 'success' });
+      setTools(properties => ({ ...properties, buttonDisable: true }));
+      notify('messages.global.changesSaved', { type: 'success' });
     };
 
     setLoading(true);
@@ -69,27 +71,29 @@ const GeneralInfoForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit(updateGlobalInformationSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-      <BPFormField style={{ width: '45%' }} name='name' type='text' form={form} label='Raison Sociale' />
-      <BPFormField style={{ width: '45%' }} name='siren' type='number' form={form} label='Siren' />
-      <BPFormField style={{ width: '45%' }} name='officialActivityName' type='text' form={form} label='Activité Officielle' />
-      <BPFormField style={{ width: '45%' }} name='initialCashflow' type='number' form={form} label='Trésorerie initial' />
-      <BPFormField style={{ width: '45%' }} name='address' type='text' form={form} label='Adresse' />
-      <BPFormField style={{ width: '45%' }} name='city' type='text' form={form} label='Ville' />
-      <BPFormField style={{ width: '45%' }} name='country' type='text' form={form} label='Pays' />
-      <BPFormField style={{ width: '45%' }} name='postalCode' type='number' form={form} label='Code postal' />
-      <Button
-        variant='contained'
-        size='small'
-        startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
-        disabled={tools.isLoading || tools.buttonDisable}
-        type='submit'
-        name='submitGeneralInfo'
-        sx={{ width: 'min-content', mt: 1 }}
-      >
-        Enregistrer
-      </Button>
-    </form>
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(updateGlobalInformationSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+        <BpFormField style={{ width: '45%' }} name='name' type='text' label='Raison Sociale' />
+        <BpNumberField style={{ width: '45%' }} name='siren' label='Siren' />
+        <BpFormField style={{ width: '45%' }} name='officialActivityName' type='text' label='Activité Officielle' />
+        <BpNumberField style={{ width: '45%' }} name='initialCashflow' label='Trésorerie initial' />
+        <BpFormField style={{ width: '45%' }} name='address' type='text' label='Adresse' />
+        <BpFormField style={{ width: '45%' }} name='city' type='text' label='Ville' />
+        <BpFormField style={{ width: '45%' }} name='country' type='text' label='Pays' />
+        <BpNumberField style={{ width: '45%' }} name='postalCode' label='Code postal' />
+        <Button
+          variant='contained'
+          size='small'
+          startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
+          disabled={tools.isLoading || tools.buttonDisable}
+          type='submit'
+          name='submitGeneralInfo'
+          sx={{ width: 'min-content', mt: 1 }}
+        >
+          Enregistrer
+        </Button>
+      </form>
+    </FormProvider>
   );
 };
 

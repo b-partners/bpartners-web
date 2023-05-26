@@ -13,16 +13,15 @@ import { useEffect, useState } from 'react';
 import { FileType } from 'bpartners-react-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bp-theme';
-import { getMimeType } from 'src/common/utils/get-mime-type';
+import { getMimeType, prettyPrintMinors } from 'src/common/utils';
 import { v4 as uuid } from 'uuid';
-import { prettyPrintMinors } from '../../common/utils/money';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
 import { printError } from 'src/common/utils';
-import { accountHolderProvider, fileProvider, getAccountLogoUrl } from 'src/providers';
+import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from 'src/providers';
 import { RaMoneyField } from 'src/common/components';
 
 const ProfileLayout = () => {
@@ -96,7 +95,9 @@ const LogoLayout = () => {
   const [logoLoading, setLogoLoading] = useState(false);
 
   const getLogo = async () => {
+    console.log('before');
     const logoUrl = getAccountLogoUrl();
+    console.log('logo url', logoUrl);
     if (logoUrl) {
       try {
         setLogoLoading(true);
@@ -123,8 +124,11 @@ const LogoLayout = () => {
       await fileProvider.saveOrUpdate(resources);
 
       notify('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.', { type: 'success' });
-
-      // cacheUser({ ...user, logoFileId: logoFileId });
+      const user = getCached.user();
+      const whoami = getCached.whoami();
+      cache.user({ ...user, logoFileId: logoFileId });
+      cache.whoami({ ...whoami, user: { ...user, logoFileId: logoFileId } });
+      getLogo().catch(printError);
     };
 
     updateLogo()
@@ -140,7 +144,7 @@ const LogoLayout = () => {
 
   return (
     <Box sx={ACCOUNT_HOLDER_STYLE}>
-      <label htmlFor='upload-photo' id='upload-photo-label'>
+      <label htmlFor='upload-photo' style={{ cursor: 'pointer' }} id='upload-photo-label'>
         <input style={{ display: 'none' }} id='upload-photo' name='upload-photo' type='file' onChange={handleUpdateLogo} />
         <Badge
           overlap='circular'

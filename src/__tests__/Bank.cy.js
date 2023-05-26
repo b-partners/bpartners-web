@@ -6,7 +6,7 @@ import App from '../App';
 import { whoami1 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1, businessActivities, account1 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
-import * as Redirect from 'src/common/utils/redirect';
+import * as Redirect from 'src/common/utils';
 
 const redirectionUrl = {
   redirectionStatusUrls: { failureUrl: 'dummy', successUrl: 'dummy' },

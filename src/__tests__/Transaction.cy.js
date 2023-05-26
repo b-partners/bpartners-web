@@ -126,7 +126,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
     cy.get('[name="datePicker"]').clear().type(2023);
 
-    cy.contains('Objectif annuel (10.00 % atteint)');
+    cy.contains('Objectif annuel (10,00 % atteint)');
     cy.contains('Recette de cette année : 12000,00 €');
     cy.contains('120000,00 €');
 
@@ -134,7 +134,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains(`Vous n'avez pas défini d'objectif pour cette année. Veuillez accéder à l'onglet mon compte pour définir votre objectif annuel.`);
 
     cy.get('[name="datePicker"]').clear().type(2021);
-    cy.contains('Objectif annuel (100 % atteint. +8.33 %)');
+    cy.contains('Objectif annuel (100 % atteint. +8,33 %)');
     cy.contains('Recette de cette année : 130000,00 €');
   });
 

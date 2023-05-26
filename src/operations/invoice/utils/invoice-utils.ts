@@ -1,9 +1,5 @@
 import { Invoice, InvoicePaymentTypeEnum } from 'bpartners-react-client';
-import { formatDateTo8601 } from 'src/common/utils/date';
-import emptyToNull from 'src/common/utils/empty-to-null';
-import isBlankNumber from 'src/common/utils/isBlank';
-import { toMajors } from 'src/common/utils/money';
-import { toMinors } from 'src/common/utils/percent';
+import { formatDateTo8601, emptyToNull, isBlankNumber, toMajors, toMinors } from 'src/common/utils';
 import {
   DefaultPaymentRegulation,
   missingPaymentRegulation,
