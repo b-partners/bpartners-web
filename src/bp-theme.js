@@ -63,8 +63,9 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           paddingLeft: 2,
+          marginTop: '1.5rem',
           '&. RaLayout-content': {
-            marginTop: '1rem',
+            marginTop: '2rem',
             zIndex: 1,
             width: '98%',
             padding: '1%',

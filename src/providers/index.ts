@@ -8,6 +8,7 @@ export * from './bp-data-provider-type';
 export * from './cache';
 export * from './customer-provider';
 export * from './data-provider';
+export * from './feedback-provider';
 export * from './file-provider';
 export * from './invoice-provider';
 export * from './marketplace-provider';

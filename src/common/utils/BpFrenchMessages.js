@@ -27,5 +27,9 @@ export const BpFrenchMessages = {
       error: "Une erreur s'est produite.",
       changesSaved: 'Changement enregistré',
     },
+    feedback: {
+      success: 'Demande envoyer avec success.',
+      error: "La demande n'as pas pus être envoyer.",
+    },
   },
 };
