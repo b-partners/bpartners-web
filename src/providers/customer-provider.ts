@@ -13,8 +13,9 @@ export const customerProvider: BpDataProviderType = {
     const { accountId } = await asyncGetUserInfo();
     return (await customerApi().getCustomers(accountId, firstName, lastName, email, phoneNumber, city, country, CustomerStatus.ENABLED, page, perPage)).data;
   },
-  getOne: function (id: string): Promise<any> {
-    throw new Error('Function not implemented.');
+  getOne: function (customerId: string): Promise<any> {
+    const { accountId } = getCached.userInfo();
+    return customerApi().getCustomerById(accountId, customerId);
   },
   saveOrUpdate: async function (customers: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();

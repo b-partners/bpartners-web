@@ -128,7 +128,7 @@ const LogoLayout = () => {
       const whoami = getCached.whoami();
       cache.user({ ...user, logoFileId: logoFileId });
       cache.whoami({ ...whoami, user: { ...user, logoFileId: logoFileId } });
-      getLogo();
+      getLogo().catch(printError);
     };
 
     updateLogo()
