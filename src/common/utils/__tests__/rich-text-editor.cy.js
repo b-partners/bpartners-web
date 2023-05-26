@@ -1,6 +1,17 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import RichTextEditor from '../../components/RichTextEditor';
+import { FormProvider, useForm } from 'react-hook-form';
+import { EditorState } from 'draft-js';
+
+const RichTextEditorComponent = () => {
+  const form = useForm({ mode: 'all', defaultValues: { message: EditorState.createEmpty() } });
+  return (
+    <FormProvider {...form}>
+      <RichTextEditor name='message' />
+    </FormProvider>
+  );
+};
 
 describe(specTitle('RichTextEditor'), () => {
   const field = '.public-DraftEditor-content';
@@ -13,7 +24,7 @@ describe(specTitle('RichTextEditor'), () => {
   const ol = '[data-testid="OL"]';
 
   beforeEach(() => {
-    mount(<RichTextEditor />);
+    mount(<RichTextEditorComponent />);
   });
 
   it('should render the editor', () => {

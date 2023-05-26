@@ -92,9 +92,17 @@ describe(specTitle('Invoice'), () => {
       req.reply({ ...req.body });
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`).as('refetch');
+    cy.intercept('POST', `/users/mock-user-id1/accountHolders/mock-accountHolder-id1/feedback`, req => {
+      const actualFeedbackAsked = req.body;
+      expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
+      expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
+      req.reply({});
+    }).as('Askfeedback');
     cy.get('[data-testid="pay-invoice-CONFIRMED-1-id"]').click();
     cy.wait('@refetch');
     cy.contains('Facture invoice-ref-1 payée !');
+    cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
+    cy.get('[data-cy="invoice-relaunch-submit"]').click();
   });
 
   it('Should automatically change tabs when converting to a quote or invoice', () => {

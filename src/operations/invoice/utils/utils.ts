@@ -3,6 +3,7 @@ import { getFilenameMeta } from '../../../common/utils';
 import { InvoiceStatusFR } from '../../../constants/invoice-status';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
+import { ContentState, EditorState, convertFromHTML } from 'draft-js';
 
 /**
  * **INVOICE**
@@ -219,4 +220,32 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
       throw e;
     }
   }
+};
+
+export enum EInvoiceModalType {
+  RELAUNCH = 'relaunch',
+  FEEDBACK = 'feedback',
+}
+
+export const getFeedbackDefaultMessage = (invoice: Invoice) => {
+  const customer = invoice?.customer;
+  const { feedback, name: companyName } = getCached.accountHolder() || { feedback: { feedbackLink: '' } };
+  const { phone } = getCached.user() || {};
+  const { feedbackLink } = feedback || {};
+  const message = `<p>Cher(e) ${customer?.firstName} ${customer?.lastName},<br/><br/>
+Nous espérons que vous allez bien. Nous vous remercions encore une fois d'avoir choisi ${companyName}.
+Nous espérons que vous avez été satisfait de notre travail et que nous avons répondu à vos attentes.<br/>
+Nous aimerions vous demander si vous seriez prêt(e) à laisser un avis  à propos de votre expérience avec notre entreprise.
+Nous attachons une grande importance aux avis de nos clients car ils nous aident à améliorer nos services et à offrir une meilleure expérience à l'avenir. 
+Si vous avez 1 minute à nous accorder, voici le lien direct vers notre page de recueil d’avis où vous pouvez laisser un avis : 
+<a href="${feedbackLink}">${feedbackLink}</a>.<br/><br/>
+Nous vous remercions par avance pour votre temps et votre avis. 
+N'hésitez pas à nous contacter si vous avez des questions ou des préoccupations.<br/><br/>
+Cordialement,<br/>
+${companyName}<br/>
+${phone}</p>`;
+  const blocksFromHtml = convertFromHTML(message);
+  const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
+
+  return EditorState.createWithContent(defaultContentState);
 };

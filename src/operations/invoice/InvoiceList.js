@@ -13,12 +13,13 @@ import TooltipButton from '../../common/components/TooltipButton';
 import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { draftInvoiceValidator, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
+import { draftInvoiceValidator, EInvoiceModalType, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
 import { printError } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { RaMoneyField } from 'src/common/components';
 import BPListActions from 'src/common/components/BPListActions';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
+import FeedbackModal from './components/FeedbackModal';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -39,7 +40,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 };
 
 const InvoiceGridTable = props => {
-  const { crupdateInvoice, viewPdf, convertToProposal, setInvoiceToRelaunch } = props;
+  const { crupdateInvoice, viewPdf, convertToProposal, setInvoice } = props;
   const { isLoading, refetch } = useListContext();
   const notify = useNotify();
 
@@ -60,9 +61,13 @@ const InvoiceGridTable = props => {
     }
   };
 
+  const setInvoiceToRelaunch = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.RELAUNCH });
+  const setInvoiceToFeedback = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.FEEDBACK });
+
   const handleInvoicePaid = invoice => {
     invoiceProvider.saveOrUpdate([{ ...invoice, status: InvoiceStatus.PAID }]).then(() => {
       notify(`Facture ${invoice.ref} payée !`);
+      setInvoiceToFeedback(invoice);
       refetch().catch(printError);
     });
   };
@@ -138,10 +143,12 @@ const InvoiceGridTable = props => {
 };
 
 const InvoiceList = props => {
-  const [invoiceToRelaunch, setInvoiceToRelaunch] = useState(null);
+  const [{ selectedInvoice, modalFor }, setInvoice] = useState({ selectedInvoice: null, modalFor: null });
   const notify = useNotify();
   const refresh = useRefresh();
   const { onStateChange, invoiceTypes, handleSwitchTab } = props;
+
+  const handleResetInvoice = () => setInvoice({ modalFor: null, selectedInvoice: null });
 
   const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
   const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
@@ -192,10 +199,11 @@ const InvoiceList = props => {
           />
         }
       >
-        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoiceToRelaunch={setInvoiceToRelaunch} />
+        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoice={setInvoice} />
       </List>
 
-      <InvoiceRelaunchModal invoice={invoiceToRelaunch} resetInvoice={() => setInvoiceToRelaunch(null)} />
+      <FeedbackModal invoice={modalFor === EInvoiceModalType.FEEDBACK ? selectedInvoice : null} resetInvoice={handleResetInvoice} />
+      <InvoiceRelaunchModal invoice={modalFor === EInvoiceModalType.RELAUNCH ? selectedInvoice : null} resetInvoice={handleResetInvoice} />
     </>
   );
 };
