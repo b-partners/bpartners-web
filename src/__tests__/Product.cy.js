@@ -18,10 +18,13 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?**`, req => {
       const { page, pageSize } = req.query;
       req.reply(getProducts(page - 1, pageSize));
     }).as('getProducts');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products/**`, req => {
+      req.reply({ ...getProducts(0, 1)[0], id: 'product-15-id' });
+    }).as('getOneProduct');
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       req.reply(req.body);
     }).as('postProducts');
@@ -134,6 +137,9 @@ describe(specTitle('Products'), () => {
           vatPercent: 500,
           description: 'new description',
           quantity: 1,
+          totalPriceWithVat: null,
+          totalVat: null,
+          unitPriceWithVat: null,
         },
       ]);
       setProduct(req.body[0]);
@@ -161,7 +167,18 @@ describe(specTitle('Products'), () => {
     cy.contains('Édition de produit');
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
-      const editedProduct = [{ description: editionDescription, unitPrice: 100, vatPercent: 100, id: 'product-15-id', quantity: 1 }];
+      const editedProduct = [
+        {
+          description: editionDescription,
+          unitPrice: 100,
+          vatPercent: 100,
+          id: 'product-15-id',
+          quantity: 1,
+          totalPriceWithVat: null,
+          totalVat: null,
+          unitPriceWithVat: null,
+        },
+      ];
       expect(req.body).to.deep.equals(editedProduct);
       setProduct(editedProduct[0], 0);
       req.reply(editedProduct);
@@ -171,7 +188,7 @@ describe(specTitle('Products'), () => {
     cy.get('#description').clear().type(editionDescription);
     cy.get('#unitPrice').clear().type(1);
     cy.get('#vatPercent').clear().type(1);
-    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
+    cy.get('.RaToolbar-defaultToolbar > .MuiButton-contained').click();
 
     cy.contains('edit this product test');
   });

@@ -4,6 +4,7 @@ import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInformationForm from './CompanyInformationForm';
 import RevenueTargetForm from './RevenueTargetForm';
 import GeneralInfoForm from './GeneralInfoForm';
+import { FeedbackLinkForm } from './FeedbackLinkForm';
 
 const CloseConfigurationButton = ({ onClick }) => (
   <Tooltip title="Fermé l'édition">
@@ -13,44 +14,28 @@ const CloseConfigurationButton = ({ onClick }) => (
   </Tooltip>
 );
 
+const CustomAccordion = ({ render, title }) => {
+  return (
+    <Accordion defaultExpanded={true}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} data-testid={`account-${title}-accordion`}>
+        <Typography variant='h6'>{title}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>{render}</AccordionDetails>
+    </Accordion>
+  );
+};
+
 const AccountEditionLayout = ({ onClose }) => {
   return (
     <Card sx={{ border: 'none' }}>
       <CardHeader title='Édition de mon compte' action={<CloseConfigurationButton onClick={onClose} />} />
       <CardContent>
         <Box>
-          <Accordion defaultExpanded={true}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel0a-content' id='panel0a-header'>
-              <Typography variant='h6'>Information Générale</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <GeneralInfoForm />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-              <Typography variant='h6'>Activité</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <BusinessActivitiesInputs />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel2a-content' id='panel2a-header'>
-              <Typography variant='h6'>Information sur la société</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <CompanyInformationForm />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded={true} sx={{ mt: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel3a-content' id='panel3a-header'>
-              <Typography variant='h6'>Recette annuelle à réaliser</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RevenueTargetForm />
-            </AccordionDetails>
-          </Accordion>
+          <CustomAccordion title='Information Générale' render={<GeneralInfoForm />} />
+          <CustomAccordion title='Booster votre référence' render={<FeedbackLinkForm />} />
+          <CustomAccordion title='Activité' render={<BusinessActivitiesInputs />} />
+          <CustomAccordion title='Information sur la société' render={<CompanyInformationForm />} />
+          <CustomAccordion title='Recette annuelle à réaliser' render={<RevenueTargetForm />} />
         </Box>
       </CardContent>
     </Card>

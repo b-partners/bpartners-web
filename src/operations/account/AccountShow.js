@@ -32,6 +32,7 @@ const ProfileLayout = () => {
       <TextField source='user.firstName' emptyText={emptyText} id='firstName' label='Prénom' />
       <TextField source='user.lastName' emptyText={emptyText} id='lastName' label='Nom' />
       <TextField source='user.phone' emptyText={emptyText} id='phone' label='Téléphone' />
+      <TextField pb={3} source='feedback.feedbackLink' emptyText={emptyText} label='Lien du feedback' />
     </SimpleShowLayout>
   );
 };
