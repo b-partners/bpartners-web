@@ -4,18 +4,17 @@
 const awsmobile = {
     "aws_project_region": "eu-west-3",
     "aws_cognito_region": "eu-west-3",
-    "aws_user_pools_id": "eu-west-3_Fv8n7AfVo",
-    "aws_user_pools_web_client_id": "4v0n3pk2j0b12m3aascud4us6h",
+    "aws_user_pools_id": "eu-west-3_FRKp6Y3Gx",
+    "aws_user_pools_web_client_id": "1rof83p44k83l5lc8gfk6sbtam",
     "oauth": {
-        "domain": "preprod-bpartners-api.auth.eu-west-3.amazoncognito.com"
+        "domain": "bpartners.auth.eu-west-3.amazoncognito.com"
     },
     "aws_cognito_username_attributes": [
         "EMAIL"
     ],
     "aws_cognito_social_providers": [],
     "aws_cognito_signup_attributes": [
-        "EMAIL",
-        "PHONE_NUMBER"
+        "EMAIL"
     ],
     "aws_cognito_mfa_configuration": "OPTIONAL",
     "aws_cognito_mfa_types": [
