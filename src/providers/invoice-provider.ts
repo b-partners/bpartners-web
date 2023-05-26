@@ -19,8 +19,10 @@ export const invoiceProvider: BpDataProviderType = {
       )
     ).then(listOfLists => listOfLists.flat());
   },
-  getOne: function (_id: string): Promise<any> {
-    throw new Error('Function not implemented.');
+  getOne: async function (invoiceId: string): Promise<any> {
+    const { accountId } = getCached.userInfo();
+    const { data: invoice } = await payingApi().getInvoiceById(accountId, invoiceId);
+    return invoiceMapper.toDomain(invoice);
   },
   saveOrUpdate: async function (_invoices: any[], option = {}): Promise<any[]> {
     const { isEdition } = option;

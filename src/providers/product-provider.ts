@@ -10,8 +10,10 @@ export const importProducts = async (body: any) => {
 };
 
 export const productProvider: BpDataProviderType = {
-  async getOne(userId: string) {
-    throw new Error('Function not implemented.');
+  async getOne(productId: string) {
+    const { accountId } = getCached.userInfo();
+    const { data: product } = await payingApi().getProductById(accountId, productId);
+    return productMapper.toDomain(product);
   },
   getList: async function (page: number, perPage: number, filters = { sort: {} }): Promise<any[]> {
     const {
