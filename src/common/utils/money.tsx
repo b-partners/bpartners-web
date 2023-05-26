@@ -24,8 +24,8 @@ export const coloredPrettyPrintMinors = (amount: number, type?: TransactionTypeE
   <b style={{ color: type === TransactionTypeEnum.INCOME ? green[500] : red[500] }}> {prettyPrintMinors(amount, type)} </b>
 );
 
-export const toMinors = (amount: number): number => (isNaN(amount * 100) ? 0 : amount * 100);
+export const toMinors = (amount: number): number => (isNaN(+amount * 100) ? 0 : +amount * 100);
 // used for format input values
 export const toMajors = (amount: number): number =>
   //TODO: subject to rounding errors, should use lib like Dinero
-  isNaN(amount / 100) ? 0 : amount / 100;
+  isNaN(+amount / 100) ? 0 : +amount / 100;

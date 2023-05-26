@@ -10,9 +10,12 @@ describe(specTitle('Customers'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers**`, req => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers?**`, req => {
       const { page, pageSize } = req.query;
       req.reply(getCustomers(page - 1, pageSize));
+    });
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers/customer-0-id`, req => {
+      req.reply(getCustomers(0, 1)[0]);
     });
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -93,7 +96,8 @@ describe(specTitle('Customers'), () => {
       req.reply([updatedCustomer]);
     }).as('updateCustomers');
 
-    cy.get('#email').clear().type('test@gmail.com');
+    cy.get('#email').clear();
+    cy.get('#email').type('test@gmail.com');
 
     cy.get('#lastName').clear().type('LastName 11');
     cy.get('#firstName').clear().type('FirstName 11');
