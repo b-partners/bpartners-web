@@ -1,7 +1,6 @@
 import { Edit, required, SimpleForm, TextInput } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { transformProduct } from './utils';
 import { RaNumberInput } from 'src/common/components';
 
 const ProductEdit = () => {
@@ -10,7 +9,7 @@ const ProductEdit = () => {
 
   return (
     <BPFormLayout title='Édition de produit' resource='products'>
-      <Edit transform={transformProduct} mutationMode='pessimistic'>
+      <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de produit'>
           <TextInput name='description' source='description' label='Description' validate={required()} />
           <RaNumberInput name='unitPrice' source='unitPrice' label='Prix unitaire HT' endText='€' />

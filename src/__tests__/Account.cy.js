@@ -4,8 +4,10 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { whoami1, user2 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities, accountHolder1 } from './mocks/responses/account-api';
+import { accounts1, accountHolders1, businessActivities, accountHolder1, accountHoldersFeedbackLink } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
+
+const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
@@ -110,7 +112,7 @@ describe(specTitle('Account'), () => {
 
     cy.get('[name="account"]').click();
 
-    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
     cy.contains('Information sur la société');
@@ -146,13 +148,13 @@ describe(specTitle('Account'), () => {
 
     cy.get('[name="account"]').click();
 
-    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
     cy.contains('Information sur la société');
 
     // close company edition
-    cy.get('#panel2a-header > .MuiAccordionSummary-expandIconWrapper > [data-testid="ExpandMoreIcon"]').click();
+    cy.get('[data-testid="account-Information sur la société-accordion"]').click();
 
     cy.get(
       '.css-1nghgb-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
@@ -201,12 +203,12 @@ describe(specTitle('Account'), () => {
     //now the isSubjectToVat is false
     cy.contains('Oui');
 
-    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
     cy.contains('Information sur la société');
     // close business activity edition
-    cy.get('#panel1a-header > .MuiAccordionSummary-expandIconWrapper > [data-testid="ExpandMoreIcon"]').click();
+    cy.get('[data-testid="account-Activité-accordion"]').click();
 
     cy.get('form [name="socialCapital"]').clear().type('{enter}');
     cy.contains('Ce champ est requis');
@@ -266,7 +268,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Recette annuelle à réaliser');
     cy.contains('120000,00 €');
 
-    cy.get('[aria-labelledby="simple-tab-0"] > .MuiBox-root > .MuiIconButton-root').click();
+    cy.get(ACCOUNT_EDITION).click();
 
     cy.contains('Recette annuelle à réaliser');
     cy.get('[name="amountTarget"]').clear().type(`{enter}`);
@@ -285,6 +287,30 @@ describe(specTitle('Account'), () => {
 
     cy.contains('Recette annuelle à réaliser');
     cy.contains('230000,00 €');
+  });
+
+  it('change feedback link', () => {
+    const validLink = 'example.com';
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
+      expect(req.body).eql({ feedbackLink: validLink });
+      req.reply(accountHoldersFeedbackLink);
+    }).as('configuration');
+    mount(<App />);
+
+    cy.get('[name="account"]').click();
+    cy.get(ACCOUNT_EDITION).click();
+    cy.contains('Booster votre référence');
+    cy.contains('Booster votre référence. Renseignez le lien vers votre page avis (google business, trust pilote)');
+    cy.get('[name="feedbackLink"]').type('not valid link{enter}');
+    cy.contains('Lien non valide');
+    cy.get('[name="feedbackLink"]').clear().type(`${validLink}{enter}`);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHoldersFeedbackLink);
+    cy.get('[data-testid="ClearIcon"]').click();
+    cy.contains(validLink);
   });
 
   it('unverified user warning', () => {

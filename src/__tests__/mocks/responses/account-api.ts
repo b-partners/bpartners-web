@@ -37,6 +37,7 @@ export const accountHolder1: AccountHolder = {
   name: 'Numer',
   siren: 'Siren',
   officialActivityName: 'activité officielle',
+  feedback: null,
   contactAddress: {
     address: '6 rue Paul Langevin',
     city: 'Ivandry',
@@ -116,3 +117,4 @@ export const accountHolders2: AccountHolder[] = [
     },
   },
 ];
+export const accountHoldersFeedbackLink: AccountHolder[] = [{ ...accountHolder1, feedback: { feedbackLink: 'example.com' } }];

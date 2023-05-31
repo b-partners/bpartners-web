@@ -7,6 +7,7 @@ import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import { RaMoneyField } from 'src/common/components';
+import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
 
 const productFilter = [
   <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn />,
@@ -50,7 +51,7 @@ const Product = () => {
           }
         />
         <RaMoneyField map={false} label='Prix unitaire HT' source='unitPrice' render={data => data?.unitPrice} />
-        {isSubjectToVat && <RaMoneyField map={false} label='TVA' source='vatPercent' render={data => data?.vatPercent} />}
+        {isSubjectToVat && <RaPercentageField map={false} label='TVA' source='vatPercent' render={data => data?.vatPercent} />}
         {isSubjectToVat && <RaMoneyField map={false} label='Prix unitaire TTC' source='unitPriceWithVat' render={data => data?.unitPriceWithVat} />}
       </Datagrid>
     )

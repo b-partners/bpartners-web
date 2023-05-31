@@ -1,4 +1,12 @@
-import { AccountHolder, BusinessActivity, CompanyBusinessActivity, CompanyInfo, CreateAnnualRevenueTarget, UpdateAccountHolder } from 'bpartners-react-client';
+import {
+  AccountHolder,
+  AccountHolderFeedback,
+  BusinessActivity,
+  CompanyBusinessActivity,
+  CompanyInfo,
+  CreateAnnualRevenueTarget,
+  UpdateAccountHolder,
+} from 'bpartners-react-client';
 import { BpDataProviderType, asyncGetAccountId, asyncGetUser, cache, getCached, userAccountsApi } from '.';
 
 export const accountHolderProvider: BpDataProviderType = {
@@ -49,4 +57,12 @@ export const updateCompanyInfo = async (resources: CompanyInfo[]) => {
   const { accountHolderId, accountId, userId } = getCached.userInfo();
   const { data } = await userAccountsApi().updateCompanyInfo(userId, accountId, accountHolderId, resources[0]);
   return [cache.accountHolder(data)];
+};
+
+export const updateFeedbackLink = async (feedbackLink: string) => {
+  const { accountHolderId, userId } = getCached.userInfo();
+  const feedback: AccountHolderFeedback = { feedbackLink };
+
+  const { data: accountHolder } = await userAccountsApi().updateFeedbackConf(userId, accountHolderId, feedback);
+  return cache.accountHolder(accountHolder);
 };
