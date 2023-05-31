@@ -123,7 +123,7 @@ describe(specTitle('Invoice creation'), () => {
 
     cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
     cy.contains('24,00 € (TTC)');
-    cy.contains('TVA : 0,04 €');
+    cy.contains('TVA : 4,00 €');
     cy.contains('10,00 € (HT)');
 
     cy.get('[data-testid="product-product-1-id-item"] input').clear().type('15');
