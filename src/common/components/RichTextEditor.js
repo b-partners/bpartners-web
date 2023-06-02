@@ -15,7 +15,7 @@ const styleMap = {
 
 // main component
 const RichTextEditor = ({ placeholder = '', name }) => {
-  const { setValue, clearErrors, trigger } = useFormContext();
+  const { setValue, clearErrors } = useFormContext();
   const editorState = useWatch({ name });
   const handleChange = state => (typeof state === 'function' ? setValue(name, state(editorState)) : setValue(name, state));
   const handleFocus = () => clearErrors(name);
