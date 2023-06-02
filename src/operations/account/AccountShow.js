@@ -177,7 +177,7 @@ const SubjectToVatSwitch = ({ data }) => {
 
   const handleChange = (_event, checked) => {
     const fetch = async () => {
-      await accountHolderProvider.saveOrUpdate([{ ...data?.accountHolder?.companyInfo, isSubjectToVat: !checked }]);
+      await accountHolderProvider.saveOrUpdate([{ ...data?.companyInfo, isSubjectToVat: !checked }]);
       refresh();
     };
     setLoading(true);
