@@ -3,6 +3,7 @@ export * from './createRedirectionUrl';
 export * from './date';
 export * from './empty-to-null';
 export * from './file';
+export * from './get-current-account';
 export * from './get-geojson-url';
 export * from './get-mime-type';
 export * from './get-params';

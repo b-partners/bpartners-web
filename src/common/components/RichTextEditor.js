@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Code, FormatBold, FormatItalic, FormatListBulleted, FormatListNumbered, FormatQuote, FormatStrikethrough } from '@mui/icons-material';
 import { ButtonGroup, Divider, IconButton, Stack } from '@mui/material';
-import { Editor, EditorState, RichUtils } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
+import { Editor, RichUtils } from 'draft-js';
+import { useFormContext, useWatch } from 'react-hook-form';
 import 'draft-js/dist/Draft.css';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 // custom styleMap
 const styleMap = {
@@ -13,19 +14,17 @@ const styleMap = {
 };
 
 // main component
-const RichTextEditor = ({ setContent, placeholder = '' }) => {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-
-  useEffect(() => {
-    const htmlContent = stateToHTML(editorState.getCurrentContent());
-    setContent && setContent(htmlContent);
-  }, [editorState, setContent]);
+const RichTextEditor = ({ placeholder = '', name }) => {
+  const { setValue, clearErrors } = useFormContext();
+  const editorState = useWatch({ name });
+  const handleChange = state => (typeof state === 'function' ? setValue(name, state(editorState)) : setValue(name, state));
+  const handleFocus = () => clearErrors(name);
 
   const handleKeyCommand = cmd => {
     const newState = RichUtils.handleKeyCommand(editorState, cmd);
 
     if (newState) {
-      setEditorState(newState);
+      handleChange(newState);
       return true;
     }
 
@@ -34,8 +33,15 @@ const RichTextEditor = ({ setContent, placeholder = '' }) => {
 
   return (
     <>
-      <Toolbar editorState={editorState} onChange={setEditorState} />
-      <Editor onChange={setEditorState} customStyleMap={styleMap} editorState={editorState} handleKeyCommand={handleKeyCommand} placeholder={placeholder} />
+      <Toolbar editorState={editorState} onChange={handleChange} />
+      <Editor
+        onChange={handleChange}
+        onFocus={handleFocus}
+        customStyleMap={styleMap}
+        editorState={editorState}
+        handleKeyCommand={handleKeyCommand}
+        placeholder={placeholder}
+      />
     </>
   );
 };
@@ -54,11 +60,13 @@ const Toolbar = ({ editorState, onChange }) => {
     <Stack
       spacing='2'
       flexDirection='row'
+      justifyContent='flex-end'
       divider={<Divider />}
       p={1}
       boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0'
       position='sticky'
       top={0}
+      marginBottom={2}
       zIndex={999}
       bgcolor='white'
     >
@@ -91,8 +99,8 @@ const ToolbarButton = ({ onToggle, label, active, style, children }) => {
 const RenderEditorFunc = ({ reg = [], onToggle, isActive }) => {
   const renderAll = useCallback(
     () =>
-      reg.map(type => (
-        <ToolbarButton key={type.label} active={isActive(type.style)} onToggle={onToggle} label={type.label} style={type.style}>
+      reg.map((type, k) => (
+        <ToolbarButton key={type.label + k} active={isActive(type.style)} onToggle={onToggle} label={type.label} style={type.style}>
           {type.icon}
         </ToolbarButton>
       )),

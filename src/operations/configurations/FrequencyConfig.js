@@ -3,6 +3,7 @@ import { useNotify } from 'react-admin';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { authProvider, relaunchProvider } from 'src/providers';
+import { printError } from 'src/common/utils';
 
 const FrequencyConfig = () => {
   const [frequency, setFrequency] = useState({});
@@ -13,8 +14,10 @@ const FrequencyConfig = () => {
     setFrequency(currentFrequency);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => userId && initializeFrequency(), []);
+  useEffect(() => {
+    userId && initializeFrequency().catch(printError);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -63,7 +66,7 @@ const FrequencyConfig = () => {
         />
       </Box>
       <Box>
-        <Button type='submit' variant='contained' color='primary' startIcon={<SaveIcon />}>
+        <Button type='submit' data-testid='submit-frequency-relaunch' variant='contained' color='primary' startIcon={<SaveIcon />}>
           Enregistrer
         </Button>
       </Box>
