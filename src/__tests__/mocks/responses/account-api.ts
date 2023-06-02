@@ -1,7 +1,16 @@
 import { Account, AccountHolder, AccountValidationRedirection, BusinessActivity, LegalFile } from 'bpartners-react-client';
 
-export const account1: Account = { availableBalance: 22000, bic: 'BIC', iban: 'IBAN', id: 'mock-account-id1', name: 'Numer', bank: null };
-export const accounts1: Account[] = [account1];
+export const account1: Account = { active: true, availableBalance: 22000, bic: 'BIC', iban: 'IBAN', id: 'mock-account-id1', name: 'Numer', bank: null };
+export const account2: Account = {
+  active: false,
+  availableBalance: 22000,
+  bic: 'BIC',
+  iban: 'IBAN',
+  id: 'mock-account-id2',
+  name: 'Numer-account-2',
+  bank: null,
+};
+export const accounts1: Account[] = [account1, account2];
 export const businessActivities: BusinessActivity[] = [
   {
     id: 'b_00',
