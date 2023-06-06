@@ -32,9 +32,9 @@ const AccountEditionLayout = ({ onClose }) => {
       <CardContent>
         <Box>
           <CustomAccordion title='Information Générale' render={<GeneralInfoForm />} />
-          <CustomAccordion title='Booster votre référence' render={<FeedbackLinkForm />} />
+          <CustomAccordion title='Boostez votre référencement' render={<FeedbackLinkForm />} />
           <CustomAccordion title='Activité' render={<BusinessActivitiesInputs />} />
-          <CustomAccordion title='Information sur la société' render={<CompanyInformationForm />} />
+          <CustomAccordion title='Informations sur la société' render={<CompanyInformationForm />} />
           <CustomAccordion title='Recette annuelle à réaliser' render={<RevenueTargetForm />} />
         </Box>
       </CardContent>

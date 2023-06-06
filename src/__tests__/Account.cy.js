@@ -115,7 +115,7 @@ describe(specTitle('Account'), () => {
     cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
-    cy.contains('Information sur la société');
+    cy.contains('Informations sur la société');
 
     cy.get('[name="name"]').clear();
     cy.contains('Ce champ est requis');
@@ -151,10 +151,10 @@ describe(specTitle('Account'), () => {
     cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
-    cy.contains('Information sur la société');
+    cy.contains('Informations sur la société');
 
     // close company edition
-    cy.get('[data-testid="account-Information sur la société-accordion"]').click();
+    cy.get('[data-testid="account-Informations sur la société-accordion"]').click();
 
     cy.get(
       '.css-1nghgb-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
@@ -206,7 +206,7 @@ describe(specTitle('Account'), () => {
     cy.get(ACCOUNT_EDITION).click();
     cy.contains('Édition de mon compte');
     cy.contains('Activité');
-    cy.contains('Information sur la société');
+    cy.contains('Informations sur la société');
     // close business activity edition
     cy.get('[data-testid="account-Activité-accordion"]').click();
 
@@ -303,8 +303,8 @@ describe(specTitle('Account'), () => {
 
     cy.get('[name="account"]').click();
     cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Booster votre référence');
-    cy.contains('Booster votre référence. Renseignez le lien vers votre page avis (google business, trust pilote)');
+    cy.contains('Boostez votre référencement');
+    cy.contains('Boostez votre référencement. Renseignez le lien vers votre page avis (google business, trust pilote)');
     cy.get('[name="feedbackLink"]').type('not valid link{enter}');
     cy.contains('Lien non valide');
     cy.get('[name="feedbackLink"]').clear().type(`${validLink}{enter}`);
