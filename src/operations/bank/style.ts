@@ -61,6 +61,8 @@ export const BANK_LOGO = {
   height: '4rem',
 };
 
+export const CARD_CONTENT = { display: 'flex', justifyContent: 'space-around' };
+
 export const DISCONNECT_BANK_LOGO = {
   position: 'absolute',
   bottom: '1rem',

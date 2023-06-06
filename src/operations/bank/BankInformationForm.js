@@ -42,7 +42,7 @@ export const BankInformationForm = props => {
           <BpFormField name='name' label='Nom du compte' />
           <BpFormField name='bic' label='BIC' />
           <BpFormField name='iban' label='IBAN' />
-          <Button type='submit' sx={{ width: 300, marginTop: 1 }} disabled={isLoading} startIcon={<SaveIcon />}>
+          <Button type='submit' data-testid='submit-change-bank-info' sx={{ width: 300, marginTop: 1 }} disabled={isLoading} startIcon={<SaveIcon />}>
             Enregistrer
           </Button>
         </form>

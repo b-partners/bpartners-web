@@ -1,7 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import FrequencyConfig from './FrequencyConfig';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import AccountConfig from './AccountConfig';
 
 const CustomAccordion = ({ content, title }) => {
   return (
@@ -17,7 +16,6 @@ const CustomAccordion = ({ content, title }) => {
 export const Configuration = () => {
   return (
     <div>
-      <CustomAccordion title='Changer de compte' content={<AccountConfig />} />
       <CustomAccordion title='Fréquence de relance' content={<FrequencyConfig />} />
     </div>
   );
