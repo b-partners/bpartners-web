@@ -41,7 +41,7 @@ export const FeedbackLinkForm = () => {
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
         <Typography bgcolor={BP_COLOR['solid_grey']} p={2} variant='body2' style={{ width: '45%' }}>
-          Booster votre référence. Renseignez le lien vers votre page avis (google business, trust pilote)
+          Boostez votre référencement. Renseignez le lien vers votre page avis (google business, trust pilote)
         </Typography>
         <BpFormField size='small' fontSiz name='feedbackLink' label='Lien pour le feedback' style={{ width: '45%' }} />
         <Button
