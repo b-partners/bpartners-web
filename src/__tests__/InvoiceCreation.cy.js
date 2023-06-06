@@ -71,7 +71,7 @@ describe(specTitle('Invoice creation'), () => {
     const newRef = 'A new ref';
     cy.get('form input[name=ref]').clear().type(newRef);
 
-    const newDelayInPaymentAllowed = '26';
+    const newDelayInPaymentAllowed = 26;
     cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
     cy.get('input[name="delayInPaymentAllowed"]').type(newDelayInPaymentAllowed);
 
@@ -79,7 +79,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
     cy.get('input[name="globalDiscount"]').type(globalDiscount_percentValue);
 
-    const newDelayPenaltyPercent = '40';
+    const newDelayPenaltyPercent = 40;
 
     cy.get('input[name="delayPenaltyPercent"]').type(newDelayPenaltyPercent);
 

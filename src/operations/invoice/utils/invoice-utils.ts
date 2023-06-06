@@ -25,11 +25,13 @@ export const invoiceMapper = {
   toRest: (_invoice: any): Invoice => {
     const submittedAt = new Date();
     const delayPenaltyPercent = toMinors(parseInt(_invoice[DELAY_PENALTY_PERCENT]));
+    const delayInPaymentAllowed = parseInt(_invoice[DELAY_IN_PAYMENT_ALLOWED]);
     const globalDiscount = _invoice[GLOBAL_DISCOUNT] !== null ? { percentValue: toMinors(_invoice[GLOBAL_DISCOUNT]) } : null;
 
     const invoice = {
       ..._invoice,
       globalDiscount,
+      delayInPaymentAllowed,
       delayPenaltyPercent,
       sendingDate: formatDateTo8601(_invoice[SENDING_DATE], '00:00:00'),
       validityDate: formatDateTo8601(_invoice[VALIDITY_DATE], '23:59:59'),
