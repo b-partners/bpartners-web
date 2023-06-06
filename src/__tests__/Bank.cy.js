@@ -3,8 +3,8 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities, account1 } from './mocks/responses/account-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
+import { accounts1, accountHolders1, businessActivities, account1, account2 } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import * as Redirect from 'src/common/utils';
 
@@ -12,17 +12,37 @@ const redirectionUrl = {
   redirectionStatusUrls: { failureUrl: 'dummy', successUrl: 'dummy' },
   redirectionUrl: 'dummy',
 };
-
+const newUser = { ...user1, activeAccount: { ...account2, active: true } };
+const newAccounts = [
+  { ...account2, active: true },
+  { ...account1, active: false },
+];
 describe(specTitle('Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
     const newAccount = [{ ...account1, bic: 'bic1234', iban: 'iban1234', bank: { name: 'BMOI' } }];
 
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccount).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [...newAccount, account2]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('POST', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/initiateBankConnection`, redirectionUrl).as('initiateBankConnection');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.intercept('POST', `/users/mock-user-id1/accounts/mock-account-id2/active`, newUser).as('setAccount');
+  });
+
+  it('Test change account', () => {
+    mount(<App />);
+    cy.get('[name="bank"]').click();
+    cy.contains('BMOI');
+    cy.contains('bic1234');
+    cy.contains('iban1234');
+
+    cy.contains('Changer de compte.');
+    cy.get('[data-testid="ArrowDropDownIcon"]').click();
+    cy.contains('Numer-account-2').click();
+    cy.get('[data-testid="submit-change-account"]').click();
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
   });
 
   it('Test bank', () => {

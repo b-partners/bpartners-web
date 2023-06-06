@@ -1,11 +1,12 @@
-import { Modal, Button, TextField, Backdrop, Autocomplete, CircularProgress } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import { Autocomplete, Backdrop, Box, Button, CircularProgress, Modal, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { accountProvider, getCached, setCurrentAccount } from 'src/providers';
-import { getCurrentAccount, printError } from 'src/common/utils';
 import { useRefresh } from 'react-admin';
+import { getCurrentAccount, printError } from 'src/common/utils';
+import { accountProvider, getCached, setCurrentAccount } from 'src/providers';
+import { BIC_MESSAGE_CONTAINER } from './style';
 
-const AccountConfig = () => {
+const AccountConfig = ({ setAccount: setGlobalAccount }) => {
   const [{ accounts, selectedAccount }, setAccounts] = useState({ accounts: [], selectedAccount: null });
   const [{ isLoading, buttonDisable }, setTool] = useState({ isLoading: false, buttonDisable: true });
   const refresh = useRefresh();
@@ -13,11 +14,14 @@ const AccountConfig = () => {
   const setIsLoading = value => setTool({ isLoading: value, buttonDisable: true });
   const setButtonDisable = value => setTool({ isLoading, buttonDisable: value });
 
+  const handleGlobalAccount = () => setGlobalAccount(selectedAccount);
+
   const handleSubmit = e => {
     e.preventDefault();
     setIsLoading(true);
     const submit = async () => {
       await setCurrentAccount(selectedAccount.id);
+      handleGlobalAccount();
       setButtonDisable(true);
     };
     if (selectedAccount !== null) submit().catch(printError).finally(refresh);
@@ -40,7 +44,12 @@ const AccountConfig = () => {
   }, []);
 
   return (
-    <>
+    <Box>
+      <Paper sx={BIC_MESSAGE_CONTAINER}>
+        <Typography variant='p' component='div' sx={{ margin: 2 }}>
+          Changer de compte.
+        </Typography>
+      </Paper>
       <form onSubmit={handleSubmit}>
         <Autocomplete
           options={accounts}
@@ -51,16 +60,7 @@ const AccountConfig = () => {
           sx={{ width: 300 }}
           renderInput={params => <TextField {...params} label='Mon compte' />}
         />
-        <Button
-          variant='contained'
-          size='small'
-          startIcon={<SaveIcon />}
-          type='submit'
-          disabled={buttonDisable}
-          name='submitChangeAccount'
-          data-testid='submit-change-account'
-          sx={{ width: 'min-content', mt: 1 }}
-        >
+        <Button startIcon={<SaveIcon />} type='submit' disabled={buttonDisable} data-testid='submit-change-account' sx={{ width: 300, marginTop: 1 }}>
           Enregistrer
         </Button>
       </form>
@@ -69,7 +69,7 @@ const AccountConfig = () => {
           <CircularProgress size={40} />
         </Backdrop>
       </Modal>
-    </>
+    </Box>
   );
 };
 

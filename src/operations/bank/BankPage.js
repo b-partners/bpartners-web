@@ -21,10 +21,11 @@ import {
 import { useEffect, useState } from 'react';
 import { redirect } from 'src/common/utils';
 import { BankInformationForm } from './BankInformationForm';
-import { BALANCE_ICON, BANK_CARD, BANK_LOGO, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
+import { BALANCE_ICON, BANK_CARD, BANK_LOGO, CARD_CONTENT, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 import { useNotify } from 'react-admin';
 import { handleSubmit, printError } from 'src/common/utils';
 import { accountProvider, bankProvider, getCached } from 'src/providers';
+import AccountConfig from './AccountConfig';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(getCached.account());
@@ -37,10 +38,14 @@ export const BankPage = () => {
     updateAccount().catch(printError);
   }, []);
 
-  return account && account.bank ? <Bank account={account} setAccount={setAccount} /> : <NoBank account={account} />;
+  return account && account.bank ? (
+    <Bank aside={<AccountConfig setAccount={setAccount} />} account={account} setAccount={setAccount} />
+  ) : (
+    <NoBank aside={<AccountConfig setAccount={setAccount} />} />
+  );
 };
 
-const NoBank = () => {
+const NoBank = ({ aside }) => {
   const [isLoading, setLoading] = useState(false);
 
   const initiateBankConnectionAsync = () => {
@@ -59,7 +64,7 @@ const NoBank = () => {
         outline: 'none',
       }}
     >
-      <CardContent>
+      <CardContent style={CARD_CONTENT}>
         <Paper sx={NO_BANK_CARD}>
           <AccountBalanceIcon style={BALANCE_ICON} />
           <Box sx={{ zIndex: 2, m: 5, '.MuiTypography-root': { fontSize: '1.3rem' } }}>
@@ -81,12 +86,13 @@ const NoBank = () => {
             <CircularProgress />
           </Backdrop>
         </Modal>
+        {aside}
       </CardContent>
     </Card>
   );
 };
 
-const Bank = ({ account, setAccount }) => {
+const Bank = ({ account, setAccount, aside }) => {
   const [isDialogOpen, setDialogState] = useState(false);
 
   const handleCloseDialog = () => setDialogState(false);
@@ -115,7 +121,7 @@ const Bank = ({ account, setAccount }) => {
             </Toolbar>
           }
         />
-        <CardContent>
+        <CardContent style={CARD_CONTENT}>
           <Stack direction='row' spacing={2}>
             <Paper sx={BANK_CARD}>
               <img src={account.bank.logoUrl} style={BANK_LOGO} alt='bank-logo' />
@@ -130,6 +136,7 @@ const Bank = ({ account, setAccount }) => {
             </Paper>
             <BankInformationForm setAccount={setAccount} account={account} />
           </Stack>
+          {aside}
         </CardContent>
       </Card>
     </>
