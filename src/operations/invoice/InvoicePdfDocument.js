@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
 import { printError } from 'src/common/utils';
+import { useInvoiceContext } from 'src/common/hooks';
 
 export const CancelButton = ({ onClick }) => (
   <Tooltip title='Retourner a la liste'>
@@ -13,20 +14,21 @@ export const CancelButton = ({ onClick }) => (
   </Tooltip>
 );
 
-const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
+const InvoicePdfDocument = () => {
+  const { invoice, setView } = useInvoiceContext();
   const [documentUrl, setDocumentUrl] = useState('');
 
   useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId)
+    getInvoicePdfUrl(invoice?.fileId)
       .then(pdfUrl => setDocumentUrl(pdfUrl))
       .catch(printError);
-  }, [selectedInvoice]);
+  }, [invoice]);
 
   return (
     <Card sx={{ border: 'none' }}>
-      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
+      <CardHeader action={<CancelButton onClick={() => setView('list')} />} title={invoice?.title} subheader={invoice?.ref} />
       <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
-        <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
+        <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={invoice?.ref} />
       </CardContent>
     </Card>
   );

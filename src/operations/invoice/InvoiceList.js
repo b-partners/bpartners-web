@@ -1,27 +1,23 @@
-import { Add, Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
-import { v4 as uuid } from 'uuid';
 
 import { formatDate } from '../../common/utils';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
-
-import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { draftInvoiceValidator, EInvoiceModalType, getInvoiceStatusInFr, InvoiceFieldErrorMessage, invoiceInitialValue, viewScreenState } from './utils/utils';
+import { draftInvoiceValidator, EInvoiceModalType, getInvoiceStatusInFr, InvoiceFieldErrorMessage, viewScreenState } from './utils/utils';
 import { printError } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { RaMoneyField } from 'src/common/components';
 import BPListActions from 'src/common/components/BPListActions';
-import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import FeedbackModal from './components/FeedbackModal';
+import { InvoiceActionButtons } from './components';
 
-const LIST_ACTION_STYLE = { display: 'flex' };
 
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
@@ -87,53 +83,7 @@ const InvoiceGridTable = props => {
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
           render={data => (
-            <Box sx={LIST_ACTION_STYLE}>
-              <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatus.DRAFT && <TooltipButton title='Convertir en devis' icon={<DriveFileMove />} onClick={onConvertToProposal(data)} />}
-              {data.status === InvoiceStatus.PROPOSAL && (
-                <>
-                  <TooltipButton
-                    title='Transformer en facture'
-                    icon={<Check />}
-                    onClick={event =>
-                      convertToProposal(
-                        event,
-                        {
-                          ...data,
-                          status: InvoiceStatus.CONFIRMED,
-                        },
-                        'Devis confirmé',
-                        2
-                      )
-                    }
-                  />
-                  <TooltipButton
-                    title='Envoyer ou relancer ce devis'
-                    icon={<TurnRight />}
-                    onClick={() => setInvoiceToRelaunch(data)}
-                    data-testid={`relaunch-${data.id}`}
-                  />
-                </>
-              )}
-              {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
-                <>
-                  <TooltipButton
-                    disabled={data.status === InvoiceStatus.PAID}
-                    title='Marquer comme payée'
-                    icon={<DoneAll />}
-                    onClick={() => handleInvoicePaid(data)}
-                    data-testid={`pay-${data.id}`}
-                  />
-                  <TooltipButton
-                    disabled={data.status === InvoiceStatus.PAID}
-                    title='Envoyer ou relancer cette facture'
-                    icon={<TurnRight />}
-                    onClick={() => setInvoiceToRelaunch(data)}
-                    data-testid={`relaunch-${data.id}`}
-                  />
-                </>
-              )}
-            </Box>
+
           )}
           label=''
         />
@@ -169,35 +119,7 @@ const InvoiceList = props => {
         component={ListComponent}
         pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
-        actions={
-          <BPListActions
-            hasCreate={false}
-            hasExport={false}
-            buttons={
-              <>
-                <ArchiveBulkAction source='title' statusName='archiveStatus' />
-                <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
-                  <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <Button
-                      name='create-draft-invoice'
-                      onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid() })}
-                      sx={{ margin: 1, display: 'block', width: '12rem' }}
-                    >
-                      Créer un devis
-                    </Button>
-                    <Button
-                      name='create-confirmed-invoice'
-                      onClick={() => crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.CONFIRMED })}
-                      sx={{ margin: 1, display: 'block', width: '12rem' }}
-                    >
-                      Créer une facture
-                    </Button>
-                  </Box>
-                </PopoverButton>
-              </>
-            }
-          />
-        }
+        actions={<BPListActions hasCreate={false} hasExport={false} buttons={<InvoiceActionButtons />} />}
       >
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoice={setInvoice} />
       </List>

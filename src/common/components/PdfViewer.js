@@ -49,7 +49,14 @@ const PdfViewer = props => {
             </a>
           </Stack>
         </Box>
-        <CardContent sx={{ ...(url && !isLoading && { paddingInline: 0 }), justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
+        <CardContent
+          sx={{
+            ...(url && !isLoading && { paddingInline: 0 }),
+            justifyContent: 'center',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           {url ? (
             <Pdf
               noData={noData || <Typography variant='body2'>En attente du document ...</Typography>}

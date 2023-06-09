@@ -1,88 +1,59 @@
-import { Box, Card, CardContent, CardHeader, Tab, Tabs } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { InvoiceStatus } from 'bpartners-react-client';
-import { useReducer } from 'react';
-import TabPanel from '../../common/components/TabPanel';
+import {InvoiceStatus} from 'bpartners-react-client';
 import InvoiceForm from './InvoiceForm';
-import InvoiceList from './InvoiceList';
-import InvoicePdfDocument, { CancelButton } from './InvoicePdfDocument';
-import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
+import InvoicePdfDocument from './InvoicePdfDocument';
+import {InvoiceTabIndex, InvoiceTabPanel, InvoiceView} from './components';
+import {useReducer} from 'react';
+import {InvoiceListContext, invoiceReducer} from '../../common/store';
 
-const useStyle = makeStyles(() => ({
-  card: { border: 'none' },
-  form: { transform: 'translateY(-1rem)' },
-}));
+// const useStyle = makeStyles(() => ({
+//   card: { border: 'none' },
+//   form: { transform: 'translateY(-1rem)' },
+// }));
 
-const TAB_PANEL_STYLE = { padding: 0 };
-
-const invoiceListReducer = (state, { type, payload }) => {
-  switch (type) {
-    case InvoiceActionType.START_PENDING:
-      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.STOP_PENDING:
-      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1, documentUrl: payload.documentUrl };
-    case InvoiceActionType.SET:
-      return { ...state, ...payload };
-    default:
-      throw new Error('Unknown action type');
-  }
-};
+/**
+ *
+ *   const classes = useStyle();
+ *   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
+ *
+ *   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
+ *   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
+ *
+ *   const handleSwitchTab = (_e, newTabIndex) => stateChangeHandling({ tabIndex: newTabIndex });
+ *
+ *   const returnToList = invoice => {
+ *     const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
+ *     stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
+ *   };
+ */
 
 const InvoiceListEditor = () => {
-  const classes = useStyle();
-  const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, viewScreen, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
-
-  const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
-  const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
-
-  const handleSwitchTab = (_e, newTabIndex) => stateChangeHandling({ tabIndex: newTabIndex });
-
-  const returnToList = invoice => {
-    const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
-    stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
-  };
+  const [state, dispatch] = useReducer(
+    invoiceReducer,
+    {
+      invoice: null,
+      updatePendingNumbers: 0,
+      documentUrl: null,
+      tab: 'draft',
+      view: 'list',
+    },
+    state => state
+  );
 
   return (
-    <Box>
-      {viewScreen === viewScreenState.LIST ? (
-        <Box>
-          <Tabs value={tabIndex} onChange={handleSwitchTab} variant='fullWidth'>
-            <Tab label='Brouillons' />
-            <Tab label='Devis' />
-            <Tab label='Factures' />
-          </Tabs>
-          <TabPanel value={tabIndex} index={0} sx={TAB_PANEL_STYLE}>
-            <InvoiceList onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.DRAFT]} handleSwitchTab={handleSwitchTab} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1} sx={TAB_PANEL_STYLE}>
-            <InvoiceList onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.PROPOSAL]} handleSwitchTab={handleSwitchTab} />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={2} sx={TAB_PANEL_STYLE}>
-            <InvoiceList onStateChange={stateChangeHandling} invoiceTypes={[InvoiceStatus.CONFIRMED, InvoiceStatus.PAID]} />
-          </TabPanel>
-        </Box>
-      ) : viewScreen === viewScreenState.EDITION ? (
-        <Card sx={{ border: 'none' }}>
-          <CardHeader
-            title={!selectedInvoice.products || selectedInvoice.products.length === 0 ? 'Création' : 'Modification'}
-            action={<CancelButton onClick={returnToList} />}
-          />
-          <CardContent>
-            <InvoiceForm
-              className={classes.form}
-              onClose={returnToList}
-              onPending={handlePending}
-              selectedInvoiceRef={selectedInvoice.ref}
-              documentUrl={documentUrl}
-              toEdit={selectedInvoice}
-              nbPendingInvoiceCrupdate={nbPendingInvoiceCrupdate}
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <InvoicePdfDocument onClose={returnToList} selectedInvoice={selectedInvoice} />
-      )}
-    </Box>
+    <InvoiceListContext.Provider value={{ state, dispatch }}>
+      <InvoiceView source='list'>
+        <InvoiceTabIndex />
+        <InvoiceTabPanel invoiceTypes={[InvoiceStatus.DRAFT]} tabSource='draft' />
+        <InvoiceTabPanel invoiceTypes={[InvoiceStatus.PROPOSAL]} tabSource='proposal' />
+        <InvoiceTabPanel invoiceTypes={[InvoiceStatus.CONFIRMED, InvoiceStatus.PAID]} tabSource='confirmed' />
+      </InvoiceView>
+      <InvoiceView sources={['edition', 'creation']}>
+        <InvoiceForm />
+      </InvoiceView>
+      <InvoiceView source='preview'>
+        <InvoicePdfDocument />
+      </InvoiceView>
+    </InvoiceListContext.Provider>
   );
 };
 

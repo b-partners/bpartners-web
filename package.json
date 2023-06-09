@@ -4,6 +4,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
     "@mui/styles": "^5.12.3",
+    "@mui/types": "^7.2.4",
     "@mui/x-date-pickers": "^5.0.20",
     "@react-admin/ra-enterprise": "^6.0.4",
     "@react-admin/ra-form-layout": "^4.1.3",
