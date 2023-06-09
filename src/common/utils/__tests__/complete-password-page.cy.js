@@ -8,12 +8,16 @@ describe(specTitle('Complete password page'), () => {
     cy.stub(authProvider, 'setNewPassword').as('setNewPassword');
     mount(<CompletePasswordPage />);
     cy.contains('Première connexion ?');
+    cy.get("input[name='phoneNumber']").type('{enter}');
+    cy.contains('Ce champ est requis.');
+    cy.get("input[name='phoneNumber']").type('123456789');
+
     cy.get("input[name='newPassword']").type('{enter}');
     cy.contains('Le mot de passe ne peut pas être vide.');
     cy.get("input[name='newPassword']").type(12);
-    cy.contains(
-      'Le mot de passe doit : - avoir au moins 8 caractères - avoir au moins une majuscule - avoir au moins un caractère spécial !@#$%^&*()_+-= - avoir au moins un chiffre'
-    );
+    cy.contains('Le mot de passe doit contenir au moins 8 caractères.');
+    cy.get("input[name='newPassword']").type(121212);
+    cy.contains('Le mot de passe doit : - avoir au moins une majuscule - avoir au moins un caractère spécial !@#$%^&*()_+-= - avoir au moins un chiffre');
     cy.get("input[name='newPassword']").clear().type('1a!qwERty');
     cy.get("input[name='confirmedPassword']").type('not the prev pass');
     cy.contains('Les mots de passe ne correspondent pas !');
