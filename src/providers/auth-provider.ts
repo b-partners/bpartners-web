@@ -103,13 +103,13 @@ export const authProvider = {
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get(paramIsTemporaryPassword) === 'true';
   },
-  setNewPassword: async (newPassword: string): Promise<void> => {
+  setNewPassword: async (newPassword: string, phoneNumber: string): Promise<void> => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
     const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
     const user = await Auth.signIn(username, temporaryPassword);
-    await Auth.completeNewPassword(user, newPassword, { phone_number: '+33648492113' /*TODO*/ });
+    await Auth.completeNewPassword(user, newPassword, { phone_number: phoneNumber });
     window.location.replace('/');
   },
 };
