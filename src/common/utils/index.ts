@@ -16,3 +16,4 @@ export * from './redirect';
 export * from './reload';
 export * from './to-array-buffer';
 export * from './retry-on-error';
+export * from './stopPropagation';

@@ -1,31 +1,33 @@
-import { Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Check, DoneAll, DriveFileMove, TurnRight, Attachment } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material';
 import { Invoice, InvoiceStatus } from 'bpartners-react-client';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import { BP_COLOR } from 'src/bp-theme';
 import TooltipButton from 'src/common/components/TooltipButton';
 import { useInvoiceContextRequest } from 'src/common/hooks';
 import { useFetch } from 'src/common/hooks/use-fetch';
+import { InvoiceTooltipContext } from './InvoiceListActionButtons';
 
 interface InvoiceChangeStatusButtonProps {
   title: string;
   icon: ReactNode;
   name: string;
   onFetch: () => Promise<any>;
+  disabled?: boolean;
 }
 interface InvoiceRelaunchProps {
-  title: string;
-  onRelaunch: () => void;
-  dataTestId: string;
+  onRelaunch: (e: ClipboardEvent) => void;
+  invoice: Invoice;
+  statusToShow: InvoiceStatus[];
 }
 
 const InvoiceChangeStatusButton = (props: InvoiceChangeStatusButtonProps) => {
-  const { onFetch, icon, title, name } = props;
+  const { onFetch, icon, title, name, disabled } = props;
   const { isLoading, trigger } = useFetch(onFetch, name);
 
   return (
     <TooltipButton
-      disabled={isLoading}
+      disabled={isLoading || disabled}
       icon={isLoading ? <CircularProgress size='24px' style={{ color: BP_COLOR['20'] }} /> : icon}
       title={title}
       onClick={trigger}
@@ -66,18 +68,57 @@ const ToPaid = (props: InvoiceToolTipsProps) => {
   return (
     invoice.status !== InvoiceStatus.PROPOSAL &&
     invoice.status !== InvoiceStatus.DRAFT && (
-      <InvoiceChangeStatusButton name='confirmedToPaid' title='Marquer comme payée' onFetch={() => convertToPaid(invoice)} icon={<DoneAll />} />
+      <InvoiceChangeStatusButton
+        disabled={invoice.status === InvoiceStatus.PAID}
+        name='confirmedToPaid'
+        title='Marquer comme payée'
+        onFetch={() => convertToPaid(invoice)}
+        icon={<DoneAll />}
+      />
     )
   );
 };
 
 const Relaunch = (props: InvoiceRelaunchProps) => {
-  const { onRelaunch, title } = props;
-  return <TooltipButton disabled={false} title={title} icon={<TurnRight />} onClick={onRelaunch} data-testid={props['data-testid']} />;
+  const { onRelaunch, invoice, statusToShow } = props;
+  return (
+    statusToShow.includes(invoice.status) && (
+      <TooltipButton
+        disabled={invoice.status === InvoiceStatus.PAID}
+        title={`Envoyer ou relancer ${invoice.status === InvoiceStatus.PROPOSAL ? 'ce devis' : 'cette facture'}`}
+        icon={<TurnRight />}
+        onClick={onRelaunch}
+        data-testid={`relaunch-${invoice.id}`}
+      />
+    )
+  );
 };
 
-export const InvoiceTooltip = {
-  ToProposal,
-  ToConfirmed,
-  ToPaid,
+type DocumentPreviewProps = {
+  onClick: (e: ClipboardEvent) => void;
+  invoice: Invoice;
+};
+
+const DocumentPreview = (props: DocumentPreviewProps) => {
+  const { invoice, onClick } = props;
+  return <TooltipButton title='Justificatif' onClick={onClick} icon={<Attachment />} disabled={!invoice.fileId} />;
+};
+
+type InvoiceToolTipProps = { type: 'toProposal' | 'toConfirmed' | 'toPaid' | 'toRelaunch' | 'toDocument'; status?: InvoiceStatus[] };
+
+export const InvoiceTooltip = (props: InvoiceToolTipProps) => {
+  const { type, status } = props;
+  const { invoice, onRelaunch, onViewPdf } = useContext(InvoiceTooltipContext);
+  switch (type) {
+    case 'toConfirmed':
+      return <ToConfirmed invoice={invoice} />;
+    case 'toPaid':
+      return <ToPaid invoice={invoice} />;
+    case 'toProposal':
+      return <ToProposal invoice={invoice} />;
+    case 'toRelaunch':
+      return <Relaunch invoice={invoice} onRelaunch={onRelaunch} statusToShow={status} />;
+    case 'toDocument':
+      return <DocumentPreview invoice={invoice} onClick={onViewPdf} />;
+  }
 };
