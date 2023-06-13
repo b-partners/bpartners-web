@@ -27,7 +27,7 @@ export const invoiceProvider: BpDataProviderType = {
   saveOrUpdate: async function (_invoices: any[], option = {}): Promise<any[]> {
     const { isEdition } = option;
     const { accountId } = getCached.userInfo();
-    const restInvoice = isEdition ? invoiceMapper.toRest({ ..._invoices[0] }) : invoiceMapper.toRest(invoiceMapper.toDomain({ ..._invoices[0] }));
+    const restInvoice = !isEdition ? invoiceMapper.toRest({ ..._invoices[0] }) : invoiceMapper.toRest(invoiceMapper.toDomain({ ..._invoices[0] }));
 
     return payingApi()
       .crupdateInvoice(accountId, restInvoice.id, restInvoice)

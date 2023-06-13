@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
+    "@mui/icons-material": "^5.11.16",
     "@mui/styles": "^5.12.3",
     "@mui/types": "^7.2.4",
     "@mui/x-date-pickers": "^5.0.20",

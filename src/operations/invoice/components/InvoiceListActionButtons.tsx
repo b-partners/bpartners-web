@@ -6,6 +6,7 @@ import { Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons
 import { useInvoiceContext, useInvoiceContextRequest } from '../../../common/hooks';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
+import { InvoiceTooltip } from './InvoiceTooltipButton';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 type LoadingState = 'toProposal' | 'toPaid' | 'toConfirmed';
@@ -37,41 +38,26 @@ export const InvoiceListActionButtons = ({ invoice, setInvoiceToRelaunch }: Invo
   };
 
   const onRelaunchInvoice = click(() => setInvoiceToRelaunch(invoice));
-  const onConvertToPaid = click(() => onConvert('toPaid', convertToPaid));
-  const onConvertToProposal = click(() => onConvert('toProposal', convertToProposal));
-  const onConvertToConfirmed = click(() => onConvert('toConfirmed', convertToConfirmed));
 
   return (
     <Box sx={LIST_ACTION_STYLE}>
       <TooltipButton title='Justificatif' onClick={viewPdf} icon={<Attachment />} disabled={!invoice.fileId} />
-      {invoice.status === InvoiceStatus.DRAFT && (
-        <TooltipButton
-          disabled={isLoading === 'toProposal'}
-          icon={isLoading === 'toProposal' ? <CircularProgress /> : <DriveFileMove />}
-          title='Convertir en devis'
-          onClick={onConvertToProposal}
-        />
-      )}
+      <InvoiceTooltip.ToProposal invoice={invoice} />
+      <InvoiceTooltip.ToConfirmed invoice={invoice} />
       {invoice.status === InvoiceStatus.PROPOSAL && (
         <>
           <TooltipButton
-            disabled={isLoading === 'toProposal'}
-            icon={isLoading === 'toProposal' ? <CircularProgress /> : <Check />}
-            title='Transformer en facture'
-            onClick={onConvertToConfirmed}
+            disabled={false}
+            title='Envoyer ou relancer ce devis'
+            icon={<TurnRight />}
+            onClick={onRelaunchInvoice}
+            invoice-testid={`relaunch-${invoice.id}`}
           />
-          <TooltipButton title='Envoyer ou relancer ce devis' icon={<TurnRight />} onClick={onRelaunchInvoice} invoice-testid={`relaunch-${invoice.id}`} />
         </>
       )}
+      <InvoiceTooltip.ToPaid invoice={invoice} />
       {invoice.status !== InvoiceStatus.PROPOSAL && invoice.status !== InvoiceStatus.DRAFT && (
         <>
-          <TooltipButton
-            disabled={invoice.status === InvoiceStatus.PAID}
-            title='Marquer comme payée'
-            icon={<DoneAll />}
-            onClick={onConvertToPaid}
-            invoice-testid={`pay-${invoice.id}`}
-          />
           <TooltipButton
             disabled={invoice.status === InvoiceStatus.PAID}
             title='Envoyer ou relancer cette facture'

@@ -17,7 +17,7 @@ import { RaMoneyField } from 'src/common/components';
 import BPListActions from 'src/common/components/BPListActions';
 import FeedbackModal from './components/FeedbackModal';
 import { InvoiceActionButtons } from './components';
-
+import { InvoiceListActionButtons } from './components/InvoiceListActionButtons';
 
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
@@ -81,12 +81,7 @@ const InvoiceGridTable = props => {
         {companyInfo && companyInfo.isSubjectToVat && <RaMoneyField render={data => data.totalPriceWithVat} label='Prix TTC' variant='body2' />}
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
-        <FunctionField
-          render={data => (
-
-          )}
-          label=''
-        />
+        <FunctionField render={data => <InvoiceListActionButtons invoice={data} setInvoiceToRelaunch={setInvoiceToRelaunch} />} label='' />
       </Datagrid>
     )
   );

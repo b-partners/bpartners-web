@@ -6,15 +6,10 @@ import { retryOnError } from '../utils';
 import { getInvoicePdfUrl } from '../../operations/invoice/utils/utils';
 import { AxiosError } from 'axios';
 
-type InvoiceMessages = {
-  success: 'string';
-  error: 'string';
-};
-
 export const useInvoiceContextRequest = () => {
-  const { state, setInvoice, setState, setTab, setDocumentUrl, decreasePending, increasePending } = useInvoiceContext();
+  const { state, setState, setTab, increasePending } = useInvoiceContext();
   const changeInvoiceStatus = async (invoice: Invoice, status: InvoiceStatus, tab?: InvoiceTab) => {
-    await invoiceProvider.saveOrUpdate([{ ...invoice, status }]);
+    await invoiceProvider.saveOrUpdate([{ ...invoice, status }], { isEdition: true });
     if (tab) setTab(tab);
   };
 
