@@ -10,7 +10,9 @@ describe(specTitle('Complete password page'), () => {
     cy.contains('Première connexion ?');
     cy.get("input[name='phoneNumber']").type('{enter}');
     cy.contains('Ce champ est requis.');
-    cy.get("input[name='phoneNumber']").type('123456789');
+    cy.get("input[name='phoneNumber']").type('012345678{enter}');
+    cy.contains('Le numéro de téléphone doit contenir exactement dix (10) chiffres.');
+    cy.get("input[name='phoneNumber']").clear().type('0123456789');
 
     cy.get("input[name='newPassword']").type('{enter}');
     cy.contains('Le mot de passe ne peut pas être vide.');
