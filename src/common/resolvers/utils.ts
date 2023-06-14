@@ -9,6 +9,7 @@ export const FieldErrorMessage = {
   emptyPassword: 'Le mot de passe ne peut pas être vide.',
   notMatchingPassword: 'Les mots de passe ne correspondent pas !',
   minPassword: 'Le mot de passe doit contenir au moins 8 caractères.',
+  phoneLength: 'Le numéro de téléphone doit contenir exactement dix (10) chiffres.',
   badPassword:
     'Le mot de passe doit : \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre',
 };
