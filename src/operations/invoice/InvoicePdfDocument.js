@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/materia
 import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
-import { printError } from 'src/common/utils';
 import { useInvoiceContext } from 'src/common/hooks';
 
 export const CancelButton = ({ onClick }) => (
@@ -15,14 +14,15 @@ export const CancelButton = ({ onClick }) => (
 );
 
 const InvoicePdfDocument = () => {
-  const { invoice, setView } = useInvoiceContext();
+  const {
+    setView,
+    state: { invoice, documentUrl: invoiceFileId },
+  } = useInvoiceContext();
   const [documentUrl, setDocumentUrl] = useState('');
-
   useEffect(() => {
-    getInvoicePdfUrl(invoice?.fileId)
-      .then(pdfUrl => setDocumentUrl(pdfUrl))
-      .catch(printError);
-  }, [invoice]);
+    const pdfUrl = getInvoicePdfUrl(invoiceFileId);
+    setDocumentUrl(pdfUrl);
+  }, [invoiceFileId]);
 
   return (
     <Card sx={{ border: 'none' }}>

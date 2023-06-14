@@ -101,6 +101,7 @@ type DocumentPreviewProps = {
 
 const DocumentPreview = (props: DocumentPreviewProps) => {
   const { invoice, onClick } = props;
+
   return <TooltipButton title='Justificatif' onClick={onClick} icon={<Attachment />} disabled={!invoice.fileId} />;
 };
 

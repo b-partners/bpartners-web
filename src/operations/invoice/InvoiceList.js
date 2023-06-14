@@ -1,5 +1,4 @@
-import { Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { useState } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
@@ -7,7 +6,6 @@ import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, us
 import { formatDate } from '../../common/utils';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
-import TooltipButton from '../../common/components/TooltipButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { draftInvoiceValidator, EInvoiceModalType, getInvoiceStatusInFr, InvoiceFieldErrorMessage, viewScreenState } from './utils/utils';
@@ -36,37 +34,11 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 };
 
 const InvoiceGridTable = props => {
-  const { crupdateInvoice, viewPdf, convertToProposal, setInvoice } = props;
-  const { isLoading, refetch } = useListContext();
-  const notify = useNotify();
-
-  const onConvertToProposal = data => event => {
-    event.stopPropagation();
-    if (!draftInvoiceValidator(data)) {
-      notify(InvoiceFieldErrorMessage, { type: 'warning' });
-    } else {
-      convertToProposal(
-        event,
-        {
-          ...data,
-          status: InvoiceStatus.PROPOSAL,
-        },
-        'Brouillon transformé en devis !',
-        1
-      );
-    }
-  };
+  const { crupdateInvoice, setInvoice } = props;
+  const { isLoading } = useListContext();
 
   const setInvoiceToRelaunch = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.RELAUNCH });
-  const setInvoiceToFeedback = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.FEEDBACK });
-
-  const handleInvoicePaid = invoice => {
-    invoiceProvider.saveOrUpdate([{ ...invoice, status: InvoiceStatus.PAID }]).then(() => {
-      notify(`Facture ${invoice.ref} payée !`);
-      setInvoiceToFeedback(invoice);
-      refetch().catch(printError);
-    });
-  };
+  // const setInvoiceToFeedback = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.FEEDBACK });
 
   const { companyInfo } = useGetAccountHolder();
 
