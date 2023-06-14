@@ -7,6 +7,7 @@ import TooltipButton from 'src/common/components/TooltipButton';
 import { useInvoiceContextRequest } from 'src/common/hooks';
 import { useFetch } from 'src/common/hooks/use-fetch';
 import { InvoiceTooltipContext } from 'src/common/store';
+import { stopPropagation } from 'src/common/utils';
 
 interface InvoiceChangeStatusButtonProps {
   title: string;
@@ -30,7 +31,7 @@ const InvoiceChangeStatusButton = (props: InvoiceChangeStatusButtonProps) => {
       disabled={isLoading || disabled}
       icon={isLoading ? <CircularProgress size='24px' style={{ color: BP_COLOR['20'] }} /> : icon}
       title={title}
-      onClick={trigger}
+      onClick={stopPropagation(trigger)}
     />
   );
 };
