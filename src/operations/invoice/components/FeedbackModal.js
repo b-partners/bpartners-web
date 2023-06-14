@@ -11,18 +11,22 @@ import { getFeedbackDefaultMessage } from '../utils/utils';
 import { EditorState } from 'draft-js';
 import { useInvoiceContext } from 'src/common/hooks';
 
-const FeedbackModal = ({ invoice = null, resetInvoice }) => {
+const FeedbackModal = () => {
   const notify = useNotify();
   const { name: companyName } = getCached.accountHolder() || {};
   const [isLoading, setIsLoading] = useState(false);
-  const { state } = useInvoiceContext();
+  const {
+    state: { modal, invoice },
+    setInvoiceModal,
+  } = useInvoiceContext();
   const form = useForm({
     mode: 'all',
     defaultValues: { subject: `${companyName} -  donnez nous votre avis`, message: EditorState.createEmpty() },
     resolver: feedbackResolver,
   });
+
   const onClose = () => {
-    resetInvoice();
+    setInvoiceModal({ isOpen: false, type: 'Feedback' }, null);
   };
 
   useEffect(() => {
@@ -34,7 +38,7 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
       if (invoice && invoice.customer) {
         setIsLoading(true);
         await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data });
-        resetInvoice();
+        onClose();
         setIsLoading(false);
         notify('messages.feedback.success', { type: 'success' });
       }
@@ -43,9 +47,10 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
   });
 
   return (
-    invoice && (
+    modal.isOpen &&
+    modal.type === 'Feedback' && (
       <FormProvider {...form}>
-        <Dialog open={state.modal && state.modal.isOpen && state.modal === 'Feedback'} onClose={onClose} maxWidth='lg'>
+        <Dialog open={modal.type === 'Feedback' && modal.isOpen} onClose={onClose} maxWidth='lg'>
           <DialogTitle>
             Envoyer un demande d'avis à {invoice?.customer?.firstName} {invoice?.customer?.lastName}.
           </DialogTitle>

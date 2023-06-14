@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { InvoiceContextState, InvoiceListContext, InvoiceTab, InvoiceView } from '../store';
+import { InvoiceContextState, InvoiceListContext, InvoiceModal, InvoiceTab, InvoiceView } from '../store';
 import { Invoice } from 'bpartners-react-client';
 import { invoiceInitialValue } from 'src/operations/invoice/utils/utils';
 
@@ -15,6 +15,7 @@ export const useInvoiceContext = () => {
   const setState = (state: InvoiceContextState) => dispatch({ type: 'set', payload: state });
   const increasePending = () => dispatch({ type: 'setPending', payload: state.updatePendingNumbers + 1 });
   const decreasePending = () => dispatch({ type: 'setPending', payload: state.updatePendingNumbers - 1 });
+  const setInvoiceModal = (modal: InvoiceModal, invoice: Invoice) => dispatch({ type: 'setPending', payload: { modal, invoice } });
 
-  return { setInvoice, setTab, setDocumentUrl, setView, setState, increasePending, decreasePending, state, editInvoice, createInvoice };
+  return { setInvoice, setTab, setDocumentUrl, setView, setState, increasePending, decreasePending, state, editInvoice, createInvoice, setInvoiceModal };
 };

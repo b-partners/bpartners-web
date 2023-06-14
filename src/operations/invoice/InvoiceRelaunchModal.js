@@ -7,6 +7,7 @@ import { authProvider, getCached, payingApi } from 'src/providers';
 import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver } from 'src/common/resolvers';
 import { EditorState } from 'draft-js';
+import { useInvoiceContext } from 'src/common/hooks';
 
 const invoiceRelaunchDefaultValue = {
   subject: '',
@@ -14,13 +15,18 @@ const invoiceRelaunchDefaultValue = {
   attachments: [],
 };
 
-const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
+const InvoiceRelaunchModal = () => {
+  const {
+    state: { modal, invoice },
+    setInvoiceModal,
+  } = useInvoiceContext();
+
   const notify = useNotify();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({ mode: 'all', defaultValues: invoiceRelaunchDefaultValue, resolver: invoiceRelaunchResolver });
 
   const onClose = () => {
-    resetInvoice();
+    setInvoiceModal({ isOpen: false, type: 'Relaunch' }, null);
     form.setValue('attachments', []);
   };
 
@@ -40,7 +46,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
           })} ref: ${invoice.ref} a été relancée avec succès.`,
           { type: 'success' }
         );
-        resetInvoice();
+        onClose();
         setIsLoading(false);
       }
     };
@@ -48,7 +54,8 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   });
 
   return (
-    invoice && (
+    modal.isOpen &&
+    modal.type === 'Relaunch' && (
       <FormProvider {...form}>
         <Dialog open={!!invoice} onClose={onClose} maxWidth='lg'>
           <DialogTitle>

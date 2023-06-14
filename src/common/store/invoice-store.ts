@@ -6,16 +6,18 @@ export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumen
 
 export type InvoiceTab = 'draft' | 'proposal' | 'confirmed';
 
+export type InvoiceModal = {
+  type: 'Feedback' | 'Relaunch';
+  isOpen: boolean;
+};
+
 export type InvoiceContextState = {
   invoice: Invoice;
   tab: InvoiceTab;
   updatePendingNumbers: number;
   view: InvoiceView;
   documentUrl: string;
-  modal: {
-    type: 'Feedback' | 'Relaunch';
-    isOpen: boolean;
-  };
+  modal: InvoiceModal;
 };
 
 type Action = {
@@ -43,7 +45,7 @@ export const invoiceReducer = (state: InvoiceContextState, { type, payload }: Ac
     case 'setView':
       return { ...state, view: payload };
     case 'setModale':
-      return { ...state, modal: payload };
+      return { ...state, modal: payload.modal, invoice: payload.invoice };
     case 'set':
       return { ...state, ...payload };
   }

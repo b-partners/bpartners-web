@@ -4,7 +4,7 @@ import { Invoice, InvoiceStatus } from 'bpartners-react-client';
 import { ReactNode, useContext } from 'react';
 import { BP_COLOR } from 'src/bp-theme';
 import TooltipButton from 'src/common/components/TooltipButton';
-import { useInvoiceContextRequest } from 'src/common/hooks';
+import { useInvoiceContext, useInvoiceContextRequest } from 'src/common/hooks';
 import { useFetch } from 'src/common/hooks/use-fetch';
 import { InvoiceTooltipContext } from 'src/common/store';
 import { stopPropagation } from 'src/common/utils';
@@ -17,7 +17,6 @@ interface InvoiceChangeStatusButtonProps {
   disabled?: boolean;
 }
 interface InvoiceRelaunchProps {
-  onRelaunch: (e: ClipboardEvent) => void;
   invoice: Invoice;
   statusToShow: InvoiceStatus[];
 }
@@ -81,7 +80,19 @@ const ToPaid = (props: InvoiceToolTipsProps) => {
 };
 
 const Relaunch = (props: InvoiceRelaunchProps) => {
-  const { onRelaunch, invoice, statusToShow } = props;
+  const { invoice, statusToShow } = props;
+  const { setInvoiceModal } = useInvoiceContext();
+
+  const onRelaunch = stopPropagation(() =>
+    setInvoiceModal(
+      {
+        isOpen: true,
+        type: 'Relaunch',
+      },
+      invoice
+    )
+  );
+
   return (
     statusToShow.includes(invoice.status) && (
       <TooltipButton
@@ -110,7 +121,7 @@ type InvoiceToolTipProps = { type: 'toProposal' | 'toConfirmed' | 'toPaid' | 'to
 
 export const InvoiceTooltip = (props: InvoiceToolTipProps) => {
   const { type, status } = props;
-  const { invoice, onRelaunch, onViewPdf } = useContext(InvoiceTooltipContext);
+  const { invoice, onViewPdf } = useContext(InvoiceTooltipContext);
   switch (type) {
     case 'toConfirmed':
       return <ToConfirmed invoice={invoice} />;
@@ -119,7 +130,7 @@ export const InvoiceTooltip = (props: InvoiceToolTipProps) => {
     case 'toProposal':
       return <ToProposal invoice={invoice} />;
     case 'toRelaunch':
-      return <Relaunch invoice={invoice} onRelaunch={onRelaunch} statusToShow={status} />;
+      return <Relaunch invoice={invoice} statusToShow={status} />;
     case 'toDocument':
       return <DocumentPreview invoice={invoice} onClick={onViewPdf} />;
   }
