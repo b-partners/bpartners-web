@@ -2,25 +2,14 @@ import { Invoice, InvoiceStatus } from 'bpartners-react-client';
 import { Box } from '@mui/material';
 import { useInvoiceContext } from '../../../common/hooks';
 import { InvoiceTooltip } from './InvoiceTooltipButton';
-import { createContext } from 'react';
 import { stopPropagation } from 'src/common/utils';
+import { InvoiceTooltipContext } from 'src/common/store';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 type InvoiceListActionButtonsProps = {
   invoice: Invoice;
   setInvoiceToRelaunch: any;
 };
-
-type TInvoiceToolTipContext = {
-  invoice: Invoice | null;
-  onRelaunch: (e: ClipboardEvent) => void;
-  onViewPdf: (e: ClipboardEvent) => void;
-};
-export const InvoiceTooltipContext = createContext<TInvoiceToolTipContext>({
-  invoice: null,
-  onRelaunch: _e => {},
-  onViewPdf: _e => {},
-});
 
 export const InvoiceListActionButtons = ({ invoice, setInvoiceToRelaunch }: InvoiceListActionButtonsProps) => {
   const { setDocumentUrl } = useInvoiceContext();

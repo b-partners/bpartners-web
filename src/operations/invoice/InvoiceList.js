@@ -16,6 +16,7 @@ import BPListActions from 'src/common/components/BPListActions';
 import FeedbackModal from './components/FeedbackModal';
 import { InvoiceActionButtons } from './components';
 import { InvoiceListActionButtons } from './components/InvoiceListActionButtons';
+import { useInvoiceContext } from 'src/common/hooks';
 
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
@@ -36,6 +37,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 const InvoiceGridTable = props => {
   const { crupdateInvoice, setInvoice } = props;
   const { isLoading } = useListContext();
+  const { editInvoice } = useInvoiceContext();
 
   const setInvoiceToRelaunch = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.RELAUNCH });
   // const setInvoiceToFeedback = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.FEEDBACK });
@@ -46,7 +48,7 @@ const InvoiceGridTable = props => {
 
   return (
     !isLoading && (
-      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && crupdateInvoice({ ...record })}>
+      <Datagrid rowClick={(_id, _resourceName, record) => record.status === InvoiceStatus.DRAFT && editInvoice(record)}>
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <FunctionField render={nameRenderer} label='Client' />

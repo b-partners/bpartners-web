@@ -6,7 +6,7 @@ import { BP_COLOR } from 'src/bp-theme';
 import TooltipButton from 'src/common/components/TooltipButton';
 import { useInvoiceContextRequest } from 'src/common/hooks';
 import { useFetch } from 'src/common/hooks/use-fetch';
-import { InvoiceTooltipContext } from './InvoiceListActionButtons';
+import { InvoiceTooltipContext } from 'src/common/store';
 
 interface InvoiceChangeStatusButtonProps {
   title: string;
