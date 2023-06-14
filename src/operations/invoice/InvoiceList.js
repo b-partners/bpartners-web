@@ -8,8 +8,7 @@ import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { draftInvoiceValidator, EInvoiceModalType, getInvoiceStatusInFr, InvoiceFieldErrorMessage, viewScreenState } from './utils/utils';
-import { printError } from 'src/common/utils';
+import { EInvoiceModalType, getInvoiceStatusInFr, viewScreenState } from './utils/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { RaMoneyField } from 'src/common/components';
 import BPListActions from 'src/common/components/BPListActions';
@@ -35,7 +34,7 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 };
 
 const InvoiceGridTable = props => {
-  const { crupdateInvoice, setInvoice } = props;
+  const { setInvoice } = props;
   const { isLoading } = useListContext();
   const { editInvoice } = useInvoiceContext();
 

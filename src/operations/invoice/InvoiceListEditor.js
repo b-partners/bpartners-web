@@ -1,9 +1,9 @@
-import {InvoiceStatus} from 'bpartners-react-client';
+import { InvoiceStatus } from 'bpartners-react-client';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument from './InvoicePdfDocument';
-import {InvoiceTabIndex, InvoiceTabPanel, InvoiceView} from './components';
-import {useReducer} from 'react';
-import {InvoiceListContext, invoiceReducer} from '../../common/store';
+import { InvoiceTabIndex, InvoiceTabPanel, InvoiceView } from './components';
+import { useReducer } from 'react';
+import { InvoiceListContext, invoiceReducer } from '../../common/store';
 
 // const useStyle = makeStyles(() => ({
 //   card: { border: 'none' },
@@ -35,6 +35,10 @@ const InvoiceListEditor = () => {
       documentUrl: null,
       tab: 'draft',
       view: 'list',
+      modal: {
+        type: 'Feedback',
+        isOpen: false,
+      },
     },
     state => state
   );

@@ -9,11 +9,13 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver as feedbackResolver } from 'src/common/resolvers';
 import { getFeedbackDefaultMessage } from '../utils/utils';
 import { EditorState } from 'draft-js';
+import { useInvoiceContext } from 'src/common/hooks';
 
 const FeedbackModal = ({ invoice = null, resetInvoice }) => {
   const notify = useNotify();
   const { name: companyName } = getCached.accountHolder() || {};
   const [isLoading, setIsLoading] = useState(false);
+  const { state } = useInvoiceContext();
   const form = useForm({
     mode: 'all',
     defaultValues: { subject: `${companyName} -  donnez nous votre avis`, message: EditorState.createEmpty() },
@@ -43,7 +45,7 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
   return (
     invoice && (
       <FormProvider {...form}>
-        <Dialog open={!!invoice} onClose={onClose} maxWidth='lg'>
+        <Dialog open={state.modal && state.modal.isOpen && state.modal === 'Feedback'} onClose={onClose} maxWidth='lg'>
           <DialogTitle>
             Envoyer un demande d'avis à {invoice?.customer?.firstName} {invoice?.customer?.lastName}.
           </DialogTitle>

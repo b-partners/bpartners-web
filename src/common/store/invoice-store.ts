@@ -2,7 +2,7 @@ import { Invoice } from 'bpartners-react-client';
 import { createContext, Dispatch } from 'react';
 
 export type InvoiceView = 'list' | 'edition' | 'creation' | 'preview';
-export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumentUrl' | 'setView' | 'set';
+export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumentUrl' | 'setView' | 'set' | 'setModale';
 
 export type InvoiceTab = 'draft' | 'proposal' | 'confirmed';
 
@@ -12,6 +12,10 @@ export type InvoiceContextState = {
   updatePendingNumbers: number;
   view: InvoiceView;
   documentUrl: string;
+  modal: {
+    type: 'Feedback' | 'Relaunch';
+    isOpen: boolean;
+  };
 };
 
 type Action = {
@@ -38,6 +42,8 @@ export const invoiceReducer = (state: InvoiceContextState, { type, payload }: Ac
       return { ...state, updatePendingNumbers: payload };
     case 'setView':
       return { ...state, view: payload };
+    case 'setModale':
+      return { ...state, modal: payload };
     case 'set':
       return { ...state, ...payload };
   }
