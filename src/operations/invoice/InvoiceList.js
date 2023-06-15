@@ -16,6 +16,7 @@ import FeedbackModal from './components/FeedbackModal';
 import { InvoiceActionButtons } from './components';
 import { InvoiceListActionButtons } from './components/InvoiceListActionButtons';
 import { useInvoiceContext } from 'src/common/hooks';
+import { InvoiceModalContextProvider } from './components/InvoiceModalContext';
 
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
@@ -34,12 +35,8 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 };
 
 const InvoiceGridTable = props => {
-  const { setInvoice } = props;
   const { isLoading } = useListContext();
   const { editInvoice } = useInvoiceContext();
-
-  const setInvoiceToRelaunch = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.RELAUNCH });
-  // const setInvoiceToFeedback = data => setInvoice({ selectedInvoice: data, modalFor: EInvoiceModalType.FEEDBACK });
 
   const { companyInfo } = useGetAccountHolder();
 
@@ -54,19 +51,17 @@ const InvoiceGridTable = props => {
         {companyInfo && companyInfo.isSubjectToVat && <RaMoneyField render={data => data.totalPriceWithVat} label='Prix TTC' variant='body2' />}
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
-        <FunctionField render={data => <InvoiceListActionButtons invoice={data} setInvoiceToRelaunch={setInvoiceToRelaunch} />} label='' />
+        <FunctionField render={data => <InvoiceListActionButtons invoice={data} />} label='' />
       </Datagrid>
     )
   );
 };
 
 const InvoiceList = props => {
-  const [{ selectedInvoice, modalFor }, setInvoice] = useState({ selectedInvoice: null, modalFor: null });
+  const [, setInvoice] = useState({ selectedInvoice: null, modalFor: null });
   const notify = useNotify();
   const refresh = useRefresh();
   const { onStateChange, invoiceTypes, handleSwitchTab } = props;
-
-  const handleResetInvoice = () => setInvoice({ modalFor: null, selectedInvoice: null });
 
   const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
   const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
@@ -76,7 +71,7 @@ const InvoiceList = props => {
   };
 
   return (
-    <>
+    <InvoiceModalContextProvider>
       <List
         sx={{
           '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
@@ -92,9 +87,9 @@ const InvoiceList = props => {
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoice={setInvoice} />
       </List>
 
-      <FeedbackModal invoice={modalFor === EInvoiceModalType.FEEDBACK ? selectedInvoice : null} resetInvoice={handleResetInvoice} />
-      <InvoiceRelaunchModal invoice={modalFor === EInvoiceModalType.RELAUNCH ? selectedInvoice : null} resetInvoice={handleResetInvoice} />
-    </>
+      <FeedbackModal />
+      <InvoiceRelaunchModal />
+    </InvoiceModalContextProvider>
   );
 };
 

@@ -11,11 +11,11 @@ type InvoiceListActionButtonsProps = {
   setInvoiceToRelaunch: any;
 };
 
-export const InvoiceListActionButtons = ({ invoice, setInvoiceToRelaunch }: InvoiceListActionButtonsProps) => {
-  const { setDocumentUrl } = useInvoiceContext();
+export const InvoiceListActionButtons = ({ invoice }: InvoiceListActionButtonsProps) => {
+  const { setDocumentUrl, setInvoiceModal } = useInvoiceContext();
 
   const onViewPdf = stopPropagation(() => setDocumentUrl(invoice.fileId));
-  const onRelaunch = stopPropagation(() => setInvoiceToRelaunch(invoice));
+  const onRelaunch = stopPropagation(() => setInvoiceModal({ isOpen: true, type: 'Relaunch' }, invoice));
 
   return (
     <Box sx={LIST_ACTION_STYLE}>

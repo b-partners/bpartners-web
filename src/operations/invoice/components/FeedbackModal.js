@@ -9,25 +9,23 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver as feedbackResolver } from 'src/common/resolvers';
 import { getFeedbackDefaultMessage } from '../utils/utils';
 import { EditorState } from 'draft-js';
-import { useInvoiceContext } from 'src/common/hooks';
+import { useInvoiceModalContext } from 'src/common/store';
 
 const FeedbackModal = () => {
   const notify = useNotify();
   const { name: companyName } = getCached.accountHolder() || {};
   const [isLoading, setIsLoading] = useState(false);
+
   const {
-    state: { modal, invoice },
-    setInvoiceModal,
-  } = useInvoiceContext();
+    modal: { invoice, isOpen: isModalOpen, type: modalType },
+    closeModal,
+  } = useInvoiceModalContext();
+
   const form = useForm({
     mode: 'all',
     defaultValues: { subject: `${companyName} -  donnez nous votre avis`, message: EditorState.createEmpty() },
     resolver: feedbackResolver,
   });
-
-  const onClose = () => {
-    setInvoiceModal({ isOpen: false, type: 'Feedback' }, null);
-  };
 
   useEffect(() => {
     form.setValue('message', getFeedbackDefaultMessage(invoice));
@@ -38,7 +36,7 @@ const FeedbackModal = () => {
       if (invoice && invoice.customer) {
         setIsLoading(true);
         await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data });
-        onClose();
+        closeModal();
         setIsLoading(false);
         notify('messages.feedback.success', { type: 'success' });
       }
@@ -47,10 +45,10 @@ const FeedbackModal = () => {
   });
 
   return (
-    modal.isOpen &&
-    modal.type === 'Feedback' && (
+    isModalOpen &&
+    modalType === 'Feedback' && (
       <FormProvider {...form}>
-        <Dialog open={modal.type === 'Feedback' && modal.isOpen} onClose={onClose} maxWidth='lg'>
+        <Dialog open={modalType === 'Feedback' && isModalOpen} onClose={closeModal} maxWidth='lg'>
           <DialogTitle>
             Envoyer un demande d'avis à {invoice?.customer?.firstName} {invoice?.customer?.lastName}.
           </DialogTitle>

@@ -1,9 +1,7 @@
 import { InvoiceStatus } from 'bpartners-react-client';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument from './InvoicePdfDocument';
-import { InvoiceTabIndex, InvoiceTabPanel, InvoiceView } from './components';
-import { useReducer } from 'react';
-import { InvoiceListContext, invoiceReducer } from '../../common/store';
+import { InvoiceContextProvider, InvoiceTabIndex, InvoiceTabPanel, InvoiceView } from './components';
 
 // const useStyle = makeStyles(() => ({
 //   card: { border: 'none' },
@@ -27,24 +25,8 @@ import { InvoiceListContext, invoiceReducer } from '../../common/store';
  */
 
 const InvoiceListEditor = () => {
-  const [state, dispatch] = useReducer(
-    invoiceReducer,
-    {
-      invoice: null,
-      updatePendingNumbers: 0,
-      documentUrl: null,
-      tab: 'draft',
-      view: 'list',
-      modal: {
-        type: 'Feedback',
-        isOpen: false,
-      },
-    },
-    state => state
-  );
-
   return (
-    <InvoiceListContext.Provider value={{ state, dispatch }}>
+    <InvoiceContextProvider>
       <InvoiceView source='list'>
         <InvoiceTabIndex />
         <InvoiceTabPanel invoiceTypes={[InvoiceStatus.DRAFT]} tabSource='draft' />
@@ -57,7 +39,7 @@ const InvoiceListEditor = () => {
       <InvoiceView source='preview'>
         <InvoicePdfDocument />
       </InvoiceView>
-    </InvoiceListContext.Provider>
+    </InvoiceContextProvider>
   );
 };
 

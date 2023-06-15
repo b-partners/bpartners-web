@@ -2,7 +2,7 @@ import { Invoice } from 'bpartners-react-client';
 import { createContext, Dispatch } from 'react';
 
 export type InvoiceView = 'list' | 'edition' | 'creation' | 'preview';
-export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumentUrl' | 'setView' | 'set' | 'setModale';
+export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumentUrl' | 'setView' | 'set';
 
 export type InvoiceTab = 'draft' | 'proposal' | 'confirmed';
 
@@ -44,30 +44,7 @@ export const invoiceReducer = (state: InvoiceContextState, { type, payload }: Ac
       return { ...state, updatePendingNumbers: payload };
     case 'setView':
       return { ...state, view: payload };
-    case 'setModale':
-      return { ...state, modal: payload.modal, invoice: payload.invoice };
     case 'set':
       return { ...state, ...payload };
   }
 };
-
-// const invoiceListReducer = (state, { type, payload }) => {
-//   switch (type) {
-//     case InvoiceActionType.START_PENDING:
-//       return {
-//         ...state,
-//         nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1,
-//         documentUrl: payload.documentUrl,
-//       };
-//     case InvoiceActionType.STOP_PENDING:
-//       return {
-//         ...state,
-//         nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1,
-//         documentUrl: payload.documentUrl,
-//       };
-//     case InvoiceActionType.SET:
-//       return { ...state, ...payload };
-//     default:
-//       throw new Error('Unknown action type');
-//   }
-// };

@@ -7,7 +7,7 @@ import { authProvider, getCached, payingApi } from 'src/providers';
 import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver } from 'src/common/resolvers';
 import { EditorState } from 'draft-js';
-import { useInvoiceContext } from 'src/common/hooks';
+import { useInvoiceModalContext } from 'src/common/store';
 
 const invoiceRelaunchDefaultValue = {
   subject: '',
@@ -16,17 +16,18 @@ const invoiceRelaunchDefaultValue = {
 };
 
 const InvoiceRelaunchModal = () => {
-  const {
-    state: { modal, invoice },
-    setInvoiceModal,
-  } = useInvoiceContext();
-
   const notify = useNotify();
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    modal: { invoice, isOpen: isModalOpen, type: modalType },
+    closeModal,
+  } = useInvoiceModalContext();
+
   const form = useForm({ mode: 'all', defaultValues: invoiceRelaunchDefaultValue, resolver: invoiceRelaunchResolver });
 
   const onClose = () => {
-    setInvoiceModal({ isOpen: false, type: 'Relaunch' }, null);
+    closeModal();
     form.setValue('attachments', []);
   };
 
@@ -54,10 +55,10 @@ const InvoiceRelaunchModal = () => {
   });
 
   return (
-    modal.isOpen &&
-    modal.type === 'Relaunch' && (
+    isModalOpen &&
+    modalType === 'Relaunch' && (
       <FormProvider {...form}>
-        <Dialog open={!!invoice} onClose={onClose} maxWidth='lg'>
+        <Dialog open={isModalOpen} onClose={onClose} maxWidth='lg'>
           <DialogTitle>
             Relance manuelle {getContext({ devis: 'du', facture: 'de la' })} ref: {invoice.ref}
           </DialogTitle>
