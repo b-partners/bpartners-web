@@ -1,15 +1,13 @@
 import { Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
-import { useState } from 'react';
-import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
+import { Datagrid, FunctionField, List, TextField, useListContext } from 'react-admin';
 
 import { formatDate } from '../../common/utils';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
-import { EInvoiceModalType, getInvoiceStatusInFr, viewScreenState } from './utils/utils';
-import { invoiceProvider } from 'src/providers/invoice-provider';
+import { getInvoiceStatusInFr } from './utils/utils';
 import { RaMoneyField } from 'src/common/components';
 import BPListActions from 'src/common/components/BPListActions';
 import FeedbackModal from './components/FeedbackModal';
@@ -18,23 +16,7 @@ import { InvoiceListActionButtons } from './components/InvoiceListActionButtons'
 import { useInvoiceContext } from 'src/common/hooks';
 import { InvoiceModalContextProvider } from './components/InvoiceModalContext';
 
-const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
-  if (event) {
-    event.stopPropagation();
-  }
-  invoiceProvider
-    .saveOrUpdate([data])
-    .then(() => {
-      notify(successMessage, { type: 'success' });
-      handleSwitchTab(null, tabIndex);
-      refresh();
-    })
-    .catch(() => {
-      notify('messages.global.error', { type: 'error' });
-    });
-};
-
-const InvoiceGridTable = props => {
+const InvoiceGridTable = () => {
   const { isLoading } = useListContext();
   const { editInvoice } = useInvoiceContext();
 
@@ -58,17 +40,7 @@ const InvoiceGridTable = props => {
 };
 
 const InvoiceList = props => {
-  const [, setInvoice] = useState({ selectedInvoice: null, modalFor: null });
-  const notify = useNotify();
-  const refresh = useRefresh();
-  const { onStateChange, invoiceTypes, handleSwitchTab } = props;
-
-  const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab);
-  const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
-  const viewPdf = (event, selectedInvoice) => {
-    event.stopPropagation();
-    onStateChange({ selectedInvoice, viewScreen: viewScreenState.PREVIEW });
-  };
+  const { invoiceTypes } = props;
 
   return (
     <InvoiceModalContextProvider>
@@ -84,7 +56,7 @@ const InvoiceList = props => {
         perPage={pageSize}
         actions={<BPListActions hasCreate={false} hasExport={false} buttons={<InvoiceActionButtons />} />}
       >
-        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} setInvoice={setInvoice} />
+        <InvoiceGridTable />
       </List>
 
       <FeedbackModal />
