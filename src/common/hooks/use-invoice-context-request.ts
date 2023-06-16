@@ -10,11 +10,11 @@ export const useInvoiceContextRequest = () => {
   const { state, setState, setTab, increasePending } = useInvoiceContext();
   const changeInvoiceStatus = async (invoice: Invoice, status: InvoiceStatus, tab?: InvoiceTab) => {
     await invoiceProvider.saveOrUpdate([{ ...invoice, status }], { isEdition: true });
-    if (tab) setTab(tab);
+    if (tab) { setTab(tab) };
   };
 
   const retryInvoice = (invoice: Invoice, submittedAt: Date) => (error: AxiosError) =>
-    error.response.status === 429 && (!invoice.metadata || submittedAt > new Date(invoice.metadata.submittedAt));
+    error && error.response && error?.response?.status === 429 && (!invoice.metadata || submittedAt > new Date(invoice.metadata.submittedAt));
 
   const updateInvoice = async (invoice: Invoice) => {
     const [updatedInvoice] = await invoiceProvider.saveOrUpdate([invoice]);
@@ -23,6 +23,7 @@ export const useInvoiceContextRequest = () => {
   };
 
   const saveOrUpdateInvoice = async (invoice: Invoice) => {
+    console.log(invoice);
     state.updatePendingNumbers === 0 && increasePending();
     const submittedAt = new Date();
     await retryOnError(() => updateInvoice(invoice), retryInvoice(invoice, submittedAt));

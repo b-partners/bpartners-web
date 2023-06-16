@@ -96,9 +96,7 @@ const LogoLayout = () => {
   const [logoLoading, setLogoLoading] = useState(false);
 
   const getLogo = async () => {
-    console.log('before');
     const logoUrl = getAccountLogoUrl();
-    console.log('logo url', logoUrl);
     if (logoUrl) {
       try {
         setLogoLoading(true);

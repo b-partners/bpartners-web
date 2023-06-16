@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import Zod from 'zod';
 
 export const FieldErrorMessage = {
   phone: 'Le numéro de téléphone ne doit contenir que des chiffres',
@@ -13,5 +13,5 @@ export const FieldErrorMessage = {
     'Le mot de passe doit : \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre',
 };
 
-export const requiredString = () => z.string({ required_error: FieldErrorMessage.required }).nonempty({ message: 'Ce champ est requis.' });
+export const requiredString = () => Zod.string({ required_error: FieldErrorMessage.required }).nonempty({ message: 'Ce champ est requis.' });
 export const phoneValidator = (phoneNumber: string) => !/[^0-9+]/.test(phoneNumber);

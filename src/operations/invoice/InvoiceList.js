@@ -19,7 +19,6 @@ import { InvoiceModalContextProvider } from './components/InvoiceModalContext';
 const InvoiceGridTable = () => {
   const { isLoading } = useListContext();
   const { editInvoice } = useInvoiceContext();
-
   const { companyInfo } = useGetAccountHolder();
 
   const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName || ''} ${customer?.firstName}` || ''}</Typography>;

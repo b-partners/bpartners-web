@@ -1,5 +1,6 @@
 import { Invoice } from 'bpartners-react-client';
 import { createContext, Dispatch } from 'react';
+import { getInvoicePdfUrl } from 'src/operations/invoice/utils/utils';
 
 export type InvoiceView = 'list' | 'edition' | 'creation' | 'preview';
 export type ReducerAction = 'setInvoice' | 'setTab' | 'setPending' | 'setDocumentUrl' | 'setView' | 'set';
@@ -35,7 +36,7 @@ export const InvoiceListContext = createContext<ContextType | undefined>(undefin
 export const invoiceReducer = (state: InvoiceContextState, { type, payload }: Action) => {
   switch (type) {
     case 'setInvoice':
-      return { ...state, invoice: payload };
+      return { ...state, invoice: payload, documentUrl: getInvoicePdfUrl(payload.fileId) };
     case 'setDocumentUrl':
       return { ...state, documentUrl: payload };
     case 'setTab':

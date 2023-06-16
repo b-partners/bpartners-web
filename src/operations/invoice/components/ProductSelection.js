@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils';
 import { ProductItem } from './ProductItem';
-import { ProductActionType, productValidationHandling } from '../utils/utils';
+import { ProductActionType } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
 
@@ -55,7 +55,6 @@ export const ProductSelection = ({ name, form }) => {
         throw new Error('Unknown type');
     }
     setValue(name, productTemp);
-    productValidationHandling(productTemp, name, setError, clearErrors);
   };
 
   useEffect(() => {

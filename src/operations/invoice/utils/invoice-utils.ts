@@ -43,7 +43,7 @@ export const invoiceMapper = {
     } else {
       const paymentRegulationTo100Percent = { ...missingPaymentRegulation(invoice.paymentRegulations) };
       const domainPR =
-        paymentRegulationTo100Percent.percent !== 0 ? [...invoice.paymentRegulations, paymentRegulationTo100Percent] : invoice.paymentRegulations;
+        paymentRegulationTo100Percent.percent !== 0 ? [...(invoice.paymentRegulations || []), paymentRegulationTo100Percent] : invoice.paymentRegulations;
       invoice.paymentRegulations = paymentRegulationToMinor(domainPR);
     }
     return emptyToNull(invoice);
