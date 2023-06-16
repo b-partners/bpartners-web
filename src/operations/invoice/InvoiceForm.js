@@ -18,6 +18,7 @@ import { useInvoiceContext } from 'src/common/hooks';
 import { invoiceResolver } from '../../common/resolvers';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 import { BPButton } from 'src/common/components/BPButton';
+import { PaymentRegulationAccordion } from './components';
 
 /**
  *
@@ -178,21 +179,10 @@ const InvoiceForm = () => {
           <InvoiceAccordion error={form.formState.errors[PRODUCT_NAME]} label='Produits' index={2} isExpanded={openedAccordion} onExpand={openAccordion}>
             <ProductSelection name={PRODUCT_NAME} form={form} />
           </InvoiceAccordion>
-          {/*
-          <FormControl sx={{ width: DEFAULT_TEXT_FIELD_WIDTH }}>
-            <FormControlLabel
-              control={<Checkbox data-testid='payment-regulation-checkbox-id' checked={!isPaymentTypeCash} onChange={togglePaymentType} />}
-              label='Payer en plusieurs fois'
-            />
-          </FormControl>
-          {!isPaymentTypeCash && (
-            <InvoiceAccordion error={paymentRegulationsError} label='Acompte' index={3} isExpanded={openedAccordion} onExpand={openAccordion}>
-              <PaymentRegulationsForm form={form} />
-            </InvoiceAccordion>
-          )}
-          <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
-          <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
-          */}
+
+          <PaymentRegulationAccordion isExpanded={openedAccordion} onExpand={openAccordion} />
+          {/* <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
+          <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} /> */}
         </form>
       </FormProvider>
       {/*<PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>*/}

@@ -15,32 +15,29 @@ import {
   paymentRegulationErrorMessage,
   paymentRegulationToMajor,
   PAYMENT_REGULATIONS,
-  PAYMENT_TYPE,
   ScreenMode,
   validatePaymentRegulation,
   validateRegulationPercentage,
 } from '../utils/payment-regulation-utils';
-import { VALIDITY_DATE } from '../utils/utils';
 import PaymentRegulationItem from './PaymentRegulationItem';
 import { handleSubmit } from 'src/common/utils';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const { IN_INSTALMENT } = InvoicePaymentTypeEnum;
 
-const PaymentRegulationsForm = props => {
+export const PaymentRegulationsForm = () => {
   const { VIEW, EDIT } = ScreenMode;
 
-  const { form } = props;
-  const { watch, setValue } = form;
+  const { setValue } = useFormContext();
+  const { paymentType, paymentRegulations, validityDate } = useWatch();
   const [{ screenMode, toEditIndex }, setScreenMode] = useState({ screenMode: VIEW, toEditIndex: null });
 
-  const paymentRegulationType = watch(PAYMENT_TYPE);
-  const paymentRegulations = watch(PAYMENT_REGULATIONS);
-  const validityDate = watch(VALIDITY_DATE);
-  const isInInstalment = screenMode === VIEW && paymentRegulationType === IN_INSTALMENT;
+  const isInInstalment = screenMode === VIEW && paymentType === IN_INSTALMENT;
 
   const handleEdit = index => setScreenMode({ screenMode: EDIT, toEditIndex: index });
   const handleCreate = () => setScreenMode({ screenMode: EDIT, toEditIndex: null });
   const handleCancel = () => setScreenMode({ screenMode: VIEW, toEditIndex: null });
+
   const handleSave = data => {
     if (toEditIndex === null) {
       setValue(PAYMENT_REGULATIONS, [...(paymentRegulations ? paymentRegulations : []), data]);
@@ -51,14 +48,17 @@ const PaymentRegulationsForm = props => {
     }
     handleCancel();
   };
+
   const handleRemove = index =>
     setValue(
       PAYMENT_REGULATIONS,
       paymentRegulations.filter((_element, k) => k !== index)
     );
-  const error = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
+
+  const error = validatePaymentRegulation(paymentType, paymentRegulations);
   const paymentRegulationRest = missingPaymentRegulation(paymentRegulations, validityDate);
   paymentRegulationRest.comment = 'Le reste à payer un mois après le dernier paiement, change en fonction des acomptes que vous créerez';
+
   return (
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
       {(paymentRegulations || []).length > 0 && (
@@ -144,5 +144,3 @@ const RegulationsForm = props => {
 };
 
 const CustomBpField = props => <BPFormField style={{ width: 284 }} {...props} />;
-
-export default PaymentRegulationsForm;
