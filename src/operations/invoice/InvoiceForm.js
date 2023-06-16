@@ -18,7 +18,7 @@ import { useInvoiceContext } from 'src/common/hooks';
 import { invoiceResolver } from '../../common/resolvers';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 import { BPButton } from 'src/common/components/BPButton';
-import { PaymentRegulationAccordion } from './components';
+import { InvoiceTotalPrice, PaymentRegulationAccordion } from './components';
 
 /**
  *
@@ -181,6 +181,7 @@ const InvoiceForm = () => {
           </InvoiceAccordion>
 
           <PaymentRegulationAccordion isExpanded={openedAccordion} onExpand={openAccordion} />
+          <InvoiceTotalPrice />
           {/* <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
           <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} /> */}
         </form>
@@ -194,13 +195,4 @@ const InvoiceForm = () => {
   );
 };
 
-const InvoiceTotalPrice = props => {
-  const { isSubjectToVat, totalPrice } = props;
-  return (
-    <Box sx={{ width: 300, display: 'flex', justifyContent: 'space-between', marginBlock: 5 }}>
-      <Typography variant='h6'>{isSubjectToVat ? 'Total TTC' : 'Total HT'}</Typography>
-      <Typography variant='h6'>{prettyPrintMinors(totalPrice)}</Typography>
-    </Box>
-  );
-};
 export default InvoiceForm;
