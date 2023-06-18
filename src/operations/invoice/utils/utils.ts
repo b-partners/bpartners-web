@@ -79,7 +79,7 @@ export const invoiceDateValidator = (dates: InvoiceValidatorParams) => {
 };
 
 export const productValidator = (products: Product[]): ProductValidatorResult => {
-  if (!products || products.length === 0) {
+  if ((products || []).length === 0) {
     return { isValid: false, message: 'Veuillez sélectionner au moins un produit' };
   }
   for (let product of products) {

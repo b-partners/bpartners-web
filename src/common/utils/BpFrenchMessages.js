@@ -17,6 +17,20 @@ export const BpFrenchMessages = {
         confirmed: 'Facture |||| Factures',
         paid: 'Facture |||| Factures',
       },
+      conversion: {
+        CONFIRMED: {
+          title: 'Transformer en facture',
+          success: 'Devis confirmé !',
+        },
+        PROPOSAL: {
+          title: 'Convertir en devis',
+          success: 'Brouillon transformé en devis !',
+        },
+        PAID: {
+          title: 'Marquer comme payée',
+          success: 'Facture payée !',
+        },
+      },
     },
   },
   messages: {
