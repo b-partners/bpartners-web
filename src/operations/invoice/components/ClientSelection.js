@@ -7,7 +7,7 @@ export const ClientSelection = props => {
   const { name, label, sx } = props;
   const { setValue } = useFormContext();
   const clientWatch = useWatch({ name });
-  const [state, setState] = useState({ clients: [], clientSelected: `${clientWatch?.lastName} ${clientWatch?.firstName}` || '' });
+  const [state, setState] = useState({ clients: [], clientSelected: `${clientWatch?.lastName} ${clientWatch?.firstName}` });
   const checkError = !clientWatch;
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const ClientSelection = props => {
             key={client.id}
             value={client.id}
           >
-            {`${client.lastName} ${client.firstName}` || ''}
+            {`${client.lastName} ${client.firstName}`}
           </MenuItem>
         ))
       ) : (

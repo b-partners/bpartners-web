@@ -37,15 +37,17 @@ import { BpFormField } from 'src/common/components';
 import { validateDIPAllowed, validateDPPercent } from './utils';
 import { handleSubmit, printError } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
 
 const InvoiceForm = props => {
-  const { toEdit, onPending, nbPendingInvoiceCrupdate, onClose, selectedInvoiceRef, documentUrl } = props;
+  const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all' });
   const notify = useNotify();
   const refresh = useRefresh();
   const paymentRegulationType = form.watch(PAYMENT_TYPE);
   const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
+  const { returnToListByStatus } = useInvoiceToolContext();
 
   const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
@@ -101,7 +103,7 @@ const InvoiceForm = props => {
         notify('Veuillez remplir correctement tous les champs', { type: 'error' });
         refresh();
       } else {
-        onClose(form.watch());
+        returnToListByStatus(form.watch().status);
       }
     };
 

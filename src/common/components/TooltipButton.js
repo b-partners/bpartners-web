@@ -1,8 +1,10 @@
 import { IconButton, Tooltip } from '@mui/material';
 
-const TooltipButton = ({ icon, ...others }) => (
+const TooltipButton = ({ icon, disabled, onClick, ...others }) => (
   <Tooltip {...others} sx={{ margin: '0 15px' }}>
-    <IconButton>{icon}</IconButton>
+    <IconButton onClick={onClick} disabled={disabled}>
+      {icon}
+    </IconButton>
   </Tooltip>
 );
 
