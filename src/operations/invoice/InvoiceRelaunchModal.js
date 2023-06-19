@@ -7,6 +7,7 @@ import { authProvider, getCached, payingApi } from 'src/providers';
 import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver } from 'src/common/resolvers';
 import { EditorState } from 'draft-js';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
 
 const invoiceRelaunchDefaultValue = {
   subject: '',
@@ -14,13 +15,17 @@ const invoiceRelaunchDefaultValue = {
   attachments: [],
 };
 
-const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
+const InvoiceRelaunchModal = () => {
   const notify = useNotify();
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    closeModal,
+    modal: { invoice, isOpen, type: modalType },
+  } = useInvoiceToolContext();
   const form = useForm({ mode: 'all', defaultValues: invoiceRelaunchDefaultValue, resolver: invoiceRelaunchResolver });
 
   const onClose = () => {
-    resetInvoice();
+    closeModal();
     form.setValue('attachments', []);
   };
 
@@ -40,7 +45,7 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
           })} ref: ${invoice.ref} a été relancée avec succès.`,
           { type: 'success' }
         );
-        resetInvoice();
+        closeModal();
         setIsLoading(false);
       }
     };
@@ -48,9 +53,10 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
   });
 
   return (
-    invoice && (
+    modalType === 'RELAUNCH' &&
+    isOpen && (
       <FormProvider {...form}>
-        <Dialog open={!!invoice} onClose={onClose} maxWidth='lg'>
+        <Dialog open={isOpen} onClose={onClose} maxWidth='lg'>
           <DialogTitle>
             Relance manuelle {getContext({ devis: 'du', facture: 'de la' })} ref: {invoice.ref}
           </DialogTitle>
@@ -59,6 +65,9 @@ const InvoiceRelaunchModal = ({ invoice = null, resetInvoice }) => {
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'flex-end', alignItems: 'center' }}>
+            <Button onClick={onClose} data-cy='invoice-relaunch-cancel'>
+              Annuler
+            </Button>
             <Button
               disabled={isLoading}
               data-cy='invoice-relaunch-submit'

@@ -97,10 +97,9 @@ describe(specTitle('Invoice'), () => {
       expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
       expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
       req.reply({});
-    }).as('Askfeedback');
-    cy.get('[data-testid="pay-invoice-CONFIRMED-1-id"]').click();
+    }).as('AskFeedback');
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
     cy.wait('@refetch');
-    cy.contains('Facture invoice-ref-1 payée !');
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
     cy.get('[data-cy="invoice-relaunch-submit"]').click();
   });

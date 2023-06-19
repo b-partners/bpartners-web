@@ -9,9 +9,14 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { invoiceRelaunchResolver as feedbackResolver } from 'src/common/resolvers';
 import { getFeedbackDefaultMessage } from '../utils/utils';
 import { EditorState } from 'draft-js';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
 
-const FeedbackModal = ({ invoice = null, resetInvoice }) => {
+const FeedbackModal = () => {
   const notify = useNotify();
+  const {
+    closeModal,
+    modal: { invoice, isOpen, type: modalType },
+  } = useInvoiceToolContext();
   const { name: companyName } = getCached.accountHolder() || {};
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
@@ -19,9 +24,6 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
     defaultValues: { subject: `${companyName} -  donnez nous votre avis`, message: EditorState.createEmpty() },
     resolver: feedbackResolver,
   });
-  const onClose = () => {
-    resetInvoice();
-  };
 
   useEffect(() => {
     form.setValue('message', getFeedbackDefaultMessage(invoice));
@@ -32,7 +34,7 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
       if (invoice && invoice.customer) {
         setIsLoading(true);
         await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data });
-        resetInvoice();
+        closeModal();
         setIsLoading(false);
         notify('messages.feedback.success', { type: 'success' });
       }
@@ -41,9 +43,10 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
   });
 
   return (
-    invoice && (
+    modalType === 'FEEDBACK' &&
+    isOpen && (
       <FormProvider {...form}>
-        <Dialog open={!!invoice} onClose={onClose} maxWidth='lg'>
+        <Dialog open={isOpen} onClose={closeModal} maxWidth='lg'>
           <DialogTitle>
             Envoyer un demande d'avis à {invoice?.customer?.firstName} {invoice?.customer?.lastName}.
           </DialogTitle>
@@ -52,6 +55,9 @@ const FeedbackModal = ({ invoice = null, resetInvoice }) => {
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'flex-end', mr: 2, alignItems: 'center' }}>
+            <Button onClick={closeModal} data-cy='invoice-relaunch-cancel'>
+              Annuler
+            </Button>
             <Button
               disabled={isLoading}
               onClick={handleSubmit(askFeedback)}

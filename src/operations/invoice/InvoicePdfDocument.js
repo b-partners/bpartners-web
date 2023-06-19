@@ -4,14 +4,22 @@ import { useEffect, useState } from 'react';
 import PdfViewer from '../../common/components/PdfViewer';
 import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
 import { printError } from 'src/common/utils';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
 
-export const CancelButton = ({ onClick }) => (
-  <Tooltip title='Retourner a la liste'>
-    <IconButton onClick={onClick}>
-      <Clear />
-    </IconButton>
-  </Tooltip>
-);
+export const CancelButton = ({ onClose }) => {
+  return (
+    <Tooltip title='Retourner a la liste'>
+      <IconButton onClick={onClose}>
+        <Clear />
+      </IconButton>
+    </Tooltip>
+  );
+};
+
+export const ContextCancelButton = () => {
+  const { setView } = useInvoiceToolContext();
+  return <CancelButton onClose={() => setView('list')} />;
+};
 
 const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
@@ -24,7 +32,11 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
 
   return (
     <Card sx={{ border: 'none' }}>
-      <CardHeader action={<CancelButton onClick={onClose} />} title={selectedInvoice.title} subheader={selectedInvoice.ref} />
+      <CardHeader
+        action={onClose ? <CancelButton onClose={onClose} /> : <ContextCancelButton />}
+        title={selectedInvoice.title}
+        subheader={selectedInvoice.ref}
+      />
       <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
         <PdfViewer width={PDF_WIDTH} url={documentUrl} filename={selectedInvoice.ref} />
       </CardContent>
