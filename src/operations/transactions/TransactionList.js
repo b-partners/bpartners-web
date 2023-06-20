@@ -47,7 +47,7 @@ const TransactionList = props => {
             filterDefaultValues={{ categorized: true }}
             filters={[
               <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
-              <BooleanInput key='transaction_list_boolean_filter' label='Catégorisées' source='categorized' alwaysOn />,
+              <BooleanInput key='transaction_list_boolean_filter' label='Non Catégorisées' source='categorized' alwaysOn />,
             ]}
             component={ListComponent}
           >
