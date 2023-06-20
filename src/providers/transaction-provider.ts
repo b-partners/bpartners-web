@@ -18,7 +18,7 @@ export const transactionProvider: BpDataProviderType = {
       .filter(
         //TODO: following filter can be expressed in a single, well-known, logic operator. What is it?
         //TODO(implement-backend)
-        ({ category }) => (categorized ? category !== null : true)
+        ({ category }) => (categorized ? category === null : true)
       )
       .filter(transaction => (status ? transaction.status === status : true))
       .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));

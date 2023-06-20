@@ -33,6 +33,8 @@ describe(specTitle('Transactions'), () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
 
+    cy.get('#categorized').click();
+
     cy.wait('@legalFiles');
     cy.get('[data-testid="transaction-add-category-transaction3"]').click();
     cy.wait('@getTransactionCategory');
@@ -191,6 +193,8 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction3/invoices/invoice-PAID-0-id`, transactions[0]).as('linkInvoiceAndTransaction');
     mount(<App />);
     cy.get('[name="transactions"]').click();
+
+    cy.get('#categorized').click();
 
     cy.wait('@legalFiles');
     cy.wait('@getTransactions5');

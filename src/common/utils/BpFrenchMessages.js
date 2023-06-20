@@ -43,7 +43,7 @@ export const BpFrenchMessages = {
     },
     feedback: {
       success: 'Demande envoyée avec succès.',
-      error: "La demande n'as pas pus être envoyer.",
+      error: "La demande n'as pas pu être envoyée.",
     },
   },
 };
