@@ -42,7 +42,7 @@ export const BpFrenchMessages = {
       changesSaved: 'Changement enregistré',
     },
     feedback: {
-      success: 'Demande envoyer avec success.',
+      success: 'Demande envoyée avec succès.',
       error: "La demande n'as pas pus être envoyer.",
     },
   },
