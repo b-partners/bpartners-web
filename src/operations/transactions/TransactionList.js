@@ -32,7 +32,7 @@ const TransactionList = props => {
 
   const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
     .filter(status => status !== 'UNKNOWN')
-    .map((status, k) => ({ id: k, name: TRANSACTION_STATUSES[status].label }));
+    .map((status, k) => ({ id: status, name: TRANSACTION_STATUSES[status].label }));
   return !documentState.shouldShowDocument ? (
     <>
       <TransactionChart />
@@ -47,7 +47,7 @@ const TransactionList = props => {
             filterDefaultValues={{ categorized: true }}
             filters={[
               <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
-              <BooleanInput key='transaction_list_boolean_filter' label='Non catégorisées' source='categorized' alwaysOn />,
+              <BooleanInput key='transaction_list_boolean_filter' label='Non Catégorisées' source='categorized' alwaysOn />,
             ]}
             component={ListComponent}
           >
