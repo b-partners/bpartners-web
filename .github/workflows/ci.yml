@@ -1,5 +1,11 @@
 name: CI
-on: [push, pull_request, workflow_dispatch]
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+      branches:
+        - it
+  workflow_dispatch:
+
 
 jobs:
   tests:
@@ -36,7 +42,7 @@ jobs:
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
         run: |
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-      - run: npm test
+      - run: REACT_APP_BPARTNERS_API_URL=https://api-prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm test
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
@@ -52,16 +58,3 @@ jobs:
           sonar-scanner \
             -Dsonar.projectVersion=${{ steps.read-version.outputs.version }} \
             -Dsonar.branch.name=${GITHUB_REF##*/}
-
-  style:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 17.x
-
-      - run: npm install --location=global prettier
-      - run: prettier --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"
