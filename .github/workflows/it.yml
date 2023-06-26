@@ -1,9 +1,7 @@
-name: CI
+name: IT
 on:
   schedule:
     - cron: '*/30 * * * *'
-      branches:
-        - it
   workflow_dispatch:
 
 
