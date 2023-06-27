@@ -25,6 +25,7 @@ describe(specTitle('Account'), () => {
     cy.contains('FRA');
     cy.contains('6 RUE PAUL LANGEVIN');
     cy.contains('94120');
+    cy.contains('78090');
 
     cy.contains('Fonenantsoa');
     cy.contains('Maurica Andrianampoizinimaro');
