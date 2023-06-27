@@ -1,0 +1,43 @@
+name: IT
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+
+jobs:
+  tests:
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 17.x
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+          rootdir: ''
+          workdir: ''
+      - name: Connect to HEI AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh hei ${{ secrets.HEI_AWS_ACCESS_KEY_ID }} ${{ secrets.HEI_AWS_SECRET_ACCESS_KEY }} ${{ secrets.HEI_AWS_REGION }}
+          sh ./initNpmrc.sh hei hei-store npm-hei-school 088312068315
+      - name: Connect to BPartners AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
+          sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
+      - run: npm config set always-auth true
+      - run: npm install --legacy-peer-deps
+      - name: Cypress dependencies
+        # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
+        run: |
+          sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      - run: REACT_APP_BPARTNERS_API_URL=https://api-prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm run it
