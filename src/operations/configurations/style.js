@@ -2,16 +2,16 @@ import { BP_COLOR } from '../../bp-theme';
 
 export const DIALOG_CONTENT = {
   display: 'flex',
-  justifyContent: 'flex-end',
-  height: '100%',
+  justifyContent: 'center',
   position: 'relative',
   padding: 0,
   margin: 0,
+  backgroundColor: BP_COLOR['solid_grey'],
 };
 
 export const VERTICAL_PAGINATION = {
   position: 'absolute',
-  right: '0',
+  right: '2%',
   top: '50%',
   backgroundColor: 'rgb(255, 255, 255, 0.95)',
   margin: '0.2rem',
