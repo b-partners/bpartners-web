@@ -9,8 +9,9 @@ import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 import { handleSubmit } from 'src/common/utils';
 import { authProvider, cache, userAccountsApi } from '../../providers';
+import { useWindowResize } from 'src/common/hooks';
 
-const INIT_LEGALFILE = {
+const INIT_LEGAL_FILE = {
   id: '',
   name: '',
   fileUrl: 'dummy-url.com',
@@ -21,11 +22,15 @@ export const GeneralConditionOfUse = () => {
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const notify = useNotify();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeLfIndex, setActiveLfIndex] = useState(0);
   const [legalFiles, setLegalFiles] = useState([]);
-  const [legalFile, setLegalFile] = useState(INIT_LEGALFILE);
+  const [legalFile, setLegalFile] = useState(INIT_LEGAL_FILE);
   const [cguDialogStatus, setCguDialogStatus] = useState(false);
+
+  useEffect(() => {
+    console.log(loading);
+  }, [loading]);
 
   useEffect(() => {
     const fetchLegalFiles = async () => {
@@ -94,7 +99,10 @@ export const GeneralConditionOfUse = () => {
 const useStyle = makeStyles(() => ({
   PDF: {
     '& .react-pdf__Page__canvas': {
-      height: '45rem !important',
+      objectFit: 'cover',
+      overflowY: 'scroll',
+      boxShadow: '-1px 0px 16px -1px rgba(0,0,0,0.75)',
+      marginBlock: '10%',
     },
     '& .react-pdf__Page__textContent, & .react-pdf__Page__annotations': {
       display: 'none',
@@ -102,18 +110,25 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGALFILE }) => {
+const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGAL_FILE }) => {
   const classes = useStyle();
+  const { width: windowWidth } = useWindowResize();
   const [activeStep, setActiveStep] = useState(1);
   const [maxSteps, setMaxSteps] = useState(0);
 
   const { fileUrl, name } = legalFile;
 
-  useEffect(() => setLoading(true), [setLoading]);
-
   return (
     <>
-      <Box sx={{ paddingLeft: '0.3rem', height: '100%', width: '100%', maxWidth: 1200 }}>
+      <Box
+        sx={{
+          height: '100%',
+          overflowY: 'scroll',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         {!loading && (
           <>
             <Pdf
@@ -129,7 +144,7 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
               }}
               onLoadError={() => setLoading(false)}
             >
-              <PdfPage pageNumber={activeStep} />
+              <PdfPage pageNumber={activeStep} width={Math.floor(windowWidth / 1.5)} />
             </Pdf>
 
             <Box sx={LEGAL_FILE_TITLE}>
@@ -138,7 +153,7 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
           </>
         )}
 
-        {loading && (
+        {fileUrl === 'dummy-url.com' && (
           <>
             <Skeleton variant='text' height={20} width='60%' />
             <Skeleton variant='text' height={20} width='20%' />
