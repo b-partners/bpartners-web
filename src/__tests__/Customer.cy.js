@@ -22,6 +22,20 @@ describe(specTitle('Customers'), () => {
 
     cy.intercept('POST', '/accounts/mock-account-id1/customers**', [customers1[0]]).as('createCustomers');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/customers/status`, [customers1[0]]).as('archiveCustomer');
+    cy.intercept('PUT', '/accounts/mock-account-id1/customers**', req => {
+      const updatedCustomer = {
+        address: 'Wall Street 2',
+        comment: null,
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        id: 'customer-0-id',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+      expect(req.body[0]).to.deep.eq(updatedCustomer);
+      setCustomer(0, updatedCustomer);
+      req.reply([updatedCustomer]);
+    }).as('updateCustomers');
 
     cy.stub(Redirect, 'redirect').as('redirect');
   });
@@ -81,21 +95,6 @@ describe(specTitle('Customers'), () => {
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
-    cy.intercept('PUT', '/accounts/mock-account-id1/customers**', req => {
-      const updatedCustomer = {
-        address: 'Wall Street 2',
-        comment: null,
-        email: 'test@gmail.com',
-        firstName: 'FirstName 11',
-        id: 'customer-0-id',
-        lastName: 'LastName 11',
-        phone: '55 55 55',
-      };
-      expect(req.body[0]).to.deep.eq(updatedCustomer);
-      setCustomer(0, updatedCustomer);
-      req.reply([updatedCustomer]);
-    }).as('updateCustomers');
-
     cy.get('#email').clear();
     cy.get('#email').type('test@gmail.com');
 
@@ -105,8 +104,6 @@ describe(specTitle('Customers'), () => {
     cy.get('#comment').contains('comment customer 1');
     cy.get('#comment').clear();
     cy.get('#phone').clear().type('55 55 55{enter}');
-
-    cy.wait('@updateCustomers');
 
     cy.contains('Wall Street 2');
     cy.contains('LastName 11');

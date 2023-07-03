@@ -1,5 +1,6 @@
 import { CustomerStatus } from 'bpartners-react-client';
 import { BpDataProviderType, asyncGetUserInfo, customerApi, getCached, maxPageSize } from '.';
+import axios from 'axios';
 
 export const importCustomers = async (body: any) => {
   const { accountId } = getCached.userInfo();
@@ -23,7 +24,14 @@ export const customerProvider: BpDataProviderType = {
   },
   update: async function (customers: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
-    return (await customerApi().updateCustomers(accountId, customers)).data;
+    const { accessToken } = getCached.token();
+
+    const { data } = await axios.put(`${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/customers`, customers, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return data;
   },
   archive: async (resources: any[]) => {
     const { accountId } = getCached.userInfo();
