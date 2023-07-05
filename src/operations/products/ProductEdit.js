@@ -11,9 +11,9 @@ const ProductEdit = () => {
     <BPFormLayout title='Édition de produit' resource='products'>
       <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de produit'>
-          <TextInput name='description' source='description' label='Description' validate={required()} />
           <RaNumberInput name='unitPrice' source='unitPrice' label='Prix unitaire HT' endText='€' />
           {isSubjectToVat && <RaNumberInput source='vatPercent' label='TVA' endText='%' />}
+          <TextInput name='description' source='description' label='Description' validate={required()} multiline={true} minRows={3} fullWidth />
         </SimpleForm>
       </Edit>
     </BPFormLayout>
