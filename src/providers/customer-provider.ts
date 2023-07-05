@@ -1,5 +1,5 @@
 import { CustomerStatus } from 'bpartners-react-client';
-import { BpDataProviderType, asyncGetUserInfo, customerApi, getCached, maxPageSize } from '.';
+import { asyncGetUserInfo, BpDataProviderType, customerApi, getCached, maxPageSize } from '.';
 
 export const importCustomers = async (body: any) => {
   const { accountId } = getCached.userInfo();
@@ -17,8 +17,14 @@ export const customerProvider: BpDataProviderType = {
     const { accountId } = getCached.userInfo();
     return customerApi().getCustomerById(accountId, customerId);
   },
-  saveOrUpdate: async function (customers: any[]): Promise<any[]> {
+  saveOrUpdate: async function ([customer]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
+    let customers = [];
+    if (customer.data) {
+      customers.push(customer.data);
+    } else {
+      customers.push(customer);
+    }
     return (await customerApi().createCustomers(accountId, customers)).data;
   },
   update: async function (customers: any[]): Promise<any[]> {
