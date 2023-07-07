@@ -29,10 +29,6 @@ export const GeneralConditionOfUse = () => {
   const [cguDialogStatus, setCguDialogStatus] = useState(false);
 
   useEffect(() => {
-    console.log(loading);
-  }, [loading]);
-
-  useEffect(() => {
     const fetchLegalFiles = async () => {
       if (userId) {
         setLoading(true);

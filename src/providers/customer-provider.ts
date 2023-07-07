@@ -1,5 +1,5 @@
 import { CustomerStatus } from 'bpartners-react-client';
-import { BpDataProviderType, asyncGetUserInfo, customerApi, getCached, maxPageSize } from '.';
+import { asyncGetUserInfo, BpDataProviderType, customerApi, getCached, maxPageSize } from '.';
 
 export const importCustomers = async (body: any) => {
   const { accountId } = getCached.userInfo();

@@ -92,7 +92,7 @@ const InvoiceForm = props => {
             .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
             .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
         error => error.response.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
-      ).catch(printError);
+      ).catch(err => err.response.status === 400 && notify(err.response.data.message, { type: 'error', autoHideDuration: 10000 }));
     })
   );
 
