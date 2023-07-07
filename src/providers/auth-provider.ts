@@ -72,7 +72,7 @@ export const authProvider = {
     clearCache();
   },
 
-  checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject()),
+  checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject({ message: false })),
 
   checkError: ({ status }: any): Promise<any> => {
     const unapprovedFiles = getCached.unapprovedFiles();
