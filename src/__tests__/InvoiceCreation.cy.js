@@ -66,6 +66,9 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-draft-invoice']").click();
 
     const newTitle = 'A new title';
+    const badTitle = "@Bad'title";
+    cy.get('form input[name=title]').clear().type(badTitle);
+    cy.contains(`Le titre ne doit pas contenir des caractères spéciales autres que "éèêëçâùûôî.,;:/!?$%_=+()*°@#ÂÇÉÈÊËÎÔÙÛ"`);
     cy.get('form input[name=title]').clear().type(newTitle);
 
     const newRef = 'A new ref';
