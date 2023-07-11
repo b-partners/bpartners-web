@@ -62,6 +62,16 @@ const toPayAtValidator = (toPayAtDate: Date) => {
   return true;
 };
 
+export const titleValidator = (title: string) => {
+  const titlePattern = /^[-a-zA-Z0-9éèêëçâùûôî.,;:/!?$%_=+()*°@#ÂÇÉÈÊËÎÔÙÛ\s]{0,140}$/;
+  if (!title && title.length === 0) {
+    return 'Ce champ est requis';
+  } else if (!titlePattern.test(title)) {
+    return 'Le titre ne doit pas contenir des caractères spéciales autres que "éèêëçâùûôî.,;:/!?$%_=+()*°@#ÂÇÉÈÊËÎÔÙÛ"';
+  }
+  return true;
+};
+
 const stringDateValidator = (stringDate: string) => (stringDate && stringDate.length === 10 ? true : false);
 
 export const invoiceDateValidator = (dates: InvoiceValidatorParams) => {
