@@ -77,8 +77,8 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Vue annuelle');
     cy.contains('Sélectionnez une année');
 
-    cy.contains('Dépense 2023');
-    cy.contains('Recette 2023');
+    cy.contains('Décaissement 2023');
+    cy.contains('Encaissement 2023');
     cy.contains('Trésorerie 2023');
 
     cy.contains('2100,00 €');
@@ -98,8 +98,8 @@ describe(specTitle('Transactions'), () => {
     cy.contains('120,00 €');
     cy.contains('0,00 €');
 
-    cy.contains('Dépense');
-    cy.contains('Recette');
+    cy.contains('Décaissement');
+    cy.contains('Encaissement');
     cy.contains('Trésorerie');
 
     cy.contains('Dernière modification');
@@ -129,7 +129,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="datePicker"]').clear().type(2023);
 
     cy.contains('Objectif annuel (10,00 % atteint)');
-    cy.contains('Recette de cette année : 12000,00 €');
+    cy.contains('Encaissement de cette année : 12000,00 €');
     cy.contains('120000,00 €');
 
     cy.get('[name="datePicker"]').clear().type(2022);
@@ -137,7 +137,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('[name="datePicker"]').clear().type(2021);
     cy.contains('Objectif annuel (100 % atteint. +8,33 %)');
-    cy.contains('Recette de cette année : 130000,00 €');
+    cy.contains('Encaissement de cette année : 130000,00 €');
   });
 
   it('display current balance all the time', () => {
@@ -148,15 +148,15 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@legalFiles');
 
     cy.wait('@getTransactionsSummary');
-    cy.contains('Solde du jour : 220,00 €');
+    cy.contains('Solde du compte d’encaissement : 220,00 €');
 
     cy.get('#annualSummarySwitch').click();
 
     cy.get('[name="datePicker"]').clear().type('janvier 2023');
-    cy.contains('Solde du jour : 220,00 €');
+    cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains('Trésorerie');
     cy.get('[name="datePicker"]').clear().type('décembre 2023');
-    cy.contains('Solde du jour : 220,00 €');
+    cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 

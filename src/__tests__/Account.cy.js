@@ -265,12 +265,12 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.contains('120000,00 €');
 
     cy.get(ACCOUNT_EDITION).click();
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.get('[name="amountTarget"]').clear().type(`{enter}`);
     cy.contains('Ce champ est requis');
     cy.get('[name="amountTarget"]').type(230000);
@@ -285,7 +285,7 @@ describe(specTitle('Account'), () => {
 
     cy.get('[data-testid="ClearIcon"]').click();
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.contains('230000,00 €');
   });
 

@@ -220,7 +220,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='businessActivities.secondary' emptyText={emptyText} label='Activité secondaire' />
         <TextField pb={3} source='officialActivityName' emptyText={emptyText} label='Activité officielle' />
         <RaMoneyField pb={3} render={data => data?.companyInfo?.socialCapital} label='Capital social' />
-        <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.revenueTargets} />} label='Recette annuelle à réaliser' />
+        <FunctionField pb={3} render={record => <IncomeTargets revenueTargets={record.revenueTargets} />} label='Encaissement annuelle à réaliser' />
         <TextField pb={3} source='siren' label='Siren' />
         <FunctionField pb={3} render={data => <SubjectToVatSwitch data={data} />} label='Micro-entreprise exonérée de TVA' />
       </SimpleShowLayout>

@@ -28,7 +28,7 @@ const AnnualTargetGraph = ({ year }) => {
         <>
           <Typography variant='h6'>Objectif annuel ({printAmountAttemptedPercent(currentRevenueTargets.amountAttemptedPercent)})</Typography>
           <Typography variant='body1' fontWeight='bold'>
-            Recette de cette année : {prettyPrintMinors(currentRevenueTargets.amountAttempted)}
+            Encaissement de cette année : {prettyPrintMinors(currentRevenueTargets.amountAttempted)}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box sx={{ width: '100%', mr: 1 }}>
@@ -96,8 +96,8 @@ const TransactionChart = () => {
     setLastUpdateDate(transactionOfTheMonth && transactionOfTheMonth.updatedAt);
     transactionOfTheMonth
       ? setData([
-          { name: 'Recette', value: transactionOfTheMonth.income },
-          { name: 'Dépense', value: transactionOfTheMonth.outcome },
+          { name: 'Encaissement', value: transactionOfTheMonth.income },
+          { name: 'Décaissement', value: transactionOfTheMonth.outcome },
           { name: 'Trésorerie', value: transactionOfTheMonth.cashFlow },
         ])
       : setData([]);
@@ -107,8 +107,8 @@ const TransactionChart = () => {
     setLastUpdateDate(transactionsSummary && transactionsSummary.updatedAt);
     transactionsSummary && transactionsSummary.summary && transactionsSummary.summary.length !== 0
       ? setData([
-          { name: `Recette ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
-          { name: `Dépense ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
+          { name: `Encaissement ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
+          { name: `Décaissement ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
           { name: `Trésorerie ${transactionsSummary.year}`, value: transactionsSummary.annualCashFlow },
         ])
       : setData([]);
@@ -141,7 +141,7 @@ const TransactionChart = () => {
     <Card sx={{ border: 0 }}>
       <CardContent>
         <Typography align='center' mr={12} variant='h6' fontWeight='bold'>
-          Solde du jour : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}
+          Solde du compte d’encaissement : {currentBalance ? prettyPrintMinors(currentBalance) : '...'}
         </Typography>
         <Box sx={{ textAlign: 'end', paddingX: 10 }}>
           <Typography variant='body1'>
