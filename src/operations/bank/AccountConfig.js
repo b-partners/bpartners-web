@@ -47,7 +47,7 @@ const AccountConfig = ({ setAccount: setGlobalAccount }) => {
     <Box>
       <Paper sx={BIC_MESSAGE_CONTAINER}>
         <Typography variant='p' component='div' sx={{ margin: 2 }}>
-          Changer de compte.
+          Changer de compte d’encaissement.
         </Typography>
       </Paper>
       <form onSubmit={handleSubmit}>
