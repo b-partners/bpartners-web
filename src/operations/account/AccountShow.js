@@ -1,28 +1,28 @@
 import {
-  Edit as EditIcon,
-  PhotoCamera as PhotoCameraIcon,
   AccessTime as AccessTimeIcon,
-  SmartToy as SmartToyIcon,
+  Edit as EditIcon,
   Handyman as HandymanIcon,
+  PhotoCamera as PhotoCameraIcon,
   QrCode as QrCodeIcon,
+  SmartToy as SmartToyIcon,
 } from '@mui/icons-material';
-import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Skeleton, Switch, Tab, Tabs, Typography, Paper } from '@mui/material';
-import { grey, yellow, green } from '@mui/material/colors';
+import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Paper, Skeleton, Switch, Tab, Tabs, Typography } from '@mui/material';
+import { green, grey, yellow } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
 import { FileType } from 'bpartners-react-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bp-theme';
-import { getMimeType, prettyPrintMinors } from 'src/common/utils';
+import { RaMoneyField } from 'src/common/components';
+import { getMimeType, prettyPrintMinors, printError } from 'src/common/utils';
+import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from 'src/providers';
 import { v4 as uuid } from 'uuid';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
 import AccountEditionLayout from './AccountEditionLayout';
+import { FeedbackLink } from './components';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
-import { printError } from 'src/common/utils';
-import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from 'src/providers';
-import { RaMoneyField } from 'src/common/components';
 
 const ProfileLayout = () => {
   const emptyText = 'VIDE';
@@ -32,7 +32,7 @@ const ProfileLayout = () => {
       <TextField source='user.firstName' emptyText={emptyText} id='firstName' label='Prénom' />
       <TextField source='user.lastName' emptyText={emptyText} id='lastName' label='Nom' />
       <TextField source='user.phone' emptyText={emptyText} id='phone' label='Téléphone' />
-      <TextField pb={3} source='feedback.feedbackLink' emptyText={emptyText} label='Lien du feedback' />
+      <FunctionField label='Lien du feedback' render={data => <FeedbackLink link={data?.feedback?.feedbackLink} />} />
     </SimpleShowLayout>
   );
 };
