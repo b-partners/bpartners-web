@@ -39,3 +39,25 @@ export const BACKDROP_STYLE = {
   zIndex: -1,
   borderRadius: '10px 10px 0 0',
 };
+
+export const FEEDBACK_LINK_TEXT = {
+  width: 250,
+  px: 1,
+  overflowX: 'scroll',
+  overflowY: 'hidden',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+    height: '2px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+    width: 200,
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '4px',
+  },
+  position: 'relative',
+};
+
+export const FEEDBACK_LINK_TEXT_CONTAINER = { display: 'flex', bgcolor: BP_COLOR['solid_grey'], alignItems: 'center', p: 1, width: 'fit-content' };
