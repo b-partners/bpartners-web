@@ -1,45 +1,35 @@
-import { MenuItem, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { TextField, Autocomplete } from '@mui/material';
+import { useGetList } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { customerProvider } from 'src/providers';
+
+const getClientName = customer => (customer && customer.lastName && customer.firstName ? `${customer.lastName} ${customer.firstName}` : '');
 
 export const ClientSelection = props => {
   const { name, label, sx } = props;
   const { setValue } = useFormContext();
-  const clientWatch = useWatch({ name });
-  const [state, setState] = useState({ clients: [], clientSelected: `${clientWatch?.lastName} ${clientWatch?.firstName}` });
-  const checkError = !clientWatch;
 
-  useEffect(() => {
-    customerProvider.getList().then(data => setState({ clients: data }));
-  }, []);
+  const client = useWatch({ name });
 
+  const { data: clients = [], isLoading, error } = useGetList('customers', { pagination: { page: 1, perPage: 500 } });
+  const checkError = !client || error;
   const errorProps = checkError && { error: true, helperText: 'Ce champ est requis' };
+  const handleChange = (_event, value) => setValue(name, value);
+
+  console.log(client);
 
   return (
-    <TextField
-      {...errorProps}
-      select
+    <Autocomplete
+      disablePortal
+      noOptionsText='Aucun élément'
+      clearIcon={false}
+      value={client || {}}
+      loading={isLoading}
+      getOptionLabel={getClientName}
+      options={clients}
+      onChange={handleChange}
       sx={{ width: 300, marginBlock: '3px', ...sx }}
-      label={label}
       data-testid='invoice-client-selection'
-      value={clientWatch?.id || ''}
-    >
-      {state.clients.length !== 0 ? (
-        state.clients.map(client => (
-          <MenuItem
-            onClick={() => {
-              setValue(name, client);
-            }}
-            key={client.id}
-            value={client.id}
-          >
-            {`${client.lastName} ${client.firstName}`}
-          </MenuItem>
-        ))
-      ) : (
-        <div></div>
-      )}
-    </TextField>
+      renderInput={params => <TextField {...errorProps} {...params} label={label} />}
+    />
   );
 };
