@@ -1,0 +1,10 @@
+{
+  "Subject": {
+    "Data": "[BPartners Web] Scheduled IT failed"
+  },
+  "Body": {
+    "Text": {
+      "Data": "This is the link to the failed action: <ACTION_LINK>"
+    }
+  }
+}
