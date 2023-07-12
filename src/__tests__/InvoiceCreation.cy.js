@@ -66,6 +66,9 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-draft-invoice']").click();
 
     const newTitle = 'A new title';
+    const badTitle = "@Bad'title";
+    cy.get('form input[name=title]').clear().type(badTitle);
+    cy.contains(`Le titre ne doit pas contenir des caractères spéciales autres que "éèêëçâùûôî.,;:/!?$%_=+()*°@#ÂÇÉÈÊËÎÔÙÛ"`);
     cy.get('form input[name=title]').clear().type(newTitle);
 
     const newRef = 'A new ref';
@@ -85,7 +88,7 @@ describe(specTitle('Invoice creation'), () => {
 
     // select the customer
     cy.get('[data-testid=invoice-client-selection]').click();
-    cy.get('[data-value="customer-2-id"]').click();
+    cy.contains('lastName-2 firstName-2').click();
 
     // select the product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
@@ -116,7 +119,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=validityDate]').invoke('removeAttr').type('2022-10-05');
     cy.get('form textarea[name=comment]').type('this is a comment for testing');
     cy.get('[data-testid=invoice-client-selection]').click();
-    cy.get('[data-value="customer-2-id"]').click();
+    cy.contains('lastName-2 firstName-2').click();
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
     cy.get('.MuiInputBase-root > #product-selection-id').click();
@@ -160,7 +163,7 @@ describe(specTitle('Invoice creation'), () => {
 
     // select the customer
     cy.get('[data-testid=invoice-client-selection]').click();
-    cy.get('[data-value="customer-2-id"]').click();
+    cy.contains('lastName-2 firstName-2').click();
 
     // select the product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();

@@ -27,6 +27,7 @@ import {
   retryOnError,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  titleValidator,
 } from './utils/utils';
 import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
@@ -64,7 +65,14 @@ const InvoiceForm = props => {
     return form.handleSubmit(data => {
       productValidationHandling(data[PRODUCT_NAME], PRODUCT_NAME, form.setError, form.clearErrors);
       const paymentRegulationError = validatePaymentRegulation(data[PAYMENT_TYPE], data[PAYMENT_REGULATIONS]);
-      if (!paymentRegulationError && !form.formState.errors[PRODUCT_NAME] && data[CUSTOMER_NAME]) {
+      if (
+        !paymentRegulationError &&
+        !form.formState.errors[PRODUCT_NAME] &&
+        data[CUSTOMER_NAME] &&
+        data['customer'] !== null &&
+        data['products'] &&
+        data['products']?.length > 0
+      ) {
         ifValid();
       }
     });
@@ -134,7 +142,7 @@ const InvoiceForm = props => {
       <FormProvider {...form}>
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
-            <BpFormField name='title' label='Titre' />
+            <BpFormField name='title' label='Titre' validate={titleValidator} />
             <BpFormField name='ref' label='Référence' />
             <BpFormField validate={e => invoiceDateValidator({ sendingDate: e })} name='sendingDate' label="Date d'émission" type='date' />
             <BpFormField

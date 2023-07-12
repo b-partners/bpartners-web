@@ -38,7 +38,7 @@ describe(specTitle('Account'), () => {
     cy.contains('bic1234');
     cy.contains('iban1234');
 
-    cy.contains('Changer de compte.');
+    cy.contains('Changer de compte d’encaissement.');
     cy.get('[data-testid="ArrowDropDownIcon"]').click();
     cy.contains('Numer-account-2').click();
     cy.get('[data-testid="submit-change-account"]').click();

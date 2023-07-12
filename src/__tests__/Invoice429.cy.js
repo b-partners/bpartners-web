@@ -45,7 +45,7 @@ describe(specTitle('Invoice'), () => {
 
     // select customer
     cy.get('[data-testid=invoice-client-selection]').click();
-    cy.get('[data-value="customer-2-id"]').click();
+    cy.contains('lastName-0 firstName-0').click();
 
     //select product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();

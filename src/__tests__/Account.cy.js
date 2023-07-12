@@ -265,12 +265,12 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.contains('120000,00 €');
 
     cy.get(ACCOUNT_EDITION).click();
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.get('[name="amountTarget"]').clear().type(`{enter}`);
     cy.contains('Ce champ est requis');
     cy.get('[name="amountTarget"]').type(230000);
@@ -285,7 +285,7 @@ describe(specTitle('Account'), () => {
 
     cy.get('[data-testid="ClearIcon"]').click();
 
-    cy.contains('Recette annuelle à réaliser');
+    cy.contains('Encaissement annuelle à réaliser');
     cy.contains('230000,00 €');
   });
 
@@ -311,6 +311,41 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHoldersFeedbackLink);
     cy.get('[data-testid="ClearIcon"]').click();
     cy.contains(validLink);
+
+    const veryLongLink =
+      'https://www.google.com/search?q=very+long+url&oq=very+long+url&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDQzNDRqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8';
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
+      expect(req.body).eql({ feedbackLink: veryLongLink });
+      req.reply(accountHoldersFeedbackLink);
+    }).as('configuration');
+    cy.get(ACCOUNT_EDITION).click();
+    cy.contains('Boostez votre référencement');
+    cy.contains('Boostez votre référencement. Renseignez le lien vers votre page avis (google business, trust pilote)');
+    cy.get('[name="feedbackLink"]').type('not valid link{enter}');
+    cy.contains('Lien non valide');
+    cy.get('[name="feedbackLink"]').clear().type(`${veryLongLink}{enter}`);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, [
+      { ...accountHoldersFeedbackLink[0], feedback: { feedbackLink: veryLongLink } },
+    ]);
+    cy.get('[data-testid="ClearIcon"]').click();
+    cy.contains(veryLongLink.slice(0, 10));
+
+    cy.get('[data-testId="copy-link-button-id"]').click();
+    cy.contains('Le texte a été copié avec succès !');
+
+    cy.contains('First Name 1');
+    cy.contains('last Name 1');
+    cy.contains('11 11 11');
+
+    cy.contains('Ma société');
+    cy.contains('Numer');
+    cy.contains('activité officielle');
+    cy.contains('1000,00 €');
+    cy.contains('Ivandry');
+    cy.contains('Madagascar');
+    cy.contains('6 rue Paul Langevin');
+    cy.contains('101');
+    cy.contains('10201');
   });
 
   it('unverified user warning', () => {
