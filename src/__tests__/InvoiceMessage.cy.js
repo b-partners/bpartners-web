@@ -76,10 +76,10 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Ce champ est requis');
     // select the customer
     cy.get('[data-testid=invoice-client-selection]').click();
-    cy.get('[data-value="customer-2-id"]').click();
+    cy.contains('lastName-2 firstName-2').click();
 
     // the user can't save the invoice if it is not valid
-    // the user shoud view an error message
+    // the user should view an error message
     cy.get('#form-save-id').click();
     cy.contains('Veuillez remplir correctement tous les champs');
 
