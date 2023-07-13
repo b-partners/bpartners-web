@@ -20,8 +20,8 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="ref-field-input"]').click().clear().type(ref);
     cy.get('[data-testid="sendingDate-field-input"]').click().clear().type('2023-06-26');
 
-    cy.get('[data-testid="invoice-client-selection"]').click();
-    cy.get('[data-value="43016bd2-9259-47ef-b388-e3bd4d758990"]').click(); // F. Maurica
+    cy.get('[data-testid="invoice-client-selection"] input').type('Maurica');
+    cy.contains('Maurica Fonenantsoa').click(); // F. Maurica
 
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
