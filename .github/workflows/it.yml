@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - 'prod'
+  pull_request:
+    branches:
+      - 'prod'
 
 permissions:
   action: read
