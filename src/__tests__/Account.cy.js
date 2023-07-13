@@ -196,6 +196,8 @@ describe(specTitle('Account'), () => {
     // because the current accountholder's isSubjectToVat is true,
     // the isSubjectToVat switch button shouldn't be activate
     cy.contains('Non');
+    cy.contains('Numéro de TVA');
+    cy.contains('123');
 
     const aHIsSubjectToVat = [{ ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: false } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, aHIsSubjectToVat).as('getAccountHolderSubjectToVat');
@@ -222,6 +224,7 @@ describe(specTitle('Account'), () => {
     cy.get('form [name="townCode"]').clear().type(`120{enter}`);
     cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
     cy.get('form [name="townCode"]').clear().type(12312);
+    cy.get('form [name="tvaNumber"]').clear().type(1234);
 
     const newCompanyInformation = {
       ...accountHolders1[0].companyInfo,
@@ -230,6 +233,7 @@ describe(specTitle('Account'), () => {
       email: 'joe.doe@bpartnes.app',
       socialCapital: 30100,
       townCode: 12312,
+      tvaNumber: '1234',
     };
     const newAccountHolder = { ...accountHolders1[0] };
     newAccountHolder.companyInfo = newCompanyInformation;
@@ -239,6 +243,7 @@ describe(specTitle('Account'), () => {
       expect(req.body.email).to.deep.eq(newCompanyInformation.email);
       expect(+req.body.socialCapital).to.deep.eq(newCompanyInformation.socialCapital);
       expect(req.body.townCode).to.deep.eq(newCompanyInformation.townCode);
+      expect(req.body.tvaNumber).to.deep.eq(newCompanyInformation.tvaNumber);
       req.reply({ body: newAccountHolder });
     }).as('editCompanyInfo');
 

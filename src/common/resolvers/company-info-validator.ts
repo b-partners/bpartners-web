@@ -7,6 +7,7 @@ const companyInfoValidator = zod.object({
   phone: requiredString().refine(phoneValidator, FieldErrorMessage.phone),
   email: requiredString().email({ message: FieldErrorMessage.emailNotValid }),
   townCode: requiredString().length(5, FieldErrorMessage.townCodeNotValid),
+  tvaNumber: requiredString(),
 });
 
 export const companyInfoResolver = zodResolver(companyInfoValidator);

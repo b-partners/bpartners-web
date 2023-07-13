@@ -60,6 +60,7 @@ export const companyInfoDiff = (currentCompanyInfo = {} as CompanyInfo, newCompa
     currentCompanyInfo.email !== newCompanyInfo.email ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
     currentCompanyInfo.townCode !== newCompanyInfo.townCode ||
+    currentCompanyInfo.tvaNumber !== newCompanyInfo.tvaNumber ||
     toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
   ) {
     return false;
