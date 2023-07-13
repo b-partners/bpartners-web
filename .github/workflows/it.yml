@@ -53,6 +53,9 @@ jobs:
     needs: [tests]
     if: always()
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.3
         with:
