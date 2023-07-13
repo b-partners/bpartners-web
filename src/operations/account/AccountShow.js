@@ -230,6 +230,7 @@ const AccountHolderLayout = props => {
         <TextField pb={3} source='contactAddress.address' emptyText={emptyText} label='Adresse' />
         <TextField pb={3} source='contactAddress.postalCode' emptyText={emptyText} label='Code postal' />
         <TextField pb={3} source='companyInfo.townCode' emptyText={emptyText} label='Code de la commune de prospection' />
+        <TextField pb={3} source='companyInfo.tvaNumber' emptyText={emptyText} label='Numéro de TVA' />
       </SimpleShowLayout>
     </Box>
   );

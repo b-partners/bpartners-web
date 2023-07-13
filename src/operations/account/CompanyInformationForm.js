@@ -12,7 +12,7 @@ import { companyInfoResolver } from 'src/common/resolvers';
 
 const CompanyInformationForm = () => {
   const { record } = useShowContext();
-  const form = useForm({ mode: 'all', defaultValues: {}, resolver: companyInfoResolver });
+  const form = useForm({ mode: 'all', defaultValues: record || {}, resolver: companyInfoResolver });
   const [tools, setTools] = useState({ isLoading: false, buttonDisable: true });
   const notify = useNotify();
 
@@ -44,7 +44,6 @@ const CompanyInformationForm = () => {
         {
           ...data,
           isSubjectToVat: record.isSubjectToVat,
-          tvaNumber: record.tvaNumber,
           socialCapital: toMinors(data.socialCapital),
           townCode: +data.townCode !== 0 ? +data.townCode : null,
         },
@@ -67,6 +66,7 @@ const CompanyInformationForm = () => {
         <BpNumberField style={{ width: '45%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '45%' }} name='email' type='email' label='Email' />
         <BpNumberField style={{ width: '45%' }} name='townCode' label='Code de la commune de prospection' />
+        <BpNumberField style={{ width: '45%' }} name='tvaNumber' label='Numéro de TVA' />
         <Button
           variant='contained'
           size='small'
