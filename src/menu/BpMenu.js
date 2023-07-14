@@ -65,7 +65,11 @@ const BpMenu = () => {
     accountHolder.businessActivities != null &&
     (accountHolder.businessActivities.primary != null || accountHolder.businessActivities.secondary != null);
   const hasCarreleur = businessActivities =>
-    businessActivities != null && (businessActivities.primary === 'Carreleur' || businessActivities.secondary === 'Carreleur');
+    businessActivities != null &&
+    (businessActivities.primary === 'Carreleur' ||
+      businessActivities.primary === 'Antinuisibles 3D' ||
+      businessActivities.secondary === 'Carreleur' ||
+      businessActivities.secondary === 'Antinuisibles 3D');
   // The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
   // then neither Markplaces nor Prospects is diplayed
   const shouldShowProspects = hasBusinessActivities(accountHolder) && hasCarreleur(accountHolder.businessActivities);
