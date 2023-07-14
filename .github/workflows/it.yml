@@ -73,6 +73,14 @@ jobs:
         run: |
           sed -i 's|<ACTION_LINK>|${{ env.action_url }}|g' ./conf/email-template.json
           sh ./conf/send-email.sh bpartners
+      - name: Get Time
+        id: current-time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 3
+          format: 'YYYY-MM-DD-HH-mm-ss'
+      - name: Set time as env
+        run: echo "time=${{ steps.current-time.outputs.time }}" >> $GITHUB_ENV
       - name: Upload test video to s3 bucket
         if: steps.check_status.outputs.status == 'failure'
-        run: aws s3 cp ./cypress/videos s3://bpartners-web-it-videos/ --recursive
+        run: aws s3 cp ./cypress/videos/__tests__/it/ s3://bpartners-web-it-videos/${{ env.time }}/ --recursive --profile bpartners
