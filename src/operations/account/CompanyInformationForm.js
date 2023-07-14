@@ -66,7 +66,7 @@ const CompanyInformationForm = () => {
         <BpNumberField style={{ width: '45%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '45%' }} name='email' type='email' label='Email' />
         <BpNumberField style={{ width: '45%' }} name='townCode' label='Code de la commune de prospection' />
-        <BpNumberField style={{ width: '45%' }} name='tvaNumber' label='Numéro de TVA' />
+        <BpFormField style={{ width: '45%' }} name='tvaNumber' label='Numéro de TVA' />
         <Button
           variant='contained'
           size='small'
