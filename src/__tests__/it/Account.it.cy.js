@@ -14,7 +14,7 @@ describe(specTitle('Account'), () => {
     cy.get('[name="account"]').click();
 
     cy.contains('NUMER');
-    cy.contains('Couvreur');
+    cy.contains('Carreleur');
     cy.contains('Carreleur');
 
     cy.contains('InformationAndCommunication');
@@ -24,7 +24,7 @@ describe(specTitle('Account'), () => {
     cy.contains('FONTENAY-SOUS-BOIS');
     cy.contains('FRA');
     cy.contains('6 RUE PAUL LANGEVIN');
-    cy.contains('94120');
+    cy.contains('92002');
     cy.contains('78090');
 
     cy.contains('Fonenantsoa');
