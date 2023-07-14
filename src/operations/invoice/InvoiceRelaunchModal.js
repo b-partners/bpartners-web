@@ -42,7 +42,7 @@ const InvoiceRelaunchModal = () => {
           `${getContext({
             devis: 'Le',
             facture: 'La',
-          })} ref: ${invoice.ref} a été relancée avec succès.`,
+          })} ref: ${invoice.ref} a été relancé avec succès.`,
           { type: 'success' }
         );
         closeModal();
