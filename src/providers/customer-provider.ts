@@ -41,7 +41,7 @@ export const customerProvider: BpDataProviderType = {
     console.log('update customers');
     console.log(customer);
     console.log(customers);
-    return (await customerApi().createCustomers(accountId, customers)).data;
+    return (await customerApi().updateCustomers(accountId, customers)).data;
   },
   archive: async (resources: any[]) => {
     const { accountId } = getCached.userInfo();
