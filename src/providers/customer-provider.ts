@@ -22,7 +22,7 @@ export const customerProvider: BpDataProviderType = {
     let customers = [];
     if (resource.config) {
       const {config, headers, request, data, status, ...customer} = resource;
-      customers.push(customer);
+      customers.push({...customer, status: data.status});
     } else {
       customers.push(resource);
     }
@@ -36,7 +36,7 @@ export const customerProvider: BpDataProviderType = {
     let customers = [];
     if (resource.config) {
       const {config, headers, request, data, status, ...customer} = resource;
-      customers.push(customer);
+      customers.push({...customer, status: data.status});
     } else {
       customers.push(resource);
     }
