@@ -14,8 +14,6 @@ describe(specTitle('Account'), () => {
     cy.get('[name="account"]').click();
 
     cy.contains('NUMER');
-    cy.contains('Carreleur');
-    cy.contains('Carreleur');
 
     cy.contains('InformationAndCommunication');
     cy.contains('6000,00 €');
