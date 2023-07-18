@@ -21,7 +21,7 @@ export const customerProvider: BpDataProviderType = {
     const { accountId } = getCached.userInfo();
     let customers = [];
     if (resource.config) {
-      const {config, headers, request, data, status, ...customer} = resource;
+      const {config, headers, request, data, status, statusText, ...customer} = resource;
       customers.push({...customer, status: data.status});
     } else {
       customers.push(resource);
@@ -35,7 +35,7 @@ export const customerProvider: BpDataProviderType = {
     const { accountId } = getCached.userInfo();
     let customers = [];
     if (resource.config) {
-      const {config, headers, request, data, status, ...customer} = resource;
+      const {config, headers, request, data, status, statusText, ...customer} = resource;
       customers.push({...customer, status: data.status});
     } else {
       customers.push(resource);
