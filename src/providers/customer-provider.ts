@@ -17,16 +17,18 @@ export const customerProvider: BpDataProviderType = {
     const { accountId } = getCached.userInfo();
     return customerApi().getCustomerById(accountId, customerId);
   },
-  saveOrUpdate: async function ([customer]: any[]): Promise<any[]> {
+  saveOrUpdate: async function ([resource]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
     let customers = [];
-    if (customer.data) {
-      customers.push(customer.data);
-    } else {
+    if (resource.config) {
+      const {config, headers, request, data, ...customer} = resource;
       customers.push(customer);
+    } else {
+      customers.push(resource);
     }
     console.log('save or update customers');
     console.log(customers);
+    console.log(resource);
     return (await customerApi().createCustomers(accountId, customers)).data;
   },
   update: async function ([customer]: any[]): Promise<any[]> {
