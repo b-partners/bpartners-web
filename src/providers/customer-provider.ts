@@ -39,6 +39,7 @@ export const customerProvider: BpDataProviderType = {
     }
 
     console.log('update customers');
+    console.log(customer);
     console.log(customers);
     return (await customerApi().createCustomers(accountId, customers)).data;
   },
