@@ -31,18 +31,18 @@ export const customerProvider: BpDataProviderType = {
     console.log(resource);
     return (await customerApi().createCustomers(accountId, customers)).data;
   },
-  update: async function ([customer]: any[]): Promise<any[]> {
+  update: async function ([resource]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
     let customers = [];
-    if (customer.data) {
-      customers.push(customer.data);
-    } else {
+    if (resource.config) {
+      const {config, headers, request, data, ...customer} = resource;
       customers.push(customer);
+    } else {
+      customers.push(resource);
     }
-
     console.log('update customers');
-    console.log(customer);
     console.log(customers);
+    console.log(resource);
     return (await customerApi().updateCustomers(accountId, customers)).data;
   },
   archive: async (resources: any[]) => {
