@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BPErrorPage from './common/components/BPErrorPage';
 
 import MyLayout from './common/components/BPLayout';
+import { CookiesProvider } from 'react-cookie';
 
 import account from './operations/account';
 import { Configuration } from './operations/configurations';
@@ -64,31 +65,33 @@ export const BpAdmin = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
-        <Route
-          exact
-          path='/login'
-          element={
-            <BpLoginPageLayout>
-              <PasswordChangeableLogin />
-            </BpLoginPageLayout>
-          }
-        />
-        <Route
-          exact
-          path='/sign-up'
-          element={
-            <BpLoginPageLayout>
-              <SignUpForm />
-            </BpLoginPageLayout>
-          }
-        />
-        <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
-        <Route exact path='*' element={<BpAdmin />} />
-      </Routes>
-    </BrowserRouter>
+    <CookiesProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+          <Route
+            exact
+            path='/login'
+            element={
+              <BpLoginPageLayout>
+                <PasswordChangeableLogin />
+              </BpLoginPageLayout>
+            }
+          />
+          <Route
+            exact
+            path='/sign-up'
+            element={
+              <BpLoginPageLayout>
+                <SignUpForm />
+              </BpLoginPageLayout>
+            }
+          />
+          <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
+          <Route exact path='*' element={<BpAdmin />} />
+        </Routes>
+      </BrowserRouter>
+    </CookiesProvider>
   );
 };
 
