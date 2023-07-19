@@ -13,7 +13,7 @@ import {
 } from '.';
 import { invoiceProvider } from './invoice-provider';
 
-export const maxPageSize = 500;
+export const maxPageSize = 10_000;
 
 const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'profile') return profileProvider;

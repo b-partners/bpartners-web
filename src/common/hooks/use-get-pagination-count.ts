@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { dataProvider, maxPageSize } from 'src/providers';
 
+const PAGE_SIZE_EXPIRATION_TIME = 3_000;
+
 const listSizeName = (source: string, filter?: string) => `bp-${source}-list-Size-filter-by-${filter || 'none'}`;
-const cacheListSize = (source: string, filterName: string, Size: number) => localStorage.setItem(listSizeName(source, filterName), Size.toString());
-const getCachedListSize = (source: string, filterName: string) => localStorage.getItem(listSizeName(source, filterName));
+const setToMillisecond = (seconds: number) => seconds * 1000;
+const getExpirationDate = (expire: number) => {
+  const currentDate = new Date();
+  currentDate.setTime(currentDate.getTime() + setToMillisecond(expire));
+  return currentDate;
+};
+
 const lastPageCalculus = (listSize: number, perPage: number) => {
   let lastPage = Math.floor(listSize / perPage);
   if (listSize % perPage !== 0) {
@@ -18,8 +26,14 @@ type TFilter = {
 };
 
 const useGetPaginationCount = (source: string, perPage: number, resourceFilter?: TFilter) => {
-  const name = resourceFilter && resourceFilter.name;
   const filter = resourceFilter && resourceFilter.filter;
+  const cookieName = listSizeName(
+    source,
+    Object.keys(filter || {})
+      .map(e => `${e}-${filter[e]}`)
+      .join('-')
+  );
+  const [cookies, setCookies] = useCookies([cookieName]);
 
   const [listSize, setListSize] = useState(null);
   const [paginationSize, setPaginationSize] = useState(null);
@@ -27,11 +41,11 @@ const useGetPaginationCount = (source: string, perPage: number, resourceFilter?:
   const fetchListSize = async () => {
     const { data } = await dataProvider.getList(source, { pagination: { page: 1, perPage: maxPageSize }, filter });
     setListSize(data.length);
-    cacheListSize(source, name, data.length);
+    setCookies(cookieName, data.length, { expires: getExpirationDate(PAGE_SIZE_EXPIRATION_TIME) });
   };
 
   useEffect(() => {
-    const cachedPageSize = getCachedListSize(source, name);
+    const cachedPageSize = cookies[cookieName];
     if (cachedPageSize) {
       setListSize(+cachedPageSize);
     } else {
