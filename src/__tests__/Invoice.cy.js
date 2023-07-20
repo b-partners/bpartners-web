@@ -6,7 +6,7 @@ import App from '../App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
@@ -228,5 +228,16 @@ describe(specTitle('Invoice'), () => {
     // description2 { quantity: 1, unitPrice: 20 }
     // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
     cy.contains('30,00 €');
+  });
+
+  it('Should show payment regulation comment', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
+
+    mount(<App />);
+
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
+    cy.contains('Test dummy comment');
   });
 });
