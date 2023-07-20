@@ -39,6 +39,9 @@ describe(specTitle('Customers'), () => {
     cy.contains('+261340465338');
     cy.contains('30 Rue de la Montagne Sainte-Genevieve');
     cy.contains('21547');
+    cy.contains('10.00');
+    cy.contains('6.00');
+    cy.contains('5/10/2023');
 
     cy.get('[data-testid="statusprospect1_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();

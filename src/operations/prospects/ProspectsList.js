@@ -19,7 +19,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Home, LocalPhoneOutlined, LocationCity, LocationOn, MailOutline, MoreVert } from '@mui/icons-material';
+import { Home, LocalPhoneOutlined, LocationCity, LocationOn, MailOutline, MoreVert, Star, Update } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
@@ -29,6 +29,8 @@ import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
 import { handleSubmit } from 'src/common/utils';
 import { prospectingProvider } from 'src/providers';
+import { parseRatingLastEvaluation, parseRatingValue } from './utils';
+import { CardViewField } from './components';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -179,12 +181,7 @@ const ProspectItem = ({ prospect }) => {
           >
             <Box sx={{ m: 2 }}>
               <FormControl>
-                <RadioGroup
-                  aria-labelledby='demo-radio-buttons-group-label'
-                  defaultValue={prospect.status}
-                  name='radio-buttons-group'
-                  onChange={handleSubmit(changeStatus)}
-                >
+                <RadioGroup defaultValue={prospect.status} name='radio-buttons-group' onChange={handleSubmit(changeStatus)}>
                   <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
                   <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
                   <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
@@ -195,18 +192,12 @@ const ProspectItem = ({ prospect }) => {
         </Stack>
       </Stack>
       <Box sx={{ color: '#4d4d4d' }}>
-        <Typography variant='body2'>
-          <MailOutline fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.email || 'Non renseigné'}
-        </Typography>
-        <Typography variant='body2'>
-          <LocalPhoneOutlined fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.phone || 'Non renseigné'}
-        </Typography>
-        <Typography variant='body2'>
-          <Home fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.address || 'Non renseigné'}
-        </Typography>
-        <Typography variant='body2'>
-          <LocationCity fontSize='small' sx={{ position: 'relative', top: 4 }} /> {prospect.townCode || 'Non renseigné'}
-        </Typography>
+        <CardViewField icon={<MailOutline />} value={prospect.email} />
+        <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
+        <CardViewField icon={<Home />} value={prospect.address} />
+        <CardViewField icon={<LocationCity />} value={prospect.townCode} />
+        <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
+        <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
       </Box>
     </Paper>
   );
