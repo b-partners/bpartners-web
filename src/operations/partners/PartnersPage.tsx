@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from '@mui/material';
-import { PartnersContainer } from './PartnersCard';
+import { BPConstruction } from 'src/common/components/BPConstruction';
 import { CONTAINER } from './style';
 import { partners } from './partners';
-import { BPConstruction } from 'src/common/components/BPConstruction';
+import { PartnersCard } from './PartnersCard';
 
 export const PartnersPage = () => {
   return (
@@ -16,7 +16,7 @@ export const PartnersPage = () => {
       <BPConstruction />
       <CardContent sx={CONTAINER}>
         {partners.map((partner, k) => (
-          <PartnersContainer partner={partner} key={`${partner.name}-${k}`} />
+          <PartnersCard partner={partner} key={`partners-card-${k}`} />
         ))}
       </CardContent>
     </Card>
