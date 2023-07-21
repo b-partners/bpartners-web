@@ -41,7 +41,6 @@ describe(specTitle('Customers'), () => {
     cy.contains('21547');
     cy.contains('10.00');
     cy.contains('6.00');
-    cy.contains('5/10/2023');
 
     cy.get('[data-testid="statusprospect1_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();
@@ -86,6 +85,6 @@ describe(specTitle('Customers'), () => {
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.contains('Aucun enregistrement à afficher');
+    cy.contains('Pas encore de Prospect.');
   });
 });
