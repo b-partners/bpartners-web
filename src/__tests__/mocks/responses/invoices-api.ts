@@ -142,6 +142,7 @@ export const invoicesToChangeStatus = [
     paymentRegulations: [
       {
         paymentRequest: {
+          comment: 'Test dummy comment',
           id: '0ebb62d2-56e9-4798-a568-ec9e8a093d0a',
           amount: 36,
           percentValue: 3000,

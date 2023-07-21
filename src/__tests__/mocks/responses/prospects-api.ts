@@ -14,6 +14,10 @@ export const prospects: Prospect[] = [
       longitude: 2.347,
       latitude: 48.8588,
     },
+    rating: {
+      lastEvaluation: new Date('2023-10-10'),
+      value: 9.99999999,
+    },
   },
   {
     id: 'prospect2_id',
@@ -23,6 +27,10 @@ export const prospects: Prospect[] = [
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
+    rating: {
+      lastEvaluation: new Date('2023-05-10'),
+      value: 5.9978,
+    },
   },
   {
     id: 'prospect3_id',

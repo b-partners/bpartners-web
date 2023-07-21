@@ -1,4 +1,4 @@
-import { InvoicePaymentTypeEnum, PaymentRegulation } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
 import { getNextMonthDate, toMajors, toMinors } from 'src/common/utils';
 
 // Payment regulation
@@ -96,14 +96,14 @@ const domainPaymentRegulationMoneyUnity = (paymentRegulation: TPaymentRegulation
   };
 };
 
-const restPaymentRegulationMoneyUnity = (paymentRegulation: PaymentRegulation, to: MoneyUnity): TPaymentRegulation => {
+const restPaymentRegulationMoneyUnity = (paymentRegulation: any, to: MoneyUnity): TPaymentRegulation => {
   const changeUnity = (pR: any) => (to === MoneyUnity.MAJOR ? toMajors(pR) : toMinors(pR));
   const {
-    paymentRequest: { percentValue },
+    paymentRequest: { percentValue, comment },
     maturityDate,
   } = paymentRegulation;
 
-  return { amount: null, percent: changeUnity(percentValue), comment: null, maturityDate };
+  return { amount: null, percent: changeUnity(percentValue), comment, maturityDate };
 };
 export const paymentRegulationMoneyUnity = (paymentRegulations: any[], to: MoneyUnity) =>
   paymentRegulations.map(paymentRegulation =>
