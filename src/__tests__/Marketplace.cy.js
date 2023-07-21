@@ -58,6 +58,6 @@ describe(specTitle('Customers'), () => {
     cy.get('[name="marketplaces"]').click();
     cy.wait('@getMarketplaces');
 
-    cy.contains('Aucun enregistrement à afficher');
+    cy.contains('Pas encore de Marketplace.');
   });
 });

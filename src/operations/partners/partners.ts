@@ -1,27 +1,66 @@
+import { SxProps, Theme } from '@mui/material';
 import BREAD_LOGO from 'src/assets/logo-bred.png';
-import BREAD_ASSURANCE_LOGO from 'src/assets/logo-bred-assurance.png';
 
-type Partner = {
-  name: string;
+type Message = {
   message: string;
+  color?: string;
+  type?: 'bold' | 'italique';
+};
+
+export type Partner = {
+  headerMessage: Message[];
   imageSrc: string;
-  phone: string;
-  email: string;
+  bodyMessage: Message[];
+  buttonLabel: string;
+  cornerPosition: SxProps<Theme>;
+  redirectionLink: string;
 };
 
 export const partners: Partner[] = [
   {
-    name: 'Laetitia DRONIOU',
-    message: "Besoin d'un compte bancaire ?",
+    headerMessage: [
+      {
+        message: "Besoin d'un ",
+      },
+      {
+        message: 'compte bancaire ?',
+        color: '#F2C30C',
+      },
+    ],
     imageSrc: BREAD_LOGO,
-    phone: '01.40.04.77.07',
-    email: 'laetitia.droniou@bred.fr',
+    bodyMessage: [
+      {
+        message: 'Découvrez la BRED, la banque 100% conseil.',
+      },
+    ],
+    buttonLabel: 'Je découvre la BRED',
+    cornerPosition: {
+      top: 0,
+      left: 0,
+      transform: 'rotate(45deg) translateX(-75%)',
+    },
+    redirectionLink:
+      'https://www.bred.fr/professionnels-associations/ouvrir-un-compte-pro?utm_medium=referral&utm_source=bpartners.app&utm_campaign=RE_bpartners&utm_content=ban_compte-bancaire',
   },
   {
-    name: 'Laetitia DRONIOU',
-    message: "Besoin d'assurer votre activité au meilleur tarif ?",
-    imageSrc: BREAD_ASSURANCE_LOGO,
-    phone: '01.40.04.77.07',
-    email: 'laetitia.droniou@bred.fr',
+    headerMessage: [{ message: "Besoin d'une assurance adaptée", color: '#F2C30C' }, { message: 'À votre activité professionnelle ?' }],
+    imageSrc: BREAD_LOGO,
+    bodyMessage: [
+      {
+        message: "Découvrez l'assurance",
+      },
+      {
+        message: 'multirisque pro!',
+        type: 'bold',
+      },
+    ],
+    buttonLabel: 'Je fait une simulation',
+    cornerPosition: {
+      bottom: 0,
+      left: 0,
+      transform: 'rotate(45deg) translateY(75%)',
+    },
+    redirectionLink:
+      'https://www.bred.fr/professionnels-associations/assurance/assurance-des-biens/assurance-multirisque-pro?utm_medium=referral&utm_source=bpartners.app&utm_campaign=RE_bpartners&utm_content=ban_assurance-pro',
   },
 ];

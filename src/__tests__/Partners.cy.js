@@ -30,11 +30,10 @@ describe(specTitle('Account'), () => {
 
     mount(<App />);
     cy.get('[name="partners"]').click();
-    cy.contains("Besoin d'un compte bancaire ?");
-    cy.contains("Besoin d'assurer votre activité au meilleur tarif ?");
-    cy.contains('Laetitia DRONIOU');
-    cy.contains('01.40.04.77.07');
-    cy.contains('laetitia.droniou@bred.fr');
-    cy.contains('En cours de construction.');
+
+    cy.contains("Besoin d'une assurance adaptée");
+    cy.contains("Découvrez l'assurance");
+    cy.contains('À votre activité professionnelle ?');
+    cy.get(':nth-child(1) > .css-fevtbh > .MuiButtonBase-root').click();
   });
 });

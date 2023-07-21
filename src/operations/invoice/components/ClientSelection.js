@@ -15,8 +15,6 @@ export const ClientSelection = props => {
   const errorProps = checkError && { error: true, helperText: 'Ce champ est requis' };
   const handleChange = (_event, value) => setValue(name, value);
 
-  console.log(client);
-
   return (
     <Autocomplete
       disablePortal
