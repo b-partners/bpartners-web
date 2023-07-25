@@ -54,7 +54,7 @@ export const partners: Partner[] = [
         type: 'bold',
       },
     ],
-    buttonLabel: 'Je fait une simulation',
+    buttonLabel: 'Je fais une simulation',
     cornerPosition: {
       bottom: 0,
       left: 0,
