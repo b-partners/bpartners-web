@@ -4,7 +4,7 @@ import { InvoiceStatus } from 'bpartners-react-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 
-import { formatDate } from '../../common/utils';
+import { formatDate, prettyPrintMoney } from '../../common/utils';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
@@ -66,7 +66,11 @@ const InvoiceGridTable = props => {
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <FunctionField render={nameRenderer} label='Client' />
-        {companyInfo && companyInfo.isSubjectToVat && <RaMoneyField render={data => data.totalPriceWithVat} label='Prix TTC' variant='body2' />}
+        <RaMoneyField
+          render={data => (companyInfo && companyInfo.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
+          label='Prix TTC'
+          variant='body2'
+        />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
