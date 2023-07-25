@@ -66,7 +66,11 @@ const InvoiceGridTable = props => {
         <TextField source='ref' label='Référence' />
         <TextField source='title' label='Titre' />
         <FunctionField render={nameRenderer} label='Client' />
-        {companyInfo && companyInfo.isSubjectToVat && <RaMoneyField render={data => data.totalPriceWithVat} label='Prix TTC' variant='body2' />}
+        <RaMoneyField
+          render={data => (companyInfo && companyInfo.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
+          label='Prix TTC'
+          variant='body2'
+        />
         <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
         <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
         <FunctionField
