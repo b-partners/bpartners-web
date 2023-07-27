@@ -240,4 +240,18 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.contains('Test dummy comment');
   });
+
+  it('Empty list', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, []);
+    mount(<App />);
+
+    cy.get('[name="invoice"]').click();
+    cy.contains('Pas encore de devis/facture.');
+    cy.contains('Voulez-vous en créer un ?');
+    cy.get('[name="create-draft-invoice"]').click();
+    cy.contains('Création');
+    cy.get('[data-testid="ClearIcon"]').click();
+    cy.get('[name="create-confirmed-invoice"]').click();
+    cy.contains('Création');
+  });
 });
