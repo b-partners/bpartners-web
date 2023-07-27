@@ -1,5 +1,5 @@
-import { Add, Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
@@ -9,7 +9,6 @@ import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
 
-import PopoverButton from '../../common/components/PopoverButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
@@ -20,6 +19,8 @@ import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import FeedbackModal from './components/FeedbackModal';
 import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoice';
 import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
+import { EmptyInvoiceList } from './components/EmptyInvoiceList';
+import { InvoiceCreationButton } from './components/InvoiceCreationButton';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -140,6 +141,7 @@ const InvoiceList = props => {
         resource='invoices'
         filter={{ invoiceTypes }}
         component={ListComponent}
+        empty={<EmptyInvoiceList createInvoice={createInvoice} />}
         pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
@@ -149,20 +151,7 @@ const InvoiceList = props => {
             buttons={
               <>
                 <ArchiveBulkAction source='title' statusName='archiveStatus' />
-                <PopoverButton style={{ marginRight: 5.2 }} icon={<Add />} label='Créer un nouveau devis'>
-                  <Box sx={{ width: '13rem', padding: 0.5, display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <Button name='create-draft-invoice' onClick={() => createInvoice(InvoiceStatus.DRAFT)} sx={{ margin: 1, display: 'block', width: '12rem' }}>
-                      Créer un devis
-                    </Button>
-                    <Button
-                      name='create-confirmed-invoice'
-                      onClick={() => createInvoice(InvoiceStatus.CONFIRMED)}
-                      sx={{ margin: 1, display: 'block', width: '12rem' }}
-                    >
-                      Créer une facture
-                    </Button>
-                  </Box>
-                </PopoverButton>
+                <InvoiceCreationButton createInvoice={createInvoice} />
               </>
             }
           />
