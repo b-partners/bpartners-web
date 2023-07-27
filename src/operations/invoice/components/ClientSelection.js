@@ -10,7 +10,7 @@ export const ClientSelection = props => {
 
   const client = useWatch({ name });
 
-  const { data: clients = [], isLoading, error } = useGetList('customers', { pagination: { page: 1, perPage: 500 } });
+  const { data: clients = [], isLoading, error } = useGetList('customers', { pagination: { page: 1, perPage: 10_000 } });
   const checkError = !client || error;
   const errorProps = checkError && { error: true, helperText: 'Ce champ est requis' };
   const handleChange = (_event, value) => setValue(name, value);
