@@ -1,4 +1,4 @@
-import { Attachment, Check, DoneAll, DriveFileMove, TurnRight } from '@mui/icons-material';
+import { Attachment, Check, DriveFileMove, TurnRight } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
@@ -21,6 +21,7 @@ import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoi
 import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { EmptyInvoiceList } from './components/EmptyInvoiceList';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
+import { InvoiceButtonToPaid } from './components';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -93,7 +94,7 @@ const InvoiceGridTable = props => {
                 )}
                 {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
                   <>
-                    <InvoiceButtonConversion icon={<DoneAll />} to='PAID' disabled={data.status === InvoiceStatus.PAID} />
+                    <InvoiceButtonToPaid disabled={data.status === InvoiceStatus.PAID} />
                     <TooltipButton
                       disabled={data.status === InvoiceStatus.PAID}
                       title='Envoyer ou relancer cette facture'
