@@ -1,5 +1,5 @@
 import { mount } from '@cypress/react';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus, PaymentMethod } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -89,6 +89,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       expect(req.body.status).to.eq(InvoiceStatus.PAID);
+      expect(req.body.paymentMethod).to.eq(PaymentMethod.CHEQUE);
       req.reply({ ...req.body });
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`).as('refetch');
@@ -98,7 +99,10 @@ describe(specTitle('Invoice'), () => {
       expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
       req.reply({});
     }).as('AskFeedback');
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="open-popover"]').click();
+    cy.get("[data-testid='invoice-payment-method-select']").click();
+    cy.contains('Chèque').click();
+    cy.get('[data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
     cy.wait('@refetch');
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
     cy.get('[data-cy="invoice-relaunch-submit"]').click();
