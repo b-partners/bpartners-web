@@ -8,7 +8,7 @@ import { useState } from 'react';
  * Use the chidren props to edit the popover content
  */
 const PopoverButton = props => {
-  const { children, icon, label, style } = props;
+  const { children, icon, label, style, disabled } = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = event => {
@@ -22,7 +22,7 @@ const PopoverButton = props => {
   return (
     <>
       <Tooltip data-testid='open-popover' sx={style} title={icon && label} onClick={handleClick}>
-        {icon ? <IconButton>{icon}</IconButton> : <Typography>{label}</Typography>}
+        {icon ? <IconButton disabled={disabled}>{icon}</IconButton> : <Typography>{label}</Typography>}
       </Tooltip>
       <Popover
         id={anchorEl && 'simple-popover'}
