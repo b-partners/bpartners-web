@@ -99,7 +99,7 @@ describe(specTitle('Invoice'), () => {
       expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
       req.reply({});
     }).as('AskFeedback');
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="open-popover"]').click();
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
     cy.get("[data-testid='invoice-payment-method-select']").click();
     cy.contains('Chèque').click();
     cy.get('[data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();

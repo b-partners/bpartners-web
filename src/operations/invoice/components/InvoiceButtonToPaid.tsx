@@ -31,7 +31,7 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
   );
 
   return (
-    <PopoverButton icon={<DoneAllIcon />} disabled={isLoading || disabled} label='Marquer comme payée'>
+    <PopoverButton data-testid={`invoice-conversion-PAID-${invoice.ref}-1`} icon={<DoneAllIcon />} disabled={isLoading || disabled} label='Marquer comme payée'>
       <Box sx={{ width: '13rem', padding: 1 }}>
         <Typography variant='h6'>Mode de payment : </Typography>
         <TextField sx={{ width: '13rem', paddingBottom: 2 }} value={paymentMethod} data-testid='invoice-payment-method-select' select>
