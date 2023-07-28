@@ -43,6 +43,7 @@ describe(specTitle('Invoice'), () => {
     cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
     cy.contains('Devis confirmé', { timeout: timeout });
 
+    cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
     cy.get(`[data-testid="invoice-conversion-PAID-${ref}"]`).click();
     cy.contains('Facture payée', { timeout: timeout });
   });
