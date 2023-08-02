@@ -1,16 +1,17 @@
 import { Toolbar, Typography, IconButton, Box, TextField, MenuItem } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useListContext } from 'react-admin';
-import useGetPaginationCount from '../hooks/use-get-pagination-count';
+import { FC } from 'react';
+import { usePagination } from '../hooks';
 
 export const pageSize = 15;
 
 const pageSizeList = [10, 15, 30, 50];
 
-const Pagination = props => {
+const Pagination: FC<any> = props => {
   const { filter, name } = props;
   const { page, isLoading, setPage, perPage, setPerPage, resource } = useListContext();
-  const { paginationSize } = useGetPaginationCount(resource, perPage, filter && { filter, name });
+  const { lastPage } = usePagination(resource, page, perPage, filter && { filter, name });
 
   if (isLoading) {
     return <Toolbar variant='dense' />;
@@ -30,7 +31,7 @@ const Pagination = props => {
           <ChevronLeft />
         </IconButton>
         <IconButton
-          disabled={page === paginationSize}
+          disabled={page === lastPage}
           data-testid='pagination-left-id'
           style={{ marginLeft: 6 }}
           color='primary'
@@ -42,7 +43,7 @@ const Pagination = props => {
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', height: '100%' }}>
         <Typography sx={{ marginRight: 1 }} variant='body1'>
-          Page : {page} / {paginationSize}
+          Page : {page}
         </Typography>
         <Typography sx={{ marginInline: 1 }} variant='body1'>
           Taille :
@@ -58,5 +59,4 @@ const Pagination = props => {
     </Toolbar>
   );
 };
-
 export default Pagination;
