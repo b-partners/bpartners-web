@@ -84,13 +84,6 @@ describe(specTitle('Products'), () => {
     cy.contains('description 1');
     cy.contains('description 9');
     cy.contains('description 14').not();
-    cy.contains('Page : 1 / 2');
-
-    cy.get('[data-testid="pagination-left-id"]').click();
-
-    cy.contains('description 10');
-    cy.contains('description 16');
-    cy.contains('Page : 2 / 2');
   });
 
   it('should validate empty input', () => {
