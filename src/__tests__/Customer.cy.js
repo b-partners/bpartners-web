@@ -158,36 +158,13 @@ describe(specTitle('Customers'), () => {
     cy.contains('lastName-1');
     cy.contains('firstName-1');
 
-    cy.get('[data-testid="customer-filter-accordion"]').click();
-
-    const testLastName = 'Doe';
-    cy.get('input[name="lastName"]').type(testLastName);
-
-    const testFirstName = 'John';
-    cy.get('input[name="firstName"]').type(testFirstName);
-
-    const testEmail = 'doe@gmail.com';
-    cy.get('input[name="email"]').type(testEmail);
-
-    const testPhoneNumber = 1234567;
-    cy.get('input[name="phoneNumber"]').type(testPhoneNumber);
-
-    const testCity = 'Paris';
-    cy.get('input[name="city"]').type(testCity);
-
-    const testCountry = 'France';
-    cy.get('input[name="country"]').type(testCountry);
+    cy.get("input[name='customerListSearch']").type('test1 test2');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/customers**`, req => {
-      const { page, pageSize, lastName, firstName, email, phoneNumber, city, country } = req.query;
-      expect(lastName).to.be.eq(testLastName);
-      expect(firstName).to.be.eq(testFirstName);
-      expect(email).to.be.eq(testEmail);
-      expect(+phoneNumber).to.be.eq(testPhoneNumber);
-      expect(city).to.be.eq(testCity);
-      expect(country).to.be.eq(testCountry);
-
-      req.reply(getCustomers(page - 1, pageSize));
+      const { page, pageSize, filters } = req.query;
+      const expectedFilter = 'test1,test2';
+      req.reply(getCustomers(page - 1, +pageSize));
+      expect(filters).to.eq(expectedFilter);
     }).as('getCustomersFilter');
     cy.wait('@getCustomersFilter');
   });

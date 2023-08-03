@@ -10,8 +10,8 @@ import { RaMoneyField } from 'src/common/components';
 import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
 
 const productFilter = [
-  <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn />,
-  <TextInput label='Filtrer par prix unitaire' source='priceFilter' size='small' alwaysOn />,
+  <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn name='descriptionFilter' />,
+  <TextInput label='Filtrer par prix unitaire' source='priceFilter' size='small' alwaysOn name='priceFilter' />,
 ];
 
 const ProductList = () => (
