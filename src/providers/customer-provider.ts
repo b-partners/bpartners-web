@@ -1,4 +1,4 @@
-import { CustomerStatus, Customer } from 'bpartners-react-client';
+import { Customer, CustomerStatus } from 'bpartners-react-client';
 import { asyncGetUserInfo, BpDataProviderType, customerApi, getCached, maxPageSize } from '.';
 
 export const importCustomers = async (body: any) => {
@@ -17,9 +17,23 @@ const rmRaProps = (dirtyCustomer: any): Customer => {
 
 export const customerProvider: BpDataProviderType = {
   getList: async function (page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
-    const { firstName, lastName, email, phoneNumber, city, country } = filters;
+    const { customerListSearch } = filters;
+    const searchValues = ((customerListSearch as string) || '').split(' ');
     const { accountId } = await asyncGetUserInfo();
-    return (await customerApi().getCustomers(accountId, firstName, lastName, email, phoneNumber, city, country, CustomerStatus.ENABLED, page, perPage)).data;
+    const { data } = await customerApi().getCustomers(
+      accountId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      CustomerStatus.ENABLED,
+      searchValues,
+      page,
+      perPage
+    );
+    return data;
   },
   getOne: function (customerId: string): Promise<any> {
     const { accountId } = getCached.userInfo();
