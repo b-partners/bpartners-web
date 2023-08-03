@@ -15,9 +15,7 @@ describe(specTitle('Validate Account'), () => {
 
     cy.stub(Redirect, 'redirect').as('redirect');
 
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=500', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/**', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0], status: 'VALIDATION_REQUIRED' }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');

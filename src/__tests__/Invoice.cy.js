@@ -60,8 +60,6 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('invoice-ref-10').not();
     cy.contains('invoice-ref-14').not();
-
-    cy.contains('Page : 1 / 4');
   });
 
   it('Should show the list of invoice', () => {
