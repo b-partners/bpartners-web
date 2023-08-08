@@ -59,7 +59,7 @@ export const ProductSelection = ({ name, form }) => {
   };
 
   useEffect(() => {
-    productProvider.getList(1, 20, {sort: {field:'createdAt', order:'DESC'}}).then(data => {
+    productProvider.getList(1, 20, { sort: { field: 'createdAt', order: 'DESC' } }).then(data => {
       setState(e => ({ ...e, productsList: data }));
     });
   }, []);
