@@ -81,6 +81,12 @@ export const BP_THEME = {
         elevation1: {
           boxShadow: 'none',
         },
+        elevation2: {
+          boxShadow: '1px 1px 8px rgba(0, 0, 0, 0.06) !important',
+        },
+        elevation3: {
+          boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1) !important',
+        },
         root: {
           border: '1px solid #ebebeb',
           backgroundClip: 'padding-box',
