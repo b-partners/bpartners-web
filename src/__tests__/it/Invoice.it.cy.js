@@ -26,8 +26,8 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('[data-value="cc687267-1f37-4f3e-8dbd-197639f1731b"]').click(); // 1 €
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un euro symbolique');
+    cy.contains('Un euro symbolique').click(); // 1 €
 
     cy.contains('Bon pour accord');
 

@@ -86,8 +86,8 @@ describe(specTitle('Invoice'), () => {
     // select the product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('description');
+    cy.contains('description 0').click();
 
     // 'cause the invoice is now valid, onclick on the save button,
     // the crupdate request is send and the edit mode is closed

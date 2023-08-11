@@ -24,7 +24,7 @@ describe(specTitle('Products'), () => {
     ).as('filter');
     cy.get('#priceFilter').type('7.91');
     cy.wait('@filter');
-    cy.get('.MuiTableBody-root > .MuiTableRow-root > .column-description').click();
+    cy.contains('Un produit avec un prix complexe').click();
     cy.contains('Supprimer');
   });
 });

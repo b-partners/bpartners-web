@@ -1,4 +1,4 @@
-import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
+import { asyncGetUserInfo, BpDataProviderType, getCached, payingApi } from '.';
 
 import { ProductStatus } from 'bpartners-react-client';
 import { toMinors } from 'src/common/utils';

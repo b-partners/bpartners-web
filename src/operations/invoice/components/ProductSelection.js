@@ -1,25 +1,14 @@
 import { Add } from '@mui/icons-material';
-import { Box, FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useEffect, useState } from 'react';
+import { Box, FormHelperText } from '@mui/material';
+import { useState } from 'react';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils';
 import { ProductItem } from './ProductItem';
 import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
-
-const useStyle = makeStyles(theme => ({
-  formControl: {
-    width: 300,
-    minHeight: 70,
-    marginBlock: 7,
-  },
-  menuItem: {
-    width: '100%',
-    paddingBlock: 10,
-  },
-}));
+import { AutocompleteBackend } from '../../../common/components';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
 
 export const ProductSelection = ({ name, form }) => {
   const {
@@ -31,7 +20,6 @@ export const ProductSelection = ({ name, form }) => {
   } = form;
   const [state, setState] = useState({ productsList: [], status: false });
   const selectedProduct = watch(name) || [];
-  const classes = useStyle();
 
   const toggle = () => setState(e => ({ ...e, status: !e.status }));
 
@@ -58,13 +46,16 @@ export const ProductSelection = ({ name, form }) => {
     productValidationHandling(productTemp, name, setError, clearErrors);
   };
 
-  useEffect(() => {
-    productProvider.getList(1, 20, {sort: {field:'createdAt', order:'DESC'}}).then(data => {
-      setState(e => ({ ...e, productsList: data }));
-    });
-  }, []);
+  const fetcher = async q => {
+    const data = await productProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { descriptionFilter: q, sort: { field: 'createdAt' } });
+    return data.filter(e => !includesObject(selectedProduct, 'id', e.id));
+  };
 
-  const disponibleProducts = state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id));
+  const handleChange = product => {
+    if (product && product.description && product.description.length) {
+      handleProduct(ProductActionType.ADD, product);
+    }
+  };
 
   return (
     <>
@@ -76,20 +67,16 @@ export const ProductSelection = ({ name, form }) => {
         </Box>
       )}
       <Box sx={{ width: '100%' }}>
-        {!state.status && state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id)).length > 0 && (
-          <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />
-        )}
-        {state.status && state.productsList.filter(e => !includesObject(selectedProduct, 'id', e.id)).length > 0 && (
-          <FormControl variant='filled' value='' className={classes.formControl}>
-            <InputLabel id='product-selection-id'>Produit</InputLabel>
-            <Select id='product-selection-id'>
-              {disponibleProducts.map(e => (
-                <MenuItem className={classes.menuItem} onClick={() => handleProduct(ProductActionType.ADD, e)} value={e.id} key={e.id + '2'}>
-                  {e.description}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        {!state.status > 0 && <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />}
+        {state.status && (
+          <AutocompleteBackend
+            name='invoice-product'
+            label='Produits'
+            fetcher={fetcher}
+            onChange={handleChange}
+            getLabel={e => (typeof e === 'string' ? e : e.description)}
+            value={{ description: '', id: '' }}
+          />
         )}
         {errors[name] && <FormHelperText error={true}>{errors[name].message}</FormHelperText>}
       </Box>
