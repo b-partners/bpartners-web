@@ -26,16 +26,19 @@ const cognitoResponse = {
 const loginParams = { username: 'dummy', password: 'dummy' };
 
 Cypress.Commands.add('cognitoLogin', () => {
-  /*
-      just replace all amplify functions to mock login
-      we never call cognito
-    */
-
   cy.intercept('GET', '/whoami', whoami1).as('whoami');
   cy.intercept('GET', `/users/**`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
   cy.stub(Auth, 'currentSession').returns(Promise.resolve(sessionStub));
   cy.stub(Auth, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.then(async () => await authProvider.login(loginParams));
+});
+
+Cypress.Commands.add('realCognitoLogin', () => {
+  const loginParams = {
+    username: process.env.REACT_APP_IT_USERNAME,
+    password: process.env.REACT_APP_IT_PASSWORD
+  };
   cy.then(async () => await authProvider.login(loginParams));
 });

@@ -56,7 +56,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "cypress run-ct",
+    "test": "cypress run-ct --spec \"src/__tests__/*.cy.js\"  --config video=false",
+    "it": "cypress run-ct --spec \"src/__tests__/it/*.it.cy.js\"",
     "cy:open": "cypress open-ct",
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
