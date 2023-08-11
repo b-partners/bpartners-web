@@ -8,6 +8,7 @@ import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
 import { AutocompleteBackend } from '../../../common/components';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
 
 export const ProductSelection = ({ name, form }) => {
   const {
@@ -46,7 +47,7 @@ export const ProductSelection = ({ name, form }) => {
   };
 
   const fetcher = async q => {
-    const data = await productProvider.getList(1, 500, { descriptionFilter: q, sort: {} });
+    const data = await productProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { descriptionFilter: q, sort: {} });
     return data.filter(e => !includesObject(selectedProduct, 'id', e.id));
   };
 

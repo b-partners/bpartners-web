@@ -2,6 +2,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useAutocomplete } from '../../../common/hooks';
 import { customerProvider } from '../../../providers';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
 
 const getClientName = customer => (customer && customer.lastName && customer.firstName ? `${customer.lastName} ${customer.firstName}` : '');
 
@@ -10,7 +11,7 @@ export const ClientSelection = props => {
   const { setValue } = useFormContext();
   const client = useWatch({ name });
 
-  const fetcher = async q => await customerProvider.getList(1, 500, { customerListSearch: q });
+  const fetcher = async q => await customerProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { customerListSearch: q });
 
   const { options, loading, onChange, query, onblur } = useAutocomplete({
     defaultValue: client,

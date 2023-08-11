@@ -1,0 +1,1 @@
+export const AUTOCOMPLETE_LIST_LENGTH = 20;
