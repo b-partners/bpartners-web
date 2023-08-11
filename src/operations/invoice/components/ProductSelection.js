@@ -47,7 +47,7 @@ export const ProductSelection = ({ name, form }) => {
   };
 
   const fetcher = async q => {
-    const data = await productProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { descriptionFilter: q, sort: {} });
+    const data = await productProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { descriptionFilter: q, sort: { field: 'createdAt' } });
     return data.filter(e => !includesObject(selectedProduct, 'id', e.id));
   };
 
