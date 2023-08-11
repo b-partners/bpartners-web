@@ -15,3 +15,4 @@ export * from './print-error';
 export * from './redirect';
 export * from './reload';
 export * from './to-array-buffer';
+export * from './stringCutter';
