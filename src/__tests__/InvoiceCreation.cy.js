@@ -93,8 +93,8 @@ describe(specTitle('Invoice creation'), () => {
     // select the product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('description');
+    cy.contains('description 0').click();
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       req.reply({ ...req.body, updatedAt: new Date() });
@@ -122,9 +122,9 @@ describe(specTitle('Invoice creation'), () => {
     cy.contains('lastName-2 firstName-2').click();
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('description');
+    cy.contains('description 1').click();
 
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
     cy.contains('24,00 € (TTC)');
     cy.contains('TVA : 4,00 €');
     cy.contains('10,00 € (HT)');
@@ -168,8 +168,8 @@ describe(specTitle('Invoice creation'), () => {
     // select the product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('description');
+    cy.contains('description 0').click();
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
       // check if the invoice status send by the use is CONFIRMED

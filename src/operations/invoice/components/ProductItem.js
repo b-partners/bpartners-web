@@ -1,7 +1,7 @@
-import { Clear } from '@mui/icons-material';
-import { Card, CardActions, CardContent, CardHeader, IconButton, Typography, TextField } from '@mui/material';
+import { Clear as ClearIcon } from '@mui/icons-material';
+import { Card, CardActions, CardContent, CardHeader, IconButton, styled, TextField, Tooltip, tooltipClasses, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { prettyPrintMinors } from '../../../common/utils';
+import { prettyPrintMinors, stringCutter } from '../../../common/utils';
 import useGetAccountHolder from '../../../common/hooks/use-get-account-holder';
 import { ProductActionType, totalPriceWithoutVatFromProductQuantity, totalPriceWithVatFromProductQuantity, totalVatFromProductQuantity } from '../utils/utils';
 
@@ -15,6 +15,16 @@ const useStyle = makeStyles(() => ({
     width: '100%',
     display: 'flex',
     alignItems: 'end',
+  },
+}));
+
+const CustomTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    fontSize: 11,
+    maxWidth: '200px',
+    textAlign: 'justify',
+    padding: '0.5rem',
+    background: '#000000aa',
   },
 }));
 
@@ -32,15 +42,19 @@ export const ProductItem = ({ product, handleProduct }) => {
   return (
     <Card className={classes.card}>
       <CardHeader
-        title={product.description}
+        title={
+          <CustomTooltip title={product.description}>
+            <Typography sx={{ cursor: 'pointer' }}>{stringCutter(product.description, 20)}</Typography>
+          </CustomTooltip>
+        }
         subheader={
           prettyPrintMinors(
             companyInfo && companyInfo.isSubjectToVat ? totalPriceWithVatFromProductQuantity(product) : totalPriceWithoutVatFromProductQuantity(product)
           ) + productPriceTTC
         }
         action={
-          <IconButton data-testid={`product-${product.id}-clear`} onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
-            <Clear />
+          <IconButton size='small' data-testid={`product-${product.id}-clear`} onClick={() => handleProduct(ProductActionType.REMOVE, product)}>
+            <ClearIcon />
           </IconButton>
         }
       />

@@ -50,8 +50,8 @@ describe(specTitle('Invoice'), () => {
     //select product
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('.MuiInputBase-root > #product-selection-id').click();
-    cy.get('.MuiPaper-root > .MuiList-root > [tabindex="0"]').click();
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('description');
+    cy.contains('description 0').click();
 
     cy.wait('@crupdateWithNewRef429'); // suppose we are extremely unlucky and first creation (no metadata.submitted) results in 429!
     cy.wait('@crupdateWithNewRef429'); // ... we are so unlucky we actually got 429 twice

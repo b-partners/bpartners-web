@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useAutocomplete } from '../../../common/hooks/use-autocomplete';
+import { useAutocomplete } from '../../../common/hooks';
 import { customerProvider } from '../../../providers';
 
 const getClientName = customer => (customer && customer.lastName && customer.firstName ? `${customer.lastName} ${customer.firstName}` : '');

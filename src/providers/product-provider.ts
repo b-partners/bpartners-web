@@ -1,4 +1,4 @@
-import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
+import { asyncGetUserInfo, BpDataProviderType, getCached, payingApi } from '.';
 
 import { ProductStatus } from 'bpartners-react-client';
 import { toMinors } from 'src/common/utils';
@@ -28,7 +28,7 @@ export const productProvider: BpDataProviderType = {
         true,
         field === 'description' ? order : undefined,
         field === 'unitPrice' ? order : undefined,
-        undefined,
+        'DESC',
         descriptionFilter,
         priceFilter ? toMinors(+priceFilter) : undefined,
         //TODO: use status from filter instead of static product status
