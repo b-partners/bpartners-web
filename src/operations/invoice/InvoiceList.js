@@ -117,7 +117,7 @@ const InvoiceGridTable = props => {
 const InvoiceList = props => {
   const notify = useNotify();
   const refresh = useRefresh();
-  const { onStateChange, invoiceTypes } = props;
+  const { onStateChange, invoiceTypes, actions, emptyAction } = props;
   const { setTab, setView } = useInvoiceToolContext();
 
   const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, setTab);
@@ -142,7 +142,7 @@ const InvoiceList = props => {
         resource='invoices'
         filter={{ invoiceTypes }}
         component={ListComponent}
-        empty={<EmptyInvoiceList createInvoice={createInvoice} />}
+        empty={<EmptyInvoiceList actions={emptyAction} createInvoice={createInvoice} />}
         pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
@@ -152,6 +152,7 @@ const InvoiceList = props => {
             buttons={
               <>
                 <ArchiveBulkAction source='title' statusName='archiveStatus' />
+                {actions}
                 <InvoiceCreationButton createInvoice={createInvoice} />
               </>
             }
