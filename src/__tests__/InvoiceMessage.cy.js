@@ -75,7 +75,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('Ce champ est requis');
     // select the customer
-    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-testid="autocomplete-backend-for-customer"]').click();
     cy.contains('lastName-2 firstName-2').click();
 
     // the user can't save the invoice if it is not valid
