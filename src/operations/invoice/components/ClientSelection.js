@@ -1,8 +1,7 @@
-import { Autocomplete, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useAutocomplete } from '../../../common/hooks';
 import { customerProvider } from '../../../providers';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
+import { AutocompleteBackend } from 'src/common/components';
 
 const getClientName = customer => (customer && customer.lastName && customer.firstName ? `${customer.lastName} ${customer.firstName}` : '');
 
@@ -12,36 +11,24 @@ export const ClientSelection = props => {
   const client = useWatch({ name });
 
   const fetcher = async q => await customerProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { customerListSearch: q });
-
-  const { options, loading, onChange, query, onblur } = useAutocomplete({
-    defaultValue: client,
-    fetcher,
-    getLabel: getClientName,
-  });
   const checkError = !client;
-  const errorProps = checkError && { error: true, helperText: 'Ce champ est requis' };
-  const handleChange = (_event, value) => {
-    setValue(name, value);
-    onChange(getClientName(value));
+  const handleChange = value => {
+    if (!!value) {
+      setValue(name, value);
+    }
   };
 
   return (
-    <Autocomplete
-      disablePortal
-      autoComplete
-      filterOptions={e => e}
-      loading={loading}
-      noOptionsText='Aucun élément'
-      clearIcon={false}
-      value={client || null}
-      getOptionLabel={getClientName}
-      options={options}
-      inputValue={query}
-      inputMode='text'
+    <AutocompleteBackend
+      fetcher={fetcher}
+      getLabel={getClientName}
+      label={label}
+      name={name}
       onChange={handleChange}
+      value={client}
+      error={checkError}
+      sync={true}
       sx={{ width: 300, marginBlock: '3px', ...sx }}
-      data-testid='invoice-client-selection'
-      renderInput={params => <TextField {...errorProps} {...params} onBlur={onblur} value={query} onChange={q => onChange(q.target.value)} label={label} />}
     />
   );
 };
