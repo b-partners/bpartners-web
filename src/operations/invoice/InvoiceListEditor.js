@@ -9,6 +9,7 @@ import { InvoiceToolContextProvider } from './components/InvoiceToolContextProvi
 import { InvoiceTabs } from './components/InvoiceTabs';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
 import { InvoiceView } from './components/InvoiceView';
+import { InvoiceConfirmedPayedTabPanel } from './components';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -31,7 +32,6 @@ const invoiceListReducer = (state, { type, payload }) => {
 const InvoiceListEditor = () => {
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
-
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
   const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
 
@@ -48,7 +48,7 @@ const InvoiceListEditor = () => {
             <InvoiceTabs />
             <InvoiceTabPanel index={0} onStateChange={stateChangeHandling} type={[InvoiceStatus.DRAFT]} />
             <InvoiceTabPanel index={1} onStateChange={stateChangeHandling} type={[InvoiceStatus.PROPOSAL]} />
-            <InvoiceTabPanel index={2} onStateChange={stateChangeHandling} type={[InvoiceStatus.CONFIRMED, InvoiceStatus.PAID]} />
+            <InvoiceConfirmedPayedTabPanel index={2} onStateChange={stateChangeHandling} />
           </Box>
         </InvoiceView>
         <InvoiceView type={['edition', 'creation']}>

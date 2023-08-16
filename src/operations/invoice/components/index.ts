@@ -11,3 +11,4 @@ export * from './PaymentRegulationsForm';
 export * from './ProductItem';
 export * from './ProductSelection';
 export * from './InvoiceButtonToPaid';
+export * from './InvoiceConfirmedPayedTabPanel';

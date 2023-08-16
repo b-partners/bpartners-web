@@ -49,11 +49,13 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('invoice-ref-15');
+    cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('invoice-ref-34');
 
     cy.get('[data-testid="pagination-right-id"]').click();
+    cy.contains('invoice-ref-15');
+    cy.get('[data-testid="pagination-right-id"]').click();
     cy.contains('invoice-ref-0');
-    cy.contains('invoice-ref-14');
 
     cy.get(`div .MuiSelect-select`).click();
     cy.get('[data-value="10"]').click();
@@ -74,7 +76,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('À confirmer');
 
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
-
+    cy.get("[data-testid='invoice-confirmed-switch']").click();
     cy.contains('À payer');
   });
 
@@ -101,7 +103,6 @@ describe(specTitle('Invoice'), () => {
     cy.get("[data-testid='invoice-payment-method-select']").click();
     cy.contains('Chèque').click();
     cy.get('[data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
-    cy.wait('@refetch');
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
     cy.get('[data-cy="invoice-relaunch-submit"]').click();
   });
