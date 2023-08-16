@@ -78,7 +78,7 @@ export const authProvider = {
     const unapprovedFiles = getCached.unapprovedFiles();
 
     if ((status === 401 || status === 403) && (!unapprovedFiles || unapprovedFiles === 0)) {
-      return Promise.reject();
+      return Promise.reject({ message: false });
     } else if (status === 200) {
       return Promise.resolve();
     }
