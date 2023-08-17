@@ -87,7 +87,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('input[name="delayPenaltyPercent"]').type(newDelayPenaltyPercent);
 
     // select the customer
-    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('lastName-0');
     cy.contains('lastName-2 firstName-2').click();
 
     // select the product
@@ -118,7 +118,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form input[name=sendingDate]').invoke('removeAttr').type('2022-10-02');
     cy.get('form input[name=validityDate]').invoke('removeAttr').type('2022-10-05');
     cy.get('form textarea[name=comment]').type('this is a comment for testing');
-    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('lastName-0');
     cy.contains('lastName-2 firstName-2').click();
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
@@ -162,7 +162,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get("[name='create-confirmed-invoice']").click();
 
     // select the customer
-    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('lastName-0');
     cy.contains('lastName-2 firstName-2').click();
 
     // select the product

@@ -34,7 +34,7 @@ const useInvoiceList = () => {
   }, [notify]);
 
   const data = useMemo(
-    () => (filter.length > 0 && list.length > 0 ? list.filter(invoice => invoice.title.toLowerCase().includes(filter.toLowerCase())) : list),
+    () => (filter.length > 0 && list.length > 0 ? list.filter(invoice => (invoice?.title || '').toLowerCase().includes((filter || '').toLowerCase())) : list),
     [list, filter]
   );
 

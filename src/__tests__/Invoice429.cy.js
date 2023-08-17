@@ -44,7 +44,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear().type(newRef);
 
     // select customer
-    cy.get('[data-testid=invoice-client-selection]').click();
+    cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('lastName-0');
     cy.contains('lastName-0 firstName-0').click();
 
     //select product
