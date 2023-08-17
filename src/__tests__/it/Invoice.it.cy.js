@@ -21,7 +21,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="ref-field-input"]').click().clear().type(ref);
     cy.get('[data-testid="sendingDate-field-input"]').click().clear().type('2023-06-26');
 
-    cy.get('[data-testid="invoice-client-selection"] input').type('Maurica');
+    cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('Maurica');
     cy.contains('Maurica Fonenantsoa').click(); // F. Maurica
 
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
