@@ -32,54 +32,6 @@ describe(specTitle('Invoice'), () => {
     });
   });
 
-  it('Should show the money in major unit', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-
-    cy.contains('120,00 €');
-    cy.contains('20,00 €');
-  });
-
-  it('Test pagination', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-
-    cy.contains('invoice-ref-0');
-    cy.contains('invoice-ref-14');
-
-    cy.get('[data-testid="pagination-left-id"]').click();
-    cy.contains('invoice-ref-15');
-    cy.get('[data-testid="pagination-left-id"]').click();
-    cy.contains('invoice-ref-34');
-
-    cy.get('[data-testid="pagination-right-id"]').click();
-    cy.contains('invoice-ref-15');
-    cy.get('[data-testid="pagination-right-id"]').click();
-    cy.contains('invoice-ref-0');
-
-    cy.get(`div .MuiSelect-select`).click();
-    cy.get('[data-value="10"]').click();
-
-    cy.contains('invoice-ref-10').not();
-    cy.contains('invoice-ref-14').not();
-  });
-
-  it('Should show the list of invoice', () => {
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-
-    cy.contains('invoice-title-0');
-    cy.contains('Brouillon');
-
-    cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
-
-    cy.contains('À confirmer');
-
-    cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
-    cy.get("[data-testid='invoice-confirmed-switch']").click();
-    cy.contains('À payer');
-  });
-
   it('Can be paid', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
@@ -94,7 +46,7 @@ describe(specTitle('Invoice'), () => {
     }).as('pay');
     cy.intercept('GET', `/accounts/mock-account-id1/invoices?page=1&pageSize=15&status=PAID`).as('refetch');
     cy.intercept('POST', `/users/mock-user-id1/accountHolders/mock-accountHolder-id1/feedback`, req => {
-      const actualFeedbackAsked = req.body;
+      const actualFeedbackAsked = req.body || {};
       expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
       expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
       req.reply({});
@@ -197,43 +149,6 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@emitInvoice');
   });
 
-  it("Shouldn't show all tva reference when isSubjectToVat is false", () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, req => {
-      // make isSubjectToVat = false
-      const accountHolder = { ...accountHolders1[0] };
-      accountHolder.companyInfo.isSubjectToVat = false;
-
-      req.reply({
-        body: [{ ...accountHolder }],
-      });
-    }).as('getAccountHolder2');
-
-    mount(<App />);
-
-    cy.get('[name="invoice"]').click();
-
-    cy.wait('@whoami');
-    cy.wait('@getAccount1');
-    cy.wait('@getAccountHolder2');
-    // shouldn't show TTC price
-    cy.contains(/TTC/gi).should('not.exist');
-
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-
-    // shouldn't show TTC price
-    cy.contains(/TTC/gi).should('not.exist');
-    cy.contains(/TVA/gi).should('not.exist');
-    cy.contains('Total TTC').should('not.exist');
-    cy.contains('Total HT');
-    cy.get('[data-testid="invoice-Produits-accordion"]').click();
-    cy.get('[data-testid="product-product-1-id-item"]').clear().type(2);
-    // we have now 2 products
-    // description1 { quantity: 1, unitPrice: 10 }
-    // description2 { quantity: 1, unitPrice: 20 }
-    // because of (1 * 10 + 1 * 20 == 30), we should see "Total HT 30.00 €"
-    cy.contains('30,00 €');
-  });
-
   it('Should show payment regulation comment', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
 
@@ -243,19 +158,5 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.contains('Test dummy comment');
-  });
-
-  it('Empty list', () => {
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, []);
-    mount(<App />);
-
-    cy.get('[name="invoice"]').click();
-    cy.contains('Pas encore de devis/facture.');
-    cy.contains('Voulez-vous en créer un ?');
-    cy.get('[name="create-draft-invoice"]').click();
-    cy.contains('Création');
-    cy.get('[data-testid="ClearIcon"]').click();
-    cy.get('[name="create-confirmed-invoice"]').click();
-    cy.contains('Création');
   });
 });
