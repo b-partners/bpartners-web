@@ -23,7 +23,7 @@ export const InvoiceConfirmedPayedTabPanel: FC<InvoiceConfirmedPayedTabPanelProp
         <FormGroup>
           <FormControlLabel
             control={<Switch data-testid='invoice-confirmed-switch' checked={switchValue} onClick={toggleConfirmedInvoiceToShow} />}
-            label='À payée'
+            label='À payer'
           />
         </FormGroup>
       }
