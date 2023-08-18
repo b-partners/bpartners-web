@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Code, FormatBold, FormatItalic, FormatListBulleted, FormatListNumbered, FormatQuote, FormatStrikethrough } from '@mui/icons-material';
-import { ButtonGroup, Divider, IconButton, Stack } from '@mui/material';
+import { ButtonGroup, IconButton, Stack } from '@mui/material';
 import { Editor, RichUtils } from 'draft-js';
 import { useFormContext, useWatch } from 'react-hook-form';
 import 'draft-js/dist/Draft.css';
 import { useCallback } from 'react';
+import { RichAttachementInput } from './RichAttachementInput';
 
 // custom styleMap
 const styleMap = {
@@ -14,7 +15,7 @@ const styleMap = {
 };
 
 // main component
-const RichTextEditor = ({ placeholder = '', name }) => {
+const RichTextEditor = ({ placeholder = '', name, setAttachement }) => {
   const { setValue, clearErrors } = useFormContext();
   const editorState = useWatch({ name });
   const handleChange = state => (typeof state === 'function' ? setValue(name, state(editorState)) : setValue(name, state));
@@ -57,21 +58,10 @@ const Toolbar = ({ editorState, onChange }) => {
   };
 
   return (
-    <Stack
-      spacing='2'
-      flexDirection='row'
-      justifyContent='flex-end'
-      divider={<Divider />}
-      p={1}
-      boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0'
-      position='sticky'
-      top={0}
-      marginBottom={2}
-      zIndex={999}
-      bgcolor='white'
-    >
+    <Stack spacing='2' flexDirection='row' justifyContent='flex-end' p={1} boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0' marginBottom={2}>
       <BlockControls editorState={editorState} onToggle={toggleBlockType} />
       <InlineControls editorState={editorState} onToggle={toggleInlineStyle} />
+      <RichAttachementInput />
     </Stack>
   );
 };

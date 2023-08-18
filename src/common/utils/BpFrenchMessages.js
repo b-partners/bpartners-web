@@ -45,5 +45,8 @@ export const BpFrenchMessages = {
       success: 'Demande envoyée avec succès.',
       error: "La demande n'as pas pu être envoyée.",
     },
+    download: {
+      start: 'Téléchargement en cours...',
+    },
   },
 };

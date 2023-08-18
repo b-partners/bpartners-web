@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
+import { invoiceRelaunch1, invoiceRelaunch2, invoiceRelaunchHistory } from './mocks/responses/invoice-relaunch-api';
 import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -26,6 +26,7 @@ describe(specTitle('Invoice Relaunch'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
+    cy.intercept('GET', '/accounts/mock-account-id1/invoices/*/relaunches**', [invoiceRelaunchHistory]);
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
       const { pageSize, status, page } = req.query;
@@ -89,19 +90,17 @@ describe(specTitle('Invoice Relaunch'), () => {
 
     cy.get('#attachment-input').invoke('show').selectFile(_files).invoke('hide');
 
-    cy.get('[data-cy-item=num-of-docs]').contains(_files.length); // num of docs
     cy.contains('attachment-mock-1');
     cy.contains('attachment-mock-2');
 
-    // remove the `attachment-mock-2`
-    cy.get('[title="attachment-mock-2"] > .MuiListItemSecondaryAction-root > .MuiButtonBase-root').click();
+    // remove 2nd file
+    cy.get(':nth-child(2) > [data-testid="CancelIcon"]').click();
 
-    cy.get('[data-cy-item=num-of-docs]').contains(_files.length - 1); // num of docs
     cy.contains('attachment-mock-1');
     cy.should('not.contain.text', 'attachment-mock-2');
 
-    // remove files
-    cy.get('[title="attachment-mock-1"] > .MuiListItemSecondaryAction-root > .MuiButtonBase-root').click();
+    // remove the last file
+    cy.get(':nth-child(1) > [data-testid="CancelIcon"]').click();
     cy.contains('Aucun attachement');
 
     // re-select files to relaunch the invoice
@@ -122,5 +121,39 @@ describe(specTitle('Invoice Relaunch'), () => {
         updatedAt: new Date(),
       });
     });
+  });
+
+  it('Show invoice relaunch history', () => {
+    mount(<App />);
+
+    // open an invoiceRelaunch modal
+    cy.get('[name="invoice"]').click();
+    cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
+    cy.get('[data-testid="relaunch-invoice-CONFIRMED-1-id"]').click();
+
+    cy.get('[data-cy="invoice-relaunch-history"]').click();
+    cy.contains('Historique de relance de la facture ref:');
+    cy.contains('invoice-ref-1');
+    cy.contains('Devis relancé');
+    cy.contains('Dummy object of history relaunch');
+    cy.contains('Page : 1');
+    cy.contains('Taille');
+
+    // show more
+    cy.get('[data-testid="VisibilityIcon"]').click();
+    cy.contains('Historique de relance de la facture ref:');
+    cy.contains('invoice-ref-1');
+    cy.contains('Dummy object of history relaunch');
+    cy.contains('Dummy body content of history relaunch');
+    cy.contains('Mock file');
+    cy.get('[data-testid="DownloadForOfflineIcon"]').click();
+
+    // // return to the history
+    // cy.get('[data-cy="invoice-relaunch-history"]').click();
+
+    // // relaunch invoice
+    // cy.get('[data-testid="relaunch-invoice"]').click();
+    // cy.contains('Relance manuelle de la facture ref:');
+    // cy.contains('invoice-ref-1');
   });
 });
