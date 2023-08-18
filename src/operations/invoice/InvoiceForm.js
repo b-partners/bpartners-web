@@ -97,8 +97,7 @@ const InvoiceForm = props => {
         () =>
           invoiceProvider
             .saveOrUpdate([form.watch()], { isEdition: true })
-            .then(([updatedInvoice]) => getInvoicePdfUrl(updatedInvoice.fileId))
-            .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl)),
+            .then(([updatedInvoice]) => onPending(InvoiceActionType.STOP_PENDING, getInvoicePdfUrl(updatedInvoice.fileId))),
         error => error?.response?.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
       ).catch(err => err?.response?.status === 400 && notify(err.response.data.message, { type: 'error', autoHideDuration: 10000 }));
     })
@@ -119,9 +118,7 @@ const InvoiceForm = props => {
   };
 
   useEffect(() => {
-    getInvoicePdfUrl(toEdit.fileId)
-      .then(pdfUrl => onPending(InvoiceActionType.STOP_PENDING, pdfUrl))
-      .catch(printError);
+    onPending(InvoiceActionType.STOP_PENDING, getInvoicePdfUrl(toEdit.fileId));
     updateInvoiceForm(toEdit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);

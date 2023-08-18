@@ -1,7 +1,7 @@
 import { Invoice, InvoiceStatus } from 'bpartners-react-client';
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
-type ModalType = 'FEEDBACK' | 'RELAUNCH';
+export type ModalType = 'FEEDBACK' | 'RELAUNCH' | 'RELAUNCH_HISTORY' | 'RELAUNCH_SHOW';
 
 type Tab = 0 | 1 | 2;
 
@@ -11,6 +11,7 @@ type Modal = {
   type: ModalType;
   isOpen: boolean;
   invoice: Invoice;
+  metadata?: any;
 };
 
 export type InvoiceToolState = {

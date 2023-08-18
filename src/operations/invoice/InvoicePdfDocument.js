@@ -1,10 +1,9 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
-import PdfViewer from '../../common/components/PdfViewer';
-import { getInvoicePdfUrl, PDF_WIDTH } from './utils/utils';
-import { printError } from 'src/common/utils';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
+import PdfViewer from '../../common/components/PdfViewer';
+import { PDF_WIDTH, getInvoicePdfUrl } from './utils/utils';
 
 export const CancelButton = ({ onClose }) => {
   return (
@@ -25,9 +24,7 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose }) => {
   const [documentUrl, setDocumentUrl] = useState('');
 
   useEffect(() => {
-    getInvoicePdfUrl(selectedInvoice.fileId)
-      .then(pdfUrl => setDocumentUrl(pdfUrl))
-      .catch(printError);
+    setDocumentUrl(getInvoicePdfUrl(selectedInvoice.fileId));
   }, [selectedInvoice]);
 
   return (
