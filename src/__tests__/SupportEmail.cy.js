@@ -19,18 +19,8 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.get('[name="support"]').click();
 
-    cy.contains("Contactez-nous à l'adresse email");
-    cy.contains('Pour utiliser votre client email, cliquez ici.');
-    cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click();
-  });
-
-  it('should open client mail', () => {
-    mount(<App />);
-
-    cy.get('[name="support"]').click();
-
-    cy.contains("Contactez-nous à l'adresse email");
-    cy.contains('Pour utiliser votre client email, cliquez ici.');
-    cy.get('.MuiDialogContent-root > span').click();
+    cy.contains('contact@bpartners.app');
+    cy.contains('Pour contacter le support, veuillez envoyer un courriel à contact@bpartners.app ou nous appeler directement au:');
+    cy.contains('01 84 80 31 69');
   });
 });
