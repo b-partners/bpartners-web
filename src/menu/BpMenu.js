@@ -13,14 +13,12 @@ import {
   Settings,
   Store,
 } from '@mui/icons-material';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { blue } from '@mui/material/colors';
 import { Menu } from 'react-admin';
 import { printError } from 'src/common/utils';
 import { accountHolderProvider, authProvider } from '../providers';
-
-const SUPPORT_EMAIL = process.env.REACT_APP_BP_EMAIL_SUPPORT || '';
+import { SupportDialog } from 'src/common/components';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -43,11 +41,6 @@ const BpMenu = () => {
   const contactSupport = e => {
     e.preventDefault();
     toggleDialogState();
-  };
-
-  const openMailService = e => {
-    e.preventDefault();
-    window.open('mailto:', SUPPORT_EMAIL);
   };
 
   const [accountHolder, setAccountHolder] = useState(null);
@@ -95,29 +88,12 @@ const BpMenu = () => {
         {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </Menu>
-
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
-        <Dialog open={dialogState} onClose={toggleDialogState}>
-          <DialogTitle>Support</DialogTitle>
-          <DialogContent>
-            Contactez-nous à l'adresse email <b>{SUPPORT_EMAIL}</b>.<br />
-            <br />
-            Pour utiliser votre client email, cliquez{' '}
-            <span style={{ color: blue[800], cursor: 'pointer' }} onClick={openMailService}>
-              ici
-            </span>
-            .
-          </DialogContent>
-          <DialogActions>
-            <Button id='support_close_button_id' onClick={toggleDialogState}>
-              Fermer
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <SupportDialog onToggle={toggleDialogState} open={dialogState} />
         <Menu>
           <Menu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
           <Menu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />
-          <Menu.Item to='/' onClick={contactSupport} primaryText='Contacter le support' name='support' leftIcon={<ContactSupport />} />
+          <Menu.Item to='/' onClick={contactSupport} primaryText='Besoin d’aide ?' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
         </Menu>
