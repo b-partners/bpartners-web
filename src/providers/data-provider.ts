@@ -9,6 +9,7 @@ import {
   profileProvider,
   prospectingProvider,
   RaDataProviderType,
+  relaunchProvider,
   transactionProvider,
 } from '.';
 import { invoiceProvider } from './invoice-provider';
@@ -25,6 +26,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'prospects') return prospectingProvider;
   if (resourceType === 'invoices') return invoiceProvider;
   if (resourceType === 'accountHolder') return accountHolderProvider;
+  if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
