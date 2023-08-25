@@ -37,7 +37,7 @@ export const InvoiceRelaunchHistoryModal = () => {
         {(isFetching || isLoading) && <LinearProgress color='secondary' />}
         {!isLoading && (data?.length || 0) === 0 && <EmptyListTemplate label='Aucune relance répertoriée' />}
         {!isLoading && (
-          <List sx={{ overflowY: 'scroll', overflowX: 'auto' }}>
+          <List sx={{ overflowY: 'scroll', overflowX: 'hidden', height: '40vh', paddingBlock: '1rem' }}>
             {data?.map((relaunch, k) => (
               <Box key={'Invoice-relaunch-list-' + relaunch?.id + k}>
                 <ListItem
@@ -58,9 +58,9 @@ export const InvoiceRelaunchHistoryModal = () => {
                 <Divider variant='inset' component='li' />
               </Box>
             ))}
-            {data.length !== 0 && <Pagination />}
           </List>
         )}
+        {!isLoading && data.length !== 0 && <Pagination />}
       </InvoiceListModal>
     </ListContextProvider>
   );
