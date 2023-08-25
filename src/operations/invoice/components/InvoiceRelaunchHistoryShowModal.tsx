@@ -32,11 +32,9 @@ export const InvoiceRelaunchHistoryShowModal = () => {
       type='RELAUNCH_SHOW'
       title={<InvoiceModalTitle label='Historique de relance' invoice={invoice} />}
       actions={
-        <>
-          <Button data-cy='invoice-relaunch-history' onClick={() => openModal({ invoice, isOpen: true, type: 'RELAUNCH_HISTORY' })}>
-            Historique des relances
-          </Button>
-        </>
+        <Button data-cy='invoice-relaunch-history' onClick={() => openModal({ invoice, isOpen: true, type: 'RELAUNCH_HISTORY' })}>
+          Historique des relances
+        </Button>
       }
     >
       <Card>
