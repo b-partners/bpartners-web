@@ -11,15 +11,15 @@ body {
   overflow-x: hidden;
 }
 
-*::-webkit-scrollbar {
+body::-webkit-scrollbar {
   width: 6px;
 }
 
-*::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track {
   box-shadow: inset 1px 1px 6px rgba(255, 0, 0, 0.3);
 }
 
-*::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
   background-color: darkgrey;
 }
 

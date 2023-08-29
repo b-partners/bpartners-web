@@ -1,4 +1,4 @@
-import { Attachment, Check, DriveFileMove, TurnRight, History } from '@mui/icons-material';
+import { Attachment, Check, DriveFileMove, TurnRight } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
@@ -10,6 +10,7 @@ import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
 
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import InvoiceRelaunchModal from './InvoiceRelaunchModal';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { RaMoneyField } from 'src/common/components';
@@ -20,7 +21,7 @@ import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoi
 import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { EmptyInvoiceList } from './components/EmptyInvoiceList';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
-import { InvoiceButtonToPaid, InvoiceRelaunchModal, InvoiceRelaunchHistoryShowModal, InvoiceRelaunchHistoryModal } from './components';
+import { InvoiceButtonToPaid } from './components';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -89,12 +90,6 @@ const InvoiceGridTable = props => {
                       onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
                       data-testid={`relaunch-${data.id}`}
                     />
-                    <TooltipButton
-                      title='Voir les historiques de relance'
-                      icon={<History />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                      data-testid={`relaunch-history-${data.id}`}
-                    />
                   </>
                 )}
                 {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
@@ -106,13 +101,6 @@ const InvoiceGridTable = props => {
                       icon={<TurnRight />}
                       onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
                       data-testid={`relaunch-${data.id}`}
-                    />
-                    <TooltipButton
-                      disabled={data.status === InvoiceStatus.PAID}
-                      title='Voir les historiques de relance'
-                      icon={<History />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                      data-testid={`relaunch-history-${data.id}`}
                     />
                   </>
                 )}
@@ -130,11 +118,7 @@ const InvoiceList = props => {
   const notify = useNotify();
   const refresh = useRefresh();
   const { onStateChange, invoiceTypes, actions, emptyAction } = props;
-  const {
-    setTab,
-    setView,
-    modal: { isOpen },
-  } = useInvoiceToolContext();
+  const { setTab, setView } = useInvoiceToolContext();
 
   const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, setTab);
   const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
@@ -178,10 +162,8 @@ const InvoiceList = props => {
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} />
       </List>
 
-      {isOpen && <FeedbackModal />}
-      {isOpen && <InvoiceRelaunchModal />}
-      {isOpen && <InvoiceRelaunchHistoryModal />}
-      {isOpen && <InvoiceRelaunchHistoryShowModal />}
+      <FeedbackModal />
+      <InvoiceRelaunchModal />
     </>
   );
 };

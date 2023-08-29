@@ -15,7 +15,7 @@ export const BP_COLOR = {
 export const BP_BUTTON = {
   color: '#fff',
   backgroundColor: BP_COLOR[10],
-  textTransform: 'unset',
+  textTransform: 'capitalize',
   '&:hover, &:active': {
     backgroundColor: BP_COLOR['20'],
     cursor: 'pointer',
@@ -27,23 +27,6 @@ export const BP_BUTTON = {
 
 export const BP_THEME = {
   ...defaultTheme,
-  palette: {
-    background: {
-      default: '#fafafb',
-    },
-    primary: {
-      light: '#ab0056',
-      main: '#7A003D',
-      dark: '#660033',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#6ec6ff',
-      main: '#2196f3',
-      dark: '#0069c0',
-      contrastText: '#fff',
-    },
-  },
   components: {
     MuiSideBar: {
       styleOverrides: {

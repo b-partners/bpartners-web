@@ -1,26 +1,13 @@
-import axios from 'axios';
 import { FileApi, getCached } from '.';
-import { getFileUrl, getMimeType, toArrayBuffer } from '../common/utils';
+import { getMimeType, toArrayBuffer } from '../common/utils';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 export const fileProvider: BpDataProviderType = {
-  async getOne(id, option = {}) {
-    const { fileType, fileName } = option;
-    const url = getFileUrl(id, fileType);
-    const response = await axios({
-      url: url,
-      method: 'GET',
-      responseType: 'blob',
-    });
-    // get the file extension
-    const contentType = response.headers['content-type'];
-    const fileExtension = contentType ? contentType.split('/')[1] : '';
-    // create a element to download the file
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(new Blob([response.data]));
-    link.download = `${fileName}.${fileExtension}`;
-    link.click();
-    window.URL.revokeObjectURL(link.href);
+  async getOne(id: string) {
+    const { accountId } = getCached.userInfo();
+    return FileApi()
+      .getFileById(accountId, id)
+      .then(({ data }) => data);
   },
   getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');

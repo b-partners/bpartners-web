@@ -20,7 +20,6 @@ const transform = (_editorState: unknown) => getHTML(_editorState as EditorState
 const invoiceRelaunchValidator = zod.object({
   subject: requiredString(),
   message: zod.custom(messageValidator, { message: FieldErrorMessage.required }).transform(transform),
-  attachments: zod.any(),
 });
 
 export const invoiceRelaunchResolver = zodResolver(invoiceRelaunchValidator);

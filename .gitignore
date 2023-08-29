@@ -8,7 +8,6 @@ coverage/
 .nyc_output/
 cypress/screenshots/
 cypress/downloads/
-cypress/videos
 
 .env
 .DS_Store
