@@ -20,9 +20,9 @@ export const invoiceProvider: BpDataProviderType = {
     ).then(listOfLists => listOfLists.flat());
 
     // TODO: remove when the backend implement the multi-status search in their side
-    if (result.length > perPage) {
-      return result.slice(0, perPage);
-    }
+    //if (result.length > perPage) {
+    //  return result.slice(0, perPage);
+    //}
     return result;
   },
   getOne: async function (invoiceId: string): Promise<any> {
