@@ -32,7 +32,7 @@ const SelectionDialog = props => {
   const handleSubmit = () => {
     const fetch = async () => {
       await justifyTransaction(id, invoiceToLink.id);
-      notify(`La transaction "${label}" à été associer au devis "${invoiceToLink.title}"`, { type: 'success' });
+      notify(`La transaction "${label}" a été associée au justificatif "${invoiceToLink.title}."`, { type: 'success' });
       close();
       refresh();
     };

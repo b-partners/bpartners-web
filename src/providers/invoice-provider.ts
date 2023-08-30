@@ -8,7 +8,7 @@ export const invoiceProvider: BpDataProviderType = {
     const accountId = await asyncGetAccountId();
     const invoiceTypes: Array<InvoiceStatus> = filter.invoiceTypes;
 
-    return Promise.all(
+    const result = await Promise.all(
       // TODO: this has to be done backend-side.
       // In particular, front-end side pagination is at best inefficient, and at worst broken (case here).
       // Filter for disabled invoice
@@ -18,6 +18,12 @@ export const invoiceProvider: BpDataProviderType = {
           .then(({ data }) => data.filter(invoice => !invoice.archiveStatus || invoice.archiveStatus === ArchiveStatus.ENABLED))
       )
     ).then(listOfLists => listOfLists.flat());
+
+    // TODO: remove when the backend implement the multi-status search in their side
+    //if (result.length > perPage) {
+    //return result.slice(0, perPage);
+    //}
+    return result;
   },
   getOne: async function (invoiceId: string): Promise<any> {
     const { accountId } = getCached.userInfo();

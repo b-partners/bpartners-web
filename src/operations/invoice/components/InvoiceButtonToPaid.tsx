@@ -33,7 +33,7 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
   return (
     <PopoverButton data-testid={`invoice-conversion-PAID-${invoice.ref}-1`} icon={<DoneAllIcon />} disabled={isLoading || disabled} label='Marquer comme payée'>
       <Box sx={{ width: '13rem', padding: 1 }}>
-        <Typography variant='h6'>Mode de payment : </Typography>
+        <Typography variant='h6'>Mode de paiement : </Typography>
         <TextField sx={{ width: '13rem', paddingBottom: 2 }} value={paymentMethod} data-testid='invoice-payment-method-select' select>
           {paymentMethodList.map(option => (
             <MenuItem onClick={() => setPaymentMethod(option.value)} key={`${option.value}`} value={option.value}>

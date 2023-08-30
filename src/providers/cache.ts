@@ -7,6 +7,7 @@ const unapprovedFiles = 'bp_unapproved_Files';
 const accountItem = 'bp_account';
 const accountHolderItem = 'bp_accountHolder';
 const userItem = 'bp_user';
+const invoiceConfirmedListSwitchItem = 'bp_invoiceConfirmedListSwitch';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -41,6 +42,9 @@ export const cache = {
   accountHolder(accountHolder: AccountHolder) {
     return cacheObject<AccountHolder>(accountHolderItem, accountHolder);
   },
+  invoiceConfirmedListSwitch(value: boolean) {
+    return localStorage.setItem(invoiceConfirmedListSwitchItem, value ? '1' : '0');
+  },
 };
 
 export const getCached = {
@@ -69,6 +73,9 @@ export const getCached = {
     const { id: accountHolderId } = this.accountHolder() || { id: null };
     const { id: userId } = this.whoami().user || { id: null };
     return { accountId, accountHolderId, userId };
+  },
+  invoiceConfirmedListSwitch() {
+    return localStorage.getItem(invoiceConfirmedListSwitchItem) === '1';
   },
 };
 
