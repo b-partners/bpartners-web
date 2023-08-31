@@ -23,14 +23,14 @@ export const InvoiceConfirmedPayedTabPanel: FC<InvoiceConfirmedPayedTabPanelProp
         <FormGroup>
           <FormControlLabel
             control={<Switch data-testid='invoice-confirmed-switch' checked={switchValue} onClick={toggleConfirmedInvoiceToShow} />}
-            label='À payer'
+            label='Impayées uniquement'
           />
         </FormGroup>
       }
       emptyAction={
         confirmedInvoiceToShow.length === 1 && (
           <Button name='create-confirmed-invoice' sx={EMPTY_BUTTON_STYLE} onClick={toggleConfirmedInvoiceToShow}>
-            Voire tout
+            Voir tout
           </Button>
         )
       }

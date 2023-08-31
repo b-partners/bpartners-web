@@ -1,7 +1,7 @@
-import { Alert, Box, Card, CardContent, CardHeader, Link } from '@mui/material';
+import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { InvoiceStatus } from 'bpartners-react-client';
-import React, { useReducer } from 'react';
+import { useReducer } from 'react';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
 import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
@@ -19,17 +19,9 @@ const useStyle = makeStyles(() => ({
 const invoiceListReducer = (state, { type, payload }) => {
   switch (type) {
     case InvoiceActionType.START_PENDING:
-      return {
-        ...state,
-        nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1,
-        documentUrl: payload.documentUrl,
-      };
+      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1, documentUrl: payload.documentUrl };
     case InvoiceActionType.STOP_PENDING:
-      return {
-        ...state,
-        nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1,
-        documentUrl: payload.documentUrl,
-      };
+      return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate - 1, documentUrl: payload.documentUrl };
     case InvoiceActionType.SET:
       return { ...state, ...payload };
     default:
@@ -53,11 +45,6 @@ const InvoiceListEditor = () => {
       <Box>
         <InvoiceView type={['list']}>
           <Box>
-            <Alert severity='warning'>
-              La liste des factures rencontre momentanément quelques difficultés qui sont en train d'être corrigées. Veuillez contacter le support au numéro{' '}
-              <Link href='tel:0184803169'>01 84 80 31 69</Link> ou par email à <Link href='mailto:contact@bpartners.app'>contact@bpartners.app</Link> en cas
-              d'urgence.
-            </Alert>
             <InvoiceTabs />
             <InvoiceTabPanel index={0} onStateChange={stateChangeHandling} type={[InvoiceStatus.DRAFT]} />
             <InvoiceTabPanel index={1} onStateChange={stateChangeHandling} type={[InvoiceStatus.PROPOSAL]} />
