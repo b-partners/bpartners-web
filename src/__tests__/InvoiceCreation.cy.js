@@ -26,8 +26,14 @@ describe(specTitle('Invoice creation'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, status, page } = req.query;
-      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
     });
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, createInvoices(1)[0]).as('crupdate1');
   });
@@ -183,6 +189,6 @@ describe(specTitle('Invoice creation'), () => {
     }).as('crupdateWithNewProduct');
 
     cy.get('form #form-save-id').click();
-    cy.contains('À payer');
+    cy.contains('Impayées uniquement');
   });
 });

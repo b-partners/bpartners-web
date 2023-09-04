@@ -113,7 +113,17 @@ const invoiceMock = {
   PROPOSAL_CONFIRMED: createInvoices(35, InvoiceStatus.PROPOSAL_CONFIRMED),
 };
 
-export const getInvoices = (page: number, perPage: number, status: InvoiceStatus) => invoiceMock[status].slice(page * perPage, page * perPage + perPage);
+export const getInvoices = (page: number, _perPage: number, statusList: InvoiceStatus[]) => {
+  let result: Invoice[] = [];
+
+  const perPage = Math.floor(_perPage / statusList.length);
+
+  statusList.forEach(status => {
+    result = [...result, ...invoiceMock[status].slice(page * perPage, page * perPage + perPage)];
+  });
+
+  return result;
+};
 
 export const invoicesToChangeStatus = [
   {

@@ -1,4 +1,4 @@
-import { Toolbar, Typography, IconButton, Box } from '@mui/material';
+import { Toolbar, Typography, IconButton, Box, TextField, MenuItem } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useListContext } from 'react-admin';
 import { FC } from 'react';
@@ -6,12 +6,11 @@ import { usePagination } from '../hooks';
 
 export const pageSize = 15;
 
-//TODO: set it again later
-//const pageSizeList = [10, 15, 30, 50];
+const pageSizeList = [10, 15, 30, 50];
 
 const Pagination: FC<any> = props => {
   const { filter, name } = props;
-  const { page, isLoading, setPage, perPage, resource } = useListContext();
+  const { page, isLoading, setPage, perPage, setPerPage, resource } = useListContext();
   const { lastPage } = usePagination(resource, page, perPage, filter && { filter, name });
 
   if (isLoading) {
@@ -47,8 +46,15 @@ const Pagination: FC<any> = props => {
           Page : {page}
         </Typography>
         <Typography sx={{ marginInline: 1 }} variant='body1'>
-          Taille : 15
+          Taille :
         </Typography>
+        <TextField select sx={{ width: 70, position: 'relative', bottom: 2 }} value={perPage} variant='outlined' type='number'>
+          {pageSizeList.map(option => (
+            <MenuItem key={`pageSize-${option}`} onClick={() => setPerPage(option)} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
       </Box>
     </Toolbar>
   );
