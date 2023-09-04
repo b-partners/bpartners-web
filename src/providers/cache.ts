@@ -71,7 +71,7 @@ export const getCached = {
   userInfo() {
     const { id: accountId } = this.account() || { id: null };
     const { id: accountHolderId } = this.accountHolder() || { id: null };
-    const { id: userId } = this.whoami().user || { id: null };
+    const { id: userId } = this.whoami()?.user || { id: null };
     return { accountId, accountHolderId, userId };
   },
   invoiceConfirmedListSwitch() {
