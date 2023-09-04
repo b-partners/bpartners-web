@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { Button, CircularProgress, Typography, Divider } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -42,13 +42,38 @@ const SignInForm = () => {
           Se connecter
         </Button>
         <Button
-          id='register'
+          id='passwordReset'
           sx={{
             backgroundColor: 'transparent',
             color: '#000000',
             textTransform: 'none',
             textAlign: 'left',
             mt: 2,
+            p: 0,
+            '&:hover': {
+              backgroundColor: 'transparent',
+              textDecoration: 'underline',
+              color: BP_COLOR[20],
+            },
+          }}
+          onClick={() => {
+            navigate('/password/reset');
+          }}
+        >
+          {' '}
+          {/** /password/reset */}
+          <Typography variant='h7' gutterBottom>
+            Mot de passe oublié ?
+          </Typography>
+        </Button>
+        <Divider />
+        <Button
+          id='register'
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#000000',
+            textTransform: 'none',
+            textAlign: 'left',
             p: 0,
             '&:hover': {
               backgroundColor: 'transparent',
