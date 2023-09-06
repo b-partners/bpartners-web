@@ -19,11 +19,7 @@ describe(specTitle('Customers'), () => {
 
   it('are displayed', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
-    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
-      expect(req.body[0].status).deep.eq('CONTACTED');
 
-      req.reply(req.body);
-    }).as('updateStatus');
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
@@ -42,23 +38,41 @@ describe(specTitle('Customers'), () => {
     cy.contains('10.00');
     cy.contains('6.00');
 
+    // test change status to CONTACTED
     cy.get('[data-testid="statusprospect1_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();
 
+    cy.contains('Pas intéressé');
+    cy.contains('Intéressé');
+    cy.contains('Devis envoyé');
+
+    cy.contains('Pas intéressé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Intéressé').click();
+    cy.contains('Réserver le Prospect');
+
+    const contactedProspect = { ...prospects[0], status: 'CONTACTED', prospectFeedback: 'INTERESTED', comment: '', contractAmount: '' };
+    contactedProspect.rating.lastEvaluation = contactedProspect.rating.lastEvaluation.toISOString();
+    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects/${prospects[0].id}`, req => {
+      expect(req.body).deep.eq(contactedProspect);
+
+      req.reply(req.body);
+    }).as('updateStatus');
+    cy.contains('Réserver le Prospect').click();
     cy.wait('@updateStatus');
 
-    cy.contains('Changement effectué');
-
-    cy.contains('Non renseigné');
-
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, [contactedProspect, ...prospects.slice(1)]).as('getProspects');
+    cy.wait('@getProspects');
     // test filter prospect by name
     const filterName = 'to search';
     cy.intercept('GET', '/accountHolders/mock-accountHolder-id1/prospects?name=to+search', req => {
       expect(req.query.name).eq(filterName);
-      req.reply(prospects);
+      req.reply([contactedProspect, ...prospects.slice(1)]);
     }).as('filterProspect');
     cy.get("[data-testid='prospect-filter']").type(filterName);
     cy.wait('@filterProspect');
+
+    // cy.contains('Contactés').parent().parent().contains('JOHN DOE');
   });
 
   it('change prospecting perimeter', () => {
