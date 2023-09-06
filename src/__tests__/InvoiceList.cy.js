@@ -23,9 +23,15 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, status, page } = req.query;
-      req.reply(getInvoices(page - 1, pageSize, InvoiceStatus[status]));
-    }).as('invoiceList');
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
+    });
 
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);

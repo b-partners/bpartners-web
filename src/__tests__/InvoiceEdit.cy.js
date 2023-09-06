@@ -1,12 +1,12 @@
 import { mount } from '@cypress/react';
-import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
@@ -21,9 +21,15 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers**', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('GET', `**/invoices**`, req => {
-      const { pageSize, status } = req.query;
-      req.reply(createInvoices(pageSize, status));
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
     });
   });
 

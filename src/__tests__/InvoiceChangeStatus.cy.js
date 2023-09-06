@@ -29,7 +29,7 @@ describe(specTitle('Invoice'), () => {
 
   it('Should change invoice status', () => {
     mount(<App />);
-    const invoices = getInvoices(0, 1, InvoiceStatus.DRAFT);
+    const invoices = getInvoices(0, 1, [InvoiceStatus.DRAFT]);
     invoices[0].paymentRegulations = null;
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
       req.reply(invoices);
