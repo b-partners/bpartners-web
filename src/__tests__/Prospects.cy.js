@@ -50,6 +50,15 @@ describe(specTitle('Customers'), () => {
     cy.contains('Changement effectué');
 
     cy.contains('Non renseigné');
+
+    // test filter prospect by name
+    const filterName = 'to search';
+    cy.intercept('GET', '/accountHolders/mock-accountHolder-id1/prospects?name=to+search', req => {
+      expect(req.query.name).eq(filterName);
+      req.reply(prospects);
+    }).as('filterProspect');
+    cy.get("[data-testid='prospect-filter']").type(filterName);
+    cy.wait('@filterProspect');
   });
 
   it('change prospecting perimeter', () => {
