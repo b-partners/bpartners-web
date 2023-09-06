@@ -13,4 +13,11 @@ export const prospectingProvider: BpDataProviderType = {
     const { accountHolderId } = getCached.userInfo();
     return (await prospectingApi().updateProspects(accountHolderId, resources)).data;
   },
+  update: async ([resource]) => {
+    const { id } = resource;
+    const { accountHolderId } = getCached.userInfo();
+
+    const { data } = await prospectingApi().updateProspectsStatus(accountHolderId, id, resource);
+    return [data];
+  },
 };

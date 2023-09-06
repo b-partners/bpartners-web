@@ -16,9 +16,9 @@ import {
   Stack,
   Tab,
   Tabs,
-  TextField,
   Tooltip,
   Typography,
+  TextField,
 } from '@mui/material';
 import { Home, LocalPhoneOutlined, LocationCity, LocationOn, MailOutline, MoreVert, Star, Update } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
@@ -30,7 +30,10 @@ import ProspectsConfiguration from './ProspectsConfiguration';
 import { handleSubmit } from 'src/common/utils';
 import { prospectingProvider } from 'src/providers';
 import { parseRatingLastEvaluation, parseRatingValue } from './utils';
-import { CardViewField } from './components';
+import { CardViewField, ProspectDialog } from './components';
+import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
+import { FormProvider, useForm } from 'react-hook-form';
+import { FieldErrorMessage } from '../../common/resolvers';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -104,7 +107,14 @@ const ProspectColumn = props => {
   const { title, list, color } = props;
   return (
     <Grid item xs={4}>
-      <Card sx={{ minWidth: 275, height: '89vh', boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1) !important', border: 'none' }}>
+      <Card
+        sx={{
+          minWidth: 275,
+          height: '89vh',
+          boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.1) !important',
+          border: 'none',
+        }}
+      >
         <CardContent>
           <Stack spacing={3}>
             <Box sx={{ textAlign: 'center', py: 1 }}>
@@ -130,9 +140,17 @@ const ProspectColumn = props => {
 };
 
 const ProspectItem = ({ prospect }) => {
+  const [dialogState, setDialogState] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+
   const notify = useNotify();
   const refresh = useRefresh();
+
+  const toggleDialog = e => {
+    e && e.stopPropagation();
+    setDialogState(e => !e);
+    closePopover();
+  };
 
   const openPopover = event => {
     setAnchorEl(event.currentTarget);
@@ -142,17 +160,36 @@ const ProspectItem = ({ prospect }) => {
     setAnchorEl(null);
   };
 
-  const changeStatus = async e => {
+  const changeStatus = e => {
     const { value } = e.target;
-    try {
-      await prospectingProvider.saveOrUpdate([{ ...prospect, status: value }]);
-      refresh();
-      closePopover();
-      notify('Changement effectué', { type: 'success' });
-    } catch (error) {
-      notify(`Une erreur s'est produite`, { type: 'error' });
-    }
+    form.setValue('status', value);
+    toggleDialog();
   };
+
+  const form = useForm({ mode: 'all', defaultValues: prospect || {}, resolver: prospectInfoResolver });
+
+  const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
+    const fetch = async () => {
+      await prospectingProvider.update([
+        {
+          ...prospect,
+          ...data,
+          status: data.prospectFeedback === 'NOT_INTERESTED' || data.prospectFeedback === 'PROPOSAL_DECLINED' ? 'TO_CONTACT' : data.status,
+        },
+      ]);
+      refresh();
+      toggleDialog();
+    };
+    if (
+      prospect.status === 'CONTACTED' &&
+      data.prospectFeedback !== 'PROPOSAL_DECLINED' &&
+      (!data.contractAmount || data?.contractAmount === 0 || data?.contractAmount?.length === 0)
+    ) {
+      form.setError('contractAmount', { message: FieldErrorMessage.required });
+    } else {
+      fetch().catch(() => notify(`Une erreur s'est produite`, { type: 'error' }));
+    }
+  });
 
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
@@ -162,61 +199,66 @@ const ProspectItem = ({ prospect }) => {
   }
 
   return (
-    <Paper elevation={2} sx={{ p: 1 }}>
-      <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
-        <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
-          {prospect.name || 'Non renseigné'}
-        </Typography>
-        <Stack direction='row' alignItems='center'>
-          {prospect.location && (
-            <Link href={getGeoJsonUrl(prospect.location)} target='_blank' underline='hover'>
-              <Tooltip title='Voir sur la carte'>
-                <IconButton component='span'>
-                  <LocationOn fontSize='small' />
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+        <Paper elevation={2} sx={{ p: 1 }}>
+          <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
+            <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
+              {prospect.name || 'Non renseigné'}
+            </Typography>
+            <Stack direction='row' alignItems='center'>
+              {prospect.location && (
+                <Link href={getGeoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+                  <Tooltip title='Voir sur la carte'>
+                    <IconButton component='span'>
+                      <LocationOn fontSize='small' />
+                    </IconButton>
+                  </Tooltip>
+                </Link>
+              )}
+              <Tooltip title='Modifier le status'>
+                <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
+                  <MoreVert fontSize='small' />
                 </IconButton>
               </Tooltip>
-            </Link>
-          )}
-          <Tooltip title='Modifier le status'>
-            <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
-              <MoreVert fontSize='small' />
-            </IconButton>
-          </Tooltip>
-          <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={closePopover}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
-            }}
-          >
-            <Box sx={{ m: 2 }}>
-              <FormControl>
-                <RadioGroup defaultValue={prospect.status} name='radio-buttons-group' onChange={handleSubmit(changeStatus)}>
-                  <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
-                  <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
-                  <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
-                </RadioGroup>
-              </FormControl>
-            </Box>
-          </Popover>
-        </Stack>
-      </Stack>
-      <Box sx={{ color: '#4d4d4d' }}>
-        <CardViewField icon={<MailOutline />} value={prospect.email} />
-        <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
-        <CardViewField icon={<Home />} value={prospect.address} />
-        <CardViewField icon={<LocationCity />} value={prospect.townCode} />
-        <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
-        <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
-      </Box>
-    </Paper>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={closePopover}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <Box sx={{ m: 2 }}>
+                  <FormControl>
+                    <RadioGroup defaultValue={prospect.status} name='status' onChange={handleSubmit(changeStatus)}>
+                      <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
+                      <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
+                      <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
+                    </RadioGroup>
+                  </FormControl>
+                </Box>
+              </Popover>
+            </Stack>
+          </Stack>
+          <Box sx={{ color: '#4d4d4d' }}>
+            <CardViewField icon={<MailOutline />} value={prospect.email} />
+            <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
+            <CardViewField icon={<Home />} value={prospect.address} />
+            <CardViewField icon={<LocationCity />} value={prospect.townCode} />
+            <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
+            <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
+          </Box>
+          <ProspectDialog open={dialogState} close={toggleDialog} prospect={prospect} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
+        </Paper>
+      </form>
+    </FormProvider>
   );
 };
 
