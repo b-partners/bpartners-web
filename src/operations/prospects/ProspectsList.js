@@ -16,6 +16,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -61,7 +62,7 @@ const ProspectsList = () => {
 };
 
 const Prospects = () => {
-  const { data, isLoading } = useListContext();
+  const { data, isLoading, setFilters, filterValues } = useListContext();
   const [prospects, setProspects] = useState();
 
   useEffect(() => {
@@ -72,20 +73,30 @@ const Prospects = () => {
     return null;
   }
 
-  return (data || []).length > 0 ? (
-    <>
-      {prospects ? (
-        <Grid container justifyContent='space-between' spacing={2}>
-          <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
-          <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
-          <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
-        </Grid>
+  return (
+    <Box>
+      <TextField
+        data-testid='prospect-filter'
+        defaultValue={filterValues.searchName}
+        label='Rechercher un prospect'
+        onChange={e => setFilters({ searchName: e.target.value }, { searchName: e.target.value }, true)}
+      />
+      {(data || []).length > 0 ? (
+        <>
+          {prospects ? (
+            <Grid container justifyContent='space-between' spacing={2}>
+              <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
+              <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
+              <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
+            </Grid>
+          ) : (
+            <EmptyList content='Les données sont en cours de chargement, veuillez patienter.' />
+          )}
+        </>
       ) : (
-        <EmptyList content='Les données sont en cours de chargement, veuillez patienter.' />
+        <EmptyList />
       )}
-    </>
-  ) : (
-    <EmptyList />
+    </Box>
   );
 };
 

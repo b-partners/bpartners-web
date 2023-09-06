@@ -1,9 +1,10 @@
-import { BpDataProviderType, getCached, prospectingApi } from '.';
+import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {
-  getList: async function (): Promise<any[]> {
+  getList: async function (page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
+    const { searchName } = filters;
     const { accountHolderId } = getCached.userInfo();
-    return (await prospectingApi().getProspects(accountHolderId)).data;
+    return (await prospectingApi().getProspects(accountHolderId, searchName)).data;
   },
   getOne: function (id: string): Promise<any> {
     throw new Error('Function not implemented.');
