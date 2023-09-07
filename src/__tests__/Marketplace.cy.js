@@ -18,7 +18,7 @@ describe(specTitle('Customers'), () => {
 
   it('only show long description when asked', () => {
     mount(<App />);
-    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces?page=1&pageSize=20', marketplaces1).as('getMarketplaces');
+    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', marketplaces1).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();
 
@@ -41,7 +41,7 @@ describe(specTitle('Customers'), () => {
 
   it('are displayed', () => {
     mount(<App />);
-    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces?page=1&pageSize=20', marketplaces1).as('getMarketplaces');
+    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', marketplaces1).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();
     cy.wait('@getMarketplaces');
@@ -53,7 +53,7 @@ describe(specTitle('Customers'), () => {
 
   it('should show info when list is empty', () => {
     mount(<App />);
-    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces?page=1&pageSize=20', []).as('getMarketplaces');
+    cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', []).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();
     cy.wait('@getMarketplaces');

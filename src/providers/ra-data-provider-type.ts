@@ -1,6 +1,10 @@
 export type RaListResponseType = {
   data: Array<any>;
   total: number;
+  pageInfo?: {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 };
 
 export type RaSingleResponseType = {

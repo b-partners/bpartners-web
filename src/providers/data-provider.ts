@@ -13,6 +13,7 @@ import {
   transactionProvider,
 } from '.';
 import { invoiceProvider } from './invoice-provider';
+import { getPagination } from 'src/common/utils/pagination-utilities';
 
 export const maxPageSize = 10_000;
 
@@ -42,8 +43,16 @@ export const dataProvider: RaDataProviderType = {
     }
 
     const filter = params.filter;
-    const result = await getProvider(resourceType).getList(page, perPage, { ...filter, sort: params.sort || {} });
-    return { data: result, total: Number.MAX_SAFE_INTEGER };
+
+    const { data, pageInfo } = await getPagination({
+      filters: filter,
+      page,
+      perPage,
+      resource: resourceType,
+      fetcher: p => getProvider(resourceType).getList(p, perPage, { ...filter, sort: params.sort || {} }),
+    });
+
+    return { data, pageInfo, total: Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {
     const result = await getProvider(resourceType).getOne(params.id);
