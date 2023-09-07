@@ -9,11 +9,10 @@ export const transactionProvider: BpDataProviderType = {
   async getOne(id: string) {
     throw new Error('Function not implemented.');
   },
-  getList: async function (page: number, perPage: number, { categorized, status }: any): Promise<any[]> {
+  getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {
+    const { categorized, status, label } = filters;
     const { accountId } = await asyncGetUserInfo();
-    //TODO: implements transaction pagination on the back side
-    //TODO: implements transaction search by label in another commit
-    const { data } = await payingApi().getTransactions(accountId, undefined, page, perPage);
+    const { data } = await payingApi().getTransactions(accountId, label, page, perPage);
 
     return data
       .filter(

@@ -14,10 +14,7 @@ describe(specTitle('Transactions'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=10', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=2&pageSize=15', transactions).as('getTransactions');
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=500', transactions).as('getTransactions');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions**', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -48,7 +45,6 @@ describe(specTitle('Transactions'), () => {
   it('are displayed', () => {
     mount(<App />);
     cy.get('[name="transactions"]').click();
-
     cy.wait('@legalFiles');
 
     cy.contains("Abonnement BPartners - L'essentiel");
@@ -223,5 +219,18 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Justificatif');
     cy.get('[data-testid="ClearIcon"]').click();
     cy.contains('Vue mensuelle');
+  });
+
+  it('Filter transaction by label', () => {
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    const labelToSearch = 'to search';
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?label=to+search&page=1&pageSize=15', req => {
+      expect(req.query.label).eq(labelToSearch);
+      req.reply(transactions);
+    });
+
+    cy.get("[name='label']").type(labelToSearch);
   });
 });
