@@ -12,7 +12,8 @@ export const transactionProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, { categorized, status }: any): Promise<any[]> {
     const { accountId } = await asyncGetUserInfo();
     //TODO: implements transaction pagination on the back side
-    const { data } = await payingApi().getTransactions(accountId, page, perPage);
+    //TODO: implements transaction search by label in another commit
+    const { data } = await payingApi().getTransactions(accountId, undefined, page, perPage);
 
     return data
       .filter(
