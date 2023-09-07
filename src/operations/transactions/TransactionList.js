@@ -4,7 +4,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { Card, CardContent, Chip } from '@mui/material';
 import { useState } from 'react';
 
-import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, useListContext } from 'react-admin';
+import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, TextInput, useListContext } from 'react-admin';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
 import { formatDatetime, coloredPrettyPrintMinors } from '../../common/utils';
@@ -46,6 +46,7 @@ const TransactionList = props => {
             actions={null}
             filterDefaultValues={{ categorized: true }}
             filters={[
+              <TextInput key='transaction_list_label_filter' label='Rechercher par titre' source='label' alwaysOn />,
               <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
               <BooleanInput key='transaction_list_boolean_filter' label='Non Catégorisées' source='categorized' alwaysOn />,
             ]}
