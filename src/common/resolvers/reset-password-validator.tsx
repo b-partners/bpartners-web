@@ -20,6 +20,7 @@ const comparePasswords = ({ newPassword, confirmedPassword }: any) => newPasswor
 
 const PasswordValidator = zod
   .object({
+    resetCode: requiredString(),
     newPassword: zod
       .string({ required_error: FieldErrorMessage.emptyPassword })
       .nonempty({ message: FieldErrorMessage.emptyPassword })

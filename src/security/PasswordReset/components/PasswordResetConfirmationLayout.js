@@ -1,10 +1,32 @@
+import { useState } from 'react';
 import { Button, Typography, CircularProgress } from '@mui/material';
 import { BP_BUTTON } from 'src/bp-theme';
 import { BpFormField, BpNumberField } from '../../../common/components';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { PasswordResolver } from 'src/common/resolvers/reset-password-validator';
+import { Auth } from 'aws-amplify';
+import { FieldErrorMessage } from 'src/common/resolvers/utils';
 
-const PasswordResetConfirmationLayout = ({ formState, handleSubmitConfirmation, isLoading }) => {
-  // const formState = useForm({ mode: 'all', defaultValues: { resetCode: '', newpassword: '', confirmPassword: '' } });
+const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
+  const [isLoading, setLoading] = useState(false);
+  const formState = useForm({ mode: 'all', resolver: PasswordResolver });
+
+  const handleSubmitConfirmation = formState.handleSubmit(values => {
+    setLoading(true);
+    Auth.forgotPasswordSubmit(email, values.resetCode, values.newPassword)
+      .then(data => {
+        // La réinitialisation du mot de passe a réussi
+        setStepFunc('success');
+        setLoading(false);
+        console.log('Mot de passe réinitialisé avec succès', data);
+      })
+      .catch(error => {
+        // La réinitialisation du mot de passe a échoué
+        formState.setError('resetCode', { message: FieldErrorMessage.resetCode });
+        console.error('Erreur lors de la réinitialisation du mot de passe', error);
+        setLoading(false);
+      });
+  });
 
   return (
     <FormProvider {...formState}>
@@ -13,8 +35,8 @@ const PasswordResetConfirmationLayout = ({ formState, handleSubmitConfirmation, 
           <Typography variant='h6' gutterBottom>
             Réinitialiser votre mot de passe
           </Typography>
-          <BpNumberField label='Code de confirmation' name='code' />
-          <BpFormField label='Nouveau mot de passe' type='password' name='newpassword' />
+          <BpNumberField label='Code de confirmation' name='resetCode' />
+          <BpFormField label='Nouveau mot de passe' type='password' name='newPassword' />
           <BpFormField label='Confirmez le mot de passe' type='password' name='confirmedPassword' />
 
           <Button
