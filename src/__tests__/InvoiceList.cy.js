@@ -140,4 +140,28 @@ describe(specTitle('Invoice'), () => {
     cy.get('[name="create-confirmed-invoice"]').click();
     cy.contains('Création');
   });
+
+  it('Search invoice', () => {
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+
+    const toSearch = 'test search';
+    const expectedQuery = 'test,search';
+
+    cy.get("[data-testid='invoice-search-bar'] input").type(toSearch);
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, statusList, page, filters } = req.query;
+      expect(filters).eq(expectedQuery);
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
+    }).as('searchInvoice');
+
+    cy.wait('@searchInvoice');
+  });
 });
