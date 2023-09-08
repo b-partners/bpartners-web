@@ -20,7 +20,7 @@ import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoi
 import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { EmptyInvoiceList } from './components/EmptyInvoiceList';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
-import { InvoiceButtonToPaid, InvoiceRelaunchModal, InvoiceRelaunchHistoryShowModal, InvoiceRelaunchHistoryModal } from './components';
+import { InvoiceButtonToPaid, InvoiceRelaunchModal, InvoiceRelaunchHistoryShowModal, InvoiceRelaunchHistoryModal, InvoiceSearchBar } from './components';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -162,17 +162,20 @@ const InvoiceList = props => {
         pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
         perPage={pageSize}
         actions={
-          <BPListActions
-            hasCreate={false}
-            hasExport={false}
-            buttons={
-              <>
-                <ArchiveBulkAction source='title' statusName='archiveStatus' />
-                {actions}
-                <InvoiceCreationButton createInvoice={createInvoice} />
-              </>
-            }
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <InvoiceSearchBar />
+            <BPListActions
+              hasCreate={false}
+              hasExport={false}
+              buttons={
+                <>
+                  <ArchiveBulkAction source='title' statusName='archiveStatus' />
+                  {actions}
+                  <InvoiceCreationButton createInvoice={createInvoice} />
+                </>
+              }
+            />
+          </Box>
         }
       >
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} />
