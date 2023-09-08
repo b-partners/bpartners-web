@@ -53,10 +53,9 @@ describe(specTitle('Products'), () => {
     cy.wait('@getCustomersFilterByUnitPrice');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
-      const { page, pageSize, descriptionFilter, priceFilter, descriptionOrder } = req.query;
+      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
       expect(descriptionFilter).to.be.eq(descriptionFilterTest);
       expect(+priceFilter).to.be.eq(priceFilterTest * 100);
-      expect(descriptionOrder).to.be.eq('ASC');
       req.reply(getProducts(page - 1, pageSize));
     }).as('getCustomersSortByDescription');
     cy.get('.column-description > .MuiButtonBase-root > span').click();

@@ -1,10 +1,10 @@
+import { Button, Stack, Switch, Typography } from '@mui/material';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { FC } from 'react';
 import { InvoiceToolState } from 'src/common/store/invoice';
-import { InvoiceTabPanel } from './InvoiceTabPanel';
-import { FormGroup, FormControlLabel, Switch, Button } from '@mui/material';
 import { useConfirmedInvoiceToShow } from '../utils';
 import { EMPTY_BUTTON_STYLE } from './EmptyInvoiceList';
+import { InvoiceTabPanel } from './InvoiceTabPanel';
 
 type InvoiceConfirmedPayedTabPanelProps = {
   index: InvoiceToolState['tab'];
@@ -20,12 +20,11 @@ export const InvoiceConfirmedPayedTabPanel: FC<InvoiceConfirmedPayedTabPanelProp
       index={index}
       onStateChange={onStateChange}
       actions={
-        <FormGroup>
-          <FormControlLabel
-            control={<Switch data-testid='invoice-confirmed-switch' checked={switchValue} onClick={toggleConfirmedInvoiceToShow} />}
-            label='Impayées uniquement'
-          />
-        </FormGroup>
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <Typography>Tout voir</Typography>
+          <Switch data-testid='invoice-confirmed-switch' checked={switchValue} onClick={toggleConfirmedInvoiceToShow} />
+          <Typography>À payer uniquement</Typography>
+        </Stack>
       }
       emptyAction={
         confirmedInvoiceToShow.length === 1 && (

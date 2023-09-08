@@ -189,6 +189,7 @@ describe(specTitle('Invoice creation'), () => {
     }).as('crupdateWithNewProduct');
 
     cy.get('form #form-save-id').click();
-    cy.contains('Impayées uniquement');
+    cy.contains('Tout voir');
+    cy.contains('À payer uniquement');
   });
 });
