@@ -2,16 +2,13 @@ import { Toolbar, Typography, IconButton, Box, TextField, MenuItem } from '@mui/
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { useListContext } from 'react-admin';
 import { FC } from 'react';
-import { usePagination } from '../hooks';
 
 export const pageSize = 15;
 
 const pageSizeList = [10, 15, 30, 50];
 
-const Pagination: FC<any> = props => {
-  const { filter, name } = props;
-  const { page, isLoading, setPage, perPage, setPerPage, resource } = useListContext();
-  const { lastPage } = usePagination(resource, page, perPage, filter && { filter, name });
+const Pagination: FC<any> = () => {
+  const { page, isLoading, isFetching, setPage, perPage, setPerPage, hasPreviousPage, hasNextPage } = useListContext();
 
   if (isLoading) {
     return <Toolbar variant='dense' />;
@@ -21,7 +18,7 @@ const Pagination: FC<any> = props => {
     <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box>
         <IconButton
-          disabled={page === 1}
+          disabled={!hasPreviousPage || isLoading || isFetching}
           data-testid='pagination-right-id'
           style={{ marginRight: 6 }}
           color='primary'
@@ -31,7 +28,7 @@ const Pagination: FC<any> = props => {
           <ChevronLeft />
         </IconButton>
         <IconButton
-          disabled={page === lastPage}
+          disabled={!hasNextPage || isLoading || isFetching}
           data-testid='pagination-left-id'
           style={{ marginLeft: 6 }}
           color='primary'

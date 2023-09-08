@@ -11,6 +11,7 @@ export * from './get-params';
 export * from './includes-object';
 export * from './isBlank';
 export * from './money';
+export * from './pagination-utilities';
 export * from './percent';
 export * from './print-error';
 export * from './redirect';
