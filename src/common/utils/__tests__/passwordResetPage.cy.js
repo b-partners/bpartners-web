@@ -4,11 +4,6 @@ import PasswordResetPage from 'src/security/PasswordReset/PasswordResetPage';
 
 describe(specTitle('password reset page'), () => {
   it('be able to reset the password', () => {
-    cy.intercept('POST', `https://cognito-idp.eu-west-3.amazonaws.com/`, req => {
-      req.reply({
-        statusCode: 400,
-      });
-    }).as('wrongValidationCode');
     mount(<PasswordResetPage />);
     cy.contains('Mot de passe oublié ?');
     cy.get("input[name='email']").type('{enter}');
@@ -18,6 +13,11 @@ describe(specTitle('password reset page'), () => {
     // close popup //
     cy.get('[data-testid="close-modal-id"]').click();
     // confirmation step //
+    cy.intercept('POST', `https://cognito-idp.eu-west-3.amazonaws.com/`, req => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as('wrongValidationCode');
     cy.contains('Réinitialiser votre mot de passe');
     cy.get("input[name='resetCode']").type('{enter}');
     cy.contains('Ce champ est requis');
