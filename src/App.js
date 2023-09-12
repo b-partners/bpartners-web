@@ -30,6 +30,7 @@ import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
 import { BP_THEME } from './bp-theme';
 import { authProvider, dataProvider } from './providers';
+import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -88,6 +89,7 @@ const App = () => {
             }
           />
           <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
+          <Route exact path='/password/reset' element={<PasswordResetPage />} />
           <Route exact path='*' element={<BpAdmin />} />
         </Routes>
       </BrowserRouter>

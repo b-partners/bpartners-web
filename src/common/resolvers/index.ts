@@ -6,3 +6,4 @@ export * from './general-info-validator';
 export * from './invoice-relaunch-validator';
 export * from './revenue-target-validator';
 export * from './utils';
+export * from './reset-password-validator';
