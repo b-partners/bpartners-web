@@ -28,7 +28,7 @@ const PasswordResetPage = () => {
         clearTimeout(timeoutId);
       };
     }, 5000);
-  });
+  }, [step]);
 
   return (
     <>

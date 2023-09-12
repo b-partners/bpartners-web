@@ -36,7 +36,7 @@ describe(specTitle('password reset page'), () => {
     cy.get('#confirmation').click();
 
     cy.wait('@wrongValidationCode');
-    cy.contains('Le code de validation est incorrecte');
+    cy.contains('Le code de validation est incorrect');
 
     cy.get('input[name="resetCode"]').clear().type(54321);
 
