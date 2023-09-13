@@ -1,5 +1,20 @@
-import { CalendarAuth, CalendarConsentInit } from 'bpartners-react-client';
+import { CalendarAuth, CalendarConsentInit, Redirection1 } from 'bpartners-react-client';
 import { BpDataProviderType, calendarApi, getCached } from '.';
+
+const getCalendarAuth = (code: string): CalendarAuth => ({
+  code,
+  redirectUrls: {
+    failureUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync/failed',
+    successUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync',
+  },
+});
+
+const redirectionUrls: CalendarConsentInit = {
+  redirectionStatusUrls: {
+    failureUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync/failed',
+    successUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync',
+  },
+};
 
 export const calendarProvider: BpDataProviderType = {
   async getOne(calendarId: string) {
@@ -17,29 +32,11 @@ export const calendarProvider: BpDataProviderType = {
     const { userId } = getCached.userInfo();
     return (await calendarApi().crupdateCalendarEvents(userId, calendarId, resources)).data;
   },
-};
-
-const redirectionUrls: CalendarConsentInit = {
-  redirectionStatusUrls: {
-    failureUrl: '',
-    successUrl: '',
-  },
-};
-
-const getCalendarAuth = (code: string): CalendarAuth => ({
-  code,
-  redirectUrls: {
-    failureUrl: '',
-    successUrl: '',
-  },
-});
-
-export const calendarAuthProvider = {
   async oauth2Init() {
     const { userId } = getCached.userInfo();
     return (await calendarApi().initConsent(userId, redirectionUrls)).data;
   },
-  async exchangeToken(code: string) {
+  async oauth2ExchangeToken(code: string) {
     const { userId } = getCached.userInfo();
     return (await calendarApi().exchangeCode(userId, getCalendarAuth(code))).data;
   },

@@ -32,6 +32,7 @@ import { BP_THEME } from './bp-theme';
 import { authProvider, dataProvider } from './providers';
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 import { calendar } from './operations/calendar';
+import { CalendarSync } from './operations/calendar/components';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -56,6 +57,7 @@ export const BpAdmin = () => {
       <Resource name='calendar' {...calendar} />
 
       <CustomRoutes>
+        <Route path='/calendar-sync' element={<CalendarSync />} />
         <Route exact path='/account' element={<account.show />} />
         <Route exact path='/configurations' element={<Configuration />} />
         <Route exact path='/bank' element={<BankPage />} />

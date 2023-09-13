@@ -128,6 +128,15 @@ export const BP_THEME = {
         },
       },
     },
+    RaCalendar: {
+      styleOverrides: {
+        root: {
+          '&.MuiButton-root': {
+            color: '#ffffff',
+          },
+        },
+      },
+    },
     MuiTableCell: {
       styleOverrides: {
         root: {

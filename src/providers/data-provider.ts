@@ -77,4 +77,13 @@ export const dataProvider: RaDataProviderType = {
     const result = await getProvider(resourceType).archive(params.data);
     return { data: result };
   },
+  async oauth2Init(resourceType, params) {
+    const data = await getProvider(resourceType).oauth2Init(params);
+    return { data };
+  },
+  async oauth2ExchangeToken(resourceType, params) {
+    const { code, options } = params;
+    const data = await getProvider(resourceType).oauth2ExchangeToken(code, options);
+    return { data };
+  },
 };
