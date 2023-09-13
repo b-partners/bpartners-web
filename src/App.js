@@ -31,6 +31,7 @@ import { SignUpForm } from './security/SignUpForm';
 import { BP_THEME } from './bp-theme';
 import { authProvider, dataProvider } from './providers';
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
+import { calendar } from './operations/calendar';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -52,6 +53,7 @@ export const BpAdmin = () => {
       <Resource name='marketplaces' {...marketplaces} />
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
+      <Resource name='calendar' {...calendar} />
 
       <CustomRoutes>
         <Route exact path='/account' element={<account.show />} />
