@@ -39,3 +39,11 @@ Cypress.Commands.add('cognitoLogin', () => {
   cy.stub(Auth, 'signIn').returns(Promise.resolve(cognitoResponse));
   cy.then(async () => await authProvider.login(loginParams));
 });
+
+Cypress.Commands.add('realCognitoLogin', () => {
+  const loginParams = {
+    username: process.env.REACT_APP_IT_USERNAME,
+    password: process.env.REACT_APP_IT_PASSWORD
+  };
+  cy.then(async () => await authProvider.login(loginParams));
+});
