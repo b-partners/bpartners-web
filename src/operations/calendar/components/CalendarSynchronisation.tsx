@@ -26,6 +26,7 @@ export const CalendarSynchronisation = () => {
           endIcon={isLoading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : <Google />}
           disabled={isLoading}
           onClick={oauth2Init}
+          data-testid='button-sync-to-google-calendar'
         >
           Se connecter
         </Button>
