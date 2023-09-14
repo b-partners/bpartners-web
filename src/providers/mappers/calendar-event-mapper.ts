@@ -17,8 +17,8 @@ export const calendarEventMapper = {
     return {
       id,
       title: summary,
-      start: from.toISOString(),
-      end: to.toISOString(),
+      start: from as any,
+      end: to as any,
       metadata: {
         location,
         organizer,
