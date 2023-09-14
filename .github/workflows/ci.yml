@@ -36,7 +36,12 @@ jobs:
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
         run: |
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-      - run: npm test
+      - run: |
+          if ${{ github.ref_name == 'prod' }}; then
+            REACT_APP_AWS_REGION=${{ secrets.BPARTNERS_AWS_REGION }} REACT_APP_USERPOOL_ID=${{ secrets.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ secrets.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ secrets.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ secrets.PROD_REDIRECT_SUCCESS }} npm test
+          else
+            REACT_APP_AWS_REGION=${{ secrets.BPARTNERS_AWS_REGION }} REACT_APP_USERPOOL_ID=${{ secrets.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ secrets.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ secrets.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ secrets.PREPROD_REDIRECT_SUCCESS }} npm test
+          fi
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
