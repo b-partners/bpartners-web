@@ -1,6 +1,6 @@
 import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
 import { getFileUrl, getFilenameMeta } from '../../../common/utils';
-import { InvoiceStatusFR } from '../../../constants/invoice-status';
+import { InvoiceStatusFR } from '../../../constants';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
 import { ContentState, EditorState, convertFromHTML } from 'draft-js';

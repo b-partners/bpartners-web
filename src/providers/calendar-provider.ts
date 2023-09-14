@@ -1,20 +1,5 @@
-import { CalendarAuth, CalendarConsentInit, Redirection1 } from 'bpartners-react-client';
 import { BpDataProviderType, calendarApi, getCached } from '.';
-
-const getCalendarAuth = (code: string): CalendarAuth => ({
-  code,
-  redirectUrls: {
-    failureUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync/failed',
-    successUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync',
-  },
-});
-
-const redirectionUrls: CalendarConsentInit = {
-  redirectionStatusUrls: {
-    failureUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync/failed',
-    successUrl: 'https://dashboard-preprod.bpartners.app/calendar-sync',
-  },
-};
+import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from 'src/constants/redirection-url';
 
 export const calendarProvider: BpDataProviderType = {
   async getOne(calendarId: string) {
@@ -34,10 +19,10 @@ export const calendarProvider: BpDataProviderType = {
   },
   async oauth2Init() {
     const { userId } = getCached.userInfo();
-    return (await calendarApi().initConsent(userId, redirectionUrls)).data;
+    return (await calendarApi().initConsent(userId, calendarRedirectionUrls)).data;
   },
   async oauth2ExchangeToken(code: string) {
     const { userId } = getCached.userInfo();
-    return (await calendarApi().exchangeCode(userId, getCalendarAuth(code))).data;
+    return (await calendarApi().exchangeCode(userId, getCalendarAuthRedirectionUrl(code))).data;
   },
 };

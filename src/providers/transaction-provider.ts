@@ -1,6 +1,6 @@
 import { Transaction, TransactionStatus } from 'bpartners-react-client';
 import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
-import { TRANSACTION_STATUSES } from '../constants/transaction-status';
+import { TRANSACTION_STATUSES } from '../constants';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
