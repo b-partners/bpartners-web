@@ -31,7 +31,9 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('Bon pour accord');
 
-    cy.intercept('GET', '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/invoices?page=1&pageSize=15&status=DRAFT').as('getdrafts');
+    cy.intercept('GET', '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
+      'getdrafts'
+    );
 
     // test payment regulation comment
     cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
@@ -55,7 +57,9 @@ describe(specTitle('Invoice'), () => {
 
     cy.wait('@getdrafts', { timeout: timeout });
 
-    cy.intercept('GET', '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/invoices?page=1&pageSize=15&status=PROPOSAL').as('getproposals');
+    cy.intercept('GET', '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/invoices?page=1&pageSize=15&statusList=PROPOSAL&archiveStatus=ENABLED&filters=').as(
+      'getproposals'
+    );
     cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
     cy.contains('Brouillon transformé en devis', { timeout: timeout });
 
