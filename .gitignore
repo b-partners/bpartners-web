@@ -17,6 +17,7 @@ key.pem
 cert.pem
 
 #amplify-do-not-edit-begin
+amplify
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
