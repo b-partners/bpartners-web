@@ -1,16 +1,14 @@
 import { MenuItem, TextField } from '@mui/material';
 import { Calendar } from 'bpartners-react-client';
 import { FC, useEffect } from 'react';
-import { useGetList } from 'react-admin';
 
 type CalendarSelectionProps = {
   onChange: (calendar: Calendar) => void;
   value: Calendar;
+  data: Calendar[];
 };
 
-export const CalendarSelection: FC<CalendarSelectionProps> = ({ onChange, value }) => {
-  const { data } = useGetList('calendar');
-
+export const CalendarSelection: FC<CalendarSelectionProps> = ({ onChange, value, data }) => {
   useEffect(() => {
     onChange(data && data[0]);
   }, [data]);
