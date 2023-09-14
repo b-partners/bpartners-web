@@ -6,6 +6,7 @@ export * from './auth-provider';
 export * from './bank-provider';
 export * from './bp-data-provider-type';
 export * from './cache';
+export * from './calendar-event-provider';
 export * from './calendar-provider';
 export * from './customer-provider';
 export * from './data-provider';
