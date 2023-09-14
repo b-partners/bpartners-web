@@ -10,15 +10,17 @@ type CalendarSelectionProps = {
 
 export const CalendarSelection: FC<CalendarSelectionProps> = ({ onChange, value, data }) => {
   useEffect(() => {
-    onChange(data && data[0]);
-  }, [data]);
+    if (!value) {
+      onChange(data[0]);
+    }
+  }, []);
 
   return (
-    <TextField select value={value}>
+    <TextField sx={{ minWidth: 300 }} select value={value?.summary}>
       {data &&
         data.map(calendar => (
-          <MenuItem onClick={() => onChange(calendar)} key={calendar.id} value={value.id}>
-            {calendar.summary}
+          <MenuItem onClick={() => onChange(calendar)} selected={value?.id === calendar?.id} key={calendar?.id} value={calendar?.summary}>
+            {calendar?.summary}
           </MenuItem>
         ))}
     </TextField>
