@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { List, useListContext, useNotify, useRefresh } from 'react-admin';
 import {
   Box,
@@ -34,33 +35,49 @@ import { CardViewField, ProspectDialog } from './components';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldErrorMessage } from '../../common/resolvers';
-import { ProspectContextProvider, useProspectContext } from 'src/common/store/Prospect-store';
+import { ProspectContextProvider, useProspectContext } from 'src/common/store/prospect-store';
+import TabManager from './components/TabManager';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
+  const location = useLocation();
 
+  // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
+  const updateURLWithTab = index => {
+    const searchParams = new URLSearchParams();
+    if (index === 0) {
+      searchParams.set('tab', 'prospects');
+    } else if (index === 1) {
+      searchParams.set('tab', 'configuration');
+    }
+    const newURL = `${location.pathname}?${searchParams.toString()}`;
+    window.history.pushState({}, '', newURL);
+  };
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
+    updateURLWithTab(newTabIndex);
   };
-
   return (
     <ProspectContextProvider>
-      <Box sx={{ p: 2 }}>
-        <Tabs value={tabIndex} onChange={handleTabChange}>
-          <Tab label='Mes prospects' />
-          <Tab label='Configuration' />
-        </Tabs>
+      <>
+        <TabManager location={location} setTabIndex={setTabIndex} />
+        <Box sx={{ p: 2 }}>
+          <Tabs value={tabIndex} onChange={handleTabChange}>
+            <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
+            <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
+          </Tabs>
 
-        <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-          <List pagination={false} component={ListComponent} actions={false}>
-            <Prospects />
-          </List>
-        </TabPanel>
+          <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
+            <List pagination={false} component={ListComponent} actions={false}>
+              <Prospects />
+            </List>
+          </TabPanel>
 
-        <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
-          <ProspectsConfiguration />
-        </TabPanel>
-      </Box>
+          <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
+            <ProspectsConfiguration />
+          </TabPanel>
+        </Box>
+      </>
     </ProspectContextProvider>
   );
 };

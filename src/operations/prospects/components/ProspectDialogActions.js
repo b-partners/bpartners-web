@@ -1,5 +1,5 @@
 import { Button, DialogActions, CircularProgress } from '@mui/material';
-import { useProspectContext } from 'src/common/store/Prospect-store';
+import { useProspectContext } from 'src/common/store/prospect-store';
 
 const ProspectDialogActions = ({ prospectStatus, close, prospectFeedback, saveOrUpdateProspectSubmit }) => {
   const { loading, selectedStatus } = useProspectContext();
