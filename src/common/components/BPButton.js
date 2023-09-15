@@ -13,7 +13,8 @@ const _BPButton = props => {
   );
 };
 
-export const BPButton = ({ href, ...others }) => {
+export const BPButton = props => {
+  const { href, ...others } = props;
   return href ? (
     <Link to={href}>
       <_BPButton {...others} />
