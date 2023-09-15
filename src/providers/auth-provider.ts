@@ -1,12 +1,26 @@
 import { Amplify, Auth } from 'aws-amplify';
 import { Configuration, SecurityApi } from 'bpartners-react-client';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
-import awsExports from '../aws-exports';
 import { cache, clearCache, getCached } from './cache';
 import { accountProvider } from './account-provider';
 import { accountHolderProvider } from './account-holder-Provider';
 import { profileProvider } from './profile-provider';
-Amplify.configure(awsExports);
+import dotenv from 'dotenv';
+dotenv.config();
+Amplify.configure({
+  Auth: {
+    region: process.env.REACT_APP_AWS_REGION || '',
+    userPoolId: process.env.REACT_APP_USERPOOL_ID || '',
+    userPoolWebClientId: process.env.REACT_APP_WEBCLIENT_ID || '',
+    signUpVerificationMethod: 'code',
+    oauth: {
+      domain: process.env.REACT_APP_OAUTH_DOMAIN || '',
+      scope: ['email'],
+      redirectSignIn: process.env.REACT_APP_REDIRECT_SUCCESS || '',
+      responseType: 'code',
+    },
+  },
+});
 
 const cacheAccounts = async () => {
   // is there is not account or account holder in the local storage,
