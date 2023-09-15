@@ -53,7 +53,7 @@ jobs:
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
         run: |
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-      - run: REACT_APP_BPARTNERS_API_URL=https://api-prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm run it
+      - run: REACT_APP_AWS_REGION=${{ secrets.BPARTNERS_AWS_REGION }} REACT_APP_USERPOOL_ID=${{ secrets.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ secrets.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ secrets.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ secrets.PROD_REDIRECT_SUCCESS }} REACT_APP_BPARTNERS_API_URL=https://api-prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm run it
         id: it-test
       - name: Upload video to s3 if failure
         if: ${{ always() && steps.it-test.outcome == 'failure' }}
