@@ -1,0 +1,87 @@
+name: IT
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'prod'
+  pull_request:
+    branches:
+      - 'prod'
+
+jobs:
+  tests:
+    timeout-minutes: 50
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 17.x
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+          rootdir: ''
+          workdir: ''
+      - name: Get Time
+        id: current-time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 3
+          format: 'YYYY-MM-DD-HH-mm-ss'
+      - name: Set time as env
+        run: echo "time=${{ steps.current-time.outputs.time }}" >> $GITHUB_ENV
+      - name: Connect to HEI AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh hei ${{ secrets.HEI_AWS_ACCESS_KEY_ID }} ${{ secrets.HEI_AWS_SECRET_ACCESS_KEY }} ${{ secrets.HEI_AWS_REGION }}
+          sh ./initNpmrc.sh hei hei-store npm-hei-school 088312068315
+      - name: Connect to BPartners AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
+          sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
+      - run: npm config set always-auth true
+      - run: npm install --legacy-peer-deps
+      - name: Cypress dependencies
+        # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
+        run: |
+          sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      - run: REACT_APP_AWS_REGION=${{ secrets.BPARTNERS_AWS_REGION }} REACT_APP_USERPOOL_ID=${{ secrets.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ secrets.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ secrets.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ secrets.PROD_REDIRECT_SUCCESS }} REACT_APP_BPARTNERS_API_URL=https://api-prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm run it
+        id: it-test
+      - name: Upload video to s3 if failure
+        if: ${{ always() && steps.it-test.outcome == 'failure' }}
+        run: aws s3 cp ./cypress/videos/__tests__/it/ s3://bpartners-web-it-videos/${{ env.time }}/ --recursive --profile bpartners
+
+  notification:
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    needs: [tests]
+    if: always()
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+          rootdir: ''
+          workdir: ''
+      - run: sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
+      - uses: martialonline/workflow-status@v3
+        id: check_status
+      - run: echo "action_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+      - name: Send mail to specified recipients on test failure
+        if: steps.check_status.outputs.status == 'failure'
+        run: |
+          sed -i 's|<ACTION_LINK>|${{ env.action_url }}|g' ./conf/email-template.json
+          sh ./conf/send-email.sh bpartners
