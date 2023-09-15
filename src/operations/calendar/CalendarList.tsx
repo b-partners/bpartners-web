@@ -29,7 +29,12 @@ export const CalendarList = () => {
           exporter={false}
           pagination={false}
         >
-          <RaCalendar locale={frLocale} />
+          <RaCalendar
+            eventClick={a => {
+              console.log(a.event._def);
+            }}
+            locale={frLocale}
+          />
         </List>
       )}
       {!isLoading && !isAuthenticated && <CalendarSynchronisation />}

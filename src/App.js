@@ -31,8 +31,9 @@ import { SignUpForm } from './security/SignUpForm';
 import { BP_THEME } from './bp-theme';
 import { authProvider, dataProvider } from './providers';
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
-import { calendar } from './operations/calendar';
+import { calendar, calendarEvent } from './operations/calendar';
 import { CalendarSync } from './operations/calendar/components';
+import { CalendarEdit } from './operations/calendar/CalendarEdit';
 
 export const BpAdmin = () => {
   return !authProvider.getCachedWhoami() ? (
@@ -55,6 +56,7 @@ export const BpAdmin = () => {
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
       <Resource name='calendar' {...calendar} />
+      <Resource name='calendar-event' {...calendarEvent} />
 
       <CustomRoutes>
         <Route path='/calendar-sync' element={<CalendarSync />} />

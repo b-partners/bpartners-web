@@ -5,25 +5,27 @@ export type TRaCalendarEvent = {
   title: string;
   start: string;
   end: string;
-  metadata?: {
-    location?: CalendarEvent['location'];
-    organizer?: CalendarEvent['organizer'];
-    participants?: CalendarEvent['participants'];
-  };
+  location?: CalendarEvent['location'];
+  organizer?: CalendarEvent['organizer'];
+  participants?: CalendarEvent['participants'];
 };
 
 export const calendarEventMapper = {
-  toDomain({ from, id, location, organizer, participants, summary, to }: CalendarEvent): TRaCalendarEvent {
+  toDomain({ from, summary, to, id, ...others }: CalendarEvent): TRaCalendarEvent {
     return {
       id,
       title: summary,
       start: from as any,
       end: to as any,
-      metadata: {
-        location,
-        organizer,
-        participants,
-      },
+      ...others,
+    };
+  },
+  toRest({ title, start, end, ...others }: TRaCalendarEvent): CalendarEvent {
+    return {
+      summary: title,
+      from: new Date(start),
+      to: new Date(end),
+      ...others,
     };
   },
 };
