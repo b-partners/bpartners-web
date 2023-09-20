@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authProvider, getCached } from 'src/providers';
+import { printError } from '../utils';
 
 /**
  * function that check is the user is authenticated or not (react admin has the same function but it seems not work)
@@ -27,7 +28,7 @@ const useAuthentication = () => {
           navigate('/login');
           authProvider
             .logout()
-            .catch(err => console.error(err))
+            .catch(printError)
             .finally(() => setState(false));
         });
     }

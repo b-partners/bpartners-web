@@ -9,6 +9,12 @@ export const BpFrenchMessages = {
     transactions: {
       category: { add: 'La catégorie a bien été ajoutée', edit: 'La catégorie a bien été modifiée' },
     },
+    calendar: {
+      name: 'Mon agenda',
+      values: {
+        participant: 'Participant |||| Participants',
+      },
+    },
     invoices: {
       name: 'Facture |||| Factures',
       status: {

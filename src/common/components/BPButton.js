@@ -1,13 +1,21 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { Link, useTranslate } from 'react-admin';
 
 const _BPButton = props => {
   const translate = useTranslate();
-  const { label, icon, style, ...others } = props;
+  const { label, icon, style, isLoading, endIcon, ...others } = props;
   const width = style && style.width ? style.width : 300;
 
   return (
-    <Button style={{ ...style, width }} {...others} color='primary' variant='contained' startIcon={icon}>
+    <Button
+      disabled={isLoading}
+      endIcon={isLoading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : endIcon}
+      style={{ ...style, width }}
+      {...others}
+      color='primary'
+      variant='contained'
+      startIcon={icon}
+    >
       {translate(label)}
     </Button>
   );

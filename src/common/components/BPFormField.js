@@ -54,7 +54,7 @@ export const BpFormField = props => {
 
   const passwordType = visibility ? 'text' : 'password';
 
-  const dateProps = type === 'date' ? { InputLabelProps: { shrink: true } } : {};
+  const dateProps = (type || '').includes('date') ? { InputLabelProps: { shrink: true } } : {};
 
   const errorStyle = errors[name] ? { error: true, helperText: errors[name].message } : { error: false };
 

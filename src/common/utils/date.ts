@@ -16,3 +16,5 @@ export const getNextMonthDate = (date: string) => {
   currentDate.setMonth(+currentMonth);
   return currentDate.toLocaleDateString('fr-ca').split('T')[0];
 };
+
+export const dateForInput = (date: Date) => date.toISOString().split('.')[0];
