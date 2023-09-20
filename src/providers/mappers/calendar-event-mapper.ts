@@ -1,4 +1,6 @@
+import { CalendarProps } from '@react-admin/ra-calendar';
 import { CalendarEvent } from 'bpartners-react-client';
+import { dateForInput } from 'src/common/utils';
 
 export type TRaCalendarEvent = {
   id: string;
@@ -28,4 +30,17 @@ export const calendarEventMapper = {
       ...others,
     };
   },
+};
+
+export const raCalendarEventMapper = (value: Parameters<CalendarProps['eventClick']>[0]): TRaCalendarEvent => {
+  const { publicId: id, title, extendedProps } = value.event._def;
+  const { end, start } = value.event._instance.range;
+
+  return {
+    id,
+    title,
+    end: dateForInput(end),
+    start: dateForInput(start),
+    ...extendedProps,
+  };
 };
