@@ -16,6 +16,7 @@
     "axios": "^0.27.2",
     "bpartners-react-client": "^0.31.0",
     "caniuse-lite": "^1.0.30001486",
+    "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.7",
     "debounce": "^1.2.1",
     "draft-js": "^0.11.7",
