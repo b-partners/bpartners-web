@@ -131,8 +131,8 @@ export const BP_THEME = {
     RaCalendar: {
       styleOverrides: {
         root: {
-          '&.MuiButton-root': {
-            color: '#ffffff',
+          '& .fc-button-primary:not(.fc-button-active)': {
+            color: '#ffffff !important',
           },
         },
       },
