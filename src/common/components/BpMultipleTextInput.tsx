@@ -87,7 +87,7 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
         ))}
       </Box>
       <form onSubmit={handleSubmit} style={ACTION_CONTAINER}>
-        <TextField error={!!errors[name]} sx={CUSTOM_INPUT} label={translate(label, { smart_count: 2 })} value={state} onChange={handleChange} />
+        <TextField name={name} error={!!errors[name]} sx={CUSTOM_INPUT} label={translate(label, { smart_count: 2 })} value={state} onChange={handleChange} />
         <BPButton
           disabled={!state || state.length === 0}
           label='ra.action.add'
