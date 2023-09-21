@@ -68,7 +68,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
         <DialogActions>
           <Toolbar sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <BPButton onClick={closeDialog} label='ra.action.cancel' style={{ width: 130 }} />
-            <BPButton onClick={handleSubmit} isLoading={isLoading} label='ra.action.save' style={{ width: 130 }} />
+            <BPButton data-testid='save-calendar-event' onClick={handleSubmit} isLoading={isLoading} label='ra.action.save' style={{ width: 130 }} />
           </Toolbar>
         </DialogActions>
       </FormProvider>
