@@ -11,7 +11,7 @@ export const calendarEventProvider: BpDataProviderType = {
   async saveOrUpdate(resources: any[], options = {}) {
     const { calendarId } = options;
     const { userId } = getCached.userInfo();
-    return (await calendarApi().crupdateCalendarEvents(userId, calendarId, resources.map(calendarEventMapper.toRest))).data;
+    return (await calendarApi().crupdateCalendarEvents(userId, calendarId || '', resources.map(calendarEventMapper.toRest))).data;
   },
   getOne: function (id?: string, option?: any): Promise<any> {
     throw new Error('Function not implemented.');

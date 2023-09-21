@@ -1,6 +1,6 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Toolbar } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
-import { useNotify } from 'react-admin';
+import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField, BpMultipleTextInput } from 'src/common/components';
 import { BPButton } from 'src/common/components/BPButton';
@@ -17,11 +17,12 @@ type CalendarEditDialogProps = {
   title: string;
 };
 
-export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, onClose, open, title }) => {
+export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, onClose: closeDialog, open, title }) => {
   const currentEvent = useCalendarEventContext();
   const form = useForm({ mode: 'all', resolver: calendarResolver, defaultValues: currentEvent || {} });
   const [isLoading, setLoading] = useState(false);
   const notify = useNotify();
+  const refresh = useRefresh();
 
   useEffect(() => {
     Object.keys(currentEvent).forEach((key: any) => form.setValue(key, (currentEvent as any)[key]));
@@ -39,8 +40,10 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
       try {
         setLoading(true);
         await calendarEventProvider.saveOrUpdate([restData], { calendarId });
+        closeDialog();
+        refresh();
       } catch (err) {
-        notify('messages.global.error');
+        notify('messages.global.error', { type: 'error' });
       } finally {
         setLoading(false);
       }
@@ -49,7 +52,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
   });
 
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog onClose={closeDialog} open={open}>
       <DialogTitle>{title}</DialogTitle>
       <FormProvider {...form}>
         <DialogContent sx={{ width: 500 }}>
@@ -66,8 +69,8 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
         </DialogContent>
         <DialogActions>
           <Toolbar sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <BPButton onClick={onClose} label='ra.action.cancel' style={{ width: 100 }} />
-            <BPButton onClick={handleSubmit} isLoading={isLoading} label='ra.action.save' style={{ width: 100 }} />
+            <BPButton onClick={closeDialog} label='ra.action.cancel' style={{ width: 130 }} />
+            <BPButton onClick={handleSubmit} isLoading={isLoading} label='ra.action.save' style={{ width: 130 }} />
           </Toolbar>
         </DialogActions>
       </FormProvider>

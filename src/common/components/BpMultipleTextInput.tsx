@@ -48,7 +48,7 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
     clearErrors,
     formState: { errors },
   } = useFormContext();
-  const selected = useWatch({ name, defaultValue: [] });
+  const selected = useWatch({ name, defaultValue: [] }) || [];
   const translate = useTranslate();
   const [state, setState] = useState('');
 

@@ -1,15 +1,13 @@
 import { CalendarProps, Calendar as RaCalendar, getFilterValuesFromInterval } from '@react-admin/ra-calendar';
 import { useEffect, useState } from 'react';
 import { List, useGetList } from 'react-admin';
-import { useCheckAuth, useTypedToggle } from 'src/common/hooks';
-import { calendarProvider } from 'src/providers';
+import { useTypedToggle } from 'src/common/hooks';
 import { CalendarSelection } from './components';
 import { Calendar } from 'bpartners-react-client';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { CalendarSaveDialog } from './CalendarSaveDialog';
 import { CalendarEventProvider } from 'src/common/store/invoice';
-import { raCalendarEventMapper } from 'src/providers/mappers';
-import { dateForInput } from 'src/common/utils';
+import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
 
 type TypedToggle = 'CREATE' | 'EDIT';
 
@@ -23,7 +21,7 @@ export const CalendarList = () => {
     setToggleStatus('EDIT');
   };
   const handleAddClick = ({ end, start }: Parameters<CalendarProps['select']>[0]) => {
-    setCurrentEvent({ end: dateForInput(end), start: dateForInput(start), title: 'Nouvelle évènement' });
+    setCurrentEvent(raCalendarEventCreationMapper({ end, start }));
     setToggleStatus('CREATE');
   };
 
@@ -41,7 +39,7 @@ export const CalendarList = () => {
         exporter={false}
         pagination={false}
       >
-        <RaCalendar select={handleAddClick} eventClick={handleEventClick} locale={frLocale} />
+        <RaCalendar timeZone='Europe/Paris' editable={false} select={handleAddClick} eventClick={handleEventClick} locale={frLocale} />
         <CalendarSaveDialog
           title='Édition'
           open={getToggleStatus('EDIT')}

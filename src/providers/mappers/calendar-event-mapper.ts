@@ -1,6 +1,9 @@
 import { CalendarProps } from '@react-admin/ra-calendar';
 import { CalendarEvent } from 'bpartners-react-client';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { dateForInput } from 'src/common/utils';
+import { v4 as uuidV4 } from 'uuid';
+import { getCached } from '../cache';
 
 export type TRaCalendarEvent = {
   id: string;
@@ -23,10 +26,11 @@ export const calendarEventMapper = {
     };
   },
   toRest({ title, start, end, ...others }: TRaCalendarEvent): CalendarEvent {
+    const timeZone = getCached.timeZone();
     return {
       summary: title,
-      from: new Date(start),
-      to: new Date(end),
+      from: zonedTimeToUtc(start, timeZone),
+      to: zonedTimeToUtc(end, timeZone),
       ...others,
     };
   },
@@ -35,7 +39,6 @@ export const calendarEventMapper = {
 export const raCalendarEventMapper = (value: Parameters<CalendarProps['eventClick']>[0]): TRaCalendarEvent => {
   const { publicId: id, title, extendedProps } = value.event._def;
   const { end, start } = value.event._instance.range;
-
   return {
     id,
     title,
@@ -44,3 +47,12 @@ export const raCalendarEventMapper = (value: Parameters<CalendarProps['eventClic
     ...extendedProps,
   };
 };
+
+type DateRange = { end: Date; start: Date };
+
+export const raCalendarEventCreationMapper = ({ end, start }: DateRange) => ({
+  end: dateForInput(end),
+  start: dateForInput(start),
+  title: 'Nouvelle évènement',
+  id: uuidV4(),
+});
