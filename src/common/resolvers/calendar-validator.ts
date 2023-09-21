@@ -8,6 +8,7 @@ const calendarValidator = zod.object({
   end: requiredString(),
   organizer: zod.custom(() => true),
   id: zod.custom(() => true),
+  location: zod.custom(() => true),
   participants: zod.custom(() => true),
 });
 
