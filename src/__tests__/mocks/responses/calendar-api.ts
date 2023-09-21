@@ -18,7 +18,7 @@ export const calendarEvents = [
     from: new Date('2023-01-01T15:10'),
     id: 'today-event-id',
     to: new Date('2023-01-01T10:10'),
-    participants: ['participants', 'participants'],
+    participants: ['participant.1@gmail.com', 'participant.2@gmail.com'],
     updatedAt: new Date(),
   },
 ];
