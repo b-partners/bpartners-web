@@ -27,10 +27,8 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
   useEffect(() => {
     Object.keys(currentEvent).forEach((key: any) => form.setValue(key, (currentEvent as any)[key]));
     if (!currentEvent.organizer) {
-      const {
-        companyInfo: { email },
-      } = getCached.accountHolder();
-      form.setValue('organizer', email);
+      const accountHolder = getCached.accountHolder();
+      form.setValue('organizer', accountHolder?.companyInfo?.email);
     }
   }, [currentEvent]);
 
