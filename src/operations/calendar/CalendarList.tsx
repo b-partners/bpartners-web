@@ -8,7 +8,6 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import { CalendarSaveDialog } from './CalendarSaveDialog';
 import { CalendarEventProvider } from 'src/common/store/invoice';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
-import { getCached } from 'src/providers';
 
 type TypedToggle = 'CREATE' | 'EDIT';
 
@@ -41,14 +40,7 @@ export const CalendarList = () => {
         pagination={false}
         sx={{ '& .fc-button': { color: '#ffffff' } }}
       >
-        <RaCalendar
-          initialView='timeGridWeek'
-          timeZone={getCached.timeZone()}
-          editable={false}
-          select={handleAddClick}
-          eventClick={handleEventClick}
-          locale={frLocale}
-        />
+        <RaCalendar initialView='timeGridWeek' editable={false} select={handleAddClick} eventClick={handleEventClick} locale={frLocale} />
         <CalendarSaveDialog
           title='Édition'
           open={getToggleStatus('EDIT')}
