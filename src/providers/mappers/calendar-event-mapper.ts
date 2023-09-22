@@ -1,9 +1,7 @@
 import { CalendarProps } from '@react-admin/ra-calendar';
 import { CalendarEvent } from 'bpartners-react-client';
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { dateForInput } from 'src/common/utils';
+import { dateForInputWithoutTimezone } from 'src/common/utils';
 import { v4 as uuidV4 } from 'uuid';
-import { getCached } from '../cache';
 
 export type TRaCalendarEvent = {
   id: string;
@@ -20,17 +18,16 @@ export const calendarEventMapper = {
     return {
       id,
       title: summary,
-      start: from as any,
-      end: to as any,
+      start: dateForInputWithoutTimezone(new Date(from)),
+      end: dateForInputWithoutTimezone(new Date(to)),
       ...others,
     };
   },
   toRest({ title, start, end, ...others }: TRaCalendarEvent): CalendarEvent {
-    const timeZone = getCached.timeZone();
     return {
       summary: title,
-      from: zonedTimeToUtc(start, timeZone),
-      to: zonedTimeToUtc(end, timeZone),
+      from: new Date(start),
+      to: new Date(end),
       ...others,
     };
   },
@@ -42,17 +39,19 @@ export const raCalendarEventMapper = (value: Parameters<CalendarProps['eventClic
   return {
     id,
     title,
-    end: dateForInput(end),
-    start: dateForInput(start),
+    end: dateForInputWithoutTimezone(end),
+    start: dateForInputWithoutTimezone(start),
     ...extendedProps,
   };
 };
 
 type DateRange = { end: Date; start: Date };
 
-export const raCalendarEventCreationMapper = ({ end, start }: DateRange) => ({
-  end: dateForInput(end),
-  start: dateForInput(start),
-  title: 'Nouvelle évènement',
-  id: uuidV4(),
-});
+export const raCalendarEventCreationMapper = ({ end, start }: DateRange) => {
+  return {
+    end: dateForInputWithoutTimezone(end),
+    start: dateForInputWithoutTimezone(start),
+    title: 'Nouvelle évènement',
+    id: uuidV4(),
+  };
+};
