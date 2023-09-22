@@ -3,7 +3,6 @@ import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from 'src/cons
 
 export const calendarProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
-    const { to, from } = filters;
     const { userId } = getCached.userInfo();
     return (await calendarApi().usersUserIdCalendarsGet(userId)).data as any;
   },

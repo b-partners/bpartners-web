@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Dialog, DialogActions, DialogContent, DialogTitle, Toolbar } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';

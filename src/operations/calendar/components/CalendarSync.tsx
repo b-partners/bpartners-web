@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box, CircularProgress } from '@mui/material';
 import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from './styles';
 import { BP_COLOR } from 'src/bp-theme';

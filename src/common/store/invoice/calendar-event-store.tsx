@@ -1,4 +1,3 @@
-import { CalendarEvent } from 'bpartners-react-client';
 import { FC, createContext, useContext } from 'react';
 import { TRaCalendarEvent } from 'src/providers/mappers';
 

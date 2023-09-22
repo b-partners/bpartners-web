@@ -3,9 +3,6 @@ import { CSSProperties, ChangeEvent, FC, FormEvent, useState } from 'react';
 import { useTranslate } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BPButton } from './BPButton';
-import { z } from 'zod';
-
-const stringParser = z.string();
 
 type BpMultipleTextInputProps = TextFieldProps & {
   name: string;
