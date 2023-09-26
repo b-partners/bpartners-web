@@ -5,6 +5,7 @@ export const calendarEventProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
     const { userId } = getCached.userInfo();
     const { calendarId, start_gte, start_lte } = filters;
+    if (!calendarId || calendarId.length === 0) return [];
     const { data: calendarEvent } = await calendarApi().getCalendarEvents(userId, calendarId, new Date(start_gte), new Date(start_lte));
     return calendarEvent.map(calendarEventMapper.toDomain);
   },
