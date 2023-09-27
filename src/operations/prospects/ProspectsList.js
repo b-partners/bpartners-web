@@ -69,11 +69,21 @@ const Prospects = () => {
   const [prospects, setProspects] = useState();
 
   useEffect(() => {
-    data && setProspects(groupBy(data, 'status'));
+    data && setProspects(groupBy(sortProspectsByDate(data), 'status'));
   }, [data]);
 
   if (isLoading) {
     return null;
+  }
+
+  function sortProspectsByDate(data) {
+    // Sort the prospects by "lastEvaluation" date from most recent to least recent
+    const sortedProspects = data.sort((a, b) => {
+      const dateA = new Date(a?.rating?.lastEvaluation);
+      const dateB = new Date(b?.rating?.lastEvaluation);
+      return dateB - dateA;
+    });
+    return sortedProspects;
   }
 
   return (
@@ -174,6 +184,8 @@ const ProspectItem = ({ prospect }) => {
         {
           ...prospect,
           ...data,
+          invoiceID: data?.invoice?.id,
+          invoice: undefined,
           status: data.prospectFeedback === 'NOT_INTERESTED' || data.prospectFeedback === 'PROPOSAL_DECLINED' ? 'TO_CONTACT' : data.status,
         },
       ]);

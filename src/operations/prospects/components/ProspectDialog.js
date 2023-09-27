@@ -1,7 +1,21 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+  FormHelperText,
+} from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
+import { InvoiceSelection } from './InvoiceSelection';
 
 export const ProspectDialog = props => {
   const {
@@ -11,7 +25,10 @@ export const ProspectDialog = props => {
     saveOrUpdateProspectSubmit,
   } = props;
 
-  const { setValue } = useFormContext();
+  const {
+    setValue,
+    formState: { errors },
+  } = useFormContext();
   const { prospectFeedback } = useWatch();
 
   const changeProspectFeedBack = e => {
@@ -52,8 +69,15 @@ export const ProspectDialog = props => {
                 </>
               )}
             </RadioGroup>
+
+            {errors['prospectFeedback'] && <FormHelperText error>{errors['prospectFeedback'].message}</FormHelperText>}
           </FormControl>
         </Box>
+        {status === 'TO_CONTACT' ? (
+          <InvoiceSelection name='invoice' label='Devis' invoiceTypes={['DRAFT']} />
+        ) : (
+          <InvoiceSelection name='invoice' label='Factures' invoiceTypes={['CONFIRMED', 'PAID']} />
+        )}
         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
           {status === 'TO_CONTACT' ? (
             <>
