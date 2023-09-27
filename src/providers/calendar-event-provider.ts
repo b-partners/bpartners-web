@@ -4,9 +4,9 @@ import { calendarEventMapper } from './mappers';
 export const calendarEventProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
     const { userId } = getCached.userInfo();
-    const { calendarId, start_gte, start_lte } = filters;
+    const { calendarId, start_gte, start_lte, calendarProvider } = filters;
     if (!calendarId || calendarId.length === 0) return [];
-    const { data: calendarEvent } = await calendarApi().getCalendarEvents(userId, calendarId, new Date(start_gte), new Date(start_lte));
+    const { data: calendarEvent } = await calendarApi().getCalendarEvents(userId, calendarId, calendarProvider, new Date(start_gte), new Date(start_lte));
     return calendarEvent.map(calendarEventMapper.toDomain);
   },
   async saveOrUpdate(resources: any[], options = {}) {
