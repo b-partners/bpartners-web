@@ -13,7 +13,8 @@ export const FieldErrorMessage = {
   badPassword:
     'Le mot de passe doit : \n - avoir au moins une majuscule \n - avoir au moins un caractère spécial !@#$%^&*()_+-= \n - avoir au moins un chiffre',
   resetCode: 'Le code de validation est incorrect',
+  shouldChoose: 'Veuillez sélectionner une option.',
 };
 
 export const requiredString = () => z.string({ required_error: FieldErrorMessage.required }).nonempty({ message: 'Ce champ est requis.' });
-export const phoneValidator = (phoneNumber: string) => !/[^0-9+]/.test(phoneNumber);
+export const phoneValidator = (phoneNumber: string) => !/[^0-9/+]/.test(phoneNumber);

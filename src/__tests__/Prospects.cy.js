@@ -5,6 +5,8 @@ import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { prospects } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { getInvoices } from './mocks/responses/invoices-api';
+import { InvoiceStatus } from 'bpartners-react-client';
 
 describe(specTitle('Customers'), () => {
   beforeEach(() => {
@@ -13,6 +15,16 @@ describe(specTitle('Customers'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
+    });
 
     cy.stub(Redirect, 'redirect').as('redirect');
   });

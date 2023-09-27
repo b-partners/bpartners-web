@@ -184,6 +184,8 @@ const ProspectItem = ({ prospect }) => {
         {
           ...prospect,
           ...data,
+          invoiceID: data?.invoice?.id,
+          invoice: undefined,
           status: data.prospectFeedback === 'NOT_INTERESTED' || data.prospectFeedback === 'PROPOSAL_DECLINED' ? 'TO_CONTACT' : data.status,
         },
       ]);
