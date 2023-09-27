@@ -6,8 +6,8 @@ import { CalendarSelection } from './components';
 import { Calendar } from 'bpartners-react-client';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { CalendarSaveDialog } from './CalendarSaveDialog';
-import { CalendarEventProvider } from 'src/common/store/invoice';
-import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
+import { TRaCalendarEvent, raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
+import { CalendarContextProvider } from 'src/common/store';
 
 type TypedToggle = 'CREATE' | 'EDIT';
 
@@ -15,7 +15,7 @@ export const CalendarList = () => {
   const { data } = useGetList('calendar');
   const [currentCalendar, setCurrentCalendar] = useState<Calendar>(data && data[0]);
   const { getToggleStatus, setToggleStatus } = useTypedToggle<TypedToggle>({ defaultType: 'EDIT', defaultValue: false });
-  const [currentEvent, setCurrentEvent] = useState({});
+  const [currentEvent, setCurrentEvent] = useState<TRaCalendarEvent>(null);
   const handleEventClick = (value: Parameters<CalendarProps['eventClick']>[0]) => {
     setCurrentEvent(raCalendarEventMapper(value));
     setToggleStatus('EDIT');
@@ -30,34 +30,19 @@ export const CalendarList = () => {
   }, [data]);
 
   return (
-    <CalendarEventProvider value={currentEvent as any}>
+    <CalendarContextProvider {...{ currentCalendar, currentEvent, eventList: data }}>
       <List
         resource='calendar-event'
         filterDefaultValues={getFilterValuesFromInterval()}
-        actions={currentCalendar && <CalendarSelection data={data} onChange={setCurrentCalendar} value={currentCalendar} />}
+        actions={currentCalendar && <CalendarSelection onChange={setCurrentCalendar} value={currentCalendar} />}
         filter={{ calendarId: currentCalendar?.id }}
         exporter={false}
         pagination={false}
-        sx={{ '& .fc-button': { color: '#ffffff' } }}
       >
         <RaCalendar initialView='timeGridWeek' editable={false} select={handleAddClick} eventClick={handleEventClick} locale={frLocale} />
-        <CalendarSaveDialog
-          title='Édition'
-          open={getToggleStatus('EDIT')}
-          calendarId={currentCalendar?.id}
-          onClose={() => {
-            setToggleStatus('EDIT');
-          }}
-        />
-        <CalendarSaveDialog
-          title='Création'
-          open={getToggleStatus('CREATE')}
-          calendarId={currentCalendar?.id}
-          onClose={() => {
-            setToggleStatus('CREATE');
-          }}
-        />
+        <CalendarSaveDialog title='Édition' open={getToggleStatus('EDIT')} onClose={() => setToggleStatus('EDIT')} />
+        <CalendarSaveDialog title='Création' open={getToggleStatus('CREATE')} onClose={() => setToggleStatus('CREATE')} />
       </List>
-    </CalendarEventProvider>
+    </CalendarContextProvider>
   );
 };

@@ -6,20 +6,19 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField, BpMultipleTextInput } from 'src/common/components';
 import { BPButton } from 'src/common/components/BPButton';
 import { calendarResolver, participantValidator } from 'src/common/resolvers';
-import { useCalendarEventContext } from 'src/common/store/invoice';
+import { useCalendarContext } from 'src/common/store';
 import { printError } from 'src/common/utils';
-import { calendarEventProvider, getCached } from 'src/providers';
+import { CalendarContextProvider, getCached } from 'src/providers';
 import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';
 
 type CalendarEditDialogProps = {
-  calendarId: string;
   open: boolean;
   onClose: () => void;
   title: string;
 };
 
-export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, onClose: closeDialog, open, title }) => {
-  const currentEvent = useCalendarEventContext();
+export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: closeDialog, open, title }) => {
+  const { currentEvent, currentCalendar } = useCalendarContext();
   const form = useForm({ mode: 'all', resolver: calendarResolver, defaultValues: currentEvent || {} });
   const [isLoading, setLoading] = useState(false);
   const notify = useNotify();
@@ -38,7 +37,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ calendarId, on
     const fetch = async () => {
       try {
         setLoading(true);
-        await calendarEventProvider.saveOrUpdate([restData], { calendarId });
+        await CalendarContextProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
         closeDialog();
         refresh();
       } catch (err) {

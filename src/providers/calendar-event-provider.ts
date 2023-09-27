@@ -1,7 +1,7 @@
 import { BpDataProviderType, calendarApi, getCached } from '.';
 import { calendarEventMapper } from './mappers';
 
-export const calendarEventProvider: BpDataProviderType = {
+export const CalendarContextProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
     const { userId } = getCached.userInfo();
     const { calendarId, start_gte, start_lte, calendarProvider } = filters;
