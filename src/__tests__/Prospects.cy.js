@@ -46,7 +46,7 @@ describe(specTitle('Customers'), () => {
     cy.contains('johnDoe@gmail.com');
     cy.contains('+261340465338');
     cy.contains('30 Rue de la Montagne Sainte-Genevieve');
-    cy.contains('21547');
+    cy.contains('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
     cy.contains('10.00');
     cy.contains('6.00');
 
@@ -63,7 +63,13 @@ describe(specTitle('Customers'), () => {
     cy.contains('Intéressé').click();
     cy.contains('Réserver le Prospect');
 
-    const contactedProspect = { ...prospects[0], status: 'CONTACTED', prospectFeedback: 'INTERESTED', comment: '', contractAmount: '' };
+    const contactedProspect = {
+      ...prospects[0],
+      status: 'CONTACTED',
+      prospectFeedback: 'INTERESTED',
+      comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      contractAmount: '',
+    };
     contactedProspect.rating.lastEvaluation = contactedProspect.rating.lastEvaluation.toISOString();
     cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects/${prospects[0].id}`, req => {
       expect(req.body).deep.eq(contactedProspect);
