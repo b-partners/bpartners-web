@@ -19,3 +19,4 @@ export * from './ra-data-provider-type';
 export * from './relaunch-provider';
 export * from './transaction-category-provider';
 export * from './transaction-provider';
+export * from './aws-config';
