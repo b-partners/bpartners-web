@@ -8,7 +8,7 @@ import { BPButton } from 'src/common/components/BPButton';
 import { calendarResolver, participantValidator } from 'src/common/resolvers';
 import { useCalendarContext } from 'src/common/store';
 import { printError } from 'src/common/utils';
-import { CalendarContextProvider, getCached } from 'src/providers';
+import { calendarEventProvider, getCached } from 'src/providers';
 import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';
 
 type CalendarEditDialogProps = {
@@ -37,7 +37,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
     const fetch = async () => {
       try {
         setLoading(true);
-        await CalendarContextProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
+        await calendarEventProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
         closeDialog();
         refresh();
       } catch (err) {

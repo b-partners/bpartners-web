@@ -1,9 +1,10 @@
 import { UpdateParams } from 'react-admin';
+import { getPagination } from 'src/common/utils/pagination-utilities';
 import {
   accountHolderProvider,
   accountProvider,
   BpDataProviderType,
-  CalendarContextProvider,
+  calendarEventProvider,
   calendarProvider,
   customerProvider,
   marketplaceProvider,
@@ -15,7 +16,6 @@ import {
   transactionProvider,
 } from '.';
 import { invoiceProvider } from './invoice-provider';
-import { getPagination } from 'src/common/utils/pagination-utilities';
 
 export const maxPageSize = 10_000;
 
@@ -31,7 +31,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'accountHolder') return accountHolderProvider;
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
   if (resourceType === 'calendar') return calendarProvider;
-  if (resourceType === 'calendar-event') return CalendarContextProvider;
+  if (resourceType === 'calendar-event') return calendarEventProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 

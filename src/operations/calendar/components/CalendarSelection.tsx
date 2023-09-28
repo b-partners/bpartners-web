@@ -4,27 +4,25 @@ import { Calendar } from 'bpartners-react-client';
 import { FC, useEffect } from 'react';
 import { useCalendarContext } from 'src/common/store';
 
-type CalendarSelectionProps = {
-  onChange: (calendar: Calendar) => void;
-  value: Calendar;
-};
-
-export const CalendarSelection: FC<CalendarSelectionProps> = ({ onChange }) => {
-  const { currentCalendar, eventList } = useCalendarContext();
-
-  console.log({ currentCalendar, eventList });
+export const CalendarSelection: FC = () => {
+  const { currentCalendar, eventList, setCalendar } = useCalendarContext();
 
   useEffect(() => {
     if (!currentCalendar) {
-      onChange(eventList[0]);
+      setCalendar && setCalendar(eventList[0]);
     }
+  }, []);
+
+  const handleClick = (calendar: Calendar) => () => setCalendar && setCalendar(calendar);
+  useEffect(() => {
+    console.log(currentCalendar);
   }, []);
 
   return (
     <TextField sx={{ minWidth: 300 }} select value={currentCalendar?.summary}>
       {eventList &&
         eventList.map(calendar => (
-          <MenuItem onClick={() => onChange(calendar)} selected={currentCalendar?.id === calendar?.id} key={calendar?.id} value={calendar?.summary}>
+          <MenuItem onClick={handleClick(calendar)} selected={currentCalendar?.id === calendar?.id} key={calendar?.id} value={calendar?.summary}>
             {calendar?.summary}
           </MenuItem>
         ))}

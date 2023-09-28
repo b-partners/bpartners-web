@@ -12,6 +12,8 @@ export const CalendarSync = () => {
   const notify = useNotify();
   const navigate = useNavigate();
 
+  console.log('here');
+
   useEffect(() => {
     const code = getUrlParams(window.location.search, 'code');
 

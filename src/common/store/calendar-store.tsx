@@ -6,6 +6,7 @@ type RaCalendarContext = {
   currentEvent: TRaCalendarEvent;
   currentCalendar: Calendar;
   eventList: CalendarEvent[];
+  setCalendar?: (calendar: Calendar) => void;
 };
 
 const CalendarContext = createContext<RaCalendarContext>(null);

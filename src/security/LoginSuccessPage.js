@@ -13,6 +13,7 @@ const LoginSuccessPage = () => {
   useEffect(() => {
     async function login() {
       const code = getUrlParams(window.location.search, 'code');
+      console.log(code);
       await authProvider.login({ username: null, password: code, clientMetadata: { redirectionStatusUrls: loginRedirectionUrls } });
       let timeoutId = setTimeout(() => {
         redirect(window.location.origin);

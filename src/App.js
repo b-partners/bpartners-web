@@ -84,7 +84,6 @@ const App = () => {
             }
           />
           <Route
-            exact
             path='/sign-up'
             element={
               <BpLoginPageLayout>
