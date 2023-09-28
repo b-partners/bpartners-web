@@ -1,13 +1,14 @@
-import { CalendarProps, Calendar as RaCalendar, getFilterValuesFromInterval } from '@react-admin/ra-calendar';
+import frLocale from '@fullcalendar/core/locales/fr';
+import { CalendarProps, Calendar as RaCalendar } from '@react-admin/ra-calendar';
+import { Calendar } from 'bpartners-react-client';
 import { useEffect, useState } from 'react';
 import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
-import { CalendarListAction } from './components';
-import { Calendar } from 'bpartners-react-client';
-import frLocale from '@fullcalendar/core/locales/fr';
-import { CalendarSaveDialog } from './CalendarSaveDialog';
-import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
 import { CalendarContextProvider } from 'src/common/store';
+import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
+import { CalendarSaveDialog } from './CalendarSaveDialog';
+import { CalendarListAction } from './components';
+import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';
 
@@ -34,13 +35,20 @@ export const CalendarList = () => {
       {!!currentCalendar && (
         <List
           resource='calendar-event'
-          filterDefaultValues={getFilterValuesFromInterval()}
+          filterDefaultValues={calendarIntervalFilter()}
           actions={<CalendarListAction />}
           filter={{ calendarId: currentCalendar?.id }}
           exporter={false}
           pagination={false}
         >
-          <RaCalendar initialView='timeGridWeek' editable={false} select={handleAddClick} eventClick={handleEventClick} locale={frLocale} />
+          <RaCalendar
+            getFilterValueFromInterval={calendarIntervalFilter}
+            initialView='timeGridWeek'
+            editable={false}
+            select={handleAddClick}
+            eventClick={handleEventClick}
+            locale={frLocale}
+          />
           <CalendarSaveDialog title='Édition' open={getToggleStatus('EDIT')} onClose={() => setToggleStatus('EDIT')} />
           <CalendarSaveDialog title='Création' open={getToggleStatus('CREATE')} onClose={() => setToggleStatus('CREATE')} />
         </List>

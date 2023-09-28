@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Box, CircularProgress } from '@mui/material';
-import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from './styles';
+import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 import { BP_COLOR } from 'src/bp-theme';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';

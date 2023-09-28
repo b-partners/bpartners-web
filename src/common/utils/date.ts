@@ -1,4 +1,4 @@
-import { nextMonday as findNextMonday, isMonday, isSunday, previousMonday } from 'date-fns';
+import { endOfMonth, nextMonday as findNextMonday, isMonday, isSunday, previousMonday, set } from 'date-fns';
 import { format, formatInTimeZone } from 'date-fns-tz';
 import { getCached } from 'src/providers';
 
@@ -33,4 +33,13 @@ export const getCurrentWeek = () => {
   const nextMonday = isSunday(currentDate) ? currentDate : findNextMonday(currentDate);
 
   return { monday, nextMonday };
+};
+
+export const getCurrentMonth = () => {
+  const currentDate = new Date();
+
+  const end = endOfMonth(currentDate);
+  const begin = set(currentDate, { date: 1, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+
+  return { end, begin };
 };
