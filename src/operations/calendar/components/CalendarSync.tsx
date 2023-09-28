@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { getUrlParams } from 'src/common/utils';
 import { useNotify } from 'react-admin';
-import { dataProvider } from 'src/providers';
+import { cache, dataProvider } from 'src/providers';
 
 export const CalendarSync = () => {
   const notify = useNotify();
@@ -23,6 +23,7 @@ export const CalendarSync = () => {
     } else {
       dataProvider
         .oauth2ExchangeToken('calendar', { code })
+        .then(() => cache.calendarSync(true))
         .catch(() => notify('messages.global.error', { type: 'error' }))
         .finally(() => navigate('/calendar'));
     }
