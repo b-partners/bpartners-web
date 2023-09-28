@@ -1,6 +1,6 @@
 import { CalendarProps } from '@react-admin/ra-calendar';
 import { CalendarEvent } from 'bpartners-react-client';
-import { dateForInputWithoutTimezone } from 'src/common/utils';
+import { dateForInput, dateForInputWithoutTimezone } from 'src/common/utils';
 import { v4 as uuidV4 } from 'uuid';
 
 export type TRaCalendarEvent = {
@@ -18,8 +18,8 @@ export const calendarEventMapper = {
     return {
       id,
       title: summary,
-      start: dateForInputWithoutTimezone(new Date(from)),
-      end: dateForInputWithoutTimezone(new Date(to)),
+      start: dateForInput(new Date(from)),
+      end: dateForInput(new Date(to)),
       ...others,
     };
   },
