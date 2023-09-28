@@ -34,6 +34,7 @@ import { CardViewField, ProspectDialog } from './components';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldErrorMessage } from '../../common/resolvers';
+import { ProspectContextProvider, useProspectContext } from 'src/common/store/Prospect-store';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -43,7 +44,7 @@ const ProspectsList = () => {
   };
 
   return (
-    <>
+    <ProspectContextProvider>
       <Box sx={{ p: 2 }}>
         <Tabs value={tabIndex} onChange={handleTabChange}>
           <Tab label='Mes prospects' />
@@ -60,7 +61,7 @@ const ProspectsList = () => {
           <ProspectsConfiguration />
         </TabPanel>
       </Box>
-    </>
+    </ProspectContextProvider>
   );
 };
 
@@ -152,10 +153,10 @@ const ProspectColumn = props => {
 const ProspectItem = ({ prospect }) => {
   const [dialogState, setDialogState] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('');
-
+  const { setSelectedStatus } = useProspectContext();
   const notify = useNotify();
   const refresh = useRefresh();
+  const { handleLoading } = useProspectContext();
 
   const toggleDialog = e => {
     e && e.stopPropagation();
@@ -181,6 +182,7 @@ const ProspectItem = ({ prospect }) => {
   const form = useForm({ mode: 'all', defaultValues: prospect || {}, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
+    handleLoading(true);
     const fetch = async () => {
       await prospectingProvider.update([
         {
@@ -191,6 +193,7 @@ const ProspectItem = ({ prospect }) => {
           status: data.prospectFeedback === 'NOT_INTERESTED' || data.prospectFeedback === 'PROPOSAL_DECLINED' ? 'TO_CONTACT' : data.status,
         },
       ]);
+      handleLoading(false);
       refresh();
       toggleDialog();
     };
@@ -199,9 +202,13 @@ const ProspectItem = ({ prospect }) => {
       data.prospectFeedback !== 'PROPOSAL_DECLINED' &&
       (!data.contractAmount || data?.contractAmount === 0 || data?.contractAmount?.length === 0)
     ) {
+      handleLoading(false);
       form.setError('contractAmount', { message: FieldErrorMessage.required });
     } else {
-      fetch().catch(() => notify(`Une erreur s'est produite`, { type: 'error' }));
+      fetch().catch(() => {
+        handleLoading(false);
+        notify(`Une erreur s'est produite`, { type: 'error' });
+      });
     }
   });
 
@@ -270,13 +277,7 @@ const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>
           {dialogState ? (
-            <ProspectDialog
-              open={dialogState}
-              close={toggleDialog}
-              prospect={prospect}
-              saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
-              selectedStatus={selectedStatus}
-            />
+            <ProspectDialog open={dialogState} close={toggleDialog} prospect={prospect} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
           ) : null}
         </Paper>
       </form>

@@ -11,7 +11,6 @@ export const ProspectDialog = props => {
     close,
     prospect: { name, status },
     saveOrUpdateProspectSubmit,
-    selectedStatus,
   } = props;
 
   const {
@@ -92,7 +91,6 @@ export const ProspectDialog = props => {
         close={close}
         prospectFeedback={prospectFeedback}
         saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
-        selectedStatus={selectedStatus}
       />
     </Dialog>
   );

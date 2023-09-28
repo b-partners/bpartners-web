@@ -1,13 +1,11 @@
 import { Button, DialogActions, CircularProgress } from '@mui/material';
+import { useProspectContext } from 'src/common/store/Prospect-store';
 
-const ProspectDialogActions = ({ prospectStatus, close, prospectFeedback, saveOrUpdateProspectSubmit, selectedStatus }) => {
+const ProspectDialogActions = ({ prospectStatus, close, prospectFeedback, saveOrUpdateProspectSubmit }) => {
+  const { loading, selectedStatus } = useProspectContext();
   const shouldRenderButton = text => {
     return (
-      <Button
-        onClick={saveOrUpdateProspectSubmit}
-        // disabled={loadingTemporary}
-        // startIcon={loadingTemporary && <CircularProgress color='inherit' size={18} />}
-      >
+      <Button onClick={saveOrUpdateProspectSubmit} disabled={loading} startIcon={loading && <CircularProgress color='inherit' size={18} />}>
         {text}
       </Button>
     );

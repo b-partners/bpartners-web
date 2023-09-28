@@ -12,7 +12,7 @@ export const transactionProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {
     const { categorized, status, label } = filters;
     const { accountId } = await asyncGetUserInfo();
-    const { data } = await payingApi().getTransactions(accountId, label, status, undefined, page, perPage);
+    const { data } = await payingApi().getTransactions(accountId, label,status, undefined, page, perPage);
 
     return data
       .filter(
