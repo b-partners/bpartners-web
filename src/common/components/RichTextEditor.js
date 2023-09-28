@@ -58,7 +58,18 @@ const Toolbar = ({ editorState, onChange }) => {
   };
 
   return (
-    <Stack spacing='2' flexDirection='row' justifyContent='flex-end' p={1} boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0' marginBottom={2}>
+    <Stack
+      spacing='2'
+      flexDirection='row'
+      justifyContent='flex-end'
+      p={1}
+      boxShadow='rgba(27, 31, 35, 0.04) 0 1px 0 0'
+      marginBottom={2}
+      position='sticky'
+      top='0'
+      bgcolor='white'
+      zIndex='10'
+    >
       <BlockControls editorState={editorState} onToggle={toggleBlockType} />
       <InlineControls editorState={editorState} onToggle={toggleInlineStyle} />
       <RichAttachementInput />

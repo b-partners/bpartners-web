@@ -69,7 +69,7 @@ export const RichTextForm = ({ attachments }) => {
     <AttachementContext.Provider value={{ attachments }}>
       <Box width='50vw'>
         <BpFormField style={{ width: '30rem' }} name='subject' label='Objet' data-test-item='subject-field' fullWidth />
-        <Box sx={{ mt: 2, ...richeErrorStyle, p: 2, borderRadius: 2, minHeight: '30vh' }}>
+        <Box sx={{ mt: 2, ...richeErrorStyle, p: 2, paddingTop: 0, borderRadius: 2, height: '30vh', overflowY: 'auto' }}>
           <RichTextEditor name='message' placeholder='Corps de votre message' />
         </Box>
         {errors['message'] && <FormHelperText error={true}>{errors['message'].message}</FormHelperText>}
