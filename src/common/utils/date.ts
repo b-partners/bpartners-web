@@ -1,4 +1,4 @@
-import {} from 'date-fns';
+import { nextMonday as findNextMonday, isMonday, isSunday, previousMonday } from 'date-fns';
 import { format, formatInTimeZone } from 'date-fns-tz';
 import { getCached } from 'src/providers';
 
@@ -25,3 +25,12 @@ export const getNextMonthDate = (date: string) => {
 
 export const dateForInput = (date: Date, timezone?: string) => formatInTimeZone(date, timezone || getCached.timeZone(), INPUT_DATETIME_FORMAT);
 export const dateForInputWithoutTimezone = (date: Date) => format(date, INPUT_DATETIME_FORMAT);
+
+export const getCurrentWeek = () => {
+  const currentDate = new Date();
+
+  const monday = isMonday(currentDate) ? currentDate : previousMonday(currentDate);
+  const nextMonday = isSunday(currentDate) ? currentDate : findNextMonday(currentDate);
+
+  return { monday, nextMonday };
+};
