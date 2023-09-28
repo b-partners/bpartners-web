@@ -152,6 +152,7 @@ const ProspectColumn = props => {
 const ProspectItem = ({ prospect }) => {
   const [dialogState, setDialogState] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   const notify = useNotify();
   const refresh = useRefresh();
@@ -173,6 +174,7 @@ const ProspectItem = ({ prospect }) => {
   const changeStatus = e => {
     const { value } = e.target;
     form.setValue('status', value);
+    setSelectedStatus(value);
     toggleDialog();
   };
 
@@ -267,7 +269,15 @@ const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>
-          <ProspectDialog open={dialogState} close={toggleDialog} prospect={prospect} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
+          {dialogState ? (
+            <ProspectDialog
+              open={dialogState}
+              close={toggleDialog}
+              prospect={prospect}
+              saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
+              selectedStatus={selectedStatus}
+            />
+          ) : null}
         </Paper>
       </form>
     </FormProvider>
