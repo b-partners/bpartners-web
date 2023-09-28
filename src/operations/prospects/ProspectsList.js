@@ -20,7 +20,7 @@ import {
   Typography,
   TextField,
 } from '@mui/material';
-import { Home, LocalPhoneOutlined, LocationCity, LocationOn, MailOutline, MoreVert, Star, Update } from '@mui/icons-material';
+import { Home, LocalPhoneOutlined, Comment, LocationOn, MailOutline, MoreVert, Star, Update } from '@mui/icons-material';
 import { EmptyList } from 'src/common/components/EmptyList';
 import ListComponent from 'src/common/components/ListComponent';
 import { groupBy } from 'lodash';
@@ -263,7 +263,7 @@ const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<MailOutline />} value={prospect.email} />
             <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
             <CardViewField icon={<Home />} value={prospect.address} />
-            <CardViewField icon={<LocationCity />} value={prospect.townCode} />
+            <CardViewField icon={<Comment />} value={prospect.comment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>

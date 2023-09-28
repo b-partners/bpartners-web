@@ -9,6 +9,7 @@ export const prospects: Prospect[] = [
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
       longitude: 2.347,
@@ -27,6 +28,7 @@ export const prospects: Prospect[] = [
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     rating: {
       lastEvaluation: new Date('2023-05-10'),
       value: 5.9978,
@@ -40,6 +42,7 @@ export const prospects: Prospect[] = [
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
     id: 'prospect4_id',
@@ -49,6 +52,7 @@ export const prospects: Prospect[] = [
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: null,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
     id: 'prospect5_id',
@@ -58,6 +62,7 @@ export const prospects: Prospect[] = [
     status: 'CONTACTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 12345,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
       longitude: 2.347,
@@ -72,6 +77,7 @@ export const prospects: Prospect[] = [
     status: 'CONVERTED',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 12345,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
     id: 'prospect7_id',
@@ -94,6 +100,7 @@ export const prospects: Prospect[] = [
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: null,
+    comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
       longitude: 2.347,
