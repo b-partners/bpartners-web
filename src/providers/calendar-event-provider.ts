@@ -6,8 +6,25 @@ export const calendarEventProvider: BpDataProviderType = {
     const { userId } = getCached.userInfo();
     const { calendarId, start_gte, start_lte, calendarProvider } = filters;
     if (!calendarId || calendarId.length === 0) return [];
-    const { data: calendarEvent } = await calendarApi().getCalendarEvents(userId, calendarId, calendarProvider, new Date(start_gte), new Date(start_lte));
-    return calendarEvent.map(calendarEventMapper.toDomain);
+    const isCalendarSync = getCached.calendarSync();
+
+    if (!isCalendarSync) {
+      const { data: calendarEvents } = await calendarApi().getCalendarEvents(userId, calendarId, calendarProvider, new Date(start_gte), new Date(start_lte));
+      return calendarEvents.map(calendarEvent => calendarEventMapper.toDomain(calendarEvent));
+    } else {
+      const [local, google] = await Promise.all([
+        (await calendarApi().getCalendarEvents(userId, calendarId, 'LOCAL', new Date(start_gte), new Date(start_lte))).data,
+        (await calendarApi().getCalendarEvents(userId, calendarId, 'GOOGLE_CALENDAR', new Date(start_gte), new Date(start_lte))).data,
+      ]);
+
+      const res = local.map(value =>
+        calendarEventMapper.toDomain(
+          value,
+          google.find(e => e.id === value?.id)
+        )
+      );
+      return res;
+    }
   },
   async saveOrUpdate(resources: any[], options = {}) {
     const { calendarId } = options;

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useMemo, useState } from 'react';
 import { debounce } from '@mui/material/utils';
+import { useEffect, useMemo, useState } from 'react';
 
 type AutocompleteOptions<T> = {
   fetcher: (query: string) => Promise<T[]>;
@@ -8,7 +8,16 @@ type AutocompleteOptions<T> = {
   getLabel: (element: T) => string;
 };
 
-export const useAutocomplete = <T>(params: AutocompleteOptions<T>) => {
+export type AutocompleteController<T> = {
+  onChange: (q: string) => void;
+  options: T[];
+  loading: boolean;
+  query: string;
+  setOptions: (options: T[]) => void;
+  onblur: () => void;
+};
+
+export const useAutocomplete = <T>(params: AutocompleteOptions<T>): AutocompleteController<T> => {
   const { defaultValue, fetcher, getLabel } = params;
 
   const [query, setQuery] = useState(getLabel(defaultValue));
