@@ -23,7 +23,7 @@ const ProspectDialogActions = ({ prospectStatus, close, prospectFeedback, saveOr
           {prospectFeedback && prospectFeedback === 'NOT_INTERESTED'
             ? shouldRenderButton('Abandonner ce prospect')
             : selectedStatus === 'CONTACTED'
-            ? shouldRenderButton('Réserver ce Prospect')
+            ? shouldRenderButton('Réserver ce prospect')
             : selectedStatus === 'CONVERTED'
             ? shouldRenderButton('Transformer ce prospect en client')
             : shouldRenderButton('Valider')}
