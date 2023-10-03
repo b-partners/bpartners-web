@@ -4,6 +4,7 @@ import { InvoiceStatusFR } from '../../../constants/invoice-status';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
 import { ContentState, EditorState, convertFromHTML } from 'draft-js';
+import { PaymentRegulationStatusFR } from '../../../constants/payment-regulation-status';
 
 /**
  * **INVOICE**
@@ -149,6 +150,16 @@ export const getInvoiceStatusInFr = (status: InvoiceStatusLabel): string => {
   }
 };
 
+export const getPaymentRegulationStatusInFr = (status: string): string => {
+  switch (status) {
+    case 'PAID':
+      return PaymentRegulationStatusFR.PAID;
+    case 'UNPAID':
+      return PaymentRegulationStatusFR.UNPAID;
+    default:
+      throw new Error(`Unknown status: ${status}`);
+  }
+};
 export const InvoiceActionType = {
   START_PENDING: 'startPending',
   STOP_PENDING: 'stopPending',

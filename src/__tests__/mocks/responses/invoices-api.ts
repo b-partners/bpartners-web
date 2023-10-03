@@ -87,6 +87,12 @@ export const restInvoiceRegulation = [
       reference: 'BROUILLON-REF-2302281442',
       initiatedDatetime: '2023-03-14T13:44:29.373132Z',
     },
+    status: {
+      paymentMethod: 'UNKNOWN',
+      paymentStatus: 'PAID',
+      updatedAt: '2023-10-05T10:21:11.593Z',
+      userUpdated: true,
+    },
     maturityDate: '2023-02-28',
   },
   {
@@ -99,6 +105,12 @@ export const restInvoiceRegulation = [
       label: 'BROUILLON-REF-2302281442 - Restant dû',
       reference: 'BROUILLON-REF-2302281442',
       initiatedDatetime: '2023-03-14T13:44:29.471419Z',
+    },
+    status: {
+      paymentMethod: 'UNKNOWN',
+      paymentStatus: 'UNPAID',
+      updatedAt: null,
+      userUpdated: null,
     },
     maturityDate: '2023-03-14',
   },
