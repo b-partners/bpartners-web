@@ -2,6 +2,7 @@
   "name": "bpartners-web",
   "private": true,
   "dependencies": {
+    "@gthrm/deep-diff": "^1.0.6",
     "@hookform/resolvers": "^3.1.0",
     "@mui/styles": "^5.12.3",
     "@mui/x-date-pickers": "^5.0.20",

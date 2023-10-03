@@ -20,15 +20,10 @@ const fromLocalToDomain = ({ from, summary, to, id, ...others }: CalendarEvent) 
   ...others,
 });
 
-const fromGoogleToDomain = (fromLocal: CalendarEvent, { from, location, organizer, participants, to, summary }: CalendarEvent) => {
+const fromGoogleToDomain = (fromLocal: CalendarEvent, fromGoogle: CalendarEvent) => {
   return {
     ...fromLocalToDomain(fromLocal),
-    fromGoogle: from,
-    locationGoogle: location,
-    organizerGoogle: organizer,
-    participantGoogle: participants,
-    toGoogle: to,
-    summaryGoogle: summary,
+    google: fromLocalToDomain(fromGoogle),
   };
 };
 

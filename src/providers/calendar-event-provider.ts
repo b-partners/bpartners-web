@@ -1,5 +1,6 @@
 import { BpDataProviderType, calendarApi, getCached } from '.';
 import { calendarEventMapper } from './mappers';
+import { mapEvents } from './utils';
 
 export const calendarEventProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
@@ -16,13 +17,10 @@ export const calendarEventProvider: BpDataProviderType = {
         (await calendarApi().getCalendarEvents(userId, calendarId, 'LOCAL', new Date(start_gte), new Date(start_lte))).data,
         (await calendarApi().getCalendarEvents(userId, calendarId, 'GOOGLE_CALENDAR', new Date(start_gte), new Date(start_lte))).data,
       ]);
+      const res = mapEvents(local, google);
 
-      const res = local.map(value =>
-        calendarEventMapper.toDomain(
-          value,
-          google.find(e => e.id === value?.id)
-        )
-      );
+      console.log(res);
+
       return res;
     }
   },
