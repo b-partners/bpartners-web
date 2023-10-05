@@ -1,3 +1,3 @@
 export * from './CalendarCustomerSelection';
 export * from './CalendarSelection';
-export * from './CalendarSync';
+export * from './CalendarSyncRedirection';
