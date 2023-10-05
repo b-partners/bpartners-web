@@ -13,26 +13,14 @@ export type TRaCalendarEvent = {
   isSynchronized?: boolean;
 };
 
-const fromLocalToDomain = ({ from, summary, to, id, ...others }: CalendarEvent) => ({
-  id,
-  title: summary,
-  start: dateForInput(new Date(from)),
-  end: dateForInput(new Date(to)),
-  ...others,
-});
-
-const fromGoogleToDomain = (fromLocal: CalendarEvent, fromGoogle: CalendarEvent) => {
-  return {
-    ...fromLocalToDomain(fromLocal),
-    google: fromLocalToDomain(fromGoogle),
-  };
-};
-
 export const calendarEventMapper = {
-  toDomain(fromLocal: CalendarEvent, fromGoogle?: CalendarEvent): TRaCalendarEvent {
-    if (!fromGoogle) return fromLocalToDomain(fromLocal);
-    return fromGoogleToDomain(fromLocal, fromGoogle);
-  },
+  toDomain: ({ from, summary, to, id, ...others }: CalendarEvent) => ({
+    id,
+    title: summary,
+    start: dateForInput(new Date(from)),
+    end: dateForInput(new Date(to)),
+    ...others,
+  }),
 
   toRest({ title, start, end, ...others }: TRaCalendarEvent): CalendarEvent {
     return {

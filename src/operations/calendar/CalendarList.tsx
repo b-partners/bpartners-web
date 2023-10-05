@@ -7,7 +7,7 @@ import { useTypedToggle } from 'src/common/hooks';
 import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
 import { CalendarSaveDialog } from './CalendarSaveDialog';
-import { CalendarEventComparator, CalendarListAction } from './components';
+import { CalendarSelection } from './components';
 import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';
@@ -36,7 +36,7 @@ export const CalendarList = () => {
         <List
           resource='calendar-event'
           filterDefaultValues={calendarIntervalFilter()}
-          actions={<CalendarListAction />}
+          actions={<CalendarSelection />}
           filter={{ calendarId: currentCalendar?.id }}
           exporter={false}
           pagination={false}
@@ -49,7 +49,6 @@ export const CalendarList = () => {
             eventClick={handleEventClick}
             locale={frLocale}
           />
-          <CalendarEventComparator />
           <CalendarSaveDialog title='Édition' open={getToggleStatus('EDIT')} onClose={() => setToggleStatus('EDIT')} />
           <CalendarSaveDialog title='Création' open={getToggleStatus('CREATE')} onClose={() => setToggleStatus('CREATE')} />
         </List>
