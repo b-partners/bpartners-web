@@ -6,14 +6,14 @@ import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
 import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
-import { CalendarSaveDialog, CalendarSyncInitPage } from './components';
+import { CalendarSaveDialog, CalendarSyncDialog, CalendarSyncInitPage } from './components';
 import { CalendarSelection } from './components';
 import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';
 
 export const CalendarList = () => {
-  const { data } = useGetList('calendar');
+  const { data, isLoading } = useGetList('calendar');
   const [currentCalendar, setCurrentCalendar] = useState<Calendar>(data && data[0]);
   const { getToggleStatus, setToggleStatus } = useTypedToggle<TypedToggle>({ defaultType: 'EDIT', defaultValue: false });
   const [currentEvent, setCurrentEvent] = useState<any>({});
@@ -32,7 +32,7 @@ export const CalendarList = () => {
 
   return (
     <CalendarContextProvider {...{ currentCalendar, currentEvent, eventList: data }}>
-      {!currentCalendar && <CalendarSyncInitPage />}
+      {!isLoading && !currentCalendar && <CalendarSyncInitPage />}
       {!!currentCalendar && (
         <List
           resource='calendar-event'
@@ -54,6 +54,7 @@ export const CalendarList = () => {
           <CalendarSaveDialog title='Création' open={getToggleStatus('CREATE')} onClose={() => setToggleStatus('CREATE')} />
         </List>
       )}
+      {!!currentCalendar && <CalendarSyncDialog />}
     </CalendarContextProvider>
   );
 };

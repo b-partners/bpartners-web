@@ -1,11 +1,11 @@
-import { Box, Paper, Typography } from '@mui/material';
 import { Sync as SyncIcon } from '@mui/icons-material';
+import { Box, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
 import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
 import { BPButton } from 'src/common/components/BPButton';
-import { ICON_CONTAINER, PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
-import { useState } from 'react';
-import { dataProvider } from 'src/providers';
 import { redirect } from 'src/common/utils';
+import { dataProvider } from 'src/providers';
+import { ICON_CONTAINER, PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 
 export const CalendarSyncInitPage = () => {
   const [isLoading, setLoading] = useState(false);
