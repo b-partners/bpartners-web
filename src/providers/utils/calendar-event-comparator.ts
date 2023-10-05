@@ -1,9 +1,13 @@
 import { equals } from '@gthrm/deep-diff';
 import { CalendarEvent } from 'bpartners-react-client';
-import { calendarEventMapper } from '../mappers';
+import { TRaCalendarEvent, calendarEventMapper } from '../mappers';
+
+export interface TNotSyncCalendarEvent extends TRaCalendarEvent {
+  google?: TRaCalendarEvent;
+}
 
 export const mapEvents = (local: CalendarEvent[] = [], _google: CalendarEvent[] = []) => {
-  const fusionOfEvents: CalendarEvent[] & { google?: CalendarEvent[] } = [];
+  const fusionOfEvents: TNotSyncCalendarEvent[] = [];
   const google = _google.slice();
   local.forEach(localEvent => {
     const fromGoogleIndex = google.findIndex(e => e.id === localEvent.id);

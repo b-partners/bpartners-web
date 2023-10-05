@@ -17,11 +17,7 @@ export const calendarEventProvider: BpDataProviderType = {
         (await calendarApi().getCalendarEvents(userId, calendarId, 'LOCAL', new Date(start_gte), new Date(start_lte))).data,
         (await calendarApi().getCalendarEvents(userId, calendarId, 'GOOGLE_CALENDAR', new Date(start_gte), new Date(start_lte))).data,
       ]);
-      const res = mapEvents(local, google);
-
-      console.log(res);
-
-      return res;
+      return mapEvents(local, google);
     }
   },
   async saveOrUpdate(resources: any[], options = {}) {

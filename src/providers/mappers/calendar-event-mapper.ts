@@ -10,6 +10,7 @@ export type TRaCalendarEvent = {
   location?: CalendarEvent['location'];
   organizer?: CalendarEvent['organizer'];
   participants?: CalendarEvent['participants'];
+  isSynchronized?: boolean;
 };
 
 const fromLocalToDomain = ({ from, summary, to, id, ...others }: CalendarEvent) => ({

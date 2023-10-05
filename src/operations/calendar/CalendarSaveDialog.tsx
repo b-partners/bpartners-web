@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
 import { BPButton } from 'src/common/components/BPButton';
 import { calendarResolver } from 'src/common/resolvers';
-import { useCalendarContext } from 'src/common/store';
+import { useCalendarContext } from 'src/common/store/calendar';
 import { printError } from 'src/common/utils';
 import { calendarEventProvider, getCached } from 'src/providers';
 import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';

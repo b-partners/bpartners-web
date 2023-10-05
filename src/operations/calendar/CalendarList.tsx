@@ -4,10 +4,10 @@ import { Calendar } from 'bpartners-react-client';
 import { useEffect, useState } from 'react';
 import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
-import { CalendarContextProvider } from 'src/common/store';
+import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
 import { CalendarSaveDialog } from './CalendarSaveDialog';
-import { CalendarListAction } from './components';
+import { CalendarEventComparator, CalendarListAction } from './components';
 import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';
@@ -49,6 +49,7 @@ export const CalendarList = () => {
             eventClick={handleEventClick}
             locale={frLocale}
           />
+          <CalendarEventComparator />
           <CalendarSaveDialog title='Édition' open={getToggleStatus('EDIT')} onClose={() => setToggleStatus('EDIT')} />
           <CalendarSaveDialog title='Création' open={getToggleStatus('CREATE')} onClose={() => setToggleStatus('CREATE')} />
         </List>

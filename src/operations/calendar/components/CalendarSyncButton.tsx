@@ -3,7 +3,7 @@ import { Badge, IconButton, SxProps, CircularProgress } from '@mui/material';
 import { CalendarProvider, Redirection1 } from 'bpartners-react-client';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { useCalendarContext } from 'src/common/store';
+import { useCalendarContext } from 'src/common/store/calendar';
 import { getCurrentWeek, printError, redirect } from 'src/common/utils';
 import { cache, calendarEventProvider, calendarProvider, getCached } from 'src/providers';
 

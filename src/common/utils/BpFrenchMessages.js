@@ -1,4 +1,10 @@
 export const BpFrenchMessages = {
+  bp: {
+    action: {
+      finish: 'Terminer',
+      next: 'Suivant',
+    },
+  },
   resources: {
     products: {
       name: 'Produit |||| Produits',

@@ -1,7 +1,7 @@
 import { Calendar, CalendarEvent } from 'bpartners-react-client';
 import { FC, createContext, useContext } from 'react';
+import { useTypedToggle } from 'src/common/hooks';
 import { TRaCalendarEvent } from 'src/providers/mappers';
-import { useTypedToggle } from '../hooks';
 
 export type CalendarDialogToggle = 'CREATE' | 'EDIT';
 
