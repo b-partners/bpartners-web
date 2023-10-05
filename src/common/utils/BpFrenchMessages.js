@@ -4,6 +4,7 @@ export const BpFrenchMessages = {
       sync: 'Synchroniser',
       finish: 'Terminer',
       next: 'Suivant',
+      notNow: 'Pas maintenant',
     },
   },
   resources: {
