@@ -10,7 +10,7 @@ import { useCalendarContext } from 'src/common/store/calendar';
 import { printError } from 'src/common/utils';
 import { calendarEventProvider, getCached } from 'src/providers';
 import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';
-import { CalendarCustomerSelection } from './components/CalendarCustomerSelection';
+import { CalendarCustomerSelection } from './CalendarCustomerSelection';
 
 type CalendarEditDialogProps = {
   open: boolean;

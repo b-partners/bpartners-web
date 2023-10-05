@@ -6,7 +6,7 @@ import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
 import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
-import { CalendarSaveDialog } from './CalendarSaveDialog';
+import { CalendarSaveDialog } from './components';
 import { CalendarSelection } from './components';
 import { calendarIntervalFilter } from './utils';
 
