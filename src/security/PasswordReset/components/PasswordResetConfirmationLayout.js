@@ -18,12 +18,10 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
         // La réinitialisation du mot de passe a réussi
         setStepFunc('success');
         setLoading(false);
-        console.log('Mot de passe réinitialisé avec succès', data);
       })
       .catch(error => {
         // La réinitialisation du mot de passe a échoué
         formState.setError('resetCode', { message: FieldErrorMessage.resetCode });
-        console.error('Erreur lors de la réinitialisation du mot de passe', error);
         setLoading(false);
       });
   });

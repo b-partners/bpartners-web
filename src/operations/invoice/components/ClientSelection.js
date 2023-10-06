@@ -1,6 +1,6 @@
 import { useFormContext, useWatch } from 'react-hook-form';
 import { customerProvider } from '../../../providers';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 import { AutocompleteBackend } from 'src/common/components';
 
 const getClientName = customer => (customer && customer.lastName && customer.firstName ? `${customer.lastName} ${customer.firstName}` : '');

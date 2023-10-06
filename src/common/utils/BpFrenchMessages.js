@@ -1,4 +1,12 @@
 export const BpFrenchMessages = {
+  bp: {
+    action: {
+      sync: 'Synchroniser',
+      finish: 'Terminer',
+      next: 'Suivant',
+      notNow: 'Pas maintenant',
+    },
+  },
   resources: {
     products: {
       name: 'Produit |||| Produits',
@@ -8,6 +16,12 @@ export const BpFrenchMessages = {
     },
     transactions: {
       category: { add: 'La catégorie a bien été ajoutée', edit: 'La catégorie a bien été modifiée' },
+    },
+    calendar: {
+      name: 'Mon agenda',
+      values: {
+        participant: 'Participant |||| Participants',
+      },
     },
     invoices: {
       name: 'Facture |||| Factures',

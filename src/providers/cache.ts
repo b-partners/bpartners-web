@@ -8,6 +8,8 @@ const accountItem = 'bp_account';
 const accountHolderItem = 'bp_accountHolder';
 const userItem = 'bp_user';
 const invoiceConfirmedListSwitchItem = 'bp_invoiceConfirmedListSwitch';
+const timeZoneItem = 'bp_time_zone';
+const calendarSyncItem = 'bp_calendar_sync_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -45,6 +47,12 @@ export const cache = {
   invoiceConfirmedListSwitch(value: boolean) {
     return localStorage.setItem(invoiceConfirmedListSwitchItem, value ? '1' : '0');
   },
+  timeZone: (timeZone: string) => {
+    return localStorage.setItem(timeZoneItem, timeZone);
+  },
+  calendarSync: (value: boolean = false) => {
+    return localStorage.setItem(calendarSyncItem, JSON.stringify(value));
+  },
 };
 
 export const getCached = {
@@ -76,6 +84,12 @@ export const getCached = {
   },
   invoiceConfirmedListSwitch() {
     return localStorage.getItem(invoiceConfirmedListSwitchItem) === '1';
+  },
+  timeZone() {
+    return localStorage.getItem(timeZoneItem) || 'Europe/Paris';
+  },
+  calendarSync(): boolean {
+    return JSON.parse(localStorage.getItem(calendarSyncItem)) || false;
   },
 };
 

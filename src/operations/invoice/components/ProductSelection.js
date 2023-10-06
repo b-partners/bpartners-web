@@ -8,7 +8,7 @@ import { ProductActionType, productValidationHandling } from '../utils/utils';
 import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
 import { AutocompleteBackend } from '../../../common/components';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 
 export const ProductSelection = ({ name, form }) => {
   const {

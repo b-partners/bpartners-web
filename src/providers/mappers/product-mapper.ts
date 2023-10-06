@@ -1,5 +1,5 @@
 import { Product } from 'bpartners-react-client';
-import { objectMapper } from './objectMapper';
+import { objectMapper } from './object-mapper';
 import { emptyToNull, toMajors, toMinors } from 'src/common/utils';
 
 export const productMapper = {
