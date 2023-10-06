@@ -7,8 +7,7 @@ import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
 import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
-import { CalendarSaveDialog, CalendarSyncDialog, CalendarSyncInitPage } from './components';
-import { CalendarSelection } from './components';
+import { CalendarSaveDialog, CalendarSyncDialog, CalendarSyncInitPage, CalendarSelection } from './components';
 import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';
