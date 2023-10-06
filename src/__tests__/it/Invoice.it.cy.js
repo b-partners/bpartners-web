@@ -68,7 +68,18 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Devis confirmé', { timeout: timeout });
 
     cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
-    cy.get(`[data-testid="invoice-conversion-PAID-${ref}"]`).click();
-    cy.contains('Facture payée', { timeout: timeout });
+
+    cy.intercept('PUT', '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/invoices/**/paymentRegulations/**/paymentMethod**').as('savePaymentRegulation');
+    cy.get("[data-testid='invoice-payment-method-select-0']").click();
+    cy.contains('Espèces').click();
+    cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
+    cy.wait('@savePaymentRegulation', { timeout: timeout });
+    cy.contains('Acompte payé avec succès !');
+
+    cy.get("[data-testid='invoice-payment-method-select-1']").click();
+    cy.contains('Chèque').click();
+    cy.get('[data-testid="invoice-conversion-PAID-1"]').click();
+    cy.wait('@savePaymentRegulation', { timeout: timeout });
+    cy.contains('Acompte payé avec succès !');
   });
 });
