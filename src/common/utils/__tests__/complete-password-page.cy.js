@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { authProvider } from 'src/providers';
 import CompletePasswordPage from 'src/security/CompletePasswordPage';
@@ -6,7 +5,7 @@ import CompletePasswordPage from 'src/security/CompletePasswordPage';
 describe(specTitle('Complete password page'), () => {
   it('should test next button', () => {
     cy.stub(authProvider, 'setNewPassword').as('setNewPassword');
-    mount(<CompletePasswordPage />);
+    cy.mount(<CompletePasswordPage />);
     cy.contains('Première connexion ?');
     cy.get("input[name='phoneNumber']").type('{enter}');
     cy.contains('Ce champ est requis.');

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
@@ -28,7 +27,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should change invoice status', () => {
-    mount(<App />);
+    cy.mount(<App />);
     const invoices = getInvoices(0, 1, [InvoiceStatus.DRAFT]);
     invoices[0].paymentRegulations = null;
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -30,7 +29,7 @@ describe(specTitle('General Condition of Use'), () => {
     });
 
     it('is displayed when CGU is not accepted yet', () => {
-      mount(<App />);
+      cy.mount(<App />);
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
@@ -42,7 +41,7 @@ describe(specTitle('General Condition of Use'), () => {
     });
 
     it('is approving legal file on next button', () => {
-      mount(<App />);
+      cy.mount(<App />);
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
@@ -58,7 +57,7 @@ describe(specTitle('General Condition of Use'), () => {
     });
 
     it('is displaying pdf with pagination', () => {
-      mount(<App />);
+      cy.mount(<App />);
       gotoProduct();
 
       cy.wait('@getLegalFiles1');
@@ -83,7 +82,7 @@ describe(specTitle('General Condition of Use'), () => {
     });
 
     it('should not display cgu dialog', () => {
-      mount(<App />);
+      cy.mount(<App />);
 
       gotoProduct();
 

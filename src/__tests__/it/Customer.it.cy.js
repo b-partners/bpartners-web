@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
@@ -10,7 +9,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('can be updated', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="customers"]').click();
     cy.contains('Andriamahery IT').click();

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -32,7 +31,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('Test change account', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="bank"]').click();
     cy.contains('BMOI');
     cy.contains('bic1234');
@@ -48,7 +47,7 @@ describe(specTitle('Account'), () => {
   it('Test bank', () => {
     cy.stub(Redirect, 'redirect');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="bank"]').click();
     cy.contains('BMOI');
     cy.contains('bic1234');
@@ -74,7 +73,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('Should update account name and iban', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="bank"]').click();
 
     cy.contains('Numer');
@@ -98,7 +97,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('Should disconnect bank', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.get('[name="bank"]').click();
     cy.get('[data-testid="bank-disconnection-front-button"]').click();

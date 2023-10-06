@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import { InvoiceStatus, PaymentMethod } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
@@ -39,7 +38,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Can be paid', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
@@ -54,7 +53,9 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('POST', `/users/mock-user-id1/accountHolders/mock-accountHolder-id1/feedback`, req => {
       const actualFeedbackAsked = req.body || {};
       expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
-      expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
+      expect(actualFeedbackAsked.message).contains('<p>');
+      expect(actualFeedbackAsked.message).contains('<br>');
+      expect(actualFeedbackAsked.message).contains('Nous espérons que vous allez bien.');
       req.reply({});
     }).as('AskFeedback');
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
@@ -66,7 +67,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should automatically change tabs when converting to a quote or invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
@@ -79,7 +80,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Check if date label are corrects', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
@@ -91,7 +92,7 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
@@ -105,7 +106,7 @@ describe(specTitle('Invoice'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const simpleComment = 'This is a simple comment';
@@ -142,7 +143,7 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('emitInvoice');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.wait('@getAccount1');
@@ -158,7 +159,7 @@ describe(specTitle('Invoice'), () => {
   it('Should show payment regulation comment', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();

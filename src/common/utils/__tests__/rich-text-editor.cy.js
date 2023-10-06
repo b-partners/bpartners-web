@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import RichTextEditor from '../../components/RichTextEditor';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -24,7 +23,7 @@ describe(specTitle('RichTextEditor'), () => {
   const ol = '[data-testid="OL"]';
 
   beforeEach(() => {
-    mount(<RichTextEditorComponent />);
+    cy.mount(<RichTextEditorComponent />);
   });
 
   it('should render the editor', () => {

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -20,7 +19,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
 
@@ -67,7 +66,7 @@ describe(specTitle('Account'), () => {
     ]).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.wait('@getAccountHolder1');
 
@@ -106,7 +105,7 @@ describe(specTitle('Account'), () => {
       req.reply(accountHolders1[0]);
     }).as('updateAccountHolder');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.wait('@getAccountHolder1');
 
@@ -142,7 +141,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw?fileType=LOGO`, images1).as('logoUpload');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.wait('@getAccountHolder1');
 
@@ -190,7 +189,7 @@ describe(specTitle('Account'), () => {
       req.reply({ body: response });
     });
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
     // because the current accountholder's isSubjectToVat is true,
@@ -264,7 +263,7 @@ describe(specTitle('Account'), () => {
       req.reply(response);
     }).as('updateRevenueTargets');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
     cy.wait('@getAccount1');
@@ -304,7 +303,7 @@ describe(specTitle('Account'), () => {
       expect(req.body).eql({ feedbackLink: validLink });
       req.reply(accountHoldersFeedbackLink);
     }).as('configuration');
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
     cy.get(ACCOUNT_EDITION).click();
@@ -360,7 +359,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.contains('Avertissement');
     cy.contains(`Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au support.`);
@@ -378,7 +377,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
 

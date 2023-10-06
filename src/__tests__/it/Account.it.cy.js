@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../../App';
@@ -9,7 +8,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('is displayed on login', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
 

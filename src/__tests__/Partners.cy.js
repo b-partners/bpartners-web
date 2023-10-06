@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -28,7 +27,7 @@ describe(specTitle('Account'), () => {
   it('Test partners', () => {
     cy.stub(Redirect, 'redirect');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="partners"]').click();
 
     cy.contains("Besoin d'une assurance adaptée");

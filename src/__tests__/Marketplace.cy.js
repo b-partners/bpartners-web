@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -17,7 +16,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('only show long description when asked', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', marketplaces1).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();
@@ -40,7 +39,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('are displayed', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', marketplaces1).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();
@@ -52,7 +51,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('should show info when list is empty', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.intercept('GET', '/accounts/mock-account-id1/marketplaces**', []).as('getMarketplaces');
     cy.wait('@getUser1');
     cy.get('[name="marketplaces"]').click();

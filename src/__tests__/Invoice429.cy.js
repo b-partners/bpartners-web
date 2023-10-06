@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
@@ -36,7 +35,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('should retry on 429', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('[data-testid="open-popover"]').click();
 

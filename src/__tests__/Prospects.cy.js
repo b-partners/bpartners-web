@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -32,7 +31,7 @@ describe(specTitle('Customers'), () => {
   it('are displayed', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
@@ -101,7 +100,7 @@ describe(specTitle('Customers'), () => {
       req.reply(accountHolders1[0]);
     }).as('updateProspectingPerimeter');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click();
@@ -122,7 +121,7 @@ describe(specTitle('Customers'), () => {
 
   it('should show empty list', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 

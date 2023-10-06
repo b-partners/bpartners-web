@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import { InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
@@ -40,7 +39,7 @@ describe(specTitle('Invoice'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 

@@ -1,7 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { whoami1 } from './mocks/responses/security-api';
 import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
-import { mount } from '@cypress/react';
 import App from 'src/App';
 import { transactions, transactionsSummary } from './mocks/responses/paying-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
@@ -28,7 +27,7 @@ describe(specTitle('Validate Account'), () => {
 
   it('should validate account', () => {
     cy.intercept('POST', '/users/mock-user-id1/accounts/mock-account-id1/initiateAccountValidation', validationRedirectionUrl).as('initiateAccountValidation');
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="transactions"]').click();
 

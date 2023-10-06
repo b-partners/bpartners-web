@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import { InvoiceStatus } from 'bpartners-react-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
@@ -39,7 +38,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('should archive invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.get('[data-testid="archive-invoices-button"]').should('not.exist');

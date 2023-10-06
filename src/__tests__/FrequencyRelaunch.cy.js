@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -20,7 +19,7 @@ describe(specTitle('Frequency relaunch'), () => {
   });
 
   it('should send configuration', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="configurations"]').click();
 
