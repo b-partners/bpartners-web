@@ -30,3 +30,13 @@ export const invoiceProvider: BpDataProviderType = {
     return (await payingApi().archiveInvoices(accountId, resources)).data;
   },
 };
+
+export const updatePaymentReg = async (invoiceId: string, paymentRegulation: any) => {
+  const { accountId } = getCached.userInfo();
+  const { paymentRequest, status } = paymentRegulation;
+  return (
+    await payingApi().updatePaymentRegMethod(accountId, invoiceId, paymentRequest?.id, {
+      method: status?.paymentMethod,
+    })
+  ).data;
+};

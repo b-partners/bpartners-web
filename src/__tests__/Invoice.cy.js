@@ -41,7 +41,6 @@ describe(specTitle('Invoice'), () => {
   it('Can be paid', () => {
     mount(<App />);
     cy.get('[name="invoice"]').click();
-
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
     cy.contains('invoice-ref-3');
 
