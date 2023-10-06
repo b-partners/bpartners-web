@@ -36,7 +36,7 @@ export const CalendarList = () => {
   }, [data]);
 
   return (
-    <CalendarContextProvider {...{ currentCalendar, currentEvent, eventList: data }}>
+    <CalendarContextProvider {...{ currentCalendar, currentEvent, eventList: data, setCalendar: setCurrentCalendar }}>
       {toShow === 'SYNC_PAGE' && <CalendarSyncInitPage />}
       {toShow === 'CALENDAR' && (
         <>

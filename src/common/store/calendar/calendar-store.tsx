@@ -19,14 +19,14 @@ type RaCalendarContext = {
 const CalendarContext = createContext<RaCalendarContext>(null);
 export const useCalendarContext = () => useContext(CalendarContext);
 
-export const CalendarContextProvider: FC<RaCalendarContext> = ({ currentCalendar, currentEvent, eventList, children }) => {
+export const CalendarContextProvider: FC<RaCalendarContext> = ({ currentCalendar, currentEvent, eventList, children, setCalendar }) => {
   const { getToggleStatus: getDialogStatus, setToggleStatus: setDialogStatus } = useTypedToggle<CalendarDialogToggle>({
     defaultType: 'EDIT',
     defaultValue: false,
   });
 
   return (
-    <CalendarContext.Provider value={{ currentCalendar, currentEvent, eventList, dialog: { getDialogStatus, setDialogStatus } }}>
+    <CalendarContext.Provider value={{ currentCalendar, currentEvent, eventList, setCalendar, dialog: { getDialogStatus, setDialogStatus } }}>
       {children}
     </CalendarContext.Provider>
   );
