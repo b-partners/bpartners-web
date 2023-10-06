@@ -65,7 +65,7 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
               <TableCell>Titre</TableCell>
               <TableCell>Prix TTC</TableCell>
               <TableCell>Statut</TableCell>
-              <TableCell>Mode de payment</TableCell>
+              <TableCell>Mode de paiement</TableCell>
               <TableCell></TableCell>
             </TableHead>
             <TableBody>
