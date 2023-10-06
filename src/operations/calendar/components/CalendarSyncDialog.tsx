@@ -35,7 +35,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
       <DialogTitle></DialogTitle>
       <DialogContent>
         <Typography width={550} textAlign='justify' mb={1}>
-          Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de RDV prospects à proximité de vos prochains RDV.
+          Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>

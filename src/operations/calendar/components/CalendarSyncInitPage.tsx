@@ -24,8 +24,8 @@ export const CalendarSyncInitPage = () => {
         </Box>
         <Box>
           <Typography width={300} textAlign='justify' mb={1}>
-            Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de RDV prospects à proximité de
-            vos prochains RDV.
+            Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité
+            de vos prochains RDV.
           </Typography>
           <BPButton onClick={oauth2Init} endIcon={<SyncIcon />} label='bp.action.sync' isLoading={isLoading} />
         </Box>
