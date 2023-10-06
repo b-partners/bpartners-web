@@ -21,7 +21,8 @@ const BP_TEXT_FIELD = {
   },
 };
 
-export const BpTextField = ({ name, icon, onClickOnIcon, ...others }) => {
+export const BpTextField = props => {
+  const { name, icon, onClickOnIcon, ...others } = props;
   const {
     register,
     formState: { errors },

@@ -5,4 +5,6 @@ export type BpDataProviderType = {
   updateOne?: (resources: any) => Promise<any>;
   update?: (resources: Array<any>) => Promise<Array<any>>;
   archive?: (resources: Array<any>) => Promise<Array<any>>;
+  oauth2Init?: (options?: any) => Promise<any>;
+  oauth2ExchangeToken?: (code: string, options?: any) => Promise<any>;
 };

@@ -1,8 +1,11 @@
 import { UpdateParams } from 'react-admin';
+import { getPagination } from 'src/common/utils/pagination-utilities';
 import {
   accountHolderProvider,
   accountProvider,
   BpDataProviderType,
+  calendarEventProvider,
+  calendarProvider,
   customerProvider,
   marketplaceProvider,
   productProvider,
@@ -13,7 +16,6 @@ import {
   transactionProvider,
 } from '.';
 import { invoiceProvider } from './invoice-provider';
-import { getPagination } from 'src/common/utils/pagination-utilities';
 
 export const maxPageSize = 10_000;
 
@@ -28,6 +30,8 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'invoices') return invoiceProvider;
   if (resourceType === 'accountHolder') return accountHolderProvider;
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
+  if (resourceType === 'calendar') return calendarProvider;
+  if (resourceType === 'calendar-event') return calendarEventProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
@@ -74,5 +78,14 @@ export const dataProvider: RaDataProviderType = {
   async archive(resourceType, params) {
     const result = await getProvider(resourceType).archive(params.data);
     return { data: result };
+  },
+  async oauth2Init(resourceType, params) {
+    const data = await getProvider(resourceType).oauth2Init(params);
+    return { data };
+  },
+  async oauth2ExchangeToken(resourceType, params) {
+    const { code, options } = params;
+    const data = await getProvider(resourceType).oauth2ExchangeToken(code, options);
+    return { data };
   },
 };

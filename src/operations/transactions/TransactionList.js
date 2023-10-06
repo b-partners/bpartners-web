@@ -10,7 +10,7 @@ import ListComponent from '../../common/components/ListComponent';
 import { formatDatetime, coloredPrettyPrintMinors } from '../../common/utils';
 
 import Pagination, { pageSize } from '../../common/components/Pagination';
-import { TRANSACTION_STATUSES } from '../../constants/transaction-status';
+import { TRANSACTION_STATUSES } from '../../constants';
 import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';

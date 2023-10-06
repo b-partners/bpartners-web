@@ -12,6 +12,7 @@ import {
   ReceiptLong,
   Settings,
   Store,
+  CalendarMonth,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -87,6 +88,7 @@ const BpMenu = () => {
         {shouldShowMarketplaces && <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />}
         {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
+        <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </Menu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
         <SupportDialog onToggle={toggleDialogState} open={dialogState} />

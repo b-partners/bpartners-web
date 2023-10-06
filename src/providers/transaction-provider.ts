@@ -1,6 +1,6 @@
 import { Transaction, TransactionStatus } from 'bpartners-react-client';
 import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
-import { TRANSACTION_STATUSES } from '../constants/transaction-status';
+import { TRANSACTION_STATUSES } from '../constants';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
@@ -12,7 +12,7 @@ export const transactionProvider: BpDataProviderType = {
   getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {
     const { categorized, status, label } = filters;
     const { accountId } = await asyncGetUserInfo();
-    const { data } = await payingApi().getTransactions(accountId, label, page, perPage);
+    const { data } = await payingApi().getTransactions(accountId, label, status, undefined, page, perPage);
 
     return data
       .filter(
@@ -20,7 +20,6 @@ export const transactionProvider: BpDataProviderType = {
         //TODO(implement-backend)
         ({ category }) => (categorized ? category === null : true)
       )
-      .filter(transaction => (status ? transaction.status === status : true))
       .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));
   },
   saveOrUpdate: function (resources: any[]): Promise<any[]> {

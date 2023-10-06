@@ -17,4 +17,6 @@ export type RaDataProviderType = {
   create: (resourceType: string, params: any) => Promise<RaSingleResponseType>;
   update: (resourceType: string, params: any) => Promise<RaSingleResponseType>;
   archive?: (resourceType: string, params: any) => Promise<RaSingleResponseType>;
+  oauth2Init?: (resourceType: string, params?: any) => Promise<RaSingleResponseType>;
+  oauth2ExchangeToken?: (resourceType: string, params: any) => Promise<RaSingleResponseType>;
 };

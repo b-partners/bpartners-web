@@ -128,6 +128,15 @@ export const BP_THEME = {
         },
       },
     },
+    RaCalendar: {
+      styleOverrides: {
+        root: {
+          '& .fc-button-primary:not(.fc-button-active, .fc-today-button)': {
+            color: '#ffffff !important',
+          },
+        },
+      },
+    },
     MuiTableCell: {
       styleOverrides: {
         root: {

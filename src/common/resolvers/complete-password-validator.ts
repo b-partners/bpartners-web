@@ -21,7 +21,7 @@ const comparePasswords = ({ newPassword, confirmedPassword }: any) => newPasswor
 const completePasswordValidator = zod
   .object({
     phoneNumber: requiredString()
-      .length(10, { message: FieldErrorMessage.phoneLength })
+      .refine(value => value.length === 10, { message: FieldErrorMessage.phoneLength })
       .transform(phone => `+33${phone.slice(1)}`),
     newPassword: zod
       .string({ required_error: FieldErrorMessage.emptyPassword })
