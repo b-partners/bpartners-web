@@ -10,6 +10,44 @@ describe(specTitle('Calendar'), () => {
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
+  it('Should sync calendar [Page]', () => {
+    const now = new Date('2023-01-01');
+    // set date global date 2023-01-01
+    cy.clock(now);
+    cy.intercept('GET', '/users/mock-user-id1/calendars', []);
+    cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
+    cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
+
+    mount(<App />);
+    cy.get("[name='calendar']").click();
+    cy.contains(
+      "Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de RDV prospects à proximité de vos prochains RDV."
+    );
+    cy.contains('Synchroniser').click();
+
+    cy.get('@redirect').should('have.been.calledOnce');
+    cy.intercept('GET', '/users/mock-user-id1/calendars', calendars);
+  });
+
+  it('Should sync calendar [Dialog]', () => {
+    const now = new Date('2023-01-01');
+    // set date global date 2023-01-01
+    cy.clock(now);
+    cy.intercept('GET', '/users/mock-user-id1/calendars', calendars);
+    cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
+    cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
+
+    mount(<App />);
+    cy.get("[name='calendar']").click();
+    cy.contains('Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de RDV prospects à proximité de vos prochains RDV.');
+    cy.contains('Pas maintenant').click();
+    cy.contains(
+      "Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de RDV prospects à proximité de vos prochains RDV."
+    );
+    cy.contains('Synchroniser').click();
+    cy.get('@redirect').should('have.been.calledOnce');
+  });
+
   it('Should test calendar', () => {
     const now = new Date('2023-01-01');
     // set date global date 2023-01-01
@@ -53,11 +91,11 @@ describe(specTitle('Calendar'), () => {
     cy.get(':nth-child(1) > [data-testid="CancelIcon"]').click();
 
     // test participants multiple input
-    cy.get("[name='participants']").type('participant');
-    cy.contains('Ajouter').click();
+    cy.get("[data-testid='autocomplete-backend-for-participants'] input").type('john doe{Enter}');
     cy.contains('Email non valide');
-    cy.get("[name='participants']").clear().type(participantMock);
-    cy.contains('Ajouter').click();
+    cy.get("[data-testid='autocomplete-backend-for-participants'] input")
+      .clear()
+      .type(participantMock + '{Enter}');
 
     // submit
     cy.get('[data-testid="save-calendar-event"]').click();
