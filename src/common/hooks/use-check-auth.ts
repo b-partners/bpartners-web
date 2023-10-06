@@ -7,7 +7,10 @@ export const useCheckAuth = (fetcher: () => Promise<any>) => {
   useEffect(() => {
     fetcher()
       .then(() => setAuthentication(true))
-      .catch(() => setAuthentication(false))
+      .catch(err => {
+        setAuthentication(false);
+        console.log(err);
+      })
       .finally(() => setLoading(false));
   }, [fetcher]);
 

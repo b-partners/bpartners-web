@@ -14,9 +14,6 @@ export const CalendarSelection: FC = () => {
   }, []);
 
   const handleClick = (calendar: Calendar) => () => setCalendar && setCalendar(calendar);
-  useEffect(() => {
-    console.log(currentCalendar);
-  }, []);
 
   return (
     <TextField sx={{ minWidth: 300 }} select value={currentCalendar?.summary}>

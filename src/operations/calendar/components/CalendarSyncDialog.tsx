@@ -6,6 +6,7 @@ import { useCheckAuth } from 'src/common/hooks';
 import { useCalendarContext } from 'src/common/store/calendar';
 import { redirect } from 'src/common/utils';
 import { calendarEventProvider, dataProvider } from 'src/providers';
+import { calendarIntervalFilter } from '../utils';
 type CalendarSyncDialogProps = {
   changeView: () => void;
 };
@@ -16,7 +17,10 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
     currentCalendar: { id: calendarId },
   } = useCalendarContext();
 
-  const fetcher = async () => await calendarEventProvider.getList(null, null, { calendarId });
+  const fetcher = async () => {
+    const { start_gte, start_lte } = calendarIntervalFilter();
+    return await calendarEventProvider.getList(null, null, { calendarId, start_gte, start_lte });
+  };
   const { isLoading: isCheckAuthLoading, isAuthenticated } = useCheckAuth(fetcher);
 
   const oauth2Init = () => {
@@ -25,6 +29,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
       redirect(redirectionUrl);
     });
   };
+
   return (
     <Dialog open={!isCheckAuthLoading && !isAuthenticated}>
       <DialogTitle></DialogTitle>
