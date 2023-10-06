@@ -21,7 +21,7 @@ describe(specTitle('Calendar'), () => {
     mount(<App />);
     cy.get("[name='calendar']").click();
     cy.contains(
-      "Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
+      "Il semble que c'est la première fois que vous utilisez Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
     );
     cy.contains('Synchroniser').click();
 
@@ -44,7 +44,7 @@ describe(specTitle('Calendar'), () => {
     );
     cy.contains('Pas maintenant').click();
     cy.contains(
-      "Il semble que c'est la première fois que vous utiliser Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
+      "Il semble que c'est la première fois que vous utilisez Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
     );
     cy.contains('Synchroniser').click();
     cy.get('@redirect').should('have.been.calledOnce');
