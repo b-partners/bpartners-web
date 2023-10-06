@@ -8,7 +8,7 @@ import { getPaymentRegulationStatusInFr } from '../utils/utils';
 import { DoneAll as DoneAllIcon } from '@mui/icons-material';
 
 const PaymentRegulationRowItem = props => {
-  const { invoice, paymentRegulationItem, paymentMethodList } = props;
+  const { invoice, paymentRegulationItem, paymentMethodList, index } = props;
   const { paymentRequest, status } = paymentRegulationItem;
 
   const [paymentMethod, setPaymentMethod] = useState(status.paymentMethod || PaymentMethod.UNKNOWN);
@@ -47,7 +47,7 @@ const PaymentRegulationRowItem = props => {
         <TextField
           sx={{ width: '13rem', paddingBottom: 2 }}
           value={status.paymentMethod || paymentMethod}
-          data-testid='invoice-payment-method-select'
+          data-testid={`invoice-payment-method-select-${index}`}
           select
           onChange={e => setPaymentMethod(e.target.value)}
         >
@@ -64,7 +64,7 @@ const PaymentRegulationRowItem = props => {
         ) : (
           <Button
             title={translate(`resources.invoices.conversion.PAID.title`, { smart_count: 2 })}
-            data-testid={`invoice-conversion-PAID-${invoice.ref}`}
+            data-testid={`invoice-conversion-PAID-${index}`}
             disabled={isLoading}
             startIcon={isLoading ? <CircularProgress size='25px' /> : <DoneAllIcon />}
             onClick={handleSubmit}

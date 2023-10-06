@@ -73,6 +73,7 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
                 paymentRegulations.map((paymentRegulationItem, index) => {
                   return (
                     <PaymentRegulationRowItem
+                      index={index}
                       key={`paymentRegulation-key-${index}`}
                       invoice={invoice}
                       paymentRegulationItem={paymentRegulationItem}
