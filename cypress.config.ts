@@ -1,4 +1,4 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
   video: false,
@@ -11,11 +11,11 @@ export default defineConfig({
   viewportWidth: 2014,
   viewportHeight: 844,
   defaultCommandTimeout: 30000,
-  reporter: "cypress-multi-reporters",
+  reporter: 'cypress-multi-reporters',
 
   reporterOptions: {
-    reporterEnabled: "cypress-sonarqube-reporter",
-    mergeFileName: "test-reports.xml",
+    reporterEnabled: 'cypress-sonarqube-reporter',
+    mergeFileName: 'test-reports.xml',
     cypressSonarqubeReporterReporterOptions: {
       overwrite: true,
     },
@@ -23,13 +23,10 @@ export default defineConfig({
 
   component: {
     setupNodeEvents(on, config) {},
-    specPattern: "src/**/*.cy.{js,ts,jsx,tsx}",
-  },
-
-  component: {
+    specPattern: 'src/**/*.cy.{js,ts,jsx,tsx}',
     devServer: {
-      framework: "create-react-app",
-      bundler: "webpack",
+      framework: 'create-react-app',
+      bundler: 'webpack',
     },
   },
 });
