@@ -1,5 +1,5 @@
 import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
-import { getFileUrl, getFilenameMeta } from '../../../common/utils';
+import { getFileUrl, getFilenameMeta, formatDate } from '../../../common/utils';
 import { InvoiceStatusFR } from '../../../constants';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
@@ -260,6 +260,24 @@ Nous vous remercions par avance pour votre temps et votre avis.
 N'hésitez pas à nous contacter si vous avez des questions ou des préoccupations.<br/><br/>
 Cordialement,<br/>
 ${companyName}<br/>
+${phone}</p>`;
+  const blocksFromHtml = convertFromHTML(message);
+  const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
+
+  return EditorState.createWithContent(defaultContentState);
+};
+
+export const getRelaunchDefaultMessage = (invoice: Invoice) => {
+  const { ref, sendingDate, customer } = invoice;
+  const { phone } = getCached.user() || {};
+  const message = `<p>Bonjour,<br/><br/>
+Nous espérons que vous allez bien.
+Nous revenons vers vous concernant la facture ${ref} que nous vous avons envoyé pour paiement le ${formatDate(new Date(sendingDate))}. 
+Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scan le qr code de la facture, en cliquant sur le lien ou par virement classique.
+Pouvez-vous, svp, me confirmer par mail ou par téléphone la mise en paiement de la facture.<br/>
+Nous restons disponible pour toute question.<br/><br/>
+Bien à vous<br/><br/>
+${customer?.firstName} ${customer?.lastName}<br/>
 ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
