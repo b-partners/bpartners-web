@@ -45,7 +45,7 @@ const SignInForm = () => {
         <DownloadAppBanner />
       ) : (
         <form style={LOGIN_FORM} onSubmit={handleSubmit(login)}>
-          <img src='./laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
+          <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
           <Typography variant='h5' gutterBottom mt={1}>
             Bienvenue !
           </Typography>
