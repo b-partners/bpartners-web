@@ -6,7 +6,7 @@ const INPUT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 
 export const formatDatetime = (date: Date) => date.toLocaleString('pt-BR');
 
-export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' ')[0];
+export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' ')[0].replace(/,/g, '');
 
 /**
  * Create new date in 8601 format
