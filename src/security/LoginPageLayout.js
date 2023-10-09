@@ -13,7 +13,7 @@ const BpLoginPageLayout = ({ children }) => {
     <BPLoader />
   ) : (
     <Box sx={FLEX_CENTER}>
-      {<img src='./bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
+      {<img src='/bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>{children}</Box>
       <Box
         width={{ md: '60%', sm: '0%', xs: '0%' }}
