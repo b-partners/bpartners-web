@@ -1,20 +1,8 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Typography,
-  FormHelperText,
-} from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, Radio, RadioGroup, Typography, FormHelperText } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
+import ProspectDialogActions from './ProspectDialogActions';
 import { InvoiceSelection } from './InvoiceSelection';
 
 export const ProspectDialog = props => {
@@ -30,7 +18,6 @@ export const ProspectDialog = props => {
     formState: { errors },
   } = useFormContext();
   const { prospectFeedback } = useWatch();
-
   const changeProspectFeedBack = e => {
     const { value } = e.target;
     setValue('prospectFeedback', value);
@@ -54,6 +41,7 @@ export const ProspectDialog = props => {
               required
               sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}
               onChange={handleSubmit(changeProspectFeedBack)}
+              value={prospectFeedback}
             >
               {status === 'TO_CONTACT' ? (
                 <>
@@ -98,27 +86,12 @@ export const ProspectDialog = props => {
           )}
         </Box>
       </DialogContent>
-      <DialogActions>
-        {status === 'TO_CONTACT' ? (
-          <>
-            <Button onClick={close}>Annuler</Button>
-            {prospectFeedback && prospectFeedback === 'NOT_INTERESTED' ? (
-              <Button onClick={saveOrUpdateProspectSubmit}>Abandonner ce prospect</Button>
-            ) : (
-              <Button onClick={saveOrUpdateProspectSubmit}>Réserver le Prospect</Button>
-            )}
-          </>
-        ) : (
-          <>
-            <Button onClick={close}>Annuler</Button>
-            {prospectFeedback && prospectFeedback === 'PROPOSAL_DECLINED' ? (
-              <Button onClick={saveOrUpdateProspectSubmit}>Abandonner ce prospect</Button>
-            ) : (
-              <Button onClick={saveOrUpdateProspectSubmit}>Passer le prospect en client</Button>
-            )}
-          </>
-        )}
-      </DialogActions>
+      <ProspectDialogActions
+        prospectStatus={status}
+        close={close}
+        prospectFeedback={prospectFeedback}
+        saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
+      />
     </Dialog>
   );
 };

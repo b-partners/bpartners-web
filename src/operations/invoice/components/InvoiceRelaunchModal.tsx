@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, CircularProgress } from '@mui/material';
 import { EditorState } from 'draft-js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { RichTextForm } from 'src/common/components/RichTextForm';
@@ -11,22 +12,29 @@ import { authProvider, getCached, payingApi } from 'src/providers';
 import { InvoiceListModal } from '.';
 import { invoiceGetContext } from '../utils';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
-
-const invoiceRelaunchDefaultValue: any = {
-  subject: '',
-  message: EditorState.createEmpty(),
-  attachments: [],
-};
+import { getRelaunchDefaultMessage } from '../utils/utils';
 
 export const InvoiceRelaunchModal = () => {
-  const notify = useNotify();
   const [isLoading, setIsLoading] = useState(false);
+
+  const notify = useNotify();
+
+  const { name: companyName } = getCached.accountHolder() || {};
+
   const {
     closeModal,
     modal: { invoice },
     openModal,
   } = useInvoiceToolContext();
-  const form = useForm({ mode: 'all', defaultValues: invoiceRelaunchDefaultValue, resolver: invoiceRelaunchResolver });
+  const form = useForm({
+    mode: 'all',
+    defaultValues: { subject: `[${companyName}] -  Relance ${invoice?.title || ''}`, message: EditorState.createEmpty(), attachments: [] },
+    resolver: invoiceRelaunchResolver,
+  });
+
+  useEffect(() => {
+    form.setValue('message', getRelaunchDefaultMessage(invoice));
+  }, [invoice]);
 
   const relaunchInvoiceSubmit = form.handleSubmit(data => {
     const userId = authProvider.getCachedWhoami().user.id;
@@ -35,7 +43,7 @@ export const InvoiceRelaunchModal = () => {
       if (userId) {
         setIsLoading(true);
         const { accountId } = getCached.userInfo();
-        await payingApi().relaunchInvoice(accountId, invoice.id, data as any);
+        await payingApi().relaunchInvoice(accountId, invoice.id, { ...data, isFromScratch: true } as any);
         notify(`${invoiceGetContext(invoice, 'Le', 'La')} ref: ${invoice?.ref} a été relancé avec succès.`, { type: 'success' });
         closeModal();
         setIsLoading(false);

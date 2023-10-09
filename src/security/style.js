@@ -6,7 +6,14 @@ export const darkGreyColor = grey[800];
 export const pinkColor = pink[50];
 export const whiteColor = '#ffffff';
 
-export const FLEX_CENTER = { display: 'flex', justifyContent: 'center', bgcolor: lightGreyColor, height: '100vh', alignItems: 'center', overflow: 'hidden' };
+export const FLEX_CENTER = {
+  display: 'flex',
+  justifyContent: 'center',
+  bgcolor: lightGreyColor,
+  height: '100vh',
+  alignItems: 'center',
+  overflow: 'hidden',
+};
 
 export const LOGIN_FORM = { display: 'flex', flexDirection: 'column', bgcolor: lightGreyColor, minWidth: '30vh' };
 export const LOGIN_FORM_BUTTON = {
@@ -21,6 +28,19 @@ export const LOGIN_FORM_BUTTON = {
   '&:disabled': {
     background: darkGreyColor,
     color: whiteColor,
+  },
+};
+
+export const TRANSPARENT_BUTTON_STYLE = {
+  backgroundColor: 'transparent',
+  color: '#000000',
+  textTransform: 'none',
+  textAlign: 'left',
+  p: 0,
+  '&:hover': {
+    backgroundColor: 'transparent',
+    textDecoration: 'underline',
+    color: BP_COLOR[20],
   },
 };
 
