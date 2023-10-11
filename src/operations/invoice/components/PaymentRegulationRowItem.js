@@ -6,6 +6,7 @@ import { updatePaymentReg } from '../../../providers';
 import { formatDatetime, prettyPrintMoney } from '../../../common/utils';
 import { getPaymentRegulationStatusInFr } from '../utils/utils';
 import { DoneAll as DoneAllIcon } from '@mui/icons-material';
+import { useInvoiceToolContext } from '../../../common/store/invoice';
 
 const PaymentRegulationRowItem = props => {
   const { invoice, paymentRegulationItem, paymentMethodList, index } = props;
@@ -17,6 +18,7 @@ const PaymentRegulationRowItem = props => {
   const notify = useNotify();
   const refresh = useRefresh();
   const translate = useTranslate();
+  const { openModal } = useInvoiceToolContext();
 
   const handleSubmit = async () => {
     const newPaymentRegulation = {
@@ -26,9 +28,13 @@ const PaymentRegulationRowItem = props => {
         paymentStatus: 'PAID',
       },
     };
+
     try {
       setIsLoading(true);
-      await updatePaymentReg(invoice.id, newPaymentRegulation);
+      const newInvoice = await updatePaymentReg(invoice.id, newPaymentRegulation);
+      if (newInvoice.status === 'PAID') {
+        openModal({ invoice, isOpen: true, type: 'FEEDBACK' });
+      }
       notify(`Acompte payé avec succès !`, { type: 'success' });
     } catch (_error) {
       notify(`Une erreur s'est produite`, { type: 'error' });
