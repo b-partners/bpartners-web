@@ -276,9 +276,9 @@ const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>
-          {dialogState ? (
+          {dialogState && (
             <ProspectDialog open={dialogState} close={toggleDialog} prospect={prospect} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
-          ) : null}
+          )}
         </Paper>
       </form>
     </FormProvider>
