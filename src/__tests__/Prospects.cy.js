@@ -61,7 +61,7 @@ describe(specTitle('Customers'), () => {
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
     cy.contains('Intéressé').click();
-    cy.contains('Réserver le Prospect');
+    cy.contains('Réserver ce prospect');
 
     const contactedProspect = {
       ...prospects[0],
@@ -76,7 +76,7 @@ describe(specTitle('Customers'), () => {
 
       req.reply(req.body);
     }).as('updateStatus');
-    cy.contains('Réserver le Prospect').click();
+    cy.contains('Réserver ce prospect').click();
     cy.wait('@updateStatus');
 
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, [contactedProspect, ...prospects.slice(1)]).as('getProspects');

@@ -64,4 +64,14 @@ describe(specTitle('Login'), () => {
     cy.contains('Ce champ est requis');
     cy.get("[name='username']").type('dummy{enter}');
   });
+
+  it('Should show the CGU in a new tab', () => {
+    mount(<App />);
+    cy.window().then(win => {
+      cy.stub(win, 'open').as('windowOpen');
+    });
+    cy.contains("Conditions générales d'utilisation").click();
+    cy.get('@windowOpen').should('be.calledOnce');
+    cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
+  });
 });
