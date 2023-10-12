@@ -8,7 +8,7 @@ import { BpFormField } from '../common/components';
 import { handleSubmit } from '../common/utils';
 import { redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
-import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
+import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
 import DownloadAppBanner from './DownloadAppBanner';
 
 const SignInForm = () => {
@@ -63,19 +63,7 @@ const SignInForm = () => {
           </Button>
           <Button
             id='passwordReset'
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#000000',
-              textTransform: 'none',
-              textAlign: 'left',
-              mt: 2,
-              p: 0,
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-                color: BP_COLOR[20],
-              },
-            }}
+            sx={{ ...TRANSPARENT_BUTTON_STYLE, pt: 1 }}
             onClick={() => {
               navigate('/password/reset');
             }}
@@ -87,24 +75,25 @@ const SignInForm = () => {
           <Divider />
           <Button
             id='register'
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#000000',
-              textTransform: 'none',
-              textAlign: 'left',
-              p: 0,
-              '&:hover': {
-                backgroundColor: 'transparent',
-                textDecoration: 'underline',
-                color: BP_COLOR[20],
-              },
-            }}
+            sx={TRANSPARENT_BUTTON_STYLE}
             onClick={() => {
               navigate('/sign-up');
             }}
           >
             <Typography variant='h7' gutterBottom mt={1}>
-              Pas de compte ? <b>C'est par ici</b>
+              Pas de compte ? <b style={{ color: BP_COLOR[20] }}>C'est par ici</b>
+            </Typography>
+          </Button>
+          <Divider />
+          <Button
+            id='passwordReset'
+            sx={{ ...TRANSPARENT_BUTTON_STYLE, pt: 1 }}
+            onClick={() => {
+              window.open('https://legal.bpartners.app/', '_blank', 'noopener');
+            }}
+          >
+            <Typography variant='h7' gutterBottom>
+              Conditions générales d'utilisation
             </Typography>
           </Button>
         </form>
