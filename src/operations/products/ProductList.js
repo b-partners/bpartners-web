@@ -8,32 +8,41 @@ import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import { RaMoneyField } from 'src/common/components';
 import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
+import { exportProducts } from 'src/providers';
 
 const productFilter = [
   <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn name='descriptionFilter' />,
   <TextInput label='Filtrer par prix unitaire' source='priceFilter' size='small' alwaysOn name='priceFilter' />,
 ];
 
-const ProductList = () => (
-  <List
-    actions={<BPListActions importComponent={<BPImport source='product' />} buttons={<ArchiveBulkAction />} />}
-    resource='products'
-    hasCreate={true}
-    hasEdit={false}
-    hasList={false}
-    hasShow={false}
-    filters={productFilter}
-    filter={{ mapped: true }}
-    component={ListComponent}
-    pagination={<Pagination />}
-    perPage={pageSize}
-    sx={{
-      '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
-    }}
-  >
-    <Product />
-  </List>
-);
+const ProductList = () => {
+  const exportAllProducts = async () => {
+    const data = await exportProducts();
+    return data;
+  };
+  return (
+    <List
+      actions={
+        <BPListActions fileName={'products'} exportList={exportAllProducts} importComponent={<BPImport source='product' />} buttons={<ArchiveBulkAction />} />
+      }
+      resource='products'
+      hasCreate={true}
+      hasEdit={false}
+      hasList={false}
+      hasShow={false}
+      filters={productFilter}
+      filter={{ mapped: true }}
+      component={ListComponent}
+      pagination={<Pagination />}
+      perPage={pageSize}
+      sx={{
+        '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
+      }}
+    >
+      <Product />
+    </List>
+  );
+};
 
 const Product = () => {
   const { isLoading } = useListContext();

@@ -15,7 +15,7 @@
     "@sentry/tracing": "^7.51.2",
     "aws-amplify": "^5.2.0",
     "axios": "^0.27.2",
-    "bpartners-react-client": "^0.33.0",
+    "bpartners-react-client": "^0.34.1",
     "caniuse-lite": "^1.0.30001486",
     "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.7",
