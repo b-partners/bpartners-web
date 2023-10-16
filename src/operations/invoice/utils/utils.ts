@@ -273,7 +273,7 @@ export const getRelaunchDefaultMessage = (invoice: Invoice) => {
   const message = `<p>Bonjour,<br/><br/>
 Nous espérons que vous allez bien.
 Nous revenons vers vous concernant la facture ${ref} que nous vous avons envoyé pour paiement le ${formatDate(new Date(sendingDate))}. 
-Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scan le qr code de la facture, en cliquant sur le lien ou par virement classique.
+Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scannant le qr code de la facture, en cliquant sur le lien ou par virement classique.
 Pouvez-vous, svp, me confirmer par mail ou par téléphone la mise en paiement de la facture.<br/>
 Nous restons disponible pour toute question.<br/><br/>
 Bien à vous<br/><br/>
