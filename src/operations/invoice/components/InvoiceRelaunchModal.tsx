@@ -12,7 +12,7 @@ import { authProvider, getCached, payingApi } from 'src/providers';
 import { InvoiceListModal } from '.';
 import { invoiceGetContext } from '../utils';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
-import { getRelaunchDefaultMessage } from '../utils/utils';
+import { getRelaunchDefaultMessage } from '../utils';
 
 export const InvoiceRelaunchModal = () => {
   const [isLoading, setIsLoading] = useState(false);
