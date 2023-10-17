@@ -15,7 +15,7 @@ import {groupBy} from 'lodash';
 import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
 import {ProspectColumn} from './components';
-import {ProspectContextProvider} from 'src/common/store/prospect-store';
+import {ProspectContextProvider} from 'src/common/store/Prospect-store';
 import TabManager from './components/TabManager';
 
 const ProspectsList = () => {
