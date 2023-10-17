@@ -9,7 +9,7 @@ import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
 import { evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
 
-describe(specTitle('Customers'), () => {
+describe(specTitle('Prospects'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
@@ -90,8 +90,82 @@ describe(specTitle('Customers'), () => {
     }).as('filterProspect');
     cy.get("[data-testid='prospect-filter']").type(filterName);
     cy.wait('@filterProspect');
+  });
 
-    // cy.contains('Contactés').parent().parent().contains('JOHN DOE');
+  it('should render the appropriate button', () => {
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="prospects"]').click();
+
+    cy.get("[data-testid='prospect-filter']").clear();
+
+    // testing TO_CONTACT to CONTACTED
+    cy.get('[data-testid="statusprospect1_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(2)').click();
+    cy.contains('Pas intéressé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Intéressé').click();
+    cy.contains('Réserver ce prospect');
+    cy.contains('Devis envoyé').click();
+    cy.contains('Réserver ce prospect');
+    cy.contains('Annuler').click();
+
+    // testing TO_CONTACT to CONVERTED
+    cy.get('[data-testid="statusprospect1_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(3)').click();
+    cy.contains('Pas intéressé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Intéressé').click();
+    cy.contains('Transformer ce prospect en client');
+    cy.contains('Devis envoyé').click();
+    cy.contains('Transformer ce prospect en client');
+    cy.contains('Annuler').click();
+
+    // testing CONTACTED to CONVERTED
+    cy.get('[data-testid="statusprospect2_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(3)').click();
+    cy.contains('Devis refusé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Devis accepté').click();
+    cy.contains('Transformer ce prospect en client');
+    cy.contains('Facture envoyée').click();
+    cy.contains('Transformer ce prospect en client');
+    cy.contains('Annuler').click();
+
+    // testing CONTACTED to TO_CONTACT
+    cy.get('[data-testid="statusprospect2_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(1)').click();
+    cy.contains('Devis refusé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Devis accepté').click();
+    cy.contains('Libérer ce prospect');
+    cy.contains('Facture envoyée').click();
+    cy.contains('Libérer ce prospect');
+    cy.contains('Annuler').click();
+
+    // testing CONVERTED to CONTACTED
+    cy.get('[data-testid="statusprospect6_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(2)').click();
+    cy.contains('Devis refusé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Devis accepté').click();
+    cy.contains('Remettre ce client en prospect');
+    cy.contains('Facture envoyée').click();
+    cy.contains('Remettre ce client en prospect');
+    cy.contains('Annuler').click();
+
+    // testing CONVERTED to TO_CONTACT
+    cy.get('[data-testid="statusprospect6_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('.MuiFormGroup-root > :nth-child(1)').click();
+    cy.contains('Devis refusé').click();
+    cy.contains('Abandonner ce prospect');
+    cy.contains('Devis accepté').click();
+    cy.contains('Libérer ce client');
+    cy.contains('Facture envoyée').click();
+    cy.contains('Libérer ce client');
+    cy.contains('Annuler').click();
   });
 
   it('change prospecting perimeter', () => {

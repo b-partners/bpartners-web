@@ -108,3 +108,26 @@ export const prospects: Prospect[] = [
     },
   },
 ];
+
+export const updatedProspects: Prospect[] = [
+  {
+    id: 'prospect1_id',
+    name: 'Doe Jhonson',
+    phone: '+261340465399',
+    email: 'doejhonson@gmail.com',
+    status: 'TO_CONTACT',
+    address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 21547,
+    comment: 'Update comment',
+    location: {
+      type: 'Point',
+      longitude: 2.347,
+      latitude: 48.8588,
+    },
+    rating: {
+      lastEvaluation: new Date('2023-10-10'),
+      value: 9.99999999,
+    },
+  },
+  ...prospects,
+];
