@@ -3,11 +3,11 @@ import { useProspectContext } from 'src/common/store/prospect-store';
 import { parseRatingLastEvaluation } from '../utils';
 
 export const DialogProspectJobDetails = () => {
-  const { prospectJobDetails, isOpenPopup, handlePopup_prospectJobDetails } = useProspectContext();
+  const { prospectJobDetails, isOpenPopup, toggleJobDetailsPopup } = useProspectContext();
 
   return (
     <>
-      <Dialog open={isOpenPopup} onClose={handlePopup_prospectJobDetails}>
+      <Dialog open={isOpenPopup} onClose={toggleJobDetailsPopup}>
         <DialogTitle>Détails</DialogTitle>
         <DialogContent>
           <Box>
@@ -25,7 +25,7 @@ export const DialogProspectJobDetails = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button data-testid='close-dialog-prospectJob-id' onClick={handlePopup_prospectJobDetails}>
+          <Button data-testid='close-dialog-prospectJob-id' onClick={toggleJobDetailsPopup}>
             Fermer
           </Button>
         </DialogActions>

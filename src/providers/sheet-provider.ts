@@ -2,7 +2,7 @@ import sheetRedirectionUrls from 'src/security/googleSheetConsent/sheet-redirect
 import { BpDataProviderType, sheetApi } from '.';
 import { getCached } from './cache';
 
-export const SheetProvider: BpDataProviderType = {
+export const sheetProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {
     throw new Error('Function not implemented.');
   },

@@ -40,7 +40,7 @@ const EvaluatedProspectColumn = ({ title, data, color }) => {
 };
 
 const EvaluatedProspectItem = ({ item }) => {
-  const { getProspectingJobs, handlePopup_prospectJobDetails } = useProspectContext();
+  const { getProspectingJobs, toggleJobDetailsPopup } = useProspectContext();
 
   const restartProspectEvaluation = async metadata => {
     const interventionTypesArray = metadata?.interventionTypes?.split(',');
@@ -60,7 +60,7 @@ const EvaluatedProspectItem = ({ item }) => {
 
   return (
     <Paper elevation={2} sx={{ p: 1 }}>
-      <Box data-cy={`view-details-job-${item?.id}`} sx={{ color: '#4d4d4d', cursor: 'pointer' }} onClick={() => handlePopup_prospectJobDetails(item)}>
+      <Box data-cy={`view-details-job-${item?.id}`} sx={{ color: '#4d4d4d', cursor: 'pointer' }} onClick={() => toggleJobDetailsPopup(item)}>
         <Typography variant='body2' fontWeight={'bold'}>
           Types intervention :
         </Typography>

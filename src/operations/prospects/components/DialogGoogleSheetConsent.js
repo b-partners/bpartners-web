@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { redirect } from 'src/common/utils';
-import { SheetProvider } from 'src/providers/sheet-provider';
+import { sheetProvider } from 'src/providers/sheet-provider';
 
 export const DialogGoogleSheetConsent = props => {
   const { isOpen, handleDialog } = props;
@@ -9,8 +9,7 @@ export const DialogGoogleSheetConsent = props => {
 
   const handleClickAutorization = async () => {
     try {
-      const response = await SheetProvider.oauth2Init();
-      console.log('response', response);
+      const response = await sheetProvider.oauth2Init();
       if (response) {
         redirect(response.redirectionUrl);
       }

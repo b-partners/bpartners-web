@@ -21,7 +21,7 @@ const ProspectsConfiguration = () => {
   const [newProspectingPerimeter, setNewProspectingPerimeter] = useState(prospectingPerimeter);
   const [isOpen, setIsOpen] = useState(false);
   const [tokenValid, setTokenValid] = useState(false);
-  const bp_user = JSON.parse(localStorage.getItem('bp_user'));
+  const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
   const { getProspectingJobs, evaluatedProspectsList, refreshLoading, isOpenPopup } = useProspectContext();
   const handleChange = e => {
     const { value } = e.target;
@@ -71,17 +71,8 @@ const ProspectsConfiguration = () => {
   const isExhalationPassed = () => {
     const expirationTime = localStorage.getItem('expiredAt_validationToken_googleSheet');
     const currentTime = new Date();
-    // Convertissez la valeur "expirationTime" en objet Date
     const expirationDate = new Date(expirationTime);
-
-    // Comparez l'heure actuelle avec la date d'expiration
-    if (currentTime >= expirationDate) {
-      // L'heure actuelle est après ou égale à la date d'expiration, cela signifie que c'est expiré
-      return false;
-    } else {
-      // L'heure actuelle est avant la date d'expiration, cela signifie que ce n'est pas encore expiré
-      return true;
-    }
+    return currentTime < expirationDate;
   };
 
   useEffect(() => {
@@ -113,7 +104,7 @@ const ProspectsConfiguration = () => {
           />
           <Typography variant='body2'>{maxProspectingPerimeter} km</Typography>
         </Stack>
-        {bp_user.roles[0] === 'EVAL_PROSPECT' ? (
+        {BP_USER.roles[0] === 'EVAL_PROSPECT' ? (
           <>
             <Typography variant='h6'>Évaluation des prospects</Typography>
             <Divider sx={{ mb: 2 }} />

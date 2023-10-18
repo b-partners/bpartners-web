@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-import { SheetProvider } from 'src/providers/sheet-provider';
+import { sheetProvider } from 'src/providers/sheet-provider';
 import { redirect } from 'src/common/utils/redirect';
 import { BP_COLOR } from 'src/bp-theme.js';
 import { useNotify } from 'react-admin';
@@ -19,7 +19,7 @@ const GoogleSheetsConsentSuccess = () => {
     const sheetProviderFunc = async () => {
       try {
         const code = getCode();
-        const response = await SheetProvider.oauth2ExchangeToken(code);
+        const response = await sheetProvider.oauth2ExchangeToken(code);
         localStorage.setItem('expiredAt_validationToken_googleSheet', response.expiredAt);
       } catch (error) {
         notify('messages.global.error', { type: 'error' });

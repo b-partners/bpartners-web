@@ -13,7 +13,7 @@ type RaProspectContext = {
   refreshLoading: boolean;
   isOpenPopup: boolean;
   prospectJobDetails: ProspectEvaluationJobInfo;
-  handlePopup_prospectJobDetails: (item: ProspectEvaluationJobInfo) => void;
+  toggleJobDetailsPopup: (item: ProspectEvaluationJobInfo) => void;
 };
 
 const ProspectContext = createContext<RaProspectContext>({
@@ -26,7 +26,7 @@ const ProspectContext = createContext<RaProspectContext>({
   refreshLoading: false,
   isOpenPopup: false,
   prospectJobDetails: {},
-  handlePopup_prospectJobDetails: () => {},
+  toggleJobDetailsPopup: () => {},
 });
 export const useProspectContext = () => useContext(ProspectContext);
 
@@ -52,7 +52,7 @@ export const ProspectContextProvider: FC = ({ children }) => {
     setRefreshLoading(false);
   };
   // show popup with prospect job details
-  const handlePopup_prospectJobDetails = (item: ProspectEvaluationJobInfo) => {
+  const toggleJobDetailsPopup = (item: ProspectEvaluationJobInfo) => {
     setProspectJobDetails(item);
     setIsOpenPopup(!isOpenPopup);
   };
@@ -70,7 +70,7 @@ export const ProspectContextProvider: FC = ({ children }) => {
         //
         isOpenPopup,
         prospectJobDetails,
-        handlePopup_prospectJobDetails,
+        toggleJobDetailsPopup,
         //
       }}
     >
