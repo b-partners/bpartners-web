@@ -46,6 +46,12 @@ export const BpFrenchMessages = {
         },
       },
     },
+    prospects: {
+      evaluation: {
+        success: 'Évaluation des prospects réussie',
+        warning: 'La réponse est vide : veuillez vérifier vos paramètres',
+      },
+    },
   },
   messages: {
     disconnection: {
