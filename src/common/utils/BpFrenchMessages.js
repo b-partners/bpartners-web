@@ -68,5 +68,9 @@ export const BpFrenchMessages = {
     download: {
       start: 'Téléchargement en cours...',
     },
+    export: {
+      success: 'Exportation effectuée avec succès.',
+      error: "Une erreur s'est produite lors de l'exportation.",
+    },
   },
 };

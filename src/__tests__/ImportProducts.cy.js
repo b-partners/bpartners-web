@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { whoami1, user1 } from './mocks/responses/security-api';
-import { products } from './mocks/responses/product-api';
+import { exportAllProducts, products } from './mocks/responses/product-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Import Products'), () => {
@@ -93,5 +93,28 @@ describe(specTitle('Import Products'), () => {
     cy.wait('@importValidProductsFile');
 
     cy.contains(`Importation effectuée avec succès.`);
+  });
+
+  it('Error when exporting all products in CSV file', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products/export`, req => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as('errorExportAllProducts');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="products"]').click();
+    cy.get('[data-testid="export-button-products"]').click();
+    cy.contains(`Une erreur s'est produite lors de l'exportation.`);
+  });
+  it('Export all products in CSV file', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products/export`, exportAllProducts).as('validExportAllProducts');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="products"]').click();
+    cy.get('[data-testid="export-button-products"]').click();
+    cy.contains('Exportation effectuée avec succès');
   });
 });

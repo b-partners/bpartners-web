@@ -42,3 +42,7 @@ export const newProduct1 = [
 ];
 
 export const newProduct2 = [newProduct1[0], ...products.slice(1)];
+export const exportAllProducts: string = `ID,Description,Prix unitaire (€),Prix unitaire avec TVA (€),TVA (%),Créé le
+62f63371-11cf-43fd-899d-79193b6ebef8,assiette en bois,2200.0,2200.0,0.0,2023-05-18T12:05:55.508393Z
+b6799ba5-1126-4599-80c7-6d429eae0cd4,Boite de chocolat,1087.0,1087.0,0.0,2023-05-19T08:14:58.962500Z
+7d52c062-b659-443c-b8bb-95e445e2f536,Boulangerie,120.0,120.0,0.0,2023-05-25T06:44:33.043903Z`;

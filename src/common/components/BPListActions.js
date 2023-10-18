@@ -1,23 +1,29 @@
-import { CreateButton } from 'react-admin';
-import { Button } from '@mui/material';
+import { CreateButton, useNotify } from 'react-admin';
+import { Button, Stack } from '@mui/material';
 import { FileDownload } from '@mui/icons-material';
-import { Stack } from '@mui/material';
 import { IMPORT_BUTTON_STYLE } from './BPImport/style';
+import { exportCustomers, exportProducts } from 'src/providers';
 
 const BPListActions = props => {
-  const { buttons, hasCreate, hasExport, importComponent, fileName, exportList } = props;
+  const { buttons, hasCreate, hasExport, importComponent, fileName } = props;
+  const notify = useNotify();
 
   const exportCSV = async () => {
-    const data = await exportList();
-    const blob = new Blob([data], { type: 'text/csv' });
+    try {
+      const data = fileName === 'customers' ? await exportCustomers() : await exportProducts();
+      const blob = new Blob([data], { type: 'text/csv' });
 
-    const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${fileName}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileName}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      notify('messages.export.success', { type: 'success' });
+    } catch (error) {
+      notify('messages.export.error', { type: 'error' });
+    }
   };
 
   return (
@@ -26,7 +32,14 @@ const BPListActions = props => {
       {hasCreate !== false && <CreateButton data-testid='create-button' label='Créer' sx={IMPORT_BUTTON_STYLE} />}
       {importComponent}
       {hasExport !== false && (
-        <Button variant='contained' startIcon={<FileDownload />} data-testid='export-button' label='Exporter' sx={IMPORT_BUTTON_STYLE} onClick={exportCSV}>
+        <Button
+          variant='contained'
+          startIcon={<FileDownload />}
+          data-testid={`export-button-${fileName}`}
+          label='Exporter'
+          sx={IMPORT_BUTTON_STYLE}
+          onClick={exportCSV}
+        >
           Exporter
         </Button>
       )}
