@@ -25,13 +25,12 @@ const BPListActions = props => {
       notify('messages.export.error', { type: 'error' });
     }
   };
-
   return (
     <Stack direction='row' spacing={1}>
       {buttons}
-      {hasCreate !== false && <CreateButton data-testid='create-button' label='Créer' sx={IMPORT_BUTTON_STYLE} />}
+      {hasCreate && <CreateButton data-testid='create-button' label='Créer' sx={IMPORT_BUTTON_STYLE} />}
       {importComponent}
-      {hasExport !== false && (
+      {hasExport && (
         <Button
           variant='contained'
           startIcon={<FileDownload />}
