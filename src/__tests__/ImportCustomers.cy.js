@@ -3,7 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { customers1 } from './mocks/responses/customer-api';
+import { customers1, exportAllCustomers } from './mocks/responses/customer-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Import Customers'), () => {
@@ -95,5 +95,27 @@ describe(specTitle('Import Customers'), () => {
     cy.wait('@importValidCustomers');
 
     cy.contains(`Importation effectuée avec succès.`);
+  });
+  it('Error when exporting all customers in CSV file', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers/export`, req => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as('errorExportAllCustomers');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.get('[data-testid="export-button-customers"]').click();
+    cy.contains(`Une erreur s'est produite lors de l'exportation.`);
+  });
+  it('Export all customers in CSV file', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/customers/export`, exportAllCustomers).as('validExportAllCustomers');
+
+    mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="customers"]').click();
+    cy.get('[data-testid="export-button-customers"]').click();
+    cy.contains('Exportation effectuée avec succès');
   });
 });
