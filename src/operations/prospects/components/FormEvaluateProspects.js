@@ -73,17 +73,6 @@ const FormEvaluateProspects = () => {
             ]}
             required
           />
-          <AutocompleteBackend
-            fetcher={fetcher}
-            getLabel={accountHolder => (accountHolder ? accountHolder.name : '')}
-            label={'Propriétaire artisan'}
-            name={'artisanOwner'}
-            onChange={handleChange}
-            value={selectedOption_ArtisanOwner}
-            sync={true}
-            isRequired={true}
-            sx={{ width: 300, marginBlock: '3px' }}
-          />
           <Autocomplete
             options={newInterventionOptions || []}
             value={selectedOption_newIntervention}
@@ -108,6 +97,17 @@ const FormEvaluateProspects = () => {
             Évaluer les prospects
           </Button>
         </form>
+        <AutocompleteBackend
+          fetcher={fetcher}
+          getLabel={accountHolder => (accountHolder ? accountHolder.name : '')}
+          label='resources.prospects.values.artisan'
+          name={'artisanOwner'}
+          onChange={handleChange}
+          value={selectedOption_ArtisanOwner}
+          sync={true}
+          isRequired={true}
+          sx={{ width: 300, marginBlock: '3px' }}
+        />
       </div>
     </FormProvider>
   );

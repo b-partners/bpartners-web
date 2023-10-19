@@ -9,6 +9,8 @@ const TabManager = ({ location, setTabIndex }) => {
       return 0;
     } else if (tabValue === 'configuration') {
       return 1;
+    } else if (tabValue === 'administration') {
+      return 2;
     } else {
       return 0;
     }

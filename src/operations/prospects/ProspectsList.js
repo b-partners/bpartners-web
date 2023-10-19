@@ -10,10 +10,12 @@ import ProspectsConfiguration from './ProspectsConfiguration';
 import { ProspectColumn } from './components';
 import { ProspectContextProvider } from 'src/common/store/prospect-store';
 import TabManager from './components/TabManager';
+import ProspectsAdministration from './ProspectsAdministration';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const location = useLocation();
+  const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
 
   // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
   const updateURLWithTab = index => {
@@ -22,6 +24,8 @@ const ProspectsList = () => {
       searchParams.set('tab', 'prospects');
     } else if (index === 1) {
       searchParams.set('tab', 'configuration');
+    } else if (index === 2) {
+      searchParams.set('tab', 'administration');
     }
     const newURL = `${location.pathname}?${searchParams.toString()}`;
     window.history.pushState({}, '', newURL);
@@ -38,6 +42,7 @@ const ProspectsList = () => {
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
             <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
+            <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
@@ -49,6 +54,12 @@ const ProspectsList = () => {
           <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
             <ProspectsConfiguration />
           </TabPanel>
+
+          {BP_USER.roles[0] === 'EVAL_PROSPECT' && (
+            <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
+              <ProspectsAdministration />
+            </TabPanel>
+          )}
         </Box>
       </>
     </ProspectContextProvider>
