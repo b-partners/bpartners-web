@@ -1,5 +1,5 @@
 import { Button, DialogActions, CircularProgress } from '@mui/material';
-import { useProspectContext } from 'src/common/store/Prospect-store';
+import { useProspectContext } from 'src/common/store/prospect-store';
 import { useWatch } from 'react-hook-form';
 
 const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, isEditing) => {

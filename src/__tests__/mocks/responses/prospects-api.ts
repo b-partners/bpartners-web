@@ -131,3 +131,11 @@ export const updatedProspects: Prospect[] = [
   },
   ...prospects,
 ];
+
+export const contactedProspect = {
+  ...prospects[0],
+  status: 'CONTACTED',
+  prospectFeedback: 'INTERESTED',
+  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  contractAmount: '',
+};
