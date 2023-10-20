@@ -31,7 +31,7 @@ export const requiredNumberRows = () =>
     .transform(value => parseInt(value, 10))
     .refine(value => value >= 0, { message: FieldErrorMessage.minNumberNotValid });
 
-export const phoneValidator = (phoneNumber: string) => !/[^0-9+]/.test(phoneNumber);
+export const phoneValidator = (phoneNumber: string) => !/[^0-9/+]/.test(phoneNumber);
 
 export const requiredArray = () => z.string({ required_error: FieldErrorMessage.required }).array().nonempty({ message: FieldErrorMessage.required });
 export const emailValidator = z.string().email({ message: FieldErrorMessage.emailNotValid });
