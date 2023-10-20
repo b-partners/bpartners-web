@@ -139,3 +139,11 @@ export const contactedProspect = {
   comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   contractAmount: '',
 };
+
+export const convertedProspect = {
+  ...prospects[1],
+  status: 'CONVERTED',
+  prospectFeedback: 'INVOICE_SENT',
+  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  contractAmount: '321',
+};

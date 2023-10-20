@@ -28,7 +28,9 @@ export const ProspectColumn = props => {
                 '&::-webkit-scrollbar': { display: 'none' },
               }}
             >
-              {list && list.map(item => <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />)}
+              {list?.map(item => (
+                <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />
+              ))}
             </Stack>
           </Stack>
         </CardContent>

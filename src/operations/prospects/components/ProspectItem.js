@@ -22,7 +22,7 @@ export const ProspectItem = ({ prospect }) => {
   const { handleLoading } = useProspectContext();
 
   const toggleDialog = (e, isEditing) => {
-    e && e.stopPropagation();
+    e?.stopPropagation();
     setDialogState(e => !e);
     setIsEditing(isEditing);
     closePopover();
