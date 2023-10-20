@@ -1,61 +1,59 @@
 import { Button, DialogActions, CircularProgress } from '@mui/material';
 import { useProspectContext } from 'src/common/store/prospect-store';
+import { useWatch } from 'react-hook-form';
 
-const ProspectDialogActions = ({ prospectStatus, close, prospectFeedback, saveOrUpdateProspectSubmit }) => {
+const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, isEditing) => {
+  if (isEditing) {
+    return 'Modifier le prospect';
+  }
+
+  const statuses = {
+    TO_CONTACT: {
+      NOT_INTERESTED: 'Abandonner ce prospect',
+      CONTACTED: 'Réserver ce prospect',
+      CONVERTED: 'Transformer ce prospect en client',
+    },
+    CONTACTED: {
+      PROPOSAL_DECLINED: 'Abandonner ce prospect',
+      TO_CONTACT: 'Libérer ce prospect',
+      CONVERTED: 'Transformer ce prospect en client',
+    },
+    CONVERTED: {
+      PROPOSAL_DECLINED: 'Abandonner ce prospect',
+      TO_CONTACT: 'Libérer ce client',
+      CONTACTED: 'Remettre ce client en prospect',
+    },
+  };
+
+  const defaultText = 'Valider';
+
+  if (statuses[prospectStatus]) {
+    const statusObj = statuses[prospectStatus];
+    if (statusObj[prospectFeedback]) {
+      return statusObj[prospectFeedback];
+    } else if (statusObj[selectedStatus]) {
+      return statusObj[selectedStatus];
+    }
+  }
+
+  return defaultText;
+};
+
+const ProspectDialogActions = props => {
+  const { prospectStatus, close, saveOrUpdateProspectSubmit, isEditing } = props;
   const { loading, selectedStatus } = useProspectContext();
-  const shouldRenderButton = text => {
-    return (
-      <Button onClick={saveOrUpdateProspectSubmit} disabled={loading} startIcon={loading && <CircularProgress color='inherit' size={18} />}>
-        {text}
-      </Button>
-    );
-  };
+  const { prospectFeedback } = useWatch();
 
-  const renderCancelButton = () => {
-    return <Button onClick={close}>Annuler</Button>;
-  };
+  const renderCancelButton = () => <Button onClick={close}>Annuler</Button>;
+
+  const primaryButtonText = getPrimaryButtonText(prospectStatus, prospectFeedback, selectedStatus, isEditing);
 
   return (
     <DialogActions>
-      {prospectStatus === 'TO_CONTACT' ? (
-        <>
-          {renderCancelButton()}
-          {prospectFeedback && prospectFeedback === 'NOT_INTERESTED'
-            ? shouldRenderButton('Abandonner ce prospect')
-            : selectedStatus === 'CONTACTED'
-            ? shouldRenderButton('Réserver ce prospect')
-            : selectedStatus === 'CONVERTED'
-            ? shouldRenderButton('Transformer ce prospect en client')
-            : shouldRenderButton('Valider')}
-        </>
-      ) : prospectStatus === 'CONTACTED' ? (
-        <>
-          {renderCancelButton()}
-          {prospectFeedback && prospectFeedback === 'PROPOSAL_DECLINED'
-            ? shouldRenderButton('Abandonner ce prospect')
-            : selectedStatus === 'TO_CONTACT'
-            ? shouldRenderButton('Libérer ce prospect')
-            : selectedStatus === 'CONVERTED'
-            ? shouldRenderButton('Transformer ce prospect en client')
-            : shouldRenderButton('Valider')}
-        </>
-      ) : prospectStatus === 'CONVERTED' ? (
-        <>
-          {renderCancelButton()}
-          {prospectFeedback && prospectFeedback === 'PROPOSAL_DECLINED'
-            ? shouldRenderButton('Abandonner ce prospect')
-            : selectedStatus === 'TO_CONTACT'
-            ? shouldRenderButton('Libérer ce client')
-            : selectedStatus === 'CONTACTED'
-            ? shouldRenderButton('Remettre ce client en prospect')
-            : shouldRenderButton('Valider')}
-        </>
-      ) : (
-        <>
-          {renderCancelButton()}
-          <Button onClick={saveOrUpdateProspectSubmit}>Valider</Button>
-        </>
-      )}
+      {renderCancelButton()}
+      <Button onClick={saveOrUpdateProspectSubmit} disabled={loading} startIcon={loading && <CircularProgress color='inherit' size={18} />}>
+        {primaryButtonText}
+      </Button>
     </DialogActions>
   );
 };
