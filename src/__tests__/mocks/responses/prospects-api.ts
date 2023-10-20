@@ -4,7 +4,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect1_id',
     name: 'john doe',
-    phone: '+261340465338',
+    phone: '+261340465338 /',
     email: 'johnDoe@gmail.com',
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
