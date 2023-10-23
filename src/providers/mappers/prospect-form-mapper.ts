@@ -14,7 +14,7 @@ export const prospectFormMapper = (values: any) => {
           newInterventionOption: values.newInterventionOption,
         },
         sheetProperties: {
-          spreadsheetName: values.spreedSheetName,
+          spreadsheetName: values.spreadsheetName,
           sheetName: values.sheetName,
           ranges: {
             min: values.min,

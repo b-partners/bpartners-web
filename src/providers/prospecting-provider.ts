@@ -1,3 +1,4 @@
+import { ImportProspect } from 'bpartners-react-client';
 import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {
@@ -20,4 +21,9 @@ export const prospectingProvider: BpDataProviderType = {
     const { data } = await prospectingApi().updateProspectsStatus(accountHolderId, id, resource);
     return [data];
   },
+};
+
+export const importProspects = async (resources: ImportProspect) => {
+  const { accountHolderId } = getCached.userInfo();
+  return (await prospectingApi().importProspects(accountHolderId, resources)).data;
 };

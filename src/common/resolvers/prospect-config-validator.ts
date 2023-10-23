@@ -7,7 +7,7 @@ const prospectConfigValidator = zod.object({
   profession: requiredString(),
   infestationType: requiredString(),
   // newInterventionOption : requiredString(),
-  spreedSheetName: requiredString(),
+  spreadsheetName: requiredString(),
   sheetName: requiredString(),
   max: requiredNumberRows(),
   min: requiredNumberRows(),

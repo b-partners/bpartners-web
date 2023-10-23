@@ -218,7 +218,7 @@ describe(specTitle('Prospects'), () => {
 
     cy.wait('@getAccountHoldersByName');
 
-    cy.get('[name="spreedSheetName"]').type('spreed Sheet Name test');
+    cy.get('[name="spreadsheetName"]').type('spreed Sheet Name test');
     cy.get('[name="sheetName"]').type('sheet name test');
     cy.get('[name="min"]').type(2);
     cy.get('[name="max"]').type(4);

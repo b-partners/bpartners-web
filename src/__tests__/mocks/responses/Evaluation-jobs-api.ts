@@ -13,7 +13,7 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
     metadata: {
       profession: 'ANTI_HARM',
       infestationType: 'souris',
-      spreedSheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
+      spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
       sheetName: 'first One',
       max: '4',
       min: '2',
@@ -37,7 +37,7 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
     metadata: {
       profession: 'ANTI_HARM',
       infestationType: 'souris',
-      spreedSheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
+      spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
       sheetName: 'Preprod Lou',
       max: '4',
       min: '2',
@@ -61,7 +61,7 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
     metadata: {
       profession: 'ANTI_HARM',
       infestationType: 'souris',
-      spreedSheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
+      spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
       sheetName: 'Preprod Lou',
       max: '4',
       min: '2',

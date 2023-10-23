@@ -22,7 +22,7 @@ export const DialogGoogleSheetConsent = props => {
     <Dialog open={isOpen} onClose={() => handleDialog(false)}>
       <DialogTitle>Connexion à Google Sheets requise</DialogTitle>
       <DialogContent>
-        <DialogContentText id='alert-dialog-description'>Vous devez vous connecter à Google sheets pour évaluer les prospects</DialogContentText>
+        <DialogContentText id='alert-dialog-description'>Vous devez vous connecter à Google sheets pour importer ou évaluer des prospects</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button data-testid='close-dialog-id' onClick={() => handleDialog(false)}>
