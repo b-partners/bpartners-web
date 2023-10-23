@@ -17,11 +17,11 @@ const prospectConfigValidator = zod.object({
 });
 
 const importProspectsValidator = zod.object({
-  spreadsheetName: requiredString(),
-  sheetName: requiredString(),
-  max: requiredNumberRows(),
-  min: requiredNumberRows(),
-})
+  import_spreadsheetName: requiredString(),
+  import_sheetName: requiredString(),
+  import_max: requiredNumberRows(),
+  import_min: requiredNumberRows(),
+});
 
 export const prospectConfigResolver = zodResolver(prospectConfigValidator);
 export const importProspectsResolver = zodResolver(importProspectsValidator);

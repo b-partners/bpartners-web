@@ -16,17 +16,17 @@ const ImportProspects = () => {
     setIsLoading(true);
     const structureData = {
       spreadsheetImport: {
-        spreadsheetName: values.spreadsheetName,
-        sheetName: values.sheetName,
+        spreadsheetName: values.import_spreadsheetName,
+        sheetName: values.import_sheetName,
         ranges: {
-          min: values.min,
-          max: values.max,
+          min: values.import_min,
+          max: values.import_max,
         },
       },
     };
     try {
       await importProspects(structureData);
-      notify('Prospects importés avec succès', { type: 'success' });
+      notify('resources.prospects.import.success', { type: 'success' });
     } catch (error) {
       notify(error?.response?.data?.message, { type: 'error' });
     } finally {
@@ -44,15 +44,15 @@ const ImportProspects = () => {
           style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
           onSubmit={handleClickImportProspects}
         >
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' required />
-          <BpFormField label='Nom de la feuille' type='text' name='sheetName' required />
-          <BpNumberField label='Nombre minimum de lignes' name='min' required />
-          <BpNumberField label='Nombre maximum de lignes' name='max' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='import_spreadsheetName' required />
+          <BpFormField label='Nom de la feuille' type='text' name='import_sheetName' required />
+          <BpNumberField label='Nombre minimum de lignes' name='import_min' required />
+          <BpNumberField label='Nombre maximum de lignes' name='import_max' required />
 
           <Button
             mt={2}
             sx={BP_BUTTON}
-            id='confirmation'
+            id='importProspectsSubmit'
             type='submit'
             disabled={isLoading}
             startIcon={isLoading && <CircularProgress color='inherit' size={18} />}

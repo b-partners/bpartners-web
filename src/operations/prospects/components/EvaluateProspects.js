@@ -3,14 +3,12 @@ import { Box, Divider, Typography, Button, Grid, CircularProgress } from '@mui/m
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FormEvaluateProspects from '../components/FormEvaluateProspects';
 import EvaluatedProspectColumn from '../components/EvaluatedProspectColumn';
-import { DialogGoogleSheetConsent } from '../components/DialogGoogleSheetConsent';
 import { DialogProspectJobDetails } from '../components/DialogProspectJobDetails';
 import { useProspectContext } from 'src/common/store/prospect-store';
 
 const EvaluateProspects = () => {
   const { getProspectingJobs, evaluatedProspectsList, refreshLoading, isOpenPopup } = useProspectContext();
   const [tokenValid, setTokenValid] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     tokenValid && getProspectingJobs();
@@ -32,9 +30,6 @@ const EvaluateProspects = () => {
     return data.filter(item => item.status.value === status);
   };
 
-  const handleDialog = value => {
-    setIsOpen(value);
-  };
   return (
     <Box>
       <Typography variant='h6'>Évaluation des prospects</Typography>
@@ -55,8 +50,6 @@ const EvaluateProspects = () => {
           <EvaluatedProspectColumn title='Échoué' data={filterDataByStatus(evaluatedProspectsList, 'FAILED')} color='#FA113D' />
         </Grid>
       </>
-
-      {isOpen ? <DialogGoogleSheetConsent isOpen={isOpen} handleDialog={handleDialog} /> : null}
       {isOpenPopup ? <DialogProspectJobDetails /> : null}
     </Box>
   );

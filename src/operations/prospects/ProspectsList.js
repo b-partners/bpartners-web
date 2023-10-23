@@ -42,7 +42,7 @@ const ProspectsList = () => {
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
             <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
-            <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />
+            {BP_USER?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
@@ -55,7 +55,7 @@ const ProspectsList = () => {
             <ProspectsConfiguration />
           </TabPanel>
 
-          {BP_USER.roles[0] === 'EVAL_PROSPECT' && (
+          {BP_USER?.roles[0] === 'EVAL_PROSPECT' && (
             <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
               <ProspectsAdministration />
             </TabPanel>

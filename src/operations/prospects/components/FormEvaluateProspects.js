@@ -97,7 +97,7 @@ const FormEvaluateProspects = () => {
           <BpNumberField label='Note minimale du client' name='minCustomerRating' required />
           <BpNumberField label='Note minimale des prospects' name='minProspectRating' required />
 
-          <Button mt={2} sx={BP_BUTTON} id='confirmation' type='submit'>
+          <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
             Évaluer les prospects
           </Button>
         </form>

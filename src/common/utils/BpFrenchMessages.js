@@ -54,6 +54,9 @@ export const BpFrenchMessages = {
       values: {
         artisan: 'Propriétaire artisan',
       },
+      import: {
+        success: 'Prospects importés avec succès',
+      },
     },
   },
   messages: {
