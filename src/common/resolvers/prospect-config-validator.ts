@@ -16,4 +16,12 @@ const prospectConfigValidator = zod.object({
   interventionTypes: requiredArray(),
 });
 
+const importProspectsValidator = zod.object({
+  spreadsheetName: requiredString(),
+  sheetName: requiredString(),
+  max: requiredNumberRows(),
+  min: requiredNumberRows(),
+})
+
 export const prospectConfigResolver = zodResolver(prospectConfigValidator);
+export const importProspectsResolver = zodResolver(importProspectsValidator);

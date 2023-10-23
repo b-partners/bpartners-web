@@ -1,15 +1,19 @@
-import { Box, Divider, Typography, Button } from '@mui/material';
+import { Box, Divider, Typography, Button, CircularProgress } from '@mui/material';
 import { BpFormField, BpNumberField } from '../../../common/components';
 import { BP_BUTTON } from 'src/bp-theme';
 import { FormProvider, useForm } from 'react-hook-form';
 import { importProspects } from 'src/providers';
 import { useNotify } from 'react-admin';
+import { importProspectsResolver } from 'src/common/resolvers/prospect-config-validator';
+import { useState } from 'react';
 
 const ImportProspects = () => {
-  const formState = useForm({ mode: 'all' });
+  const formState = useForm({ mode: 'all', resolver: importProspectsResolver });
   const notify = useNotify();
+  const [isLoading, setIsLoading] = useState();
 
   const handleClickImportProspects = formState.handleSubmit(async values => {
+    setIsLoading(true);
     const structureData = {
       spreadsheetImport: {
         spreadsheetName: values.spreadsheetName,
@@ -25,6 +29,8 @@ const ImportProspects = () => {
       notify('Prospects importés avec succès', { type: 'success' });
     } catch (error) {
       notify(error?.response?.data?.message, { type: 'error' });
+    } finally {
+      setIsLoading(false);
     }
   });
 
@@ -43,7 +49,14 @@ const ImportProspects = () => {
           <BpNumberField label='Nombre minimum de lignes' name='min' required />
           <BpNumberField label='Nombre maximum de lignes' name='max' required />
 
-          <Button mt={2} sx={BP_BUTTON} id='confirmation' type='submit'>
+          <Button
+            mt={2}
+            sx={BP_BUTTON}
+            id='confirmation'
+            type='submit'
+            disabled={isLoading}
+            startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
+          >
             Importer des prospects
           </Button>
         </form>
