@@ -10,16 +10,13 @@ import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit } from 'src/common/utils';
 import { authProvider, getCached, payingApi } from 'src/providers';
 import { InvoiceListModal } from '.';
-import { invoiceGetContext } from '../utils';
+import { getEmailSubject, invoiceGetContext, getRelaunchDefaultMessage } from '../utils';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
-import { getRelaunchDefaultMessage } from '../utils';
 
 export const InvoiceRelaunchModal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const notify = useNotify();
-
-  const { name: companyName } = getCached.accountHolder() || {};
 
   const {
     closeModal,
@@ -28,7 +25,7 @@ export const InvoiceRelaunchModal = () => {
   } = useInvoiceToolContext();
   const form = useForm({
     mode: 'all',
-    defaultValues: { subject: `[${companyName}] -  Relance ${invoice?.title || ''}`, message: EditorState.createEmpty(), attachments: [] },
+    defaultValues: { subject: getEmailSubject(invoice), message: EditorState.createEmpty(), attachments: [] },
     resolver: invoiceRelaunchResolver,
   });
 
