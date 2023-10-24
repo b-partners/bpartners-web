@@ -51,27 +51,25 @@ const ProspectsConfiguration = () => {
   };
 
   return (
-    <>
-      <Box>
-        <Typography variant='h6'>Configurer le périmètre de prospection.</Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Stack spacing={2} direction='row' sx={{ my: 5 }}>
-          <Typography variant='body2'>0 km</Typography>
-          <Slider
-            defaultValue={newProspectingPerimeter}
-            aria-label='prospectingPerimeterSlider'
-            valueLabelDisplay='on'
-            min={0}
-            max={maxProspectingPerimeter}
-            onChange={handleChange}
-            sx={{ width: 300 }}
-            data-testid='perimeterSlider'
-            value={newProspectingPerimeter}
-          />
-          <Typography variant='body2'>{maxProspectingPerimeter} km</Typography>
-        </Stack>
-      </Box>
-    </>
+    <Box>
+      <Typography variant='h6'>Configurer le périmètre de prospection.</Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Stack spacing={2} direction='row' sx={{ my: 5 }}>
+        <Typography variant='body2'>0 km</Typography>
+        <Slider
+          defaultValue={newProspectingPerimeter}
+          aria-label='prospectingPerimeterSlider'
+          valueLabelDisplay='on'
+          min={0}
+          max={maxProspectingPerimeter}
+          onChange={handleChange}
+          sx={{ width: 300 }}
+          data-testid='perimeterSlider'
+          value={newProspectingPerimeter}
+        />
+        <Typography variant='body2'>{maxProspectingPerimeter} km</Typography>
+      </Stack>
+    </Box>
   );
 };
 
