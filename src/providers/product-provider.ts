@@ -8,6 +8,10 @@ export const importProducts = async (body: any) => {
   const { accountId } = getCached.userInfo();
   return (await payingApi().importProducts(accountId, body)).data;
 };
+export const exportProducts = async () => {
+  const { accountId } = getCached.userInfo();
+  return (await payingApi().exportProducts(accountId, 'text/csv')).data;
+};
 
 export const productProvider: BpDataProviderType = {
   async getOne(productId: string) {

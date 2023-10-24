@@ -12,7 +12,14 @@ const CustomerList = props => (
   <List
     {...props}
     perPage={pageSize}
-    actions={<BPListActions buttons={<ArchiveBulkAction source='lastName ||| firstName' />} importComponent={<BPImport source='customer' />} />}
+    actions={
+      <BPListActions
+        hasExport={true}
+        fileName={'customers'}
+        buttons={<ArchiveBulkAction source='lastName ||| firstName' />}
+        importComponent={<BPImport source='customer' />}
+      />
+    }
     resource='customers'
     hasCreate={true}
     hasEdit={false}

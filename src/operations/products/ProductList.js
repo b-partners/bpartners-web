@@ -16,7 +16,7 @@ const productFilter = [
 
 const ProductList = () => (
   <List
-    actions={<BPListActions importComponent={<BPImport source='product' />} buttons={<ArchiveBulkAction />} />}
+    actions={<BPListActions hasExport={true} fileName={'products'} importComponent={<BPImport source='product' />} buttons={<ArchiveBulkAction />} />}
     resource='products'
     hasCreate={true}
     hasEdit={false}

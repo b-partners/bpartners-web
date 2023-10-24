@@ -46,6 +46,12 @@ export const BpFrenchMessages = {
         },
       },
     },
+    prospects: {
+      evaluation: {
+        success: 'Évaluation des prospects réussie',
+        warning: 'La réponse est vide : veuillez vérifier vos paramètres',
+      },
+    },
   },
   messages: {
     disconnection: {
@@ -61,6 +67,10 @@ export const BpFrenchMessages = {
     },
     download: {
       start: 'Téléchargement en cours...',
+    },
+    export: {
+      success: 'Exportation effectuée avec succès.',
+      error: "Une erreur s'est produite lors de l'exportation.",
     },
   },
 };

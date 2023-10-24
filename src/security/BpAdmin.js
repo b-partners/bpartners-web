@@ -23,6 +23,7 @@ import { CalendarSync } from 'src/operations/calendar/components';
 import { Auth } from 'aws-amplify';
 import { BP_THEME } from 'src/bp-theme';
 import BPErrorPage from 'src/common/components/BPErrorPage';
+import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
@@ -72,6 +73,7 @@ export const BpAdmin = () => {
       <Resource name='calendar' {...calendar} />
 
       <CustomRoutes>
+        <Route exact path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/calendar-sync' element={<CalendarSync />} />
         <Route exact path='/account' element={<account.show />} />
         <Route exact path='/configurations' element={<Configuration />} />

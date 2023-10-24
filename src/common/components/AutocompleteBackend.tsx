@@ -13,6 +13,7 @@ type AutocompleteProps<T> = {
   sync?: boolean;
   name: string;
   error?: boolean;
+  isRequired?: boolean;
   autocompleteController?: AutocompleteController<T>;
   renderOption?: (props: HTMLAttributes<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState) => ReactNode;
   onInputSubmit?: (data: string) => void;
@@ -32,6 +33,7 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
     renderOption,
     autocompleteController,
     onInputSubmit,
+    isRequired = false,
     ...others
   } = props;
   const translate = useTranslate();
@@ -71,7 +73,15 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
         onChange={handleChange}
         sx={{ width: 300, marginBlock: '3px', ...sx }}
         renderInput={params => (
-          <TextField {...params} error={error} onBlur={onblur} value={query} onChange={handleInputChange} label={translate(label, { smart_count: 2 })} />
+          <TextField
+            {...params}
+            error={error}
+            required={isRequired}
+            onBlur={onblur}
+            value={query}
+            onChange={handleInputChange}
+            label={translate(label, { smart_count: 2 })}
+          />
         )}
         {...others}
         renderOption={renderOption}

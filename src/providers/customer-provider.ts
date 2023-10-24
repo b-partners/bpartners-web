@@ -6,6 +6,10 @@ export const importCustomers = async (body: any) => {
   const { data } = await customerApi().importCustomers(accountId, body);
   return data;
 };
+export const exportCustomers = async () => {
+  const { accountId } = getCached.userInfo();
+  return (await customerApi().exportCustomers(accountId, 'text/csv')).data;
+};
 
 const rmRaProps = (dirtyCustomer: any): Customer => {
   if (dirtyCustomer.config) {

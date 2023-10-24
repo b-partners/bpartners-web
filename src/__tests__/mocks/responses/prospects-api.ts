@@ -4,7 +4,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect1_id',
     name: 'john doe',
-    phone: '+261340465338',
+    phone: '+261340465338 /',
     email: 'johnDoe@gmail.com',
     status: 'TO_CONTACT',
     address: '30 Rue de la Montagne Sainte-Genevieve',
@@ -108,3 +108,42 @@ export const prospects: Prospect[] = [
     },
   },
 ];
+
+export const updatedProspects: Prospect[] = [
+  {
+    id: 'prospect1_id',
+    name: 'Doe Jhonson',
+    phone: '+261340465399',
+    email: 'doejhonson@gmail.com',
+    status: 'TO_CONTACT',
+    address: '30 Rue de la Montagne Sainte-Genevieve',
+    townCode: 21547,
+    comment: 'Update comment',
+    location: {
+      type: 'Point',
+      longitude: 2.347,
+      latitude: 48.8588,
+    },
+    rating: {
+      lastEvaluation: new Date('2023-10-10'),
+      value: 9.99999999,
+    },
+  },
+  ...prospects,
+];
+
+export const contactedProspect = {
+  ...prospects[0],
+  status: 'CONTACTED',
+  prospectFeedback: 'INTERESTED',
+  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  contractAmount: '',
+};
+
+export const convertedProspect = {
+  ...prospects[1],
+  status: 'CONVERTED',
+  prospectFeedback: 'INVOICE_SENT',
+  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  contractAmount: '321',
+};
