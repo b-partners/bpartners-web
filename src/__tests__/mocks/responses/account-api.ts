@@ -57,6 +57,7 @@ export const accountHolder1: AccountHolder = {
   companyInfo: {
     phone: '+261 34 xx xxx xx',
     email: 'numer@madagascar.com',
+    website: 'https://bpartners.app',
     socialCapital: 100000,
     tvaNumber: '123',
     isSubjectToVat: true,

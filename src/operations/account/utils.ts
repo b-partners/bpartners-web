@@ -56,22 +56,20 @@ export const townCodeValidator = (townCode: number): any => {
  * @returns true is two companyInfo are same, else false
  */
 export const companyInfoDiff = (currentCompanyInfo = {} as CompanyInfo, newCompanyInfo = {} as CompanyInfo) => {
-  if (
+  return !(
     currentCompanyInfo.email !== newCompanyInfo.email ||
+    currentCompanyInfo.website !== newCompanyInfo.website ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
     currentCompanyInfo.townCode !== newCompanyInfo.townCode ||
     currentCompanyInfo.tvaNumber !== newCompanyInfo.tvaNumber ||
     toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
-  ) {
-    return false;
-  }
-  return true;
+  );
 };
 
 export const generalInfoDiff = (currentAccountHolder: AccountHolder, newGeneralInfo: any) => {
   const { name, siren, initialCashflow, officialActivityName, contactAddress } = currentAccountHolder;
   const { address, city, country, postalCode } = contactAddress || {};
-  if (
+  return !(
     newGeneralInfo.name !== name ||
     newGeneralInfo.siren !== siren ||
     +newGeneralInfo.initialCashflow !== toMajors(initialCashflow) ||
@@ -80,8 +78,5 @@ export const generalInfoDiff = (currentAccountHolder: AccountHolder, newGeneralI
     newGeneralInfo.city !== city ||
     newGeneralInfo.country !== country ||
     newGeneralInfo.postalCode !== postalCode
-  ) {
-    return false;
-  }
-  return true;
+  );
 };
