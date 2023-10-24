@@ -6,6 +6,7 @@ const companyInfoValidator = zod.object({
   socialCapital: requiredString(),
   phone: requiredString().refine(phoneValidator, FieldErrorMessage.phone),
   email: zod.string().nonempty(FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
+  website: zod.custom(() => true),
   townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
   tvaNumber: requiredString(),
 });
