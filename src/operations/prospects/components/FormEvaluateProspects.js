@@ -11,6 +11,8 @@ import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider
 import { v4 as uuid } from 'uuid';
 import { prospectFormMapper } from 'src/providers/mappers/prospect-form-mapper';
 import { useProspectContext } from 'src/common/store/prospect-store';
+import { SheetNames } from 'src/constants/sheet-names';
+import { BpAutoComplete } from 'src/common/components/BpAutoComplete';
 
 const newInterventionOptions = ['ALL', 'NEW_PROSPECT', 'OLD_CUSTOMER'];
 
@@ -83,7 +85,6 @@ const FormEvaluateProspects = () => {
               { id: 'DISINFECTION', name: 'DISINFECTION' },
               { id: 'RAT_REMOVAL', name: 'RAT_REMOVAL' },
             ]}
-            required
           />
           <Autocomplete
             options={newInterventionOptions || []}
@@ -91,19 +92,21 @@ const FormEvaluateProspects = () => {
             onChange={(event, newValue) => {
               setSelectedOption_newIntervention(newValue);
             }}
-            renderInput={params => <TextField required {...params} label={"Nouvelle option d'intervention"} />}
+            renderInput={params => <TextField {...params} label={"Nouvelle option d'intervention"} />}
           />
           <Tooltip title="Seule la valeur ANTI_HARM est supportée pour l'instant">
             <span>
               <BpFormField label='Profession' type='text' name='profession' disabled />
             </span>
           </Tooltip>
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' disabled />
-          <BpFormField label='Nom de la feuille' type='text' name='sheetName' required />
-          <BpNumberField label='Nombre minimum de lignes' name='min' required />
-          <BpNumberField label='Nombre maximum de lignes' name='max' required />
-          <BpNumberField label='Note minimale du client' name='minCustomerRating' required />
-          <BpNumberField label='Note minimale des prospects' name='minProspectRating' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' />
+
+          <BpAutoComplete name='sheetName' label='Nom de la feuille' options={SheetNames} />
+          {/* <BpFormField label='Nom de la feuille' type='text' name='sheetName' required /> */}
+          <BpNumberField label='Nombre minimum de lignes' name='min' />
+          <BpNumberField label='Nombre maximum de lignes' name='max' />
+          <BpNumberField label='Note minimale du client' name='minCustomerRating' />
+          <BpNumberField label='Note minimale des prospects' name='minProspectRating' />
 
           <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
             Évaluer les prospects
