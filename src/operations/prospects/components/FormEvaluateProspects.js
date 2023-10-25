@@ -15,7 +15,15 @@ import { useProspectContext } from 'src/common/store/prospect-store';
 const newInterventionOptions = ['ALL', 'NEW_PROSPECT', 'OLD_CUSTOMER'];
 
 const FormEvaluateProspects = () => {
-  const formState = useForm({ mode: 'all', resolver: prospectConfigResolver, defaultValues: { profession: 'ANTI_HARM', infestationType: 'souris' } });
+  const formState = useForm({
+    mode: 'all',
+    resolver: prospectConfigResolver,
+    defaultValues: {
+      profession: 'ANTI_HARM',
+      infestationType: 'souris',
+      spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
+    },
+  });
   const [selectedOption_ArtisanOwner, setSelectedOption_ArtisanOwner] = useState(''); // { name: '' }
   const [selectedOption_newIntervention, setSelectedOption_newIntervention] = useState('NEW_PROSPECT');
   const { getProspectingJobs } = useProspectContext();
@@ -90,7 +98,7 @@ const FormEvaluateProspects = () => {
               <BpFormField label='Profession' type='text' name='profession' disabled />
             </span>
           </Tooltip>
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' disabled />
           <BpFormField label='Nom de la feuille' type='text' name='sheetName' required />
           <BpNumberField label='Nombre minimum de lignes' name='min' required />
           <BpNumberField label='Nombre maximum de lignes' name='max' required />

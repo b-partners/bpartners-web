@@ -8,7 +8,11 @@ import { importProspectsResolver } from 'src/common/resolvers/prospect-config-va
 import { useState } from 'react';
 
 const ImportProspects = () => {
-  const formState = useForm({ mode: 'all', resolver: importProspectsResolver });
+  const formState = useForm({
+    mode: 'all',
+    resolver: importProspectsResolver,
+    defaultValues: { import_spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ' },
+  });
   const notify = useNotify();
   const [isLoading, setIsLoading] = useState();
 
@@ -44,7 +48,7 @@ const ImportProspects = () => {
           style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
           onSubmit={handleClickImportProspects}
         >
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='import_spreadsheetName' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='import_spreadsheetName' disabled />
           <BpFormField label='Nom de la feuille' type='text' name='import_sheetName' required />
           <BpNumberField label='Nombre minimum de lignes' name='import_min' required />
           <BpNumberField label='Nombre maximum de lignes' name='import_max' required />
