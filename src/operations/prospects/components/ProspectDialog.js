@@ -5,6 +5,7 @@ import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
 import { useFormContext, useWatch } from 'react-hook-form';
+import PropTypes from 'prop-types';
 
 export const ProspectDialog = props => {
   const {
@@ -95,4 +96,13 @@ export const ProspectDialog = props => {
       <ProspectDialogActions prospectStatus={status} close={close} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isEditing={isEditing} />
     </Dialog>
   );
+};
+ProspectDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  close: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  status: PropTypes.string,
+  comment: PropTypes.string,
+  saveOrUpdateProspectSubmit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
 };
