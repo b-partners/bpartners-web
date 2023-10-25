@@ -152,7 +152,7 @@ export const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<MailOutline />} value={prospect.email} />
             <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
             <CardViewField icon={<Home />} value={prospect.address} />
-            <CardViewField icon={<Comment />} value={prospect.comment} />
+            <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>

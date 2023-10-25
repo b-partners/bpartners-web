@@ -10,7 +10,7 @@ export const ProspectDialog = props => {
   const {
     open,
     close,
-    prospect: { name, status },
+    prospect: { name, status, comment },
     saveOrUpdateProspectSubmit,
     isEditing,
   } = props;
@@ -37,7 +37,7 @@ export const ProspectDialog = props => {
         <BpFormField style={{ width: '100%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
         <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
-        <BpFormField multiline rows={4} style={{ width: '100%' }} name='comment' label='Commentaire' />
+        <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
         {!isEditing && (
           <Box>
             <FormControl>
