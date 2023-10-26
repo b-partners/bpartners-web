@@ -57,7 +57,8 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Importer des prospects dans la base de données depuis Google Sheet');
 
-    cy.get('[name="import_sheetName"]').type('sheet Name test');
+    cy.get('[name="import_sheetName"]').click();
+    cy.contains('Daniderat').click();
     cy.get('[name="import_min"]').type(2);
     cy.get('[name="import_max"]').type(4);
     cy.get('#importProspectsSubmit').click();
@@ -75,7 +76,8 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Importer des prospects dans la base de données depuis Google Sheet');
 
-    cy.get('[name="import_sheetName"]').type('dummy');
+    cy.get('[name="import_sheetName"]').click();
+    cy.contains('Daniderat').click();
     cy.get('[name="import_min"]').type(2);
     cy.get('[name="import_max"]').type(4);
     cy.get('#importProspectsSubmit').click();
@@ -103,7 +105,8 @@ describe(specTitle('Customers'), () => {
 
     cy.wait('@getAccountHoldersByName');
 
-    cy.get('[name="sheetName"]').type('sheet name test');
+    cy.get('[name="sheetName"]').click();
+    cy.contains('Daniderat').click();
     cy.get('[name="min"]').type(2);
     cy.get('[name="max"]').type(4);
     cy.get('[name="minCustomerRating"]').type(-12);

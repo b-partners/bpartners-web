@@ -23,6 +23,7 @@ const FormEvaluateProspects = () => {
       profession: 'ANTI_HARM',
       infestationType: 'souris',
       spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
+      newInterventionOption: 'NEW_PROSPECT',
     },
   });
   const [selectedOption_ArtisanOwner, setSelectedOption_ArtisanOwner] = useState('');
