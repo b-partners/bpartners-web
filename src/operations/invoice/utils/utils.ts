@@ -268,7 +268,7 @@ ${phone}</p>`;
 };
 
 // @ts-ignore
-export const getRelaunchDefaultMessage = (invoice: Invoice) => {
+const getInvoiceRelaunchDefaultMessage = (invoice: Invoice) => {
   const { ref, sendingDate } = invoice;
   const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
   const { phone } = companyInfo || {};
@@ -285,4 +285,42 @@ ${phone}</p>`;
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
 
   return EditorState.createWithContent(defaultContentState);
+};
+
+const getQuotationRelaunchDefaultMessage = (invoice: Invoice) => {
+  const customer = invoice?.customer;
+  const { sendingDate } = invoice;
+  const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
+  const { phone } = companyInfo || {};
+  const message = `<p>Bonjour ${customer?.lastName},<br/><br/>
+Nous espérons que vous allez bien.<br/><br/>
+Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/>
+Dés réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/>
+Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/>
+<br/><br/>
+Vous remerciant pour votre confiance.<br/><br/>
+${companyName}<br/>
+${phone}</p>`;
+  const blocksFromHtml = convertFromHTML(message);
+  const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
+
+  return EditorState.createWithContent(defaultContentState);
+};
+
+const getInvoiceEmailSubject = (invoice: Invoice) => {
+  const { name: companyName } = getCached.accountHolder() || {};
+  return `[${companyName}] -  Relance ${invoice?.title || ''}`;
+};
+
+const getQuotationEmailSubject = (invoice: Invoice) => {
+  const { name: companyName } = getCached.accountHolder() || {};
+  return `[${companyName}] -  Suivi ${invoice?.title || ''} - ${invoice?.customer?.lastName || ''}`;
+};
+
+export const getRelaunchDefaultMessage = (invoice: Invoice) => {
+  return invoice.status === 'PROPOSAL' ? getQuotationRelaunchDefaultMessage(invoice) : getInvoiceRelaunchDefaultMessage(invoice);
+};
+
+export const getEmailSubject = (invoice: Invoice) => {
+  return invoice.status === 'PROPOSAL' ? getQuotationEmailSubject(invoice) : getInvoiceEmailSubject(invoice);
 };

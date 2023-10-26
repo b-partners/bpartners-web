@@ -62,7 +62,11 @@ const FormEvaluateProspects = () => {
   return (
     <FormProvider {...formState}>
       <div>
-        <form style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }} onSubmit={evaluateProspects}>
+        <form
+          id='evaluateProspectsForm'
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
+          onSubmit={evaluateProspects}
+        >
           <SelectArrayInput
             name='interventionTypes'
             source='Types intervention'
@@ -72,17 +76,6 @@ const FormEvaluateProspects = () => {
               { id: 'RAT_REMOVAL', name: 'RAT_REMOVAL' },
             ]}
             required
-          />
-          <AutocompleteBackend
-            fetcher={fetcher}
-            getLabel={accountHolder => (accountHolder ? accountHolder.name : '')}
-            label={'Propriétaire artisan'}
-            name={'artisanOwner'}
-            onChange={handleChange}
-            value={selectedOption_ArtisanOwner}
-            sync={true}
-            isRequired={true}
-            sx={{ width: 300, marginBlock: '3px' }}
           />
           <Autocomplete
             options={newInterventionOptions || []}
@@ -97,17 +90,28 @@ const FormEvaluateProspects = () => {
               <BpFormField label='Profession' type='text' name='profession' disabled />
             </span>
           </Tooltip>
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreedSheetName' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' required />
           <BpFormField label='Nom de la feuille' type='text' name='sheetName' required />
           <BpNumberField label='Nombre minimum de lignes' name='min' required />
           <BpNumberField label='Nombre maximum de lignes' name='max' required />
           <BpNumberField label='Note minimale du client' name='minCustomerRating' required />
           <BpNumberField label='Note minimale des prospects' name='minProspectRating' required />
 
-          <Button mt={2} sx={BP_BUTTON} id='confirmation' type='submit'>
+          <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
             Évaluer les prospects
           </Button>
         </form>
+        <AutocompleteBackend
+          fetcher={fetcher}
+          getLabel={accountHolder => (accountHolder ? accountHolder.name : '')}
+          label='resources.prospects.values.artisan'
+          name={'artisanOwner'}
+          onChange={handleChange}
+          value={selectedOption_ArtisanOwner}
+          sync={true}
+          isRequired={true}
+          sx={{ width: 300, marginBlock: '3px' }}
+        />
       </div>
     </FormProvider>
   );

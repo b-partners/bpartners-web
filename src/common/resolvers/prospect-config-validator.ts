@@ -7,7 +7,7 @@ const prospectConfigValidator = zod.object({
   profession: requiredString(),
   infestationType: requiredString(),
   // newInterventionOption : requiredString(),
-  spreedSheetName: requiredString(),
+  spreadsheetName: requiredString(),
   sheetName: requiredString(),
   max: requiredNumberRows(),
   min: requiredNumberRows(),
@@ -16,4 +16,12 @@ const prospectConfigValidator = zod.object({
   interventionTypes: requiredArray(),
 });
 
+const importProspectsValidator = zod.object({
+  import_spreadsheetName: requiredString(),
+  import_sheetName: requiredString(),
+  import_max: requiredNumberRows(),
+  import_min: requiredNumberRows(),
+});
+
 export const prospectConfigResolver = zodResolver(prospectConfigValidator);
+export const importProspectsResolver = zodResolver(importProspectsValidator);

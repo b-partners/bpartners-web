@@ -16,7 +16,7 @@ export const DialogProspectJobDetails = () => {
             {prospectJobDetailsList("Type d'infestation", prospectJobDetails?.metadata?.infestationType)}
             {prospectJobDetailsList('Profession', prospectJobDetails?.metadata?.profession)}
             {prospectJobDetailsList('SheetName', prospectJobDetails?.metadata?.sheetName)}
-            {prospectJobDetailsList('SpreedSheetName', prospectJobDetails?.metadata?.spreedSheetName)}
+            {prospectJobDetailsList('spreadsheetName', prospectJobDetails?.metadata?.spreadsheetName)}
             {prospectJobDetailsList('Nombre min de lignes', prospectJobDetails?.metadata?.min)}
             {prospectJobDetailsList('Nombre max de lignes', prospectJobDetails?.metadata?.max)}
             {prospectJobDetailsList('Note min du client', prospectJobDetails?.metadata?.minCustomerRating)}

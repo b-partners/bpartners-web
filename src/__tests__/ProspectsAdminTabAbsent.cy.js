@@ -5,7 +5,7 @@ import { user2, whoami2 } from './mocks/responses/security-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import { prospects } from './mocks/responses/prospects-api';
 
-describe(specTitle('evaluation prospects'), () => {
+describe(specTitle('administration tab not present for non admin users in prospects page'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
     cy.intercept('GET', '/whoami', whoami2).as('whoami');
@@ -20,8 +20,6 @@ describe(specTitle('evaluation prospects'), () => {
     mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('#closeWarning').click();
-    cy.get('[data-cy="configuration-tab"]').click();
-
-    cy.contains('Évaluation des prospects').should('not.exist');
+    cy.get('[data-cy="administration-tab"]').should('not.exist');
   });
 });

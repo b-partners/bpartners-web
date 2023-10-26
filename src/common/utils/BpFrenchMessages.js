@@ -51,6 +51,12 @@ export const BpFrenchMessages = {
         success: 'Évaluation des prospects réussie',
         warning: 'La réponse est vide : veuillez vérifier vos paramètres',
       },
+      values: {
+        artisan: 'Propriétaire artisan',
+      },
+      import: {
+        success: 'Prospects importés avec succès',
+      },
     },
   },
   messages: {

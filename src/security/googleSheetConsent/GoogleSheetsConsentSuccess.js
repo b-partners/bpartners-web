@@ -31,7 +31,7 @@ const GoogleSheetsConsentSuccess = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      redirect('/prospects?tab=configuration');
+      redirect('/prospects?tab=administration');
 
       return () => {
         clearTimeout(timeoutId);

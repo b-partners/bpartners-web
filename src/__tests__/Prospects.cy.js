@@ -7,7 +7,6 @@ import { prospects, contactedProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
-import { evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
 
 describe(specTitle('Prospects'), () => {
   beforeEach(() => {
@@ -182,87 +181,11 @@ describe(specTitle('Prospects'), () => {
 
     mount(<App />);
     cy.get('[name="prospects"]').click();
-    cy.get('[data-cy="configuration-tab"]').click();
+    cy.get('[data-cy="administration-tab"]').click();
 
-    cy.contains('Évaluation des prospects');
+    cy.contains('Vous devez vous connecter à Google sheets pour importer ou évaluer des prospects');
     cy.get('[data-cy="evaluate-prospect"]').click();
-    cy.contains('Connexion à Google Sheets requise');
-    cy.get('[data-testid="connect-to-googleSheets"]').click();
 
     cy.get('@redirect').should('have.been.calledOnce');
-  });
-  //
-  it('should evaluate prospects', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, evaluationJobs).as('getEvaluationJobs');
-    cy.intercept('GET', `/accountHolders?name=`, req => {
-      req.reply(accountHolders1);
-    }).as('getAllAccountHolders');
-    cy.intercept('GET', `/accountHolders?name=Numer`, accountHolders1[0]).as('getAccountHoldersByName');
-    cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
-
-    // Configurez localStorage pour que la fonction isExhalationPassed retourne true
-    const futureExpirationDate = new Date();
-    futureExpirationDate.setMinutes(futureExpirationDate.getMinutes() + 30);
-    cy.window().its('localStorage').invoke('setItem', 'expiredAt_validationToken_googleSheet', futureExpirationDate.toISOString());
-
-    mount(<App />);
-    cy.get('[name="prospects"]').click();
-    cy.get('[data-cy="configuration-tab"]').click();
-    cy.get('#mui-component-select-interventionTypes').click();
-    cy.get('[data-value="RAT_REMOVAL"]').click();
-
-    cy.get('body').click();
-    cy.get('[data-testid="autocomplete-backend-for-artisanOwner"]').click();
-    cy.contains('Numer').click();
-
-    cy.wait('@getAccountHoldersByName');
-
-    cy.get('[name="spreedSheetName"]').type('spreed Sheet Name test');
-    cy.get('[name="sheetName"]').type('sheet name test');
-    cy.get('[name="min"]').type(2);
-    cy.get('[name="max"]').type(4);
-    cy.get('[name="minCustomerRating"]').type(-12);
-    cy.get('[name="minProspectRating"]').type(30);
-    cy.get('#confirmation').click();
-    cy.contains('La valeur minimale autorisée est 0');
-    cy.contains('La valeur maximale autorisée est 10');
-    cy.get('[name="minCustomerRating"]').clear().type(8);
-    cy.get('[name="minProspectRating"]').clear().type(9);
-    cy.get('#confirmation').click();
-    cy.wait('@evaluateProspects').then(interception => {
-      const responseStatus = interception.response.statusCode;
-      expect(responseStatus).to.equal(200);
-    });
-  });
-
-  it('view prospect evaluation jobs', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, evaluationJobs).as('getEvaluationJobs');
-    cy.intercept('GET', `/accountHolders?name=`, req => {
-      req.reply(accountHolders1);
-    }).as('getAllAccountHolders');
-    cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
-
-    const futureExpirationDate = new Date();
-    futureExpirationDate.setMinutes(futureExpirationDate.getMinutes() + 30);
-    cy.window().its('localStorage').invoke('setItem', 'expiredAt_validationToken_googleSheet', futureExpirationDate.toISOString());
-
-    mount(<App />);
-    cy.get('[name="prospects"]').click();
-    cy.get('[data-cy="configuration-tab"]').click();
-
-    cy.contains('En attente');
-    cy.contains('Traitement');
-    cy.contains('Réussi');
-    cy.contains('Échoué');
-
-    cy.contains('Rafraîchir la liste').click();
-
-    cy.get(`[data-cy="view-details-job-${evaluationJobs[0].id}"]`).click();
-    cy.contains('Détails');
-    cy.contains('Fermer').click();
-
-    cy.get(`[data-cy="rerun-evaluation-failed-${evaluationJobs[0].id}"]`).click();
   });
 });

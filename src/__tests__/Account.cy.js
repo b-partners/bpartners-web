@@ -40,6 +40,7 @@ describe(specTitle('Account'), () => {
     cy.contains('6 rue Paul Langevin');
     cy.contains('101');
     cy.contains('10201');
+    cy.contains('https://bpartners.app');
 
     cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
     cy.contains('Mon abonnement');
@@ -221,6 +222,7 @@ describe(specTitle('Account'), () => {
     cy.get('form [name="email"]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
+    cy.get('form [name="website"]').clear().type('https://bpartners.app/home');
     cy.get('form [name="townCode"]').clear().type(`120{enter}`);
     cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
     cy.get('form [name="townCode"]').clear().type(12312);
