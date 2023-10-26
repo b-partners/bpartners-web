@@ -73,7 +73,12 @@ const NoBank = ({ aside }) => {
             </Typography>
             <Typography component='div' variant='p' mt={15}>
               Cliquez{' '}
-              <span data-testid='initiate-bank-connection-button' style={HERE_LINK} onClick={initiateBankConnectionAsync}>
+              <span
+                data-testid='initiate-bank-connection-button'
+                style={HERE_LINK}
+                onClick={initiateBankConnectionAsync}
+                onKeyDown={initiateBankConnectionAsync}
+              >
                 ici
               </span>{' '}
               pour associer une banque.
