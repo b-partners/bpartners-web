@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SelectArrayInput } from 'react-admin';
-import { Button, Autocomplete, TextField, Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { BP_BUTTON } from 'src/bp-theme';
 import { AutocompleteBackend, BpFormField, BpNumberField } from '../../../common/components';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -13,8 +13,7 @@ import { prospectFormMapper } from 'src/providers/mappers/prospect-form-mapper';
 import { useProspectContext } from 'src/common/store/prospect-store';
 import { SheetNames } from 'src/constants/sheet-names';
 import { BpAutoComplete } from 'src/common/components/BpAutoComplete';
-
-const newInterventionOptions = ['ALL', 'NEW_PROSPECT', 'OLD_CUSTOMER'];
+import { NewInterventionOptions } from 'src/constants/intervention-types';
 
 const FormEvaluateProspects = () => {
   const formState = useForm({
@@ -26,8 +25,7 @@ const FormEvaluateProspects = () => {
       spreadsheetName: 'Golden source Depa1 Depa 2 - Prospect métier Antinuisibles  Serrurier ',
     },
   });
-  const [selectedOption_ArtisanOwner, setSelectedOption_ArtisanOwner] = useState(''); // { name: '' }
-  const [selectedOption_newIntervention, setSelectedOption_newIntervention] = useState('NEW_PROSPECT');
+  const [selectedOption_ArtisanOwner, setSelectedOption_ArtisanOwner] = useState('');
   const { getProspectingJobs } = useProspectContext();
   const id = uuid();
 
@@ -42,7 +40,6 @@ const FormEvaluateProspects = () => {
       ...values,
       jobId: id,
       artisanOwner: selectedOption_ArtisanOwner.id,
-      newInterventionOption: selectedOption_newIntervention,
       interventionTypes: [values.interventionTypes].toString(),
       min: values.min.toString(),
       max: values.max.toString(),
@@ -54,7 +51,6 @@ const FormEvaluateProspects = () => {
       jobId: id,
       metadata: metadata,
       artisanOwner: selectedOption_ArtisanOwner.id,
-      newInterventionOption: selectedOption_newIntervention,
     };
 
     const newStructuredData = prospectFormMapper(structureData);
@@ -71,47 +67,11 @@ const FormEvaluateProspects = () => {
 
   return (
     <FormProvider {...formState}>
-      <div>
-        <form
-          id='evaluateProspectsForm'
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
-          onSubmit={evaluateProspects}
-        >
-          <SelectArrayInput
-            name='interventionTypes'
-            source='Types intervention'
-            choices={[
-              { id: 'INSECT_CONTROL', name: 'INSECT_CONTROL' },
-              { id: 'DISINFECTION', name: 'DISINFECTION' },
-              { id: 'RAT_REMOVAL', name: 'RAT_REMOVAL' },
-            ]}
-          />
-          <Autocomplete
-            options={newInterventionOptions || []}
-            value={selectedOption_newIntervention}
-            onChange={(event, newValue) => {
-              setSelectedOption_newIntervention(newValue);
-            }}
-            renderInput={params => <TextField {...params} label={"Nouvelle option d'intervention"} />}
-          />
-          <Tooltip title="Seule la valeur ANTI_HARM est supportée pour l'instant">
-            <span>
-              <BpFormField label='Profession' type='text' name='profession' disabled />
-            </span>
-          </Tooltip>
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' />
-
-          <BpAutoComplete name='sheetName' label='Nom de la feuille' options={SheetNames} />
-          {/* <BpFormField label='Nom de la feuille' type='text' name='sheetName' required /> */}
-          <BpNumberField label='Nombre minimum de lignes' name='min' />
-          <BpNumberField label='Nombre maximum de lignes' name='max' />
-          <BpNumberField label='Note minimale du client' name='minCustomerRating' />
-          <BpNumberField label='Note minimale des prospects' name='minProspectRating' />
-
-          <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
-            Évaluer les prospects
-          </Button>
-        </form>
+      <form
+        id='evaluateProspectsForm'
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
+        onSubmit={evaluateProspects}
+      >
         <AutocompleteBackend
           fetcher={fetcher}
           getLabel={accountHolder => (accountHolder ? accountHolder.name : '')}
@@ -122,8 +82,35 @@ const FormEvaluateProspects = () => {
           sync={true}
           isRequired={true}
           sx={{ width: 300, marginBlock: '3px' }}
+          asForm={false}
         />
-      </div>
+        <SelectArrayInput
+          name='interventionTypes'
+          source='Types intervention'
+          choices={[
+            { id: 'INSECT_CONTROL', name: 'INSECT_CONTROL' },
+            { id: 'DISINFECTION', name: 'DISINFECTION' },
+            { id: 'RAT_REMOVAL', name: 'RAT_REMOVAL' },
+          ]}
+        />
+        <BpAutoComplete name='newInterventionOption' label="Nouvelle option d'intervention" options={NewInterventionOptions} />
+        <Tooltip title="Seule la valeur ANTI_HARM est supportée pour l'instant">
+          <span>
+            <BpFormField label='Profession' type='text' name='profession' disabled />
+          </span>
+        </Tooltip>
+        <BpFormField label='Nom de la feuille de calcul' type='text' name='spreadsheetName' />
+
+        <BpAutoComplete name='sheetName' label='Nom de la feuille' options={SheetNames} />
+        <BpNumberField label='Nombre minimum de lignes' name='min' />
+        <BpNumberField label='Nombre maximum de lignes' name='max' />
+        <BpNumberField label='Note minimale du client' name='minCustomerRating' />
+        <BpNumberField label='Note minimale des prospects' name='minProspectRating' />
+
+        <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
+          Évaluer les prospects
+        </Button>
+      </form>
     </FormProvider>
   );
 };

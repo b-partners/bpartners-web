@@ -14,6 +14,7 @@ type AutocompleteProps<T> = {
   name: string;
   error?: boolean;
   isRequired?: boolean;
+  asForm?: boolean;
   autocompleteController?: AutocompleteController<T>;
   renderOption?: (props: HTMLAttributes<HTMLLIElement>, option: T, state: AutocompleteRenderOptionState) => ReactNode;
   onInputSubmit?: (data: string) => void;
@@ -34,6 +35,7 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
     autocompleteController,
     onInputSubmit,
     isRequired = false,
+    asForm = true,
     ...others
   } = props;
   const translate = useTranslate();
@@ -57,8 +59,9 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
     !!onInputSubmit && onInputSubmit(query);
   };
 
+  const Wrapper = asForm ? 'form' : 'div';
   return (
-    <form onSubmit={handleSubmit}>
+    <Wrapper onSubmit={asForm ? handleSubmit : undefined}>
       <Autocomplete
         filterOptions={e => e}
         loading={loading}
@@ -86,6 +89,6 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
         {...others}
         renderOption={renderOption}
       />
-    </form>
+    </Wrapper>
   );
 }

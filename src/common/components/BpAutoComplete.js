@@ -1,7 +1,7 @@
-import { TextField, Autocomplete } from '@mui/material';
+import { TextField, Autocomplete, FormHelperText } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-export const BpAutoComplete = ({ name, label, ...others }) => {
+export const BpAutoComplete = ({ name, label, error, ...others }) => {
   const {
     register,
     formState: { errors },
@@ -14,16 +14,19 @@ export const BpAutoComplete = ({ name, label, ...others }) => {
   };
 
   const customRegister = { ...register(name), onChange: handleChange };
-
   return (
-    <Autocomplete
-      {...customRegister}
-      {...others}
-      value={value}
-      error={errors[name]}
-      data-testid={`${name}-auto-complete`}
-      // disablePortal
-      renderInput={params => <TextField {...params} label={label} />}
-    />
+    <div>
+      <Autocomplete
+        {...customRegister}
+        {...others}
+        value={value}
+        data-testid={`${name}-auto-complete`}
+        renderInput={params => <TextField {...params} label={label} error={errors && !!errors[name]} />}
+      />
+
+      <FormHelperText style={{ marginLeft: '14px' }} error>
+        {errors[name]?.message}
+      </FormHelperText>
+    </div>
   );
 };
