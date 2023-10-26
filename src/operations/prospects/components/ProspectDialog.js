@@ -5,12 +5,13 @@ import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
 import { useFormContext, useWatch } from 'react-hook-form';
+import PropTypes from 'prop-types';
 
 export const ProspectDialog = props => {
   const {
     open,
     close,
-    prospect: { name, status },
+    prospect: { name, status, comment },
     saveOrUpdateProspectSubmit,
     isEditing,
   } = props;
@@ -37,7 +38,7 @@ export const ProspectDialog = props => {
         <BpFormField style={{ width: '100%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
         <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
-        <BpFormField multiline rows={4} style={{ width: '100%' }} name='comment' label='Commentaire' />
+        <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
         {!isEditing && (
           <Box>
             <FormControl>
@@ -95,4 +96,13 @@ export const ProspectDialog = props => {
       <ProspectDialogActions prospectStatus={status} close={close} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isEditing={isEditing} />
     </Dialog>
   );
+};
+ProspectDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  close: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  status: PropTypes.string,
+  comment: PropTypes.string,
+  saveOrUpdateProspectSubmit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
 };
