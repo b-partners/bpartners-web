@@ -27,4 +27,3 @@ export const importProspects = async (resources: ImportProspect) => {
   const { accountHolderId } = getCached.userInfo();
   return (await prospectingApi().importProspects(accountHolderId, resources)).data;
 };
-
