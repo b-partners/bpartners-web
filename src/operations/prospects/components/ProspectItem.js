@@ -97,79 +97,79 @@ export const ProspectItem = ({ prospect }) => {
   }
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-        <Paper elevation={2} sx={{ p: 1 }}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
-            <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
-              {prospect.name || 'Non renseigné'}
-            </Typography>
-            <Stack direction='row' alignItems='center'>
-              {prospect.location && (
-                <Link href={getGeoJsonUrl(prospect.location)} target='_blank' underline='hover'>
-                  <Tooltip title='Voir sur la carte'>
-                    <IconButton component='span'>
-                      <LocationOn fontSize='small' />
-                    </IconButton>
-                  </Tooltip>
-                </Link>
-              )}
-              <Tooltip title='Modifier le status'>
-                <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
-                  <MoreVert fontSize='small' />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Modifier le prospect'>
-                <IconButton data-testid={`edit${prospect.id}`} aria-describedby={id} component='span' onClick={e => toggleDialog(e, true)}>
-                  <Edit fontSize='small' />
-                </IconButton>
-              </Tooltip>
-              <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={closePopover}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-              >
-                <Box sx={{ m: 2 }}>
-                  <FormControl>
-                    <RadioGroup defaultValue={prospect.status} name='status' onChange={handleSubmit(changeStatus)}>
-                      <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
-                      <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
-                      <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
-                    </RadioGroup>
-                  </FormControl>
-                </Box>
-              </Popover>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+          <Paper elevation={2} sx={{ p: 1 }}>
+            <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
+              <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
+                {prospect.name || 'Non renseigné'}
+              </Typography>
+              <Stack direction='row' alignItems='center'>
+                {prospect.location && (
+                    <Link href={getGeoJsonUrl(prospect.location)} target='_blank' underline='hover'>
+                      <Tooltip title='Voir sur la carte'>
+                        <IconButton component='span'>
+                          <LocationOn fontSize='small' />
+                        </IconButton>
+                      </Tooltip>
+                    </Link>
+                )}
+                <Tooltip title='Modifier le status'>
+                  <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
+                    <MoreVert fontSize='small' />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Modifier le prospect'>
+                  <IconButton data-testid={`edit${prospect.id}`} aria-describedby={id} component='span' onClick={e => toggleDialog(e, true)}>
+                    <Edit fontSize='small' />
+                  </IconButton>
+                </Tooltip>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={closePopover}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                >
+                  <Box sx={{ m: 2 }}>
+                    <FormControl>
+                      <RadioGroup defaultValue={prospect.status} name='status' onChange={handleSubmit(changeStatus)}>
+                        <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
+                        <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
+                        <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
+                      </RadioGroup>
+                    </FormControl>
+                  </Box>
+                </Popover>
+              </Stack>
             </Stack>
-          </Stack>
-          <Box sx={{ color: '#4d4d4d' }}>
-            <CardViewField icon={<MailOutline />} value={prospect.email} />
-            <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
-            <CardViewField icon={<Home />} value={prospect.address} />
-            <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
-            <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
-            <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
-          </Box>
-          {dialogState && (
-            <ProspectDialog
-              open={dialogState}
-              close={toggleDialog}
-              prospect={prospect}
-              saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
-              isEditing={isEditing}
-            />
-          )}
-        </Paper>
-      </form>
-    </FormProvider>
+            <Box sx={{ color: '#4d4d4d' }}>
+              <CardViewField icon={<MailOutline />} value={prospect.email} />
+              <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
+              <CardViewField icon={<Home />} value={prospect.address} />
+              <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
+              <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
+              <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
+            </Box>
+            {dialogState && (
+                <ProspectDialog
+                    open={dialogState}
+                    close={toggleDialog}
+                    prospect={prospect}
+                    saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
+                    isEditing={isEditing}
+                />
+            )}
+          </Paper>
+        </form>
+      </FormProvider>
   );
 };
 ProspectItem.propTypes = {
