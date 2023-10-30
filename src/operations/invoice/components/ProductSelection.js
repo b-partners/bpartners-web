@@ -71,7 +71,7 @@ export const ProductSelection = ({ name, form }) => {
         {state.status && (
           <AutocompleteBackend
             name='invoice-product'
-            label='Produits'
+            label='Rechercher un produit'
             fetcher={fetcher}
             onChange={handleChange}
             getLabel={e => (typeof e === 'string' ? e : e.description)}
