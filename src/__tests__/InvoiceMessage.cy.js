@@ -61,8 +61,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=ref]').clear();
     cy.contains('Ce champ est requis');
     cy.get('form input[name=ref]').type('New ref');
-    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
-    cy.get('input[name="delayInPaymentAllowed"]').type(30);
 
     cy.get('form input[name=sendingDate]').clear();
     cy.contains('Ce champ est requis');
@@ -73,20 +71,22 @@ describe(specTitle('Invoice'), () => {
     cy.get('form input[name=sendingDate]').type(`2023-01-01`);
 
     cy.get('form input[name=validityDate]').clear();
-    cy.contains('Ce champ est requis');
 
     cy.get('form input[name=validityDate]').type('2022-12-31');
     cy.contains("La date limite de validité doit être ultérieure ou égale à la date d'émission");
     cy.get('form input[name=validityDate]').clear().type('2023-01-02');
 
-    cy.contains('Ce champ est requis');
     // select the customer
     cy.get('[data-testid="autocomplete-backend-for-customer"]').click();
     cy.contains('lastName-2 firstName-2').click();
 
+    cy.get('[data-testid="delayInPaymentAllowed-checkbox-id"]').click();
+    cy.get('input[name="delayInPaymentAllowed"]').type(30);
+
     // the user can't save the invoice if it is not valid
     // the user should view an error message
     cy.get('#form-save-id').click();
+    cy.contains('Ce champ est requis');
     cy.contains('Veuillez remplir correctement tous les champs');
 
     // select the product
@@ -100,7 +100,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('Titre');
     cy.contains('Référence');
     cy.contains("Date d'émission");
-    cy.contains('Client');
+    cy.contains('Rechercher un client');
     cy.contains('description');
     cy.get('#form-save-id').click();
   });
