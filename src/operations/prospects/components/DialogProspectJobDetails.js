@@ -12,6 +12,7 @@ export const DialogProspectJobDetails = () => {
   useEffect(() => {
     const getProspectEvaluationJobDetails = async () => {
       const response = await prospectingJobsProvider.getOne(prospectJobDetails?.id);
+      console.log('response', response);
       setProspectsLength(response?.results.length);
       setprospectsLengthLoading(false);
     };
