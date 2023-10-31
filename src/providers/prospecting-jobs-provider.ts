@@ -7,7 +7,9 @@ export const prospectingJobsProvider: BpDataProviderType = {
     return data;
   },
   getOne: async function (jId: string): Promise<any> {
-    throw new Error('Function not implemented.');
+    const { accountHolderId } = getCached.userInfo();
+    const { data } = await prospectingApi().getProspectEvaluationJobDetailsById(accountHolderId, jId);
+    return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountHolderId } = getCached.userInfo();

@@ -1,4 +1,4 @@
-import { ProspectEvaluationJobInfo } from 'bpartners-react-client';
+import { ProspectEvaluationJobDetails, ProspectEvaluationJobInfo } from 'bpartners-react-client';
 
 export const evaluationJobs: ProspectEvaluationJobInfo[] = [
   {
@@ -74,3 +74,10 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
     },
   },
 ];
+export const evaluationJobDetails: ProspectEvaluationJobDetails = {
+  id: '91013503-cb23-4ea3-b381-4f55ba80c29b',
+  metadata: {},
+  results: [{}, {}, {}],
+  status: { value: 'FINISHED', message: 'Successfully processed after 0 minutes 3 seconds with 3 evaluated prospects or old customers' },
+  type: 'SPREADSHEET_EVALUATION',
+};

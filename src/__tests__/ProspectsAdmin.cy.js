@@ -6,7 +6,7 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
-import { evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
+import { evaluationJobDetails, evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
 import { importProspects } from './mocks/responses/import-prospects-api';
 
 describe(specTitle('Customers'), () => {
@@ -125,6 +125,9 @@ describe(specTitle('Customers'), () => {
 
   it('view prospect evaluation jobs', () => {
     cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
+    cy.intercept('GET', `/accountHolders/mock-accountHolder-id1/prospects/evaluationJobs/mock-evaluationJob-id1`, evaluationJobDetails).as(
+      'getProspectEvaluationJobDetails'
+    );
 
     mount(<App />);
     cy.get('[name="prospects"]').click();
@@ -138,7 +141,9 @@ describe(specTitle('Customers'), () => {
     cy.contains('Rafraîchir la liste').click();
 
     cy.get(`[data-cy="view-details-job-${evaluationJobs[0].id}"]`).click();
+    cy.wait('@getProspectEvaluationJobDetails');
     cy.contains('Détails');
+    cy.contains('Nombre de prospects évalués');
     cy.contains('Fermer').click();
 
     cy.get(`[data-cy="rerun-evaluation-failed-${evaluationJobs[0].id}"]`).click();
