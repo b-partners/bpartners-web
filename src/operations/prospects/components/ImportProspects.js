@@ -6,6 +6,8 @@ import { importProspects } from 'src/providers';
 import { useNotify } from 'react-admin';
 import { importProspectsResolver } from 'src/common/resolvers/prospect-config-validator';
 import { useState } from 'react';
+import { SheetNames } from 'src/constants/sheet-names';
+import { BpAutoComplete } from 'src/common/components/BpAutoComplete';
 
 const ImportProspects = () => {
   const formState = useForm({
@@ -48,10 +50,10 @@ const ImportProspects = () => {
           style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '10px', width: '300px', alignItems: 'center' }}
           onSubmit={handleClickImportProspects}
         >
-          <BpFormField label='Nom de la feuille de calcul' type='text' name='import_spreadsheetName' disabled />
-          <BpFormField label='Nom de la feuille' type='text' name='import_sheetName' required />
-          <BpNumberField label='Nombre minimum de lignes' name='import_min' required />
-          <BpNumberField label='Nombre maximum de lignes' name='import_max' required />
+          <BpFormField label='Nom de la feuille de calcul' type='text' name='import_spreadsheetName' />
+          <BpAutoComplete name='import_sheetName' label='Nom de la feuille' options={SheetNames} />
+          <BpNumberField label='Nombre minimum de lignes' name='import_min' />
+          <BpNumberField label='Nombre maximum de lignes' name='import_max' />
 
           <Button
             mt={2}
