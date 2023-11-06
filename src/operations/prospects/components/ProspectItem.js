@@ -99,7 +99,7 @@ export const ProspectItem = ({ prospect }) => {
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-        <Paper elevation={2} sx={{ p: 1 }}>
+        <Paper elevation={2} sx={{ p: 1, bgcolor: prospect?.contactNature === 'PROSPECT' ? '#dceeff' : '' }}>
           <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
             <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
               {prospect.name || 'Non renseigné'}
