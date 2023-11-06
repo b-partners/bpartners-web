@@ -40,7 +40,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <BPButton style={{ width: 200 }} onClick={changeView} label='bp.action.notNow' />
-        <BPButton style={{ width: 200 }} onClick={oauth2Init} endIcon={<SyncIcon />} label='bp.action.sync' isLoading={isLoading} />
+        <BPButton style={{ width: 250 }} onClick={oauth2Init} endIcon={<SyncIcon />} label='bp.action.sync' isLoading={isLoading} />
       </DialogActions>
     </Dialog>
   );

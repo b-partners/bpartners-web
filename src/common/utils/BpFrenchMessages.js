@@ -1,7 +1,7 @@
 export const BpFrenchMessages = {
   bp: {
     action: {
-      sync: 'Synchroniser',
+      sync: 'Synchroniser et prospecter',
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',

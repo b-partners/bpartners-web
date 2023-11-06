@@ -8,9 +8,10 @@ import { BPButton } from 'src/common/components/BPButton';
 import { calendarResolver } from 'src/common/resolvers';
 import { useCalendarContext } from 'src/common/store/calendar';
 import { printError } from 'src/common/utils';
-import { calendarEventProvider, getCached } from 'src/providers';
+import { calendarEventProvider, getCached, prospectingJobsProvider } from 'src/providers';
 import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';
 import { CalendarCustomerSelection } from './CalendarCustomerSelection';
+import { ProspectEvaluateJobsMapper } from 'src/providers/mappers/prospect-evaluate-jobs-mapper';
 
 type CalendarEditDialogProps = {
   open: boolean;
@@ -35,10 +36,17 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
 
   const handleSubmit = form.handleSubmit((data: TRaCalendarEvent) => {
     const restData = calendarEventMapper.toRest(data);
+    const eventDateRanges = {
+      from: new Date(data?.start),
+      to:  new Date(data?.end),
+    }
     const fetch = async () => {
       try {
         setLoading(true);
         await calendarEventProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
+        // transform Calendar Event To Prospect
+        const requestBody = ProspectEvaluateJobsMapper(eventDateRanges)
+        await prospectingJobsProvider.saveOrUpdate(requestBody);
         closeDialog();
         refresh();
       } catch (err) {
