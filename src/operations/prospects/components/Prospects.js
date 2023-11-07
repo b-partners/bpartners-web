@@ -37,7 +37,7 @@ export const Prospects = props => {
           label='Rechercher un prospect'
           onChange={e => setFilters({ searchName: e.target.value }, { searchName: e.target.value }, true)}
         />
-        <BPButton label='Ajouter un prospect' onClick={toggleDialog} style={{ width: '15rem', height: '3rem' }} />
+        <BPButton label='resources.prospects.add' onClick={toggleDialog} style={{ width: '15rem', height: '3rem' }} />
       </Box>
       {(data || []).length > 0 ? (
         <>

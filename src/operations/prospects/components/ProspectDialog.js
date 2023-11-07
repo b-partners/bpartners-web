@@ -63,7 +63,7 @@ export const ProspectDialog = props => {
             </FormControl>
           </Box>
         )}
-        {status === 'TO_CONTACT' ? (
+        {status === 'TO_CONTACT' || isCreating ? (
           <InvoiceSelection name='invoice' label='resources.invoices.status.proposal' invoiceTypes={['DRAFT']} />
         ) : (
           <InvoiceSelection name='invoice' label='resources.invoices.status.confirmed' invoiceTypes={['CONFIRMED', 'PAID']} />

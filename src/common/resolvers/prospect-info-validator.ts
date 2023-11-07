@@ -25,6 +25,7 @@ const prospectInfoValidator = zod.object({
   ),
   address: zod.custom(() => true),
   comment: zod.custom(() => true),
+  defaultComment: zod.custom(() => true),
   invoice: zod.custom(() => true),
   invoiceID: zod.custom(() => true),
   prospectFeedback: zod.custom(() => true),
