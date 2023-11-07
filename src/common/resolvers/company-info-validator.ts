@@ -4,7 +4,7 @@ import { FieldErrorMessage, phoneValidator, requiredString } from './utils';
 
 const companyInfoValidator = zod.object({
   socialCapital: requiredString(),
-  phone: requiredString().refine(phoneValidator, FieldErrorMessage.phone),
+  phone: requiredString().refine(phoneValidator, FieldErrorMessage.accountPhone),
   email: zod.string().nonempty(FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
   website: zod.custom(() => true),
   townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
