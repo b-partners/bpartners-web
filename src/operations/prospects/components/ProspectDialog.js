@@ -105,5 +105,6 @@ ProspectDialog.propTypes = {
   status: PropTypes.string,
   comment: PropTypes.string,
   saveOrUpdateProspectSubmit: PropTypes.func.isRequired,
-  isEditing: PropTypes.bool.isRequired,
+  isEditing: PropTypes.bool,
+  isCreating: PropTypes.bool,
 };

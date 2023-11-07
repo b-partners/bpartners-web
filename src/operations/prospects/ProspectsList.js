@@ -79,35 +79,35 @@ const ProspectsList = () => {
   return (
     <ProspectContextProvider loading={loading} setLoading={setLoading}>
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-          <TabManager location={location} setTabIndex={setTabIndex} />
-          <Box sx={{ p: 2 }}>
-            <Tabs value={tabIndex} onChange={handleTabChange}>
-              <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
-              <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
-              {BP_USER?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
-            </Tabs>
+        <TabManager location={location} setTabIndex={setTabIndex} />
+        <Box sx={{ p: 2 }}>
+          <Tabs value={tabIndex} onChange={handleTabChange}>
+            <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
+            <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
+            {BP_USER?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
+          </Tabs>
 
-            <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-              <List pagination={false} component={ListComponent} actions={false}>
+          <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
+            <List pagination={false} component={ListComponent} actions={false}>
+              <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
                 <Prospects toggleDialog={toggleDialog} />
-              </List>
-            </TabPanel>
+                {isCreating && (
+                  <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
+                )}
+              </form>
+            </List>
+          </TabPanel>
 
-            <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
-              <ProspectsConfiguration />
-            </TabPanel>
+          <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
+            <ProspectsConfiguration />
+          </TabPanel>
 
-            {BP_USER?.roles[0] === 'EVAL_PROSPECT' && (
-              <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
-                <ProspectsAdministration />
-              </TabPanel>
-            )}
-          </Box>
-          {isCreating && (
-            <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
+          {BP_USER?.roles[0] === 'EVAL_PROSPECT' && (
+            <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
+              <ProspectsAdministration />
+            </TabPanel>
           )}
-        </form>
+        </Box>
       </FormProvider>
     </ProspectContextProvider>
   );
