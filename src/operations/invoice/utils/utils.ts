@@ -268,39 +268,54 @@ ${phone}</p>`;
 };
 
 // @ts-ignore
-const getInvoiceRelaunchDefaultMessage = (invoice: Invoice) => {
+const getInvoiceRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean) => {
+  const customer = invoice?.customer;
   const { ref, sendingDate } = invoice;
   const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
   const { phone } = companyInfo || {};
-  const message = `<p>Bonjour,<br/><br/>
-Nous espérons que vous allez bien.
-Nous revenons vers vous concernant la facture ${ref} que nous vous avons envoyé pour paiement le ${formatDate(new Date(sendingDate))}. 
-Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scannant le qr code de la facture, en cliquant sur le lien ou par virement classique.
-Pouvez-vous, svp, me confirmer par mail ou par téléphone la mise en paiement de la facture.<br/>
-Nous restons disponible pour toute question.<br/><br/>
-Bien à vous<br/><br/>
-${companyName}<br/>
-${phone}</p>`;
+  const message = isRelaunch
+    ? `<p>Bonjour ${customer?.lastName},<br/><br/>
+    Nous espérons que vous allez bien.
+    Nous revenons vers vous concernant la facture ${ref} que nous vous avons envoyé pour paiement le ${formatDate(new Date(sendingDate))}.
+    Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scannant le qr code de la facture, en cliquant sur le lien ou par virement classique.
+    Pouvez-vous, svp, me confirmer par mail ou par téléphone la mise en paiement de la facture.<br/>
+    Nous restons disponible pour toute question.<br/><br/>
+    Bien à vous<br/><br/>
+  ${companyName}<br/>
+  ${phone}</p>`
+    : `<p>Bonjour ${customer?.lastName},<br/><br/>
+    Dans la continuité de notre échange, vous trouverez ci-joint la facture. <br/><br/>
+    Je vous prie de bien vouloir procéder au paiement en scan le qr code, en cliquant sur le lien de paiement ou par virement classique.<br/><br/>
+    Dans cette attente,<br/><br/>
+    ${companyName}<br/>
+    ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
 
   return EditorState.createWithContent(defaultContentState);
 };
 
-const getQuotationRelaunchDefaultMessage = (invoice: Invoice) => {
+const getQuotationRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean) => {
   const customer = invoice?.customer;
   const { sendingDate } = invoice;
   const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
   const { phone } = companyInfo || {};
-  const message = `<p>Bonjour ${customer?.lastName},<br/><br/>
-Nous espérons que vous allez bien.<br/><br/>
-Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/>
-Dés réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/>
-Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/>
-<br/><br/>
-Vous remerciant pour votre confiance.<br/><br/>
-${companyName}<br/>
-${phone}</p>`;
+  const message = isRelaunch
+    ? `<p>Bonjour ${customer?.lastName},<br/><br/>
+    Nous espérons que vous allez bien.<br/><br/>
+    Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/>
+    Dés réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/>
+    Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/>
+    <br/><br/>
+    Vous remerciant pour votre confiance.<br/><br/>
+    ${companyName}<br/>
+    ${phone}</p>`
+    : `<p>Bonjour ${customer?.lastName},<br/><br/>
+    Dans la continuité de notre échange, vous trouverez ci-joint le devis.<br/><br/>
+    Dès réception de votre bon pour accord, je vous contacterai pour organiser la prestation.<br/><br/>
+    Dans cette attente,<br/><br/>
+    ${companyName}<br/>
+    ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
 
@@ -317,8 +332,8 @@ const getQuotationEmailSubject = (invoice: Invoice) => {
   return `[${companyName}] -  Suivi ${invoice?.title || ''} - ${invoice?.customer?.lastName || ''}`;
 };
 
-export const getRelaunchDefaultMessage = (invoice: Invoice) => {
-  return invoice.status === 'PROPOSAL' ? getQuotationRelaunchDefaultMessage(invoice) : getInvoiceRelaunchDefaultMessage(invoice);
+export const getRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean) => {
+  return invoice.status === 'PROPOSAL' ? getQuotationRelaunchDefaultMessage(invoice, isRelaunch) : getInvoiceRelaunchDefaultMessage(invoice, isRelaunch);
 };
 
 export const getEmailSubject = (invoice: Invoice) => {
