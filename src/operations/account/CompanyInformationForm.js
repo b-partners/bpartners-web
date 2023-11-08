@@ -63,7 +63,7 @@ const CompanyInformationForm = () => {
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(saveOrUpdateAccountSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
         <BpNumberField style={{ width: '45%' }} name='socialCapital' label='Capital Social (€)' />
-        <BpNumberField style={{ width: '45%' }} name='phone' label='Téléphone' />
+        <BpFormField style={{ width: '45%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '45%' }} name='email' type='email' label='Email' />
         <BpFormField style={{ width: '45%' }} name='website' label='Site web' />
         <BpNumberField style={{ width: '45%' }} name='townCode' label='Code de la commune de prospection' />
