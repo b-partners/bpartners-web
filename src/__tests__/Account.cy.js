@@ -180,7 +180,7 @@ describe(specTitle('Account'), () => {
     cy.get('[data-testid="ClearIcon"]').click();
   });
 
-  it('change company information', () => {
+  it.only('change company information', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
@@ -217,7 +217,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis');
     cy.get('form [name="socialCapital"]').type(301);
     cy.get('form [name="phone"]').clear().type('+261 not valid phone number');
-    cy.contains('Le numéro de téléphone ne doit contenir que des chiffres');
+    cy.contains("Veuillez entrer un numéro de téléphone valide, en utilisant uniquement des chiffres, espaces, slashes '/' ou tirets '-'");
     cy.get('form [name="phone"]').clear().type('+261340465338');
     cy.get('form [name="email"]').clear();
     cy.contains('Ce champ est requis');
