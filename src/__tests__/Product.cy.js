@@ -23,7 +23,7 @@ describe(specTitle('Products'), () => {
       req.reply(getProducts(page - 1, pageSize));
     }).as('getProducts');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products/**`, req => {
-      req.reply({ ...getProducts(0, 1)[0], id: 'product-15-id' });
+      req.reply({ ...getProducts(0, 1)[0], id: 'product-0-id' });
     }).as('getOneProduct');
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       req.reply(req.body);
@@ -164,7 +164,7 @@ describe(specTitle('Products'), () => {
           description: editionDescription,
           unitPrice: 100,
           vatPercent: 100,
-          id: 'product-15-id',
+          id: 'product-0-id',
           quantity: 1,
           totalPriceWithVat: null,
           totalVat: null,
@@ -251,7 +251,7 @@ describe(specTitle('Products'), () => {
     cy.get('[data-testid="submit-archive-products"]').click();
     cy.wait('@archiveProduct').then(res => {
       const expectedPayload = [
-        { id: 'product-15-id', status: 'DISABLED' },
+        { id: 'product-0-id', status: 'DISABLED' },
         { id: 'product-1-id', status: 'DISABLED' },
       ];
       const body = res.request.body;
