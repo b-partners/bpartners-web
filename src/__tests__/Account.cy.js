@@ -180,7 +180,7 @@ describe(specTitle('Account'), () => {
     cy.get('[data-testid="ClearIcon"]').click();
   });
 
-  it.only('change company information', () => {
+  it('change company information', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
