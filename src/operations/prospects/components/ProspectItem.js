@@ -11,6 +11,8 @@ import { Comment, Edit, Home, LocalPhoneOutlined, LocationOn, MailOutline, MoreV
 import { CardViewField } from './CardViewField';
 import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
 import { ProspectDialog } from './ProspectDialog';
+import PropTypes from 'prop-types';
+import { Prospect } from 'bpartners-react-client';
 
 export const ProspectItem = ({ prospect }) => {
   const [dialogState, setDialogState] = useState(false);
@@ -152,7 +154,7 @@ export const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<MailOutline />} value={prospect.email} />
             <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
             <CardViewField icon={<Home />} value={prospect.address} />
-            <CardViewField icon={<Comment />} value={prospect.comment} />
+            <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>
@@ -169,4 +171,7 @@ export const ProspectItem = ({ prospect }) => {
       </form>
     </FormProvider>
   );
+};
+ProspectItem.propTypes = {
+  prospect: PropTypes.shape(Prospect).isRequired,
 };

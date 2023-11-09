@@ -30,7 +30,7 @@ export const InvoiceRelaunchHistoryModal = () => {
         title={<InvoiceModalTitle invoice={invoice} label='Historique de relance' />}
         actions={
           <Button data-testid='relaunch-invoice' onClick={() => openModal({ invoice, isOpen: true, type: 'RELAUNCH' })}>
-            Relancer {invoiceGetContext(invoice, 'ce', 'cette')}
+            {(data?.length || 0) === 0 ? 'Envoyer ' + invoiceGetContext(invoice, 'un', 'une') : 'Relancer ' + invoiceGetContext(invoice, 'ce', 'cette')}
           </Button>
         }
       >

@@ -94,9 +94,12 @@ const BPAppBar = () => {
       </Box>
 
       <BPDialog
-        title='Validation de vos identifiants requis'
-        content={['Il semble que vos identifiants ne soient pas corrects, veuillez les valider.']}
-        btnLabel='Valider les identifiants'
+        title='Mettez à jour votre banque'
+        content={[
+          'Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.',
+          'En cas de question, contactez le : 01 84 80 31 69',
+        ]}
+        btnLabel='Synchroniser ma banque'
         open={openDialog}
         handleClick={accountValidation}
       />

@@ -66,7 +66,7 @@ const BpMenu = () => {
       businessActivities.secondary === 'Antinuisibles 3D');
   // The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
   // then neither Markplaces nor Prospects is diplayed
-  const shouldShowProspects = hasBusinessActivities(accountHolder) && hasCarreleur(accountHolder.businessActivities);
+  const shouldShowProspects = hasBusinessActivities(accountHolder);
   const shouldShowMarketplaces = hasBusinessActivities(accountHolder) && !hasCarreleur(accountHolder.businessActivities);
 
   return (

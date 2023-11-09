@@ -148,7 +148,7 @@ const InvoiceForm = props => {
               label='Date limite de validité'
               type='date'
             />
-            <ClientSelection name='customer' label='Client' />
+            <ClientSelection name='customer' label='Rechercher un client' />
             <BpFormField name='comment' rows={3} multiline label='Commentaire' shouldValidate={false} />
             <CheckboxForm switchlabel='Ajouter un délai de retard de paiement autorisé' type='number' name='delayInPaymentAllowed' label='Délai de retard'>
               <BpFormField

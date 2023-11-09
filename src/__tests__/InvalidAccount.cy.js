@@ -33,8 +33,8 @@ describe(specTitle('Validate Account'), () => {
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
-    cy.contains('Validation de vos identifiants requis');
-    cy.contains('Il semble que vos identifiants ne soient pas corrects, veuillez les valider.');
+    cy.contains('Mettez à jour votre banque');
+    cy.contains('Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.');
 
     cy.get('[data-testid="dialog-btn"]').click();
     cy.get('@redirect').should('have.been.calledOnce');
