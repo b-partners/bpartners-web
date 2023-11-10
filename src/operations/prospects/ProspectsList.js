@@ -1,20 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { List, useListContext } from 'react-admin';
-import { Box, Grid, Tab, Tabs, TextField, Link } from '@mui/material';
-import { EmptyList } from 'src/common/components/EmptyList';
+import { List, useNotify, useRefresh } from 'react-admin';
+import { FormProvider, useForm } from 'react-hook-form';
+import { Box, Tab, Tabs, Link } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
 import ListComponent from 'src/common/components/ListComponent';
-import { groupBy } from 'lodash';
 import TabPanel from 'src/common/components/TabPanel';
 import ProspectsConfiguration from './ProspectsConfiguration';
-import { ProspectColumn } from './components';
+import { ProspectDialog, Prospects } from './components';
 import { ProspectContextProvider } from 'src/common/store/prospect-store';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
+import { handleSubmit } from '../../common/utils';
+import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
+import { prospectingProvider } from '../../providers';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const location = useLocation();
+  const notify = useNotify();
+  const refresh = useRefresh();
   const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
 
   // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
@@ -34,9 +42,43 @@ const ProspectsList = () => {
     setTabIndex(newTabIndex);
     updateURLWithTab(newTabIndex);
   };
+
+  const toggleDialog = e => {
+    e?.stopPropagation();
+    setIsCreating(!isCreating);
+  };
+
+  const handleLoading = isLoading => {
+    setLoading(isLoading);
+  };
+
+  const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
+
+  const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
+    handleLoading(true);
+    const fetch = async () => {
+      await prospectingProvider.saveOrUpdate([
+        {
+          ...data,
+          id: uuidv4(),
+          invoiceID: data?.invoice?.id,
+          invoice: undefined,
+        },
+      ]);
+      handleLoading(false);
+      notify(`Prospect créé avec succès !`, { type: 'success' });
+      refresh();
+      toggleDialog();
+    };
+    fetch().catch(() => {
+      handleLoading(false);
+      notify(`Une erreur s'est produite`, { type: 'error' });
+    });
+  });
+
   return (
-    <ProspectContextProvider>
-      <>
+    <ProspectContextProvider loading={loading} setLoading={setLoading}>
+      <FormProvider {...form}>
         <TabManager location={location} setTabIndex={setTabIndex} />
         <Box sx={{ p: 2 }}>
           <Tabs value={tabIndex} onChange={handleTabChange}>
@@ -47,7 +89,12 @@ const ProspectsList = () => {
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
             <List pagination={false} component={ListComponent} actions={false}>
-              <Prospects />
+              <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+                <Prospects toggleDialog={toggleDialog} />
+                {isCreating && (
+                  <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
+                )}
+              </form>
             </List>
           </TabPanel>
 
@@ -61,56 +108,8 @@ const ProspectsList = () => {
             </TabPanel>
           )}
         </Box>
-      </>
+      </FormProvider>
     </ProspectContextProvider>
-  );
-};
-
-const Prospects = () => {
-  const { data, isLoading, setFilters, filterValues } = useListContext();
-  const [prospects, setProspects] = useState();
-
-  useEffect(() => {
-    data && setProspects(groupBy(sortProspectsByDate(data), 'status'));
-  }, [data]);
-
-  if (isLoading) {
-    return null;
-  }
-
-  function sortProspectsByDate(data) {
-    // Sort the prospects by "lastEvaluation" date from most recent to least recent
-    return data.sort((a, b) => {
-      const dateA = new Date(a?.rating?.lastEvaluation);
-      const dateB = new Date(b?.rating?.lastEvaluation);
-      return dateB - dateA;
-    });
-  }
-
-  return (
-    <Box>
-      <TextField
-        data-testid='prospect-filter'
-        defaultValue={filterValues.searchName}
-        label='Rechercher un prospect'
-        onChange={e => setFilters({ searchName: e.target.value }, { searchName: e.target.value }, true)}
-      />
-      {(data || []).length > 0 ? (
-        <>
-          {prospects ? (
-            <Grid container justifyContent='space-between' spacing={2}>
-              <ProspectColumn title='À contacter' list={prospects['TO_CONTACT']} color='#005ce6' />
-              <ProspectColumn title='Contactés' list={prospects['CONTACTED']} color='#cc0099' />
-              <ProspectColumn title='Convertis' list={prospects['CONVERTED']} color='#00cc33' />
-            </Grid>
-          ) : (
-            <EmptyList content='Les données sont en cours de chargement, veuillez patienter.' />
-          )}
-        </>
-      ) : (
-        <EmptyList />
-      )}
-    </Box>
   );
 };
 

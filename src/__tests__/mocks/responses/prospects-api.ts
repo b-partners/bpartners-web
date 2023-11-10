@@ -147,3 +147,14 @@ export const convertedProspect = {
   comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   contractAmount: '321',
 };
+
+export const createdProspect = {
+  email: 'doejhonson@gmail.com',
+  phone: '+261340465399',
+  address: 'Evry',
+  name: 'Doe Jhonson',
+  status: 'TO_CONTACT',
+  defaultComment: 'create comment',
+  invoiceID: 'invoice-DRAFT-1-id',
+  contractAmount: '91',
+};

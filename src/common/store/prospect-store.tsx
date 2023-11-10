@@ -5,6 +5,7 @@ import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider
 
 type RaProspectContext = {
   loading: boolean;
+  setLoading: Dispatch<React.SetStateAction<boolean>>;
   handleLoading: (isLoading: boolean) => void;
   selectedStatus: string;
   setSelectedStatus: Dispatch<React.SetStateAction<string>>;
@@ -18,6 +19,7 @@ type RaProspectContext = {
 
 const ProspectContext = createContext<RaProspectContext>({
   loading: false,
+  setLoading: () => {},
   handleLoading: () => {},
   selectedStatus: '',
   setSelectedStatus: () => {},
@@ -30,8 +32,7 @@ const ProspectContext = createContext<RaProspectContext>({
 });
 export const useProspectContext = () => useContext(ProspectContext);
 
-export const ProspectContextProvider: FC = ({ children }) => {
-  const [loading, setLoading] = useState(false);
+export const ProspectContextProvider: FC<RaProspectContext> = ({ children, loading, setLoading }) => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [evaluatedProspectsList, setEvaluatedProspectsList] = useState<ProspectEvaluationJobInfo[]>([]);
   const [refreshLoading, setRefreshLoading] = useState(false);
@@ -61,6 +62,7 @@ export const ProspectContextProvider: FC = ({ children }) => {
     <ProspectContext.Provider
       value={{
         loading,
+        setLoading,
         handleLoading,
         selectedStatus,
         setSelectedStatus,

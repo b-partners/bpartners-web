@@ -2,9 +2,13 @@ import { Button, DialogActions, CircularProgress } from '@mui/material';
 import { useProspectContext } from 'src/common/store/prospect-store';
 import { useWatch } from 'react-hook-form';
 
-const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, isEditing) => {
+const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, isEditing, isCreating) => {
   if (isEditing) {
     return 'Modifier le prospect';
+  }
+
+  if (isCreating) {
+    return 'Créer';
   }
 
   const statuses = {
@@ -40,16 +44,16 @@ const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, 
 };
 
 const ProspectDialogActions = props => {
-  const { prospectStatus, close, saveOrUpdateProspectSubmit, isEditing } = props;
+  const { prospectStatus, close, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
   const { loading, selectedStatus } = useProspectContext();
   const { prospectFeedback } = useWatch();
 
   const renderCancelButton = () => <Button onClick={close}>Annuler</Button>;
 
-  const primaryButtonText = getPrimaryButtonText(prospectStatus, prospectFeedback, selectedStatus, isEditing);
+  const primaryButtonText = getPrimaryButtonText(prospectStatus, prospectFeedback, selectedStatus, isEditing, isCreating);
 
   return (
-    <DialogActions>
+    <DialogActions sx={{ marginRight: '1rem' }}>
       {renderCancelButton()}
       <Button onClick={saveOrUpdateProspectSubmit} disabled={loading} startIcon={loading && <CircularProgress color='inherit' size={18} />}>
         {primaryButtonText}

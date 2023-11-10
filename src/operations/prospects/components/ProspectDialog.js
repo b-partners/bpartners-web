@@ -8,13 +8,9 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import PropTypes from 'prop-types';
 
 export const ProspectDialog = props => {
-  const {
-    open,
-    close,
-    prospect: { name, status, comment },
-    saveOrUpdateProspectSubmit,
-    isEditing,
-  } = props;
+  const { open, close, prospect, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
+
+  const { name, status, comment } = prospect || {};
 
   const {
     setValue,
@@ -39,7 +35,7 @@ export const ProspectDialog = props => {
         <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
         <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
         <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
-        {!isEditing && (
+        {!isEditing && !isCreating && (
           <Box>
             <FormControl>
               <RadioGroup
@@ -63,18 +59,17 @@ export const ProspectDialog = props => {
                   </>
                 )}
               </RadioGroup>
-
               {errors['prospectFeedback'] && <FormHelperText error>{errors['prospectFeedback'].message}</FormHelperText>}
             </FormControl>
           </Box>
         )}
-        {status === 'TO_CONTACT' ? (
+        {status === 'TO_CONTACT' || isCreating ? (
           <InvoiceSelection name='invoice' label='resources.invoices.status.proposal' invoiceTypes={['DRAFT']} />
         ) : (
           <InvoiceSelection name='invoice' label='resources.invoices.status.confirmed' invoiceTypes={['CONFIRMED', 'PAID']} />
         )}
         <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
-          {status === 'TO_CONTACT' ? (
+          {status === 'TO_CONTACT' || isCreating ? (
             <>
               <Typography sx={{ marginRight: 4 }}>
                 Optionel <br />
@@ -93,7 +88,13 @@ export const ProspectDialog = props => {
           )}
         </Box>
       </DialogContent>
-      <ProspectDialogActions prospectStatus={status} close={close} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isEditing={isEditing} />
+      <ProspectDialogActions
+        prospectStatus={status}
+        close={close}
+        saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
+        isEditing={isEditing}
+        isCreating={isCreating}
+      />
     </Dialog>
   );
 };
@@ -104,5 +105,6 @@ ProspectDialog.propTypes = {
   status: PropTypes.string,
   comment: PropTypes.string,
   saveOrUpdateProspectSubmit: PropTypes.func.isRequired,
-  isEditing: PropTypes.bool.isRequired,
+  isEditing: PropTypes.bool,
+  isCreating: PropTypes.bool,
 };
