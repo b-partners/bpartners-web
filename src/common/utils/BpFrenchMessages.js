@@ -47,6 +47,7 @@ export const BpFrenchMessages = {
       },
     },
     prospects: {
+      add: 'Ajouter un prospect',
       evaluation: {
         success: 'Évaluation des prospects réussie',
         warning: 'La réponse est vide : veuillez vérifier vos paramètres',
