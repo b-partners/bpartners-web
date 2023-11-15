@@ -42,15 +42,16 @@ export const InvoiceRelaunchModal = () => {
     }
   }, [invoice, data]);
 
-  const relaunchInvoiceSubmit = form.handleSubmit(data => {
+  const relaunchInvoiceSubmit = form.handleSubmit(datas => {
     const userId = authProvider.getCachedWhoami().user.id;
 
     const fetch = async () => {
       if (userId) {
         setIsLoadingSubmit(true);
         const { accountId } = getCached.userInfo();
-        await payingApi().relaunchInvoice(accountId, invoice.id, { ...data, isFromScratch: true } as any);
-        notify(`${invoiceGetContext(invoice, 'Le', 'La')} ref: ${invoice?.ref} a été relancé avec succès.`, { type: 'success' });
+        await payingApi().relaunchInvoice(accountId, invoice.id, { ...datas, isFromScratch: true } as any);
+        const invoiceStatus = (data?.length || 0) === 0 ? 'envoyé' : 'relancé';
+        notify(`${invoiceGetContext(invoice, 'Le', 'La')} ref: ${invoice?.ref} a été ${invoiceStatus} avec succès.`, { type: 'success' });
         closeModal();
         setIsLoadingSubmit(false);
       }
