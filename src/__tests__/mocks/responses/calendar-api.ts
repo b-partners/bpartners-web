@@ -8,7 +8,7 @@ export const redirectionUrl = {
   },
 };
 
-export const calendars = [{ summary: 'holydays', id: 'holydays-calendar-id', permission: 'READER' }];
+export const calendars = [{ summary: 'holydays', id: 'holydays-calendar-id', permission: 'OWNER' }];
 
 export const calendarEvents = [
   {
