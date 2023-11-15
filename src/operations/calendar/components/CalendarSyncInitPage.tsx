@@ -7,15 +7,16 @@ import { redirect } from 'src/common/utils';
 import { dataProvider } from 'src/providers';
 import { ICON_CONTAINER, PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 
-export const CalendarSyncInitPage = () => {
+export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId: string }) => {
   const [isLoading, setLoading] = useState(false);
 
-  const oauth2Init = () => {
+  const oauth2Init = async () => {
     setLoading(true);
-    dataProvider.oauth2Init('calendar').then(({ data: { redirectionUrl } }) => {
+    dataProvider.oauth2Init('calendar', currentCalendarId).then(({ data: { redirectionUrl } }) => {
       redirect(redirectionUrl);
     });
   };
+
   return (
     <Box sx={PRIMARY_CONTAINER}>
       <Paper sx={SECONDARY_CONTAINER}>

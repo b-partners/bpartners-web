@@ -36,16 +36,14 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
 
   const handleSubmit = form.handleSubmit((data: TRaCalendarEvent) => {
     const restData = calendarEventMapper.toRest(data);
-    const eventDateRanges = {
-      from: new Date(data?.start),
-      to:  new Date(data?.end),
-    }
+    const from = new Date(data?.start);
+    const to = new Date(data?.end);
     const fetch = async () => {
       try {
         setLoading(true);
         await calendarEventProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
         // transform Calendar Event To Prospect
-        const requestBody = ProspectEvaluateJobsMapper(eventDateRanges)
+        const requestBody = ProspectEvaluateJobsMapper(from, to, currentCalendar?.id);
         await prospectingJobsProvider.saveOrUpdate(requestBody);
         closeDialog();
         refresh();

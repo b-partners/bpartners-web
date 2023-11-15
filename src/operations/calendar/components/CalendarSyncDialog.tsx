@@ -25,7 +25,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
 
   const oauth2Init = () => {
     setLoading(true);
-    dataProvider.oauth2Init('calendar').then(({ data: { redirectionUrl } }) => {
+    dataProvider.oauth2Init('calendar', calendarId).then(({ data: { redirectionUrl } }) => {
       redirect(redirectionUrl);
     });
   };
