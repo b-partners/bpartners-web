@@ -25,7 +25,7 @@ export const InvoiceRelaunchModal = () => {
   } = useInvoiceToolContext();
   const form = useForm({
     mode: 'all',
-    defaultValues: { subject: getEmailSubject(invoice), message: EditorState.createEmpty(), attachments: [] },
+    defaultValues: { subject: getEmailSubject(invoice, false), message: EditorState.createEmpty(), attachments: [] },
     resolver: invoiceRelaunchResolver,
   });
   const invoiceRelaunchListController = useListController({ resource: 'invoiceRelaunch', perPage: 10, filter: { invoiceId: invoice?.id || '' } });
@@ -35,20 +35,23 @@ export const InvoiceRelaunchModal = () => {
   useEffect(() => {
     if ((data?.length || 0) === 0) {
       form.setValue('message', getRelaunchDefaultMessage(invoice, false));
+      form.setValue('subject', getEmailSubject(invoice, false));
     } else {
       form.setValue('message', getRelaunchDefaultMessage(invoice, true));
+      form.setValue('subject', getEmailSubject(invoice, true));
     }
   }, [invoice, data]);
 
-  const relaunchInvoiceSubmit = form.handleSubmit(data => {
+  const relaunchInvoiceSubmit = form.handleSubmit(datas => {
     const userId = authProvider.getCachedWhoami().user.id;
 
     const fetch = async () => {
       if (userId) {
         setIsLoadingSubmit(true);
         const { accountId } = getCached.userInfo();
-        await payingApi().relaunchInvoice(accountId, invoice.id, { ...data, isFromScratch: true } as any);
-        notify(`${invoiceGetContext(invoice, 'Le', 'La')} ref: ${invoice?.ref} a été relancé avec succès.`, { type: 'success' });
+        await payingApi().relaunchInvoice(accountId, invoice.id, { ...datas, isFromScratch: true } as any);
+        const invoiceStatus = (data?.length || 0) === 0 ? 'envoyé' : 'relancé';
+        notify(`${invoiceGetContext(invoice, 'Le', 'La')} ref: ${invoice?.ref} a été ${invoiceStatus} avec succès.`, { type: 'success' });
         closeModal();
         setIsLoadingSubmit(false);
       }
