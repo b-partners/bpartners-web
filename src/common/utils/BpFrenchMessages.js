@@ -62,7 +62,7 @@ export const BpFrenchMessages = {
   },
   messages: {
     disconnection: {
-      success: 'Déconnexion effectuer avec succès.',
+      success: 'Déconnexion effectuée avec succès.',
     },
     global: {
       error: "Une erreur s'est produite.",
@@ -70,7 +70,7 @@ export const BpFrenchMessages = {
     },
     feedback: {
       success: 'Demande envoyée avec succès.',
-      error: "La demande n'as pas pu être envoyée.",
+      error: "La demande n'a pas pu être envoyée.",
     },
     download: {
       start: 'Téléchargement en cours...',
