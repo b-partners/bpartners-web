@@ -14,6 +14,9 @@ describe(specTitle('Calendar'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
 
     cy.stub(Redirect, 'redirect').as('redirect');
+    cy.window().then(win => {
+      cy.stub(win, 'open').as('windowOpen');
+    });
   });
 
   it('Should sync calendar [Page]', () => {
@@ -32,6 +35,10 @@ describe(specTitle('Calendar'), () => {
     cy.contains(
       "En continuant, vous acceptez que BPartners transmette les adresses récoltées depuis vos agendas à des services tiers sécurisés, de façon anonyme, pour générer des nouveaux prospects. Pour plus d'infos, consultez https://legal.bpartners.app/"
     );
+    cy.contains('https://legal.bpartners.app/').click();
+    cy.get('@windowOpen').should('be.calledOnce');
+    cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
+
     cy.contains('Synchroniser').click();
 
     cy.get('@redirect').should('have.been.calledOnce');
@@ -58,6 +65,10 @@ describe(specTitle('Calendar'), () => {
     cy.contains(
       "En continuant, vous acceptez que BPartners transmette les adresses récoltées depuis vos agendas à des services tiers sécurisés, de façon anonyme, pour générer des nouveaux prospects. Pour plus d'infos, consultez https://legal.bpartners.app/"
     );
+    cy.contains('https://legal.bpartners.app/').click();
+    cy.get('@windowOpen').should('be.calledOnce');
+    cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
+
     cy.contains('Synchroniser et prospecter').click();
     cy.get('@redirect').should('have.been.calledOnce');
   });
