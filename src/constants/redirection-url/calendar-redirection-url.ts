@@ -1,13 +1,15 @@
-import { CalendarAuth, CalendarConsentInit } from 'bpartners-react-client';
+import { CalendarAuth } from 'bpartners-react-client';
 
-export const calendarRedirectionUrls: CalendarConsentInit = {
-  redirectionStatusUrls: {
-    failureUrl: `${window.location.origin}/calendar-sync/failed`,
-    successUrl: `${window.location.origin}/calendar-sync`,
-  },
+export const calendarRedirectionUrls = (calendarId: string) => {
+  return {
+    redirectionStatusUrls: {
+      failureUrl: `${window.location.origin}/calendar-sync/failed`,
+      successUrl: `${window.location.origin}/calendar-sync?calendarId=${calendarId}`,
+    },
+  };
 };
 
-export const getCalendarAuthRedirectionUrl = (code: string): CalendarAuth => ({
+export const getCalendarAuthRedirectionUrl = (code: string, calendarId: string): CalendarAuth => ({
   code,
-  redirectUrls: calendarRedirectionUrls.redirectionStatusUrls,
+  redirectUrls: calendarRedirectionUrls(calendarId).redirectionStatusUrls,
 });

@@ -6,13 +6,13 @@ export const calendarProvider: BpDataProviderType = {
     const { userId } = getCached.userInfo();
     return (await calendarApi().usersUserIdCalendarsGet(userId)).data as any;
   },
-  async oauth2Init() {
+  async oauth2Init(calendarId: string) {
     const { userId } = getCached.userInfo();
-    return (await calendarApi().initConsent(userId, calendarRedirectionUrls)).data;
+    return (await calendarApi().initConsent(userId, calendarRedirectionUrls(calendarId))).data;
   },
-  async oauth2ExchangeToken(code: string) {
+  async oauth2ExchangeToken(code: string, calendarId: string) {
     const { userId } = getCached.userInfo();
-    return (await calendarApi().exchangeCode(userId, getCalendarAuthRedirectionUrl(code))).data;
+    return (await calendarApi().exchangeCode(userId, getCalendarAuthRedirectionUrl(code, calendarId))).data;
   },
   getOne: function (id?: string, option?: any): Promise<any> {
     throw new Error('Function not implemented.');

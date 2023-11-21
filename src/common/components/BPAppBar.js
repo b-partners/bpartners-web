@@ -63,7 +63,7 @@ const BPAppBar = () => {
 
   useEffect(() => {
     const isAccountValidated = () => {
-      setOpenDialog(status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS');
+      setOpenDialog(status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS' || status === 'SCA_REQUIRED');
     };
     isAccountValidated();
   }, [status]);
