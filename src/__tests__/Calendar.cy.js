@@ -3,10 +3,16 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
+import { whoami1 } from './mocks/responses/security-api';
+import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Calendar'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
+
     cy.stub(Redirect, 'redirect').as('redirect');
   });
 
@@ -46,7 +52,7 @@ describe(specTitle('Calendar'), () => {
     cy.contains(
       "Il semble que c'est la première fois que vous utilisez Bpartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
     );
-    cy.contains('Synchroniser').click();
+    cy.contains('Synchroniser et prospecter').click();
     cy.get('@redirect').should('have.been.calledOnce');
   });
 
@@ -80,6 +86,8 @@ describe(specTitle('Calendar'), () => {
       req.reply({ body: [body] });
     }).as('editCalendarEvent');
 
+    cy.intercept('PUT', '/accountHolders/mock-accountHolder-id1/prospects/evaluationJobs', []).as('transformEventToProspects');
+
     cy.contains('Event for today').click();
     cy.contains('Édition');
     // change the event's name
@@ -100,13 +108,15 @@ describe(specTitle('Calendar'), () => {
       .type(participantMock + '{Enter}');
 
     // submit
-    // le code suivant cause erreur, je fix ça aprés, pour l'instant on push sur la preprod comme ça pour tester la fonctionnalité transform events to prospects
-    // const newEvent = { ...calendarEvents[0], summary: titleMock, participants: participantMock, from: startDateMock, to: endDateMock };
-    // cy.intercept('GET', '/users/mock-user-id1/calendars/holydays-calendar-id/events**', [newEvent]).as('getNewCalendarEvent');
+    const newEvent = { ...calendarEvents[0], summary: titleMock, participants: participantMock, from: startDateMock, to: endDateMock };
+    cy.intercept('GET', '/users/mock-user-id1/calendars/holydays-calendar-id/events**', [newEvent]).as('getNewCalendarEvent');
     cy.get('[data-testid="save-calendar-event"]').click();
-    // cy.wait('@getNewCalendarEvent');
-    // cy.contains(titleMock);
+    cy.wait('@transformEventToProspects').then(interception => {
+      const responseStatus = interception.response.statusCode;
+      expect(responseStatus).to.equal(200);
+    });
+    cy.contains(titleMock);
     //restore the current date
-    // cy.clock().invoke('restore');
+    cy.clock().invoke('restore');
   });
 });
