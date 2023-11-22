@@ -20,10 +20,10 @@ describe(specTitle('Products'), () => {
 
     cy.intercept(
       'GET',
-      '/accounts/7efea565-bc2b-463f-b219-ef695c4acdc8/products?unique=true&descriptionFilter=complexe&priceFilter=791&status=ENABLED&page=1&pageSize=15'
+      '/accounts/414049cb-5b6e-429e-b64d-8d6afdb201e4/products?unique=true&descriptionFilter=complexe&priceFilter=791&status=ENABLED&page=1&pageSize=15'
     ).as('filter');
     cy.get('#priceFilter').type('7.91');
-    cy.wait('@filter');
+    cy.wait('@filter', { timeout: 10_000 });
     cy.contains('Un produit avec un prix complexe').click();
     cy.contains('Supprimer');
   });

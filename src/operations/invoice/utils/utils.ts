@@ -302,40 +302,37 @@ const getQuotationRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolea
   const { phone } = companyInfo || {};
   const message = isRelaunch
     ? `<p>Bonjour ${customer?.lastName},<br/><br/>
-    Nous espérons que vous allez bien.<br/><br/>
-    Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/>
-    Dés réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/>
-    Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/>
-    <br/><br/>
-    Vous remerciant pour votre confiance.<br/><br/>
-    ${companyName}<br/>
-    ${phone}</p>`
+Nous espérons que vous allez bien.<br/><br/>
+Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/><br/>
+Dès réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/><br/>
+Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/>
+<br/><br/>
+Vous remerciant pour votre confiance.<br/><br/>
+${companyName}<br/>
+${phone}</p>`
     : `<p>Bonjour ${customer?.lastName},<br/><br/>
-    Dans la continuité de notre échange, vous trouverez ci-joint le devis.<br/><br/>
-    Dès réception de votre bon pour accord, je vous contacterai pour organiser la prestation.<br/><br/>
-    Dans cette attente,<br/><br/>
-    ${companyName}<br/>
-    ${phone}</p>`;
+Dans la continuité de notre échange, vous trouverez ci-joint le devis.<br/><br/>
+Dès réception de votre bon pour accord, je vous contacterai pour organiser la prestation.<br/><br/>
+Dans cette attente,<br/><br/>
+${companyName}<br/>
+${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
 
   return EditorState.createWithContent(defaultContentState);
 };
 
-const getInvoiceEmailSubject = (invoice: Invoice) => {
+export const getEmailSubject = (invoice: Invoice, isRelaunch: boolean) => {
   const { name: companyName } = getCached.accountHolder() || {};
-  return `[${companyName}] -  Relance ${invoice?.title || ''}`;
-};
+  let invoiceStatus = '';
 
-const getQuotationEmailSubject = (invoice: Invoice) => {
-  const { name: companyName } = getCached.accountHolder() || {};
-  return `[${companyName}] -  Suivi ${invoice?.title || ''} - ${invoice?.customer?.lastName || ''}`;
+  if (isRelaunch) {
+    invoiceStatus = invoice.status === 'PROPOSAL' ? 'Suivi' : 'Relance';
+  }
+
+  return `[${companyName}] - ${invoiceStatus} ${invoice?.title || ''} - ${invoice?.customer?.lastName || ''}`;
 };
 
 export const getRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean) => {
   return invoice.status === 'PROPOSAL' ? getQuotationRelaunchDefaultMessage(invoice, isRelaunch) : getInvoiceRelaunchDefaultMessage(invoice, isRelaunch);
-};
-
-export const getEmailSubject = (invoice: Invoice) => {
-  return invoice.status === 'PROPOSAL' ? getQuotationEmailSubject(invoice) : getInvoiceEmailSubject(invoice);
 };
