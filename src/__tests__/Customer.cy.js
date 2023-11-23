@@ -49,6 +49,10 @@ describe(specTitle('Customers'), () => {
 
     cy.get('[data-testid="create-button"]').click();
 
+    cy.get('[data-testid="userType-professionnel"]').click();
+    cy.contains('Nom de la société');
+    cy.contains("Prénom - Nom de l'interlocuteur");
+
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
