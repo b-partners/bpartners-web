@@ -39,7 +39,9 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getProspects');
 
     // TO_CONTACT to CONTACTED
-    cy.get('[data-testid="statusprospect1_id"]').click();
+    cy.get('[data-testid="edit-prospect1_id"]').click();
+    cy.get('[data-testid="edit-status-prospect1_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();
 
     cy.contains('Pas intéressé');
@@ -64,7 +66,9 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getProspects');
 
     // CONTACTED to CONVERTED
-    cy.get('[data-testid="statusprospect2_id"]').click();
+    cy.get('[data-testid="edit-prospect2_id"]').click();
+    cy.get('[data-testid="edit-status-prospect2_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('.MuiFormGroup-root > :nth-child(3) > .MuiTypography-root').click();
 
     cy.get('[name="contractAmount"]').type(123);

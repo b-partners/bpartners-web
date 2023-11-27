@@ -70,7 +70,8 @@ describe(specTitle('Prospects'), () => {
     cy.get("[data-testid='prospect-filter']").clear();
 
     // testing TO_CONTACT to CONTACTED
-    cy.get('[data-testid="statusprospect1_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect1_id"]').click();
+    cy.get('[data-testid="edit-status-prospect1_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
@@ -81,7 +82,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing TO_CONTACT to CONVERTED
-    cy.get('[data-testid="statusprospect1_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect1_id"]').click();
+    cy.get('[data-testid="edit-status-prospect1_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(3)').click();
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
@@ -92,7 +94,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONTACTED to CONVERTED
-    cy.get('[data-testid="statusprospect2_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect2_id"]').click();
+    cy.get('[data-testid="edit-status-prospect2_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(3)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -103,7 +106,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONTACTED to TO_CONTACT
-    cy.get('[data-testid="statusprospect2_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect2_id"]').click();
+    cy.get('[data-testid="edit-status-prospect2_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -114,7 +118,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONVERTED to CONTACTED
-    cy.get('[data-testid="statusprospect6_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect6_id"]').click();
+    cy.get('[data-testid="edit-status-prospect6_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -125,7 +130,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONVERTED to TO_CONTACT
-    cy.get('[data-testid="statusprospect6_id"] > [data-testid="MoreVertIcon"]').click();
+    cy.get('[data-testid="edit-prospect6_id"]').click();
+    cy.get('[data-testid="edit-status-prospect6_id"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');

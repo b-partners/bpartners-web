@@ -38,7 +38,8 @@ describe(specTitle('Prospects'), () => {
 
     cy.wait('@getProspects');
 
-    cy.get('[data-testid="editprospect1_id"] > [data-testid="EditIcon"] > path').click();
+    cy.get('[data-testid="edit-prospect1_id"]').click();
+    cy.get('[data-testid="edit-prospect-prospect1_id"]').click();
 
     const updatedProspect = {
       ...prospects[0],
