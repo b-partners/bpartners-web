@@ -6,12 +6,21 @@ const CustomerEdit = () => {
     <BPFormLayout title='Édition de client' resource='customers'>
       <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de client'>
-          <TextInput name='lastName' source='lastName' label='Nom' validate={required()} />
-          <TextInput name='firstName' source='firstName' label='Prénom' validate={required()} />
-          <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />
-          <TextInput name='address' source='address' label='Adresse' validate={required()} />
-          <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
-          <TextInput name='comment' source='comment' label='Commentaire' multiline sx={{ width: 220 }} />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              columnGap: '20px',
+              width: '80%',
+            }}
+          >
+            <TextInput name='lastName' source='lastName' label='Nom' validate={required()} />
+            <TextInput name='firstName' source='firstName' label='Prénom' validate={required()} />
+            <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />
+            <TextInput name='address' source='address' label='Adresse' validate={required()} />
+            <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
+            <TextInput name='comment' source='comment' label='Commentaire' multiline />
+          </div>
         </SimpleForm>
       </Edit>
     </BPFormLayout>
