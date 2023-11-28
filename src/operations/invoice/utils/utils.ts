@@ -249,6 +249,7 @@ export const getFeedbackDefaultMessage = (invoice: Invoice) => {
   const { feedback, name: companyName } = getCached.accountHolder() || { feedback: { feedbackLink: '' } };
   const { phone } = getCached.user() || {};
   const { feedbackLink } = feedback || {};
+  const user = getCached.user() || {};
   const message = `<p>Cher(e) ${customer?.firstName} ${customer?.lastName},<br/><br/>
 Nous espérons que vous allez bien. Nous vous remercions encore une fois d'avoir choisi ${companyName}.
 Nous espérons que vous avez été satisfait de notre travail et que nous avons répondu à vos attentes.<br/>
@@ -260,8 +261,8 @@ Nous vous remercions par avance pour votre temps et votre avis.
 N'hésitez pas à nous contacter si vous avez des questions ou des préoccupations.<br/><br/>
 Cordialement,<br/>
 ${companyName}<br/>
-${customer?.firstName}
-${customer?.lastName}<br/>
+${user?.firstName}
+${user?.lastName}<br/>
 ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
@@ -275,6 +276,7 @@ const getInvoiceRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean)
   const { ref, sendingDate } = invoice;
   const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
   const { phone } = companyInfo || {};
+  const user = getCached.user() || {};
   const message = isRelaunch
     ? `<p>Bonjour ${customer?.lastName},<br/><br/>
 Nous espérons que vous allez bien.<br/><br/>
@@ -284,16 +286,16 @@ Pouvez-vous, svp, me confirmer par mail ou par téléphone la mise en paiement d
 Nous restons disponible pour toute question.<br/>
 Bien à vous<br/><br/>
 ${companyName}<br/>
-${customer?.firstName}
-${customer?.lastName}<br/>
+${user?.firstName}
+${user?.lastName}<br/>
 ${phone}</p>`
     : `<p>Bonjour ${customer?.lastName},<br/><br/>
 Dans la continuité de notre échange, vous trouverez ci-joint la facture. <br/><br/>
 Je vous prie de bien vouloir procéder au paiement en scan le qr code, en cliquant sur le lien de paiement ou par virement classique.<br/><br/>
 Dans cette attente,<br/><br/>
 ${companyName}<br/>
-${customer?.firstName}
-${customer?.lastName}<br/>
+${user?.firstName}
+${user?.lastName}<br/>
 ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
@@ -306,6 +308,7 @@ const getQuotationRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolea
   const { sendingDate } = invoice;
   const { companyInfo, name: companyName } = getCached.accountHolder() || { companyInfo: { phone: '' } };
   const { phone } = companyInfo || {};
+  const user = getCached.user() || {};
   const message = isRelaunch
     ? `<p>Bonjour ${customer?.lastName},<br/><br/>
 Nous espérons que vous allez bien.<br/><br/>
@@ -314,16 +317,16 @@ Dès réception de votre bon pour accord, un technicien vous contactera afin d�
 Nous restons à votre entière disposition pour tous renseignements complémentaires.<br/><br/>
 Vous remerciant pour votre confiance.<br/><br/>
 ${companyName}<br/>
-${customer?.firstName}
-${customer?.lastName}<br/>
+${user?.firstName}
+${user?.lastName}<br/>
 ${phone}</p>`
     : `<p>Bonjour ${customer?.lastName},<br/><br/>
 Dans la continuité de notre échange, vous trouverez ci-joint le devis.<br/><br/>
 Dès réception de votre bon pour accord, je vous contacterai pour organiser la prestation.<br/><br/>
 Dans cette attente,<br/><br/>
 ${companyName}<br/>
-${customer?.firstName}
-${customer?.lastName}<br/>
+${user?.firstName}
+${user?.lastName}<br/>
 ${phone}</p>`;
   const blocksFromHtml = convertFromHTML(message);
   const defaultContentState = ContentState.createFromBlockArray(blocksFromHtml.contentBlocks, blocksFromHtml.entityMap);
