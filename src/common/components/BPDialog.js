@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const BPDialog = props => {
-  const { title, content, btnLabel, handleClick, open = false, onClose = () => {}, closeBtnLabel = false } = props;
+  const { title, content, btnLabel, handleClick, open = false, onClose = () => {}, closeBtnLabel = true } = props;
 
   return (
     <div>
@@ -15,12 +15,8 @@ const BPDialog = props => {
           ))}
         </DialogContent>
         <DialogActions>
-          {closeBtnLabel && (
-            <Button onClick={onClose} autoFocus>
-              {closeBtnLabel}
-            </Button>
-          )}
-          <Button onClick={handleClick} autoFocus data-testid='dialog-btn'>
+          {closeBtnLabel && <Button onClick={onClose}>Plus tard</Button>}
+          <Button onClick={handleClick} data-testid='dialog-btn'>
             {btnLabel}
           </Button>
         </DialogActions>
