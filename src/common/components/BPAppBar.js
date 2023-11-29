@@ -77,6 +77,10 @@ const BPAppBar = () => {
     }
   };
 
+  const onClose = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <>
       <Box className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
@@ -102,6 +106,7 @@ const BPAppBar = () => {
         btnLabel='Synchroniser ma banque'
         open={openDialog}
         handleClick={accountValidation}
+        onClose={onClose}
       />
       <GeneralConditionOfUse />
       {getCached.user() && <UnverifiedUser />}
