@@ -69,6 +69,7 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@updateProspect');
 
     cy.wait('@getupdatedProspects');
+    cy.contains('Prospect mis à jour avec succès !');
 
     cy.contains('Doe Jhonson');
     cy.contains('Update comment');

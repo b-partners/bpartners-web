@@ -60,5 +60,6 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Créer').click();
 
     cy.wait('@createProspect');
+    cy.contains('Prospect créé avec succès !');
   });
 });

@@ -145,7 +145,7 @@ export const ProspectItem = ({ prospect }) => {
               >
                 <Box sx={{ m: 2, width: '250px' }}>
                   <Typography sx={{ paddingBottom: '5px', textAlign: 'center', fontSize: '18px' }}>Changez le statut du prospect pour le protéger</Typography>
-                  {changeStatusButtons(prospect.status, prospect.id, changeStatus)}
+                  {changeStatusButtons(prospect.status, changeStatus)}
                   <Typography sx={{ paddingBottom: '5px', textAlign: 'center' }}>Ou</Typography>
                   <Divider />
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -183,34 +183,34 @@ ProspectItem.propTypes = {
   prospect: PropTypes.shape(Prospect).isRequired,
 };
 
-const changeStatusButtons = (status, prospectId, changeStatus) => {
+const changeStatusButtons = (status, changeStatus) => {
   return (
     <Box sx={{ m: 1, textAlign: 'center' }}>
       {status === 'TO_CONTACT' ? (
         <>
-          <Button sx={{ m: '5px 0', width: '150px' }} value={'CONTACTED'} onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-contacted' value={'CONTACTED'} onClick={handleSubmit(changeStatus)}>
             Contacté
           </Button>
-          <Button sx={{ m: '5px 0', width: '150px' }} value={'CONVERTED'} onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-converted' value={'CONVERTED'} onClick={handleSubmit(changeStatus)}>
             Converti
           </Button>
         </>
       ) : status === 'CONTACTED' ? (
         <>
-          <Button sx={{ m: '5px 0', width: '150px' }} value='TO_CONTACT' onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-to_contact' value='TO_CONTACT' onClick={handleSubmit(changeStatus)}>
             À contacter
           </Button>
-          <Button sx={{ m: '5px 0', width: '150px' }} value={'CONVERTED'} onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-converted' value={'CONVERTED'} onClick={handleSubmit(changeStatus)}>
             Converti
           </Button>
         </>
       ) : (
         status === 'CONVERTED' && (
           <>
-            <Button sx={{ m: '5px 0', width: '150px' }} value='TO_CONTACT' onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+            <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-to_contact' value='TO_CONTACT' onClick={handleSubmit(changeStatus)}>
               À contacter
             </Button>
-            <Button sx={{ m: '5px 0', width: '150px' }} value={'CONTACTED'} onClick={handleSubmit(changeStatus)} data-testid={`edit-prospect-${prospectId}`}>
+            <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-contacted' value={'CONTACTED'} onClick={handleSubmit(changeStatus)}>
               Contacté
             </Button>
           </>

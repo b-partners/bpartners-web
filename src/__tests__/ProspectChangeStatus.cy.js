@@ -40,8 +40,8 @@ describe(specTitle('Prospects'), () => {
 
     // TO_CONTACT to CONTACTED
     cy.get('[data-testid="edit-prospect1_id"]').click();
-    cy.get('[data-testid="edit-status-prospect1_id"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-contacted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2) > .MuiTypography-root').click();
 
     cy.contains('Pas intéressé');
@@ -51,7 +51,6 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
     cy.contains('Intéressé').click();
-    cy.contains('Réserver ce prospect');
 
     contactedProspect.rating.lastEvaluation = contactedProspect.rating.lastEvaluation.toISOString();
     cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects/${prospects[0].id}`, req => {
@@ -61,15 +60,15 @@ describe(specTitle('Prospects'), () => {
     }).as('updateStatusToContacted');
     cy.contains('Réserver ce prospect').click();
     cy.wait('@updateStatusToContacted');
+    cy.contains('Prospect mis à jour avec succès !');
 
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, [contactedProspect, ...prospects.slice(1)]).as('getProspects');
     cy.wait('@getProspects');
 
     // CONTACTED to CONVERTED
     cy.get('[data-testid="edit-prospect2_id"]').click();
-    cy.get('[data-testid="edit-status-prospect2_id"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
-    cy.get('.MuiFormGroup-root > :nth-child(3) > .MuiTypography-root').click();
+    cy.get('[data-testid="edit-status-to-converted"]').click();
 
     cy.get('[name="contractAmount"]').type(123);
     cy.contains('Transformer ce prospect en client').click();

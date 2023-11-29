@@ -71,7 +71,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing TO_CONTACT to CONTACTED
     cy.get('[data-testid="edit-prospect1_id"]').click();
-    cy.get('[data-testid="edit-status-prospect1_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-contacted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
@@ -83,7 +84,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing TO_CONTACT to CONVERTED
     cy.get('[data-testid="edit-prospect1_id"]').click();
-    cy.get('[data-testid="edit-status-prospect1_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-converted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(3)').click();
     cy.contains('Pas intéressé').click();
     cy.contains('Abandonner ce prospect');
@@ -95,7 +97,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing CONTACTED to CONVERTED
     cy.get('[data-testid="edit-prospect2_id"]').click();
-    cy.get('[data-testid="edit-status-prospect2_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-converted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(3)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -107,7 +110,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing CONTACTED to TO_CONTACT
     cy.get('[data-testid="edit-prospect2_id"]').click();
-    cy.get('[data-testid="edit-status-prospect2_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-to_contact"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -119,7 +123,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing CONVERTED to CONTACTED
     cy.get('[data-testid="edit-prospect6_id"]').click();
-    cy.get('[data-testid="edit-status-prospect6_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-contacted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
@@ -131,7 +136,8 @@ describe(specTitle('Prospects'), () => {
 
     // testing CONVERTED to TO_CONTACT
     cy.get('[data-testid="edit-prospect6_id"]').click();
-    cy.get('[data-testid="edit-status-prospect6_id"]').click();
+    cy.contains('Changez le statut du prospect pour le protéger');
+    cy.get('[data-testid="edit-status-to-to_contact"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();
     cy.contains('Devis refusé').click();
     cy.contains('Abandonner ce prospect');
