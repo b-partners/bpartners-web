@@ -6,8 +6,8 @@ import { prospectInfoResolver } from '../../../common/resolvers/prospect-info-va
 import { FieldErrorMessage } from '../../../common/resolvers';
 import { prospectingProvider } from '../../../providers';
 import { getGeoJsonUrl, handleSubmit } from '../../../common/utils';
-import { Box, FormControl, FormControlLabel, IconButton, Link, Paper, Popover, Radio, RadioGroup, Stack, Tooltip, Typography } from '@mui/material';
-import { Comment, Edit, Home, LocalPhoneOutlined, LocationOn, MailOutline, MoreVert, Star, Update } from '@mui/icons-material';
+import { Box, IconButton, Link, Paper, Popover, Stack, Tooltip, Typography, Button, Divider } from '@mui/material';
+import { Comment, Home, LocalPhoneOutlined, LocationOn, MailOutline, Star, Update } from '@mui/icons-material';
 import { CardViewField } from './CardViewField';
 import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
 import { ProspectDialog } from './ProspectDialog';
@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { Prospect } from 'bpartners-react-client';
 
 export const ProspectItem = ({ prospect }) => {
-  const [dialogState, setDialogState] = useState(false);
+  const [isProspectDialogOpen, setIsProspectDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { setSelectedStatus } = useProspectContext();
@@ -25,7 +25,7 @@ export const ProspectItem = ({ prospect }) => {
 
   const toggleDialog = (e, isEditing) => {
     e?.stopPropagation();
-    setDialogState(e => !e);
+    setIsProspectDialogOpen(e => !e);
     setIsEditing(isEditing);
     closePopover();
   };
@@ -114,16 +114,21 @@ export const ProspectItem = ({ prospect }) => {
                   </Tooltip>
                 </Link>
               )}
-              <Tooltip title='Modifier le status'>
-                <IconButton data-testid={`status${prospect.id}`} aria-describedby={id} component='span' onClick={openPopover}>
-                  <MoreVert fontSize='small' />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Modifier le prospect'>
-                <IconButton data-testid={`edit${prospect.id}`} aria-describedby={id} component='span' onClick={e => toggleDialog(e, true)}>
-                  <Edit fontSize='small' />
-                </IconButton>
-              </Tooltip>
+              <Button
+                style={{
+                  background: 'transparent',
+                  color: '#000',
+                  padding: '4px',
+                  border: '1px solid #74737378',
+                  fontSize: '12px',
+                }}
+                variant='text'
+                data-testid={`edit-${prospect.id}`}
+                aria-describedby={id}
+                onClick={openPopover}
+              >
+                Modifier
+              </Button>
               <Popover
                 id={id}
                 open={open}
@@ -138,14 +143,16 @@ export const ProspectItem = ({ prospect }) => {
                   horizontal: 'center',
                 }}
               >
-                <Box sx={{ m: 2 }}>
-                  <FormControl>
-                    <RadioGroup defaultValue={prospect.status} name='status' onChange={handleSubmit(changeStatus)}>
-                      <FormControlLabel value='TO_CONTACT' control={<Radio size='small' />} label='À contacter' />
-                      <FormControlLabel value='CONTACTED' control={<Radio size='small' />} label='Contacté' />
-                      <FormControlLabel value='CONVERTED' control={<Radio size='small' />} label='Converti' />
-                    </RadioGroup>
-                  </FormControl>
+                <Box sx={{ m: 2, width: '250px' }}>
+                  <Typography sx={{ paddingBottom: '5px', textAlign: 'center', fontSize: '18px' }}>Changez le statut du prospect pour le protéger</Typography>
+                  {changeStatusButtons(prospect.status, changeStatus)}
+                  <Typography sx={{ paddingBottom: '5px', textAlign: 'center' }}>Ou</Typography>
+                  <Divider />
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button sx={{ m: '10px 0', width: '150px' }} onClick={e => toggleDialog(e, true)} data-testid={`edit-prospect-${prospect.id}`}>
+                      Modifier le prospect
+                    </Button>
+                  </Box>
                 </Box>
               </Popover>
             </Stack>
@@ -158,9 +165,9 @@ export const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
           </Box>
-          {dialogState && (
+          {isProspectDialogOpen && (
             <ProspectDialog
-              open={dialogState}
+              open={isProspectDialogOpen}
               close={toggleDialog}
               prospect={prospect}
               saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
@@ -174,4 +181,41 @@ export const ProspectItem = ({ prospect }) => {
 };
 ProspectItem.propTypes = {
   prospect: PropTypes.shape(Prospect).isRequired,
+};
+
+const changeStatusButtons = (status, changeStatus) => {
+  return (
+    <Box sx={{ m: 1, textAlign: 'center' }}>
+      {status === 'TO_CONTACT' ? (
+        <>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-contacted' value={'CONTACTED'} onClick={handleSubmit(changeStatus)}>
+            Contacté
+          </Button>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-converted' value={'CONVERTED'} onClick={handleSubmit(changeStatus)}>
+            Converti
+          </Button>
+        </>
+      ) : status === 'CONTACTED' ? (
+        <>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-to_contact' value='TO_CONTACT' onClick={handleSubmit(changeStatus)}>
+            À contacter
+          </Button>
+          <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-converted' value={'CONVERTED'} onClick={handleSubmit(changeStatus)}>
+            Converti
+          </Button>
+        </>
+      ) : (
+        status === 'CONVERTED' && (
+          <>
+            <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-to_contact' value='TO_CONTACT' onClick={handleSubmit(changeStatus)}>
+              À contacter
+            </Button>
+            <Button sx={{ m: '5px 0', width: '150px' }} data-testid='edit-status-to-contacted' value={'CONTACTED'} onClick={handleSubmit(changeStatus)}>
+              Contacté
+            </Button>
+          </>
+        )
+      )}
+    </Box>
+  );
 };
