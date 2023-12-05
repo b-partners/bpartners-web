@@ -153,7 +153,7 @@ const InvoiceForm = props => {
               type='date'
             />
             <ClientSelection name='customer' label='Rechercher un client' />
-            <div style={{ marginBottom: '8px' }}>
+            <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
               <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
                 <UserTypeRadioGroup userType={userType} setUserType={setUserType} />
                 <SimpleForm>

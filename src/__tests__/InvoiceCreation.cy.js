@@ -5,10 +5,10 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { customers1 } from './mocks/responses/customer-api';
+import { customers1, customers2 } from './mocks/responses/customer-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
 import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
-import { products } from './mocks/responses/product-api';
+import { products, setProduct } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice creation'), () => {
@@ -191,5 +191,84 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('form #form-save-id').click();
     cy.contains('Tout voir');
     cy.contains('À payer uniquement');
+  });
+
+  it('should create a new customer', () => {
+    cy.intercept('POST', '/accounts/mock-account-id1/customers**', req => {
+      const newCustomer = {
+        address: 'Wall Street 2',
+        comment: 'comment',
+        email: 'test@gmail.com',
+        firstName: 'FirstName 11',
+        lastName: 'LastName 11',
+        phone: '55 55 55',
+      };
+
+      expect(req.body[0]).to.deep.eq(newCustomer);
+      req.reply([customers2[3]]);
+    }).as('createCustomer');
+
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.get('[data-testid="open-popover"]').click();
+
+    cy.get("[name='create-draft-invoice']").click();
+
+    cy.get('[data-testid="create-new-customer"]').click();
+    cy.contains('Créer un nouveau client');
+
+    cy.get('#email').type('invalid email{enter}');
+    cy.contains('Doit être un email valide');
+
+    cy.get('#email').clear().type('test@gmail.com{enter}');
+    cy.contains('Ce champ est requis');
+
+    cy.get('#lastName').type('LastName 11');
+    cy.get('#firstName').type('FirstName 11');
+    cy.get('#address').type('Wall Street 2');
+    cy.get('#comment').type('comment');
+    cy.get('#phone').type('55 55 55{enter}');
+
+    cy.wait('@createCustomer');
+  });
+
+  it('should create a new product', () => {
+    mount(<App />);
+
+    cy.get('[name="invoice"]').click();
+
+    cy.get('[data-testid="open-popover"]').click();
+    cy.get("[name='create-draft-invoice']").click();
+
+    cy.get('[data-testid="invoice-Produits-accordion"]').click();
+    cy.get('#invoice-product-selection-button-id').click();
+    cy.get('[data-testid="create-new-product"]').click();
+
+    cy.contains('Créer un nouveau produit');
+
+    cy.get('#description').type('new description product');
+    cy.get('#unitPrice').type(1.04);
+    cy.get('#vatPercent').type(6);
+
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
+      expect(req.body).to.deep.eq([
+        {
+          unitPrice: 10400,
+          vatPercent: 600,
+          description: 'new description product',
+          quantity: 1,
+          totalPriceWithVat: null,
+          totalVat: null,
+          unitPriceWithVat: null,
+        },
+      ]);
+      setProduct(req.body[0]);
+
+      req.reply({
+        statusCode: 200,
+      });
+    }).as('createNewProduct');
+    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
+    cy.wait('@createNewProduct');
   });
 });
