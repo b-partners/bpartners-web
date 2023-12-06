@@ -1,19 +1,13 @@
-import { Edit, required, SimpleForm, TextInput } from 'react-admin';
+import { Edit, SimpleForm } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
-import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { RaNumberInput } from 'src/common/components';
+import FormProduct from './components/FormProduct';
 
 const ProductEdit = () => {
-  const { companyInfo } = useGetAccountHolder();
-  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
-
   return (
     <BPFormLayout title='Édition de produit' resource='products'>
       <Edit mutationMode='pessimistic'>
-        <SimpleForm title='Édition de produit'>
-          <RaNumberInput name='unitPrice' source='unitPrice' label='Prix unitaire HT' endText='€' />
-          {isSubjectToVat && <RaNumberInput source='vatPercent' label='TVA' endText='%' />}
-          <TextInput name='description' source='description' label='Description' validate={required()} multiline={true} minRows={3} fullWidth />
+        <SimpleForm>
+          <FormProduct />
         </SimpleForm>
       </Edit>
     </BPFormLayout>

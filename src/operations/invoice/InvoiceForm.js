@@ -2,7 +2,7 @@ import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
 import { Box, IconButton, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
-import { useNotify, useRefresh } from 'react-admin';
+import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
@@ -39,6 +39,9 @@ import { validateDIPAllowed, validateDPPercent } from './utils';
 import { handleSubmit, printError } from 'src/common/utils';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
+import FormCustomer from '../customers/components/FormCustomer';
+import UserTypeRadioGroup from '../customers/components/UserTypeRadioGroup';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
@@ -49,6 +52,7 @@ const InvoiceForm = props => {
   const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const { returnToListByStatus } = useInvoiceToolContext();
+  const [userType, setUserType] = useState('particulier');
 
   const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
@@ -149,6 +153,23 @@ const InvoiceForm = props => {
               type='date'
             />
             <ClientSelection name='customer' label='Rechercher un client' />
+            <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
+              <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
+                <UserTypeRadioGroup userType={userType} setUserType={setUserType} />
+                <SimpleForm>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      columnGap: '20px',
+                      width: '100%',
+                    }}
+                  >
+                    <FormCustomer userType={userType} />
+                  </div>
+                </SimpleForm>
+              </CreateInDialogButton>
+            </div>
             <BpFormField name='comment' rows={3} multiline label='Commentaire' shouldValidate={false} />
             <CheckboxForm switchlabel='Ajouter un délai de retard de paiement autorisé' type='number' name='delayInPaymentAllowed' label='Délai de retard'>
               <BpFormField
