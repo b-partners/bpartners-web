@@ -26,6 +26,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
       // message: EditorState.createEmpty(),
       attachments: [],
     },
+    // resolver: transactionMailResolver,
     // resolver: participantValidator,
   });
   const { isSubmitting } = form.formState;
@@ -42,19 +43,19 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
       notify(`messages.mail.${status}`, { type: 'success' });
       handleExpLinkMailModal();
     } catch (error) {
+      console.log('erroooor', error);
       notify('messages.global.error', { type: 'error' });
     }
   };
-  const sendEmail = form.handleSubmit(data => {
+  const sendEmail = form.handleSubmit(async data => {
+    console.log('data', data);
     const structuredData = transactionMapper(data, id, 'SENT');
-    handleEmailRequest(structuredData, 'sent');
+    await handleEmailRequest(structuredData, 'sent');
   });
   const saveDraft = form.handleSubmit(data => {
     const structuredData = transactionMapper(data, id, 'DRAFT');
     handleEmailRequest(structuredData, 'draft');
   });
-
-  console.log('isSubmitting', isSubmitting);
 
   return (
     <FormProvider {...form}>
@@ -71,13 +72,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
             <Button onClick={handleExpLinkMailModal} name='export-link-modal-cancel-button'>
               Annuler
             </Button>
-            <Button
-              type='button'
-              name='export-link-modal-submit-button'
-              onClick={handleSubmit(saveDraft)}
-              disabled={isSubmitting}
-              startIcon={isSubmitting && <CircularProgress color='inherit' size={18} />}
-            >
+            <Button type='button' name='export-link-modal-submit-button' onClick={handleSubmit(saveDraft)}>
               Enregistrer en brouillon
             </Button>
             <Button

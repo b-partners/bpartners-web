@@ -6,7 +6,7 @@ export const mailingProvider = {
         throw new Error('Function not implemented.');
       },
   saveOrUpdate: async (createEmail: CreateEmail[]) => {
-    const { userId } = getCached.userInfo();
+    const { userId } = getCached.userInfo();    
     return (await mailingApi().editOrSendEmails(userId, createEmail)).data;
   },
 };

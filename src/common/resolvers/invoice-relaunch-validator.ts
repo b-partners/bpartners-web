@@ -9,7 +9,7 @@ const getHTML = (editorState: EditorState) => {
   return stateToHTML(content);
 };
 
-const messageValidator = (_editorState: unknown) => {
+export const messageValidator = (_editorState: unknown) => {
   const htmlContent = getHTML(_editorState as EditorState);
   if (htmlContent.length === 0) return false;
   return true;
