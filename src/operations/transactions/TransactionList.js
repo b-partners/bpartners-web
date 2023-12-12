@@ -1,7 +1,7 @@
 import { Attachment as AttachmentIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 
-import { Card, CardContent, Chip } from '@mui/material';
+import { Card, CardContent, Chip, Button } from '@mui/material';
 import { useState } from 'react';
 
 import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, TextInput, useListContext } from 'react-admin';
@@ -15,6 +15,10 @@ import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
 import TransactionLinkInvoice from './TransactionLinkInvoice';
+import { mailingProvider } from 'src/providers';
+import GenerateLinkModal from './components/GenerateLinkModal';
+import ExportLinkMailModal from './components/ExportLinkMailModal';
+import { ModalProvider, useModalContext } from 'src/common/store/transaction';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
@@ -22,6 +26,8 @@ const StatusField = ({ status }) => (
 
 const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false });
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  // const { isExportLinkMailModalOpen, handleExpLinkMailModal } = useModalContext();
 
   const onDocumentIconClicked = document => {
     setDocumentState({ shouldShowDocument: true, document });
@@ -30,12 +36,17 @@ const TransactionList = props => {
     setDocumentState(e => ({ ...e, shouldShowDocument: false }));
   };
 
+  const handleGenerateLinkModal = () => {
+    setIsOpenModal(!isOpenModal);
+  };
+
   const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
     .filter(status => status !== 'UNKNOWN')
     .map((status, k) => ({ id: status, name: TRANSACTION_STATUSES[status].label }));
   return !documentState.shouldShowDocument ? (
-    <>
+    <ModalProvider>
       <TransactionChart />
+      <Button onClick={handleGenerateLinkModal}>Export comptable</Button>
       <Card sx={{ marginTop: 1, border: 0 }}>
         <CardContent>
           <List
@@ -56,7 +67,9 @@ const TransactionList = props => {
           </List>
         </CardContent>
       </Card>
-    </>
+      {isOpenModal && <GenerateLinkModal isOpenModal={isOpenModal} handleGenerateLinkModal={handleGenerateLinkModal} />}
+      {/* {isExportLinkMailModalOpen && <ExportLinkMailModal isOpenModal={isExportLinkMailModalOpen} handleExpLinkMailModal={handleExpLinkMailModal} />} */}
+    </ModalProvider>
   ) : (
     <InvoicePdfDocument selectedInvoice={documentState.document} onClose={closeDocument} />
   );

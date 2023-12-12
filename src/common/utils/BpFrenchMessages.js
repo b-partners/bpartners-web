@@ -79,5 +79,9 @@ export const BpFrenchMessages = {
       success: 'Exportation effectuée avec succès.',
       error: "Une erreur s'est produite lors de l'exportation.",
     },
+    mail: {
+      sent: 'Votre mail a été envoyé avec succès',
+      draft: 'Votre mail a été enregistré en tant que brouillon',
+    },
   },
 };

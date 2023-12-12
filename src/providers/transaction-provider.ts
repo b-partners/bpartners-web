@@ -22,8 +22,9 @@ export const transactionProvider: BpDataProviderType = {
       )
       .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));
   },
-  saveOrUpdate: function (resources: any[]): Promise<any[]> {
-    throw new Error('Function not implemented.');
+  saveOrUpdate: async function (resources: any): Promise<any> {
+    const {accountId} = getCached.userInfo();
+    return (await payingApi().exportTransactionsAndInvoices(accountId, resources)).data;    
   },
 };
 
