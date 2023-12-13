@@ -23,8 +23,8 @@ export const transactionProvider: BpDataProviderType = {
       .map(transaction => ({ ...transaction, status: toModelStatus(transaction.status) }));
   },
   saveOrUpdate: async function (resources: any): Promise<any> {
-    const {accountId} = getCached.userInfo();
-    return (await payingApi().exportTransactionsAndInvoices(accountId, resources)).data;    
+    const { accountId } = getCached.userInfo();
+    return (await payingApi().exportTransactionsAndInvoices(accountId, resources)).data;
   },
 };
 

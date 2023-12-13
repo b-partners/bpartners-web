@@ -15,10 +15,9 @@ import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
 import TransactionLinkInvoice from './TransactionLinkInvoice';
-import { mailingProvider } from 'src/providers';
 import GenerateLinkModal from './components/GenerateLinkModal';
 import ExportLinkMailModal from './components/ExportLinkMailModal';
-import { ModalProvider, useModalContext } from 'src/common/store/transaction';
+import { ModalProvider } from 'src/common/store/transaction';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
@@ -27,7 +26,7 @@ const StatusField = ({ status }) => (
 const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false });
   const [isOpenModal, setIsOpenModal] = useState(false);
-  // const { isExportLinkMailModalOpen, handleExpLinkMailModal } = useModalContext();
+  const [isExportLinkMailModalOpen, setIsExportLinkMailModalOpen] = useState(false);
 
   const onDocumentIconClicked = document => {
     setDocumentState({ shouldShowDocument: true, document });
@@ -39,6 +38,9 @@ const TransactionList = props => {
   const handleGenerateLinkModal = () => {
     setIsOpenModal(!isOpenModal);
   };
+  const handleExportLinkMailModal = () => {
+    setIsExportLinkMailModalOpen(!isExportLinkMailModalOpen);
+  };
 
   const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
     .filter(status => status !== 'UNKNOWN')
@@ -46,9 +48,18 @@ const TransactionList = props => {
   return !documentState.shouldShowDocument ? (
     <ModalProvider>
       <TransactionChart />
-      <Button onClick={handleGenerateLinkModal}>Export comptable</Button>
       <Card sx={{ marginTop: 1, border: 0 }}>
         <CardContent>
+          <Button
+            onClick={handleGenerateLinkModal}
+            style={{
+              position: 'absolute',
+              right: '24px',
+              zIndex: 1,
+            }}
+          >
+            Export comptable
+          </Button>
           <List
             {...props}
             resource='transactions'
@@ -67,8 +78,10 @@ const TransactionList = props => {
           </List>
         </CardContent>
       </Card>
-      {isOpenModal && <GenerateLinkModal isOpenModal={isOpenModal} handleGenerateLinkModal={handleGenerateLinkModal} />}
-      {/* {isExportLinkMailModalOpen && <ExportLinkMailModal isOpenModal={isExportLinkMailModalOpen} handleExpLinkMailModal={handleExpLinkMailModal} />} */}
+      {isOpenModal && (
+        <GenerateLinkModal isOpenModal={isOpenModal} handleGenerateLinkModal={handleGenerateLinkModal} handleExportLinkMailModal={handleExportLinkMailModal} />
+      )}
+      {isExportLinkMailModalOpen && <ExportLinkMailModal isOpenModal={isExportLinkMailModalOpen} handleExportLinkMailModal={handleExportLinkMailModal} />}
     </ModalProvider>
   ) : (
     <InvoicePdfDocument selectedInvoice={documentState.document} onClose={closeDocument} />

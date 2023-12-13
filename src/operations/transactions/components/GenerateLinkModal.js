@@ -6,13 +6,12 @@ import { handleSubmit } from 'src/common/utils';
 import { transactionProvider } from 'src/providers';
 import { useNotify } from 'react-admin';
 import { useModalContext } from 'src/common/store/transaction';
-import ExportLinkMailModal from './ExportLinkMailModal';
 
-const GenerateLinkModal = ({ isOpenModal, handleGenerateLinkModal }) => {
+const GenerateLinkModal = ({ isOpenModal, handleGenerateLinkModal, handleExportLinkMailModal }) => {
   const form = useForm({ mode: 'all' });
   const isSubmitting = form.formState.isSubmitting;
   const notify = useNotify();
-  const { setDataGenerateLinkFrom, handleExpLinkMailModal, isExportLinkMailModalOpen } = useModalContext();
+  const { setDataGenerateLinkFrom } = useModalContext();
 
   const generateExportLink = form.handleSubmit(async data => {
     const requestBody = {
@@ -27,7 +26,8 @@ const GenerateLinkModal = ({ isOpenModal, handleGenerateLinkModal }) => {
         to: new Date(data.to),
         downloadLink: response.downloadLink,
       });
-      handleExpLinkMailModal();
+      handleGenerateLinkModal();
+      handleExportLinkMailModal();
       return response;
     } catch (error) {
       notify('messages.global.error', { type: 'error' });
@@ -61,7 +61,6 @@ const GenerateLinkModal = ({ isOpenModal, handleGenerateLinkModal }) => {
           </form>
         </Dialog>
       </FormProvider>
-      {isExportLinkMailModalOpen && <ExportLinkMailModal isOpenModal={isExportLinkMailModalOpen} handleExpLinkMailModal={handleExpLinkMailModal} />}
     </>
   );
 };

@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField, BpMultipleTextInput } from 'src/common/components';
-import { getExportLinkMailDefaultMessage, getExportLinkMailSubject, invoiceDateValidator } from 'src/operations/invoice/utils';
+import { BpMultipleTextInput } from 'src/common/components';
 import { handleSubmit } from 'src/common/utils';
-import { AttachmentForm, RichTextForm } from 'src/common/components/RichTextForm';
-import RichTextEditor from 'src/common/components/RichTextEditor';
-import { Editor, EditorState } from 'draft-js';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { RichTextForm } from 'src/common/components/RichTextForm';
 import { useModalContext } from 'src/common/store/transaction';
 import { mailingProvider } from 'src/providers';
-import { emailValidator, participantValidator } from 'src/common/resolvers';
+import { exportLinkMailResolver, participantValidator } from 'src/common/resolvers';
 import { v4 as uuid } from 'uuid';
 import { transactionMapper } from 'src/providers/mappers/transaction-mapper';
 import { useNotify } from 'react-admin';
+import { getExportLinkMailDefaultMessage, getExportLinkMailSubject } from '../utils';
 
-const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
+const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
   const id = uuid();
   const { dataForm } = useModalContext();
   const form = useForm({
@@ -23,32 +19,23 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
     defaultValues: {
       subject: getExportLinkMailSubject(dataForm),
       message: getExportLinkMailDefaultMessage(dataForm),
-      // message: EditorState.createEmpty(),
       attachments: [],
     },
-    // resolver: transactionMailResolver,
-    // resolver: participantValidator,
+    resolver: exportLinkMailResolver,
   });
   const { isSubmitting } = form.formState;
   const notify = useNotify();
-  //   const richeErrorStyle = errors['message'] ? { border: 'solid 1px red' } : { border: `solid 2px ${BP_COLOR['solid_grey']}` };
-
-  // useEffect(() => {
-  //   form.setValue('message', getExportLinkMailDefaultMessage(dataForm));
-  // }, [dataForm, form]);
 
   const handleEmailRequest = async (structuredData, status) => {
     try {
       await mailingProvider.saveOrUpdate(structuredData);
       notify(`messages.mail.${status}`, { type: 'success' });
-      handleExpLinkMailModal();
+      handleExportLinkMailModal();
     } catch (error) {
-      console.log('erroooor', error);
       notify('messages.global.error', { type: 'error' });
     }
   };
   const sendEmail = form.handleSubmit(async data => {
-    console.log('data', data);
     const structuredData = transactionMapper(data, id, 'SENT');
     await handleEmailRequest(structuredData, 'sent');
   });
@@ -59,7 +46,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
 
   return (
     <FormProvider {...form}>
-      <Dialog open={isOpenModal} onClose={handleExpLinkMailModal} maxWidth='lg'>
+      <Dialog open={isOpenModal} onClose={handleExportLinkMailModal} maxWidth='lg'>
         <DialogTitle>Envoi de mail</DialogTitle>
         <Box width='33.4vw' margin='0 24px'>
           <BpMultipleTextInput name='recipient' label='Destinataire' title='' validator={participantValidator} />
@@ -69,7 +56,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExpLinkMailModal }) => {
             <RichTextForm attachments={true} />
           </DialogContent>
           <DialogActions sx={{ justifyContent: 'flex-end', mr: 2, alignItems: 'center', position: 'relative' }}>
-            <Button onClick={handleExpLinkMailModal} name='export-link-modal-cancel-button'>
+            <Button onClick={handleExportLinkMailModal} name='export-link-modal-cancel-button'>
               Annuler
             </Button>
             <Button type='button' name='export-link-modal-submit-button' onClick={handleSubmit(saveDraft)}>

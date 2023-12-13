@@ -3,10 +3,10 @@ import { getCached, mailingApi } from '.';
 
 export const mailingProvider = {
   getList(page: number, perPage: number, filters: any) {
-        throw new Error('Function not implemented.');
-      },
+    throw new Error('Function not implemented.');
+  },
   saveOrUpdate: async (createEmail: CreateEmail[]) => {
-    const { userId } = getCached.userInfo();    
+    const { userId } = getCached.userInfo();
     return (await mailingApi().editOrSendEmails(userId, createEmail)).data;
   },
 };
