@@ -39,10 +39,10 @@ const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
     const structuredData = transactionMapper(data, id, 'SENT');
     await handleEmailRequest(structuredData, 'sent');
   });
-  const saveDraft = form.handleSubmit(data => {
-    const structuredData = transactionMapper(data, id, 'DRAFT');
-    handleEmailRequest(structuredData, 'draft');
-  });
+  // const saveDraft = form.handleSubmit(data => {
+  //   const structuredData = transactionMapper(data, id, 'DRAFT');
+  //   handleEmailRequest(structuredData, 'draft');
+  // });
 
   return (
     <FormProvider {...form}>
@@ -59,9 +59,9 @@ const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
             <Button onClick={handleExportLinkMailModal} name='export-link-modal-cancel-button'>
               Annuler
             </Button>
-            <Button type='button' name='export-link-modal-submit-button' onClick={handleSubmit(saveDraft)}>
+            {/* <Button type='button' name='export-link-modal-submit-button' onClick={handleSubmit(saveDraft)}>
               Enregistrer en brouillon
-            </Button>
+            </Button> */}
             <Button
               type='submit'
               name='export-link-modal-submit-button'
