@@ -1,11 +1,11 @@
-import { Box, Button, Paper, Typography, FormGroup, FormControlLabel, Checkbox, CircularProgress } from '@mui/material';
+import { Box, Button, Paper, Typography, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
 import { redirect } from 'src/common/utils';
 import { dataProvider } from 'src/providers';
 import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
-import { TRANSPARENT_BUTTON_STYLE } from 'src/security/style';
 import { useTranslate } from 'react-admin';
+import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 
 export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId: string }) => {
   const [isLoading, setLoading] = useState(false);
@@ -18,6 +18,7 @@ export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId:
       redirect(redirectionUrl);
     });
   };
+  const handleCheck = () => setChecked(!checked);
 
   return (
     <Box sx={PRIMARY_CONTAINER}>
@@ -28,42 +29,7 @@ export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId:
             Il semble que c'est la première fois que vous utilisez BPartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité
             de vos prochains RDV.
           </Typography>
-          <FormGroup onChange={() => setChecked(!checked)}>
-            <FormControlLabel
-              data-testid='control-cgs'
-              style={{ alignItems: 'start' }}
-              control={<Checkbox />}
-              label={
-                <>
-                  <Typography style={{ color: '#0009', fontSize: '14px', paddingBottom: '20px' }}>
-                    En continuant, vous acceptez que BPartners transmette anonymement vos informations à&nbsp;
-                    <Button
-                      id='passwordReset'
-                      sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                      onClick={() => {
-                        window.open('https://adresse.data.gouv.fr/base-adresse-nationale#4.4/46.9/1.7', '_blank', 'noopener');
-                      }}
-                    >
-                      <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> la Base Adresse Nationale</Typography>
-                    </Button>{' '}
-                    afin de générer des nouveaux prospects.
-                    <br />
-                    Pour plus d'infos, consultez&nbsp;
-                    <Button
-                      id='passwordReset'
-                      sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                      onClick={() => {
-                        window.open('https://legal.bpartners.app/', '_blank', 'noopener');
-                      }}
-                    >
-                      <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> https://legal.bpartners.app/</Typography>
-                    </Button>
-                  </Typography>
-                </>
-              }
-              checked={checked}
-            />
-          </FormGroup>
+          <CalendarCheckboxCGS checked={checked} handleCheck={handleCheck} />
           <Button
             disabled={isLoading || !checked}
             endIcon={isLoading && <CircularProgress size={20} sx={{ color: 'white' }} />}

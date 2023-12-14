@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, CircularProgress, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material';
 import { FC, useState } from 'react';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCheckAuth } from 'src/common/hooks';
@@ -7,8 +7,8 @@ import { redirect } from 'src/common/utils';
 import { calendarEventProvider, dataProvider } from 'src/providers';
 import { calendarIntervalFilter } from '../utils';
 import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
-import { TRANSPARENT_BUTTON_STYLE } from 'src/security/style';
 import { useTranslate } from 'react-admin';
+import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 type CalendarSyncDialogProps = {
   changeView: () => void;
 };
@@ -33,6 +33,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
       redirect(redirectionUrl);
     });
   };
+  const handleCheck = () => setChecked(!checked);
 
   return (
     <Dialog open={!isCheckAuthLoading && !isAuthenticated} style={{ textAlign: 'center' }}>
@@ -41,42 +42,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
         Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV.
       </DialogTitle>
       <DialogContent>
-        <FormGroup onChange={() => setChecked(!checked)}>
-          <FormControlLabel
-            data-testid='control-cgs'
-            style={{ alignItems: 'start' }}
-            control={<Checkbox />}
-            label={
-              <>
-                <Typography style={{ color: '#0009', fontSize: '14px' }}>
-                  En continuant, vous acceptez que BPartners transmette anonymement vos informations à&nbsp;
-                  <Button
-                    id='passwordReset'
-                    sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                    onClick={() => {
-                      window.open('https://adresse.data.gouv.fr/base-adresse-nationale#4.4/46.9/1.7', '_blank', 'noopener');
-                    }}
-                  >
-                    <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> la Base Adresse Nationale</Typography>
-                  </Button>{' '}
-                  afin de générer des nouveaux prospects.
-                  <br />
-                  Pour plus d'infos, consultez&nbsp;
-                  <Button
-                    id='passwordReset'
-                    sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                    onClick={() => {
-                      window.open('https://legal.bpartners.app/', '_blank', 'noopener');
-                    }}
-                  >
-                    <Typography style={{ fontSize: '13px', textDecoration: 'underline' }}> https://legal.bpartners.app/</Typography>
-                  </Button>
-                </Typography>
-              </>
-            }
-            checked={checked}
-          />
-        </FormGroup>
+        <CalendarCheckboxCGS checked={checked} handleCheck={handleCheck} />
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <BPButton style={{ width: 200 }} onClick={changeView} label='bp.action.notNow' />
