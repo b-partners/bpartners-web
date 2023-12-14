@@ -1,7 +1,7 @@
 export const BpFrenchMessages = {
   bp: {
     action: {
-      sync: 'Synchroniser et prospecter',
+      sync: 'Connecter le calendrier Google',
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',

@@ -32,9 +32,7 @@ describe(specTitle('Calendar'), () => {
     cy.contains(
       "Il semble que c'est la première fois que vous utilisez BPartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
     );
-    cy.contains(
-      "En continuant, vous acceptez que BPartners transmette les adresses récoltées depuis vos agendas à des services tiers sécurisés, de façon anonyme, pour générer des nouveaux prospects. Pour plus d'infos, consultez https://legal.bpartners.app/"
-    );
+    cy.contains('vous acceptez que BPartners transmette anonymement vos informations');
     cy.contains('https://legal.bpartners.app/').click();
     cy.get('@windowOpen').should('be.calledOnce');
     cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
@@ -62,14 +60,14 @@ describe(specTitle('Calendar'), () => {
     cy.contains(
       "Il semble que c'est la première fois que vous utilisez BPartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
     );
-    cy.contains(
-      "En continuant, vous acceptez que BPartners transmette les adresses récoltées depuis vos agendas à des services tiers sécurisés, de façon anonyme, pour générer des nouveaux prospects. Pour plus d'infos, consultez https://legal.bpartners.app/"
-    );
+    cy.contains('vous acceptez que BPartners transmette anonymement vos informations');
     cy.contains('https://legal.bpartners.app/').click();
     cy.get('@windowOpen').should('be.calledOnce');
     cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
 
-    cy.contains('Synchroniser et prospecter').click();
+    cy.contains('Connecter le calendrier Google').should('be.disabled');
+    cy.get('[data-testid="control-cgs"]').click();
+    cy.contains('Connecter le calendrier Google').click();
     cy.get('@redirect').should('have.been.calledOnce');
   });
 
