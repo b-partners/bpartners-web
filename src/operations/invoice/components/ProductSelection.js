@@ -9,6 +9,9 @@ import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
 import { AutocompleteBackend } from '../../../common/components';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { SimpleForm } from 'react-admin';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
+import FormProduct from 'src/operations/products/components/FormProduct';
 
 export const ProductSelection = ({ name, form }) => {
   const {
@@ -79,6 +82,15 @@ export const ProductSelection = ({ name, form }) => {
           />
         )}
         {errors[name] && <FormHelperText error={true}>{errors[name].message}</FormHelperText>}
+        {state.status && (
+          <div style={{ marginBottom: '8px' }} data-testid='create-new-product'>
+            <CreateInDialogButton fullWidth title='Créer un nouveau produit' label='Créer un nouveau produit' resource='products'>
+              <SimpleForm>
+                <FormProduct />
+              </SimpleForm>
+            </CreateInDialogButton>
+          </div>
+        )}
       </Box>
     </>
   );

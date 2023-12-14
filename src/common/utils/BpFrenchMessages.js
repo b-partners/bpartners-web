@@ -1,7 +1,7 @@
 export const BpFrenchMessages = {
   bp: {
     action: {
-      sync: 'Synchroniser et prospecter',
+      sync: 'Connecter le calendrier Google',
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',
@@ -78,6 +78,10 @@ export const BpFrenchMessages = {
     export: {
       success: 'Exportation effectuée avec succès.',
       error: "Une erreur s'est produite lors de l'exportation.",
+    },
+    mail: {
+      sent: 'Votre mail a été envoyé avec succès',
+      draft: 'Votre mail a été enregistré en tant que brouillon',
     },
   },
 };

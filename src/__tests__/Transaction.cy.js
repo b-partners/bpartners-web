@@ -9,6 +9,7 @@ import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from 'bpartners-react-client';
+import { createEmailResponse, transactionExportLinkResponse } from './mocks/responses/transaction-mailing-api';
 
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
@@ -232,5 +233,48 @@ describe(specTitle('Transactions'), () => {
     });
 
     cy.get("[name='label']").type(labelToSearch);
+  });
+
+  it('should generate export transactions link and send email', () => {
+    const currentDate = new Date();
+    const from = '2023-03-15';
+    const to = '2023-11-01';
+    cy.intercept('POST', '/accounts/mock-account-id1/transactions/exportLink', transactionExportLinkResponse).as('generateExportTransactionsLink');
+    cy.intercept('PUT', '/users/mock-user-id1/emails', createEmailResponse).as('sendEmails');
+
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+    cy.contains('Export comptable').click();
+    // tester l'ouverture et la fermeture du GenerateLinkModal
+    cy.contains('Choisissez votre période de transaction à communiquer à votre comptable');
+    cy.get('[type="submit"]').click();
+    cy.contains('Ce champ est requis');
+    cy.get('[name="generate-link-modal-cancel-button"]').click();
+    cy.contains('Choisissez votre période de transaction à communiquer à votre comptable').should('not.exist');
+    // exécuter la requete pour générer le lien du téléchargement
+    cy.contains('Export comptable').click();
+    cy.get('input[name="from"]').type(`${currentDate.getFullYear() + 1}-03-15`);
+    cy.contains("La date d'émission doit être antérieure ou égale à la date d’aujourd’hui");
+    cy.get('input[name="from"]').invoke('removeAttr').type(from);
+    cy.get('input[name="to"]').type(to);
+    cy.get('[type="submit"]').click();
+    cy.wait('@generateExportTransactionsLink').then(interception => {
+      const responseStatus = interception.response.statusCode;
+      expect(responseStatus).to.equal(200);
+    });
+    cy.contains('Envoi de mail');
+    // On test le form mail
+    cy.get('[type="submit"]').click();
+    cy.contains('Ce champ est requis.');
+    cy.get('[name="recipient"]').type('dummy{enter}');
+    cy.contains('Email non valide');
+    cy.get('[name="recipient"]').invoke('removeAttr').type('dummy@gmail.com{enter}');
+    cy.contains('dummy@gmail.com');
+    cy.get('[type="submit"]').click();
+    cy.wait('@sendEmails').then(interception => {
+      const responseStatus = interception.response.statusCode;
+      expect(responseStatus).to.equal(200);
+    });
+    cy.contains('Votre mail a été envoyé avec succès');
   });
 });

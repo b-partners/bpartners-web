@@ -24,3 +24,4 @@ export * from './sheet-provider';
 export * from './transaction-category-provider';
 export * from './transaction-provider';
 export * from './aws-config';
+export * from './mailing-provider';
