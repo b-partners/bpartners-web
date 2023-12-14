@@ -37,9 +37,11 @@ describe(specTitle('Calendar'), () => {
     cy.get('@windowOpen').should('be.calledOnce');
     cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
 
-    cy.contains('Synchroniser').click();
-
+    cy.contains('Connecter le calendrier Google').should('be.disabled');
+    cy.get('[data-testid="control-cgs"]').click();
+    cy.contains('Connecter le calendrier Google').click();
     cy.get('@redirect').should('have.been.calledOnce');
+
     cy.intercept('GET', '/users/mock-user-id1/calendars', calendars);
   });
 

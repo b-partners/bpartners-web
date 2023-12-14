@@ -1,5 +1,5 @@
-import { Button, Typography, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-import { TRANSPARENT_BUTTON_STYLE } from 'src/security/style';
+import { Typography, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
 
 type Props = {
   checked: boolean;
@@ -16,26 +16,16 @@ const CalendarCheckboxCGS = ({ checked, handleCheck }: Props) => {
         label={
           <>
             <Typography style={{ color: '#0009', fontSize: '14px', paddingBottom: '20px' }}>
-              En continuant, vous acceptez que BPartners transmette anonymement vos informations à&nbsp;
-              <Button
-                sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                onClick={() => {
-                  window.open('https://adresse.data.gouv.fr/base-adresse-nationale#4.4/46.9/1.7', '_blank', 'noopener');
-                }}
-              >
+              En continuant, vous acceptez que BPartners transmette anonymement vos informations à{' '}
+              <ExternalLinkButton url='https://adresse.data.gouv.fr/base-adresse-nationale#4.4/46.9/1.7'>
                 <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> la Base Adresse Nationale</Typography>
-              </Button>{' '}
+              </ExternalLinkButton>{' '}
               afin de générer des nouveaux prospects.
               <br />
-              Pour plus d'infos, consultez&nbsp;
-              <Button
-                sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-                onClick={() => {
-                  window.open('https://legal.bpartners.app/', '_blank', 'noopener');
-                }}
-              >
+              Pour plus d'infos, consultez{' '}
+              <ExternalLinkButton url='https://legal.bpartners.app/'>
                 <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> https://legal.bpartners.app/</Typography>
-              </Button>
+              </ExternalLinkButton>
             </Typography>
           </>
         }
