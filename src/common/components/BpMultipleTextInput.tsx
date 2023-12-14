@@ -77,7 +77,7 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
 
   return (
     <Box>
-      <Typography variant='body1'>{title || 'Liste'}</Typography>
+      <Typography variant='body1'>{title}</Typography>
       <Box sx={CHIP_CONTAINER}>
         {selected.map((title: string) => (
           <Chip key={`BpMultipleTextInput-${title}`} label={title} onDelete={() => handleDelete(title)} />
