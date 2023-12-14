@@ -278,7 +278,7 @@ const getInvoiceRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolean)
   const { phone } = companyInfo || {};
   const user = getCached.user() || {};
   const message = isRelaunch
-    ? `<p>Bonjour ${customer?.lastName},<br/><br/>
+    ? `<p>Bonjour ${customer?.firstName} ${customer?.lastName},<br/><br/>
 Nous espérons que vous allez bien.<br/><br/>
 Nous revenons vers vous concernant la facture ${ref} que nous vous avons envoyé pour paiement le ${formatDate(new Date(sendingDate))}.<br/><br/>
 Si ce n'est pas déjà fait, pourriez vous svp procéder au paiement en scannant le qr code de la facture, en cliquant sur le lien ou par virement classique.<br/><br/>
@@ -289,7 +289,7 @@ ${companyName}<br/>
 ${user?.firstName}
 ${user?.lastName}<br/>
 ${phone}</p>`
-    : `<p>Bonjour ${customer?.lastName},<br/><br/>
+    : `<p>Bonjour ${customer?.firstName} ${customer?.lastName},<br/><br/>
 Dans la continuité de notre échange, vous trouverez ci-joint la facture. <br/><br/>
 Je vous prie de bien vouloir procéder au paiement en scan le qr code, en cliquant sur le lien de paiement ou par virement classique.<br/><br/>
 Dans cette attente,<br/><br/>
@@ -310,7 +310,7 @@ const getQuotationRelaunchDefaultMessage = (invoice: Invoice, isRelaunch: boolea
   const { phone } = companyInfo || {};
   const user = getCached.user() || {};
   const message = isRelaunch
-    ? `<p>Bonjour ${customer?.lastName},<br/><br/>
+    ? `<p>Bonjour ${customer?.firstName} ${customer?.lastName},<br/><br/>
 Nous espérons que vous allez bien.<br/><br/>
 Dans la continuité de notre échange, je vous ai fait parvenir un devis le ${sendingDate}. Avez-vous pu le parcourir ? <br/><br/>
 Dès réception de votre bon pour accord, un technicien vous contactera afin d’organiser une intervention dans les plus brefs délais.<br/><br/>
@@ -320,7 +320,7 @@ ${companyName}<br/>
 ${user?.firstName}
 ${user?.lastName}<br/>
 ${phone}</p>`
-    : `<p>Bonjour ${customer?.lastName},<br/><br/>
+    : `<p>Bonjour ${customer?.firstName} ${customer?.lastName},<br/><br/>
 Dans la continuité de notre échange, vous trouverez ci-joint le devis.<br/><br/>
 Dès réception de votre bon pour accord, je vous contacterai pour organiser la prestation.<br/><br/>
 Dans cette attente,<br/><br/>
