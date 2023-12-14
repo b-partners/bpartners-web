@@ -10,6 +10,7 @@ import { redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
 import DownloadAppBanner from './DownloadAppBanner';
+import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
 
 const SignInForm = () => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
@@ -85,17 +86,11 @@ const SignInForm = () => {
             </Typography>
           </Button>
           <Divider />
-          <Button
-            id='passwordReset'
-            sx={{ ...TRANSPARENT_BUTTON_STYLE, pt: 1 }}
-            onClick={() => {
-              window.open('https://legal.bpartners.app/', '_blank', 'noopener');
-            }}
-          >
+          <ExternalLinkButton url='https://legal.bpartners.app/' id='passwordReset'>
             <Typography variant='h7' gutterBottom>
               Conditions générales d'utilisation
             </Typography>
-          </Button>
+          </ExternalLinkButton>
         </form>
       )}
     </FormProvider>

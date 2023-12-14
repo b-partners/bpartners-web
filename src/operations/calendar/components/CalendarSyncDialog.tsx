@@ -1,5 +1,4 @@
-import { Sync as SyncIcon } from '@mui/icons-material';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material';
 import { FC, useState } from 'react';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCheckAuth } from 'src/common/hooks';
@@ -8,16 +7,19 @@ import { redirect } from 'src/common/utils';
 import { calendarEventProvider, dataProvider } from 'src/providers';
 import { calendarIntervalFilter } from '../utils';
 import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
-import { TRANSPARENT_BUTTON_STYLE } from 'src/security/style';
+import { useTranslate } from 'react-admin';
+import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 type CalendarSyncDialogProps = {
   changeView: () => void;
 };
 
 export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) => {
   const [isLoading, setLoading] = useState(false);
+  const [checked, setChecked] = useState(false);
   const {
     currentCalendar: { id: calendarId },
   } = useCalendarContext();
+  const translate = useTranslate();
 
   const fetcher = async () => {
     const { start_gte, start_lte } = calendarIntervalFilter();
@@ -31,6 +33,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
       redirect(redirectionUrl);
     });
   };
+  const handleCheck = () => setChecked(!checked);
 
   return (
     <Dialog open={!isCheckAuthLoading && !isAuthenticated} style={{ textAlign: 'center' }}>
@@ -39,24 +42,21 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
         Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV.
       </DialogTitle>
       <DialogContent>
-        <Typography style={{ color: '#0009', fontSize: '14px' }}>
-          En continuant, vous acceptez que BPartners transmette les adresses récoltées depuis vos agendas à des services tiers sécurisés,{' '}
-          <strong>de façon anonyme</strong>, pour générer des nouveaux prospects. <br />
-          Pour plus d'infos, consultez&nbsp;
-          <Button
-            id='passwordReset'
-            sx={{ ...TRANSPARENT_BUTTON_STYLE }}
-            onClick={() => {
-              window.open('https://legal.bpartners.app/', '_blank', 'noopener');
-            }}
-          >
-            <Typography style={{ fontSize: '13px', textDecoration: 'underline' }}> https://legal.bpartners.app/</Typography>
-          </Button>
-        </Typography>
+        <CalendarCheckboxCGS checked={checked} handleCheck={handleCheck} />
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <BPButton style={{ width: 200 }} onClick={changeView} label='bp.action.notNow' />
-        <BPButton style={{ width: 250 }} onClick={oauth2Init} endIcon={<SyncIcon />} label='bp.action.sync' isLoading={isLoading} />
+        <Button
+          disabled={isLoading || !checked}
+          endIcon={isLoading && <CircularProgress size={20} sx={{ color: 'white' }} />}
+          style={{ width: 270 }}
+          color='primary'
+          variant='contained'
+          onClick={oauth2Init}
+        >
+          <img alt='calendar_icon_button' src={GOOGLE_CALENDAR_ICON} style={{ width: '20px', paddingRight: '5px' }} />
+          {translate('bp.action.sync')}
+        </Button>
       </DialogActions>
     </Dialog>
   );
