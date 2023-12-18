@@ -41,7 +41,7 @@ import { invoiceProvider } from 'src/providers/invoice-provider';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import FormCustomer from '../customers/components/FormCustomer';
-import UserTypeRadioGroup from '../customers/components/UserTypeRadioGroup';
+import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
@@ -155,7 +155,7 @@ const InvoiceForm = props => {
             <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
               <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
                 <SimpleForm>
-                  <UserTypeRadioGroup />
+                  <CustomerTypeRadioGroup />
                   <div
                     style={{
                       display: 'grid',

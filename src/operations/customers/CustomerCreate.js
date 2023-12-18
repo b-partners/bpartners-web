@@ -1,14 +1,14 @@
 import { Create, SimpleForm } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
 import FormCustomer from './components/FormCustomer';
-import UserTypeRadioGroup from './components/UserTypeRadioGroup';
+import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
 
 const CustomerCreate = props => {
   return (
     <BPFormLayout title='Création de client' resource='customers'>
       <Create {...props} title='Clients' redirect='list'>
         <SimpleForm>
-          <UserTypeRadioGroup />
+          <CustomerTypeRadioGroup />
           <div
             style={{
               display: 'grid',

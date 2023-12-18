@@ -5,7 +5,7 @@ const FormCustomer = () => {
   const values = useWatch();
   return (
     <>
-      {values?.userType === 'professionnel' && <TextInput name='compagnyName' source='compagnyName' label='Nom de la société' validate={required()} />}
+      {values?.customerType === 'PROFESSIONAL' && <TextInput name='name' source='name' label='Nom de la société' validate={required()} />}
       <TextInput name='lastName' source='lastName' label='Nom' validate={required()} />
       <TextInput name='firstName' source='firstName' label='Prénom' validate={required()} />
       <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />

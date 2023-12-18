@@ -1,14 +1,14 @@
 import { Edit, SimpleForm } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
 import FormCustomer from './components/FormCustomer';
-import UserTypeRadioGroup from './components/UserTypeRadioGroup';
+import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
 
 const CustomerEdit = () => {
   return (
     <BPFormLayout title='Édition de client' resource='customers'>
       <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de client'>
-          <UserTypeRadioGroup />
+          <CustomerTypeRadioGroup />
           <div
             style={{
               display: 'grid',
