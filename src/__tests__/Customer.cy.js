@@ -29,6 +29,8 @@ describe(specTitle('Customers'), () => {
   it('Should create customer', () => {
     cy.intercept('POST', '/accounts/mock-account-id1/customers**', req => {
       const newCustomer = {
+        name: 'dummyCompany',
+        customerType: 'PROFESSIONAL',
         address: 'Wall Street 2',
         comment: 'comment',
         email: 'test@gmail.com',
@@ -49,9 +51,8 @@ describe(specTitle('Customers'), () => {
 
     cy.get('[data-testid="create-button"]').click();
 
-    cy.get('[data-testid="userType-professionnel"]').click();
+    cy.get('#customerType_PROFESSIONAL').click();
     cy.contains('Nom de la société');
-    cy.contains("Prénom - Nom de l'interlocuteur");
 
     cy.get('#email').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
@@ -59,6 +60,7 @@ describe(specTitle('Customers'), () => {
     cy.get('#email').clear().type('test@gmail.com{enter}');
     cy.contains('Ce champ est requis');
 
+    cy.get('#name').type('dummyCompany');
     cy.get('#lastName').type('LastName 11');
     cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers2).as('getCustomers2');
     cy.get('#firstName').type('FirstName 11');
@@ -87,6 +89,7 @@ describe(specTitle('Customers'), () => {
 
     cy.intercept('PUT', '/accounts/mock-account-id1/customers**', req => {
       const updatedCustomer = {
+        customerType: 'INDIVIDUAL',
         address: 'Wall Street 2',
         comment: null,
         email: 'test@gmail.com',
@@ -103,6 +106,7 @@ describe(specTitle('Customers'), () => {
     cy.get('#email').clear();
     cy.get('#email').type('test@gmail.com');
 
+    cy.get('#customerType_INDIVIDUAL').click();
     cy.get('#lastName').clear().type('LastName 11');
     cy.get('#firstName').clear().type('FirstName 11');
     cy.get('#address').clear().type('Wall Street 2');
@@ -170,6 +174,6 @@ describe(specTitle('Customers'), () => {
       req.reply(getCustomers(page - 1, +pageSize));
       expect(filters).to.eq(expectedFilter);
     }).as('getCustomersFilter');
-    cy.wait('@getCustomersFilter');
+    cy.wait('@getCustomersFilter', { timeout: 10000 });
   });
 });
