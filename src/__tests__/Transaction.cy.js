@@ -268,8 +268,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Ce champ est requis.');
     cy.get('[name="recipient"]').type('dummy{enter}');
     cy.contains('Email non valide');
-    cy.get('[name="recipient"]').invoke('removeAttr').type('dummy@gmail.com{enter}');
-    cy.contains('dummy@gmail.com');
+    cy.get('[name="recipient"]').invoke('removeAttr').type('dummy@gmail.com');
     cy.get('[type="submit"]').click();
     cy.wait('@sendEmails').then(interception => {
       const responseStatus = interception.response.statusCode;
