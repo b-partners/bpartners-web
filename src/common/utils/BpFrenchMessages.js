@@ -83,5 +83,11 @@ export const BpFrenchMessages = {
       sent: 'Votre mail a été envoyé avec succès',
       draft: 'Votre mail a été enregistré en tant que brouillon',
     },
+    customer: {
+      create: 'Le client a été créé avec succès.',
+    },
+    product: {
+      create: 'Le produit a été créé avec succès.',
+    },
   },
 };

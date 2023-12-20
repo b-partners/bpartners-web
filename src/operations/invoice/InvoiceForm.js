@@ -42,6 +42,8 @@ import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import FormCustomer from '../customers/components/FormCustomer';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
+import { customerProvider } from 'src/providers';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
@@ -52,6 +54,8 @@ const InvoiceForm = props => {
   const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const { returnToListByStatus } = useInvoiceToolContext();
+  const [isOpenCreateInDialogButton, setIsOpenCreateInDialogButton] = useState(true);
+  const toggle = () => setIsOpenCreateInDialogButton(!isOpenCreateInDialogButton);
 
   const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
@@ -137,6 +141,22 @@ const InvoiceForm = props => {
   const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
   const totalPrice = isSubjectToVat ? totalPriceWithVatFromProducts(form.watch().products) : totalPriceWithoutVatFromProducts(form.watch().products);
 
+  const submitNewCustomer = async values => {
+    // create the new customer
+    const createdCustomerResponse = await customerProvider.saveOrUpdate([values]);
+    // get all customers
+    const fetcher = async q => await customerProvider.getList(1, AUTOCOMPLETE_LIST_LENGTH, { customerListSearch: q });
+    const allCustomers = await fetcher();
+    // find the last customer created
+    const lastCustomer = allCustomers.find(customer => customer.id === createdCustomerResponse[0].id);
+    // update customer value in autoComplete
+    form.setValue('customer', lastCustomer);
+    // notification success
+    notify('messages.customer.create', { type: 'success' });
+    // close the modal
+    toggle();
+  };
+
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <FormProvider {...form}>
@@ -152,23 +172,25 @@ const InvoiceForm = props => {
               type='date'
             />
             <ClientSelection name='customer' label='Rechercher un client' />
-            <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
-              <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
-                <SimpleForm>
-                  <CustomerTypeRadioGroup />
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      columnGap: '20px',
-                      width: '100%',
-                    }}
-                  >
-                    <FormCustomer />
-                  </div>
-                </SimpleForm>
-              </CreateInDialogButton>
-            </div>
+            {isOpenCreateInDialogButton && (
+              <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
+                <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
+                  <SimpleForm onSubmit={submitNewCustomer}>
+                    <CustomerTypeRadioGroup />
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        columnGap: '20px',
+                        width: '100%',
+                      }}
+                    >
+                      <FormCustomer />
+                    </div>
+                  </SimpleForm>
+                </CreateInDialogButton>
+              </div>
+            )}
             <BpFormField name='comment' rows={3} multiline label='Commentaire' shouldValidate={false} />
             <CheckboxForm switchlabel='Ajouter un délai de retard de paiement autorisé' type='number' name='delayInPaymentAllowed' label='Délai de retard'>
               <BpFormField

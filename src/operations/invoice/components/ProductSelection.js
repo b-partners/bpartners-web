@@ -9,7 +9,7 @@ import { INVOICE_EDITION } from '../style';
 import { productProvider } from 'src/providers';
 import { AutocompleteBackend } from '../../../common/components';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
-import { SimpleForm } from 'react-admin';
+import { SimpleForm, useNotify } from 'react-admin';
 import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import FormProduct from 'src/operations/products/components/FormProduct';
 
@@ -23,8 +23,8 @@ export const ProductSelection = ({ name, form }) => {
   } = form;
   const [state, setState] = useState({ productsList: [], status: false });
   const selectedProduct = watch(name) || [];
-
   const toggle = () => setState(e => ({ ...e, status: !e.status }));
+  const notify = useNotify();
 
   const handleProduct = (type, product) => {
     let productTemp = null;
@@ -60,6 +60,15 @@ export const ProductSelection = ({ name, form }) => {
     }
   };
 
+  const submitNewProduct = async values => {
+    // create the new product
+    const createdProductResponse = await productProvider.saveOrUpdate([values]);
+    // add the new created product
+    handleProduct('add', createdProductResponse[0]);
+    // notification success
+    notify('messages.product.create', { type: 'success' });
+  };
+
   return (
     <>
       {selectedProduct && selectedProduct.length > 0 && (
@@ -85,7 +94,7 @@ export const ProductSelection = ({ name, form }) => {
         {state.status && (
           <div style={{ marginBottom: '8px' }} data-testid='create-new-product'>
             <CreateInDialogButton fullWidth title='Créer un nouveau produit' label='Créer un nouveau produit' resource='products'>
-              <SimpleForm>
+              <SimpleForm onSubmit={submitNewProduct}>
                 <FormProduct />
               </SimpleForm>
             </CreateInDialogButton>
