@@ -196,6 +196,7 @@ describe(specTitle('Invoice creation'), () => {
   it('should create a new customer', () => {
     cy.intercept('POST', '/accounts/mock-account-id1/customers**', req => {
       const newCustomer = {
+        customerType: 'INDIVIDUAL',
         address: 'Wall Street 2',
         comment: 'comment',
         email: 'test@gmail.com',
@@ -223,6 +224,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('#email').clear().type('test@gmail.com{enter}');
     cy.contains('Ce champ est requis');
 
+    cy.get('#customerType_INDIVIDUAL').click();
     cy.get('#lastName').type('LastName 11');
     cy.get('#firstName').type('FirstName 11');
     cy.get('#address').type('Wall Street 2');
