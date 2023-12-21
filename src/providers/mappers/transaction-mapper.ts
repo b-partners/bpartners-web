@@ -2,7 +2,7 @@ export const transactionMapper = (values: any, id: string, status: string) => {
   const formValues = [
     {
       id: id,
-      recipients: values.recipient,
+      recipients: [values.recipient],
       emailObject: values.subject,
       emailBody: values.message,
       attachments: values.attachments,

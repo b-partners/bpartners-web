@@ -196,6 +196,7 @@ describe(specTitle('Invoice creation'), () => {
   it('should create a new customer', () => {
     cy.intercept('POST', '/accounts/mock-account-id1/customers**', req => {
       const newCustomer = {
+        customerType: 'INDIVIDUAL',
         address: 'Wall Street 2',
         comment: 'comment',
         email: 'test@gmail.com',
@@ -205,7 +206,7 @@ describe(specTitle('Invoice creation'), () => {
       };
 
       expect(req.body[0]).to.deep.eq(newCustomer);
-      req.reply([customers2[3]]);
+      req.reply([customers2[12]]);
     }).as('createCustomer');
 
     mount(<App />);
@@ -223,6 +224,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('#email').clear().type('test@gmail.com{enter}');
     cy.contains('Ce champ est requis');
 
+    cy.get('#customerType_INDIVIDUAL').click();
     cy.get('#lastName').type('LastName 11');
     cy.get('#firstName').type('FirstName 11');
     cy.get('#address').type('Wall Street 2');
@@ -230,9 +232,27 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('#phone').type('55 55 55{enter}');
 
     cy.wait('@createCustomer');
+    cy.contains('Le client a été créé avec succès.');
   });
 
   it('should create a new product', () => {
+    cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
+      const newProduct = [
+        {
+          unitPrice: 10400,
+          vatPercent: 600,
+          description: 'new description product',
+          quantity: 1,
+          totalPriceWithVat: null,
+          totalVat: null,
+          unitPriceWithVat: null,
+        },
+      ];
+      expect(req.body).to.deep.equals(newProduct);
+      setProduct(newProduct[0], 0);
+      req.reply(newProduct);
+    }).as('createNewProduct');
+
     mount(<App />);
 
     cy.get('[name="invoice"]').click();
@@ -249,26 +269,8 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('#description').type('new description product');
     cy.get('#unitPrice').type(1.04);
     cy.get('#vatPercent').type(6);
-
-    cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
-      expect(req.body).to.deep.eq([
-        {
-          unitPrice: 10400,
-          vatPercent: 600,
-          description: 'new description product',
-          quantity: 1,
-          totalPriceWithVat: null,
-          totalVat: null,
-          unitPriceWithVat: null,
-        },
-      ]);
-      setProduct(req.body[0]);
-
-      req.reply({
-        statusCode: 200,
-      });
-    }).as('createNewProduct');
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@createNewProduct');
+    cy.contains('Le produit a été créé avec succès.');
   });
 });

@@ -1,11 +1,14 @@
-import { Edit, email, required, SimpleForm, TextInput } from 'react-admin';
+import { Edit, SimpleForm } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
+import FormCustomer from './components/FormCustomer';
+import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
 
 const CustomerEdit = () => {
   return (
     <BPFormLayout title='Édition de client' resource='customers'>
       <Edit mutationMode='pessimistic'>
         <SimpleForm title='Édition de client'>
+          <CustomerTypeRadioGroup />
           <div
             style={{
               display: 'grid',
@@ -14,12 +17,7 @@ const CustomerEdit = () => {
               width: '80%',
             }}
           >
-            <TextInput name='lastName' source='lastName' label='Nom' validate={required()} />
-            <TextInput name='firstName' source='firstName' label='Prénom' validate={required()} />
-            <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />
-            <TextInput name='address' source='address' label='Adresse' validate={required()} />
-            <TextInput name='phone' source='phone' label='Téléphone' validate={required()} />
-            <TextInput name='comment' source='comment' label='Commentaire' multiline />
+            <FormCustomer />
           </div>
         </SimpleForm>
       </Edit>
