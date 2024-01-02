@@ -68,15 +68,15 @@ describe(specTitle('Transactions'), () => {
     const today = new Date();
     cy.wait('@getTransactionsSummary');
     cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
-    cy.get('[name="datePicker"]').clear().type(2023);
+    cy.get('[name="datePicker"]').clear().type(2024);
 
     cy.contains('Vue mensuelle');
     cy.contains('Vue annuelle');
     cy.contains('Sélectionnez une année');
 
-    cy.contains('Décaissement 2023');
-    cy.contains('Encaissement 2023');
-    cy.contains('Trésorerie 2023');
+    cy.contains('Décaissement 2024');
+    cy.contains('Encaissement 2024');
+    cy.contains('Trésorerie 2024');
 
     cy.contains('2100,00 €');
     cy.contains('1000,00 €');
@@ -90,7 +90,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
 
-    cy.get('[name="datePicker"]').clear().type('janvier 2023');
+    cy.get('[name="datePicker"]').clear().type('janvier 2024');
 
     cy.contains('120,00 €');
     cy.contains('0,00 €');
@@ -101,13 +101,13 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains('Dernière modification');
 
-    cy.get('[name="datePicker"]').clear().type('avril 2023');
+    cy.get('[name="datePicker"]').clear().type('avril 2024');
 
     cy.contains('130,00 €');
     cy.contains('10,00 €');
     cy.contains('330,00 €');
 
-    cy.get('[name="datePicker"]').clear().type('décembre 2023');
+    cy.get('[name="datePicker"]').clear().type('décembre 2024');
 
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
 
@@ -123,7 +123,7 @@ describe(specTitle('Transactions'), () => {
     const today = new Date();
     cy.wait('@getTransactionsSummary');
     cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
-    cy.get('[name="datePicker"]').clear().type(2023);
+    cy.get('[name="datePicker"]').clear().type(2024);
 
     cy.contains('Objectif annuel (10,00 % atteint)');
     cy.contains('Encaissement de cette année : 12000,00 €');
@@ -138,7 +138,7 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('display current balance all the time', () => {
-    const newDate = new Date(2023, 1, 1);
+    const newDate = new Date(2024, 1, 1);
     cy.clock(newDate);
     mount(<App />);
     cy.get('[name="transactions"]').click();
@@ -149,10 +149,10 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('#annualSummarySwitch').click();
 
-    cy.get('[name="datePicker"]').clear().type('janvier 2023');
+    cy.get('[name="datePicker"]').clear().type('janvier 2024');
     cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains('Trésorerie');
-    cy.get('[name="datePicker"]').clear().type('décembre 2023');
+    cy.get('[name="datePicker"]').clear().type('décembre 2024');
     cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });

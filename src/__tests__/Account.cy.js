@@ -258,7 +258,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    const newRevenueTargets = [{ year: 2023, amountTarget: 23000000 }];
+    const newRevenueTargets = [{ year: 2024, amountTarget: 23000000 }];
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
       expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
       const response = { ...accountHolders1[0] };
