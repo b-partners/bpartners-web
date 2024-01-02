@@ -59,11 +59,13 @@ jobs:
         with:
           file: version.yml
           version: version
+          record: true
       - run: npm install --location=global sonar-scanner
       - name: Sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
           sonar-scanner \
             -Dsonar.projectVersion=${{ steps.read-version.outputs.version }} \

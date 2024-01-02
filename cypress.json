@@ -18,5 +18,6 @@
     "cypressSonarqubeReporterReporterOptions": {
       "overwrite": true
     }
-  }
+  },
+  "projectId": "4f6tz2"
 }
