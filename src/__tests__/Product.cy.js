@@ -259,5 +259,15 @@ describe(specTitle('Products'), () => {
     });
     cy.get('[data-testid="archive-products-button"]').should('not.exist');
     cy.contains('Produits archivés avec succès');
+    // Archiver le produit depuis la fenêtre d'edit du produit
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
+    cy.contains('Édition de produit');
+    cy.get('[data-testid="submit-archive-products"]').click();
+    cy.wait('@archiveProduct').then(res => {
+      const expectedPayload = [{ id: 'product-15-id', status: 'DISABLED' }];
+      const body = res.request.body;
+      expect(body).to.deep.eq(expectedPayload);
+    });
+    cy.contains('Produits archivés avec succès');
   });
 });
