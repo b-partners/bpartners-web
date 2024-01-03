@@ -62,9 +62,15 @@ export const ProductSelection = ({ name, form }) => {
 
   const submitNewProduct = async values => {
     // create the new product
-    const createdProductResponse = await productProvider.saveOrUpdate([values]);
+    const [createdProductResponse] = await productProvider.saveOrUpdate([values]);
+    const adaptedDataNewProduct = {
+      ...createdProductResponse,
+      unitPrice: createdProductResponse.unitPrice * 100,
+      unitPriceWithVat: createdProductResponse.unitPriceWithVat * 100,
+      vatPercent: createdProductResponse.vatPercent * 100,
+    };
     // add the new created product
-    handleProduct('add', createdProductResponse[0]);
+    handleProduct('add', adaptedDataNewProduct);
     // notification success
     notify('messages.product.create', { type: 'success' });
   };
