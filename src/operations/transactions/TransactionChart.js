@@ -1,14 +1,14 @@
-import { Box, Card, CardContent, Grid, LinearProgress, Typography, Skeleton, Switch } from '@mui/material';
+import { Box, Card, CardContent, Grid, LinearProgress, Skeleton, Switch, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Legend } from 'recharts';
+import { Cell, Legend, Pie, PieChart } from 'recharts';
 import emptyGraph from 'src/assets/noData.png';
 
-import { toMajors, prettyPrintPercentMinors, toMinors, prettyPrintMinors } from '../../common/utils';
-import BPDatePicker from '../../common/components/BPDatePicker';
 import { BP_COLOR } from 'src/bp-theme';
-import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { printError } from 'src/common/utils';
 import { accountProvider, payingApi } from 'src/providers';
+import BPDatePicker from '../../common/components/BPDatePicker';
+import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
+import { prettyPrintMinors, prettyPrintPercentMinors, toMajors, toMinors } from '../../common/utils';
 
 const AnnualTargetGraph = ({ year }) => {
   const revenueTargets = useGetAccountHolder().revenueTargets;
@@ -167,7 +167,7 @@ const TransactionChart = () => {
                   <i>Dernière modification</i>
                 </Typography>
                 <Typography variant='body2'>
-                  <i>{lastUpdateDate.split('T').join(' ').split('.')[0]}</i>
+                  <i>{`${lastUpdateDate}`.split('T').join(' ').split('.')[0]}</i>
                 </Typography>
               </Box>
             )}
