@@ -13,10 +13,12 @@ import {
   Tooltip,
   Card,
   CardContent,
+  Chip,
 } from '@mui/material';
 import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
 import { useNotify, useRefresh } from 'react-admin';
 import { justifyTransaction } from 'src/providers/transaction-provider';
+import { transactionSupportingDocProvider } from 'src/providers';
 
 const SelectionDialog = props => {
   const {
@@ -28,6 +30,7 @@ const SelectionDialog = props => {
   const refresh = useRefresh();
   const [isLoading, setLoading] = useState(false);
   const [invoiceToLink, setInvoiceToLink] = useState(null);
+  const [file, setFile] = useState(null);
 
   const handleSubmit = () => {
     const fetch = async () => {
@@ -40,6 +43,31 @@ const SelectionDialog = props => {
     fetch()
       .catch(() => notify('messages.global.error', { type: 'error' }))
       .finally(() => setLoading(false));
+  };
+
+  const handleRowClick = (_id, _resource, record) => {
+    setInvoiceToLink(record);
+    setFile(null);
+  };
+
+  const handleImportFile = file => {
+    console.log('file du handleImportFile', file);
+    const targetFile = file.target.files[0];
+    if (targetFile?.name) {
+      console.log('tu es dans la condition');
+      setFile(file);
+      setInvoiceToLink(null);
+    }
+  };
+  const importFileSubmit = async () => {
+    console.log('file submit', file);
+    const resources = { file: file, tId: id };
+    try {
+      await transactionSupportingDocProvider.saveOrUpdate(resources);
+      notify('Document ajouté avec succès.', { type: 'success' });
+    } catch (error) {
+      notify('messages.global.error', { type: 'error' });
+    }
   };
 
   return (
@@ -55,14 +83,29 @@ const SelectionDialog = props => {
         </Box>
         <Card>
           <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 0, padding: 0 }}>
-              {invoiceToLink ? <SelectedInvoiceTable invoice={invoiceToLink} /> : <Typography>Veuillez sélectionner une facture</Typography>}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', margin: 0, padding: 0 }}>
+              {invoiceToLink && !file ? (
+                <SelectedInvoiceTable invoice={invoiceToLink} />
+              ) : file ? (
+                <Chip sx={{ marginTop: '0.3rem', marginLeft: '0.3rem' }} label={file?.target.files[0].name} onDelete={() => setFile(null)} />
+              ) : (
+                <Typography>Veuillez sélectionner une facture </Typography>
+              )}
+              {!file && (
+                <Typography>
+                  ou{' '}
+                  <label htmlFor='attachment-input' style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                    importer un document
+                  </label>
+                  <input id='attachment-input' style={{ display: 'none' }} onChange={handleImportFile} type='file' />
+                </Typography>
+              )}
             </Box>
           </CardContent>
         </Card>
       </DialogTitle>
       <DialogContent>
-        <InvoiceListSelection onSelectInvoice={setInvoiceToLink} />
+        <InvoiceListSelection handleRowClick={handleRowClick} />
       </DialogContent>
       <DialogActions>
         <Button
@@ -73,6 +116,7 @@ const SelectionDialog = props => {
         >
           Enregistrer
         </Button>
+        <Button onClick={importFileSubmit}>Enregistrer le fichier importé</Button>
       </DialogActions>
     </Dialog>
   );

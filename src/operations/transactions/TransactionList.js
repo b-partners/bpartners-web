@@ -18,6 +18,7 @@ import TransactionLinkInvoice from './TransactionLinkInvoice';
 import GenerateLinkModal from './components/GenerateLinkModal';
 import ExportLinkMailModal from './components/ExportLinkMailModal';
 import { ModalProvider } from 'src/common/store/transaction';
+import TransactionDocImport from './components/TransactionDocImport';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
@@ -114,6 +115,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
           )}
         />
         <FunctionField render={transaction => <TransactionLinkInvoice transaction={transaction} />} label='' />
+        {/* <FunctionField render={transaction => <TransactionDocImport transaction={transaction} />} label='' /> */}
       </Datagrid>
     )
   );
