@@ -163,7 +163,7 @@ describe(specTitle('Customers'), () => {
       const expectedPayload = [{ id: 'customer-0-id', status: 'DISABLED' }];
       const body = res.request.body;
       expect(body).to.deep.eq(expectedPayload);
-      cy.contains('Clients archivés avec succès');
+      cy.contains('Client archivé avec succès');
     });
   });
 
