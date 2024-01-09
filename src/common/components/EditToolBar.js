@@ -19,7 +19,7 @@ const EditToolBar = props => {
     await dataProvider.archive(props.resource, { data });
     setLoading(false);
     toList();
-    notify(`${translate(`resources.${props.resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
+    notify(`${translate(`resources.${props.resource}.name`, { smart_count: 1 })} archivé avec succès`, { type: 'success' });
   };
 
   const toList = () => {
