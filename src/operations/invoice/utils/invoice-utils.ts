@@ -1,4 +1,4 @@
-import { Invoice, InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { Invoice, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { formatDateTo8601, emptyToNull, isBlankNumber, toMajors, toMinors } from 'src/common/utils';
 import {
   DefaultPaymentRegulation,
@@ -22,7 +22,7 @@ export const invoiceMapper = {
     const delayInPaymentAllowed = !isBlankNumber(_invoice[DELAY_IN_PAYMENT_ALLOWED]) ? _invoice[DELAY_IN_PAYMENT_ALLOWED] : null;
     return { ...invoice, delayPenaltyPercent, globalDiscount, paymentRegulations, delayInPaymentAllowed };
   },
-  toRest: (_invoice: any): Invoice => {
+  toRest: (_invoice: any) => {
     const submittedAt = new Date();
 
     const globalDiscount = _invoice[GLOBAL_DISCOUNT] !== null ? { percentValue: toMinors(_invoice[GLOBAL_DISCOUNT]) } : null;

@@ -1,4 +1,4 @@
-import { Marketplace } from 'bpartners-react-client';
+import { Marketplace } from '@bpartners/typescript-client';
 
 export const marketplaces1: Array<Marketplace> = [
   {

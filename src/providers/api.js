@@ -9,7 +9,7 @@ import {
   UserAccountsApi,
   SheetApi,
   MailingApi,
-} from 'bpartners-react-client';
+} from '@bpartners/typescript-client';
 import { authProvider } from '.';
 
 export const securityApi = () => new SecurityApi(authProvider.getCachedAuthConf());

@@ -1,4 +1,4 @@
-import { FeedbackRequest } from 'bpartners-react-client';
+import { FeedbackRequest } from '@bpartners/typescript-client';
 import { userAccountsApi } from './api';
 import { asyncGetUserInfo } from './asyncGetUserInfo';
 

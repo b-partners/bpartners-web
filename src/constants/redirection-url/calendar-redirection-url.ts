@@ -1,4 +1,4 @@
-import { CalendarAuth } from 'bpartners-react-client';
+import { CalendarAuth } from '@bpartners/typescript-client';
 
 export const calendarRedirectionUrls = (calendarId: string) => {
   return {

@@ -1,6 +1,6 @@
 import { Attachment, Check, DriveFileMove, TurnRight, History } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 

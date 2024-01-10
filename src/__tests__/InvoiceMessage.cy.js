@@ -1,5 +1,5 @@
 import { mount } from '@cypress/react';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';

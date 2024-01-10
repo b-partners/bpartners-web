@@ -1,5 +1,5 @@
 import { mount } from '@cypress/react';
-import { InvoicePaymentTypeEnum, InvoiceStatus } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum, InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';

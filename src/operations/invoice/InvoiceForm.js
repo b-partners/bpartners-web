@@ -29,7 +29,7 @@ import {
   totalPriceWithVatFromProducts,
   titleValidator,
 } from './utils/utils';
-import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import { invoiceMapper } from './utils/invoice-utils';
 import CheckboxForm from './components/CheckboxForm';

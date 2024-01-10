@@ -1,4 +1,4 @@
-import { Invoice } from 'bpartners-react-client';
+import { Invoice } from '@bpartners/typescript-client';
 import { createContext, useContext } from 'react';
 
 type ConversionStore = {

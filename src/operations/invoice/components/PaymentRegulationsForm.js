@@ -1,6 +1,6 @@
 import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/icons-material';
 import { Box, FormControl, FormHelperText, Paper } from '@mui/material';
-import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';

@@ -1,4 +1,4 @@
-import { AccountInvoiceRelaunchConf, InvoiceRelaunch } from 'bpartners-react-client';
+import { AccountInvoiceRelaunchConf, InvoiceRelaunch, RelaunchType } from '@bpartners/typescript-client';
 import { accounts1 } from './account-api';
 
 export const invoiceRelaunch1: AccountInvoiceRelaunchConf = {
@@ -19,7 +19,7 @@ export const invoiceRelaunchHistory: InvoiceRelaunch = {
   creationDatetime: new Date('2023-01-01'),
   id: 'invoice_relaunch_1',
   isUserRelaunched: true,
-  type: 'CONFIRMED',
+  type: RelaunchType.CONFIRMED,
   emailInfo: {
     attachmentFileId: 'dummy_attachement_id',
     emailBody: '<p>Dummy body content of history relaunch</p>',

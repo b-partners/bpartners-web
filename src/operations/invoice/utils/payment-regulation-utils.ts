@@ -1,4 +1,4 @@
-import { InvoicePaymentTypeEnum } from 'bpartners-react-client';
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { getNextMonthDate, toMajors, toMinors } from 'src/common/utils';
 
 // Payment regulation

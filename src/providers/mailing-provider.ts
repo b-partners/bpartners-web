@@ -1,4 +1,4 @@
-import { CreateEmail } from 'bpartners-react-client';
+import { CreateEmail } from '@bpartners/typescript-client';
 import { getCached, mailingApi } from '.';
 
 export const mailingProvider = {

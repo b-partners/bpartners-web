@@ -1,4 +1,4 @@
-import { AccountHolder } from 'bpartners-react-client';
+import { AccountHolder } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
 import { accountHolderProvider, getCached } from '../../providers';
 import { printError } from '../utils';

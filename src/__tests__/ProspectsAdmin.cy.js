@@ -5,7 +5,7 @@ import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { evaluationJobDetails, evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
 import { importProspects } from './mocks/responses/import-prospects-api';
 

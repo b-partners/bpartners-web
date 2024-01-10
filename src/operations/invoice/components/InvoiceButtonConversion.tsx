@@ -1,4 +1,4 @@
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { ReactElement } from 'react';
 import { useTranslate } from 'react-admin';
 import TooltipButton from 'src/common/components/TooltipButton';

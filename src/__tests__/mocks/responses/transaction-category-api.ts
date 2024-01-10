@@ -1,4 +1,4 @@
-import { TransactionCategory, TransactionTypeEnum } from 'bpartners-react-client';
+import { TransactionCategory, TransactionTypeEnum } from '@bpartners/typescript-client';
 
 const createTransactionCategory = (n: number): TransactionCategory => {
   const transactionCategory: TransactionCategory = {
