@@ -1,6 +1,5 @@
 import { getMimeType, toArrayBuffer } from 'src/common/utils';
-import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
-
+import { BpDataProviderType, asyncGetUserInfo, payingApi } from '.';
 
 export const transactionSupportingDocProvider: BpDataProviderType = {
   async getOne(id: string) {
@@ -11,19 +10,19 @@ export const transactionSupportingDocProvider: BpDataProviderType = {
   },
   saveOrUpdate: async function (resources: any): Promise<any> {
     const { file, tId } = resources;
-    // const { accountId } = getCached.userInfo();
     const { accountId } = await asyncGetUserInfo();
     const binaryFile = await toArrayBuffer(file);
-    const type = getMimeType(file);    
+    const type = getMimeType(file);
+    const data = (await payingApi().addTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
+    console.log('data', data);
 
-    return await payingApi().addTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } });
+    return data;
   },
-  archive : async (resources: any) => {
+  archive: async (resources: any) => {
     const { accountId } = await asyncGetUserInfo();
     const { file, tId } = resources;
     const binaryFile = await toArrayBuffer(file);
-    const type = getMimeType(file); 
-   return (await payingApi().deleteTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
-  }
+    const type = getMimeType(file);
+    return (await payingApi().deleteTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
+  },
 };
-

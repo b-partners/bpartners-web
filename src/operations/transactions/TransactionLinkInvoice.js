@@ -32,41 +32,44 @@ const SelectionDialog = props => {
   const [invoiceToLink, setInvoiceToLink] = useState(null);
   const [file, setFile] = useState(null);
 
-  const handleSubmit = () => {
-    const fetch = async () => {
-      await justifyTransaction(id, invoiceToLink.id);
-      notify(`La transaction "${label}" a été associée au justificatif "${invoiceToLink.title}."`, { type: 'success' });
-      close();
-      refresh();
-    };
-    setLoading(true);
-    fetch()
-      .catch(() => notify('messages.global.error', { type: 'error' }))
-      .finally(() => setLoading(false));
-  };
-
   const handleRowClick = (_id, _resource, record) => {
     setInvoiceToLink(record);
     setFile(null);
   };
 
   const handleImportFile = file => {
-    console.log('file du handleImportFile', file);
     const targetFile = file.target.files[0];
     if (targetFile?.name) {
-      console.log('tu es dans la condition');
       setFile(file);
       setInvoiceToLink(null);
     }
   };
+
+  const fetch = async () => {
+    await justifyTransaction(id, invoiceToLink.id);
+    notify(`La transaction "${label}" a été associée au justificatif "${invoiceToLink.title}."`, { type: 'success' });
+    close();
+    refresh();
+  };
+
   const importFileSubmit = async () => {
-    console.log('file submit', file);
     const resources = { file: file, tId: id };
-    try {
-      await transactionSupportingDocProvider.saveOrUpdate(resources);
-      notify('Document ajouté avec succès.', { type: 'success' });
-    } catch (error) {
-      notify('messages.global.error', { type: 'error' });
+    await transactionSupportingDocProvider.saveOrUpdate(resources);
+    notify('Document ajouté avec succès.', { type: 'success' });
+    close();
+    refresh();
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    if (invoiceToLink && !file) {
+      fetch()
+        .catch(() => notify('messages.global.error', { type: 'error' }))
+        .finally(() => setLoading(false));
+    } else {
+      importFileSubmit()
+        .catch(() => notify('messages.global.error', { type: 'error' }))
+        .finally(() => setLoading(false));
     }
   };
 
@@ -97,7 +100,7 @@ const SelectionDialog = props => {
                   <label htmlFor='attachment-input' style={{ textDecoration: 'underline', cursor: 'pointer' }}>
                     importer un document
                   </label>
-                  <input id='attachment-input' style={{ display: 'none' }} onChange={handleImportFile} type='file' />
+                  <input id='attachment-input' style={{ display: 'none' }} onChange={handleImportFile} type='file' accept='.png, .jpg, .jpeg, .pdf' />
                 </Typography>
               )}
             </Box>
@@ -110,13 +113,12 @@ const SelectionDialog = props => {
       <DialogActions>
         <Button
           id='link-invoice-button-id'
-          disabled={isLoading || !invoiceToLink}
+          disabled={isLoading || (!invoiceToLink && !file)}
           endIcon={isLoading && <CircularProgress size={20} sx={{ color: 'white' }} />}
           onClick={handleSubmit}
         >
           Enregistrer
         </Button>
-        <Button onClick={importFileSubmit}>Enregistrer le fichier importé</Button>
       </DialogActions>
     </Dialog>
   );
