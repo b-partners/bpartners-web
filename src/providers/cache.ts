@@ -1,4 +1,4 @@
-import { Account, AccountHolder, User, Whoami } from 'bpartners-react-client';
+import { Account, AccountHolder, User, Whoami } from '@bpartners/typescript-client';
 
 const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';

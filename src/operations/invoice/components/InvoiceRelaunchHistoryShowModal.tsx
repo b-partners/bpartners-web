@@ -4,7 +4,7 @@ import { ContentState, Editor, EditorState, convertFromHTML } from 'draft-js';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { InvoiceListModal } from '.';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
-import { Attachment, InvoiceRelaunch } from 'bpartners-react-client';
+import { Attachment, InvoiceRelaunch } from '@bpartners/typescript-client';
 import { formatDatetime } from 'src/common/utils';
 import { fileProvider } from 'src/providers';
 import { useNotify } from 'react-admin';

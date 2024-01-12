@@ -1,6 +1,6 @@
 import { Box, Typography, Button } from '@mui/material';
 import { Inbox as InboxIcon } from '@mui/icons-material';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { FC, ReactNode } from 'react';
 
 interface EmptyInvoiceListProps {

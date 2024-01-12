@@ -1,4 +1,4 @@
-import { Account, AccountHolder, AccountValidationRedirection, BusinessActivity, LegalFile } from 'bpartners-react-client';
+import { Account, AccountHolder, AccountValidationRedirection, BusinessActivity, LegalFile } from '@bpartners/typescript-client';
 
 export const account1: Account = { active: true, availableBalance: 22000, bic: 'BIC', iban: 'IBAN', id: 'mock-account-id1', name: 'Numer', bank: null };
 export const account2: Account = {

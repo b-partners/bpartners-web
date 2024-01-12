@@ -1,4 +1,4 @@
-import { Invoice, InvoiceStatus } from 'bpartners-react-client';
+import { Invoice, InvoiceStatus } from '@bpartners/typescript-client';
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
 export type ModalType = 'FEEDBACK' | 'RELAUNCH' | 'RELAUNCH_HISTORY' | 'RELAUNCH_SHOW';

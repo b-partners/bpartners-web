@@ -1,5 +1,5 @@
 import { CalendarProps } from '@react-admin/ra-calendar';
-import { CalendarEvent } from 'bpartners-react-client';
+import { CalendarEvent } from '@bpartners/typescript-client';
 import { dateForInput, dateForInputWithoutTimezone } from 'src/common/utils';
 import { v4 as uuidV4 } from 'uuid';
 export type TRaCalendarEvent = {

@@ -1,4 +1,4 @@
-import { Product } from 'bpartners-react-client';
+import { Product } from '@bpartners/typescript-client';
 import { objectMapper } from './object-mapper';
 import { emptyToNull, toMajors, toMinors } from 'src/common/utils';
 

@@ -1,4 +1,4 @@
-import { Product } from 'bpartners-react-client';
+import { Product } from '@bpartners/typescript-client';
 
 export const createProduct = (n: number) => {
   const _products = [];

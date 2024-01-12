@@ -1,5 +1,5 @@
 import { Amplify, Auth } from 'aws-amplify';
-import { Configuration, SecurityApi } from 'bpartners-react-client';
+import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';

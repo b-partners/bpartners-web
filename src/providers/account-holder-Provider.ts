@@ -6,7 +6,7 @@ import {
   CompanyInfo,
   CreateAnnualRevenueTarget,
   UpdateAccountHolder,
-} from 'bpartners-react-client';
+} from '@bpartners/typescript-client';
 import { BpDataProviderType, asyncGetAccountId, asyncGetUser, cache, getCached, userAccountsApi } from '.';
 
 export const accountHolderProvider: BpDataProviderType = {

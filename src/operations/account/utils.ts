@@ -1,4 +1,4 @@
-import { AccountHolder, CompanyBusinessActivity, CompanyInfo } from 'bpartners-react-client';
+import { AccountHolder, CompanyBusinessActivity, CompanyInfo } from '@bpartners/typescript-client';
 import { toMajors } from '../../common/utils';
 
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";

@@ -1,11 +1,11 @@
-import { ProspectEvaluationJobDetails, ProspectEvaluationJobInfo } from 'bpartners-react-client';
+import { ProspectEvaluationJobDetails, ProspectEvaluationJobInfo, ProspectEvaluationJobType, JobStatusValue } from '@bpartners/typescript-client';
 
 export const evaluationJobs: ProspectEvaluationJobInfo[] = [
   {
     id: 'mock-evaluationJob-id1',
-    type: 'SPREADSHEET_EVALUATION',
+    type: ProspectEvaluationJobType.SPREADSHEET_EVALUATION,
     status: {
-      value: 'FAILED',
+      value: JobStatusValue.FAILED,
       message: "[Google Sheet] Unable to parse range: 'first One'!A2:AF4",
     },
     startedAt: new Date('2023-10-10T09:33:43.849669Z'),
@@ -27,9 +27,9 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
   },
   {
     id: 'mock-evaluationJob-id2',
-    type: 'SPREADSHEET_EVALUATION',
+    type: ProspectEvaluationJobType.SPREADSHEET_EVALUATION,
     status: {
-      value: 'NOT_STARTED',
+      value: JobStatusValue.NOT_STARTED,
       message: null,
     },
     startedAt: new Date('2023-10-05T12:11:03.641960Z'),
@@ -51,9 +51,9 @@ export const evaluationJobs: ProspectEvaluationJobInfo[] = [
   },
   {
     id: 'mock-evaluationJob-id3',
-    type: 'SPREADSHEET_EVALUATION',
+    type: ProspectEvaluationJobType.SPREADSHEET_EVALUATION,
     status: {
-      value: 'FINISHED',
+      value: JobStatusValue.FINISHED,
       message: null,
     },
     startedAt: new Date('2023-10-05T08:00:52.352837Z'),
@@ -78,6 +78,6 @@ export const evaluationJobDetails: ProspectEvaluationJobDetails = {
   id: '91013503-cb23-4ea3-b381-4f55ba80c29b',
   metadata: {},
   results: [{}, {}, {}],
-  status: { value: 'FINISHED', message: 'Successfully processed after 0 minutes 3 seconds with 3 evaluated prospects or old customers' },
-  type: 'SPREADSHEET_EVALUATION',
+  status: { value: JobStatusValue.FINISHED, message: 'Successfully processed after 0 minutes 3 seconds with 3 evaluated prospects or old customers' },
+  type: ProspectEvaluationJobType.SPREADSHEET_EVALUATION,
 };

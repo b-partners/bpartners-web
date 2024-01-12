@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { Invoice } from 'bpartners-react-client';
+import { Invoice } from '@bpartners/typescript-client';
 import { FC, ReactNode } from 'react';
 import { invoiceGetContext } from '../utils';
 

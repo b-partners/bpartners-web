@@ -1,4 +1,4 @@
-import { Account, AccountValidationRedirection, UpdateAccountIdentity } from 'bpartners-react-client';
+import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import { getCurrentAccount } from 'src/common/utils';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
 import { BpDataProviderType, accountHolderProvider, cache, getCached, onboardingApi, userAccountsApi } from '.';

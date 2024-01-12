@@ -1,4 +1,4 @@
-import { ImportProspect } from 'bpartners-react-client';
+import { ImportProspect } from '@bpartners/typescript-client';
 import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {

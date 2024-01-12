@@ -1,4 +1,4 @@
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
 import { cache, getCached } from 'src/providers';
 

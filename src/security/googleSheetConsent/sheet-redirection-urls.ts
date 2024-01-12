@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls } from 'bpartners-react-client';
+import { RedirectionStatusUrls } from '@bpartners/typescript-client';
 
 export const SuccesslUrl = '/sheets/consent/success';
 export const failurelUrl = '/sheets/consent/failure';

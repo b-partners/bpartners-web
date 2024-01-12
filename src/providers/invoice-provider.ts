@@ -1,4 +1,4 @@
-import { ArchiveStatus } from 'bpartners-react-client';
+import { ArchiveStatus } from '@bpartners/typescript-client';
 import { invoiceMapper } from 'src/operations/invoice/utils/invoice-utils';
 import { asyncGetAccountId, getCached, payingApi } from '.';
 import { BpDataProviderType } from './bp-data-provider-type';

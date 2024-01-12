@@ -10,7 +10,7 @@ import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Paper, Ske
 import { green, grey, yellow } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
-import { FileType } from 'bpartners-react-client';
+import { FileType } from '@bpartners/typescript-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bp-theme';
 import { RaMoneyField } from 'src/common/components';

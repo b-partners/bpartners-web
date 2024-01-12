@@ -1,4 +1,4 @@
-import { CalendarProvider } from 'bpartners-react-client';
+import { CalendarProvider } from '@bpartners/typescript-client';
 import { BpDataProviderType, calendarApi, getCached } from '.';
 import { calendarEventMapper } from './mappers';
 

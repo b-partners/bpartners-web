@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { MenuItem, TextField } from '@mui/material';
-import { Calendar } from 'bpartners-react-client';
+import { Calendar } from '@bpartners/typescript-client';
 import { FC, useEffect } from 'react';
 import { useCalendarContext } from 'src/common/store/calendar';
 
