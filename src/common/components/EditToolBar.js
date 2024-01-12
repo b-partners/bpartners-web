@@ -4,7 +4,7 @@ import { Toolbar, SaveButton, useRedirect, useTranslate, useNotify } from 'react
 import { Button, CircularProgress } from '@mui/material';
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { dataProvider } from 'src/providers';
-import { ProductStatus as ArchiveStatus } from 'bpartners-react-client';
+import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 
 const EditToolBar = props => {
   const [isLoading, setLoading] = useState(false);
