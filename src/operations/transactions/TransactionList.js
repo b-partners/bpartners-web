@@ -102,11 +102,11 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
           render={({ id, invoice }) => (
-            <Tooltip title='Voir mon justificatifs' onClick={() => onDocumentIconClicked(invoice)}>
+            <Tooltip title='Voir mon justificatifs'>
               <span>
                 {/* Do NOT remove span otherwise Tooltip won't show while IconButton is disabled
                     https://mui.com/material-ui/react-tooltip/#disabled-elements */}
-                <IconButton id={`document-button-${id}`} disabled={invoice === null}>
+                <IconButton id={`document-button-${id}`} disabled={invoice === null} onClick={() => onDocumentIconClicked(invoice)}>
                   <AttachmentIcon />
                 </IconButton>
               </span>

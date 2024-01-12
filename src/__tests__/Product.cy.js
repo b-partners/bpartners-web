@@ -180,7 +180,7 @@ describe(specTitle('Products'), () => {
     cy.get('#description').clear().type(editionDescription);
     cy.get('#unitPrice').clear().type(1);
     cy.get('#vatPercent').clear().type(1);
-    cy.get('.RaToolbar-defaultToolbar > .MuiButton-contained').click();
+    cy.get('.MuiToolbar-root > .MuiButton-contained').click();
 
     cy.contains('edit this product test');
   });
@@ -259,5 +259,11 @@ describe(specTitle('Products'), () => {
     });
     cy.get('[data-testid="archive-products-button"]').should('not.exist');
     cy.contains('Produits archivés avec succès');
+    // Archiver le produit depuis la fenêtre d'edit du produit
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
+    cy.contains('Édition de produit');
+    cy.get('[data-testid="submit-archive-products"]').click();
+    cy.wait('@archiveProduct');
+    cy.contains('Produit archivé avec succès');
   });
 });
