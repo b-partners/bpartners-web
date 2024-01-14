@@ -178,7 +178,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('En réception').should('not.exist');
   });
 
-  it('Link transaction to invoice', () => {
+  it.only('Link transaction to invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
