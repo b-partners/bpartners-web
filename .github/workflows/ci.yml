@@ -59,6 +59,11 @@ jobs:
         with:
           file: version.yml
           version: version
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
       - run: npm install --location=global sonar-scanner
       - name: Sonar
         env:
