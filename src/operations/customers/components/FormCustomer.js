@@ -1,11 +1,15 @@
 import { TextInput, email, required } from 'react-admin';
 import { useWatch } from 'react-hook-form';
 
+const ReturnedCompanyName = () => {
+  const customerType = useWatch({ name: 'customerType' });
+  return customerType === 'PROFESSIONAL' && <TextInput name='name' source='name' label='Nom de la société' validate={required()} />;
+};
+
 const FormCustomer = () => {
-  const values = useWatch();
   return (
     <>
-      {values?.customerType === 'PROFESSIONAL' && <TextInput name='name' source='name' label='Nom de la société' validate={required()} />}
+      <ReturnedCompanyName />
       <TextInput name='lastName' source='lastName' label='Nom' validate={required()} />
       <TextInput name='firstName' source='firstName' label='Prénom' validate={required()} />
       <TextInput name='email' source='email' label='Email' validate={[email('Doit être un email valide'), required()]} />

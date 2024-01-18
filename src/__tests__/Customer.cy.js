@@ -77,6 +77,9 @@ describe(specTitle('Customers'), () => {
   });
 
   it('Should edit a customer', () => {
+    /* test à faire :
+      - au edit d'un client "PROFESSIONNEL", vérifier que le champ "name" existe
+    */
     mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
