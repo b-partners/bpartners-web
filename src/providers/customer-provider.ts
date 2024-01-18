@@ -39,9 +39,9 @@ export const customerProvider: BpDataProviderType = {
     );
     return data;
   },
-  getOne: function (customerId: string): Promise<any> {
+  getOne: async function (customerId: string): Promise<any> {
     const { accountId } = getCached.userInfo();
-    return customerApi().getCustomerById(accountId, customerId);
+    return (await customerApi().getCustomerById(accountId, customerId)).data;
   },
   saveOrUpdate: async function ([resource]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
