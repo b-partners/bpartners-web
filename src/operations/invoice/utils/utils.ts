@@ -114,7 +114,7 @@ export const productValidationHandling = (product: Product[], name: string, setE
   }
 };
 
-export const getReceiptUrl = (id: string, fileType: string) => getFileUrl(id, fileType);
+export const getReceiptUrl = (id: string, fileType: FileType) => getFileUrl(id, fileType);
 
 export const totalPriceWithVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPriceWithVat;
 export const totalPriceWithoutVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPrice;

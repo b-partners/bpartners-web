@@ -1,13 +1,15 @@
-import { Card } from '@mui/material';
-import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
+import { Card, CardHeader } from '@mui/material';
+import InvoicePdfDocument, { CancelButton, ContextCancelButton } from '../invoice/InvoicePdfDocument';
 import TransactionSupportingDoc from '../invoice/TransactionSupportingDoc';
 import { getReceiptUrl } from '../invoice/utils';
 import { useEffect, useState } from 'react';
+import { useNotify } from 'react-admin';
 
 const TransactionReceiptView = ({ selectedDoc, onClose }) => {
   const [fileExtension, setFileExtension] = useState('');
   const [url, setUrl] = useState('');
   const acceptedFileExtensions = ['png', 'jpeg', 'jpg'];
+  const notify = useNotify();
 
   const returnCorrectUrl = () => {
     const invoiceUrl = getReceiptUrl(selectedDoc.fileId, 'INVOICE');
@@ -17,12 +19,15 @@ const TransactionReceiptView = ({ selectedDoc, onClose }) => {
 
   const returnFileExtension = async () => {
     const correctUrl = returnCorrectUrl();
-    setUrl(correctUrl);
-    return fetch(correctUrl).then(res => {
-      // get the file extension
-      const contentType = res.headers.get('Content-Type');
-      return contentType ? contentType.split('/')[1] : '';
-    });
+
+    try {
+      const response = await fetch(correctUrl);
+      const blob = await response.blob();
+      setUrl(URL.createObjectURL(blob));
+      return blob ? blob.type.split('/')[1] : '';
+    } catch (error) {
+      notify('messages.global.error', { type: 'error' });
+    }
   };
 
   useEffect(() => {
@@ -39,9 +44,12 @@ const TransactionReceiptView = ({ selectedDoc, onClose }) => {
       {fileExtension === 'pdf' ? (
         <InvoicePdfDocument selectedInvoice={selectedDoc} onClose={onClose} url={url} />
       ) : acceptedFileExtensions.includes(fileExtension) ? (
-        <TransactionSupportingDoc selectedDoc={selectedDoc} onClose={onClose} url={url} />
+        <TransactionSupportingDoc onClose={onClose} url={url} />
       ) : (
-        <p style={{ textAlign: 'center' }}>Chargement du document...</p>
+        <>
+          <CardHeader title='Justificatif' action={onClose ? <CancelButton onClose={onClose} /> : <ContextCancelButton />} />
+          <p style={{ textAlign: 'center' }}>Chargement du document...</p>
+        </>
       )}
     </Card>
   );

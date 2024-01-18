@@ -38,7 +38,6 @@ const SelectionDialog = props => {
   };
 
   const handleImportFile = file => {
-    console.log('file', file);
     const targetFile = file.target.files[0];
 
     if (targetFile?.name) {

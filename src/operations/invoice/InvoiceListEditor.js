@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { useEffect, useReducer, useState } from 'react';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
