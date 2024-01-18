@@ -38,8 +38,17 @@ const SelectionDialog = props => {
   };
 
   const handleImportFile = file => {
+    console.log('file', file);
     const targetFile = file.target.files[0];
+
     if (targetFile?.name) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1 Mo
+
+      if (targetFile.size > maxSizeInBytes) {
+        notify('La taille du fichier dépasse la limite autorisée (1 Mo). Veuillez choisir un fichier plus petit.', { type: 'error' });
+        file.target.value = null;
+        return;
+      }
       setFile(file);
       setInvoiceToLink(null);
     }
