@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { Invoice, InvoiceStatus } from 'bpartners-react-client';
+import { Invoice, InvoiceStatus } from '@bpartners/typescript-client';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { invoiceProvider } from 'src/providers';

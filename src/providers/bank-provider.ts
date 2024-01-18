@@ -1,4 +1,4 @@
-import { Account, BankConnectionRedirection } from 'bpartners-react-client';
+import { Account, BankConnectionRedirection } from '@bpartners/typescript-client';
 import { cache, getCached } from './cache';
 import { createRedirectionUrl } from '../common/utils';
 import { userAccountsApi } from './api';

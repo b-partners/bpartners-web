@@ -1,5 +1,5 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { FC } from 'react';
 import { InvoiceToolState } from 'src/common/store/invoice';
 import { useConfirmedInvoiceToShow } from '../utils';

@@ -1,4 +1,4 @@
-import { CreateEmail, TransactionExportLink } from 'bpartners-react-client';
+import { CreateEmail, TransactionExportLink, EmailStatus } from '@bpartners/typescript-client';
 
 export const transactionExportLinkResponse: TransactionExportLink = {
   createdAt: new Date('2023-03-15'),
@@ -11,5 +11,5 @@ export const createEmailResponse: CreateEmail = {
   emailObject: 'dummy object',
   emailBody: 'dummy body message',
   attachments: [],
-  status: 'SENT',
+  status: EmailStatus.SENT,
 };

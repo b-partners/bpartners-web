@@ -1,4 +1,4 @@
-import { Invoice, InvoiceStatus } from 'bpartners-react-client';
+import { Invoice, InvoiceStatus, InvoicePaymentTypeEnum, ArchiveStatus } from '@bpartners/typescript-client';
 import { customers1 } from './customer-api';
 import { products } from './product-api';
 
@@ -21,9 +21,9 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
       totalPriceWithoutVat: 10000,
       totalPriceWithVat: 12000,
       totalVat: 2000,
-      paymentType: 'CASH',
+      paymentType: InvoicePaymentTypeEnum.CASH,
       globalDiscount: null,
-      archiveStatus: 'ENABLED',
+      archiveStatus: ArchiveStatus.ENABLED,
       metadata: {
         submittedAt: '2023-01-10T11:05:22.362Z',
       },
@@ -41,12 +41,12 @@ export const invoiceWithoutCustomer: Invoice = {
   sendingDate: '2022-05-10',
   toPayAt: '2022-05-15',
   validityDate: '2022-05-10',
-  status: 'DRAFT',
+  status: InvoiceStatus.DRAFT,
   title: 'invoice-incomplete-title',
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
-  paymentType: 'CASH',
+  paymentType: InvoicePaymentTypeEnum.CASH,
   globalDiscount: null,
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',
@@ -63,12 +63,12 @@ export const invoiceWithoutTitle: Invoice = {
   sendingDate: '2022-05-10',
   toPayAt: '2022-05-15',
   validityDate: '2022-05-15',
-  status: 'DRAFT',
+  status: InvoiceStatus.DRAFT,
   title: '',
   totalPriceWithoutVat: 10000,
   totalPriceWithVat: 12000,
   totalVat: 2000,
-  paymentType: 'CASH',
+  paymentType: InvoicePaymentTypeEnum.CASH,
   globalDiscount: null,
   metadata: {
     submittedAt: '2023-01-10T11:05:22.362Z',

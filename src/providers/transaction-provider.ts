@@ -1,4 +1,4 @@
-import { Transaction, TransactionStatus } from 'bpartners-react-client';
+import { Transaction, TransactionStatus } from '@bpartners/typescript-client';
 import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
 import { TRANSACTION_STATUSES } from '../constants';
 

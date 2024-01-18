@@ -1,4 +1,4 @@
-import { Account } from 'bpartners-react-client';
+import { Account } from '@bpartners/typescript-client';
 
 export const getCurrentAccount = (accounts: Account[]) => {
   const currentAccount = accounts?.filter(account => account.active);

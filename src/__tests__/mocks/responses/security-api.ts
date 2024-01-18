@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls, Token, User, Whoami } from 'bpartners-react-client';
+import { RedirectionStatusUrls, Token, User, Whoami, UserRole } from '@bpartners/typescript-client';
 
 export const phone1 = '0648492113';
 export const authStatusUrls1: RedirectionStatusUrls = { successUrl: '/login/success', failureUrl: 'login/failure' };
@@ -9,7 +9,7 @@ export const user1: User = {
   phone: '11 11 11',
   logoFileId: 'file-id-1',
   idVerified: true,
-  roles: ['EVAL_PROSPECT'],
+  roles: [UserRole.EVAL_PROSPECT],
 };
 export const user2: User = { ...user1, idVerified: false, roles: [] };
 export const whoami1: Whoami = { user: user1 };

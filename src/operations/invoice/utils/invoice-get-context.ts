@@ -1,4 +1,4 @@
-import { Invoice } from 'bpartners-react-client';
+import { Invoice } from '@bpartners/typescript-client';
 
 export const invoiceGetContext = (invoice: Invoice = {}, ifProposal: string, ifConfirmed: string) =>
   invoiceGetBaseContext(invoice, `${ifProposal} devis`, `${ifConfirmed} facture`);

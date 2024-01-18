@@ -8,7 +8,7 @@ import { transactions, transactionsSummary, transactionsSummary1 } from './mocks
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { createEmailResponse, transactionExportLinkResponse } from './mocks/responses/transaction-mailing-api';
 
 describe(specTitle('Transactions'), () => {

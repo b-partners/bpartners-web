@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls } from 'bpartners-react-client';
+import { RedirectionStatusUrls } from '@bpartners/typescript-client';
 
 export const loginSuccessRelUrl = '/login/success';
 export const failureSuccessRelUrl = '/login/failure';

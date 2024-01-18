@@ -1,4 +1,4 @@
-import { Customer, CustomerStatus } from 'bpartners-react-client';
+import { Customer, CustomerStatus } from '@bpartners/typescript-client';
 import { asyncGetUserInfo, BpDataProviderType, customerApi, getCached, maxPageSize } from '.';
 
 export const importCustomers = async (body: any) => {

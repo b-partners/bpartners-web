@@ -11,6 +11,7 @@ import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 import { BpAdmin } from './security/BpAdmin';
+import RedirectionMobilePage from './operations/redirectionMobile/RedirectionMobilePage';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           />
           <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
           <Route exact path='/password/reset' element={<PasswordResetPage />} />
+          <Route exact path='/redirection' element={<RedirectionMobilePage />} />
           <Route exact path='*' element={<BpAdmin />} />
         </Routes>
       </BrowserRouter>

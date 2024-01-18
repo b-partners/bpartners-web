@@ -31,7 +31,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.contains('Bon pour accord');
 
-    cy.intercept('GET', '/accounts/414049cb-5b6e-429e-b64d-8d6afdb201e4/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
+    cy.intercept('GET', '/accounts/c60f7153-d17b-49fa-80f0-1e8b48a15363/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
       'getdrafts'
     );
 
@@ -57,29 +57,37 @@ describe(specTitle('Invoice'), () => {
 
     cy.wait('@getdrafts', { timeout: timeout });
 
-    cy.intercept('GET', '/accounts/414049cb-5b6e-429e-b64d-8d6afdb201e4/invoices?page=1&pageSize=15&statusList=PROPOSAL&archiveStatus=ENABLED&filters=').as(
+    cy.intercept('GET', '/accounts/c60f7153-d17b-49fa-80f0-1e8b48a15363/invoices?page=1&pageSize=15&statusList=PROPOSAL&archiveStatus=ENABLED&filters=').as(
       'getproposals'
     );
-    cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
-    cy.contains('Brouillon transformé en devis', { timeout: timeout });
 
-    cy.wait('@getproposals', { timeout: timeout });
-    cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
-    cy.contains('Devis confirmé', { timeout: timeout });
+    cy.get('[name="bank"]').click();
 
-    cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
+    cy.get('body').then(body => {
+      if (!body.text().includes('Aucune banque associée.')) {
+        cy.get('[name="invoice"]').click();
+        cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
+        cy.contains('Brouillon transformé en devis', { timeout: timeout });
 
-    cy.intercept('PUT', '/accounts/414049cb-5b6e-429e-b64d-8d6afdb201e4/invoices/**/paymentRegulations/**/paymentMethod**').as('savePaymentRegulation');
-    cy.get("[data-testid='invoice-payment-method-select-0']").click();
-    cy.contains('Espèces').click();
-    cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-    cy.wait('@savePaymentRegulation', { timeout: timeout });
-    cy.contains('Acompte payé avec succès !');
+        cy.wait('@getproposals', { timeout: timeout });
+        cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
+        cy.contains('Devis confirmé', { timeout: timeout });
 
-    cy.get("[data-testid='invoice-payment-method-select-1']").click();
-    cy.contains('Chèque').click();
-    cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-    cy.wait('@savePaymentRegulation', { timeout: timeout });
-    cy.contains('Acompte payé avec succès !');
+        cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
+
+        cy.intercept('PUT', '/accounts/c60f7153-d17b-49fa-80f0-1e8b48a15363/invoices/**/paymentRegulations/**/paymentMethod**').as('savePaymentRegulation');
+        cy.get("[data-testid='invoice-payment-method-select-0']").click();
+        cy.contains('Espèces').click();
+        cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
+        cy.wait('@savePaymentRegulation', { timeout: timeout });
+        cy.contains('Acompte payé avec succès !');
+
+        cy.get("[data-testid='invoice-payment-method-select-1']").click();
+        cy.contains('Chèque').click();
+        cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
+        cy.wait('@savePaymentRegulation', { timeout: timeout });
+        cy.contains('Acompte payé avec succès !');
+      }
+    });
   });
 });

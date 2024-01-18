@@ -1,6 +1,6 @@
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { Avatar, Box, Button, LinearProgress, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import { InvoiceRelaunch } from 'bpartners-react-client';
+import { InvoiceRelaunch } from '@bpartners/typescript-client';
 import { ListContextProvider, useListController } from 'react-admin';
 import { EmptyListTemplate } from 'src/common/components';
 import { useInvoiceToolContext } from 'src/common/store/invoice';

@@ -1,5 +1,5 @@
 import { Box, Chip, FormHelperText, SxProps, Typography } from '@mui/material';
-import { Customer } from 'bpartners-react-client';
+import { Customer } from '@bpartners/typescript-client';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { AutocompleteBackend } from 'src/common/components';

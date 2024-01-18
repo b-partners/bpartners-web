@@ -155,6 +155,16 @@ describe(specTitle('Customers'), () => {
     });
     cy.get('[data-testid="archive-customers-button"]').should('not.exist');
     cy.contains('Clients archivés avec succès');
+    // Archiver le client depuis la fenêtre d'edit du client
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
+    cy.contains('Édition de client');
+    cy.get('[data-testid="submit-archive-customers"]').click();
+    cy.wait('@archiveCustomer').then(res => {
+      const expectedPayload = [{ id: 'customer-0-id', status: 'DISABLED' }];
+      const body = res.request.body;
+      expect(body).to.deep.eq(expectedPayload);
+      cy.contains('Client archivé avec succès');
+    });
   });
 
   it('Should display customer list', () => {

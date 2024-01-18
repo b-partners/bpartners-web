@@ -1,4 +1,4 @@
-import { ImportProspect } from 'bpartners-react-client';
+import { ImportProspect } from '@bpartners/typescript-client';
 
 export const importProspects: ImportProspect = {
   spreadsheetImport: {

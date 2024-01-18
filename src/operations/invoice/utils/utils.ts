@@ -1,4 +1,4 @@
-import { CreateAttachment, Invoice, InvoiceStatus, Product } from 'bpartners-react-client';
+import { CreateAttachment, Invoice, InvoiceStatus, Product, FileType, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { getFileUrl, getFilenameMeta, formatDate } from '../../../common/utils';
 import { InvoiceStatusFR } from '../../../constants';
 import { printError } from 'src/common/utils';
@@ -114,7 +114,7 @@ export const productValidationHandling = (product: Product[], name: string, setE
   }
 };
 
-export const getInvoicePdfUrl = (id: string) => getFileUrl(id, 'INVOICE');
+export const getInvoicePdfUrl = (id: string) => getFileUrl(id, FileType.INVOICE);
 
 export const totalPriceWithVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPriceWithVat;
 export const totalPriceWithoutVatFromProductQuantity = (product: Product): number => product.quantity * product.unitPrice;
@@ -194,7 +194,7 @@ export const invoiceInitialValue: Invoice = {
   validityDate: new Date().toLocaleDateString('fr-ca'),
   status: InvoiceStatus.DRAFT,
   comment: '',
-  paymentType: 'CASH',
+  paymentType: InvoicePaymentTypeEnum.CASH,
   paymentRegulations: [],
 };
 

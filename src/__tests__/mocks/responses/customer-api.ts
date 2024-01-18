@@ -1,11 +1,11 @@
-import { Customer } from 'bpartners-react-client';
+import { Customer, CustomerType } from '@bpartners/typescript-client';
 
 export const createCustomer = (n: number) => {
   const customers = [];
   for (let i = 0; i < n; i++) {
     customers.push({
       id: `customer-${i}-id`,
-      customerType: 'INDIVIDUAL',
+      customerType: CustomerType.INDIVIDUAL,
       lastName: `lastName-${i}`,
       firstName: `firstName-${i}`,
       email: `email.${i}@gmail.com`,

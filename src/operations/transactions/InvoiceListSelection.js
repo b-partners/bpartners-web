@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Table, TableBody, TableCell, TableRow, TextField as MuiTextField, Typography } from '@mui/material';
-import { InvoiceStatus } from 'bpartners-react-client';
+import { InvoiceStatus } from '@bpartners/typescript-client';
 import { useEffect, useMemo, useState } from 'react';
 import { Datagrid, FunctionField, ListContextProvider, TextField, useList, useNotify } from 'react-admin';
 import useGetAccountHolder from 'src/common/hooks/use-get-account-holder';

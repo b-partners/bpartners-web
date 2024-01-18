@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNotify, useRefresh, useTranslate } from 'react-admin';
 import { Button, CircularProgress, MenuItem, TableCell, TableRow, TextField, Typography } from '@mui/material';
-import { PaymentMethod } from 'bpartners-react-client';
+import { PaymentMethod } from '@bpartners/typescript-client';
 import { updatePaymentReg } from '../../../providers';
 import { formatDatetime, prettyPrintMoney } from '../../../common/utils';
 import { getPaymentRegulationStatusInFr } from '../utils/utils';

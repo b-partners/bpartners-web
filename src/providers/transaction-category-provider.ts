@@ -1,4 +1,4 @@
-import { TransactionCategory, TransactionTypeEnum } from 'bpartners-react-client';
+import { TransactionCategory, TransactionTypeEnum } from '@bpartners/typescript-client';
 import { getCached, payingApi } from '.';
 
 export const transactionCategoryProvider = {

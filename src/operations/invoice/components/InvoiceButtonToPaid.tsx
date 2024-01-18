@@ -1,4 +1,4 @@
-import { PaymentMethod } from 'bpartners-react-client';
+import { PaymentMethod, InvoiceStatus } from '@bpartners/typescript-client';
 import { useState } from 'react';
 import { useTranslate } from 'react-admin';
 import { useChangeInvoiceStatus } from 'src/common/hooks';
@@ -28,7 +28,7 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
   const paymentRegulations = invoice.paymentRegulations;
   const { fetch, isLoading } = useChangeInvoiceStatus(
     { ...invoice, paymentMethod },
-    'PAID',
+    InvoiceStatus.PAID,
     translate(`resources.invoices.conversion.PAID.success`, { smart_count: 2 })
   );
 

@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls } from 'bpartners-react-client';
+import { RedirectionStatusUrls } from '@bpartners/typescript-client';
 
 export const createRedirectionUrl = (successUrl: string, failureUrl: string): RedirectionStatusUrls => ({
   successUrl: window.location.origin + successUrl,

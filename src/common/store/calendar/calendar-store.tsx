@@ -1,4 +1,4 @@
-import { Calendar, CalendarEvent } from 'bpartners-react-client';
+import { Calendar, CalendarEvent } from '@bpartners/typescript-client';
 import { FC, createContext, useContext } from 'react';
 import { useTypedToggle } from 'src/common/hooks';
 import { TRaCalendarEvent } from 'src/providers/mappers';

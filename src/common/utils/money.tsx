@@ -1,6 +1,6 @@
 import { green, red } from '@mui/material/colors';
 import { ReactElement } from 'react';
-import { TransactionTypeEnum } from 'bpartners-react-client';
+import { TransactionTypeEnum } from '@bpartners/typescript-client';
 
 enum Currency {
   EUR = '€',

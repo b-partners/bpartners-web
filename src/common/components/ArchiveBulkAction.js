@@ -2,7 +2,7 @@ import { useListContext, useNotify, useRefresh, useUnselectAll, useTranslate } f
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { ProductStatus as ArchiveStatus } from 'bpartners-react-client';
+import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 import { BPButton } from 'src/common/components/BPButton';
 import { dataProvider } from 'src/providers';
 
