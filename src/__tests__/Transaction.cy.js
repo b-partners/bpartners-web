@@ -221,6 +221,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[data-testid="ClearIcon"]').click();
     cy.contains('Vue mensuelle');
   });
+
   it('Import document for a transaction', () => {
     cy.readFile('cypress/fixtures/test_image.jpg', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=TRANSACTION_SUPPORTING_DOCS`, document);
@@ -246,7 +247,6 @@ describe(specTitle('Transactions'), () => {
     cy.get('#categorized').click();
 
     cy.wait('@legalFiles');
-    cy.wait('@getTransactions5');
 
     cy.get('[data-testid="transaction3-link-invoice-button"]').click();
 
@@ -264,6 +264,8 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('#document-button-transaction3').click();
     cy.contains('Justificatif');
+    cy.get('[data-testid="ClearIcon"]').click();
+    cy.contains('Vue mensuelle');
   });
 
   it('Filter transaction by label', () => {

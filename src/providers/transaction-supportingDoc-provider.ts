@@ -13,16 +13,6 @@ export const transactionSupportingDocProvider: BpDataProviderType = {
     const { accountId } = await asyncGetUserInfo();
     const binaryFile = await toArrayBuffer(file);
     const type = getMimeType(file);
-    const data = (await payingApi().addTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
-    console.log('data', data);
-
-    return data;
-  },
-  archive: async (resources: any) => {
-    const { accountId } = await asyncGetUserInfo();
-    const { file, tId } = resources;
-    const binaryFile = await toArrayBuffer(file);
-    const type = getMimeType(file);
-    return (await payingApi().deleteTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
+    return (await payingApi().addTransactionSupportingDocuments(accountId, tId, binaryFile, { headers: { 'Content-Type': type } })).data;
   },
 };
