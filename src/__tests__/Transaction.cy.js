@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { whoami1 } from './mocks/responses/security-api';
-import { transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
+import { supportingDoc, transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
 import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { getInvoices } from './mocks/responses/invoices-api';
@@ -178,7 +178,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('En réception').should('not.exist');
   });
 
-  it.only('Link transaction to invoice', () => {
+  it('Link transaction to invoice', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
@@ -220,6 +220,50 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Justificatif');
     cy.get('[data-testid="ClearIcon"]').click();
     cy.contains('Vue mensuelle');
+  });
+  it('Import document for a transaction', () => {
+    cy.readFile('cypress/fixtures/test_image.jpg', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=TRANSACTION_SUPPORTING_DOCS`, document);
+    });
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        )
+      );
+    });
+    cy.intercept('POST', `/accounts/mock-account-id1/transactions/transaction3/supportingDocuments`, supportingDoc).as('supportingDocuments');
+    const newTransaction = transactions.slice();
+    newTransaction[2].supportingDocs = supportingDoc;
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions**', newTransaction).as('getTransactionsWithSupportingDoc');
+    mount(<App />);
+    cy.get('[name="transactions"]').click();
+
+    cy.get('#categorized').click();
+
+    cy.wait('@legalFiles');
+    cy.wait('@getTransactions5');
+
+    cy.get('[data-testid="transaction3-link-invoice-button"]').click();
+
+    cy.contains('Veuillez sélectionner une facture');
+    cy.contains('ou importer un document');
+
+    const file = 'cypress/fixtures/test_image.jpg';
+
+    cy.get('#attachment-input').invoke('show').selectFile(file).invoke('hide');
+
+    cy.get('#link-invoice-button-id').click();
+    cy.wait('@supportingDocuments');
+    cy.contains('Document ajouté avec succès.');
+    cy.wait('@getTransactionsWithSupportingDoc');
+
+    cy.get('#document-button-transaction3').click();
+    cy.contains('Justificatif');
   });
 
   it('Filter transaction by label', () => {
