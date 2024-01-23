@@ -20,7 +20,7 @@ describe(specTitle('Products'), () => {
 
     cy.intercept(
       'GET',
-      '/accounts/c60f7153-d17b-49fa-80f0-1e8b48a15363/products?unique=true&descriptionFilter=complexe&priceFilter=791&status=ENABLED&page=1&pageSize=15'
+      '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/products?unique=true&descriptionFilter=complexe&priceFilter=791&status=ENABLED&page=1&pageSize=15'
     ).as('filter');
     cy.get('#priceFilter').type('7.91');
     cy.wait('@filter', { timeout: 10_000 });
