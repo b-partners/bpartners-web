@@ -41,10 +41,10 @@ const SelectionDialog = props => {
     const targetFile = file.target.files[0];
 
     if (targetFile?.name) {
-      const maxSizeInBytes = 1 * 1024 * 1024; // 1 Mo
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2 Mo
 
       if (targetFile.size > maxSizeInBytes) {
-        notify('La taille du fichier dépasse la limite autorisée (1 Mo). Veuillez choisir un fichier plus petit.', { type: 'error' });
+        notify('La taille du fichier dépasse la limite autorisée (2 Mo). Veuillez choisir un fichier plus petit.', { type: 'error' });
         file.target.value = null;
         return;
       }

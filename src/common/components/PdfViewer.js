@@ -34,7 +34,6 @@ const PdfViewer = props => {
   useEffect(() => {
     startLoading();
   }, [url, startLoading]);
-  // console.log('url', url);
   return (
     <Box {...others}>
       <Card ref={pdfRef}>
