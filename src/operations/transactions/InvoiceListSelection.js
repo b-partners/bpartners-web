@@ -42,8 +42,7 @@ const useInvoiceList = () => {
 };
 
 const InvoiceListSelection = props => {
-  const { onSelectInvoice } = props;
-  const handleRowClick = (_id, _resource, record) => onSelectInvoice(record);
+  const { handleRowClick } = props;
 
   const { data, setFilter, isLoading } = useInvoiceList();
 

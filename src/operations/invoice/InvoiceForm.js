@@ -17,7 +17,7 @@ import { INVOICE_EDITION, DEFAULT_TEXT_FIELD_WIDTH } from './style';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
-  getInvoicePdfUrl,
+  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
   invoiceDateValidator,
@@ -104,7 +104,7 @@ const InvoiceForm = props => {
         () =>
           invoiceProvider
             .saveOrUpdate([form.watch()], { isEdition: true })
-            .then(([updatedInvoice]) => onPending(InvoiceActionType.STOP_PENDING, getInvoicePdfUrl(updatedInvoice.fileId))),
+            .then(([updatedInvoice]) => onPending(InvoiceActionType.STOP_PENDING, getReceiptUrl(updatedInvoice.fileId, 'INVOICE'))),
         error => error?.response?.status === 429 && (!form.watch().metadata || submittedAt > new Date(form.watch().metadata.submittedAt))
       ).catch(err => err?.response?.status === 400 && notify(err.response.data.message, { type: 'error', autoHideDuration: 10000 }));
     })
@@ -125,7 +125,7 @@ const InvoiceForm = props => {
   };
 
   useEffect(() => {
-    onPending(InvoiceActionType.STOP_PENDING, getInvoicePdfUrl(toEdit.fileId));
+    onPending(InvoiceActionType.STOP_PENDING, getReceiptUrl(toEdit.fileId, 'INVOICE'));
     updateInvoiceForm(toEdit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);
