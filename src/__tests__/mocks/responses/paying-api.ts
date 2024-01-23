@@ -17,6 +17,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.PENDING,
     type: TransactionTypeEnum.INCOME,
     invoice: null,
+    supportingDocs: [],
   },
   {
     id: 'transaction2',
@@ -34,6 +35,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.UPCOMING,
     type: TransactionTypeEnum.INCOME,
     invoice: null,
+    supportingDocs: [],
   },
   {
     id: 'transaction3',
@@ -44,6 +46,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.BOOKED,
     type: TransactionTypeEnum.OUTCOME,
     invoice: null,
+    supportingDocs: [],
   },
   {
     id: 'transaction4',
@@ -61,6 +64,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.REJECTED,
     type: TransactionTypeEnum.OUTCOME,
     invoice: null,
+    supportingDocs: [],
   },
   {
     id: 'transaction5',
@@ -71,6 +75,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.UNKNOWN,
     type: TransactionTypeEnum.INCOME,
     invoice: null,
+    supportingDocs: [],
   },
   {
     id: 'dummy',
@@ -81,6 +86,17 @@ export const transactions: Array<any> = [
     status: 'A_TOTALLY_UNEXPECTED_STATUS',
     type: TransactionTypeEnum.INCOME, //TODO: test for forward compatibility
     invoice: null,
+    supportingDocs: [],
+  },
+];
+
+export const supportingDoc: Array<any> = [
+  {
+    id: 'dummy',
+    uploadedAt: '2024-01-19T10:08:15.263Z',
+    uploadedByAccountId: 'dummy',
+    sizeInKB: 90,
+    sha256: 'dummy',
   },
 ];
 

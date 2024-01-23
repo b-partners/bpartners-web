@@ -11,26 +11,31 @@ import { formatDatetime, coloredPrettyPrintMinors } from '../../common/utils';
 
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import { TRANSACTION_STATUSES } from '../../constants';
-import InvoicePdfDocument from '../invoice/InvoicePdfDocument';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
 import TransactionLinkInvoice from './TransactionLinkInvoice';
 import GenerateLinkModal from './components/GenerateLinkModal';
 import ExportLinkMailModal from './components/ExportLinkMailModal';
 import { ModalProvider } from 'src/common/store/transaction';
+import TransactionReceiptView from './TransactionReceiptView';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />
 );
 
 const TransactionList = props => {
-  const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false });
+  const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false, type: '' });
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isExportLinkMailModalOpen, setIsExportLinkMailModalOpen] = useState(false);
 
-  const onDocumentIconClicked = document => {
-    setDocumentState({ shouldShowDocument: true, document });
+  const onDocumentIconClicked = (invoice, supportingDocs) => {
+    if (invoice) {
+      setDocumentState({ shouldShowDocument: true, document: invoice, type: 'INVOICE' });
+    } else {
+      setDocumentState({ shouldShowDocument: true, document: supportingDocs[0], type: 'TRANSACTION_SUPPORTING_DOCS' });
+    }
   };
+
   const closeDocument = () => {
     setDocumentState(e => ({ ...e, shouldShowDocument: false }));
   };
@@ -45,7 +50,9 @@ const TransactionList = props => {
   const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
     .filter(status => status !== 'UNKNOWN')
     .map((status, k) => ({ id: status, name: TRANSACTION_STATUSES[status].label }));
-  return !documentState.shouldShowDocument ? (
+  return documentState.shouldShowDocument ? (
+    <TransactionReceiptView selectedDoc={documentState.document} onClose={closeDocument} />
+  ) : (
     <ModalProvider>
       <TransactionChart />
       <Card sx={{ marginTop: 1, border: 0 }}>
@@ -83,8 +90,6 @@ const TransactionList = props => {
       )}
       {isExportLinkMailModalOpen && <ExportLinkMailModal isOpenModal={isExportLinkMailModalOpen} handleExportLinkMailModal={handleExportLinkMailModal} />}
     </ModalProvider>
-  ) : (
-    <InvoicePdfDocument selectedInvoice={documentState.document} onClose={closeDocument} />
   );
 };
 
@@ -101,17 +106,23 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
         <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
         <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
         <FunctionField
-          render={({ id, invoice }) => (
-            <Tooltip title='Voir mon justificatifs'>
-              <span>
-                {/* Do NOT remove span otherwise Tooltip won't show while IconButton is disabled
-                    https://mui.com/material-ui/react-tooltip/#disabled-elements */}
-                <IconButton id={`document-button-${id}`} disabled={invoice === null} onClick={() => onDocumentIconClicked(invoice)}>
-                  <AttachmentIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          )}
+          render={transaction => {
+            return (
+              <Tooltip title='Voir mon justificatif'>
+                <span>
+                  {/* Do NOT remove span otherwise Tooltip won't show while IconButton is disabled
+              https://mui.com/material-ui/react-tooltip/#disabled-elements */}
+                  <IconButton
+                    id={`document-button-${transaction.id}`}
+                    disabled={transaction.invoice === null && transaction.supportingDocs.length === 0}
+                    onClick={() => onDocumentIconClicked(transaction.invoice, transaction.supportingDocs)}
+                  >
+                    <AttachmentIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            );
+          }}
         />
         <FunctionField render={transaction => <TransactionLinkInvoice transaction={transaction} />} label='' />
       </Datagrid>

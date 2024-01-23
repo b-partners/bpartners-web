@@ -1,10 +1,10 @@
 import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
-import { InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
+import { InvoiceActionType, getReceiptUrl, invoiceListInitialState, viewScreenState } from './utils/utils';
 import { InvoiceToolContextProvider } from './components/InvoiceToolContextProvider';
 import { InvoiceTabs } from './components/InvoiceTabs';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
@@ -30,6 +30,7 @@ const invoiceListReducer = (state, { type, payload }) => {
 };
 
 const InvoiceListEditor = () => {
+  const [url, setUrl] = useState('');
   const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
   const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
@@ -39,6 +40,10 @@ const InvoiceListEditor = () => {
     const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
     stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
   };
+
+  useEffect(() => {
+    setUrl(getReceiptUrl(selectedInvoice.fileId, 'INVOICE'));
+  }, [selectedInvoice]);
 
   return (
     <InvoiceToolContextProvider>
@@ -71,7 +76,7 @@ const InvoiceListEditor = () => {
           </Card>
         </InvoiceView>
         <InvoiceView type={['preview']}>
-          <InvoicePdfDocument selectedInvoice={selectedInvoice} />
+          <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url} />
         </InvoiceView>
       </Box>
     </InvoiceToolContextProvider>
