@@ -40,3 +40,7 @@ export const updatePaymentReg = async (invoiceId: string, paymentRegulation: any
     })
   ).data;
 };
+export const getInvoicesSummary = async () => {
+  const { accountId } = getCached.userInfo();
+  return (await payingApi().getInvoicesSummary(accountId)).data;
+};
