@@ -10,9 +10,15 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('is created from draft to confirmed', () => {
+    // GET /accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary
+    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary').as('getInvoicesSummary');
     mount(<App />);
 
     cy.get('[name="invoice"]').click();
+    cy.wait('@getInvoicesSummary', { timeout: 10_000 });
+    cy.contains('Devis');
+    cy.contains('Factures payées');
+    cy.contains('Factures en attente');
     cy.get('[data-testid="AddIcon"]').click();
     cy.get('[name="create-draft-invoice"]').click();
 
@@ -66,6 +72,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('body').then(body => {
       if (!body.text().includes('Aucune banque associée.')) {
         cy.get('[name="invoice"]').click();
+        cy.wait('@getInvoicesSummary', { timeout: timeout });
         cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
         cy.contains('Brouillon transformé en devis', { timeout: timeout });
 
