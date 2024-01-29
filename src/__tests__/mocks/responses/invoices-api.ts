@@ -214,3 +214,9 @@ export const invoicesToChangeStatus = [
     globalDiscount: { percentValue: 0, amountValue: 0 },
   },
 ];
+
+export const invoicesSummary = {
+  paid: { amount: 550000, count: -1 },
+  proposal: { amount: 325000, count: -1 },
+  unpaid: { amount: 10000, count: -1 },
+};

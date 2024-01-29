@@ -12,6 +12,7 @@ import { InvoiceView } from './components/InvoiceView';
 import { InvoiceConfirmedPayedTabPanel } from './components';
 import { getInvoicesSummary } from 'src/providers';
 import { useStore } from 'react-admin';
+import { printError } from 'src/common/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -54,21 +55,16 @@ const InvoiceListEditor = () => {
   };
   const [, setInvoicesSummary] = useStore('amounts', amounts);
 
-  const getInvoicesSummaryData = async () => {
-    try {
+  useEffect(() => {
+    const getInvoicesSummaryData = async () => {
       const { paid, unpaid, proposal } = await getInvoicesSummary();
       setInvoicesSummary({
         paid: paid.amount,
         unpaid: unpaid.amount,
         proposal: proposal.amount,
       });
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    getInvoicesSummaryData();
+    };
+    getInvoicesSummaryData().catch(printError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

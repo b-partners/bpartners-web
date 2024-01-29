@@ -42,7 +42,7 @@ const InvoiceSumsCards = () => {
         justifyContent: 'space-evenly',
       }}
     >
-      {cards.map((card, k) => (
+      {cards?.map((card, k) => (
         <Paper elevation={3} key={`amountCard-${k}`} sx={{ ...AMOUNT_CARD, backgroundColor: card.bgColor }}>
           <img src={card.img} alt={card.title} width={40} />
           <Typography component={'div'} sx={{ paddingLeft: '7px' }}>

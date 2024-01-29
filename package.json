@@ -55,7 +55,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "cypress run-ct --spec './src/__tests__/it/Invoice.it.cy.js' --key 8f36a5b3-f03d-4268-95a2-f355d98059f3 --record",
+    "test": "cypress run-ct --spec './**/!(*.it).cy.js'",
     "it": "cypress run-ct --spec \"src/__tests__/it/*.it.cy.js\" --config video=true",
     "cy:open": "cypress open-ct",
     "eject": "react-scripts eject",

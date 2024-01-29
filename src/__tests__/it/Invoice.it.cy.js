@@ -3,6 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
 import App from '../../App';
+import { invoicesSummary } from '../mocks/responses/invoices-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
@@ -10,8 +11,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('is created from draft to confirmed', () => {
-    // GET /accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary
-    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary').as('getInvoicesSummary');
+    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
     mount(<App />);
 
     cy.get('[name="invoice"]').click();

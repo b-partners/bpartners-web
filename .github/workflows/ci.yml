@@ -10,7 +10,7 @@ env:
   PREPROD_USERPOOL_ID: eu-west-3_Fv8n7AfVo
   PREPROD_WEBCLIENT_ID: 4v0n3pk2j0b12m3aascud4us6h
   PREPROD_OAUTH_DOMAIN: preprod-bpartners-api.auth.eu-west-3.amazoncognito.com
-  PREPROD_REDIRECT_SUCCESS: https://dashboard-preprod.bpartners.app/login/success
+  PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
 
 jobs:
   tests:
