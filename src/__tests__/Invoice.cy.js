@@ -36,6 +36,8 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
+    // Revoir pourquoi cette fonction ne s'exécute pas seulement en CY test
+    // cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
   });
 
   it('Can be paid', () => {
@@ -163,5 +165,17 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.contains('Test dummy comment');
+  });
+  it('should show invoices summary', () => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    // cy.wait('@getInvoicesSummary', { timeout: 20_000 });
+    cy.contains('Devis');
+    cy.contains('Factures payées');
+    cy.contains('Factures en attente');
+    // cy.contains('5500,00');
+    // cy.contains('3250,00');
+    // cy.contains('100,00');
   });
 });
