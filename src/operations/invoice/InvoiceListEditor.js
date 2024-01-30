@@ -10,6 +10,9 @@ import { InvoiceTabs } from './components/InvoiceTabs';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
 import { InvoiceView } from './components/InvoiceView';
 import { InvoiceConfirmedPayedTabPanel } from './components';
+import { getInvoicesSummary } from 'src/providers';
+import { useStore } from 'react-admin';
+import { printError } from 'src/common/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -44,6 +47,26 @@ const InvoiceListEditor = () => {
   useEffect(() => {
     setUrl(getReceiptUrl(selectedInvoice.fileId, 'INVOICE'));
   }, [selectedInvoice]);
+
+  const amounts = {
+    paid: 0,
+    unpaid: 0,
+    proposal: 0,
+  };
+  const [, setInvoicesSummary] = useStore('amounts', amounts);
+
+  useEffect(() => {
+    const getInvoicesSummaryData = async () => {
+      const { paid, unpaid, proposal } = await getInvoicesSummary();
+      setInvoicesSummary({
+        paid: paid.amount,
+        unpaid: unpaid.amount,
+        proposal: proposal.amount,
+      });
+    };
+    getInvoicesSummaryData().catch(printError);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <InvoiceToolContextProvider>

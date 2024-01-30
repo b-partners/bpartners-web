@@ -3,7 +3,6 @@ import { Box, Typography } from '@mui/material';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
-
 import { formatDate } from '../../common/utils';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
@@ -21,6 +20,7 @@ import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { EmptyInvoiceList } from './components/EmptyInvoiceList';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
 import { InvoiceButtonToPaid, InvoiceRelaunchModal, InvoiceRelaunchHistoryShowModal, InvoiceRelaunchHistoryModal, InvoiceSearchBar } from './components';
+import InvoiceSumsCards from './components/InvoiceSumsCards';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -164,6 +164,7 @@ const InvoiceList = props => {
         actions={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <InvoiceSearchBar />
+            <InvoiceSumsCards />
             <BPListActions
               hasCreate={false}
               hasExport={false}
