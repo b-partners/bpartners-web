@@ -10,7 +10,6 @@ import account from 'src/operations/account';
 import { Configuration } from 'src/operations/configurations';
 import { customers } from 'src/operations/customers';
 import invoice from 'src/operations/invoice';
-import { marketplaces } from 'src/operations/marketplaces';
 import products from 'src/operations/products';
 import transactions from 'src/operations/transactions';
 import { prospects } from 'src/operations/prospects';
@@ -67,7 +66,6 @@ export const BpAdmin = () => {
       <Resource name='customers' {...customers} />
       <Resource name='products' {...products} />
       <Resource name='invoices' {...invoice} />
-      <Resource name='marketplaces' {...marketplaces} />
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
       <Resource name='calendar' {...calendar} />
