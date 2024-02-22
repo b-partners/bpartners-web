@@ -46,6 +46,9 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getProspects');
     cy.get('.css-69i1ev > .MuiButtonBase-root').click();
 
+    cy.contains('Créer').click();
+    cy.contains('Veuillez renseigner le champ requis : Adresse');
+
     cy.get('[data-testid="email-field-input"] > .MuiInputBase-root').type('doejhonson@gmail.com');
     cy.get('[data-testid="phone-field-input"] > .MuiInputBase-root').type('+261340465399');
     cy.get('[data-testid="address-field-input"] > .MuiInputBase-root').type('Evry');
