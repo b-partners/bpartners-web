@@ -92,10 +92,6 @@ export const ProspectItem = ({ prospect }) => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  if (!prospect.location && !prospect.name && !prospect.email) {
-    return null;
-  }
-
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -163,7 +159,10 @@ export const ProspectItem = ({ prospect }) => {
             <CardViewField icon={<Home />} value={prospect.address} />
             <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
-            <CardViewField icon={<Update />} value={parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)} />
+            <CardViewField
+              icon={<Update />}
+              value={prospect?.rating?.lastEvaluation === null ? 'Non renseigné' : parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)}
+            />
           </Box>
           {isProspectDialogOpen && (
             <ProspectDialog

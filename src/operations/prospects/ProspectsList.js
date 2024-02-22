@@ -55,25 +55,29 @@ const ProspectsList = () => {
   const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
-    handleLoading(true);
-    const fetch = async () => {
-      await prospectingProvider.saveOrUpdate([
-        {
-          ...data,
-          id: uuidv4(),
-          invoiceID: data?.invoice?.id,
-          invoice: undefined,
-        },
-      ]);
-      handleLoading(false);
-      notify(`Prospect créé avec succès !`, { type: 'success' });
-      refresh();
-      toggleDialog();
-    };
-    fetch().catch(() => {
-      handleLoading(false);
-      notify(`Une erreur s'est produite`, { type: 'error' });
-    });
+    if (!data.address) {
+      notify(`Veuillez renseigner le champ requis : Adresse`, { type: 'warning' });
+    } else {
+      handleLoading(true);
+      const fetch = async () => {
+        await prospectingProvider.saveOrUpdate([
+          {
+            ...data,
+            id: uuidv4(),
+            invoiceID: data?.invoice?.id,
+            invoice: undefined,
+          },
+        ]);
+        handleLoading(false);
+        notify(`Prospect créé avec succès !`, { type: 'success' });
+        refresh();
+        toggleDialog();
+      };
+      fetch().catch(() => {
+        handleLoading(false);
+        notify(`Une erreur s'est produite`, { type: 'error' });
+      });
+    }
   });
 
   return (
