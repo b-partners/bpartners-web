@@ -7,7 +7,6 @@ import {
   calendarEventProvider,
   calendarProvider,
   customerProvider,
-  marketplaceProvider,
   productProvider,
   profileProvider,
   prospectingProvider,
@@ -25,7 +24,6 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'transactions') return transactionProvider;
   if (resourceType === 'products') return productProvider;
   if (resourceType === 'customers') return customerProvider;
-  if (resourceType === 'marketplaces') return marketplaceProvider;
   if (resourceType === 'prospects') return prospectingProvider;
   if (resourceType === 'invoices') return invoiceProvider;
   if (resourceType === 'accountHolder') return accountHolderProvider;
