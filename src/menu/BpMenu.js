@@ -11,7 +11,6 @@ import {
   Receipt,
   ReceiptLong,
   Settings,
-  Store,
   CalendarMonth,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
@@ -58,16 +57,9 @@ const BpMenu = () => {
     accountHolder != null &&
     accountHolder.businessActivities != null &&
     (accountHolder.businessActivities.primary != null || accountHolder.businessActivities.secondary != null);
-  const hasCarreleur = businessActivities =>
-    businessActivities != null &&
-    (businessActivities.primary === 'Carreleur' ||
-      businessActivities.primary === 'Antinuisibles 3D' ||
-      businessActivities.secondary === 'Carreleur' ||
-      businessActivities.secondary === 'Antinuisibles 3D');
-  // The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
-  // then neither Markplaces nor Prospects is diplayed
+  /* The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
+   then the Prospects page will not be displayed */
   const shouldShowProspects = hasBusinessActivities(accountHolder);
-  const shouldShowMarketplaces = hasBusinessActivities(accountHolder) && !hasCarreleur(accountHolder.businessActivities);
 
   return (
     <Box
@@ -85,7 +77,6 @@ const BpMenu = () => {
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
-        {shouldShowMarketplaces && <Menu.Item to='/marketplaces' name='marketplaces' primaryText='Mes marchés' leftIcon={<Store />} />}
         {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
         <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
