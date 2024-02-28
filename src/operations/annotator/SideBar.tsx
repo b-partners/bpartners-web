@@ -14,6 +14,8 @@ import { SelectInput } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import AnnotatorForm from './components/AnnotatorForm';
 import {annotatorMapper} from 'src/providers/mappers';
+import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
+import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 
 interface Label {
     id: string;
@@ -27,21 +29,22 @@ interface Annotation {
 }
 
 const SideBar = () => {
+    const {polygons} = useCanvasAnnotationContext();
 
-    const annotations : Annotation[] = [
-        {polygon: 1, surface: 140, labels: [
-            {id: 'solId', name: 'sol'},
-            {id: 'porteId', name: 'porte'},
-            {id: 'brefId', name: 'bref'}
-        ]},
-        {polygon: 2, surface: 95, labels: [
-            {id: 'toitId', name: 'toit'},
-            {id: 'veluxId', name: 'velux'},
-            {id: 'compteId', name: 'compe'}
-        ]}
-    ]        
+    // const annotations : Annotation[] = [
+    //     {polygon: 1, surface: 140, labels: [
+    //         {id: 'roofId', name: 'Toit'},
+    //         {id: 'porteId', name: 'porte'},
+    //         {id: 'brefId', name: 'bref'}
+    //     ]},
+    //     {polygon: 2, surface: 95, labels: [
+    //         {id: 'roofId', name: 'Toit'},
+    //         {id: 'veluxId', name: 'velux'},
+    //         {id: 'compteId', name: 'compe'}
+    //     ]}
+    // ]        
     
-    const defaultValues = annotations?.map(() => {
+    const defaultValues = polygons?.map(() => {
         return {
             revetement:'',
             pente: '',
@@ -76,17 +79,17 @@ const SideBar = () => {
                     annotations.map(annotation => <AdminAnnotationItem key={annotation.id} annotation={annotation} />)} */}
                 {/* {isUser() && */}
                 {
-                    annotations.length > 0 ?
+                    polygons.length > 0 ?
                 <FormProvider {...formState}>
                     <form onSubmit={handleSubmitForms}>
-                    {annotations.map((annotation, i) => {
+                    {polygons.map((polygon, i) => {
                          return ( 
                         
                             <Box> {/* key={annotation.id} */}
-                             <SelectInput name={`${i}.label`} source={'label'} choices={annotation.labels} alwaysOn resettable sx={{width:'90%'}}/>
+                             <SelectInput name={`${i}.label`} source={'label'} choices={labels} alwaysOn resettable sx={{width:'90%'}}/>
                                     <Accordion style={{ marginTop: '-15px', marginBottom: '20px'}}>
                                             <AccordionSummary expandIcon={<ExpandMore />}>
-                                              <Typography>Polygone {annotation.polygon}</Typography>
+                                              <Typography>Polygone {i + 1}</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>  
                                               <AnnotatorForm index={i}/>                                                                      

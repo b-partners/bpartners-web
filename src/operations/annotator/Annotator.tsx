@@ -40,8 +40,6 @@ const Annotator = () => {
         }
     ];
     
-    
-    
     return (
         <CanvasAnnotationContextProvider>
         <Grid container height='94%' pl={1}>
