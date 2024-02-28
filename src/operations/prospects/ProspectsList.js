@@ -11,9 +11,9 @@ import { ProspectDialog, Prospects } from './components';
 import { ProspectContextProvider } from 'src/common/store/prospect-store';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
-import { handleSubmit } from '../../common/utils';
+import { handleSubmit, redirect } from '../../common/utils';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
-import { prospectingProvider } from '../../providers';
+import { getCached, prospectingProvider } from '../../providers';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -24,6 +24,8 @@ const ProspectsList = () => {
   const notify = useNotify();
   const refresh = useRefresh();
   const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
+  const accountHolder = getCached.accountHolder();
+  const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
 
   // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
   const updateURLWithTab = index => {
@@ -57,27 +59,31 @@ const ProspectsList = () => {
   const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
     if (!data.address) {
       notify(`Veuillez renseigner le champ requis : Adresse`, { type: 'warning' });
-    } else {
-      handleLoading(true);
-      const fetch = async () => {
-        await prospectingProvider.saveOrUpdate([
-          {
-            ...data,
-            id: uuidv4(),
-            invoiceID: data?.invoice?.id,
-            invoice: undefined,
-          },
-        ]);
-        handleLoading(false);
-        notify(`Prospect créé avec succès !`, { type: 'success' });
-        refresh();
-        toggleDialog();
-      };
-      fetch().catch(() => {
-        handleLoading(false);
-        notify(`Une erreur s'est produite`, { type: 'error' });
-      });
+      return;
     }
+      if (isRoofer) {
+        redirect('/annotator');
+        return
+      }
+        handleLoading(true);
+        const fetch = async () => {
+          await prospectingProvider.saveOrUpdate([
+            {
+              ...data,
+              id: uuidv4(),
+              invoiceID: data?.invoice?.id,
+              invoice: undefined,
+            },
+          ]);
+          handleLoading(false);
+          notify(`Prospect créé avec succès !`, { type: 'success' });
+          refresh();
+          toggleDialog();
+        };
+        fetch().catch(() => {
+          handleLoading(false);
+          notify(`Une erreur s'est produite`, { type: 'error' });
+        });
   });
 
   return (

@@ -23,6 +23,7 @@ import { Auth } from 'aws-amplify';
 import { BP_THEME } from 'src/bp-theme';
 import BPErrorPage from 'src/common/components/BPErrorPage';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
+import Annotator from 'src/operations/annotator/Annotator';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
@@ -77,6 +78,7 @@ export const BpAdmin = () => {
         <Route exact path='/configurations' element={<Configuration />} />
         <Route exact path='/bank' element={<BankPage />} />
         <Route exact path='/partners' element={<PartnersPage />} />
+        <Route exact path='/annotator' element={<Annotator />} />
         <Route exact path='/error' element={<BPErrorPage />} />
       </CustomRoutes>
     </Admin>
