@@ -1,13 +1,15 @@
 // import annotatorLib from '@bpartners/annotator-component';
 import{AnnotatorCanvas} from '@bpartners/annotator-component';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
+import { getUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 
 
 const AnnotatorComponent = () => {
 
     const {polygons, setPolygons, updatePolygonList} = useCanvasAnnotationContext();
+    const [imgUrl, setImgUrl] = useState('');
     
     useEffect(()=>{
       const fetch = async ()=>{
@@ -17,13 +19,16 @@ const AnnotatorComponent = () => {
       fetch();
     },[setPolygons])
 
+    useEffect(()=>{
+       setImgUrl(getUrlParams(window.location.search, 'imgUrl'))
+    },[])
           
     return (
             <AnnotatorCanvas
             allowAnnotation
             width='100%'
             height='100%'
-            image={"https://capable.ctreq.qc.ca/wp-content/uploads/2017/01/exemple-image-e1486497635469.jpg"}
+            image={imgUrl}
             setPolygons= {updatePolygonList}
             polygonList= {polygons}
             />

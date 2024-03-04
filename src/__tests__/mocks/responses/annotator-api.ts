@@ -4,7 +4,10 @@ interface Label {
     id: string;
     name: string;
 }
-
+export interface VerifyAdress {
+    Longitude: number;
+    Latitude: number;
+}
 
 export const annotations : Polygon[] = [
    /* {
@@ -97,3 +100,8 @@ export const labels: Label[] = [
     {id: 'veluxId', name: 'Velux'},
     {id: 'arbresId', name: 'Arbres'}
 ]
+
+export const verifyAdressResponse: VerifyAdress = {
+    Longitude : -73.985428,
+    Latitude : 40.748817
+}

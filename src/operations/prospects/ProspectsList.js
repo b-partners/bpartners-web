@@ -14,6 +14,7 @@ import ProspectsAdministration from './ProspectsAdministration';
 import { handleSubmit, redirect } from '../../common/utils';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getCached, prospectingProvider } from '../../providers';
+import { getImageByCoordinates, verifyAddress } from 'src/providers/annotator-provider';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -56,14 +57,16 @@ const ProspectsList = () => {
 
   const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
 
-  const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
+  const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     if (!data.address) {
       notify(`Veuillez renseigner le champ requis : Adresse`, { type: 'warning' });
       return;
     }
       if (isRoofer) {
-        redirect('/annotator');
-        return
+        const geoposition = await verifyAddress();
+        const imgUrl = await getImageByCoordinates(geoposition);
+        redirect(`/annotator?imgUrl=${encodeURIComponent(imgUrl)}`);
+        return;
       }
         handleLoading(true);
         const fetch = async () => {
