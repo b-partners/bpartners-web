@@ -1,9 +1,16 @@
-import { v4 as uuid } from 'uuid';
+import { Polygon } from '@bpartners/annotator-component';
 
-export const annotatorMapper = (values: any) => { // mettre ici le vrai type depuis notre client
-    return Object.entries(values).map(([id, attributes]) => ({
-        id: uuid(),
+export const annotatorMapper = (values: any, polygons: Polygon[]) => { // mettre ici le vrai type depuis notre client
+  
+    return Object.entries(values).map(([index, attributes]) => {
+      const polygonIndex = parseInt(index, 10);
+      const correspondingPolygon = polygons[polygonIndex];
+  
+      return {
+        id: correspondingPolygon.id,
         attributes,
-        geometry: ''
-      }));
+        geometry: '',
+        polygon: correspondingPolygon
+      };
+    });
 };

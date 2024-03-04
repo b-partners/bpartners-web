@@ -7,7 +7,7 @@ import { annotatorProvider } from 'src/providers/annotator-provider';
 
 const AnnotatorComponent = () => {
 
-    const {polygons, setPolygons, addNewPolygon} = useCanvasAnnotationContext();
+    const {polygons, setPolygons, updatePolygonList} = useCanvasAnnotationContext();
     
     useEffect(()=>{
       const fetch = async ()=>{
@@ -19,16 +19,14 @@ const AnnotatorComponent = () => {
 
           
     return (
-        <div>
             <AnnotatorCanvas
             allowAnnotation
             width='100%'
             height='100%'
             image={"https://capable.ctreq.qc.ca/wp-content/uploads/2017/01/exemple-image-e1486497635469.jpg"}
-            addPolygone= {addNewPolygon}
-            polygoneList= {polygons}
+            setPolygons= {updatePolygonList}
+            polygonList= {polygons}
             />
-        </div>
     );
 };
 

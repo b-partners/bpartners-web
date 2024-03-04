@@ -8,6 +8,8 @@ import {
     AccordionDetails,
     AccordionSummary,
     Stack,
+    IconButton,
+    Tooltip,
  } from '@mui/material';
  import { ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
 import { SelectInput } from 'react-admin';
@@ -16,33 +18,11 @@ import AnnotatorForm from './components/AnnotatorForm';
 import {annotatorMapper} from 'src/providers/mappers';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { labels } from 'src/__tests__/mocks/responses/annotator-api';
-
-interface Label {
-    id: string;
-    name: string;
-}
-
-interface Annotation {
-    polygon: number;
-    surface: number;
-    labels: Label[];
-}
+import { Delete as DeleteIcon} from '@mui/icons-material';
+import { Polygon } from '@bpartners/annotator-component';
 
 const SideBar = () => {
-    const {polygons} = useCanvasAnnotationContext();
-
-    // const annotations : Annotation[] = [
-    //     {polygon: 1, surface: 140, labels: [
-    //         {id: 'roofId', name: 'Toit'},
-    //         {id: 'porteId', name: 'porte'},
-    //         {id: 'brefId', name: 'bref'}
-    //     ]},
-    //     {polygon: 2, surface: 95, labels: [
-    //         {id: 'roofId', name: 'Toit'},
-    //         {id: 'veluxId', name: 'velux'},
-    //         {id: 'compteId', name: 'compe'}
-    //     ]}
-    // ]        
+    const {polygons, setPolygons} = useCanvasAnnotationContext();    
     
     const defaultValues = polygons?.map(() => {
         return {
@@ -57,23 +37,18 @@ const SideBar = () => {
     });
     const formState = useForm({defaultValues});
 
-    // const { formValues, updateFormValues } = useCanvasAnnotationContext();
-
     const handleSubmitForms = formState.handleSubmit(data =>{
         
-        const dataMapped = annotatorMapper(data);
+        const dataMapped = annotatorMapper(data, polygons);
         console.log('dataMapped', dataMapped);
-        // const parsedLabel = JSON.parse(selectedLabel);
-        // console.log("parsedLabel", parsedLabel);
-        
-        
-    })
+    });
+
+    const removeAnnotation = (polygonId: string)=>{
+        setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
+    }
     
     return (
-        <List
-            sx={{ maxHeight: window.innerHeight * 0.75, overflow: 'auto' }}
-            // subheader={<ListSubheader>Labels</ListSubheader>}
-        >
+        <List sx={{ maxHeight: window.innerHeight * 0.75, overflow: 'auto' }}>
             <Box py={2}>
                 {/* {isAdmin() &&
                     annotations.map(annotation => <AdminAnnotationItem key={annotation.id} annotation={annotation} />)} */}
@@ -85,8 +60,15 @@ const SideBar = () => {
                     {polygons.map((polygon, i) => {
                          return ( 
                         
-                            <Box> {/* key={annotation.id} */}
-                             <SelectInput name={`${i}.label`} source={'label'} choices={labels} alwaysOn resettable sx={{width:'90%'}}/>
+                            <Box key={polygon.id}>
+                             <SelectInput name={`${i}.label`} source={'label'} choices={labels} alwaysOn resettable sx={{width:'85%'}}/>
+                    
+                             <Tooltip title="Supprimer">
+                                <IconButton edge='end' style={{marginTop: '15px'}} onClick={() => removeAnnotation(polygon.id)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                           
                                     <Accordion style={{ marginTop: '-15px', marginBottom: '20px'}}>
                                             <AccordionSummary expandIcon={<ExpandMore />}>
                                               <Typography>Polygone {i + 1}</Typography>

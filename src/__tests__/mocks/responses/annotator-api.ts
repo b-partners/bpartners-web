@@ -7,8 +7,9 @@ interface Label {
 
 
 export const annotations : Polygon[] = [
-    {
+   /* {
         // surface: 140,  LA SURFACE vas être ajouté normalement ici, voir avec Amour 🚨
+        id: '56789',
         fillColor: "#00ff0040",
         strokeColor: "#00ff00",
           points: [
@@ -32,6 +33,7 @@ export const annotations : Polygon[] = [
     },
     {
         // surface: 95,
+        id: '01234',
         fillColor: "#00ff0040",
         strokeColor: "#00ff00",
         points: [
@@ -88,7 +90,7 @@ export const annotations : Polygon[] = [
                 "y": 300
             }
         ],
-}
+}*/
 ];
 export const labels: Label[] = [
     {id: 'solId', name: 'sol'},
