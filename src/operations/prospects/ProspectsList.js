@@ -73,16 +73,17 @@ const ProspectsList = () => {
       const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
       if (isRoofer) {
         const fileId = uuidv4();
+        const pictureId = uuidv4();
         const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-        await annotatorProvider.getPictureFormAddress(fileId, {
+        await annotatorProvider.getPictureFormAddress(pictureId, {
           address: data.address,
           fileId,
           filename: `Layer ${data.address}`,
           prospectId,
           layer: OpenStreetMapLayer.angouleme_2019,
-          zoomLevel: ZoomLevel.CITY,
+          zoomLevel: ZoomLevel.HOUSES_0,
         });
-        redirect(`/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}`);
+        redirect(`/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}&pictureId=${pictureId}`);
         return;
       }
     };
