@@ -1,20 +1,21 @@
+import { FileType, OpenStreetMapLayer, ZoomLevel } from '@bpartners/typescript-client';
+import { Box, Link, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { List, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Box, Tab, Tabs, Link } from '@mui/material';
-import { v4 as uuidv4 } from 'uuid';
+import { useLocation } from 'react-router-dom';
 import ListComponent from 'src/common/components/ListComponent';
 import TabPanel from 'src/common/components/TabPanel';
+import { ProspectContextProvider } from 'src/common/store/prospect-store';
+import { annotatorProvider } from 'src/providers/annotator-provider';
+import { v4 as uuidv4 } from 'uuid';
+import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
+import { getFileUrl, handleSubmit, redirect } from '../../common/utils';
+import { getCached, prospectingProvider } from '../../providers';
+import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 import { ProspectDialog, Prospects } from './components';
-import { ProspectContextProvider } from 'src/common/store/prospect-store';
 import TabManager from './components/TabManager';
-import ProspectsAdministration from './ProspectsAdministration';
-import { handleSubmit, redirect } from '../../common/utils';
-import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
-import { getCached, prospectingProvider } from '../../providers';
-import { getImageByCoordinates, verifyAddress } from 'src/providers/annotator-provider';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -23,10 +24,8 @@ const ProspectsList = () => {
 
   const location = useLocation();
   const notify = useNotify();
-  const refresh = useRefresh();
   const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
   const accountHolder = getCached.accountHolder();
-  const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
 
   // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
   const updateURLWithTab = index => {
@@ -58,35 +57,39 @@ const ProspectsList = () => {
   const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
-    if (!data.address) {
-      notify(`Veuillez renseigner le champ requis : Adresse`, { type: 'warning' });
-      return;
-    }
+    handleLoading(true);
+    const fetch = async () => {
+      const prospectId = uuidv4();
+      await prospectingProvider.saveOrUpdate([
+        {
+          ...data,
+          id: prospectId,
+          invoiceID: data?.invoice?.id,
+          invoice: undefined,
+        },
+      ]);
+      handleLoading(false);
+      notify(`Prospect créé avec succès !`, { type: 'success' });
+      const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
       if (isRoofer) {
-        const geoposition = await verifyAddress();
-        const imgUrl = await getImageByCoordinates(geoposition);
-        redirect(`/annotator?imgUrl=${encodeURIComponent(imgUrl)}`);
+        const fileId = uuidv4();
+        const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+        await annotatorProvider.getPictureFormAddress(fileId, {
+          address: data.address,
+          fileId,
+          filename: `Layer ${data.address}`,
+          prospectId,
+          layer: OpenStreetMapLayer.angouleme_2019,
+          zoomLevel: ZoomLevel.CITY,
+        });
+        redirect(`/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}`);
         return;
       }
-        handleLoading(true);
-        const fetch = async () => {
-          await prospectingProvider.saveOrUpdate([
-            {
-              ...data,
-              id: uuidv4(),
-              invoiceID: data?.invoice?.id,
-              invoice: undefined,
-            },
-          ]);
-          handleLoading(false);
-          notify(`Prospect créé avec succès !`, { type: 'success' });
-          refresh();
-          toggleDialog();
-        };
-        fetch().catch(() => {
-          handleLoading(false);
-          notify(`Une erreur s'est produite`, { type: 'error' });
-        });
+    };
+    fetch().catch(() => {
+      handleLoading(false);
+      notify(`Une erreur s'est produite`, { type: 'error' });
+    });
   });
 
   return (

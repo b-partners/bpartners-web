@@ -1,6 +1,6 @@
 import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldErrorMessage, phoneValidator } from './utils';
+import { FieldErrorMessage, phoneValidator, requiredStringCustom } from './utils';
 
 const prospectInfoValidator = zod.object({
   email: zod.custom(
@@ -23,7 +23,7 @@ const prospectInfoValidator = zod.object({
     },
     { message: FieldErrorMessage.phone }
   ),
-  address: zod.custom(() => true),
+  address: requiredStringCustom(),
   comment: zod.custom(() => true),
   defaultComment: zod.custom(() => true),
   invoice: zod.custom(() => true),

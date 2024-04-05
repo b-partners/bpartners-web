@@ -9,6 +9,7 @@ import {
   UserAccountsApi,
   SheetApi,
   MailingApi,
+  AreaPictureApi,
 } from '@bpartners/typescript-client';
 import { authProvider } from '.';
 
@@ -22,3 +23,4 @@ export const onboardingApi = () => new OnboardingApi(authProvider.getCachedAuthC
 export const calendarApi = () => new CalendarApi(authProvider.getCachedAuthConf());
 export const sheetApi = () => new SheetApi(authProvider.getCachedAuthConf());
 export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf());
+export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());
