@@ -26,7 +26,11 @@ const AnnotatorComponent = () => {
         image={getUrlParams(window.location.search, 'imgUrl')}
         setPolygons={updatePolygonList}
         polygonList={polygons}
-        polygonLineSizeProps={{ imageName: `image_1_${xTile}_${yTile}.jpg`, showLineSize: true }}
+        polygonLineSizeProps={{
+          imageName: `image_1_${xTile}_${yTile}.jpg`,
+          showLineSize: true,
+          converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
+        }}
       />
     </Box>
   );
