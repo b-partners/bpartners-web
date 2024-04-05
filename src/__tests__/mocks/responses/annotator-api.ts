@@ -1,16 +1,16 @@
-import { Polygon } from "@bpartners/annotator-component";
+import { Polygon } from '@bpartners/annotator-component';
 
 interface Label {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 export interface VerifyAdress {
-    Longitude: number;
-    Latitude: number;
+  Longitude: number;
+  Latitude: number;
 }
 
-export const annotations : Polygon[] = [
-   /* {
+export const annotations: Polygon[] = [
+  /* {
         // surface: 140,  LA SURFACE vas être ajouté normalement ici, voir avec Amour 🚨
         id: '56789',
         fillColor: "#00ff0040",
@@ -96,12 +96,12 @@ export const annotations : Polygon[] = [
 }*/
 ];
 export const labels: Label[] = [
-    {id: 'solId', name: 'sol'},
-    {id: 'veluxId', name: 'Velux'},
-    {id: 'arbresId', name: 'Arbres'}
-]
+  { id: 'solId', name: 'sol' },
+  { id: 'veluxId', name: 'Velux' },
+  { id: 'arbresId', name: 'Arbres' },
+];
 
 export const verifyAdressResponse: VerifyAdress = {
-    Longitude : -73.985428,
-    Latitude : 40.748817
-}
+  Longitude: -73.985428,
+  Latitude: 40.748817,
+};
