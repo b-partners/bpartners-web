@@ -1,6 +1,6 @@
+import { CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
 import { VerifyAdress, verifyAdressResponse } from 'src/__tests__/mocks/responses/annotator-api';
 import { areaPictureApi } from './api';
-import { CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
 import { getCached } from './cache';
 
 // export const annotatorProvider = async () => {

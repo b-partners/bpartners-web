@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
+import { getUrlParams, redirect } from '../common/utils';
 import loginRedirectionUrls from './login-redirection-urls';
-import { redirect, getUrlParams } from '../common/utils';
 
-import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { printError } from 'src/common/utils';
 import { authProvider } from 'src/providers';
+import BpBackgroundImage from '../assets/bp-bg-image.png';
+import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 
 const LoginSuccessPage = () => {
   useEffect(() => {

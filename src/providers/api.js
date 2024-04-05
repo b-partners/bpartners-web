@@ -1,15 +1,15 @@
 import {
+  AreaPictureApi,
   CalendarApi,
   CustomersApi,
   FilesApi,
+  MailingApi,
   OnboardingApi,
   PayingApi,
   ProspectingApi,
   SecurityApi,
-  UserAccountsApi,
   SheetApi,
-  MailingApi,
-  AreaPictureApi,
+  UserAccountsApi,
 } from '@bpartners/typescript-client';
 import { authProvider } from '.';
 

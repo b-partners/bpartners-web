@@ -1,5 +1,5 @@
 import { ProspectEvaluationJobInfo } from '@bpartners/typescript-client';
-import { Dispatch, FC, createContext, useContext, useState } from 'react';
+import { createContext, Dispatch, FC, useContext, useState } from 'react';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
 import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider';
 

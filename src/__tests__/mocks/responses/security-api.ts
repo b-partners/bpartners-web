@@ -1,4 +1,4 @@
-import { RedirectionStatusUrls, Token, User, Whoami, UserRole } from '@bpartners/typescript-client';
+import { RedirectionStatusUrls, Token, User, UserRole, Whoami } from '@bpartners/typescript-client';
 
 export const phone1 = '0648492113';
 export const authStatusUrls1: RedirectionStatusUrls = { successUrl: '/login/success', failureUrl: 'login/failure' };

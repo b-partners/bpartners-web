@@ -1,7 +1,7 @@
 import { Grid, Stack } from '@mui/material';
-import SideBar from './SideBar';
 import { CanvasAnnotationContextProvider } from 'src/common/store/annotator/Canvas-annotation-store';
 import AnnotatorComponent from './AnnotatorComponent';
+import SideBar from './SideBar';
 
 const Annotator = () => {
   const imageAnnotated = [

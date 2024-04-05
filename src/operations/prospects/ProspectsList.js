@@ -1,7 +1,7 @@
 import { FileType, OpenStreetMapLayer, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Link, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
-import { List, useNotify, useRefresh } from 'react-admin';
+import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import ListComponent from 'src/common/components/ListComponent';
@@ -12,10 +12,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit, redirect } from '../../common/utils';
 import { getCached, prospectingProvider } from '../../providers';
-import ProspectsAdministration from './ProspectsAdministration';
-import ProspectsConfiguration from './ProspectsConfiguration';
 import { ProspectDialog, Prospects } from './components';
 import TabManager from './components/TabManager';
+import ProspectsAdministration from './ProspectsAdministration';
+import ProspectsConfiguration from './ProspectsConfiguration';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);

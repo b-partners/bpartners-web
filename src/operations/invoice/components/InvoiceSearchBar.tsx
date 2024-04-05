@@ -1,6 +1,6 @@
-import { useListContext } from 'react-admin';
 import { TextField } from '@mui/material';
 import { ChangeEvent } from 'react';
+import { useListContext } from 'react-admin';
 
 export const InvoiceSearchBar = () => {
   const { setFilters, filterValues } = useListContext();

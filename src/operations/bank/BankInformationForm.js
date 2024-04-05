@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';
-import { BIC_MESSAGE_CONTAINER } from './style';
 import { handleSubmit } from 'src/common/utils';
 import { accountProvider } from 'src/providers';
+import { BIC_MESSAGE_CONTAINER } from './style';
 
 export const BankInformationForm = props => {
   const {

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const TabManager = ({ location, setTabIndex }) => {
   // Utilise useCallback pour déclarer la fonction en tant que dépendance stable

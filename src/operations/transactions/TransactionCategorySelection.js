@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
-import { Autocomplete, Box, Button, Chip, Dialog, DialogTitle, DialogActions, DialogContent, TextField, Typography, CircularProgress } from '@mui/material';
+import { Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from 'src/bp-theme';
 import { printError } from 'src/common/utils';

@@ -1,12 +1,12 @@
+import { PaymentMethod } from '@bpartners/typescript-client';
+import { DoneAll as DoneAllIcon } from '@mui/icons-material';
+import { Button, CircularProgress, MenuItem, TableCell, TableRow, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNotify, useRefresh, useTranslate } from 'react-admin';
-import { Button, CircularProgress, MenuItem, TableCell, TableRow, TextField, Typography } from '@mui/material';
-import { PaymentMethod } from '@bpartners/typescript-client';
-import { updatePaymentReg } from '../../../providers';
-import { formatDatetime, prettyPrintMoney } from '../../../common/utils';
-import { getPaymentRegulationStatusInFr } from '../utils/utils';
-import { DoneAll as DoneAllIcon } from '@mui/icons-material';
 import { useInvoiceToolContext } from '../../../common/store/invoice';
+import { formatDatetime, prettyPrintMoney } from '../../../common/utils';
+import { updatePaymentReg } from '../../../providers';
+import { getPaymentRegulationStatusInFr } from '../utils/utils';
 
 const PaymentRegulationRowItem = props => {
   const { invoice, paymentRegulationItem, paymentMethodList, index } = props;

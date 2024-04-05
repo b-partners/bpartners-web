@@ -1,5 +1,5 @@
+import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { useState } from 'react';
-import { VisibilityOff as VisibilityOffIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { BpTextField } from './BpTextField';
 
 export const BpPasswordField = props => {

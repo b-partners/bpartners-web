@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, IconButton, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
@@ -11,9 +11,24 @@ import { prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
+import { BpFormField } from 'src/common/components';
+import BpTextAdornment from 'src/common/components/BpTextAdornment';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { handleSubmit, printError } from 'src/common/utils';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { customerProvider } from 'src/providers';
+import { invoiceProvider } from 'src/providers/invoice-provider';
+import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
+import FormCustomer from '../customers/components/FormCustomer';
+import CheckboxForm from './components/CheckboxForm';
 import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-import { INVOICE_EDITION, DEFAULT_TEXT_FIELD_WIDTH } from './style';
+import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
+import { validateDIPAllowed, validateDPPercent } from './utils';
+import { invoiceMapper } from './utils/invoice-utils';
+import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
@@ -25,25 +40,10 @@ import {
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
+  titleValidator,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
-  titleValidator,
 } from './utils/utils';
-import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
-import { invoiceMapper } from './utils/invoice-utils';
-import CheckboxForm from './components/CheckboxForm';
-import BpTextAdornment from 'src/common/components/BpTextAdornment';
-import { BpFormField } from 'src/common/components';
-import { validateDIPAllowed, validateDPPercent } from './utils';
-import { handleSubmit, printError } from 'src/common/utils';
-import { invoiceProvider } from 'src/providers/invoice-provider';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { CreateInDialogButton } from '@react-admin/ra-form-layout';
-import FormCustomer from '../customers/components/FormCustomer';
-import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
-import { customerProvider } from 'src/providers';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;

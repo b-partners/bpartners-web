@@ -1,11 +1,11 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Typography } from '@mui/material';
 
-import ProspectDialogActions from './ProspectDialogActions';
+import PropTypes from 'prop-types';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
-import { useFormContext, useWatch } from 'react-hook-form';
-import PropTypes from 'prop-types';
+import ProspectDialogActions from './ProspectDialogActions';
 
 export const ProspectDialog = props => {
   const { open, close, prospect, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;

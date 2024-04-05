@@ -1,9 +1,9 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { user2, whoami2 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1 } from './mocks/responses/account-api';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { prospects } from './mocks/responses/prospects-api';
+import { user2, whoami2 } from './mocks/responses/security-api';
 
 describe(specTitle('administration tab not present for non admin users in prospects page'), () => {
   beforeEach(() => {

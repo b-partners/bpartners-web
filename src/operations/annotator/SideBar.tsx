@@ -1,13 +1,12 @@
-import { Box, Button, Divider, List, Typography, Accordion, AccordionDetails, AccordionSummary, Stack, IconButton, Tooltip } from '@mui/material';
-import { ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
+import { Polygon } from '@bpartners/annotator-component';
+import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, IconButton, List, Stack, Tooltip, Typography } from '@mui/material';
 import { SelectInput } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import AnnotatorForm from './components/AnnotatorForm';
-import { annotatorMapper } from 'src/providers/mappers';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
+import { annotatorMapper } from 'src/providers/mappers';
 import { labels } from 'src/__tests__/mocks/responses/annotator-api';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { Polygon } from '@bpartners/annotator-component';
+import AnnotatorForm from './components/AnnotatorForm';
 
 const SideBar = () => {
   const { polygons, setPolygons } = useCanvasAnnotationContext();

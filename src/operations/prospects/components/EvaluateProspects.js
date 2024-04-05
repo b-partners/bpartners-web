@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Box, Divider, Typography, Button, Grid, CircularProgress } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import FormEvaluateProspects from '../components/FormEvaluateProspects';
-import EvaluatedProspectColumn from '../components/EvaluatedProspectColumn';
-import { DialogProspectJobDetails } from '../components/DialogProspectJobDetails';
+import { Box, Button, CircularProgress, Divider, Grid, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useProspectContext } from 'src/common/store/prospect-store';
+import { DialogProspectJobDetails } from '../components/DialogProspectJobDetails';
+import EvaluatedProspectColumn from '../components/EvaluatedProspectColumn';
+import FormEvaluateProspects from '../components/FormEvaluateProspects';
 
 const EvaluateProspects = () => {
   const { getProspectingJobs, evaluatedProspectsList, refreshLoading, isOpenPopup } = useProspectContext();

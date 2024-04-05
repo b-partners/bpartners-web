@@ -49,6 +49,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "husky": "^8.0.3",
     "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "pretty-quick": "^4.0.0",
     "prop-types": "15.8.1",
     "react-scripts": "4.0.3",
