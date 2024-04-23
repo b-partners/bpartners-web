@@ -6,8 +6,16 @@ import { getUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 
 const AnnotatorComponent = () => {
-  const { polygons, updatePolygonList } = useCanvasAnnotationContext();
+  const { polygons, setPolygons, updatePolygonList } = useCanvasAnnotationContext();
   const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
+
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const data = await annotatorProvider();
+  //     setPolygons(data);
+  //   };
+  //   fetch();
+  // }, [setPolygons])
 
   useEffect(() => {
     const pictureId = getUrlParams(window.location.search, 'pictureId');
