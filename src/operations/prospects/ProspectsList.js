@@ -80,9 +80,10 @@ const ProspectsList = () => {
           fileId,
           filename: `Layer ${data.address}`,
           prospectId,
-          layer: OpenStreetMapLayer.angouleme_2019,
+          layer: OpenStreetMapLayer.tous_fr,
           zoomLevel: ZoomLevel.HOUSES_0,
         });
+
         redirect(`/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}&pictureId=${pictureId}`);
         return;
       }
