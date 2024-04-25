@@ -19,7 +19,7 @@ const SlopeSelect = ({ name }: { name: string }) => {
 
 
     const handleChange = (event: any) => {
-        setValue(name, event.target.value as string)
+        setValue(name, event.target.value as number)
     };
 
     return (
@@ -28,7 +28,7 @@ const SlopeSelect = ({ name }: { name: string }) => {
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={value || ''}
+                value={value || 0}
                 label="Pente"
                 onChange={handleChange}
                 {...register(name)}

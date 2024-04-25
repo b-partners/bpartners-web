@@ -11,30 +11,34 @@ import {
   IconButton,
   Tooltip,
   Dialog,
-  DialogTitle,
   DialogContent
 } from '@mui/material';
+import { v4 as uuidV4 } from 'uuid';
 import { ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
 import { SelectInput } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import AnnotatorForm from './components/AnnotatorForm';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import { annotatorMapper } from 'src/providers/mappers';
+import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
 import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { Polygon } from '@bpartners/annotator-component';
 import CalculInfo from '../../assets/pentes/calcul.png';
+import { getUrlParams } from 'src/common/utils';
+import { annotatorProvider } from 'src/providers/annotator-provider';
 
 const SideBar = () => {
   const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
+  const annotationId = uuidV4();
+  const pictureId = getUrlParams(window.location.search, 'pictureId');
 
   const defaultValues = polygons?.map(() => {
     return {
-      label: '',
-      revetement: '',
-      slope: '',
-      usury: '',
-      velux: '',
+      labelType: '',
+      covering: '',
+      slope: 0,
+      wearLevel: 0,
+      velux: 0,
       veluxform: '',
       obstacle: '',
       comment: '',
@@ -42,10 +46,15 @@ const SideBar = () => {
   });
   const formState = useForm({ defaultValues });
 
-  const handleSubmitForms = formState.handleSubmit(data => {
+  const handleSubmitForms = formState.handleSubmit(async data => {
 
-    const dataMapped = annotatorMapper(data, polygons);
-    console.log('dataMapped', dataMapped);
+    const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
+    const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId);
+    console.log("annotationAttributeMapped", annotationAttributeMapped);
+
+    console.log("requestBody", requestBody);
+    await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
+
   });
 
   const removeAnnotation = (polygonId: string) => {
@@ -63,7 +72,7 @@ const SideBar = () => {
                   return (
 
                     <Box key={polygon.id}>
-                      <SelectInput name={`${i}.label`} source={'label'} choices={labels} alwaysOn resettable sx={{ width: '85%' }} />
+                      <SelectInput name={`${i}.labelType`} source={'labelType'} choices={labels} alwaysOn resettable sx={{ width: '85%' }} />
 
                       <Tooltip title="Supprimer">
                         <IconButton edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
@@ -76,7 +85,7 @@ const SideBar = () => {
                           <Typography>Polygone {i + 1}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                          <AnnotatorForm index={i} />
+                          <AnnotatorForm index={i} surface={polygon.surface} />
                         </AccordionDetails>
                       </Accordion>
                       {/* )} */}

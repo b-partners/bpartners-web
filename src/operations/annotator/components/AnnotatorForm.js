@@ -3,8 +3,7 @@ import { SelectInput, TextInput } from 'react-admin';
 import { BpNumberField } from 'src/common/components';
 import SlopeSelect from './SlopeSelect';
 
-const AnnotatorForm = ({ index }) => {
-  const surface = 146;
+const AnnotatorForm = ({ index, surface }) => {
   const Coating = [
     { id: 'tuiles', name: 'Tuiles' },
     { id: 'ardoise', name: 'Ardoise' },
@@ -16,14 +15,13 @@ const AnnotatorForm = ({ index }) => {
       <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Box>
           Surface :
-          <Typography component='span' fontWeight={'bold'}>
-            {surface} m2
-          </Typography>
+          <Typography component='span' fontWeight={'bold'}> {surface} m²</Typography>
         </Box>
-        <SelectInput name={`${index}.revetement`} source={'revêtement'} choices={Coating} alwaysOn resettable />
+        <SelectInput name={`${index}.covering`} source={'covering'} label={'Revêtement'} choices={Coating} alwaysOn resettable />
         <SlopeSelect name={`${index}.slope`} />
-        <TextInput name={`${index}.usury`} source={'usury'} label={'Usure'} />
-        <BpNumberField style={{ width: '10%' }} name={`${index}.velux`} label={'Velux'} />
+        {/* <TextInput name={`${index}.wearLevel`} source={'wearLevel'} label={'Usure'} /> */}
+        <BpNumberField name={`${index}.wearLevel`} source={'wearLevel'} label={'Usure'} /> {/* ! envoyé la donnée en NUMBER */}
+        <BpNumberField style={{ width: '10%' }} name={`${index}.velux`} source={'velux'} label={'Velux'} />
         <TextInput name={`${index}.veluxform`} source={'veluxform'} label={'Velux forme'} />
         <TextInput name={`${index}.obstacle`} source={'obstacle'} label={'Obstacle'} />
         <TextInput name={`${index}.comment`} source='comment' label='Commentaire' multiline />

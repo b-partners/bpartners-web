@@ -1,4 +1,4 @@
-import { CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
+import { AreaPictureAnnotation, CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
 import { areaPictureApi } from './api';
 import { getCached } from './cache';
 
@@ -26,4 +26,9 @@ export const annotatorProvider = {
     const { data } = await areaPictureApi().getAllAreaPictures(accountId, page, pageSize, address, filename);
     return data;
   },
+  async annotatePicture(pictureId: string, annotationId: string, newDataMapped: AreaPictureAnnotation) {
+    const { accountId } = getCached.userInfo();
+    const { data } = await areaPictureApi().annotateAreaPicture(accountId, pictureId, annotationId, newDataMapped);
+    return data;
+  }
 };
