@@ -2,8 +2,8 @@
   "name": "bpartners-web",
   "private": true,
   "dependencies": {
-    "@bpartners/annotator-component": "^0.7.0",
-    "@bpartners/typescript-client": "^0.40.0",
+    "@bpartners/annotator-component": "^0.7.3",
+    "@bpartners/typescript-client": "^0.41.0",
     "@gthrm/deep-diff": "^1.0.6",
     "@hookform/resolvers": "^3.1.0",
     "@mui/styles": "^5.12.3",
@@ -17,7 +17,6 @@
     "@sentry/tracing": "^7.94.1",
     "aws-amplify": "^5.3.10",
     "axios": "^1.6.5",
-    "bpartners-react-client": "^0.38.1",
     "caniuse-lite": "^1.0.30001486",
     "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.10",
