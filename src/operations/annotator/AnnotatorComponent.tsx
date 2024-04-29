@@ -5,17 +5,9 @@ import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-an
 import { getUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 
-const AnnotatorComponent = () => {
+const AnnotatorComponent = ({ allowAnnotation = true }) => {
   const { polygons, setPolygons, updatePolygonList } = useCanvasAnnotationContext();
   const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
-
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     const data = await annotatorProvider();
-  //     setPolygons(data);
-  //   };
-  //   fetch();
-  // }, [setPolygons])
 
   useEffect(() => {
     const pictureId = getUrlParams(window.location.search, 'pictureId');
@@ -26,11 +18,11 @@ const AnnotatorComponent = () => {
   }, []);
 
   return (
-    <Box width='100%' height='80vh' position='relative'>
+    <Box width='100%' height='580px' position='relative'>
       <AnnotatorCanvas
-        allowAnnotation
+        allowAnnotation={allowAnnotation}
         width='100%'
-        height='80vh'
+        height='500px'
         image={getUrlParams(window.location.search, 'imgUrl')}
         setPolygons={updatePolygonList}
         polygonList={polygons}

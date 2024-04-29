@@ -30,5 +30,10 @@ export const annotatorProvider = {
     const { accountId } = getCached.userInfo();
     const { data } = await areaPictureApi().annotateAreaPicture(accountId, pictureId, annotationId, newDataMapped);
     return data;
-  }
+  },
+  async getAnnotationPicture(pictureId: string, annotationId: string) {
+    const { accountId } = getCached.userInfo();
+    const { data } = await areaPictureApi().getAreaPictureAnnotation(accountId, pictureId, annotationId);
+    return data;
+  },
 };

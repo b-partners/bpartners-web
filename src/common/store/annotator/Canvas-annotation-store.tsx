@@ -5,12 +5,17 @@ type annotationStore = {
   setPolygons: (data: any) => void;
   polygons: Polygon[];
   updatePolygonList: (polygons: Polygon[]) => void;
-  slopeInfoOpen: boolean,
-  handleSlopeInfoToggle: () => void,
-}
+  slopeInfoOpen: boolean;
+  handleSlopeInfoToggle: () => void;
+};
 
-
-const CanvasAnnotationContext = createContext<annotationStore>({ polygons: [], setPolygons: () => { }, updatePolygonList: () => { }, slopeInfoOpen: false, handleSlopeInfoToggle: () => { } });
+const CanvasAnnotationContext = createContext<annotationStore>({
+  polygons: [],
+  setPolygons: () => {},
+  updatePolygonList: () => {},
+  slopeInfoOpen: false,
+  handleSlopeInfoToggle: () => {},
+});
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
 
 export const CanvasAnnotationContextProvider = ({ children }: any) => {
@@ -24,7 +29,7 @@ export const CanvasAnnotationContextProvider = ({ children }: any) => {
 
   const handleSlopeInfoToggle = () => {
     setSlopeInfoOpen(!slopeInfoOpen);
-  }
+  };
 
   return (
     <CanvasAnnotationContext.Provider value={{ polygons, setPolygons, updatePolygonList, slopeInfoOpen, handleSlopeInfoToggle }}>

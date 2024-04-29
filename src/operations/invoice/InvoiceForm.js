@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
+import { Box, Checkbox, Divider, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { prettyPrintMinors } from '../../common/utils';
+import { getUrlParams, listDetails, prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -18,8 +18,11 @@ import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit, printError } from 'src/common/utils';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { Alphabet } from 'src/constants/alphabet';
 import { customerProvider } from 'src/providers';
+import { annotatorProvider } from 'src/providers/annotator-provider';
 import { invoiceProvider } from 'src/providers/invoice-provider';
+import AnnotatorComponent from '../annotator/AnnotatorComponent';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';
@@ -157,10 +160,41 @@ const InvoiceForm = props => {
     toggle();
   };
 
+  const pictureId = getUrlParams(window.location.search, 'pictureId');
+  const annotationId = getUrlParams(window.location.search, 'annotationId');
+  const [annotations, setAnnotations] = useState({});
+  useEffect(() => {
+    if (pictureId && annotationId) {
+      annotatorProvider.getAnnotationPicture(pictureId, annotationId).then(annotations => {
+        setAnnotations(annotations);
+      });
+    }
+  }, [pictureId, annotationId]);
+
+  console.log('annotations state', annotations);
+
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <FormProvider {...form}>
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
+          {Object.keys(annotations).length > 0 && (
+            <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
+              {annotations?.annotations.map((annotation, i) => (
+                <>
+                  <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
+                    Polygone {Alphabet[i]}
+                  </Typography>
+                  {listDetails('Type', annotation.labelType)}
+                  {listDetails('Surface', annotation.metadata?.area, 'm²')}
+                  {listDetails('Pente', annotation.metadata?.slope, '/12')}
+                  {listDetails('Taux d’usure', annotation.metadata?.wearLevel)}
+                  {listDetails('Obstacle', annotation.metadata?.obstacle)}
+                  {listDetails('Commentaire', annotation.metadata?.comment)}
+                  <Divider sx={{ my: 1 }} />
+                </>
+              ))}
+            </InvoiceAccordion>
+          )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
             <BpFormField name='title' label='Titre' validate={titleValidator} />
             <BpFormField name='ref' label='Référence' />
@@ -242,11 +276,14 @@ const InvoiceForm = props => {
           <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
         </form>
       </FormProvider>
-      <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
-        <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
-          <RefreshIcon />
-        </IconButton>
-      </PdfViewer>
+      <div>
+        {Object.keys(annotations).length > 0 && <AnnotatorComponent allowAnnotation={false} />}
+        <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
+          <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
+            <RefreshIcon />
+          </IconButton>
+        </PdfViewer>
+      </div>
     </Box>
   );
 };
