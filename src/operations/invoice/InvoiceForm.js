@@ -163,6 +163,7 @@ const InvoiceForm = props => {
   const pictureId = getUrlParams(window.location.search, 'pictureId');
   const annotationId = getUrlParams(window.location.search, 'annotationId');
   const [annotations, setAnnotations] = useState({});
+  const [polygons, setPolygons] = useState([]);
   useEffect(() => {
     if (pictureId && annotationId) {
       annotatorProvider.getAnnotationPicture(pictureId, annotationId).then(annotations => {
@@ -171,7 +172,18 @@ const InvoiceForm = props => {
     }
   }, [pictureId, annotationId]);
 
-  console.log('annotations state', annotations);
+  useEffect(() => {
+    if (Object.keys(annotations).length > 0) {
+      const newPolygons = annotations?.annotations.map(annotation => ({
+        id: annotation.id,
+        fillColor: '#00ff0040',
+        strokeColor: '#00ff00',
+        points: annotation.polygon?.points
+      }));
+      setPolygons(newPolygons);
+    }
+  }, [annotations, setPolygons])
+
 
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
@@ -277,7 +289,7 @@ const InvoiceForm = props => {
         </form>
       </FormProvider>
       <div>
-        {Object.keys(annotations).length > 0 && <AnnotatorComponent allowAnnotation={false} />}
+        {Object.keys(annotations).length > 0 && <AnnotatorComponent allowAnnotation={false} poly_gone={polygons} />}
         <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
           <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
             <RefreshIcon />
