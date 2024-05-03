@@ -1,24 +1,46 @@
-import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
-import { Box } from '@mui/material';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { OpenStreetMapLayer } from '@bpartners/typescript-client';
+import { Box, SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import { getUrlParams } from 'src/common/utils';
+import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
+import SelectZoomLevel from './components/SelectZoomLevel';
 
-const AnnotatorComponent = ({ allowAnnotation = true, poly_gone }: { allowAnnotation: boolean, poly_gone: Polygon[] }) => {
+const AnnotatorComponent = ({ allowAnnotation = true, poly_gone }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
+  const { pictureId, prospectId, fileId } = parseUrlParams();
+  const [newZoomLevel, setNewZoomLevel] = useState('');
+  const [fileInfo, setFileInfo] = useState({ filename: '', address: '' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const pictureId = getUrlParams(window.location.search, 'pictureId');
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
-      const { xTile, yTile } = pictureDetail;
+      const { xTile, yTile, zoomLevel, filename, address } = pictureDetail;
       setTiles({ xTile, yTile });
+      setNewZoomLevel(zoomLevel);
+      setFileInfo({ filename, address });
+      setLoading(false);
     });
-  }, []);
+  }, [pictureId, newZoomLevel]);
+
+  const handleZoomLvl = async (e: SelectChangeEvent<string>) => {
+    setLoading(true);
+    await annotatorProvider.getPictureFormAddress(pictureId, {
+      address: fileInfo.address,
+      fileId,
+      filename: fileInfo.filename,
+      prospectId,
+      layer: OpenStreetMapLayer.tous_fr,
+      zoomLevel: e.target.value,
+    });
+    setNewZoomLevel(e.target.value);
+  };
 
   return (
     <Box width='100%' height='580px' position='relative'>
+      <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />
       <AnnotatorCanvas
         allowAnnotation={allowAnnotation}
         width='100%'

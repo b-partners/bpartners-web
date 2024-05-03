@@ -178,12 +178,13 @@ const InvoiceForm = props => {
         id: annotation.id,
         fillColor: '#00ff0040',
         strokeColor: '#00ff00',
-        points: annotation.polygon?.points
+        points: annotation.polygon?.points,
       }));
       setPolygons(newPolygons);
     }
-  }, [annotations, setPolygons])
+  }, [annotations, setPolygons]);
 
+  console.log('annotations', annotations);
 
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>

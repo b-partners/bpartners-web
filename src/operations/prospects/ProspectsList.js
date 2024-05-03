@@ -84,7 +84,9 @@ const ProspectsList = () => {
           zoomLevel: ZoomLevel.HOUSES_0,
         });
 
-        redirect(`/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}&pictureId=${pictureId}`);
+        redirect(
+          `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.WORLD_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
+        );
         return;
       }
     };

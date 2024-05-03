@@ -19,7 +19,7 @@ import {
 import { SelectInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import { getUrlParams } from 'src/common/utils';
+import { parseUrlParams } from 'src/common/utils';
 import { Alphabet } from 'src/constants/alphabet';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
@@ -32,8 +32,7 @@ const SideBar = () => {
   const redirect = useRedirect();
   const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const annotationId = uuidV4();
-  const pictureId = getUrlParams(window.location.search, 'pictureId');
-  const imgUrl = getUrlParams(window.location.search, 'imgUrl');
+  const { pictureId, imgUrl, prospectId } = parseUrlParams();
 
   const defaultValues = polygons?.map(() => {
     return {
@@ -52,7 +51,7 @@ const SideBar = () => {
     const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId);
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
-    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&zoomLevel=${ZoomLevel.WORLD_0}&pictureId=${pictureId}&annotationId=${annotationId}`);
+    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}`);
   });
 
   const removeAnnotation = (polygonId: string) => {
@@ -68,7 +67,15 @@ const SideBar = () => {
               {polygons.map((polygon, i) => {
                 return (
                   <Box key={polygon.id}>
-                    <SelectInput name={`${i}.labelType`} source={'labelType'} choices={labels} alwaysOn resettable sx={{ width: '85%' }} />
+                    <SelectInput
+                      name={`${i}.labelType`}
+                      source={'labelType'}
+                      label='Type de label'
+                      choices={labels}
+                      alwaysOn
+                      resettable
+                      sx={{ width: '85%' }}
+                    />
 
                     <Tooltip title='Supprimer'>
                       <IconButton edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
@@ -94,8 +101,8 @@ const SideBar = () => {
                 <Button
                   type='submit'
                   data-testid={`generate-quote`}
-                // disabled={isLoading}
-                //  startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
+                  // disabled={isLoading}
+                  //  startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
                 >
                   Générer un devis
                 </Button>
