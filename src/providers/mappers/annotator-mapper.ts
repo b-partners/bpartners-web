@@ -36,7 +36,7 @@ export const annotationsAttributeMapper = (data: any, polygons: Polygon[], pictu
         strokeColor: attributes.strokeColor,
       },
       userId: userId,
-      labelName: attributes.labelType, // * mettre "attributes.labelName" lorsque j'aurais mis l'input labelName
+      labelName: attributes.labelName,
       labelType: attributes.labelType,
       polygon: {
         points: correspondingPolygon.points,

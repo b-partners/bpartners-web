@@ -1,5 +1,4 @@
 import { Polygon } from '@bpartners/annotator-component';
-import { ZoomLevel } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
 import {
   Accordion,
@@ -16,8 +15,10 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { SelectInput, useRedirect } from 'react-admin';
+import { useState } from 'react';
+import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
+import { BPButton } from 'src/common/components/BPButton';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { parseUrlParams } from 'src/common/utils';
 import { Alphabet } from 'src/constants/alphabet';
@@ -33,6 +34,7 @@ const SideBar = () => {
   const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const annotationId = uuidV4();
   const { pictureId, imgUrl, prospectId } = parseUrlParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   const defaultValues = polygons?.map(() => {
     return {
@@ -47,10 +49,12 @@ const SideBar = () => {
   const formState = useForm({ defaultValues });
 
   const handleSubmitForms = formState.handleSubmit(async data => {
+    setIsLoading(true);
     const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
     const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId);
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
+    setIsLoading(false);
     redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}`);
   });
 
@@ -85,7 +89,13 @@ const SideBar = () => {
 
                     <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }}>
                       <AccordionSummary expandIcon={<ExpandMore />}>
-                        <Typography>Polygone {Alphabet[i]}</Typography>
+                        <TextInput
+                          name={`${i}.labelName`}
+                          source={'labelName'}
+                          label={'Nom du label'}
+                          defaultValue={`Polygone ${Alphabet[i]}`}
+                          helperText={false}
+                        />
                       </AccordionSummary>
                       <AccordionDetails>
                         <AnnotatorForm index={i} surface={polygon.surface} />
@@ -98,14 +108,7 @@ const SideBar = () => {
               })}
 
               <Stack spacing={1} m={2} mb={1} style={{ position: 'fixed', bottom: '55px', width: '250px' }}>
-                <Button
-                  type='submit'
-                  data-testid={`generate-quote`}
-                  // disabled={isLoading}
-                  //  startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
-                >
-                  Générer un devis
-                </Button>
+                <BPButton type='submit' data-testid='submit-annotator-form' isLoading={isLoading} label='resources.annotator.save' style={{ width: '100%' }} />
               </Stack>
             </form>
           </FormProvider>

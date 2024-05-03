@@ -195,7 +195,7 @@ const InvoiceForm = props => {
               {annotations?.annotations.map((annotation, i) => (
                 <>
                   <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
-                    Polygone {Alphabet[i]}
+                    {annotation.labelName}
                   </Typography>
                   {listDetails('Type', annotation.labelType)}
                   {listDetails('Surface', annotation.metadata?.area, 'm²')}
