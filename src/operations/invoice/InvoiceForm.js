@@ -18,7 +18,6 @@ import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit, printError } from 'src/common/utils';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
-import { Alphabet } from 'src/constants/alphabet';
 import { customerProvider } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { invoiceProvider } from 'src/providers/invoice-provider';

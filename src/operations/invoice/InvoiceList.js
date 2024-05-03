@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
-import { formatDate } from '../../common/utils';
+import { formatDate, parseUrlParams } from '../../common/utils';
 
 import { RaMoneyField } from 'src/common/components';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
@@ -21,6 +21,7 @@ import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
+import { useEffect } from 'react';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -147,6 +148,14 @@ const InvoiceList = props => {
     crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status });
     setView('creation');
   };
+
+  const { pictureId, imgUrl } = parseUrlParams();
+
+  // useEffect(() => {
+  //   if (pictureId && imgUrl) {
+  //     setView('creation')
+  //   }
+  // }, [pictureId, imgUrl])
 
   return (
     <>

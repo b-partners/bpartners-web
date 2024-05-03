@@ -5,7 +5,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Dialog,
   DialogContent,
   Divider,
@@ -33,7 +32,7 @@ const SideBar = () => {
   const redirect = useRedirect();
   const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const annotationId = uuidV4();
-  const { pictureId, imgUrl, prospectId } = parseUrlParams();
+  const { pictureId, imgUrl } = parseUrlParams();
   const [isLoading, setIsLoading] = useState(false);
 
   const defaultValues = polygons?.map(() => {
