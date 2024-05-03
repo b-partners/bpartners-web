@@ -54,7 +54,7 @@ const SideBar = () => {
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
     setIsLoading(false);
-    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}`);
+    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
   });
 
   const removeAnnotation = (polygonId: string) => {

@@ -8,6 +8,8 @@ import Pagination, { pageSize } from '../../common/components/Pagination';
 import TooltipButton from '../../common/components/TooltipButton';
 import { formatDate, parseUrlParams } from '../../common/utils';
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RaMoneyField } from 'src/common/components';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import BPListActions from 'src/common/components/BPListActions';
@@ -21,7 +23,6 @@ import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
 import { InvoiceCreationButton } from './components/InvoiceCreationButton';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
-import { useEffect } from 'react';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -149,13 +150,20 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { pictureId, imgUrl } = parseUrlParams();
+  const { showCreateQuote, ...otherParams } = parseUrlParams();
+  const navigate = useNavigate();
+  console.log('otherParams', otherParams);
 
-  // useEffect(() => {
-  //   if (pictureId && imgUrl) {
-  //     setView('creation')
-  //   }
-  // }, [pictureId, imgUrl])
+  useEffect(() => {
+    if (showCreateQuote === 'true') {
+      // * afficher le composant creation
+      setView('creation');
+      // * Je supprime le param 'showCreateQuote' pour pouvoir quitter ce composant et revenir sur la liste si besoin
+      const params = new URLSearchParams(otherParams);
+      navigate({ search: params.toString() });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCreateQuote]);
 
   return (
     <>
