@@ -7,7 +7,7 @@ import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import SelectZoomLevel from './components/SelectZoomLevel';
 
-const AnnotatorComponent = ({ allowAnnotation = true, poly_gone }: any) => {
+const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoomLevel = true }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
   const { pictureId, prospectId, fileId } = parseUrlParams();
@@ -40,7 +40,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone }: any) => {
 
   return (
     <Box width='100%' height='580px' position='relative'>
-      <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />
+      {allowSelectZoomLevel && <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />}
       <AnnotatorCanvas
         allowAnnotation={allowAnnotation}
         width='100%'

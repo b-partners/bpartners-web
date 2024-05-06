@@ -152,7 +152,6 @@ const InvoiceList = props => {
 
   const { showCreateQuote, ...otherParams } = parseUrlParams();
   const navigate = useNavigate();
-  console.log('otherParams', otherParams);
 
   useEffect(() => {
     if (showCreateQuote === 'true') {
