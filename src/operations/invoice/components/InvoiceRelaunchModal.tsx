@@ -10,7 +10,7 @@ import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit } from 'src/common/utils';
 import { authProvider, getCached, payingApi } from 'src/providers';
 import { InvoiceListModal } from '.';
-import { getEmailSubject, invoiceGetContext, getRelaunchDefaultMessage } from '../utils';
+import { getEmailSubject, getRelaunchDefaultMessage, invoiceGetContext } from '../utils';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
 
 export const InvoiceRelaunchModal = () => {

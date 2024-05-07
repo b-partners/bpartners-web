@@ -1,4 +1,4 @@
-import { Invoice, InvoiceStatus, InvoicePaymentTypeEnum, ArchiveStatus } from '@bpartners/typescript-client';
+import { ArchiveStatus, Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from '@bpartners/typescript-client';
 import { customers1 } from './customer-api';
 import { products } from './product-api';
 

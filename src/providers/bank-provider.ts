@@ -1,7 +1,7 @@
 import { Account, BankConnectionRedirection } from '@bpartners/typescript-client';
-import { cache, getCached } from './cache';
 import { createRedirectionUrl } from '../common/utils';
 import { userAccountsApi } from './api';
+import { cache, getCached } from './cache';
 
 export const bankProvider = {
   initiateConnection: async (): Promise<BankConnectionRedirection> => {

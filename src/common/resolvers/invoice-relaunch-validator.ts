@@ -1,8 +1,8 @@
-import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldErrorMessage, requiredString } from './utils';
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import zod from 'zod';
+import { FieldErrorMessage, requiredString } from './utils';
 
 const getHTML = (editorState: EditorState) => {
   const content = editorState.getCurrentContent();

@@ -4,14 +4,14 @@ import { CookiesProvider } from 'react-cookie';
 
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
+import RedirectionMobilePage from './operations/redirectionMobile/RedirectionMobilePage';
+import { BpAdmin } from './security/BpAdmin';
 import BpLoginPageLayout from './security/LoginPageLayout';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
+import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
-import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
-import { BpAdmin } from './security/BpAdmin';
-import RedirectionMobilePage from './operations/redirectionMobile/RedirectionMobilePage';
 
 const App = () => {
   return (

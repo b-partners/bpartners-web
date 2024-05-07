@@ -1,6 +1,6 @@
 import WorkIcon from '@mui/icons-material/Work';
-import TransactionShow from './TransactionShow';
 import TransactionList from './TransactionList';
+import TransactionShow from './TransactionShow';
 
 const transactions = {
   list: TransactionList,

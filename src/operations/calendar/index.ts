@@ -1,5 +1,5 @@
-import { CalendarList } from './CalendarList';
 import { CalendarMonth as CalendarMonthIcon } from '@mui/icons-material';
+import { CalendarList } from './CalendarList';
 
 export const calendar = {
   list: CalendarList,

@@ -3,10 +3,10 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { user1, whoami1 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, businessActivities, account1, account2 } from './mocks/responses/account-api';
-import { images1 } from './mocks/responses/file-api';
 import * as Redirect from 'src/common/utils';
+import { account1, account2, accountHolders1, accounts1, businessActivities } from './mocks/responses/account-api';
+import { images1 } from './mocks/responses/file-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
 
 const redirectionUrl = {
   redirectionStatusUrls: { failureUrl: 'dummy', successUrl: 'dummy' },

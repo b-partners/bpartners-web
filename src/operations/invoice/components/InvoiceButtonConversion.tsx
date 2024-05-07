@@ -1,10 +1,10 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
+import { CircularProgress } from '@mui/material';
 import { ReactElement } from 'react';
 import { useTranslate } from 'react-admin';
 import TooltipButton from 'src/common/components/TooltipButton';
 import { useChangeInvoiceStatus } from 'src/common/hooks';
 import { useGetConversionContext } from 'src/common/store/invoice';
-import { CircularProgress } from '@mui/material';
 
 type InvoiceButtonConversionProps = {
   to: InvoiceStatus;

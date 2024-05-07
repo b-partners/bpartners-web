@@ -1,6 +1,6 @@
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import FrequencyConfig from './FrequencyConfig';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 const CustomAccordion = ({ content, title }) => {
   return (

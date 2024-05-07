@@ -19,13 +19,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { redirect } from 'src/common/utils';
-import { BankInformationForm } from './BankInformationForm';
-import { BALANCE_ICON, BANK_CARD, BANK_LOGO, CARD_CONTENT, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 import { useNotify } from 'react-admin';
-import { handleSubmit, printError } from 'src/common/utils';
+import { handleSubmit, printError, redirect } from 'src/common/utils';
 import { accountProvider, bankProvider, getCached } from 'src/providers';
 import AccountConfig from './AccountConfig';
+import { BankInformationForm } from './BankInformationForm';
+import { BALANCE_ICON, BANK_CARD, BANK_LOGO, CARD_CONTENT, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(getCached.account());

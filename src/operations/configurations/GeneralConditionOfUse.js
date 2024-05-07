@@ -1,15 +1,15 @@
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { makeStyles } from '@mui/styles';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
-import { reload } from '../../common/utils';
-import { EmptyList } from '../../common/components/EmptyList';
 import { VerticalPagination } from 'src/common/components/VerticalPagination';
-import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
-import { handleSubmit } from 'src/common/utils';
-import { authProvider, cache, userAccountsApi } from '../../providers';
 import { useWindowResize } from 'src/common/hooks';
+import { handleSubmit } from 'src/common/utils';
+import { EmptyList } from '../../common/components/EmptyList';
+import { reload } from '../../common/utils';
+import { authProvider, cache, userAccountsApi } from '../../providers';
+import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 
 const INIT_LEGAL_FILE = {
   id: '',

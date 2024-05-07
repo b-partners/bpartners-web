@@ -1,6 +1,6 @@
+import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
 import { accountHolderProvider, updateGlobalInformation } from '../../providers';

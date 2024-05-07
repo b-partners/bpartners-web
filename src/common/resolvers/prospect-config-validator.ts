@@ -1,6 +1,6 @@
-import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldErrorMessage, requiredNumberRows, requiredRating, requiredString, requiredArray } from './utils';
+import zod from 'zod';
+import { FieldErrorMessage, requiredArray, requiredNumberRows, requiredRating, requiredString } from './utils';
 
 const prospectConfigValidator = zod.object({
   // artisanOwner: requiredString(),

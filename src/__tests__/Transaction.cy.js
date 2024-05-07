@@ -3,12 +3,12 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1 } from './mocks/responses/security-api';
-import { supportingDoc, transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
-import { accounts1, accountHolders1 } from './mocks/responses/account-api';
-import transactionCategory1 from './mocks/responses/transaction-category-api';
-import { getInvoices } from './mocks/responses/invoices-api';
 import { InvoiceStatus } from '@bpartners/typescript-client';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
+import { getInvoices } from './mocks/responses/invoices-api';
+import { supportingDoc, transactions, transactionsSummary, transactionsSummary1 } from './mocks/responses/paying-api';
+import { whoami1 } from './mocks/responses/security-api';
+import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { createEmailResponse, transactionExportLinkResponse } from './mocks/responses/transaction-mailing-api';
 
 describe(specTitle('Transactions'), () => {

@@ -1,24 +1,24 @@
-import { useState } from 'react';
 import { AddLink as AddLinkIcon, Clear as ClearIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  Typography,
-  CircularProgress,
-  IconButton,
-  Tooltip,
   Card,
   CardContent,
   Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+  Typography,
 } from '@mui/material';
-import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
+import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { justifyTransaction } from 'src/providers/transaction-provider';
 import { transactionSupportingDocProvider } from 'src/providers';
+import { justifyTransaction } from 'src/providers/transaction-provider';
+import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
 
 const SelectionDialog = props => {
   const {

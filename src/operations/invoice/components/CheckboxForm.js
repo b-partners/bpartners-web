@@ -1,4 +1,4 @@
-import { Box, FormControl, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField } from 'src/common/components';

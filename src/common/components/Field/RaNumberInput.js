@@ -1,5 +1,5 @@
-import { TextInput } from 'react-admin';
 import { IconButton, Typography } from '@mui/material';
+import { TextInput } from 'react-admin';
 
 // Callback taking the value from the form state, and returning the input value.
 const format = value => `${value || ''}`.replace('.', ',');

@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 export const DialogResetCodeSent = props => {
   const { isOpen, handleDialog } = props;

@@ -2,13 +2,13 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
-import { useForm, FormProvider } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { BpFormField, BpNumberField } from 'src/common/components';
+import { companyInfoResolver } from 'src/common/resolvers';
 import { handleSubmit } from 'src/common/utils';
 import { accountHolderProvider } from 'src/providers';
 import { toMajors, toMinors } from '../../common/utils';
 import { companyInfoDiff } from './utils';
-import { BpFormField, BpNumberField } from 'src/common/components';
-import { companyInfoResolver } from 'src/common/resolvers';
 
 const CompanyInformationForm = () => {
   const { record } = useShowContext();

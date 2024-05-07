@@ -1,10 +1,10 @@
-import { useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-import { sheetProvider } from 'src/providers/sheet-provider';
-import { redirect } from 'src/common/utils/redirect';
-import { BP_COLOR } from 'src/bp-theme.js';
+import { useCallback, useEffect } from 'react';
 import { useNotify } from 'react-admin';
+import { useLocation } from 'react-router-dom';
+import { BP_COLOR } from 'src/bp-theme.js';
+import { redirect } from 'src/common/utils/redirect';
+import { sheetProvider } from 'src/providers/sheet-provider';
 
 const GoogleSheetsConsentSuccess = () => {
   const notify = useNotify();

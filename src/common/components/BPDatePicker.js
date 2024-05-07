@@ -4,8 +4,8 @@ import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import 'dayjs/locale/fr';
 import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
 
 const BPDatePicker = props => {
   const { views, label, setDate } = props;

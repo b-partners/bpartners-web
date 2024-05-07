@@ -1,11 +1,11 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Typography } from '@mui/material';
 
-import ProspectDialogActions from './ProspectDialogActions';
+import PropTypes from 'prop-types';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
-import { useFormContext, useWatch } from 'react-hook-form';
-import PropTypes from 'prop-types';
+import ProspectDialogActions from './ProspectDialogActions';
 
 export const ProspectDialog = props => {
   const { open, close, prospect, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
@@ -34,6 +34,7 @@ export const ProspectDialog = props => {
         <BpFormField style={{ width: '100%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
         <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
+        <BpFormField style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
         <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
         {!isEditing && !isCreating && (
           <Box>

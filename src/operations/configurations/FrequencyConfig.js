@@ -1,9 +1,9 @@
+import SaveIcon from '@mui/icons-material/Save';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Box, Button, TextField, Typography } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import { authProvider, relaunchProvider } from 'src/providers';
 import { printError } from 'src/common/utils';
+import { authProvider, relaunchProvider } from 'src/providers';
 
 const FrequencyConfig = () => {
   const [frequency, setFrequency] = useState({});

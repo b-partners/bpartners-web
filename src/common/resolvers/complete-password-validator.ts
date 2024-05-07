@@ -1,5 +1,5 @@
-import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import zod from 'zod';
 import { FieldErrorMessage, requiredString } from './utils';
 
 const matchCognitoPassword = (password: string) => {

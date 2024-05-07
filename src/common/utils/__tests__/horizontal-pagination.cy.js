@@ -1,6 +1,6 @@
 import { mount } from '@cypress/react';
-import { HorizontalPagination } from 'src/common/components/HorizontalPagination';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
+import { HorizontalPagination } from 'src/common/components/HorizontalPagination';
 
 describe(specTitle('Pagination test'), () => {
   it('should test next button', () => {

@@ -1,13 +1,13 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, useState } from 'react';
+import { useTranslate } from 'react-admin';
+import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCheckAuth } from 'src/common/hooks';
 import { useCalendarContext } from 'src/common/store/calendar';
 import { redirect } from 'src/common/utils';
 import { calendarEventProvider, dataProvider } from 'src/providers';
 import { calendarIntervalFilter } from '../utils';
-import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
-import { useTranslate } from 'react-admin';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 type CalendarSyncDialogProps = {
   changeView: () => void;

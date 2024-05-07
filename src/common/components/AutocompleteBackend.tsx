@@ -1,7 +1,7 @@
-import { AutocompleteController, useAutocomplete } from '../hooks';
-import { Autocomplete, SxProps, TextField, Theme, AutocompleteRenderOptionState } from '@mui/material';
+import { Autocomplete, AutocompleteRenderOptionState, SxProps, TextField, Theme } from '@mui/material';
 import { ChangeEvent, FormEvent, HTMLAttributes, ReactNode } from 'react';
 import { useTranslate } from 'react-admin';
+import { AutocompleteController, useAutocomplete } from '../hooks';
 
 type AutocompleteProps<T> = {
   label: string;
