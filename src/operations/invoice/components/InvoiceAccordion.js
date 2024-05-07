@@ -3,12 +3,12 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { errorStyle, INVOICE_EDITION } from '../style';
 
 const InvoiceAccordion = props => {
-  const { label, children, index, isExpanded, onExpand, error = false } = props;
+  const { label, children, index, isExpanded, onExpand, error = false, width } = props;
 
   const handleClick = () => onExpand(lastIndex => (lastIndex === index ? 0 : index));
 
   return (
-    <Accordion sx={error ? errorStyle : undefined} expanded={isExpanded === index}>
+    <Accordion sx={error ? errorStyle : undefined} expanded={isExpanded === index} style={{ width }}>
       <AccordionSummary data-testid={`invoice-${label}-accordion`} onClick={handleClick} expandIcon={<ExpandMoreIcon />}>
         {label}
       </AccordionSummary>

@@ -1,11 +1,11 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { whoami1 } from './mocks/responses/security-api';
-import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
 import { mount } from '@cypress/react';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { transactions, transactionsSummary } from './mocks/responses/paying-api';
-import transactionCategory1 from './mocks/responses/transaction-category-api';
 import * as Redirect from '../common/utils/redirect';
+import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
+import { transactions, transactionsSummary } from './mocks/responses/paying-api';
+import { whoami1 } from './mocks/responses/security-api';
+import transactionCategory1 from './mocks/responses/transaction-category-api';
 
 const date = new Date().toISOString().slice(0, 10);
 

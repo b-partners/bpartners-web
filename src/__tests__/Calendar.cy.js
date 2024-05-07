@@ -2,9 +2,9 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1 } from './mocks/responses/account-api';
 
 describe(specTitle('Calendar'), () => {
   beforeEach(() => {

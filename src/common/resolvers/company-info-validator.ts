@@ -1,5 +1,5 @@
-import zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import zod from 'zod';
 import { FieldErrorMessage, phoneValidator, requiredString } from './utils';
 
 const companyInfoValidator = zod.object({

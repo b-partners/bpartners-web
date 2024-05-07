@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, IconButton, Typography, FormControl, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Checkbox, Divider, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
@@ -7,13 +7,30 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { prettyPrintMinors } from '../../common/utils';
+import { listDetails, parseUrlParams, prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
+import { BpFormField } from 'src/common/components';
+import BpTextAdornment from 'src/common/components/BpTextAdornment';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { handleSubmit, printError } from 'src/common/utils';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { customerProvider } from 'src/providers';
+import { annotatorProvider } from 'src/providers/annotator-provider';
+import { invoiceProvider } from 'src/providers/invoice-provider';
+import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
+import FormCustomer from '../customers/components/FormCustomer';
+import CheckboxForm from './components/CheckboxForm';
 import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-import { INVOICE_EDITION, DEFAULT_TEXT_FIELD_WIDTH } from './style';
+import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
+import { validateDIPAllowed, validateDPPercent } from './utils';
+import { invoiceMapper } from './utils/invoice-utils';
+import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
@@ -25,25 +42,10 @@ import {
   productValidationHandling,
   PRODUCT_NAME,
   retryOnError,
+  titleValidator,
   totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
-  titleValidator,
 } from './utils/utils';
-import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
-import { invoiceMapper } from './utils/invoice-utils';
-import CheckboxForm from './components/CheckboxForm';
-import BpTextAdornment from 'src/common/components/BpTextAdornment';
-import { BpFormField } from 'src/common/components';
-import { validateDIPAllowed, validateDPPercent } from './utils';
-import { handleSubmit, printError } from 'src/common/utils';
-import { invoiceProvider } from 'src/providers/invoice-provider';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { CreateInDialogButton } from '@react-admin/ra-form-layout';
-import FormCustomer from '../customers/components/FormCustomer';
-import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
-import { customerProvider } from 'src/providers';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 
 const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
@@ -100,6 +102,7 @@ const InvoiceForm = props => {
       }
       onPending(InvoiceActionType.START_PENDING);
       const submittedAt = new Date();
+      Object.keys(annotations).length > 0 && form.setValue('idAreaPicture', annotations.idAreaPicture);
       retryOnError(
         () =>
           invoiceProvider
@@ -157,10 +160,51 @@ const InvoiceForm = props => {
     toggle();
   };
 
+  const { pictureId, annotationId } = parseUrlParams();
+  const [annotations, setAnnotations] = useState({});
+  const [polygons, setPolygons] = useState([]);
+  useEffect(() => {
+    if (pictureId && annotationId) {
+      annotatorProvider.getAnnotationPicture(pictureId, annotationId).then(annotations => {
+        setAnnotations(annotations);
+      });
+    }
+  }, [pictureId, annotationId]);
+
+  useEffect(() => {
+    if (Object.keys(annotations).length > 0) {
+      const newPolygons = annotations?.annotations.map(annotation => ({
+        id: annotation.id,
+        fillColor: '#00ff0040',
+        strokeColor: '#00ff00',
+        points: annotation.polygon?.points,
+      }));
+      setPolygons(newPolygons);
+    }
+  }, [annotations, setPolygons]);
+
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <FormProvider {...form}>
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
+          {Object.keys(annotations).length > 0 && (
+            <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
+              {annotations?.annotations.map((annotation, i) => (
+                <>
+                  <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
+                    {annotation.labelName}
+                  </Typography>
+                  {listDetails('Type', annotation.labelType)}
+                  {listDetails('Surface', annotation.metadata?.area, 'm²')}
+                  {listDetails('Pente', annotation.metadata?.slope, '/12')}
+                  {listDetails('Taux d’usure', annotation.metadata?.wearLevel)}
+                  {listDetails('Obstacle', annotation.metadata?.obstacle)}
+                  {listDetails('Commentaire', annotation.metadata?.comment)}
+                  <Divider sx={{ my: 1 }} />
+                </>
+              ))}
+            </InvoiceAccordion>
+          )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
             <BpFormField name='title' label='Titre' validate={titleValidator} />
             <BpFormField name='ref' label='Référence' />
@@ -242,11 +286,14 @@ const InvoiceForm = props => {
           <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
         </form>
       </FormProvider>
-      <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
-        <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
-          <RefreshIcon />
-        </IconButton>
-      </PdfViewer>
+      <div>
+        {Object.keys(annotations).length > 0 && <AnnotatorComponent allowAnnotation={false} poly_gone={polygons} allowSelectZoomLevel={false} />}
+        <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
+          <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
+            <RefreshIcon />
+          </IconButton>
+        </PdfViewer>
+      </div>
     </Box>
   );
 };

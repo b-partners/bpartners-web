@@ -1,4 +1,4 @@
-import { TextInput, email, required } from 'react-admin';
+import { email, required, TextInput } from 'react-admin';
 import { useWatch } from 'react-hook-form';
 
 const ReturnedCompanyName = () => {

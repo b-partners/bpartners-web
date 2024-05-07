@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
-import { FieldErrorMessage, emailValidator, requiredString } from './utils';
+import { emailValidator, FieldErrorMessage, requiredString } from './utils';
 
 const calendarValidator = zod.object({
   title: requiredString(),

@@ -1,8 +1,8 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import RichTextEditor from '../../components/RichTextEditor';
-import { FormProvider, useForm } from 'react-hook-form';
 import { EditorState } from 'draft-js';
+import { FormProvider, useForm } from 'react-hook-form';
+import RichTextEditor from '../../components/RichTextEditor';
 
 const RichTextEditorComponent = () => {
   const form = useForm({ mode: 'all', defaultValues: { message: EditorState.createEmpty() } });

@@ -2,9 +2,9 @@ import { Clear as ClearIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-mat
 import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, CardHeader, IconButton, Tooltip, Typography } from '@mui/material';
 import BusinessActivitiesInputs from './BusinessActivityForm';
 import CompanyInformationForm from './CompanyInformationForm';
-import RevenueTargetForm from './RevenueTargetForm';
-import GeneralInfoForm from './GeneralInfoForm';
 import { FeedbackLinkForm } from './FeedbackLinkForm';
+import GeneralInfoForm from './GeneralInfoForm';
+import RevenueTargetForm from './RevenueTargetForm';
 
 const CloseConfigurationButton = ({ onClick }) => (
   <Tooltip title="Fermé l'édition">

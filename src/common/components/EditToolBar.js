@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Toolbar, SaveButton, useRedirect, useTranslate, useNotify } from 'react-admin';
-import { Button, CircularProgress } from '@mui/material';
-import { Archive as ArchiveIcon } from '@mui/icons-material';
-import { dataProvider } from 'src/providers';
 import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
+import { Archive as ArchiveIcon } from '@mui/icons-material';
+import { Button, CircularProgress } from '@mui/material';
+import { useState } from 'react';
+import { SaveButton, Toolbar, useNotify, useRedirect, useTranslate } from 'react-admin';
+import { useParams } from 'react-router-dom';
+import { dataProvider } from 'src/providers';
 
 const EditToolBar = props => {
   const [isLoading, setLoading] = useState(false);

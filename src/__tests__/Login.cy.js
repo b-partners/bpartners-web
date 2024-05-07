@@ -3,8 +3,8 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
-import * as Redirect from '../common/utils';
 import App from 'src/App';
+import * as Redirect from '../common/utils';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {

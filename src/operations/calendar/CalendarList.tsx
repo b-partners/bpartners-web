@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import frLocale from '@fullcalendar/core/locales/fr';
-import { CalendarProps, Calendar as RaCalendar } from '@react-admin/ra-calendar';
 import { Calendar } from '@bpartners/typescript-client';
+import frLocale from '@fullcalendar/core/locales/fr';
+import { Calendar as RaCalendar, CalendarProps } from '@react-admin/ra-calendar';
 import { useEffect, useState } from 'react';
 import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';
 import { CalendarContextProvider } from 'src/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from 'src/providers/mappers';
-import { CalendarSaveDialog, CalendarSyncDialog, CalendarSyncInitPage, CalendarSelection } from './components';
+import { CalendarSaveDialog, CalendarSelection, CalendarSyncDialog, CalendarSyncInitPage } from './components';
 import { calendarIntervalFilter } from './utils';
 
 type TypedToggle = 'CREATE' | 'EDIT';

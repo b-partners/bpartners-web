@@ -1,4 +1,4 @@
-import { CreateEmail, TransactionExportLink, EmailStatus } from '@bpartners/typescript-client';
+import { CreateEmail, EmailStatus, TransactionExportLink } from '@bpartners/typescript-client';
 
 export const transactionExportLinkResponse: TransactionExportLink = {
   createdAt: new Date('2023-03-15'),

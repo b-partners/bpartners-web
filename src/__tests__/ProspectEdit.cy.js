@@ -1,12 +1,12 @@
+import { InvoiceStatus } from '@bpartners/typescript-client';
+import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { whoami1 } from './mocks/responses/security-api';
+import App from '../App';
+import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { InvoiceStatus } from '@bpartners/typescript-client';
-import * as Redirect from '../common/utils';
 import { prospects, updatedProspects } from './mocks/responses/prospects-api';
-import { mount } from '@cypress/react';
-import App from '../App';
+import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects'), () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
-import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider, getCached, profileProvider } from '.';
+import { accountHolderProvider } from './account-holder-Provider';
 
 export const asyncGetUserInfo = async () => {
   const { accountHolderId, accountId, userId } = getCached.userInfo();

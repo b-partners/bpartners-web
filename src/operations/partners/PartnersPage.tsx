@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from '@mui/material';
 import { BPConstruction } from 'src/common/components/BPConstruction';
-import { CONTAINER } from './style';
 import { partners } from './partners';
 import { PartnersCard } from './PartnersCard';
+import { CONTAINER } from './style';
 
 export const PartnersPage = () => {
   return (

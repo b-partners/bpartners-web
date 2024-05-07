@@ -2,9 +2,9 @@
 import { Code, FormatBold, FormatItalic, FormatListBulleted, FormatListNumbered, FormatQuote, FormatStrikethrough } from '@mui/icons-material';
 import { ButtonGroup, IconButton, Stack } from '@mui/material';
 import { Editor, RichUtils } from 'draft-js';
-import { useFormContext, useWatch } from 'react-hook-form';
 import 'draft-js/dist/Draft.css';
 import { useCallback } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { RichAttachementInput } from './RichAttachementInput';
 
 // custom styleMap

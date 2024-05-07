@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
-import { UNVERIFIED_USER_BOX } from './style';
+import { useEffect, useState } from 'react';
 import { getCached } from 'src/providers/cache';
+import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {
   const user = getCached.user();

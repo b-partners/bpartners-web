@@ -1,7 +1,7 @@
-import { TextField, IconButton } from '@mui/material';
-import { VisibilityOff as VisibilityOffIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+import { IconButton, TextField } from '@mui/material';
 import { useState } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const textFieldStyle = {
   marginBlock: 3,

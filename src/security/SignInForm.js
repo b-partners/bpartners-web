@@ -1,16 +1,15 @@
-import { Button, CircularProgress, Typography, Divider } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { Button, CircularProgress, Divider, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
 import { authProvider } from 'src/providers';
 import { BP_COLOR } from '../bp-theme';
 import { BpFormField } from '../common/components';
-import { handleSubmit } from '../common/utils';
-import { redirect } from '../common/utils';
+import { handleSubmit, redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
-import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
 import DownloadAppBanner from './DownloadAppBanner';
-import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
+import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
 
 const SignInForm = () => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });

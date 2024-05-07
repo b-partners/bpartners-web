@@ -1,8 +1,8 @@
-import { useListContext, useNotify, useRefresh, useUnselectAll, useTranslate } from 'react-admin';
+import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
+import { useListContext, useNotify, useRefresh, useTranslate, useUnselectAll } from 'react-admin';
 import { BPButton } from 'src/common/components/BPButton';
 import { dataProvider } from 'src/providers';
 

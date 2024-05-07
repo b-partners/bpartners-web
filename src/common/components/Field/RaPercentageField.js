@@ -1,5 +1,5 @@
-import { FunctionField } from 'react-admin';
 import { Typography } from '@mui/material';
+import { FunctionField } from 'react-admin';
 import { prettyPrintPercentMinors } from 'src/common/utils';
 
 export const RaPercentageField = ({ render, map = true, ...others }) => {

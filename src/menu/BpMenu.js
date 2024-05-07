@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
 import {
   AccountBalance,
   AccountCircle,
+  CalendarMonth,
   Category,
   ContactSupport,
   Euro,
@@ -11,14 +11,14 @@ import {
   Receipt,
   ReceiptLong,
   Settings,
-  CalendarMonth,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
 import { Menu } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
+import { SupportDialog } from 'src/common/components';
 import { printError } from 'src/common/utils';
 import { accountHolderProvider, authProvider } from '../providers';
-import { SupportDialog } from 'src/common/components';
 
 const LogoutButton = () => {
   const navigate = useNavigate();

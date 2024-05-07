@@ -1,4 +1,4 @@
-import { TransactionStatus, TransactionTypeEnum, TransactionsSummary } from '@bpartners/typescript-client';
+import { TransactionsSummary, TransactionStatus, TransactionTypeEnum } from '@bpartners/typescript-client';
 
 export const transactions: Array<any> = [
   {

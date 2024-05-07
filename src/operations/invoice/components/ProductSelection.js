@@ -1,17 +1,17 @@
 import { Add } from '@mui/icons-material';
 import { Box, FormHelperText } from '@mui/material';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useState } from 'react';
-import { BPButton } from '../../../common/components/BPButton';
-import { includesObject } from '../../../common/utils';
-import { ProductItem } from './ProductItem';
-import { ProductActionType, productValidationHandling } from '../utils/utils';
-import { INVOICE_EDITION } from '../style';
+import { SimpleForm, useNotify } from 'react-admin';
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import FormProduct from 'src/operations/products/components/FormProduct';
 import { productProvider } from 'src/providers';
 import { AutocompleteBackend } from '../../../common/components';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
-import { SimpleForm, useNotify } from 'react-admin';
-import { CreateInDialogButton } from '@react-admin/ra-form-layout';
-import FormProduct from 'src/operations/products/components/FormProduct';
+import { BPButton } from '../../../common/components/BPButton';
+import { includesObject } from '../../../common/utils';
+import { INVOICE_EDITION } from '../style';
+import { ProductActionType, productValidationHandling } from '../utils/utils';
+import { ProductItem } from './ProductItem';
 
 export const ProductSelection = ({ name, form }) => {
   const {

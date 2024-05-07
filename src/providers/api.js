@@ -1,14 +1,15 @@
 import {
+  AreaPictureApi,
   CalendarApi,
   CustomersApi,
   FilesApi,
+  MailingApi,
   OnboardingApi,
   PayingApi,
   ProspectingApi,
   SecurityApi,
-  UserAccountsApi,
   SheetApi,
-  MailingApi,
+  UserAccountsApi,
 } from '@bpartners/typescript-client';
 import { authProvider } from '.';
 
@@ -22,3 +23,4 @@ export const onboardingApi = () => new OnboardingApi(authProvider.getCachedAuthC
 export const calendarApi = () => new CalendarApi(authProvider.getCachedAuthConf());
 export const sheetApi = () => new SheetApi(authProvider.getCachedAuthConf());
 export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf());
+export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());

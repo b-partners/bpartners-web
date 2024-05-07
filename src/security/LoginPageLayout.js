@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
 
-import useAuthentication from 'src/common/hooks/use-authentication';
 import BPLoader from 'src/common/components/BPLoader';
-import { FLEX_CENTER } from './style.js';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
+import useAuthentication from 'src/common/hooks/use-authentication';
 import { authProvider } from 'src/providers';
+import BpBackgroundImage from '../assets/bp-bg-image.png';
+import { FLEX_CENTER } from './style.js';
 
 const BpLoginPageLayout = ({ children }) => {
   const { isLoading } = useAuthentication();

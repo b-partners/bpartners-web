@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, required } from 'react-admin';
+import { required, TextInput } from 'react-admin';
 import { RaNumberInput } from 'src/common/components';
 import useGetAccountHolder from 'src/common/hooks/use-get-account-holder';
 
