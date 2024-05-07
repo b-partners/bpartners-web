@@ -11,7 +11,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
   const { pictureId, prospectId, fileId } = parseUrlParams();
-  const [newZoomLevel, setNewZoomLevel] = useState('');
+  const [newZoomLevel, setNewZoomLevel] = useState('HOUSES_0');
   const [fileInfo, setFileInfo] = useState({ filename: '', address: '' });
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +19,11 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
       const { xTile, yTile, zoomLevel, filename, address } = pictureDetail;
       setTiles({ xTile, yTile });
-      setNewZoomLevel(zoomLevel);
+      allowSelectZoomLevel && setNewZoomLevel(zoomLevel);
       setFileInfo({ filename, address });
       setLoading(false);
     });
-  }, [pictureId, newZoomLevel]);
+  }, [pictureId, newZoomLevel, allowSelectZoomLevel]);
 
   const handleZoomLvl = async (e: SelectChangeEvent<string>) => {
     setLoading(true);
