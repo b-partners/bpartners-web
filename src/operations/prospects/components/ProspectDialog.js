@@ -34,6 +34,7 @@ export const ProspectDialog = props => {
         <BpFormField style={{ width: '100%' }} name='phone' label='Téléphone' />
         <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
         <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
+        <BpFormField style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
         <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
         {!isEditing && !isCreating && (
           <Box>
