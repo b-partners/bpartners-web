@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { getUrlParams, listDetails, prettyPrintMinors } from '../../common/utils';
+import { listDetails, parseUrlParams, prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -102,6 +102,7 @@ const InvoiceForm = props => {
       }
       onPending(InvoiceActionType.START_PENDING);
       const submittedAt = new Date();
+      Object.keys(annotations).length > 0 && form.setValue('idAreaPicture', annotations.idAreaPicture);
       retryOnError(
         () =>
           invoiceProvider
@@ -159,8 +160,7 @@ const InvoiceForm = props => {
     toggle();
   };
 
-  const pictureId = getUrlParams(window.location.search, 'pictureId');
-  const annotationId = getUrlParams(window.location.search, 'annotationId');
+  const { pictureId, annotationId } = parseUrlParams();
   const [annotations, setAnnotations] = useState({});
   const [polygons, setPolygons] = useState([]);
   useEffect(() => {
@@ -182,8 +182,6 @@ const InvoiceForm = props => {
       setPolygons(newPolygons);
     }
   }, [annotations, setPolygons]);
-
-  console.log('annotations', annotations);
 
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>

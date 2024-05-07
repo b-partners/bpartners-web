@@ -31,6 +31,7 @@ const prospectInfoValidator = zod.object({
   prospectFeedback: zod.custom(() => true),
   contractAmount: zod.custom(() => true),
   name: zod.custom(() => true),
+  firstName: zod.custom(() => true),
   status: zod.custom(() => true),
 });
 
