@@ -1,8 +1,8 @@
-import { Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Typography } from '@mui/material';
-import { useProspectContext } from 'src/common/store/prospect-store';
-import { parseRatingLastEvaluation } from '../utils';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useProspectContext } from 'src/common/store/prospect-store';
 import { prospectingJobsProvider } from 'src/providers';
+import { parseRatingLastEvaluation } from '../utils';
 
 export const DialogProspectJobDetails = () => {
   const { prospectJobDetails, isOpenPopup, toggleJobDetailsPopup } = useProspectContext();

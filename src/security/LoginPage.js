@@ -1,19 +1,19 @@
-import { Box, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
 import { redirect } from '../common/utils';
 
-import useAuthentication from 'src/common/hooks/use-authentication';
-import CompletePasswordPage from './CompletePasswordPage';
-import BPLoader from 'src/common/components/BPLoader';
-import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
-import { useForm, FormProvider } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
-import { BP_COLOR } from 'src/bp-theme';
 import { useState } from 'react';
-import { SignUpForm } from './SignUpForm';
+import { FormProvider, useForm } from 'react-hook-form';
+import { BP_COLOR } from 'src/bp-theme';
+import { BpFormField } from 'src/common/components';
+import BPLoader from 'src/common/components/BPLoader';
+import useAuthentication from 'src/common/hooks/use-authentication';
 import { handleSubmit } from 'src/common/utils';
 import { authProvider } from 'src/providers';
+import BpBackgroundImage from '../assets/bp-bg-image.png';
+import CompletePasswordPage from './CompletePasswordPage';
+import { SignUpForm } from './SignUpForm';
+import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
 
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();

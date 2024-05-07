@@ -1,13 +1,13 @@
 import { Datagrid, FunctionField, List, TextInput, useListContext } from 'react-admin';
+import { RaMoneyField } from 'src/common/components';
+import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
+import { BPImport } from 'src/common/components/BPImport';
+import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
+import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
-import { BPImport } from 'src/common/components/BPImport';
-import BPListActions from '../../common/components/BPListActions';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
-import { RaMoneyField } from 'src/common/components';
-import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
 
 const productFilter = [
   <TextInput label='Filtrer par description' source='descriptionFilter' size='small' alwaysOn name='descriptionFilter' />,

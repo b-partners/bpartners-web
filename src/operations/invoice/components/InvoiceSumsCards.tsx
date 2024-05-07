@@ -1,9 +1,9 @@
-import { Box, Paper, Typography, Skeleton } from '@mui/material';
+import { Box, Paper, Skeleton, Typography } from '@mui/material';
+import { useStore } from 'react-admin';
+import { toMajors } from 'src/common/utils';
+import devis from '../../../assets/devis.svg';
 import invoicePaid from '../../../assets/invoice_paid.svg';
 import invoicePending from '../../../assets/invoice_pending.svg';
-import devis from '../../../assets/devis.svg';
-import { toMajors } from 'src/common/utils';
-import { useStore } from 'react-admin';
 
 const AMOUNT_CARD = {
   display: 'flex',

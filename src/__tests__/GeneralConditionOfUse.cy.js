@@ -3,10 +3,10 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1, user1 } from './mocks/responses/security-api';
-import { products } from './mocks/responses/product-api';
-import { accounts1, accountHolders1, legalFiles1 } from './mocks/responses/account-api';
 import * as Reload from '../common/utils';
+import { accountHolders1, accounts1, legalFiles1 } from './mocks/responses/account-api';
+import { products } from './mocks/responses/product-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('General Condition of Use'), () => {
   beforeEach(() => {

@@ -1,11 +1,12 @@
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/icons-material';
 import { Box, FormControl, FormHelperText, Paper } from '@mui/material';
-import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';
 import BPFormField from 'src/common/components/BPFormField';
 import BpTextAdornment from 'src/common/components/BpTextAdornment';
+import { handleSubmit } from 'src/common/utils';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
@@ -22,7 +23,6 @@ import {
 } from '../utils/payment-regulation-utils';
 import { VALIDITY_DATE } from '../utils/utils';
 import PaymentRegulationItem from './PaymentRegulationItem';
-import { handleSubmit } from 'src/common/utils';
 
 const { IN_INSTALMENT } = InvoicePaymentTypeEnum;
 

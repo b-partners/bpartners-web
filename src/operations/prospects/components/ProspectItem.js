@@ -1,18 +1,18 @@
+import { Prospect } from '@bpartners/typescript-client';
+import { Comment, Home, LocalPhoneOutlined, LocationOn, MailOutline, Star, Update } from '@mui/icons-material';
+import { Box, Button, Divider, IconButton, Link, Paper, Popover, Stack, Tooltip, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useProspectContext } from '../../../common/store/prospect-store';
-import { prospectInfoResolver } from '../../../common/resolvers/prospect-info-validator';
 import { FieldErrorMessage } from '../../../common/resolvers';
-import { prospectingProvider } from '../../../providers';
+import { prospectInfoResolver } from '../../../common/resolvers/prospect-info-validator';
+import { useProspectContext } from '../../../common/store/prospect-store';
 import { getGeoJsonUrl, handleSubmit } from '../../../common/utils';
-import { Box, IconButton, Link, Paper, Popover, Stack, Tooltip, Typography, Button, Divider } from '@mui/material';
-import { Comment, Home, LocalPhoneOutlined, LocationOn, MailOutline, Star, Update } from '@mui/icons-material';
-import { CardViewField } from './CardViewField';
+import { prospectingProvider } from '../../../providers';
 import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
+import { CardViewField } from './CardViewField';
 import { ProspectDialog } from './ProspectDialog';
-import PropTypes from 'prop-types';
-import { Prospect } from '@bpartners/typescript-client';
 
 export const ProspectItem = ({ prospect }) => {
   const [isProspectDialogOpen, setIsProspectDialogOpen] = useState(false);

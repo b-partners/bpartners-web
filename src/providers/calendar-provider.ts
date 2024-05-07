@@ -1,5 +1,5 @@
-import { BpDataProviderType, calendarApi, getCached } from '.';
 import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from 'src/constants/redirection-url';
+import { BpDataProviderType, calendarApi, getCached } from '.';
 
 export const calendarProvider: BpDataProviderType = {
   async getList(page: number, perPage: number, filters: any) {

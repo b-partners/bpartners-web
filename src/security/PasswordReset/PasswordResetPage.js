@@ -1,10 +1,10 @@
 // import { Auth } from 'aws-amplify';
-import PasswordResetRequestLayout from './components/PasswordResetRequestLayout';
-import { useState, useEffect } from 'react';
-import { Typography, Button } from '@mui/material';
-import PasswordResetConfirmationLayout from './components/PasswordResetConfirmationLayout';
-import { DialogResetCodeSent } from './components/DialogResetCodeSent';
+import { Button, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { redirect } from 'src/common/utils';
+import { DialogResetCodeSent } from './components/DialogResetCodeSent';
+import PasswordResetConfirmationLayout from './components/PasswordResetConfirmationLayout';
+import PasswordResetRequestLayout from './components/PasswordResetRequestLayout';
 
 const PasswordResetPage = () => {
   const [isOpen, setIsOpen] = useState(false);

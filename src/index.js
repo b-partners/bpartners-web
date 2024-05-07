@@ -1,9 +1,9 @@
-import './index.css';
-import 'typeface-quicksand';
-import App from './App';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { createRoot } from 'react-dom/client';
+import 'typeface-quicksand';
+import App from './App';
+import './index.css';
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,

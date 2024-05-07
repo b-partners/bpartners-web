@@ -1,4 +1,4 @@
-import { ProspectEvaluationJobDetails, ProspectEvaluationJobInfo, ProspectEvaluationJobType, JobStatusValue } from '@bpartners/typescript-client';
+import { JobStatusValue, ProspectEvaluationJobDetails, ProspectEvaluationJobInfo, ProspectEvaluationJobType } from '@bpartners/typescript-client';
 
 export const evaluationJobs: ProspectEvaluationJobInfo[] = [
   {

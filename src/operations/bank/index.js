@@ -1,2 +1,2 @@
-export * from './BankPage';
 export * from './AccountConfig';
+export * from './BankPage';

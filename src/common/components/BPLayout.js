@@ -2,8 +2,8 @@ import { Layout } from '@react-admin/ra-enterprise';
 import { AppLocationContext } from '@react-admin/ra-navigation';
 import BPErrorPage from './BPErrorPage';
 
-import BPAppBar from './BPAppBar';
 import BpMenu from '../../menu/BpMenu';
+import BPAppBar from './BPAppBar';
 
 const BPLayout = props => (
   <AppLocationContext>

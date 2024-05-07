@@ -1,4 +1,4 @@
-import { TextField, IconButton } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 const BP_TEXT_FIELD = {

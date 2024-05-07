@@ -3,9 +3,9 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1, user1 } from './mocks/responses/security-api';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { exportAllProducts, products } from './mocks/responses/product-api';
-import { accounts1, accountHolders1 } from './mocks/responses/account-api';
+import { user1, whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Import Products'), () => {
   beforeEach(() => {

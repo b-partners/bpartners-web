@@ -22,6 +22,8 @@ export const FieldErrorMessage = {
 
 export const requiredString = () => z.string({ required_error: FieldErrorMessage.required }).nonempty({ message: 'Ce champ est requis.' });
 
+export const requiredStringCustom = () => z.custom(str => str && `${str}`.length > 0, { message: FieldErrorMessage.required }).transform(str => `${str}`);
+
 export const requiredRating = () =>
   requiredString()
     .transform(value => parseFloat(value.replace(',', '.')))

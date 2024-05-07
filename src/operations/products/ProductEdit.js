@@ -1,7 +1,7 @@
 import { Edit, SimpleForm } from 'react-admin';
+import EditToolBar from 'src/common/components/EditToolBar';
 import BPFormLayout from '../../common/components/BPFormLayout';
 import FormProduct from './components/FormProduct';
-import EditToolBar from 'src/common/components/EditToolBar';
 
 const ProductEdit = () => {
   return (

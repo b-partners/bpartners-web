@@ -1,7 +1,7 @@
 import { Create, SimpleForm } from 'react-admin';
 import BPFormLayout from '../../common/components/BPFormLayout';
-import FormCustomer from './components/FormCustomer';
 import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
+import FormCustomer from './components/FormCustomer';
 
 const CustomerCreate = props => {
   return (

@@ -1,8 +1,8 @@
 import { Edit, SimpleForm } from 'react-admin';
-import BPFormLayout from '../../common/components/BPFormLayout';
-import FormCustomer from './components/FormCustomer';
-import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
 import EditToolBar from 'src/common/components/EditToolBar';
+import BPFormLayout from '../../common/components/BPFormLayout';
+import CustomerTypeRadioGroup from './components/CustomerTypeRadioGroup';
+import FormCustomer from './components/FormCustomer';
 
 const CustomerEdit = () => {
   return (

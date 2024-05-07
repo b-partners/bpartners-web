@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Button, Typography, CircularProgress } from '@mui/material';
-import { BP_BUTTON } from 'src/bp-theme';
-import { BpFormField, BpNumberField } from '../../../common/components';
-import { FormProvider, useForm } from 'react-hook-form';
-import { PasswordResolver } from 'src/common/resolvers/reset-password-validator';
+import { Button, CircularProgress, Typography } from '@mui/material';
 import { Auth } from 'aws-amplify';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { BP_BUTTON } from 'src/bp-theme';
+import { PasswordResolver } from 'src/common/resolvers/reset-password-validator';
 import { FieldErrorMessage } from 'src/common/resolvers/utils';
+import { BpFormField, BpNumberField } from '../../../common/components';
 
 const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
   const [isLoading, setLoading] = useState(false);

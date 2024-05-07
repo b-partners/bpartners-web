@@ -1,10 +1,10 @@
-import ImportProspects from './components/ImportProspects';
-import EvaluateProspects from './components/EvaluateProspects';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Box, Button, Typography, Divider } from '@mui/material';
-import { sheetProvider } from 'src/providers/sheet-provider';
-import { redirect } from 'src/common/utils';
 import { useNotify } from 'react-admin';
+import { redirect } from 'src/common/utils';
+import { sheetProvider } from 'src/providers/sheet-provider';
+import EvaluateProspects from './components/EvaluateProspects';
+import ImportProspects from './components/ImportProspects';
 
 const ProspectsAdministration = () => {
   const [tokenValid, setTokenValid] = useState(false);

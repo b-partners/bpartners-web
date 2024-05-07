@@ -1,9 +1,9 @@
-import { Box, Chip, FormHelperText, SxProps, Typography } from '@mui/material';
 import { Customer } from '@bpartners/typescript-client';
+import { Box, Chip, FormHelperText, SxProps, Typography } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { AutocompleteBackend } from 'src/common/components';
-import { FieldErrorMessage, emailValidator } from 'src/common/resolvers';
+import { emailValidator, FieldErrorMessage } from 'src/common/resolvers';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 import { customerProvider } from 'src/providers';
 

@@ -34,6 +34,7 @@ export const customerProvider: BpDataProviderType = {
       undefined,
       CustomerStatus.ENABLED,
       searchValues,
+      undefined,
       page,
       perPage
     );

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useListContext } from 'react-admin';
 import { Box, Grid, TextField } from '@mui/material';
 import { groupBy } from 'lodash';
+import { useEffect, useState } from 'react';
+import { useListContext } from 'react-admin';
 import { BPButton } from '../../../common/components/BPButton';
-import { ProspectColumn } from './ProspectColumn';
 import { EmptyList } from '../../../common/components/EmptyList';
+import { ProspectColumn } from './ProspectColumn';
 
 export const Prospects = props => {
   const { toggleDialog } = props;

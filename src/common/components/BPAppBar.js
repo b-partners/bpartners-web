@@ -1,15 +1,15 @@
-import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { SidebarToggleButton, useNotify } from 'react-admin';
+import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from 'src/providers';
 import bpLogo from '../../assets/bp-logo-full.webp';
-import { ShortWarning } from './BPBetaTestWarning';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
-import BPDialog from './BPDialog';
-import { redirect } from '../utils/redirect';
-import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from 'src/providers';
 import { printError } from '../utils';
+import { redirect } from '../utils/redirect';
+import { ShortWarning } from './BPBetaTestWarning';
+import BPDialog from './BPDialog';
 
 const useStyle = makeStyles(() => ({
   LOGO: {

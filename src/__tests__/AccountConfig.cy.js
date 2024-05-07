@@ -3,9 +3,9 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
 
-import { whoami1, token1, user1 } from './mocks/responses/security-api';
-import { accounts1, accountHolders1, account2, account1 } from './mocks/responses/account-api';
+import { account1, account2, accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
+import { token1, user1, whoami1 } from './mocks/responses/security-api';
 
 const newUser = { ...user1, activeAccount: { ...account2, active: true } };
 const newAccounts = [

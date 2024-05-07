@@ -1,10 +1,9 @@
-import { Button, Typography, Divider, CircularProgress } from '@mui/material';
-import { BpFormField } from '../../../common/components';
-import { FormProvider } from 'react-hook-form';
-import { BP_BUTTON } from 'src/bp-theme';
-import { useForm } from 'react-hook-form';
+import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { Auth } from 'aws-amplify';
 import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { BP_BUTTON } from 'src/bp-theme';
+import { BpFormField } from '../../../common/components';
 
 const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
   const [isLoading, setLoading] = useState(false);

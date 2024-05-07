@@ -59,6 +59,10 @@ export const BpFrenchMessages = {
         success: 'Prospects importés avec succès',
       },
     },
+    annotator: {
+      name: 'Annotation |||| Annotations',
+      save: 'Générer un devis',
+    },
   },
   messages: {
     disconnection: {

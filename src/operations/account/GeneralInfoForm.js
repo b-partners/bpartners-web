@@ -1,14 +1,13 @@
+import { Save as SaveIcon } from '@mui/icons-material';
+import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
-import { useForm, FormProvider } from 'react-hook-form';
-import { Button, CircularProgress } from '@mui/material';
-import { Save as SaveIcon } from '@mui/icons-material';
-import { generalInfoDiff } from './utils';
-import { toMajors, toMinors } from 'src/common/utils';
-import { handleSubmit, printError } from 'src/common/utils';
-import { updateGlobalInformation } from 'src/providers/account-holder-Provider';
+import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField, BpNumberField } from 'src/common/components';
 import { generalInfoResolver } from 'src/common/resolvers';
+import { handleSubmit, printError, toMajors, toMinors } from 'src/common/utils';
+import { updateGlobalInformation } from 'src/providers/account-holder-Provider';
+import { generalInfoDiff } from './utils';
 
 const GeneralInfoForm = () => {
   const { record } = useShowContext();
