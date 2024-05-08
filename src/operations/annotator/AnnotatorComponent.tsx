@@ -1,6 +1,6 @@
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { OpenStreetMapLayer } from '@bpartners/typescript-client';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
@@ -25,7 +25,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
     });
   }, [pictureId, newZoomLevel, allowSelectZoomLevel]);
 
-  const handleZoomLvl = async (e: SelectChangeEvent<string>) => {
+  const handleZoomLvl = async (e: any) => {
     setLoading(true);
     await annotatorProvider.getPictureFormAddress(pictureId, {
       address: fileInfo.address,
