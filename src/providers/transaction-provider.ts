@@ -1,5 +1,5 @@
 import { Transaction, TransactionStatus } from '@bpartners/typescript-client';
-import { asyncGetUserInfo, BpDataProviderType, getCached, payingApi } from '.';
+import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
 import { TRANSACTION_STATUSES } from '../constants';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>

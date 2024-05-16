@@ -1,6 +1,6 @@
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import { errorStyle, INVOICE_EDITION } from '../style';
+import { INVOICE_EDITION, errorStyle } from '../style';
 
 const InvoiceAccordion = props => {
   const { label, children, index, isExpanded, onExpand, error = false, width } = props;

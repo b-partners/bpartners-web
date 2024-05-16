@@ -34,17 +34,17 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
-  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  productValidationHandling,
   PRODUCT_NAME,
+  getReceiptUrl,
+  invoiceDateValidator,
+  productValidationHandling,
   retryOnError,
   titleValidator,
-  totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  totalPriceWithoutVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
