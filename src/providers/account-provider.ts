@@ -1,7 +1,7 @@
 import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import { getCurrentAccount } from 'src/common/utils';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
-import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
+import { BpDataProviderType, accountHolderProvider, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
   async getOne(_userId?: string) {

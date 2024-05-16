@@ -10,14 +10,14 @@ import { handleSubmit } from 'src/common/utils';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
+  PAYMENT_REGULATIONS,
+  PAYMENT_TYPE,
+  ScreenMode,
   getNextMaturityDate,
   getPercentValue,
   missingPaymentRegulation,
   paymentRegulationErrorMessage,
   paymentRegulationToMajor,
-  PAYMENT_REGULATIONS,
-  PAYMENT_TYPE,
-  ScreenMode,
   validatePaymentRegulation,
   validateRegulationPercentage,
 } from '../utils/payment-regulation-utils';

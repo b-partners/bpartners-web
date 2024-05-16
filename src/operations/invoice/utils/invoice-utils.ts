@@ -2,10 +2,10 @@ import { Invoice, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { emptyToNull, formatDateTo8601, isBlankNumber, toMajors, toMinors } from 'src/common/utils';
 import {
   DefaultPaymentRegulation,
+  PAYMENT_REGULATIONS,
   missingPaymentRegulation,
   paymentRegulationToMajor,
   paymentRegulationToMinor,
-  PAYMENT_REGULATIONS,
 } from './payment-regulation-utils';
 import { DELAY_IN_PAYMENT_ALLOWED, DELAY_PENALTY_PERCENT, GLOBAL_DISCOUNT, PERCENT_VALUE, SENDING_DATE, VALIDITY_DATE } from './utils';
 

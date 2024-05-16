@@ -1,7 +1,7 @@
 import { Attachment, InvoiceRelaunch } from '@bpartners/typescript-client';
 import { DownloadForOffline as DownloadForOfflineIcon } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, CardHeader, Chip } from '@mui/material';
-import { ContentState, convertFromHTML, Editor, EditorState } from 'draft-js';
+import { ContentState, Editor, EditorState, convertFromHTML } from 'draft-js';
 import { useNotify } from 'react-admin';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { formatDatetime } from 'src/common/utils';

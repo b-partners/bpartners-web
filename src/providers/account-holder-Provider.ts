@@ -7,7 +7,7 @@ import {
   CreateAnnualRevenueTarget,
   UpdateAccountHolder,
 } from '@bpartners/typescript-client';
-import { asyncGetAccountId, asyncGetUser, BpDataProviderType, cache, getCached, userAccountsApi } from '.';
+import { BpDataProviderType, asyncGetAccountId, asyncGetUser, cache, getCached, userAccountsApi } from '.';
 
 export const accountHolderProvider: BpDataProviderType = {
   async getOne() {

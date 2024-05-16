@@ -12,12 +12,12 @@ import { coloredPrettyPrintMinors, formatDatetime } from '../../common/utils';
 import { ModalProvider } from 'src/common/store/transaction';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import { TRANSACTION_STATUSES } from '../../constants';
-import ExportLinkMailModal from './components/ExportLinkMailModal';
-import GenerateLinkModal from './components/GenerateLinkModal';
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
 import TransactionLinkInvoice from './TransactionLinkInvoice';
 import TransactionReceiptView from './TransactionReceiptView';
+import ExportLinkMailModal from './components/ExportLinkMailModal';
+import GenerateLinkModal from './components/GenerateLinkModal';
 
 const StatusField = ({ status }) => (
   <Chip style={{ backgroundColor: TRANSACTION_STATUSES[status]['color'], color: 'white' }} label={TRANSACTION_STATUSES[status]['label']} />

@@ -46,6 +46,10 @@ jobs:
           format: 'YYYY-MM-DD-HH-mm-ss'
       - name: Set time as env
         run: echo "time=${{ steps.current-time.outputs.time }}" >> $GITHUB_ENV
+      - name: Connect to Bpartners Imagery AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh imagery ${{ secrets.BPARTNERS_IMAGERY_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_IMAGERY_AWS_SECRET_ACCESS_KEY }} eu-west-3
+          sh ./initNpmrc.sh imagery annotator-imagery-store npm-bpartners-imagery-app 205205101409
       - name: Connect to HEI AWS CodeArtifact
         run: |
           sh ./initAWS.sh hei ${{ secrets.HEI_AWS_ACCESS_KEY_ID }} ${{ secrets.HEI_AWS_SECRET_ACCESS_KEY }} ${{ secrets.HEI_AWS_REGION }}
