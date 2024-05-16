@@ -1,5 +1,5 @@
 import { getMimeType, toArrayBuffer } from 'src/common/utils';
-import { asyncGetUserInfo, BpDataProviderType, payingApi } from '.';
+import { BpDataProviderType, asyncGetUserInfo, payingApi } from '.';
 
 export const transactionSupportingDocProvider: BpDataProviderType = {
   async getOne(id: string) {

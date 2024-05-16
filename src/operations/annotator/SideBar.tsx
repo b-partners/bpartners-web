@@ -17,13 +17,13 @@ import {
 import { useState } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
+import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { parseUrlParams } from 'src/common/utils';
 import { Alphabet } from 'src/constants/alphabet';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
-import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { v4 as uuidV4 } from 'uuid';
 import CalculInfo from '../../assets/pentes/calcul.png';
 import AnnotatorForm from './components/AnnotatorForm';

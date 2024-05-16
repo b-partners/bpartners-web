@@ -1,8 +1,8 @@
 import { CreateAttachment, FileType, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from '@bpartners/typescript-client';
-import { ContentState, convertFromHTML, EditorState } from 'draft-js';
+import { ContentState, EditorState, convertFromHTML } from 'draft-js';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
-import { formatDate, getFilenameMeta, getFileUrl } from '../../../common/utils';
+import { formatDate, getFileUrl, getFilenameMeta } from '../../../common/utils';
 import { InvoiceStatusFR } from '../../../constants';
 import { PaymentRegulationStatusFR } from '../../../constants/payment-regulation-status';
 
@@ -196,7 +196,7 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: InvoicePaymentTypeEnum.CASH,
   paymentRegulations: [],
-  idAreaPicture: ''
+  idAreaPicture: '',
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
