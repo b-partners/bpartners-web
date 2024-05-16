@@ -88,5 +88,10 @@ jobs:
         with:
           node-version: 17.x
 
-      - run: npm install --location=global prettier
-      - run: prettier --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"
+      - run: rm package.json package-lock.json
+      
+      - run: |
+          npm init -y
+          npm install -d prettier prettier-plugin-organize-imports
+
+      - run: npx prettier --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"

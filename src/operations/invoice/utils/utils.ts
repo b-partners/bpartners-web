@@ -196,7 +196,7 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: InvoicePaymentTypeEnum.CASH,
   paymentRegulations: [],
-  idAreaPicture: ''
+  idAreaPicture: '',
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
