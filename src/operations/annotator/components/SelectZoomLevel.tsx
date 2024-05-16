@@ -15,11 +15,13 @@ const SelectZoomLevel = ({ newZoomLevel, handleZoomLvl, loading }: SelectZoomLev
         {loading ? (
           <MenuItem disabled>Chargement en cours...</MenuItem>
         ) : (
-          Object.values(ZoomLevel).slice(-6).map(level => (
-            <MenuItem key={level} value={level}>
-              {level}
-            </MenuItem>
-          ))
+          Object.values(ZoomLevel)
+            .slice(-6)
+            .map(level => (
+              <MenuItem key={level} value={level}>
+                {level}
+              </MenuItem>
+            ))
         )}
       </Select>
     </FormControl>

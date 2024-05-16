@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Calendar } from '@bpartners/typescript-client';
 import frLocale from '@fullcalendar/core/locales/fr';
-import { Calendar as RaCalendar, CalendarProps } from '@react-admin/ra-calendar';
+import { CalendarProps, Calendar as RaCalendar } from '@react-admin/ra-calendar';
 import { useEffect, useState } from 'react';
 import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from 'src/common/hooks';

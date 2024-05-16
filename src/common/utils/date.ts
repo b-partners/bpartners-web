@@ -1,4 +1,4 @@
-import { endOfMonth, isMonday, isSunday, nextMonday as findNextMonday, previousMonday, set } from 'date-fns';
+import { endOfMonth, nextMonday as findNextMonday, isMonday, isSunday, previousMonday, set } from 'date-fns';
 import { format, formatInTimeZone } from 'date-fns-tz';
 import { getCached } from 'src/providers';
 
