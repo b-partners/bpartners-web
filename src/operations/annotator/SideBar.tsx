@@ -1,5 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
-import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+
 import {
   Accordion,
   AccordionDetails,
@@ -14,7 +15,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { labels } from 'src/__tests__/mocks/responses/annotator-api';
@@ -34,6 +35,7 @@ const SideBar = () => {
   const annotationId = uuidV4();
   const { pictureId, imgUrl } = parseUrlParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [expanded, setExpanded] = useState<number | null>(0);
 
   const defaultValues = polygons?.map(() => {
     return {
@@ -61,6 +63,18 @@ const SideBar = () => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
   };
 
+  const togglePolygonVisibility = (polygonId: string) => {
+    setPolygons((prev: Polygon[]) =>
+      prev.map((polygon: Polygon) =>
+        polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon
+      )
+    );
+  };
+
+  const handleClickAccordion = (index: number) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? index : null);
+  };
+
   return (
     <List sx={{ maxHeight: window.innerHeight * 0.75, overflow: 'auto' }}>
       <Box py={2}>
@@ -70,6 +84,11 @@ const SideBar = () => {
               {polygons.map((polygon, i) => {
                 return (
                   <Box key={polygon.id}>
+                    <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
+                      <IconButton aria-label='toggle polygon visibility' edge='end' style={{ marginTop: '15px', marginRight: '0' }} onClick={() => togglePolygonVisibility(polygon.id)}>
+                        {polygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                      </IconButton>
+                    </Tooltip>
                     <SelectInput
                       name={`${i}.labelType`}
                       source={'labelType'}
@@ -77,16 +96,19 @@ const SideBar = () => {
                       choices={labels}
                       alwaysOn
                       resettable
-                      sx={{ width: '85%' }}
+                      sx={{ width: '70%' }}
                     />
-
-                    <Tooltip title='Supprimer'>
-                      <IconButton edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
+                    <Tooltip title='supprimer le polygone'>
+                      <IconButton aria-label='delete polygon' edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
 
-                    <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }}>
+                    <Accordion
+                      style={{ marginTop: '-15px', marginBottom: '20px' }}
+                      expanded={expanded === i}
+                      onChange={handleClickAccordion(i)}
+                    >
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <TextInput
                           name={`${i}.labelName`}

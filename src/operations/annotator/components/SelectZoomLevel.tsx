@@ -1,5 +1,5 @@
-import { ZoomLevel } from '@bpartners/typescript-client';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 
 interface SelectZoomLevelProps {
   newZoomLevel: string;
@@ -15,13 +15,11 @@ const SelectZoomLevel = ({ newZoomLevel, handleZoomLvl, loading }: SelectZoomLev
         {loading ? (
           <MenuItem disabled>Chargement en cours...</MenuItem>
         ) : (
-          Object.values(ZoomLevel)
-            .slice(-6)
-            .map(level => (
-              <MenuItem key={level} value={level}>
-                {level}
-              </MenuItem>
-            ))
+          ZOOM_LEVEL.map(level => (
+            <MenuItem key={level.value} value={level.value}>
+              {level.label}
+            </MenuItem>
+          ))
         )}
       </Select>
     </FormControl>
