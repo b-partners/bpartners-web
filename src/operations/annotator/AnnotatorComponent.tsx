@@ -41,19 +41,22 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelectZoomLevel && <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />}
-      <AnnotatorCanvas
-        allowAnnotation={allowAnnotation}
-        width='100%'
-        height='500px'
-        image={getUrlParams(window.location.search, 'imgUrl')}
-        setPolygons={updatePolygonList}
-        polygonList={poly_gone ? poly_gone : polygons}
-        polygonLineSizeProps={{
-          imageName: `image_1_${xTile}_${yTile}.jpg`,
-          showLineSize: true,
-          converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
-        }}
-      />
+      {
+        fileInfo.filename &&
+        <AnnotatorCanvas
+          allowAnnotation={allowAnnotation}
+          width='100%'
+          height='500px'
+          image={getUrlParams(window.location.search, 'imgUrl')}
+          setPolygons={updatePolygonList}
+          polygonList={poly_gone ? poly_gone : polygons}
+          polygonLineSizeProps={{
+            imageName: `${fileInfo.filename}.jpg`,
+            showLineSize: true,
+            converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
+          }}
+        />
+      }
     </Box>
   );
 };
