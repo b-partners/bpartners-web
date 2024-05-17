@@ -17,8 +17,7 @@ const AnnotatorForm = ({ index, surface }) => {
         </Box>
         <SelectInput name={`${index}.covering`} source={'covering'} label={'Revêtement'} choices={covering} alwaysOn resettable />
         <SlopeSelect name={`${index}.slope`} />
-        {/* <TextInput name={`${index}.wearLevel`} source={'wearLevel'} label={'Usure'} /> */}
-        <BpNumberField name={`${index}.wearLevel`} source={'wearLevel'} label={"Taux d'usure"} /> {/* ! envoyé la donnée en NUMBER */}
+        <BpNumberField name={`${index}.wearLevel`} source={'wearLevel'} label={"Taux d'usure"} />
         <TextInput name={`${index}.obstacle`} source={'obstacle'} label={'Obstacle'} />
         <TextInput name={`${index}.comment`} source='comment' label='Commentaire' multiline />
       </div>
