@@ -14,7 +14,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { labels } from 'src/__tests__/mocks/responses/annotator-api';
@@ -34,6 +34,7 @@ const SideBar = () => {
   const annotationId = uuidV4();
   const { pictureId, imgUrl } = parseUrlParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [expanded, setExpanded] = useState<number | null>(0);
 
   const defaultValues = polygons?.map(() => {
     return {
@@ -61,6 +62,10 @@ const SideBar = () => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
   };
 
+  const handleClickAccordion = (index: number) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? index : null);
+  };
+
   return (
     <List sx={{ maxHeight: window.innerHeight * 0.75, overflow: 'auto' }}>
       <Box py={2}>
@@ -86,7 +91,11 @@ const SideBar = () => {
                       </IconButton>
                     </Tooltip>
 
-                    <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }}>
+                    <Accordion
+                      style={{ marginTop: '-15px', marginBottom: '20px' }}
+                      expanded={expanded === i}
+                      onChange={handleClickAccordion(i)}
+                    >
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <TextInput
                           name={`${i}.labelName`}
