@@ -196,8 +196,9 @@ const InvoiceForm = props => {
                   </Typography>
                   {listDetails('Type', annotation.labelType)}
                   {listDetails('Surface', annotation.metadata?.area, 'm²')}
+                  {listDetails("Revêtement", annotation.metadata?.covering)}
                   {listDetails('Pente', annotation.metadata?.slope, '/12')}
-                  {listDetails('Taux d’usure', annotation.metadata?.wearLevel)}
+                  {listDetails("Taux d'usure", annotation.metadata?.wearLevel)}
                   {listDetails('Obstacle', annotation.metadata?.obstacle)}
                   {listDetails('Commentaire', annotation.metadata?.comment)}
                   <Divider sx={{ my: 1 }} />

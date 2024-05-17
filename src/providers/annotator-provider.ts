@@ -12,7 +12,7 @@ interface GetAllAreaPicturesParams {
 export const annotatorProvider = {
   async getPictureFormAddress(pictureId: string, crupdateAreaPictureDetails: CrupdateAreaPictureDetails) {
     const { accountId } = getCached.userInfo();
-    const { data } = await areaPictureApi().downloadAndSaveAreaPicture(accountId, pictureId, crupdateAreaPictureDetails);
+    const { data } = await areaPictureApi().crupdateAreaPictureDetails(accountId, pictureId, crupdateAreaPictureDetails);
     return data;
   },
   async getAreaPictureById(pictureId: string) {
