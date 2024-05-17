@@ -1,5 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
-import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+
 import {
   Accordion,
   AccordionDetails,
@@ -62,6 +63,14 @@ const SideBar = () => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
   };
 
+  const togglePolygonVisibility = (polygonId: string) => {
+    setPolygons((prev: Polygon[]) =>
+      prev.map((polygon: Polygon) =>
+        polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon
+      )
+    );
+  };
+
   const handleClickAccordion = (index: number) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
     setExpanded(isExpanded ? index : null);
   };
@@ -75,6 +84,11 @@ const SideBar = () => {
               {polygons.map((polygon, i) => {
                 return (
                   <Box key={polygon.id}>
+                    <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
+                      <IconButton aria-label='toggle polygon visibility' edge='end' style={{ marginTop: '15px', marginRight: '0' }} onClick={() => togglePolygonVisibility(polygon.id)}>
+                        {polygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                      </IconButton>
+                    </Tooltip>
                     <SelectInput
                       name={`${i}.labelType`}
                       source={'labelType'}
@@ -82,11 +96,10 @@ const SideBar = () => {
                       choices={labels}
                       alwaysOn
                       resettable
-                      sx={{ width: '85%' }}
+                      sx={{ width: '70%' }}
                     />
-
-                    <Tooltip title='Supprimer'>
-                      <IconButton edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
+                    <Tooltip title='supprimer le polygone'>
+                      <IconButton aria-label='delete polygon' edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
