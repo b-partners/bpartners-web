@@ -156,6 +156,7 @@ const InvoiceList = props => {
   useEffect(() => {
     if (showCreateQuote === 'true') {
       // * afficher le composant creation
+      crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });
       setView('creation');
       // * Je supprime le param 'showCreateQuote' pour pouvoir quitter ce composant et revenir sur la liste si besoin
       const params = new URLSearchParams(otherParams);
