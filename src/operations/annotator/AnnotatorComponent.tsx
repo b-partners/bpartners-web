@@ -6,36 +6,55 @@ import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-an
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import SelectZoomLevel from './components/SelectZoomLevel';
+import { useNotify } from 'react-admin';
+import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 
 const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoomLevel = true }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
-  const [{ xTile, yTile }, setTiles] = useState({ xTile: 0, yTile: 0 });
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const [newZoomLevel, setNewZoomLevel] = useState('HOUSES_0');
+  const [newzoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
   const [fileInfo, setFileInfo] = useState({ filename: '', address: '' });
   const [loading, setLoading] = useState(false);
+  const notify = useNotify();
 
   useEffect(() => {
-    annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
-      const { xTile, yTile, zoomLevel, filename, address } = pictureDetail;
-      setTiles({ xTile, yTile });
-      allowSelectZoomLevel && setNewZoomLevel(zoomLevel);
+    annotatorProvider.getAreaPictureById(pictureId).then((pictureDetail) => {
+      const { filename, address, zoom } = pictureDetail;
+
+      if (allowSelectZoomLevel) {
+        setNewZoomLevel(zoom.level);
+        setNewZoomLevelAsNumber(zoom.number);
+      }
       setFileInfo({ filename, address });
       setLoading(false);
     });
   }, [pictureId, newZoomLevel, allowSelectZoomLevel]);
 
   const handleZoomLvl = async (e: any) => {
-    setLoading(true);
-    await annotatorProvider.getPictureFormAddress(pictureId, {
-      address: fileInfo.address,
-      fileId,
-      filename: fileInfo.filename,
-      prospectId,
-      layer: OpenStreetMapLayer.tous_fr,
-      zoomLevel: e.target.value,
-    });
-    setNewZoomLevel(e.target.value);
+
+    const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
+
+    console.log("OpenStreetMapLayer", OpenStreetMapLayer);
+
+
+    try {
+      setLoading(true);
+      await annotatorProvider.getPictureFormAddress(pictureId, {
+        address: fileInfo.address,
+        fileId,
+        filename: fileInfo.filename,
+        prospectId,
+        layer: OpenStreetMapLayer.tous_fr,
+        zoomLevel: e.target.value,
+      });
+      setNewZoomLevel(e.target.value);
+      setNewZoomLevelAsNumber(selectedZoom.lvl);
+    } catch (error) {
+      notify('messages.global.error', { type: 'error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,6 +74,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
             showLineSize: true,
             converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
           }}
+          zoom={newzoomLevelAsNumber}
         />
       }
     </Box>
