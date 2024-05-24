@@ -2,12 +2,12 @@ import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { OpenStreetMapLayer } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNotify } from 'react-admin';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
+import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import SelectZoomLevel from './components/SelectZoomLevel';
-import { useNotify } from 'react-admin';
-import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 
 const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoomLevel = true }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
@@ -19,7 +19,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   const notify = useNotify();
 
   useEffect(() => {
-    annotatorProvider.getAreaPictureById(pictureId).then((pictureDetail) => {
+    annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
       const { filename, address, zoom } = pictureDetail;
 
       if (allowSelectZoomLevel) {
@@ -32,11 +32,9 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   }, [pictureId, newZoomLevel, allowSelectZoomLevel]);
 
   const handleZoomLvl = async (e: any) => {
-
     const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
 
-    console.log("OpenStreetMapLayer", OpenStreetMapLayer);
-
+    console.log('OpenStreetMapLayer', OpenStreetMapLayer);
 
     try {
       setLoading(true);
@@ -60,8 +58,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelectZoomLevel && <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />}
-      {
-        fileInfo.filename &&
+      {fileInfo.filename && (
         <AnnotatorCanvas
           allowAnnotation={allowAnnotation}
           width='100%'
@@ -76,7 +73,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
           }}
           zoom={newzoomLevelAsNumber}
         />
-      }
+      )}
     </Box>
   );
 };

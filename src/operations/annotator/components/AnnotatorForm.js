@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { SelectInput, TextInput } from 'react-admin';
-import { covering } from 'src/__tests__/mocks/responses/annotator-api';
 import { BpNumberField } from 'src/common/components';
+import { covering } from 'src/__tests__/mocks/responses/annotator-api';
 import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm = ({ index, surface }) => {
