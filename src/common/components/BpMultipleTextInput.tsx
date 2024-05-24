@@ -1,5 +1,5 @@
 import { Box, Chip, FormHelperText, SxProps, TextField, TextFieldProps, Typography } from '@mui/material';
-import { CSSProperties, ChangeEvent, FC, FormEvent, useState } from 'react';
+import { ChangeEvent, CSSProperties, FC, FormEvent, useState } from 'react';
 import { useTranslate } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BPButton } from './BPButton';

@@ -7,6 +7,7 @@ export const prospects: Prospect[] = [
     phone: '+261340465338 /',
     email: 'johnDoe@gmail.com',
     status: ProspectStatus.TO_CONTACT,
+    firstName: '',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -23,6 +24,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect2_id',
     name: 'jane doe',
+    firstName: '',
     phone: '+261340465339',
     email: 'janeDoe@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -36,6 +38,7 @@ export const prospects: Prospect[] = [
   },
   {
     id: 'prospect3_id',
+    firstName: '',
     name: 'markus adams',
     phone: '+261340465340',
     email: 'markusAdams@gmail.com',
@@ -47,6 +50,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect4_id',
     name: 'Alyssa Hain',
+    firstName: '',
     phone: '+261340465341',
     email: 'alyssaHain@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -57,6 +61,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect5_id',
     name: 'Michele Klaffs',
+    firstName: '',
     phone: '+261340465342',
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -73,6 +78,7 @@ export const prospects: Prospect[] = [
     id: 'prospect6_id',
     name: 'Michele Klaffs',
     phone: '+261340465342',
+    firstName: '',
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONVERTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
@@ -81,6 +87,7 @@ export const prospects: Prospect[] = [
   },
   {
     id: 'prospect7_id',
+    firstName: '',
     name: 'Killy Waddilove',
     phone: '+261340465344',
     email: 'killyWaddilove@gmail.com',
@@ -95,6 +102,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect8_id',
     name: null,
+    firstName: '',
     phone: null,
     email: null,
     status: ProspectStatus.TO_CONTACT,
@@ -114,6 +122,7 @@ export const updatedProspects: Prospect[] = [
     id: 'prospect1_id',
     name: 'Doe Jhonson',
     phone: '+261340465399',
+    firstName: '',
     email: 'doejhonson@gmail.com',
     status: ProspectStatus.TO_CONTACT,
     address: '30 Rue de la Montagne Sainte-Genevieve',
@@ -152,6 +161,7 @@ export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',
   address: 'Evry',
+  firstName: '',
   name: 'Doe Jhonson',
   status: 'TO_CONTACT',
   defaultComment: 'create comment',
