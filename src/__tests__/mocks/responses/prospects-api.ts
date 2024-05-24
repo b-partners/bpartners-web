@@ -161,6 +161,7 @@ export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',
   address: 'Evry',
+  firstName: '',
   name: 'Doe Jhonson',
   status: 'TO_CONTACT',
   defaultComment: 'create comment',
