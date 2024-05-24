@@ -41,8 +41,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelectZoomLevel && <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />}
-      {
-        fileInfo.filename &&
+      {fileInfo.filename && (
         <AnnotatorCanvas
           allowAnnotation={allowAnnotation}
           width='100%'
@@ -56,7 +55,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
             converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
           }}
         />
-      }
+      )}
     </Box>
   );
 };
