@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { View as InvoiceViewType, useInvoiceToolContext } from 'src/common/store/invoice';
+import { useInvoiceToolContext, View as InvoiceViewType } from 'src/common/store/invoice';
 
 type InvoiceViewProps = {
   children: ReactElement;

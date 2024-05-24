@@ -1,9 +1,9 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from 'src/App';
 import Annotator from 'src/operations/annotator/Annotator';
-import annotator_img from '../assets/Rennes_Solar_Panel_Batch_1_519355_363821.jpg';
 import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
@@ -41,7 +41,13 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.get('.css-69i1ev > .MuiButtonBase-root').click();
     cy.get('[data-testid="address-field-input"] > .MuiInputBase-root').type('Evry');
     cy.contains('Créer').click();
-    mount(<Annotator />);
+    mount(
+      <BrowserRouter>
+        <Routes>
+          <Route path='/annotator' element={<Annotator />} />
+        </Routes>
+      </BrowserRouter>
+    );
   });
 
   // it('The roofer can annotate an image, fill out the form(s), and submit to generate a quote', ()=>{

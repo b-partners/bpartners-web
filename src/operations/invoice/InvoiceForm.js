@@ -34,17 +34,17 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
+  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  PDF_EDITION_WIDTH,
-  PRODUCT_NAME,
-  getReceiptUrl,
   invoiceDateValidator,
+  PDF_EDITION_WIDTH,
   productValidationHandling,
+  PRODUCT_NAME,
   retryOnError,
   titleValidator,
-  totalPriceWithVatFromProducts,
   totalPriceWithoutVatFromProducts,
+  totalPriceWithVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
@@ -196,7 +196,7 @@ const InvoiceForm = props => {
                   </Typography>
                   {listDetails('Type', annotation.labelType)}
                   {listDetails('Surface', annotation.metadata?.area, 'm²')}
-                  {listDetails("Revêtement", annotation.metadata?.covering)}
+                  {listDetails('Revêtement', annotation.metadata?.covering)}
                   {listDetails('Pente', annotation.metadata?.slope, '/12')}
                   {listDetails("Taux d'usure", annotation.metadata?.wearLevel)}
                   {listDetails('Obstacle', annotation.metadata?.obstacle)}
