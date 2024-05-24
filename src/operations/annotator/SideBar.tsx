@@ -15,16 +15,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { parseUrlParams } from 'src/common/utils';
 import { Alphabet } from 'src/constants/alphabet';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
+import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { v4 as uuidV4 } from 'uuid';
 import CalculInfo from '../../assets/pentes/calcul.png';
 import AnnotatorForm from './components/AnnotatorForm';
@@ -64,11 +64,7 @@ const SideBar = () => {
   };
 
   const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons((prev: Polygon[]) =>
-      prev.map((polygon: Polygon) =>
-        polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon
-      )
-    );
+    setPolygons((prev: Polygon[]) => prev.map((polygon: Polygon) => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
   };
 
   const handleClickAccordion = (index: number) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
@@ -85,7 +81,12 @@ const SideBar = () => {
                 return (
                   <Box key={polygon.id}>
                     <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
-                      <IconButton aria-label='toggle polygon visibility' edge='end' style={{ marginTop: '15px', marginRight: '0' }} onClick={() => togglePolygonVisibility(polygon.id)}>
+                      <IconButton
+                        aria-label='toggle polygon visibility'
+                        edge='end'
+                        style={{ marginTop: '15px', marginRight: '0' }}
+                        onClick={() => togglePolygonVisibility(polygon.id)}
+                      >
                         {polygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
                       </IconButton>
                     </Tooltip>
@@ -104,11 +105,7 @@ const SideBar = () => {
                       </IconButton>
                     </Tooltip>
 
-                    <Accordion
-                      style={{ marginTop: '-15px', marginBottom: '20px' }}
-                      expanded={expanded === i}
-                      onChange={handleClickAccordion(i)}
-                    >
+                    <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <TextInput
                           name={`${i}.labelName`}
