@@ -9,7 +9,6 @@ import TooltipButton from '../../common/components/TooltipButton';
 import { formatDate, parseUrlParams } from '../../common/utils';
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { RaMoneyField } from 'src/common/components';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import BPListActions from 'src/common/components/BPListActions';
@@ -54,20 +53,15 @@ const InvoiceGridTable = props => {
 
   const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName} ${customer?.firstName}`}</Typography>;
 
-  const editInvoice = (_id, _resourceName, record) => {
+  const editInvoice = async (_id, _resourceName, record) => {
     if (record.status !== InvoiceStatus.DRAFT) {
       return;
     }
-
-    console.log('here 1');
-
-    if (record.areaPictureId) {
-      areaPictureFetcher({ areaPictureId: record.areaPictureId, invoice: { ...record } });
-      return;
-    }
-
     crupdateInvoice({ ...record });
     setView('edition');
+    if (record.idAreaPicture) {
+      return areaPictureFetcher({ areaPictureId: record.idAreaPicture, invoice: { ...record } });
+    }
   };
 
   const viewPdf = (event, data) => {
@@ -162,17 +156,12 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { showCreateQuote, ...otherParams } = parseUrlParams();
-  const navigate = useNavigate();
+  const { showCreateQuote } = parseUrlParams();
 
   useEffect(() => {
     if (showCreateQuote === 'true') {
-      // * afficher le composant creation
       crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });
       setView('creation');
-      // * Je supprime le param 'showCreateQuote' pour pouvoir quitter ce composant et revenir sur la liste si besoin
-      const params = new URLSearchParams(otherParams);
-      navigate({ search: params.toString() });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCreateQuote]);

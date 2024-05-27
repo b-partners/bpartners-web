@@ -1,6 +1,7 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { UrlParams } from 'src/common/utils';
 import PdfViewer from '../../common/components/PdfViewer';
 import { PDF_WIDTH } from './utils/utils';
 
@@ -14,9 +15,13 @@ export const CancelButton = ({ onClose }) => {
   );
 };
 
-export const ContextCancelButton = () => {
+export const ContextCancelButton = ({ clearUrlParams = false }) => {
   const { setView } = useInvoiceToolContext();
-  return <CancelButton onClose={() => setView('list')} />;
+  const handleOnClose = () => {
+    setView('list');
+    clearUrlParams && UrlParams.clear();
+  };
+  return <CancelButton onClose={handleOnClose} />;
 };
 
 const InvoicePdfDocument = ({ selectedInvoice, onClose, url }) => {

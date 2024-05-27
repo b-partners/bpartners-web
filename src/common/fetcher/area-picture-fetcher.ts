@@ -1,7 +1,8 @@
 import { UrlParams } from '@bpartners/annotator-component';
-import { Invoice } from '@bpartners/typescript-client';
+import { FileType, Invoice } from '@bpartners/typescript-client';
 import { useMutation } from 'react-query';
 import { annotatorProvider } from 'src/providers/annotator-provider';
+import { getFileUrl } from '../utils';
 
 interface AreaPictureFetcher {
   areaPictureId: string;
@@ -17,11 +18,11 @@ export const useAreaPictureFetcher = (crupdateInvoice: CrupdateInvoiceFc) => {
     mutationKey: ['useAreaPictureFetcher'],
     mutationFn: async ({ areaPictureId, invoice }: AreaPictureFetcher) => {
       const data = await annotatorProvider.getAreaPictureById(areaPictureId);
-
-      console.log('here 2');
+      const fileUrl = getFileUrl(data.fileId, FileType.AREA_PICTURE);
 
       crupdateInvoice(invoice);
 
+      UrlParams.set('imgUrl', fileUrl);
       UrlParams.set('pictureId', data.id);
       UrlParams.set('prospectId', data.prospectId);
       UrlParams.set('fileId', data.fileId);
