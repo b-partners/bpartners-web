@@ -12,4 +12,8 @@ export class UrlParams {
     url.searchParams.set(name, value);
     window.history.pushState({}, '', url);
   }
+  public static clear = () => {
+    const url = window.location.pathname;
+    window.history.replaceState({}, '', url);
+  };
 }

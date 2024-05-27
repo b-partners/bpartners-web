@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { listDetails, parseUrlParams, prettyPrintMinors } from '../../common/utils';
+import { listDetails, parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -121,6 +121,7 @@ const InvoiceForm = props => {
         refresh();
       } else {
         returnToListByStatus(form.watch().status);
+        UrlParams.clear();
       }
     };
 
@@ -160,16 +161,16 @@ const InvoiceForm = props => {
     toggle();
   };
 
-  const { pictureId, annotationId } = parseUrlParams();
+  const { pictureId } = parseUrlParams();
   const [annotations, setAnnotations] = useState({});
   const [polygons, setPolygons] = useState([]);
   useEffect(() => {
-    if (pictureId && annotationId) {
-      annotatorProvider.getAnnotationPicture(pictureId, annotationId).then(annotations => {
-        setAnnotations(annotations);
+    if (pictureId) {
+      annotatorProvider.getAnnotationsPicture(pictureId).then(annotations => {
+        setAnnotations(annotations[0]);
       });
     }
-  }, [pictureId, annotationId]);
+  }, [pictureId]);
 
   useEffect(() => {
     if (Object.keys(annotations).length > 0) {

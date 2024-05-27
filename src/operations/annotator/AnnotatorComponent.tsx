@@ -34,8 +34,6 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   const handleZoomLvl = async (e: any) => {
     const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
 
-    console.log('OpenStreetMapLayer', OpenStreetMapLayer);
-
     try {
       setLoading(true);
       await annotatorProvider.getPictureFormAddress(pictureId, {
