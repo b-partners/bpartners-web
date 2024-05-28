@@ -1,16 +1,16 @@
-import { FileType, OpenStreetMapLayer, ZoomLevel } from '@bpartners/typescript-client';
+import { FileType, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Link, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ListComponent from 'src/common/components/ListComponent';
 import TabPanel from 'src/common/components/TabPanel';
 import { ProspectContextProvider } from 'src/common/store/prospect-store';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { v4 as uuidv4 } from 'uuid';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
-import { getFileUrl, handleSubmit, redirect } from '../../common/utils';
+import { getFileUrl, handleSubmit } from '../../common/utils';
 import { getCached, prospectingProvider } from '../../providers';
 import { ProspectDialog, Prospects } from './components';
 import TabManager from './components/TabManager';
@@ -24,6 +24,7 @@ const ProspectsList = () => {
 
   const location = useLocation();
   const notify = useNotify();
+  const navigate = useNavigate();
   const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
   const accountHolder = getCached.accountHolder();
 
@@ -80,11 +81,10 @@ const ProspectsList = () => {
           fileId,
           filename: `Layer ${data.address}`,
           prospectId,
-          layer: OpenStreetMapLayer.tous_fr,
           zoomLevel: ZoomLevel.HOUSES_0,
         });
 
-        redirect(
+        navigate(
           `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
         );
         return;

@@ -9,10 +9,10 @@ import TooltipButton from '../../common/components/TooltipButton';
 import { formatDate, parseUrlParams } from '../../common/utils';
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { RaMoneyField } from 'src/common/components';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import BPListActions from 'src/common/components/BPListActions';
+import { useAreaPictureFetcher } from 'src/common/fetcher';
 import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoice';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
@@ -47,14 +47,20 @@ const InvoiceGridTable = props => {
   const { isLoading } = useListContext();
   const { openModal, setView } = useInvoiceToolContext();
 
+  const { mutate: areaPictureFetcher, isLoading: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
+
   const { companyInfo } = useGetAccountHolder();
 
   const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName} ${customer?.firstName}`}</Typography>;
 
-  const editInvoice = (_id, _resourceName, record) => {
-    if (record.status === InvoiceStatus.DRAFT) {
-      crupdateInvoice({ ...record });
-      setView('edition');
+  const editInvoice = async (_id, _resourceName, record) => {
+    if (record.status !== InvoiceStatus.DRAFT) {
+      return;
+    }
+    crupdateInvoice({ ...record });
+    setView('edition');
+    if (record.idAreaPicture) {
+      return areaPictureFetcher({ areaPictureId: record.idAreaPicture, invoice: { ...record } });
     }
   };
 
@@ -63,68 +69,68 @@ const InvoiceGridTable = props => {
     setView('preview');
   };
 
-  return (
-    !isLoading && (
-      <Datagrid rowClick={editInvoice}>
-        <TextField source='ref' label='Référence' />
-        <TextField source='title' label='Titre' />
-        <FunctionField render={nameRenderer} label='Client' />
-        <RaMoneyField
-          render={data => (companyInfo && companyInfo.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
-          label='Prix TTC'
-          variant='body2'
-        />
-        <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-        <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
-        <FunctionField
-          render={data => (
-            <ConversionContext.Provider value={{ invoice: data }}>
-              <Box sx={LIST_ACTION_STYLE}>
-                <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-                {data.status === InvoiceStatus.DRAFT && <InvoiceButtonConversion icon={<DriveFileMove />} to='PROPOSAL' />}
-                {data.status === InvoiceStatus.PROPOSAL && (
-                  <>
-                    <InvoiceButtonConversion icon={<Check />} to='CONFIRMED' />
-                    <TooltipButton
-                      title='Envoyer ou relancer ce devis'
-                      icon={<TurnRight />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
-                      data-testid={`relaunch-${data.id}`}
-                    />
-                    <TooltipButton
-                      title='Voir les historiques de relance'
-                      icon={<History />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                      data-testid={`relaunch-history-${data.id}`}
-                    />
-                  </>
-                )}
-                {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
-                  <>
-                    <InvoiceButtonToPaid disabled={data.status === InvoiceStatus.PAID} />
-                    <TooltipButton
-                      disabled={data.status === InvoiceStatus.PAID}
-                      title='Envoyer ou relancer cette facture'
-                      icon={<TurnRight />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
-                      data-testid={`relaunch-${data.id}`}
-                    />
-                    <TooltipButton
-                      disabled={data.status === InvoiceStatus.PAID}
-                      title='Voir les historiques de relance'
-                      icon={<History />}
-                      onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                      data-testid={`relaunch-history-${data.id}`}
-                    />
-                  </>
-                )}
-              </Box>
-            </ConversionContext.Provider>
-          )}
-          label=''
-        />
-      </Datagrid>
-    )
+  return !(isLoading && areaPictureFetcherLoading) ? (
+    <Datagrid rowClick={editInvoice}>
+      <TextField source='ref' label='Référence' />
+      <TextField source='title' label='Titre' />
+      <FunctionField render={nameRenderer} label='Client' />
+      <RaMoneyField
+        render={data => (companyInfo && companyInfo.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
+        label='Prix TTC'
+        variant='body2'
+      />
+      <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
+      <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
+      <FunctionField
+        render={data => (
+          <ConversionContext.Provider value={{ invoice: data }}>
+            <Box sx={LIST_ACTION_STYLE}>
+              <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
+              {data.status === InvoiceStatus.DRAFT && <InvoiceButtonConversion icon={<DriveFileMove />} to='PROPOSAL' />}
+              {data.status === InvoiceStatus.PROPOSAL && (
+                <>
+                  <InvoiceButtonConversion icon={<Check />} to='CONFIRMED' />
+                  <TooltipButton
+                    title='Envoyer ou relancer ce devis'
+                    icon={<TurnRight />}
+                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
+                    data-testid={`relaunch-${data.id}`}
+                  />
+                  <TooltipButton
+                    title='Voir les historiques de relance'
+                    icon={<History />}
+                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
+                    data-testid={`relaunch-history-${data.id}`}
+                  />
+                </>
+              )}
+              {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
+                <>
+                  <InvoiceButtonToPaid disabled={data.status === InvoiceStatus.PAID} />
+                  <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
+                    title='Envoyer ou relancer cette facture'
+                    icon={<TurnRight />}
+                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
+                    data-testid={`relaunch-${data.id}`}
+                  />
+                  <TooltipButton
+                    disabled={data.status === InvoiceStatus.PAID}
+                    title='Voir les historiques de relance'
+                    icon={<History />}
+                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
+                    data-testid={`relaunch-history-${data.id}`}
+                  />
+                </>
+              )}
+            </Box>
+          </ConversionContext.Provider>
+        )}
+        label=''
+      />
+    </Datagrid>
+  ) : (
+    <div></div>
   );
 };
 
@@ -150,16 +156,12 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { showCreateQuote, ...otherParams } = parseUrlParams();
-  const navigate = useNavigate();
+  const { showCreateQuote } = parseUrlParams();
 
   useEffect(() => {
     if (showCreateQuote === 'true') {
-      // * afficher le composant creation
+      crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });
       setView('creation');
-      // * Je supprime le param 'showCreateQuote' pour pouvoir quitter ce composant et revenir sur la liste si besoin
-      const params = new URLSearchParams(otherParams);
-      navigate({ search: params.toString() });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCreateQuote]);
