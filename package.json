@@ -2,8 +2,8 @@
   "name": "bpartners-web",
   "private": true,
   "dependencies": {
-    "@bpartners/annotator-component": "^0.7.6",
-    "@bpartners/typescript-client": "^0.45.0",
+    "@bpartners/annotator-component": "^0.9.0",
+    "@bpartners/typescript-client": "^0.46.0",
     "@gthrm/deep-diff": "^1.0.6",
     "@hookform/resolvers": "^3.1.0",
     "@mui/styles": "^5.12.3",
