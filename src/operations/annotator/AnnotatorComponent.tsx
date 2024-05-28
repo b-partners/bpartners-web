@@ -1,5 +1,4 @@
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { OpenStreetMapLayer } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
@@ -41,7 +40,6 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
         fileId,
         filename: fileInfo.filename,
         prospectId,
-        layer: OpenStreetMapLayer.tous_fr,
         zoomLevel: e.target.value,
       });
       setNewZoomLevel(e.target.value);
