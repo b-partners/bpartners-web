@@ -9,7 +9,7 @@ import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import SelectZoomLevel from './components/SelectZoomLevel';
 
-const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoomLevel = true }: any) => {
+const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoomLevel = true, width }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const [newZoomLevel, setNewZoomLevel] = useState('HOUSES_0');
@@ -59,7 +59,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
       {fileInfo.filename && (
         <AnnotatorCanvas
           allowAnnotation={allowAnnotation}
-          width='100%'
+          width={width || '100%'}
           height='500px'
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
