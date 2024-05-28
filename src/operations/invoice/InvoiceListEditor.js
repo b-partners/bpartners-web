@@ -83,7 +83,7 @@ const InvoiceListEditor = () => {
           <Card sx={{ border: 'none' }}>
             <CardHeader
               title={!selectedInvoice.products || selectedInvoice.products.length === 0 ? 'Création' : 'Modification'}
-              action={<ContextCancelButton />}
+              action={<ContextCancelButton clearUrlParams={true} />}
             />
             <CardContent>
               <InvoiceForm

@@ -1,11 +1,10 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from 'src/App';
-import Annotator from 'src/operations/annotator/Annotator';
 import * as Redirect from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
+import { areaPictures } from './mocks/responses/area-pictures';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { prospects } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -39,26 +38,24 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.wait('@getProspects');
 
     cy.get('.css-69i1ev > .MuiButtonBase-root').click();
-    cy.get('[data-testid="address-field-input"] > .MuiInputBase-root').type('Evry');
+
+    cy.get('[data-testid="email-field-input"]').clear().type('doejhonson@gmail.com');
+    cy.get('[data-testid="phone-field-input"]').clear().type('+261340465399');
+    cy.get('[data-testid="name-field-input"]').clear().type('Doe');
+    cy.get('[data-testid="address-field-input"]').type('Evry');
+    cy.get('[data-testid="firstName-field-input"]').clear().type('Jhonson');
+
+    cy.get('[data-testid="autocomplete-backend-for-invoice"]').click();
+    cy.contains('invoice-title-0').click();
+
+    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
+      req.reply(req.body);
+    });
+
+    cy.intercept('PUT', `/accounts/**/areaPictures/**`, areaPictures);
+    cy.intercept('GET', '/accounts/**/areaPictures/**', areaPictures);
+    cy.intercept('GET', '/accounts/**/files/**/raw');
+
     cy.contains('Créer').click();
-    mount(
-      <BrowserRouter>
-        <Routes>
-          <Route path='/annotator' element={<Annotator />} />
-        </Routes>
-      </BrowserRouter>
-    );
   });
-
-  // it('The roofer can annotate an image, fill out the form(s), and submit to generate a quote', ()=>{
-  //    mount(<App/>);
-  // })
-  /* it 'Lorsque le couvreur veut crée un prospect, on le redirige vers la page /annotator' suite à 
-    l'exécution des deux requete necessaire pour générer l'url d'image qu'on stock dans l'url param' */
-
-  /* it 'Le couvreur peut annoter une image, remplir le ou les forms, et submit pour générer un devis'
-   * vérifier que l'image est afficher
-   * Faire un polygon, le formulaire à droite s'affiche
-   * Remplir le form, et submit
-   */
 });

@@ -25,7 +25,6 @@ export const CanvasAnnotationContextProvider = ({ children }: any) => {
   const updatePolygonList = (polygons: Polygon[]) => {
     setPolygons(polygons);
   };
-  console.log('polygons', polygons);
 
   const handleSlopeInfoToggle = () => {
     setSlopeInfoOpen(!slopeInfoOpen);
