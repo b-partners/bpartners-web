@@ -1,5 +1,6 @@
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { Box } from '@mui/material';
+import { AreaPictureMapLayer } from '@bpartners/typescript-client';
+import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
@@ -15,17 +16,18 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   const [newzoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
   const [fileInfo, setFileInfo] = useState({ filename: '', address: '' });
   const [loading, setLoading] = useState(false);
+  const [currentlayer, setCurrentlayer] = useState<AreaPictureMapLayer>({});
   const notify = useNotify();
 
   useEffect(() => {
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
-      const { filename, address, zoom } = pictureDetail;
-
+      const { filename, address, zoom, actualLayer } = pictureDetail;
       if (allowSelectZoomLevel) {
         setNewZoomLevel(zoom.level);
         setNewZoomLevelAsNumber(zoom.number);
       }
       setFileInfo({ filename, address });
+      setCurrentlayer(actualLayer);
       setLoading(false);
     });
   }, [pictureId, newZoomLevel, allowSelectZoomLevel]);
@@ -52,7 +54,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
   };
 
   return (
-    <Box width='100%' height='580px' position='relative'>
+    <Box width='100%' height='580px' position='relative' sx={{ mb: 4 }}>
       {allowSelectZoomLevel && <SelectZoomLevel newZoomLevel={newZoomLevel} handleZoomLvl={handleZoomLvl} loading={loading} />}
       {fileInfo.filename && (
         <AnnotatorCanvas
@@ -69,6 +71,13 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelectZoom
           }}
           zoom={newzoomLevelAsNumber}
         />
+      )}
+      {Object.keys(currentlayer).length > 0 && (
+        <Box sx={{ textAlign: 'center', p: 1, border: '1px solid #ebebeb' }}>
+          <Typography variant='body2' style={{ fontWeight: 'bold' }}>
+            Source de l'image: {currentlayer.name}, {currentlayer.precisionLevelInCm}cm, {currentlayer.year}
+          </Typography>
+        </Box>
       )}
     </Box>
   );
