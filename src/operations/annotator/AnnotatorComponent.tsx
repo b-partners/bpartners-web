@@ -1,8 +1,9 @@
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer, ZoomLevel } from '@bpartners/typescript-client';
+import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
+import { BPButton } from 'src/common/components/BPButton';
 import BpSelect from 'src/common/components/BpSelect';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
@@ -18,15 +19,18 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const [loading, setLoading] = useState({
     zoomLvl: false,
     layer: false,
+    refocusImg: false,
   });
   const [layer, setLayer] = useState<AreaPictureMapLayer>({});
   const [otherLayers, setOtherLayers] = useState([]);
-  const [layerChanging, setLayerChanging] = useState(false);
+  const [changing, setChanging] = useState(false);
+  const [isExtended, setIsExtended] = useState(false);
+
   const notify = useNotify();
 
   useEffect(() => {
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
-      const { filename, address, zoom, actualLayer, otherLayers } = pictureDetail;
+      const { filename, address, zoom, actualLayer, otherLayers, isExtended } = pictureDetail;
 
       if (allowSelect) {
         setNewZoomLevel(zoom.level);
@@ -36,55 +40,80 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       setLayer(actualLayer);
       setOtherLayers(otherLayers);
       setFileInfo({ filename, address });
-      setLoading({
-        zoomLvl: false,
-        layer: false,
-      });
+      setIsExtended(isExtended);
     });
-  }, [pictureId, newZoomLevel, allowSelect, layerChanging]);
+  }, [pictureId, newZoomLevel, allowSelect, changing]);
 
-  const handleZoomLvl = async (e: any) => {
-    const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
-
+  const handleAction = async (actionType: string, fetchParams: CrupdateAreaPictureDetails, updateState: () => void) => {
     try {
-      setLoading(prev => ({ ...prev, zoomLvl: true }));
-      await annotatorProvider.getPictureFormAddress(pictureId, {
-        address: fileInfo.address,
-        fileId,
-        filename: fileInfo.filename,
-        prospectId,
-        zoomLevel: e.target.value,
-      });
-      setNewZoomLevel(e.target.value);
-      setNewZoomLevelAsNumber(selectedZoom.lvl);
+      setLoading(prev => ({ ...prev, [actionType]: true }));
+      await annotatorProvider.getPictureFormAddress(pictureId, fetchParams);
+      updateState();
     } catch (error) {
       notify('messages.global.error', { type: 'error' });
     } finally {
-      setLoading(prev => ({ ...prev, zoomLvl: false }));
+      setLoading(prev => ({ ...prev, [actionType]: false }));
     }
+  };
+  const handleZoomLvl = async (e: any) => {
+    const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
+
+    const fetchParams = {
+      address: fileInfo.address,
+      fileId,
+      filename: fileInfo.filename,
+      prospectId,
+      zoomLevel: e.target.value,
+    };
+
+    const updateState = () => {
+      setNewZoomLevel(e.target.value);
+      setNewZoomLevelAsNumber(selectedZoom.lvl);
+    };
+
+    handleAction('zoomLvl', fetchParams, updateState);
   };
 
   const handleLayerChanger = async (e: any) => {
     const selectedLayer = otherLayers.find(layer => layer.name === e.target.value);
 
-    try {
-      setLoading(prev => ({ ...prev, layer: true }));
-      await annotatorProvider.getPictureFormAddress(pictureId, {
-        address: fileInfo.address,
-        fileId,
-        filename: fileInfo.filename,
-        prospectId,
-        zoomLevel: newZoomLevel,
-        layerId: selectedLayer.id,
-      });
+    const fetchParams = {
+      address: fileInfo.address,
+      fileId,
+      filename: fileInfo.filename,
+      prospectId,
+      zoomLevel: newZoomLevel,
+      layerId: selectedLayer.id,
+    };
 
+    const updateState = () => {
       setLayer(selectedLayer);
-      setLayerChanging(!layerChanging);
-    } catch (error) {
-      notify('messages.global.error', { type: 'error' });
-    } finally {
-      setLoading(prev => ({ ...prev, layer: false }));
+      setChanging(!changing);
+    };
+
+    handleAction('layer', fetchParams, updateState);
+  };
+
+  const refocusImgClick = async () => {
+    if (isExtended) {
+      notify('Cette image a déjà été Recentrer', { type: 'warning' });
+      return;
     }
+
+    const fetchParams = {
+      address: fileInfo.address,
+      fileId,
+      filename: fileInfo.filename,
+      prospectId,
+      zoomLevel: newZoomLevel,
+      isExtended: true,
+    };
+
+    const updateState = () => {
+      setChanging(!changing);
+    };
+
+    handleAction('refocusImg', fetchParams, updateState);
   };
 
   return (
@@ -110,6 +139,20 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
             getOptionValue={(option: AreaPictureMapLayer) => option.name}
             getOptionLabel={(option: AreaPictureMapLayer) => `${option.name} ${option.year} ${option.precisionLevelInCm}cm`}
             label="Source d'image"
+          />
+          <BPButton
+            type='button'
+            onClick={refocusImgClick}
+            data-testid='center-img-btn'
+            label="Recenter l'image"
+            style={{
+              width: '200px',
+              height: '50px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '7px',
+            }}
+            isLoading={loading.refocusImg}
           />
         </>
       )}
