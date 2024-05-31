@@ -30,13 +30,15 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   useEffect(() => {
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
-      const { filename, address, zoom, actualLayer, otherLayers, isExtended } = pictureDetail;
+      const { address, zoom, actualLayer, otherLayers, isExtended, xTile, yTile } = pictureDetail;
+
+      const filename = `${actualLayer}_zoom_${xTile}_${yTile}.jpg`;
 
       if (allowSelect) {
         setNewZoomLevel(zoom.level);
         setNewZoomLevelAsNumber(zoom.number);
       }
-      //
+
       setLayer(actualLayer);
       setOtherLayers(otherLayers);
       setFileInfo({ filename, address });

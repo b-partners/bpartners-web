@@ -1,4 +1,6 @@
+import { Polygon } from '@bpartners/annotator-component';
 import { Account, AccountHolder, User, Whoami } from '@bpartners/typescript-client';
+import { AnnotationInfo, AnnotationsInfo, NumberAsString, PolygonsForm } from 'src/operations/annotator';
 
 const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';
@@ -10,6 +12,8 @@ const userItem = 'bp_user';
 const invoiceConfirmedListSwitchItem = 'bp_invoiceConfirmedListSwitch';
 const timeZoneItem = 'bp_time_zone';
 const calendarSyncItem = 'bp_calendar_sync_item';
+const polygonsItem = 'bp_polygons_item';
+const annotationsInfoItem = 'bp_annotations_info_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -53,6 +57,12 @@ export const cache = {
   calendarSync: (value: boolean = false) => {
     return localStorage.setItem(calendarSyncItem, JSON.stringify(value));
   },
+  polygons: (polygons: Polygon[]) => {
+    return cacheObject(polygonsItem, polygons);
+  },
+  annotationsInfo: (info: AnnotationInfo[]) => {
+    return cacheObject(annotationsInfoItem, info);
+  },
 };
 
 export const getCached = {
@@ -90,6 +100,16 @@ export const getCached = {
   },
   calendarSync(): boolean {
     return JSON.parse(localStorage.getItem(calendarSyncItem)) || false;
+  },
+  polygons: () => {
+    const polygons = getCachedObject<PolygonsForm>(polygonsItem);
+    if (!polygons) return null;
+    const polygonsArray: Polygon[] = [];
+    Object.keys(polygons).forEach(index => polygonsArray.push(polygons[index as NumberAsString]));
+    return polygonsArray;
+  },
+  annotationsInfo: () => {
+    return getCachedObject<AnnotationsInfo>(annotationsInfoItem);
   },
 };
 

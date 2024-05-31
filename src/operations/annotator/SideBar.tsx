@@ -17,8 +17,9 @@ import {
 } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';
+import { useAnnotationsInfoForm } from 'src/common/forms';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { parseUrlParams } from 'src/common/utils';
 import { Alphabet } from 'src/constants/alphabet';
@@ -37,17 +38,7 @@ const SideBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
-  const defaultValues = polygons?.map(() => {
-    return {
-      labelType: '',
-      covering: '',
-      slope: 0,
-      wearLevel: 0,
-      obstacle: '',
-      comment: '',
-    };
-  });
-  const formState = useForm({ defaultValues });
+  const formState = useAnnotationsInfoForm(polygons);
 
   const handleSubmitForms = formState.handleSubmit(async data => {
     setIsLoading(true);
@@ -119,7 +110,6 @@ const SideBar = () => {
                         <AnnotatorForm index={i} surface={polygon.surface} />
                       </AccordionDetails>
                     </Accordion>
-                    {/* )} */}
                     <Divider />
                   </Box>
                 );
