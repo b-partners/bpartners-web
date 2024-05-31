@@ -17,7 +17,15 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
 
   return (
     <>
-      <BPButton type='button' disabled={disabled} onClick={handleOpen} data-testid='center-img-btn' label="Recenter l'image" style={REFOCUS_BUTTON} />
+      <BPButton
+        type='button'
+        disabled={disabled}
+        onClick={handleOpen}
+        data-testid='center-img-btn'
+        label="Recenter l'image"
+        style={REFOCUS_BUTTON}
+        isLoading={isLoading}
+      />
       <Dialog open={isOpen} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>
         <DialogTitle id='alert-dialog-title'>Recentrer l'image</DialogTitle>
         <DialogContent>
@@ -28,7 +36,7 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Annuler</Button>
-          <BPButton style={{ width: 100 }} onClick={handleAccept} autoFocus label='Confirmer' isLoading={isLoading} />
+          <BPButton style={{ width: 100 }} onClick={handleAccept} autoFocus label='Confirmer' />
         </DialogActions>
       </Dialog>
     </>
