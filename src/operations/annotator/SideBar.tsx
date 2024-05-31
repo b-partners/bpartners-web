@@ -17,14 +17,16 @@ import {
 } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { BPButton } from 'src/common/components/BPButton';
+import { useAnnotationsInfoForm } from 'src/common/forms';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { parseUrlParams } from 'src/common/utils';
+import { labels } from 'src/constants';
 import { Alphabet } from 'src/constants/alphabet';
+import { clearPolygons } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
-import { labels } from 'src/__tests__/mocks/responses/annotator-api';
 import { v4 as uuidV4 } from 'uuid';
 import CalculInfo from '../../assets/pentes/calcul.png';
 import AnnotatorForm from './components/AnnotatorForm';
@@ -37,17 +39,7 @@ const SideBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
-  const defaultValues = polygons?.map(() => {
-    return {
-      labelType: '',
-      covering: '',
-      slope: 0,
-      wearLevel: 0,
-      obstacle: '',
-      comment: '',
-    };
-  });
-  const formState = useForm({ defaultValues });
+  const formState = useAnnotationsInfoForm(polygons);
 
   const handleSubmitForms = formState.handleSubmit(async data => {
     setIsLoading(true);
@@ -56,6 +48,7 @@ const SideBar = () => {
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
     setIsLoading(false);
+    clearPolygons();
     redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
   });
 
@@ -119,7 +112,6 @@ const SideBar = () => {
                         <AnnotatorForm index={i} surface={polygon.surface} />
                       </AccordionDetails>
                     </Accordion>
-                    {/* )} */}
                     <Divider />
                   </Box>
                 );
