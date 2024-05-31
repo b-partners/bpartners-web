@@ -11,7 +11,7 @@ import { annotatorProvider } from 'src/providers/annotator-provider';
 import { v4 as uuidv4 } from 'uuid';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
-import { getCached, prospectingProvider } from '../../providers';
+import { clearPolygons, getCached, prospectingProvider } from '../../providers';
 import { ProspectDialog, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
@@ -55,11 +55,12 @@ const ProspectsList = () => {
     setLoading(isLoading);
   };
 
-  const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
+  const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
     const fetch = async () => {
+      clearPolygons();
       const prospectId = uuidv4();
       await prospectingProvider.saveOrUpdate([
         {
@@ -83,7 +84,6 @@ const ProspectsList = () => {
           prospectId,
           zoomLevel: ZoomLevel.HOUSES_0,
         });
-
         navigate(
           `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
         );
