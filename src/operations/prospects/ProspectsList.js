@@ -55,7 +55,7 @@ const ProspectsList = () => {
     setLoading(isLoading);
   };
 
-  const form = useForm({ mode: 'all', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
+  const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
