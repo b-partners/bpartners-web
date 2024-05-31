@@ -14,3 +14,9 @@ export type PolygonsForm = Record<`${number}`, Polygon>;
 export type AnnotationsInfo = Record<`${number}`, AnnotationInfo>;
 
 export type NumberAsString = `${number}`;
+
+export type RefocusDialogProps = {
+  onAccept: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+};

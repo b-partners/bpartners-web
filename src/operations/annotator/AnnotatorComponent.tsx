@@ -3,18 +3,18 @@ import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpa
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { BPButton } from 'src/common/components/BPButton';
 import BpSelect from 'src/common/components/BpSelect';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 import { annotatorProvider } from 'src/providers/annotator-provider';
+import { RefocusDialog } from './RefocusDialog';
 
 const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = true, width }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const [newZoomLevel, setNewZoomLevel] = useState<ZoomLevel>(ZoomLevel.HOUSES_0);
-  const [newzoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
+  const [newZoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
   const [fileInfo, setFileInfo] = useState({ filename: '', address: '' });
   const [loading, setLoading] = useState({
     zoomLvl: false,
@@ -97,11 +97,6 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   };
 
   const refocusImgClick = async () => {
-    if (isExtended) {
-      notify('Cette image a déjà été Recentrer', { type: 'warning' });
-      return;
-    }
-
     const fetchParams = {
       address: fileInfo.address,
       fileId,
@@ -142,20 +137,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
             getOptionLabel={(option: AreaPictureMapLayer) => `${option.name} ${option.year} ${option.precisionLevelInCm}cm`}
             label="Source d'image"
           />
-          <BPButton
-            type='button'
-            onClick={refocusImgClick}
-            data-testid='center-img-btn'
-            label="Recenter l'image"
-            style={{
-              width: '200px',
-              height: '50px',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '7px',
-            }}
-            isLoading={loading.refocusImg}
-          />
+          <RefocusDialog onAccept={refocusImgClick} isLoading={loading.refocusImg} disabled={isExtended} />
         </>
       )}
       {fileInfo.filename && (
@@ -171,7 +153,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
             showLineSize: true,
             converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
           }}
-          zoom={newzoomLevelAsNumber}
+          zoom={newZoomLevelAsNumber}
         />
       )}
       {Object.keys(layer).length > 0 && (
