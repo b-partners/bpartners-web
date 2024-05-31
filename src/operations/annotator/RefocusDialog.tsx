@@ -10,6 +10,11 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
 
+  const handleAccept = () => {
+    onAccept();
+    handleClose();
+  };
+
   return (
     <>
       <BPButton type='button' disabled={disabled} onClick={handleOpen} data-testid='center-img-btn' label="Recenter l'image" style={REFOCUS_BUTTON} />
@@ -23,7 +28,7 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Annuler</Button>
-          <BPButton style={{ width: 100 }} onClick={onAccept} autoFocus label='Confirmer' isLoading={isLoading} />
+          <BPButton style={{ width: 100 }} onClick={handleAccept} autoFocus label='Confirmer' isLoading={isLoading} />
         </DialogActions>
       </Dialog>
     </>

@@ -7,6 +7,7 @@ import BpSelect from 'src/common/components/BpSelect';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
+import { clearPolygons } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { RefocusDialog } from './RefocusDialog';
 
@@ -25,7 +26,6 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const [otherLayers, setOtherLayers] = useState([]);
   const [changing, setChanging] = useState(false);
   const [isExtended, setIsExtended] = useState(false);
-
   const notify = useNotify();
 
   useEffect(() => {
@@ -108,6 +108,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
     const updateState = () => {
       setChanging(!changing);
+      clearPolygons();
+      window.location.reload();
     };
 
     handleAction('refocusImg', fetchParams, updateState);
