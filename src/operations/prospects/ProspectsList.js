@@ -60,6 +60,7 @@ const ProspectsList = () => {
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
     const fetch = async () => {
+      clearPolygons();
       const prospectId = uuidv4();
       await prospectingProvider.saveOrUpdate([
         {
@@ -83,7 +84,6 @@ const ProspectsList = () => {
           prospectId,
           zoomLevel: ZoomLevel.HOUSES_0,
         });
-        clearPolygons();
         navigate(
           `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
         );

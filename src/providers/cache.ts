@@ -17,7 +17,9 @@ const annotationsInfoItem = 'bp_annotations_info_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
-  if (!valueAsString || valueAsString.length < 10) return null;
+  if (!valueAsString || valueAsString.length < 10) {
+    return localStorage.setItem(key, null);
+  }
   localStorage.setItem(key, valueAsString);
   return { ...value };
 };
