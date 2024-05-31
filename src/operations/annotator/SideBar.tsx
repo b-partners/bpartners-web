@@ -24,7 +24,7 @@ import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-an
 import { parseUrlParams } from 'src/common/utils';
 import { labels } from 'src/constants';
 import { Alphabet } from 'src/constants/alphabet';
-import { cache } from 'src/providers';
+import { clearPolygons } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
 import { v4 as uuidV4 } from 'uuid';
@@ -48,8 +48,7 @@ const SideBar = () => {
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
     setIsLoading(false);
-    cache.annotationsInfo(null);
-    cache.polygons(null);
+    clearPolygons();
     redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
   });
 

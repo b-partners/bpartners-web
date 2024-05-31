@@ -117,3 +117,8 @@ export const clearCache = () => {
   localStorage.clear();
   sessionStorage.clear();
 };
+
+export const clearPolygons = () => {
+  cache.polygons(null);
+  cache.annotationsInfo(null);
+};
