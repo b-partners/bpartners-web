@@ -11,6 +11,9 @@ export interface AnnotationInfo {
   comment?: string;
   wear?: Wear;
   moldRate?: number;
+  fillColor?: string;
+  strokeColor?: string;
+  labelName?: string;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;

@@ -14,6 +14,9 @@ const defaultAnnotationInfo: AnnotationInfo = {
   comment: '',
   moldRate: 0,
   wear: null,
+  fillColor: '',
+  labelName: '',
+  strokeColor: '',
 };
 
 export const useAnnotationsInfoForm = (polygons: Polygon[] = []) => {
