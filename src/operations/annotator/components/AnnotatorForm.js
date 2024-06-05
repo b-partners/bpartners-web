@@ -5,7 +5,7 @@ import { covering, wear } from 'src/constants';
 import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm = ({ index, surface }) => {
-  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((e, k) => k * 10), [])
+  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((e, k) => ({ id: k * 10, name: k * 10 })), [])
 
   return (
     <Box sx={{ p: 2 }}>
