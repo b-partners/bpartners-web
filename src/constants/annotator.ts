@@ -15,8 +15,8 @@ export const covering = [
 ];
 
 export const wear = [
-  { id: 'LOW', name: '1. minime' },
-  { id: 'PARTIAL', name: '2.partielle' },
-  { id: 'ADVANCED', name: '3.avancée' },
-  { id: 'EXTREME', name: '4 extrême' },
+  { id: 'LOW', name: '1. Minime' },
+  { id: 'PARTIAL', name: '2. Partielle' },
+  { id: 'ADVANCED', name: '3. Avancée' },
+  { id: 'EXTREME', name: '4 Extrême' },
 ];
