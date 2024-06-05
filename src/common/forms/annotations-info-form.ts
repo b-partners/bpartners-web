@@ -5,13 +5,15 @@ import { useForm } from 'react-hook-form';
 import { AnnotationInfo, NumberAsString } from 'src/operations/annotator';
 import { cache, getCached } from 'src/providers';
 
-const defaultAnnotationInfo = {
+const defaultAnnotationInfo: AnnotationInfo = {
   labelType: '',
   covering: '',
   slope: 0,
   wearLevel: 0,
   obstacle: '',
   comment: '',
+  moldRate: 0,
+  wear: null,
 };
 
 export const useAnnotationsInfoForm = (polygons: Polygon[] = []) => {

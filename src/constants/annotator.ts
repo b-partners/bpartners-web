@@ -13,3 +13,10 @@ export const covering = [
   { id: 'beton', name: 'Beton' },
   { id: 'autre', name: 'Autre' },
 ];
+
+export const wear = [
+  { id: 'LOW', name: '1. minime' },
+  { id: 'PARTIAL', name: '2.partielle' },
+  { id: 'ADVANCED', name: '3.avancée' },
+  { id: 'EXTREME', name: '4 extrême' },
+];

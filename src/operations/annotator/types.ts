@@ -1,5 +1,7 @@
 import { Polygon } from '@bpartners/annotator-component';
 
+type Wear = 'LOW' | 'PARTIAL' | 'ADVANCED' | 'EXTREME';
+
 export interface AnnotationInfo {
   labelType?: string;
   covering?: string;
@@ -7,6 +9,8 @@ export interface AnnotationInfo {
   wearLevel?: number;
   obstacle?: string;
   comment?: string;
+  wear?: Wear;
+  moldRate?: number;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;
