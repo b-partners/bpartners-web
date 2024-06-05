@@ -8,6 +8,8 @@ export const useRetrievePolygons = () => {
   const [annotations, setAnnotations] = useState<AreaPictureAnnotation>({});
   const [polygons, setPolygons] = useState<Polygon[]>([]);
 
+  const isAnnotationEmpty = Object.keys(annotations).length === 0;
+
   useEffect(() => {
     if (pictureId) {
       annotatorProvider.getAnnotationsPicture(pictureId).then(annotations => {
@@ -17,7 +19,7 @@ export const useRetrievePolygons = () => {
   }, [pictureId]);
 
   useEffect(() => {
-    if (Object.keys(annotations).length > 0) {
+    if (!isAnnotationEmpty) {
       const newPolygons = annotations?.annotations.map(annotation => ({
         id: annotation.id,
         fillColor: '#00ff0040',
@@ -26,7 +28,7 @@ export const useRetrievePolygons = () => {
       }));
       setPolygons(newPolygons);
     }
-  }, [annotations, setPolygons]);
+  }, [annotations, setPolygons, isAnnotationEmpty]);
 
-  return { polygons, annotations, isAnnotationEmpty: Object.keys(annotations).length === 0 };
+  return { polygons, annotations, isAnnotationEmpty };
 };

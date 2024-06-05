@@ -22,7 +22,7 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
         disabled={disabled}
         onClick={handleOpen}
         data-testid='center-img-btn'
-        label="Recenter l'image"
+        label="Recentrer l'image"
         style={REFOCUS_BUTTON}
         isLoading={isLoading}
       />

@@ -3,10 +3,10 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
-import { parseUrlParams, printError } from 'src/common/utils';
+import { printError } from 'src/common/utils';
 import { getInvoicesSummary } from 'src/providers';
-import { annotatorProvider } from 'src/providers/annotator-provider';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotationInfo } from '../annotator/components';
 import { InvoiceConfirmedPayedTabPanel } from './components';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
 import { InvoiceTabs } from './components/InvoiceTabs';
@@ -36,8 +36,22 @@ const invoiceListReducer = (state, { type, payload }) => {
 };
 
 const AnnotatorComponentShow = () => {
-  const { polygons, isEmpty } = useRetrievePolygons();
-  return !isEmpty ? <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} /> : null;
+  const { polygons, isAnnotationEmpty, annotations } = useRetrievePolygons();
+
+  if (isAnnotationEmpty) return null;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
+      <Box sx={{ width: '333px' }}>
+        {annotations?.annotations.map((annotation, index) => (
+          <AnnotationInfo areaPictureAnnotationInstance={annotation} key={index} />
+        ))}
+      </Box>
+      <Box width={PDF_EDITION_WIDTH}>
+        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />
+      </Box>
+    </Box>
+  );
 };
 
 const InvoiceListEditor = () => {
@@ -108,9 +122,7 @@ const InvoiceListEditor = () => {
         </InvoiceView>
         <InvoiceView type={['preview']}>
           <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url}>
-            <Box width={PDF_EDITION_WIDTH} mx='auto'>
-              <AnnotatorComponentShow />
-            </Box>
+            <AnnotatorComponentShow />
           </InvoicePdfDocument>
         </InvoiceView>
       </Box>
