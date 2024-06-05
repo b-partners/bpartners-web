@@ -3,8 +3,10 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
-import { printError } from 'src/common/utils';
+import { parseUrlParams, printError } from 'src/common/utils';
 import { getInvoicesSummary } from 'src/providers';
+import { annotatorProvider } from 'src/providers/annotator-provider';
+import AnnotatorComponent from '../annotator/AnnotatorComponent';
 import { InvoiceConfirmedPayedTabPanel } from './components';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
 import { InvoiceTabs } from './components/InvoiceTabs';
@@ -12,7 +14,8 @@ import { InvoiceToolContextProvider } from './components/InvoiceToolContextProvi
 import { InvoiceView } from './components/InvoiceView';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
-import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
+import { useRetrievePolygons } from './utils/use-retrieve-polygons';
+import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, PDF_EDITION_WIDTH, viewScreenState } from './utils/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -30,6 +33,11 @@ const invoiceListReducer = (state, { type, payload }) => {
     default:
       throw new Error('Unknown action type');
   }
+};
+
+const AnnotatorComponentShow = () => {
+  const { polygons, isEmpty } = useRetrievePolygons();
+  return !isEmpty ? <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} /> : null;
 };
 
 const InvoiceListEditor = () => {
@@ -99,7 +107,11 @@ const InvoiceListEditor = () => {
           </Card>
         </InvoiceView>
         <InvoiceView type={['preview']}>
-          <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url} />
+          <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url}>
+            <Box width={PDF_EDITION_WIDTH} mx='auto'>
+              <AnnotatorComponentShow />
+            </Box>
+          </InvoicePdfDocument>
         </InvoiceView>
       </Box>
     </InvoiceToolContextProvider>
