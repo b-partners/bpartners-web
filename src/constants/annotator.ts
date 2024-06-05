@@ -18,5 +18,12 @@ export const wear = [
   { id: 'LOW', name: '1. Minime' },
   { id: 'PARTIAL', name: '2. Partielle' },
   { id: 'ADVANCED', name: '3. Avancée' },
-  { id: 'EXTREME', name: '4 Extrême' },
+  { id: 'EXTREME', name: '4. Extrême' },
 ];
+
+export const wearTranslation = {
+  LOW: 'Minime',
+  PARTIAL: 'Partielle',
+  ADVANCED: 'Avancée',
+  EXTREME: 'Extrême',
+};

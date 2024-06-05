@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { listDetails, parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
+import { UrlParams, listDetails, parseUrlParams, prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -17,7 +17,7 @@ import { BpFormField } from 'src/common/components';
 import BpTextAdornment from 'src/common/components/BpTextAdornment';
 import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit, printError } from 'src/common/utils';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { AUTOCOMPLETE_LIST_LENGTH, wearTranslation } from 'src/constants';
 import { customerProvider } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { invoiceProvider } from 'src/providers/invoice-provider';
@@ -34,17 +34,17 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
-  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  productValidationHandling,
   PRODUCT_NAME,
+  getReceiptUrl,
+  invoiceDateValidator,
+  productValidationHandling,
   retryOnError,
   titleValidator,
-  totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  totalPriceWithoutVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
@@ -190,7 +190,8 @@ const InvoiceForm = props => {
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           {Object.keys(annotations).length > 0 && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
-              {annotations?.annotations.map((annotation, i) => (
+              {annotations?.annotations.map((annotation, i) =>
+              (
                 <>
                   <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
                     {annotation.labelName}
@@ -199,12 +200,15 @@ const InvoiceForm = props => {
                   {listDetails('Surface', annotation.metadata?.area, 'm²')}
                   {listDetails('Revêtement', annotation.metadata?.covering)}
                   {listDetails('Pente', annotation.metadata?.slope, '/12')}
+                  {listDetails("Usure", wearTranslation[annotation.metadata?.wearness])}
                   {listDetails("Taux d'usure", annotation.metadata?.wearLevel)}
+                  {listDetails("Taux de moisissure", annotation.metadata?.moldRate)}
                   {listDetails('Obstacle', annotation.metadata?.obstacle)}
                   {listDetails('Commentaire', annotation.metadata?.comment)}
                   <Divider sx={{ my: 1 }} />
                 </>
-              ))}
+              )
+              )}
             </InvoiceAccordion>
           )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
