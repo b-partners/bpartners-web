@@ -1,5 +1,5 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
-import { Box, Checkbox, Divider, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
+import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
 import debounce from 'debounce';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { listDetails, parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
+import { UrlParams, parseUrlParams, prettyPrintMinors } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -22,6 +22,7 @@ import { customerProvider } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotationInfo } from '../annotator/components';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';
@@ -34,17 +35,17 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
-  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  productValidationHandling,
   PRODUCT_NAME,
+  getReceiptUrl,
+  invoiceDateValidator,
+  productValidationHandling,
   retryOnError,
   titleValidator,
-  totalPriceWithoutVatFromProducts,
   totalPriceWithVatFromProducts,
+  totalPriceWithoutVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
@@ -190,21 +191,7 @@ const InvoiceForm = props => {
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           {Object.keys(annotations).length > 0 && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
-              {annotations?.annotations.map((annotation, i) => (
-                <>
-                  <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
-                    {annotation.labelName}
-                  </Typography>
-                  {listDetails('Type', annotation.labelType)}
-                  {listDetails('Surface', annotation.metadata?.area, 'm²')}
-                  {listDetails('Revêtement', annotation.metadata?.covering)}
-                  {listDetails('Pente', annotation.metadata?.slope, '/12')}
-                  {listDetails("Taux d'usure", annotation.metadata?.wearLevel)}
-                  {listDetails('Obstacle', annotation.metadata?.obstacle)}
-                  {listDetails('Commentaire', annotation.metadata?.comment)}
-                  <Divider sx={{ my: 1 }} />
-                </>
-              ))}
+              {annotations?.annotations.map((annotation, i) => <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />)}
             </InvoiceAccordion>
           )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
