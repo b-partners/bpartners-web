@@ -182,6 +182,7 @@ describe(specTitle('Prospects'), () => {
     cy.get('[name="prospects"]').click();
 
     cy.contains('Pas encore de Prospect.');
+    cy.contains('Ajouter un prospect');
   });
 
   it('consent google sheet', () => {
