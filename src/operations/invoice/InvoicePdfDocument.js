@@ -24,7 +24,7 @@ export const ContextCancelButton = ({ clearUrlParams = false }) => {
   return <CancelButton onClose={handleOnClose} />;
 };
 
-const InvoicePdfDocument = ({ selectedInvoice, onClose, url }) => {
+const InvoicePdfDocument = ({ selectedInvoice, onClose, url, children = null }) => {
   return (
     <Card sx={{ border: 'none' }}>
       <CardHeader
@@ -32,8 +32,9 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose, url }) => {
         title={selectedInvoice.title}
         subheader={selectedInvoice.ref}
       />
-      <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
+      <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
         <PdfViewer width={PDF_WIDTH} url={url} filename={selectedInvoice.ref} />
+        {children}
       </CardContent>
     </Card>
   );

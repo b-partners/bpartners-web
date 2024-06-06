@@ -5,6 +5,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '../App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
+import { areaPictureAnnotation, areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, getInvoices, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
@@ -177,5 +178,35 @@ describe(specTitle('Invoice'), () => {
     // cy.contains('5500,00');
     // cy.contains('3250,00');
     // cy.contains('100,00');
+  });
+
+  it.only('shoulw show annotation on preview', () => {
+    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
+    });
+
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+      const { pageSize, statusList, page } = req.query;
+      req.reply(
+        getInvoices(
+          page - 1,
+          pageSize,
+          statusList.split(',').map(status => InvoiceStatus[status])
+        ).map(invoice => ({ ...invoice, idAreaPicture: areaPictures.id }))
+      );
+    });
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/${areaPictures.id}`, areaPictures).as('getAreaByPictureId');
+    cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, [areaPictureAnnotation]).as('getAreaPictureAnnotation');
+
+    mount(<App />);
+    cy.get('[name="invoice"]').click();
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getUser1');
+    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
+
+    cy.contains('Justificatif');
+    cy.wait('@getAreaByPictureId');
   });
 });

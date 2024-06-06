@@ -5,7 +5,7 @@ import { covering, wear } from 'src/constants';
 import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm = ({ index, surface }) => {
-  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((e, k) => ({ id: k * 10, name: k * 10 })), [])
+  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((e, k) => ({ id: k * 10, name: k * 10 })), []);
 
   return (
     <Box sx={{ p: 2 }}>
@@ -20,7 +20,7 @@ const AnnotatorForm = ({ index, surface }) => {
         <SlopeSelect name={`${index}.slope`} />
         <SelectInput name={`${index}.wear`} source='wear' label='Usure' choices={wear} alwaysOn resettable />
         <SelectInput name={`${index}.wearLevel`} source='wearLevel' label="Taux d'usure" choices={percentagesLevel} alwaysOn resettable />
-        <SelectInput name={`${index}.moldRate`} source='moldRate' label="Taux de moisissure" choices={percentagesLevel} alwaysOn resettable />
+        <SelectInput name={`${index}.moldRate`} source='moldRate' label='Taux de moisissure' choices={percentagesLevel} alwaysOn resettable />
         <TextInput name={`${index}.obstacle`} source='obstacle' label='Obstacle' />
         <TextInput name={`${index}.comment`} source='comment' label='Commentaire' multiline />
       </div>

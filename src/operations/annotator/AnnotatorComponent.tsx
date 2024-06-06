@@ -3,6 +3,7 @@ import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpa
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
+import BPLoader from 'src/common/components/BPLoader';
 import BpSelect from 'src/common/components/BpSelect';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
@@ -29,6 +30,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const notify = useNotify();
 
   useEffect(() => {
+    if (!pictureId) return;
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
       const { address, zoom, actualLayer, otherLayers, isExtended, filename } = pictureDetail;
 
@@ -112,6 +114,10 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
     handleAction('refocusImg', fetchParams, updateState);
   };
+
+  if (!fileInfo.filename) {
+    return <BPLoader sx={{ width: width || undefined }} />;
+  }
 
   return (
     <Box width='100%' height='580px' position='relative'>

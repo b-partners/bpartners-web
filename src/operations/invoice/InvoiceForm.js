@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { UrlParams, parseUrlParams, prettyPrintMinors } from '../../common/utils';
+import { parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -19,7 +19,6 @@ import { useInvoiceToolContext } from 'src/common/store/invoice';
 import { handleSubmit, printError } from 'src/common/utils';
 import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
 import { customerProvider } from 'src/providers';
-import { annotatorProvider } from 'src/providers/annotator-provider';
 import { invoiceProvider } from 'src/providers/invoice-provider';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
 import { AnnotationInfo } from '../annotator/components';
@@ -32,20 +31,21 @@ import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
 import { validateDIPAllowed, validateDPPercent } from './utils';
 import { invoiceMapper } from './utils/invoice-utils';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
+import { useRetrievePolygons } from './utils/use-retrieve-polygons';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
+  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  PDF_EDITION_WIDTH,
-  PRODUCT_NAME,
-  getReceiptUrl,
   invoiceDateValidator,
+  PDF_EDITION_WIDTH,
   productValidationHandling,
+  PRODUCT_NAME,
   retryOnError,
   titleValidator,
-  totalPriceWithVatFromProducts,
   totalPriceWithoutVatFromProducts,
+  totalPriceWithVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
@@ -58,6 +58,7 @@ const InvoiceForm = props => {
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const { returnToListByStatus } = useInvoiceToolContext();
   const [isOpenCreateInDialogButton, setIsOpenCreateInDialogButton] = useState(true);
+  const { polygons, annotations, isAnnotationEmpty } = useRetrievePolygons();
   const toggle = () => setIsOpenCreateInDialogButton(!isOpenCreateInDialogButton);
 
   const updateInvoiceForm = _newInvoice => {
@@ -103,7 +104,7 @@ const InvoiceForm = props => {
       }
       onPending(InvoiceActionType.START_PENDING);
       const submittedAt = new Date();
-      Object.keys(annotations).length > 0 && form.setValue('idAreaPicture', annotations.idAreaPicture);
+      !isAnnotationEmpty && form.setValue('idAreaPicture', annotations.idAreaPicture);
       retryOnError(
         () =>
           invoiceProvider
@@ -162,36 +163,15 @@ const InvoiceForm = props => {
     toggle();
   };
 
-  const { pictureId } = parseUrlParams();
-  const [annotations, setAnnotations] = useState({});
-  const [polygons, setPolygons] = useState([]);
-  useEffect(() => {
-    if (pictureId) {
-      annotatorProvider.getAnnotationsPicture(pictureId).then(annotations => {
-        setAnnotations(annotations[0]);
-      });
-    }
-  }, [pictureId]);
-
-  useEffect(() => {
-    if (Object.keys(annotations).length > 0) {
-      const newPolygons = annotations?.annotations.map(annotation => ({
-        id: annotation.id,
-        fillColor: '#00ff0040',
-        strokeColor: '#00ff00',
-        points: annotation.polygon?.points,
-      }));
-      setPolygons(newPolygons);
-    }
-  }, [annotations, setPolygons]);
-
   return (
     <Box sx={INVOICE_EDITION.LAYOUT}>
       <FormProvider {...form}>
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
-          {Object.keys(annotations).length > 0 && (
+          {!isAnnotationEmpty && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
-              {annotations?.annotations.map((annotation, i) => <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />)}
+              {annotations?.annotations.map((annotation, i) => (
+                <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />
+              ))}
             </InvoiceAccordion>
           )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
@@ -276,9 +256,7 @@ const InvoiceForm = props => {
         </form>
       </FormProvider>
       <div>
-        {Object.keys(annotations).length > 0 && (
-          <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />
-        )}
+        {!isAnnotationEmpty && <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />}
         <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
           <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
             <RefreshIcon />
