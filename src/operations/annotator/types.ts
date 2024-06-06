@@ -39,7 +39,7 @@ export type AnnotationInfoDetailsProps = {
   unity?: string;
 };
 
-export interface ReferencerGeoJSON {
+export interface ConverterGeoJSON {
   properties: Properties;
   type: string;
   filename: string;

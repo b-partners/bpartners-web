@@ -1,5 +1,5 @@
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
+import { AreaPictureDetails, AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
@@ -14,6 +14,7 @@ import { RefocusDialog } from './RefocusDialog';
 
 const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = true, width }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
+
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const [newZoomLevel, setNewZoomLevel] = useState<ZoomLevel>(ZoomLevel.HOUSES_0);
   const [newZoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
