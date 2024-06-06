@@ -10,7 +10,7 @@ export const labels: Label[] = [
 export const covering = [
   { id: 'tuiles', name: 'Tuiles' },
   { id: 'ardoise', name: 'Ardoise' },
-  { id: 'beton', name: 'Beton' },
+  { id: 'beton', name: 'Béton' },
   { id: 'autre', name: 'Autre' },
 ];
 
