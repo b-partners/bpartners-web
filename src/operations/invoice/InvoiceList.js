@@ -67,6 +67,10 @@ const InvoiceGridTable = props => {
   const viewPdf = (event, data) => {
     setPdf(event, data);
     setView('preview');
+
+    if (data.idAreaPicture) {
+      return areaPictureFetcher({ areaPictureId: data.idAreaPicture, invoice: { ...data } });
+    }
   };
 
   return !(isLoading && areaPictureFetcherLoading) ? (
