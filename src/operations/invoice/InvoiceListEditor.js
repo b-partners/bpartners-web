@@ -5,6 +5,8 @@ import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
 import { printError } from 'src/common/utils';
 import { getInvoicesSummary } from 'src/providers';
+import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotationInfo } from '../annotator/components';
 import { InvoiceConfirmedPayedTabPanel } from './components';
 import { InvoiceTabPanel } from './components/InvoiceTabPanel';
 import { InvoiceTabs } from './components/InvoiceTabs';
@@ -12,7 +14,8 @@ import { InvoiceToolContextProvider } from './components/InvoiceToolContextProvi
 import { InvoiceView } from './components/InvoiceView';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
-import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
+import { useRetrievePolygons } from './utils/use-retrieve-polygons';
+import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, PDF_EDITION_WIDTH, viewScreenState } from './utils/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -30,6 +33,25 @@ const invoiceListReducer = (state, { type, payload }) => {
     default:
       throw new Error('Unknown action type');
   }
+};
+
+const AnnotatorComponentShow = () => {
+  const { polygons, isAnnotationEmpty, annotations } = useRetrievePolygons();
+
+  if (isAnnotationEmpty) return null;
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
+      <Box sx={{ width: '333px' }}>
+        {annotations?.annotations.map((annotation, index) => (
+          <AnnotationInfo areaPictureAnnotationInstance={annotation} key={index} />
+        ))}
+      </Box>
+      <Box width={PDF_EDITION_WIDTH}>
+        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />
+      </Box>
+    </Box>
+  );
 };
 
 const InvoiceListEditor = () => {
@@ -99,7 +121,9 @@ const InvoiceListEditor = () => {
           </Card>
         </InvoiceView>
         <InvoiceView type={['preview']}>
-          <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url} />
+          <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url}>
+            <AnnotatorComponentShow />
+          </InvoicePdfDocument>
         </InvoiceView>
       </Box>
     </InvoiceToolContextProvider>
