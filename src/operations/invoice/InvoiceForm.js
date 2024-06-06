@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { UrlParams, parseUrlParams, prettyPrintMinors } from '../../common/utils';
+import { parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -35,17 +35,17 @@ import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
+  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  PDF_EDITION_WIDTH,
-  PRODUCT_NAME,
-  getReceiptUrl,
   invoiceDateValidator,
+  PDF_EDITION_WIDTH,
   productValidationHandling,
+  PRODUCT_NAME,
   retryOnError,
   titleValidator,
-  totalPriceWithVatFromProducts,
   totalPriceWithoutVatFromProducts,
+  totalPriceWithVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
@@ -191,7 +191,9 @@ const InvoiceForm = props => {
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           {Object.keys(annotations).length > 0 && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
-              {annotations?.annotations.map((annotation, i) => <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />)}
+              {annotations?.annotations.map((annotation, i) => (
+                <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />
+              ))}
             </InvoiceAccordion>
           )}
           <InvoiceAccordion label='Informations générales' index={1} isExpanded={openedAccordion} onExpand={openAccordion}>
