@@ -9,7 +9,7 @@ import { usePolygonMarkerFetcher } from 'src/common/fetcher';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
-import { clearPolygons } from 'src/providers';
+import { clearPolygons, geojsonMapper } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { RefocusDialog } from './RefocusDialog';
 
@@ -34,7 +34,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
 
-  console.log('marker', marker);
+  console.log('marker', marker, 'mapped', geojsonMapper.toPolygon(marker, { fillColor: '#ffffff00', strokeColor: '#ff0000' }));
 
   useEffect(() => {
     if (!pictureId) return;

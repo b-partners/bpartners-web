@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { ConverterGeoJSON } from 'src/operations/annotator';
+import { ConverterPayloadGeoJSON, ConverterResultGeoJSON } from 'src/operations/annotator';
 
 export const polygonConverterProvider = {
-  async coordinatesToPixel(geojson: ConverterGeoJSON) {
-    const { data } = await axios.put('https://referencer-test.azurewebsites.net/api/converter', geojson);
+  async coordinatesToPixel(geojson: ConverterPayloadGeoJSON): Promise<ConverterResultGeoJSON> {
+    const { data } = await axios.post('https://referencer-test.azurewebsites.net/api/converter', geojson);
     return data;
   },
 };

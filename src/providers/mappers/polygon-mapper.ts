@@ -1,5 +1,5 @@
 import { GeoPosition } from '@bpartners/typescript-client';
-import { ConverterGeoJSON, Geometry } from 'src/operations/annotator';
+import { ConverterPayloadGeoJSON, Geometry } from 'src/operations/annotator';
 
 type GeoPolygonToRestMetaData = {
   filename: string;
@@ -16,7 +16,7 @@ export const polygonMapper = {
       type: 'MultiPolygon',
     };
 
-    const res: ConverterGeoJSON = {
+    const res: ConverterPayloadGeoJSON = {
       ...metadata,
       properties: {
         id: '',

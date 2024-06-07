@@ -1,7 +1,7 @@
 export * from './account-holder-Provider';
 export * from './account-provider';
 export * from './annotator-provider';
-export * from './api.js';
+export * from './api';
 export * from './asyncGetUserInfo';
 export * from './auth-provider';
 export * from './aws-config';
@@ -14,7 +14,6 @@ export * from './customer-provider';
 export * from './data-provider';
 export * from './feedback-provider';
 export * from './file-provider';
-export * from './index';
 export * from './invoice-provider';
 export * from './mailing-provider';
 export * from './mappers';

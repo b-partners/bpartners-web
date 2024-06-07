@@ -1,7 +1,7 @@
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { ConverterGeoJSON } from 'src/operations/annotator';
+import { ConverterPayloadGeoJSON } from 'src/operations/annotator';
 import { polygonConverterProvider, polygonMapper } from 'src/providers';
 import { getFileUrl } from '../utils';
 
@@ -33,7 +33,7 @@ export const usePolygonMarkerFetcher = ({ areaPictureDetails }: PolygonMarkerFet
 
         zoom: { number: zoom },
       } = areaPictureDetails;
-      const geoJson: ConverterGeoJSON = polygonMapper.toRest(areaPictureDetails.geoPositions, { filename, image_size: imageSize, x_tile, y_tile, zoom });
+      const geoJson: ConverterPayloadGeoJSON = polygonMapper.toRest(areaPictureDetails.geoPositions, { filename, image_size: imageSize, x_tile, y_tile, zoom });
       return await polygonConverterProvider.coordinatesToPixel(geoJson);
     },
     enabled: !!areaPictureDetails && imageSize > 0,
