@@ -7,7 +7,7 @@ import { BPLoader } from 'src/common/components';
 import BpSelect from 'src/common/components/BpSelect';
 import { usePolygonMarkerFetcher } from 'src/common/fetcher';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import { getUrlParams, parseUrlParams } from 'src/common/utils';
+import { getUrlParams, parseUrlParams, reload } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
 import { clearPolygons, geojsonMapper } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
@@ -113,7 +113,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const updateState = () => {
       setChanging(!changing);
       clearPolygons();
-      window.location.reload();
+      reload();
     };
 
     handleAction('refocusImg', fetchParams, updateState);
