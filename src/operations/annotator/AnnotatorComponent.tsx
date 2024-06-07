@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { BPLoader } from 'src/common/components';
 import BpSelect from 'src/common/components/BpSelect';
+import { usePolygonMarkerFetcher } from 'src/common/fetcher';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
@@ -28,13 +29,17 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const [otherLayers, setOtherLayers] = useState([]);
   const [changing, setChanging] = useState(false);
   const [isExtended, setIsExtended] = useState(false);
+  const [areaPictureDetails, setAreaPictureDetails] = useState<AreaPictureDetails | null>(null);
   const notify = useNotify();
+
+  const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
+
+  console.log('marker', marker);
 
   useEffect(() => {
     if (!pictureId) return;
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
       const { address, zoom, actualLayer, otherLayers, isExtended, filename } = pictureDetail;
-
       if (allowSelect) {
         setNewZoomLevel(zoom.level);
         setNewZoomLevelAsNumber(zoom.number);
@@ -44,6 +49,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       setOtherLayers(otherLayers);
       setFileInfo({ filename, address });
       setIsExtended(isExtended);
+      setAreaPictureDetails(pictureDetail);
     });
   }, [pictureId, newZoomLevel, allowSelect, changing]);
 
@@ -62,9 +68,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
 
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: e.target.value,
     };
@@ -81,9 +86,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const selectedLayer = otherLayers.find(layer => layer.name === e.target.value);
 
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: newZoomLevel,
       layerId: selectedLayer.id,
@@ -99,9 +103,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   const refocusImgClick = async () => {
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: newZoomLevel,
       isExtended: true,
