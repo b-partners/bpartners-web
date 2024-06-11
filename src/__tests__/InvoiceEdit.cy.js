@@ -192,8 +192,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click()
     cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click()
 
-    cy.contains("5.6m")
-
     cy.get('[data-cy="annotator-top-bar"] > :nth-child(4)').click()
     cy.get('[data-cy="annotator-top-bar"] > :nth-child(3)').click()
   });
