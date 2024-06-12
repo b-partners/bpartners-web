@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-import BPLoader from 'src/common/components/BPLoader';
+import { BPLoader } from 'src/common/components';
 import useAuthentication from 'src/common/hooks/use-authentication';
 import { authProvider } from 'src/providers';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
