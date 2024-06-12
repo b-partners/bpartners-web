@@ -1,4 +1,4 @@
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Point } from '@bpartners/annotator-component';
 import { AreaPictureDetails, AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -31,9 +31,14 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const [isExtended, setIsExtended] = useState(false);
   const [areaPictureDetails, setAreaPictureDetails] = useState<AreaPictureDetails | null>(null);
   const notify = useNotify();
+  const [markerPosition, setMarker] = useState<Point | null>(null);
 
   const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
-  const markerPosition = geojsonMapper.toMarker((marker || [null])[0]);
+
+  useEffect(() => {
+    const markerPositionMapped = geojsonMapper.toMarker((marker || [null])[0]);
+    setMarker(markerPositionMapped.length > 0 && polygons.length === 0 ? markerPositionMapped[0] : null);
+  }, [marker, polygons]);
 
   useEffect(() => {
     if (!pictureId) return;
@@ -151,7 +156,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       )}
       {fileInfo.filename && (
         <AnnotatorCanvas
-          marker={markerPosition.length > 0 && polygons.length === 0 ? { position: markerPosition[0] } : undefined}
+          markerPosition={markerPosition}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height='500px'
