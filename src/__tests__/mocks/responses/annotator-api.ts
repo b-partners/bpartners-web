@@ -1,4 +1,5 @@
 import { Polygon } from '@bpartners/annotator-component';
+import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 
 interface Label {
   id: string;
@@ -9,92 +10,101 @@ export interface VerifyAdress {
   Latitude: number;
 }
 
-export const annotations: Polygon[] = [
-  /* {
-            // surface: 140,  LA SURFACE vas être ajouté normalement ici, voir avec Amour 🚨
-            id: '56789',
-            fillColor: "#00ff0040",
-            strokeColor: "#00ff00",
-              points: [
-                  {
-                      "x": 400,
-                      "y": 31.08108108108108
-                  },
-                  {
-                      "x": 348.64864864864865,
-                      "y": 108.10810810810811
-                  },
-                  {
-                      "x": 485.13513513513516,
-                      "y": 108.10810810810811
-                  },
-                  {
-                      "x": 400,
-                      "y": 31.08108108108108
-                  }
-              ],
+export const annotations: Polygon[] = [];
+
+export const invoiceAnnotations: AreaPictureAnnotation[] = [
+  {
+    id: 'a74ead26-c7f6-46bb-a6ad-c5abda36c20c',
+    idAreaPicture: 'b437dfbf-a522-4999-88b2-dd5b66a65d00',
+    annotations: [
+      {
+        id: '312f26d8-f178-4baf-b99d-2567237cd4f3',
+        areaPictureId: 'b437dfbf-a522-4999-88b2-dd5b66a65d00',
+        annotationId: 'a74ead26-c7f6-46bb-a6ad-c5abda36c20c',
+        metadata: {
+          area: 10.0,
+          slope: 0.0,
+          covering: null,
+          comment: null,
+          fillColor: null,
+          strokeColor: null,
+          obstacle: null,
+          wearLevel: null,
+          wearness: null,
+          moldRate: null,
         },
-        {
-            // surface: 95,
-            id: '01234',
-            fillColor: "#00ff0040",
-            strokeColor: "#00ff00",
-            points: [
-                {
-                    "x": 117.56756756756756,
-                    "y": 300
-                },
-                {
-                    "x": 114.86486486486487,
-                    "y": 278.3783783783784
-                },
-                {
-                    "x": 71.62162162162163,
-                    "y": 282.43243243243245
-                },
-                {
-                    "x": 71.62162162162163,
-                    "y": 251.35135135135135
-                },
-                {
-                    "x": 106.75675675675676,
-                    "y": 247.2972972972973
-                },
-                {
-                    "x": 106.75675675675676,
-                    "y": 232.43243243243245
-                },
-                {
-                    "x": 71.62162162162163,
-                    "y": 228.3783783783784
-                },
-                {
-                    "x": 71.62162162162163,
-                    "y": 200
-                },
-                {
-                    "x": 114.86486486486487,
-                    "y": 200
-                },
-                {
-                    "x": 116.21621621621622,
-                    "y": 181.0810810810811
-                },
-                {
-                    "x": 45.945945945945944,
-                    "y": 185.13513513513513
-                },
-                {
-                    "x": 47.2972972972973,
-                    "y": 300
-                },
-                {
-                    "x": 117.56756756756756,
-                    "y": 300
-                }
-            ],
-    }*/
+        userId: 'ce0c0edb-7d45-4f4f-86d9-363cd5206969',
+        labelType: null,
+        labelName: 'Polygone A',
+        polygon: {
+          points: [
+            {
+              x: 95.0920245398773,
+              y: 70.5521472392638,
+            },
+            {
+              x: 59.50920245398773,
+              y: 112.26993865030676,
+            },
+            {
+              x: 100.0,
+              y: 115.33742331288344,
+            },
+            {
+              x: 95.0920245398773,
+              y: 70.5521472392638,
+            },
+          ],
+        },
+      },
+      {
+        id: '07cdb26d-84af-4b54-a73c-c22984b71dbe',
+        areaPictureId: 'b437dfbf-a522-4999-88b2-dd5b66a65d00',
+        annotationId: 'a74ead26-c7f6-46bb-a6ad-c5abda36c20c',
+        metadata: {
+          area: 10.0,
+          slope: 0.0,
+          covering: null,
+          comment: null,
+          fillColor: null,
+          strokeColor: null,
+          obstacle: null,
+          wearLevel: null,
+          wearness: null,
+          moldRate: null,
+        },
+        userId: 'ce0c0edb-7d45-4f4f-86d9-363cd5206969',
+        labelType: null,
+        labelName: 'Polygone B',
+        polygon: {
+          points: [
+            {
+              x: 182.82208588957056,
+              y: 144.78527607361963,
+            },
+            {
+              x: 166.87116564417178,
+              y: 185.27607361963192,
+            },
+            {
+              x: 188.3435582822086,
+              y: 187.73006134969327,
+            },
+            {
+              x: 206.74846625766872,
+              y: 165.03067484662577,
+            },
+            {
+              x: 182.82208588957056,
+              y: 144.78527607361963,
+            },
+          ],
+        },
+      },
+    ],
+  },
 ];
+
 export const labels: Label[] = [
   { id: 'roof', name: 'Toit' },
   { id: 'velux', name: 'Velux' },

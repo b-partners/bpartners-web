@@ -116,22 +116,28 @@ export const restInvoiceRegulation = [
   },
 ];
 
-const invoiceMock = {
+const getInvoiceMock = () => ({
   ACCEPTED: createInvoices(35, InvoiceStatus.ACCEPTED),
   CONFIRMED: createInvoices(35, InvoiceStatus.CONFIRMED),
   DRAFT: createInvoices(35, InvoiceStatus.DRAFT),
   PAID: createInvoices(35, InvoiceStatus.PAID),
   PROPOSAL: createInvoices(35, InvoiceStatus.PROPOSAL),
   PROPOSAL_CONFIRMED: createInvoices(35, InvoiceStatus.PROPOSAL_CONFIRMED),
-};
+});
+
+let invoiceMock = getInvoiceMock();
 
 export const getInvoices = (page: number, _perPage: number, statusList: InvoiceStatus[]) => {
   let result: Invoice[] = [];
 
+  if (!invoiceMock) {
+    invoiceMock = getInvoiceMock();
+  }
+
   const perPage = Math.floor(_perPage / statusList.length);
 
   statusList.forEach(status => {
-    result = [...result, ...invoiceMock[status].slice(page * perPage, page * perPage + perPage)];
+    result = [...result, ...(invoiceMock[status] || []).slice(page * perPage, page * perPage + perPage)];
   });
 
   return result;

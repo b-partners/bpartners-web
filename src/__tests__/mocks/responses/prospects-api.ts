@@ -160,9 +160,9 @@ export const convertedProspect = {
 export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',
-  address: 'Evry',
-  firstName: '',
-  name: 'Doe Jhonson',
+  address: 'Paris',
+  firstName: 'Doe',
+  name: 'Johnson',
   status: 'TO_CONTACT',
   defaultComment: 'create comment',
   invoiceID: 'invoice-DRAFT-1-id',

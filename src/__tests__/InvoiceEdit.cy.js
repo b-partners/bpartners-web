@@ -3,12 +3,7 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
-
-import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, getInvoices, restInvoiceRegulation } from './mocks/responses/invoices-api';
-import { products } from './mocks/responses/product-api';
-import { whoami1 } from './mocks/responses/security-api';
+import { accountHolders1, accounts1, createInvoices, customers1, getInvoices, products, restInvoiceRegulation, whoami1 } from './mocks/responses';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
@@ -27,7 +22,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
+          `${statusList}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     });

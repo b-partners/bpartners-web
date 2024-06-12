@@ -1,19 +1,21 @@
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
+import { AnnotatorCanvas, Point } from '@bpartners/annotator-component';
+import { AreaPictureDetails, AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import BPLoader from 'src/common/components/BPLoader';
+import { BPLoader } from 'src/common/components';
 import BpSelect from 'src/common/components/BpSelect';
+import { usePolygonMarkerFetcher } from 'src/common/fetcher';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import { getUrlParams, parseUrlParams } from 'src/common/utils';
+import { getUrlParams, parseUrlParams, reload } from 'src/common/utils';
 import { ZOOM_LEVEL } from 'src/constants/zoom-level';
-import { clearPolygons } from 'src/providers';
+import { clearPolygons, geojsonMapper } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { RefocusDialog } from './RefocusDialog';
 
 const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = true, width }: any) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
+
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const [newZoomLevel, setNewZoomLevel] = useState<ZoomLevel>(ZoomLevel.HOUSES_0);
   const [newZoomLevelAsNumber, setNewZoomLevelAsNumber] = useState(20);
@@ -27,13 +29,21 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const [otherLayers, setOtherLayers] = useState([]);
   const [changing, setChanging] = useState(false);
   const [isExtended, setIsExtended] = useState(false);
+  const [areaPictureDetails, setAreaPictureDetails] = useState<AreaPictureDetails | null>(null);
   const notify = useNotify();
+  const [markerPosition, setMarker] = useState<Point | null>(null);
+
+  const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
+
+  useEffect(() => {
+    const markerPositionMapped = geojsonMapper.toMarker((marker || [null])[0]);
+    setMarker(markerPositionMapped.length > 0 && polygons.length === 0 ? markerPositionMapped[0] : null);
+  }, [marker, polygons]);
 
   useEffect(() => {
     if (!pictureId) return;
     annotatorProvider.getAreaPictureById(pictureId).then(pictureDetail => {
       const { address, zoom, actualLayer, otherLayers, isExtended, filename } = pictureDetail;
-
       if (allowSelect) {
         setNewZoomLevel(zoom.level);
         setNewZoomLevelAsNumber(zoom.number);
@@ -43,6 +53,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       setOtherLayers(otherLayers);
       setFileInfo({ filename, address });
       setIsExtended(isExtended);
+      setAreaPictureDetails(pictureDetail);
     });
   }, [pictureId, newZoomLevel, allowSelect, changing]);
 
@@ -61,9 +72,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const selectedZoom = ZOOM_LEVEL.find(level => level.value === e.target.value);
 
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: e.target.value,
     };
@@ -80,9 +90,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const selectedLayer = otherLayers.find(layer => layer.name === e.target.value);
 
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: newZoomLevel,
       layerId: selectedLayer.id,
@@ -98,9 +107,8 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   const refocusImgClick = async () => {
     const fetchParams = {
-      address: fileInfo.address,
+      ...fileInfo,
       fileId,
-      filename: fileInfo.filename,
       prospectId,
       zoomLevel: newZoomLevel,
       isExtended: true,
@@ -109,14 +117,14 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
     const updateState = () => {
       setChanging(!changing);
       clearPolygons();
-      window.location.reload();
+      reload();
     };
 
     handleAction('refocusImg', fetchParams, updateState);
   };
 
   if (!fileInfo.filename) {
-    return <BPLoader sx={{ width: width || undefined }} />;
+    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
   return (
@@ -148,6 +156,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       )}
       {fileInfo.filename && (
         <AnnotatorCanvas
+          markerPosition={markerPosition}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height='500px'
@@ -157,7 +166,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
           polygonLineSizeProps={{
             imageName: `${fileInfo.filename}.jpg`,
             showLineSize: true,
-            converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
+            converterApiUrl: `${process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL}/api/reference` || '',
           }}
           zoom={newZoomLevelAsNumber}
         />
