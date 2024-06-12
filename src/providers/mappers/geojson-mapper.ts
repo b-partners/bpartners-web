@@ -1,16 +1,16 @@
-import { Measurement, Polygon } from '@bpartners/annotator-component';
+import { Point } from '@bpartners/annotator-component';
 import { ConverterResultGeoJSON } from 'src/operations/annotator';
-import { pointsMapper } from './points-mapper';
 
-interface PolygonMetadata {
-  fillColor: string;
-  strokeColor: string;
-  measurements?: Measurement[];
-  surface?: number;
-}
+const getCenter = (coordinates: number[]) => {
+  if (!coordinates) return 0;
+  const sumOfCoordinates = coordinates.reduce((prev, current) => prev + current);
+  console.log({ sumOfCoordinates, l: coordinates.length });
+
+  return sumOfCoordinates / coordinates.length;
+};
 
 export const geojsonMapper = {
-  toPolygon(geoJson: ConverterResultGeoJSON, { fillColor, strokeColor, measurements, surface }: PolygonMetadata): Polygon[] {
+  toMarker(geoJson: ConverterResultGeoJSON): Point[] {
     if (!geoJson) return [];
     const { regions } = geoJson;
 
@@ -18,18 +18,7 @@ export const geojsonMapper = {
       const {
         shape_attributes: { all_points_x, all_points_y },
       } = regions[id];
-
-      const points = pointsMapper.geoPointsToPolygonPoints(all_points_x, all_points_y);
-
-      return {
-        id,
-        points,
-        surface,
-        fillColor,
-        strokeColor,
-        measurements,
-        isInvisible: true,
-      };
+      return { x: getCenter(all_points_x), y: getCenter(all_points_y) };
     });
   },
 };

@@ -12,7 +12,7 @@ type GeoPolygonToRestMetaData = {
 export const polygonMapper = {
   toRest(geoPositions: GeoPosition[], metadata: GeoPolygonToRestMetaData) {
     const geometry: Geometry = {
-      coordinates: [[[...geoPositions.map(({ latitude, longitude }) => [latitude, longitude])]]],
+      coordinates: [[[...geoPositions.map(({ latitude, longitude }) => [longitude, latitude])]]],
       type: 'MultiPolygon',
     };
 

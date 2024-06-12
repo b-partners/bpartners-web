@@ -34,7 +34,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
 
-  console.log('marker', marker, 'mapped', geojsonMapper.toPolygon(marker, { fillColor: '#ffffff00', strokeColor: '#ff0000' }));
+  console.log('marker', marker, 'mapped', geojsonMapper.toMarker((marker || [null])[0]));
 
   useEffect(() => {
     if (!pictureId) return;
