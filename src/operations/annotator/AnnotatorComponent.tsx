@@ -116,7 +116,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   };
 
   if (!fileInfo.filename) {
-    return <BPLoader sx={{ width: width || undefined }} />;
+    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
   return (
