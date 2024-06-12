@@ -3,7 +3,7 @@ import { AreaPictureMapLayer, CrupdateAreaPictureDetails, ZoomLevel } from '@bpa
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import BPLoader from 'src/common/components/BPLoader';
+import { BPLoader } from 'src/common/components';
 import BpSelect from 'src/common/components/BpSelect';
 import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams, parseUrlParams } from 'src/common/utils';
@@ -116,7 +116,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   };
 
   if (!fileInfo.filename) {
-    return <BPLoader sx={{ width: width || undefined }} />;
+    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
   return (
