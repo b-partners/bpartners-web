@@ -108,13 +108,13 @@ const ProspectsList = () => {
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-            <List empty={false} pagination={false} component={ListComponent} actions={false}>
-              <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Prospects toggleDialog={toggleDialog} />
-                {isCreating && (
+            <List queryOptions={{ refetchOnWindowFocus: false }} empty={false} pagination={false} component={ListComponent} actions={false}>
+              <Prospects toggleDialog={toggleDialog} />
+              {isCreating && (
+                <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
                   <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
-                )}
-              </form>
+                </form>
+              )}
             </List>
           </TabPanel>
 
