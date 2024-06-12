@@ -70,7 +70,6 @@ const ProspectsList = () => {
           invoice: undefined,
         },
       ]);
-      handleLoading(false);
       notify(`Prospect créé avec succès !`, { type: 'success' });
       const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
       if (isRoofer) {
@@ -89,10 +88,11 @@ const ProspectsList = () => {
         );
         return;
       }
+      handleLoading(false);
     };
     fetch().catch(() => {
       handleLoading(false);
-      notify(`Une erreur s'est produite`, { type: 'error' });
+      notify(`messages.global.error`, { type: 'error' });
     });
   });
 
