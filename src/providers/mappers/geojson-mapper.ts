@@ -4,8 +4,6 @@ import { ConverterResultGeoJSON } from 'src/operations/annotator';
 const getCenter = (coordinates: number[]) => {
   if (!coordinates) return 0;
   const sumOfCoordinates = coordinates.reduce((prev, current) => prev + current);
-  console.log({ sumOfCoordinates, l: coordinates.length });
-
   return sumOfCoordinates / coordinates.length;
 };
 

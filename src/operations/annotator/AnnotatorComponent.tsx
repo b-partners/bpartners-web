@@ -33,8 +33,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
   const notify = useNotify();
 
   const { data: marker } = usePolygonMarkerFetcher({ areaPictureDetails });
-
-  console.log('marker', marker, 'mapped', geojsonMapper.toMarker((marker || [null])[0]));
+  const markerPosition = geojsonMapper.toMarker((marker || [null])[0]);
 
   useEffect(() => {
     if (!pictureId) return;
@@ -152,6 +151,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
       )}
       {fileInfo.filename && (
         <AnnotatorCanvas
+          marker={markerPosition.length > 0 && polygons.length === 0 ? { position: markerPosition[0] } : undefined}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height='500px'
