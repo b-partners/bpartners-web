@@ -108,7 +108,7 @@ const ProspectsList = () => {
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-            <List pagination={false} component={ListComponent} actions={false}>
+            <List empty={false} pagination={false} component={ListComponent} actions={false}>
               <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
                 <Prospects toggleDialog={toggleDialog} />
                 {isCreating && (
@@ -132,5 +132,4 @@ const ProspectsList = () => {
     </ProspectContextProvider>
   );
 };
-
 export default ProspectsList;
