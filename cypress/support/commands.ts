@@ -1,7 +1,7 @@
 import { Auth } from 'aws-amplify';
 import { authProvider } from '../../src/providers';
-import { whoami1, user1 } from '../../src/__tests__/mocks/responses/security-api';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
+import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
 
 const sessionStub = {
   getIdToken: () => ({ getJwtToken: () => 'dummy' }),
@@ -43,7 +43,17 @@ Cypress.Commands.add('cognitoLogin', () => {
 Cypress.Commands.add('realCognitoLogin', () => {
   const loginParams = {
     username: process.env.REACT_APP_IT_USERNAME,
-    password: process.env.REACT_APP_IT_PASSWORD
+    password: process.env.REACT_APP_IT_PASSWORD,
   };
   cy.then(async () => await authProvider.login(loginParams));
 });
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      dataCy(value: string): Chainable<JQuery<HTMLElement>>;
+      cognitoLogin(): void;
+      realCognitoLogin(): void;
+    }
+  }
+}
