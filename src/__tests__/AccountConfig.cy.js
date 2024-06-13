@@ -28,10 +28,21 @@ describe(specTitle('Frequency relaunch'), () => {
   it('should send configuration', () => {
     mount(<App />);
 
-    // cy.get('[name="configurations"]').click();
-    // cy.get('[data-testid="ArrowDropDownIcon"]').click();
-    // cy.contains('Numer-account-2').click();
-    // cy.get('[data-testid="submit-change-account"]').click();
-    // cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
+    cy.get('[name="configurations"]').click();
+    cy.get('[data-testid="ExpandMoreIcon"]').click();
+    cy.get('[data-testid="ExpandMoreIcon"]').click();
+
+    cy.contains('Devis non confirmé (en jour)');
+    cy.get("[name='draftRelaunch']").clear().type('2');
+    cy.contains('Facture en retard (en jour)');
+    cy.get("[name='unpaidRelaunch']").clear().type('1');
+
+    cy.get('[type="submit"]').click();
+    cy.wait("@getInvoiceRelaunch2").then(({request}) => {
+      expect(request.body.draftRelaunch).eq('21')
+      expect(request.body.unpaidRelaunch).eq('11')
+      cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
+    })
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
   });
 });
