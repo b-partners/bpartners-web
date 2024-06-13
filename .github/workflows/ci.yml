@@ -59,6 +59,8 @@ jobs:
           else
             REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.ANNOTATOR_PIXEL_CONVERTER_API_URL }} REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.ANNOTATOR_GEO_CONVERTER_API_URL }} REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} npm test
           fi
+      - name: Show test repports
+        run: cat ./dist/test-reports.xml
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
