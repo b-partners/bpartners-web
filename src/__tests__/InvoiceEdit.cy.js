@@ -6,14 +6,12 @@ import App from '../App';
 import {
   accountHolders1,
   accounts1,
-  areaPictures,
   createInvoices,
   customers1,
   getInvoices,
-  invoiceAnnotations,
   products,
   restInvoiceRegulation,
-  whoami1,
+  whoami1
 } from './mocks/responses';
 
 describe(specTitle('Invoice'), () => {
@@ -33,7 +31,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
+          `${statusList || InvoiceStatus.DRAFT}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     });
