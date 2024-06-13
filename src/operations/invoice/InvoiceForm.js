@@ -1,13 +1,13 @@
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
 import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
-import debounce from 'debounce';
+import { debounce } from '@mui/material/utils';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { parseUrlParams, prettyPrintMinors, UrlParams } from '../../common/utils';
+import { prettyPrintMinors, UrlParams } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -276,4 +276,5 @@ const InvoiceTotalPrice = props => {
     </Box>
   );
 };
+
 export default InvoiceForm;
