@@ -11,11 +11,13 @@ env:
   PREPROD_WEBCLIENT_ID: 4v0n3pk2j0b12m3aascud4us6h
   PREPROD_OAUTH_DOMAIN: preprod-bpartners-api.auth.eu-west-3.amazoncognito.com
   PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
-  ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
-  ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
 
 jobs:
   tests:
+    env:
+      REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
+      REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
+      
     timeout-minutes: 35
     runs-on: ubuntu-latest
     steps:
@@ -55,9 +57,9 @@ jobs:
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
       - run: |
           if ${{ github.ref_name == 'prod' }}; then
-            REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.ANNOTATOR_PIXEL_CONVERTER_API_URL }} REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.ANNOTATOR_GEO_CONVERTER_API_URL }} REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} npm test
+            REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} npm test
           else
-            REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.ANNOTATOR_PIXEL_CONVERTER_API_URL }} REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.ANNOTATOR_GEO_CONVERTER_API_URL }} REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} npm test
+            REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} npm test
           fi
       - name: Show test repports
         if: always()

@@ -33,7 +33,6 @@ describe('Invoice Annotation', () => {
 
     cy.wait('@getAreaPictures');
     cy.wait('@getAreaPicturesAnnotation');
-    cy.wait('@getAreaPictureFileImage');
 
     cy.contains('x : 0');
     cy.contains('y : 0');

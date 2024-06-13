@@ -1,4 +1,3 @@
-import { AreaPictureDetails } from '@bpartners/typescript-client';
 
 const availableLayers = [
   {
