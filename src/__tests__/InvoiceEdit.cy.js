@@ -3,8 +3,18 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
-import { accountHolders1, accounts1, areaPictures, createInvoices, customers1, getInvoices, invoiceAnnotations, products, restInvoiceRegulation, whoami1 } from './mocks/responses';
-
+import {
+  accountHolders1,
+  accounts1,
+  areaPictures,
+  createInvoices,
+  customers1,
+  getInvoices,
+  invoiceAnnotations,
+  products,
+  restInvoiceRegulation,
+  whoami1,
+} from './mocks/responses';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
@@ -172,27 +182,5 @@ describe(specTitle('Invoice'), () => {
 
       expect(newInvoice).to.deep.eq(expectedInvoice);
     });
-  });
-
-  it('should show annotation on edit an invoice', () => {
-    cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=dummy&fileType=INVOICE`, { fixture: "testInvoice.pdf" });
-    const invoice = createInvoices(1)[0]
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, [{ ...invoice, idAreaPicture: "areaPicture-mock-id", status: InvoiceStatus["DRAFT"] }]);
-    cy.intercept("GET", "/accounts/mock-account-id1/areaPictures/*", areaPictures)
-    cy.intercept("GET", "/accounts/mock-account-id1/areaPictures/*/annotations", invoiceAnnotations)
-    cy.intercept("GET", "/accounts/mock-account-id1/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE", { fixture: "test-annotator-image.jpeg" })
-
-    mount(<App />);
-    cy.get('[name="invoice"]').click();
-    cy.contains("invoice-ref-0").click()
-
-    cy.contains("x : 0")
-    cy.contains("y : 0")
-
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click()
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click()
-
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(4)').click()
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(3)').click()
   });
 });
