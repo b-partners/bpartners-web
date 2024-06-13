@@ -7,7 +7,7 @@ export const accountProvider: BpDataProviderType = {
   async getOne(_userId?: string) {
     // TODO: return the account with the attribut current = true but wait for the backend to implement it
     const { userId } = getCached.userInfo();
-    const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId);
+    const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId || '');
     const account: Account = getCurrentAccount(data);
     return cache.account(account);
   },
@@ -16,7 +16,7 @@ export const accountProvider: BpDataProviderType = {
   },
   async getList(page: number, perPage: number, filter: any) {
     const { userId } = getCached.userInfo();
-    const { data } = await userAccountsApi().getAccountsByUserId(userId);
+    const { data } = await userAccountsApi().getAccountsByUserId(userId || '');
     return data;
   },
   async updateOne(resource: UpdateAccountIdentity) {

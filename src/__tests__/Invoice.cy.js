@@ -29,7 +29,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          `${statusList | InvoiceStatus['DRAFT']}`.split(',').map(status => InvoiceStatus[status])
+          `${statusList}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     });
