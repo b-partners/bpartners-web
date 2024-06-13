@@ -166,7 +166,7 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
           polygonLineSizeProps={{
             imageName: `${fileInfo.filename}.jpg`,
             showLineSize: true,
-            converterApiUrl: process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '',
+            converterApiUrl: `${process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL}/api/reference` || '',
           }}
           zoom={newZoomLevelAsNumber}
         />
