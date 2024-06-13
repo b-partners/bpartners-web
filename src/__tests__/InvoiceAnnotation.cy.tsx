@@ -13,20 +13,27 @@ describe('Invoice Annotation', () => {
 
     cy.intercept('GET', '/accounts/mock-account-id1/customers**', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products**`, products).as('getProducts');
-    cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1, InvoiceStatus['PROPOSAL'])[0]).as('crupdate1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=INVOICE`, { fixture: 'testInvoice.pdf' });
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=INVOICE`, { fixture: 'testInvoice.pdf' }).as('getInvoicePdfFile');
 
     const invoice = createInvoices(1, InvoiceStatus['DRAFT'])[0];
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, [{ ...invoice, idAreaPicture: 'areaPicture-mock-id', status: InvoiceStatus['DRAFT'] }]);
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/*`, areaPictures);
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/*/annotations`, invoiceAnnotations);
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, { fixture: 'test-annotator-image.jpeg' });
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, [{ ...invoice, idAreaPicture: 'areaPicture-mock-id', status: InvoiceStatus['DRAFT'] }]).as(
+      'getDraftInvoice'
+    );
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/*`, areaPictures).as('getAreaPictures');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/*/annotations`, invoiceAnnotations).as('getAreaPicturesAnnotation');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, { fixture: 'test-annotator-image.jpeg' }).as(
+      'getAreaPictureFileImage'
+    );
   });
 
   it('should show annotation on edit an invoice', () => {
     cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.contains('invoice-ref-0').click();
+
+    cy.wait('@getAreaPictures');
+    cy.wait('@getAreaPicturesAnnotation');
+    cy.wait('@getAreaPictureFileImage');
 
     cy.contains('x : 0');
     cy.contains('y : 0');
