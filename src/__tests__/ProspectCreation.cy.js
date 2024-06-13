@@ -13,8 +13,7 @@ import {
   createdProspect,
   getInvoices,
   prospects,
-  referencerResponse,
-  whoami1,
+  whoami1
 } from './mocks/responses';
 import { PathVariable } from './mocks/utilities';
 

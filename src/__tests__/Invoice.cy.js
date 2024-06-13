@@ -180,7 +180,7 @@ describe(specTitle('Invoice'), () => {
     // cy.contains('100,00');
   });
 
-  it.only('shoulw show annotation on preview', () => {
+  it('should show annotation on preview', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
     });
