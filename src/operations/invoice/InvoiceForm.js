@@ -7,7 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BPButton } from '../../common/components/BPButton';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { UrlParams, prettyPrintMinors } from '../../common/utils';
+import { prettyPrintMinors, UrlParams } from '../../common/utils';
 import { ClientSelection } from './components/ClientSelection';
 import { ProductSelection } from './components/ProductSelection';
 
@@ -35,17 +35,17 @@ import { useRetrievePolygons } from './utils/use-retrieve-polygons';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
+  getReceiptUrl,
   GLOBAL_DISCOUNT,
   InvoiceActionType,
-  PDF_EDITION_WIDTH,
-  PRODUCT_NAME,
-  getReceiptUrl,
   invoiceDateValidator,
+  PDF_EDITION_WIDTH,
   productValidationHandling,
+  PRODUCT_NAME,
   retryOnError,
   titleValidator,
-  totalPriceWithVatFromProducts,
   totalPriceWithoutVatFromProducts,
+  totalPriceWithVatFromProducts,
 } from './utils/utils';
 
 const InvoiceForm = props => {
