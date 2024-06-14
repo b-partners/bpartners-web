@@ -3,7 +3,7 @@ import { ConverterResultGeoJSON } from 'src/operations/annotator';
 
 const getCenter = (coordinates: number[]) => {
   if (!coordinates) return 0;
-  const sumOfCoordinates = coordinates.reduce((prev, current) => prev + current);
+  const sumOfCoordinates = coordinates.reduce((prev, current) => prev + current, 0);
   return sumOfCoordinates / coordinates.length;
 };
 
@@ -12,7 +12,7 @@ export const geojsonMapper = {
     if (!geoJson) return [];
     const { regions } = geoJson;
 
-    return Object.keys(regions).map(id => {
+    return Object.keys(regions || {}).map(id => {
       const {
         shape_attributes: { all_points_x, all_points_y },
       } = regions[id];
