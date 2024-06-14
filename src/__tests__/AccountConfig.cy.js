@@ -38,11 +38,11 @@ describe(specTitle('Frequency relaunch'), () => {
     cy.get("[name='unpaidRelaunch']").clear().type('1');
 
     cy.get('[type="submit"]').click();
-    cy.wait("@getInvoiceRelaunch2").then(({request}) => {
-      expect(request.body.draftRelaunch).eq('21')
-      expect(request.body.unpaidRelaunch).eq('11')
+    cy.wait('@getInvoiceRelaunch2').then(({ request }) => {
+      expect(request.body.draftRelaunch).eq('21');
+      expect(request.body.unpaidRelaunch).eq('11');
       cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
-    })
+    });
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, newAccounts);
   });
 });

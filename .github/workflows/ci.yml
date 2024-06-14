@@ -17,7 +17,7 @@ jobs:
     env:
       REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
       REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
-      
+
     timeout-minutes: 35
     runs-on: ubuntu-latest
     steps:

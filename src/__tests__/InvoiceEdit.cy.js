@@ -3,16 +3,7 @@ import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
-import {
-  accountHolders1,
-  accounts1,
-  createInvoices,
-  customers1,
-  getInvoices,
-  products,
-  restInvoiceRegulation,
-  whoami1
-} from './mocks/responses';
+import { accountHolders1, accounts1, createInvoices, customers1, getInvoices, products, restInvoiceRegulation, whoami1 } from './mocks/responses';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {

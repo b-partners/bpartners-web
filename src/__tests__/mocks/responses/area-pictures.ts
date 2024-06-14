@@ -1,4 +1,3 @@
-
 const availableLayers = [
   {
     id: 'cee23f9b-d3ca-4a47-b27a-d7d62b5119c7',
