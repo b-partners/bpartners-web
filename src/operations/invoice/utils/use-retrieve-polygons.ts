@@ -8,7 +8,7 @@ export const useRetrievePolygons = () => {
   const [annotations, setAnnotations] = useState<AreaPictureAnnotation>({});
   const [polygons, setPolygons] = useState<Polygon[]>([]);
 
-  const isAnnotationEmpty = Object.keys(annotations).length === 0;
+  const isAnnotationEmpty = !annotations || Object.keys(annotations || {}).length === 0;
 
   useEffect(() => {
     if (pictureId) {

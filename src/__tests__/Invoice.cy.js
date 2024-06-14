@@ -1,5 +1,4 @@
 import { InvoiceStatus, PaymentMethod } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '../App';
@@ -7,7 +6,7 @@ import App from '../App';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { areaPictureAnnotation, areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, getInvoices, invoicesToChangeStatus } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices, invoicesSummary, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
@@ -29,7 +28,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
+          `${statusList}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     });
@@ -37,12 +36,13 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
-    // Revoir pourquoi cette fonction ne s'exécute pas seulement en CY test
-    // cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
+    cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
+
+    cy.mount(<App />);
+    cy.wait('@getUser1');
   });
 
   it('Can be paid', () => {
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
     cy.contains('invoice-ref-3');
@@ -68,7 +68,6 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should automatically change tabs when converting to a quote or invoice', () => {
-    mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
@@ -81,7 +80,6 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Check if date label are corrects', () => {
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
 
@@ -93,7 +91,6 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
@@ -107,7 +104,6 @@ describe(specTitle('Invoice'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     const simpleComment = 'This is a simple comment';
@@ -144,7 +140,6 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('emitInvoice');
 
-    mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.wait('@getAccount1');
@@ -160,8 +155,6 @@ describe(specTitle('Invoice'), () => {
   it('Should show payment regulation comment', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
 
-    mount(<App />);
-
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
@@ -169,7 +162,6 @@ describe(specTitle('Invoice'), () => {
   });
   it('should show invoices summary', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     // cy.wait('@getInvoicesSummary', { timeout: 20_000 });
     cy.contains('Devis');
@@ -180,7 +172,7 @@ describe(specTitle('Invoice'), () => {
     // cy.contains('100,00');
   });
 
-  it.only('shoulw show annotation on preview', () => {
+  it('should show annotation on preview', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
     });
@@ -198,7 +190,6 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/${areaPictures.id}`, areaPictures).as('getAreaByPictureId');
     cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, [areaPictureAnnotation]).as('getAreaPictureAnnotation');
 
-    mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.wait('@getAccount1');
     cy.wait('@whoami');
@@ -207,6 +198,5 @@ describe(specTitle('Invoice'), () => {
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
     cy.contains('Justificatif');
-    cy.wait('@getAreaByPictureId');
   });
 });

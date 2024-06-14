@@ -2,7 +2,7 @@
   "name": "bpartners-web",
   "private": true,
   "dependencies": {
-    "@bpartners/annotator-component": "^0.9.4",
+    "@bpartners/annotator-component": "^0.11.0",
     "@bpartners/typescript-client": "^0.49.0",
     "@gthrm/deep-diff": "^1.0.6",
     "@hookform/resolvers": "^3.1.0",
@@ -44,7 +44,7 @@
     "babel-plugin-istanbul": "5.2.0",
     "cypress": "9.5.4",
     "cypress-multi-reporters": "^1.5.0",
-    "cypress-sonarqube-reporter": "^1.10.0",
+    "cypress-sonarqube-reporter": "^1.13.0",
     "eslint-plugin-cypress": "^2.12.1",
     "husky": "^8.0.3",
     "prettier": "^3.2.5",
@@ -57,7 +57,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "cypress run-ct --spec './**/!(*.it).cy.js'",
+    "test": "cypress run-ct --spec './**/!(*.it).cy.{js,jsx,tsx}'",
     "it": "cypress run-ct --spec \"src/__tests__/it/*.it.cy.js\" --config video=true",
     "cy:open": "cypress open-ct",
     "eject": "react-scripts eject",

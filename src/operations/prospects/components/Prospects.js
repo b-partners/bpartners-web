@@ -1,6 +1,5 @@
 import { Box, Grid, TextField } from '@mui/material';
 import { groupBy } from 'lodash';
-import { useEffect, useState } from 'react';
 import { Empty, useListContext } from 'react-admin';
 import { EmptyList } from 'src/common/components/EmptyList';
 import { BPButton } from '../../../common/components/BPButton';
@@ -18,12 +17,9 @@ const EmptyProspect = ({ toggleCreate }) => {
 export const Prospects = props => {
   const { toggleDialog } = props;
   const { data = [], isLoading, setFilters, filterValues } = useListContext();
-  const [prospects, setProspects] = useState();
   const isEmptyList = data.length <= 0;
 
-  useEffect(() => {
-    data && setProspects(groupBy(sortProspectsByDate(data), 'status'));
-  }, [data]);
+  const prospects = groupBy(sortProspectsByDate(data), 'status');
 
   if (isLoading) {
     return null;
