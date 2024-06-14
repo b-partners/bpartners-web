@@ -14,6 +14,10 @@ env:
 
 jobs:
   tests:
+    env:
+      REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
+      REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
+
     timeout-minutes: 35
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 17.x
+          node-version: 16.17.0
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.3
         with:
@@ -57,6 +61,9 @@ jobs:
           else
             REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} npm test
           fi
+      - name: Show test repports
+        if: always()
+        run: cat ./dist/test-reports.xml
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0

@@ -1,5 +1,6 @@
 export * from './account-holder-Provider';
 export * from './account-provider';
+export * from './annotator-provider';
 export * from './api';
 export * from './asyncGetUserInfo';
 export * from './auth-provider';
@@ -15,6 +16,8 @@ export * from './feedback-provider';
 export * from './file-provider';
 export * from './invoice-provider';
 export * from './mailing-provider';
+export * from './mappers';
+export * from './polygon-converter-provider';
 export * from './product-provider';
 export * from './profile-provider';
 export * from './prospecting-jobs-provider';
