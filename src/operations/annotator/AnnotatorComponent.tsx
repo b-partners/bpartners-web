@@ -37,8 +37,9 @@ const AnnotatorComponent = ({ allowAnnotation = true, poly_gone, allowSelect = t
 
   useEffect(() => {
     const markerPositionMapped = geojsonMapper.toMarker((marker || [null])[0]);
-    setMarker(markerPositionMapped.length > 0 && polygons.length === 0 ? markerPositionMapped[0] : null);
-  }, [marker, polygons]);
+    setMarker(markerPositionMapped.length > 0 && polygons.length === 0 && (!poly_gone || poly_gone.length === 0) ? markerPositionMapped[0] : null);
+    updatePolygonList(polygons);
+  }, [marker, polygons, poly_gone, updatePolygonList]);
 
   useEffect(() => {
     if (!pictureId) return;
