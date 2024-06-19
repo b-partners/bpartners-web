@@ -28,7 +28,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
+          `${statusList || ''}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     });
@@ -62,7 +62,7 @@ describe(specTitle('Invoice'), () => {
         getInvoices(
           page - 1,
           pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
+          `${statusList || ''}`.split(',').map(status => InvoiceStatus[status])
         )
       );
     }).as('searchInvoice');
