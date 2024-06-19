@@ -5,6 +5,7 @@ export const BpFrenchMessages = {
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',
+      refocusImage: "Recentrer l'image",
     },
   },
   resources: {

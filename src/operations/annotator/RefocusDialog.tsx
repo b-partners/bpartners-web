@@ -22,7 +22,7 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
         disabled={disabled}
         onClick={handleOpen}
         data-testid='center-img-btn'
-        label="Recentrer l'image"
+        label='bp.action.refocusImage'
         style={REFOCUS_BUTTON}
         isLoading={isLoading}
       />
