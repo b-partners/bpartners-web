@@ -256,7 +256,7 @@ const InvoiceForm = props => {
         </form>
       </FormProvider>
       <div>
-        {!isAnnotationEmpty && <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />}
+        {!isAnnotationEmpty && <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />}
         <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
           <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
             <RefreshIcon />
