@@ -5,9 +5,18 @@ export const BpFrenchMessages = {
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',
+      refocusImage: "Recentrer l'image",
+      resetRefocusImage: "Réinitialiser l'image",
+      confirm: 'Confirmer',
     },
   },
   resources: {
+    annotation: {
+      text: {
+        refocusImage: "Cette action va agrandir la zone couverte par l'image.",
+        resetRefocusImage: "Cette action va réinitialiser la position de l'image à son état d'origine.",
+      },
+    },
     products: {
       name: 'Produit |||| Produits',
     },

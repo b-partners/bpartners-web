@@ -88,3 +88,11 @@ export interface ShapeAttributes {
   all_points_y: number[];
   name: string;
 }
+
+export interface AnnotatorComponentProps {
+  allowAnnotation?: boolean;
+  allowSelect?: boolean;
+  polygons?: Polygon[];
+  width?: number;
+  height?: number;
+}
