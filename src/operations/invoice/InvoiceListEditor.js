@@ -48,7 +48,7 @@ const AnnotatorComponentShow = () => {
         ))}
       </Box>
       <Box width={PDF_EDITION_WIDTH}>
-        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} poly_gone={polygons} allowSelect={false} />
+        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />
       </Box>
     </Box>
   );
