@@ -3,7 +3,7 @@ import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@m
 interface DynamicSelectProps<T> {
   value: string;
   handleChange: (e: SelectChangeEvent<string>) => Promise<void>;
-  loading: boolean;
+  loading?: boolean;
   options: T[];
   getOptionKey: (option: T) => string;
   getOptionValue: (option: T) => string;
