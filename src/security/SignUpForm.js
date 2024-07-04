@@ -1,9 +1,10 @@
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+
 import BPFormField from 'src/common/components/BPFormField';
+import { useToggle } from 'src/common/hooks';
 import { handleSubmit } from 'src/common/utils';
 import { phoneValidator } from 'src/operations/account/utils';
 import { onboarding } from 'src/providers/account-provider';
@@ -14,31 +15,30 @@ import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 export const SignUpForm = () => {
   const notify = useNotify();
   const navigate = useNavigate();
-  const [isLoading, setLoading] = useState(false);
-  const [isModalOpen, setModalState] = useState(false);
+  const { value: isLoading, handleOpen: startLoading, handleClose: stopLoading } = useToggle();
+  const { value: isModalOpen, handleOpen: handleOpenModal, handleClose: handleCloseModal } = useToggle();
   const form = useForm({ mode: 'all' });
 
-  const handleCloseModal = () => {
-    setModalState(false);
+  const handleCloseModalWithRedirect = () => {
+    handleCloseModal();
     navigate('/login');
   };
-  const handleOpenModal = () => setModalState(true);
 
   const onSubmit = form.handleSubmit(async data => {
     try {
-      setLoading(true);
+      startLoading();
       await onboarding([data]);
       handleOpenModal();
     } catch {
       notify('messages.global.error', { type: 'error' });
     } finally {
-      setLoading(false);
+      stopLoading();
     }
   });
 
   return (
     <>
-      <DialogSuccessSignUp isOpen={isModalOpen} onClose={handleCloseModal} />
+      <DialogSuccessSignUp isOpen={isModalOpen} onClose={handleCloseModalWithRedirect} />
       <Box sx={{ ...LOGIN_FORM, alignItems: 'center' }}>
         <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
         <Typography variant='h5' gutterBottom mt={1}>
