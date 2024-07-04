@@ -9,6 +9,7 @@ import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL
 
 import { useNotify, useRefresh } from 'react-admin';
 import { BP_BUTTON } from 'src/bp-theme';
+import { useToggle } from 'src/common/hooks';
 import { toArrayBuffer } from 'src/common/utils';
 import { importProducts } from 'src/providers/product-provider';
 
@@ -20,11 +21,10 @@ export const BPImport = props => {
   const customerTemplateUrl = process.env.REACT_APP_CUSTOMER_TEMPLATE_URL;
   const productTemplateUrl = process.env.REACT_APP_PRODUCT_TEMPLATE_URL;
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpen = () => setOpenModal(true);
+  const { value: openModal, handleOpen, handleClose: toggleHandlerClose } = useToggle();
   const handleClose = () => {
     handleDelete();
-    setOpenModal(false);
+    toggleHandlerClose();
   };
 
   const [file, setFile] = useState();
