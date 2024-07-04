@@ -1,13 +1,16 @@
 import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { useState } from 'react';
+import { useToggle } from 'src/common/hooks';
 import { BpTextField } from './BpTextField';
 
 export const BpPasswordField = props => {
-  const [isVisible, setVisibility] = useState(false);
-
-  const handleToggle = () => setVisibility(e => !e);
+  const { value: isVisible, toggleValue: toggleVisibility } = useToggle();
 
   return (
-    <BpTextField {...props} type={isVisible ? 'text' : 'password'} onClickOnIcon={handleToggle} icon={isVisible ? <VisibilityOffIcon /> : <VisibilityIcon />} />
+    <BpTextField
+      {...props}
+      type={isVisible ? 'text' : 'password'}
+      onClickOnIcon={toggleVisibility}
+      icon={isVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+    />
   );
 };

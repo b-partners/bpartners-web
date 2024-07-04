@@ -1,20 +1,17 @@
 import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useToggle } from 'src/common/hooks';
 import { getCached } from 'src/providers/cache';
 import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {
   const user = getCached.user();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const { value: isOpen, handleClose, handleOpen } = useToggle();
 
   const idVerified = user && user.idVerified;
 
   useEffect(() => {
-    !idVerified && setIsOpen(true);
+    !idVerified && handleOpen();
   }, [idVerified]);
 
   return (

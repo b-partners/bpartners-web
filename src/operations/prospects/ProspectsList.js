@@ -4,18 +4,20 @@ import { useState } from 'react';
 import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+
 import ListComponent from 'src/common/components/ListComponent';
 import TabPanel from 'src/common/components/TabPanel';
 import { ProspectContextProvider } from 'src/common/store/prospect-store';
-import { annotatorProvider } from 'src/providers/annotator-provider';
-import { v4 as uuidv4 } from 'uuid';
-import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
-import { getFileUrl, handleSubmit } from '../../common/utils';
-import { clearPolygons, getCached, prospectingProvider } from '../../providers';
 import { ProspectDialog, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
+
+import { annotatorProvider } from 'src/providers/annotator-provider';
+import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
+import { getFileUrl, handleSubmit } from '../../common/utils';
+import { clearPolygons, getCached, prospectingProvider } from '../../providers';
 
 const ProspectsList = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -41,6 +43,7 @@ const ProspectsList = () => {
     const newURL = `${location.pathname}?${searchParams.toString()}`;
     window.history.pushState({}, '', newURL);
   };
+
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
     updateURLWithTab(newTabIndex);
