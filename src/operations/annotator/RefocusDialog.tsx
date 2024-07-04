@@ -1,16 +1,14 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { useTranslate } from 'react-admin';
 import { BPButton } from 'src/common/components/BPButton';
+import { useToggle } from 'src/common/hooks';
 import { REFOCUS_BUTTON } from './style';
 import { RefocusDialogProps } from './types';
 
 export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, disabled }) => {
-  const [isOpen, setOpen] = useState(false);
+  const { value: isOpen, handleClose, handleOpen } = useToggle();
   const translate = useTranslate();
-
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
 
   const handleAccept = () => {
     onAccept();

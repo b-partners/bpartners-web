@@ -13,6 +13,7 @@ const ProspectsAdministration = () => {
   useEffect(() => {
     setTokenValid(isExhalationPassed());
   }, []);
+
   const isExhalationPassed = () => {
     const expirationTime = localStorage.getItem('expiredAt_validationToken_googleSheet');
     const currentTime = new Date();
