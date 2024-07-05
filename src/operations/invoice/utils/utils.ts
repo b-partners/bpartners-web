@@ -3,8 +3,7 @@ import { ContentState, convertFromHTML, EditorState } from 'draft-js';
 import { printError } from 'src/common/utils';
 import { getCached } from 'src/providers/cache';
 import { formatDate, getFilenameMeta, getFileUrl } from '../../../common/utils';
-import { InvoiceStatusFR } from '../../../constants';
-import { PaymentRegulationStatusFR } from '../../../constants/payment-regulation-status';
+import { InvoiceStatusFR, PaymentRegulationStatusFR } from '../../../constants';
 
 /**
  * **INVOICE**
@@ -121,14 +120,10 @@ export const totalPriceWithoutVatFromProductQuantity = (product: Product): numbe
 export const totalVatFromProductQuantity = (product: Product): number => (product.quantity * product.unitPrice * product.vatPercent) / 100 / 100;
 
 export const totalPriceWithVatFromProducts = (products: Array<Product>): number =>
-  products != null && products.length > 0
-    ? products.map(product => totalPriceWithVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
-    : 0;
+  (products || []).map(product => totalPriceWithVatFromProductQuantity(product)).reduce((acc, price) => acc + price, 0);
 
 export const totalPriceWithoutVatFromProducts = (products: Array<Product>): number =>
-  products != null && products.length > 0
-    ? products.map(product => totalPriceWithoutVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
-    : 0;
+  (products || []).map(product => totalPriceWithoutVatFromProductQuantity(product)).reduce((acc, price) => acc + price, 0);
 
 type InvoiceStatusLabel = keyof typeof InvoiceStatus;
 
