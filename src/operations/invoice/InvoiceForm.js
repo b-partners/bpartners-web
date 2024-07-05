@@ -1,37 +1,36 @@
+import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
 import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
 import { debounce } from '@mui/material/utils';
+import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BPButton } from '../../common/components/BPButton';
+import { BPButton, BpFormField } from 'src/common/components';
+import { AnnotationInfo } from '../annotator/components';
+import { ClientSelection, ProductSelection } from './components';
+
+import BpTextAdornment from 'src/common/components/BpTextAdornment';
+import { useToggle } from 'src/common/hooks';
+import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { handleSubmit, printError } from 'src/common/utils';
+import { customerProvider, invoiceProvider } from 'src/providers';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
-import { ClientSelection } from './components/ClientSelection';
-import { ProductSelection } from './components/ProductSelection';
-
-import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { CreateInDialogButton } from '@react-admin/ra-form-layout';
-import { BpFormField } from 'src/common/components';
-import BpTextAdornment from 'src/common/components/BpTextAdornment';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { handleSubmit, printError } from 'src/common/utils';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
-import { customerProvider } from 'src/providers';
-import { invoiceProvider } from 'src/providers/invoice-provider';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
-import { AnnotationInfo } from '../annotator/components';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';
 import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
-import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
 import { validateDIPAllowed, validateDPPercent } from './utils';
 import { invoiceMapper } from './utils/invoice-utils';
-import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
+
+import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
+import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import {
   CUSTOMER_NAME,
   DELAY_PENALTY_PERCENT,
@@ -57,9 +56,8 @@ const InvoiceForm = props => {
   const paymentRegulations = form.watch(PAYMENT_REGULATIONS);
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const { returnToListByStatus } = useInvoiceToolContext();
-  const [isOpenCreateInDialogButton, setIsOpenCreateInDialogButton] = useState(true);
+  const { value: isOpenCreateInDialogButton, toggleValue: toggle } = useToggle(true);
   const { polygons, annotations, isAnnotationEmpty } = useRetrievePolygons();
-  const toggle = () => setIsOpenCreateInDialogButton(!isOpenCreateInDialogButton);
 
   const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
