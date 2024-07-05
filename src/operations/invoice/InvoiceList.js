@@ -1,26 +1,31 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Attachment, Check, DriveFileMove, History, TurnRight } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
-import { v4 as uuid } from 'uuid';
-import ListComponent from '../../common/components/ListComponent';
-import Pagination, { pageSize } from '../../common/components/Pagination';
-import TooltipButton from '../../common/components/TooltipButton';
-import { formatDate, parseUrlParams } from '../../common/utils';
-
 import { useEffect } from 'react';
+import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { RaMoneyField } from 'src/common/components';
 import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
 import BPListActions from 'src/common/components/BPListActions';
 import { useAreaPictureFetcher } from 'src/common/fetcher';
 import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoice';
 import { invoiceProvider } from 'src/providers/invoice-provider';
+import { v4 as uuid } from 'uuid';
+import ListComponent from '../../common/components/ListComponent';
+import Pagination, { pageSize } from '../../common/components/Pagination';
+import TooltipButton from '../../common/components/TooltipButton';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { InvoiceButtonToPaid, InvoiceRelaunchHistoryModal, InvoiceRelaunchHistoryShowModal, InvoiceRelaunchModal, InvoiceSearchBar } from './components';
-import { EmptyInvoiceList } from './components/EmptyInvoiceList';
+import { formatDate, parseUrlParams } from '../../common/utils';
+import {
+  EmptyInvoiceList,
+  InvoiceButtonConversion,
+  InvoiceButtonToPaid,
+  InvoiceCreationButton,
+  InvoiceRelaunchHistoryModal,
+  InvoiceRelaunchHistoryShowModal,
+  InvoiceRelaunchModal,
+  InvoiceSearchBar,
+} from './components';
 import FeedbackModal from './components/FeedbackModal';
-import { InvoiceButtonConversion } from './components/InvoiceButtonConversion';
-import { InvoiceCreationButton } from './components/InvoiceCreationButton';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
 
@@ -46,9 +51,7 @@ const InvoiceGridTable = props => {
   const { crupdateInvoice, viewPdf: setPdf } = props;
   const { isLoading } = useListContext();
   const { openModal, setView } = useInvoiceToolContext();
-
   const { mutate: areaPictureFetcher, isLoading: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
-
   const { companyInfo } = useGetAccountHolder();
 
   const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName} ${customer?.firstName}`}</Typography>;
@@ -73,7 +76,11 @@ const InvoiceGridTable = props => {
     }
   };
 
-  return !(isLoading && areaPictureFetcherLoading) ? (
+  if (isLoading && areaPictureFetcherLoading) {
+    return null;
+  }
+
+  return (
     <Datagrid rowClick={editInvoice}>
       <TextField source='ref' label='Référence' />
       <TextField source='title' label='Titre' />
@@ -133,8 +140,6 @@ const InvoiceGridTable = props => {
         label=''
       />
     </Datagrid>
-  ) : (
-    <div></div>
   );
 };
 
@@ -203,11 +208,14 @@ const InvoiceList = props => {
       >
         <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} />
       </List>
-
-      {isOpen && <FeedbackModal />}
-      {isOpen && <InvoiceRelaunchModal />}
-      {isOpen && <InvoiceRelaunchHistoryModal />}
-      {isOpen && <InvoiceRelaunchHistoryShowModal />}
+      {isOpen && (
+        <>
+          <FeedbackModal />
+          <InvoiceRelaunchModal />
+          <InvoiceRelaunchHistoryModal />
+          <InvoiceRelaunchHistoryShowModal />
+        </>
+      )}
     </>
   );
 };
