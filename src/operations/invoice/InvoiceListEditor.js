@@ -3,15 +3,12 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
+import { AnnotationInfo } from '../annotator/components';
+import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
+
 import { printError } from 'src/common/utils';
 import { getInvoicesSummary } from 'src/providers';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
-import { AnnotationInfo } from '../annotator/components';
-import { InvoiceConfirmedPayedTabPanel } from './components';
-import { InvoiceTabPanel } from './components/InvoiceTabPanel';
-import { InvoiceTabs } from './components/InvoiceTabs';
-import { InvoiceToolContextProvider } from './components/InvoiceToolContextProvider';
-import { InvoiceView } from './components/InvoiceView';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
