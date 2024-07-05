@@ -17,6 +17,7 @@ const paymentMethodList: { label: string; value: PaymentMethod }[] = [
   { label: 'Espèces', value: PaymentMethod.CASH },
   { label: 'Virement bancaire', value: PaymentMethod.BANK_TRANSFER },
   { label: 'Chèque', value: PaymentMethod.CHEQUE },
+  { label: 'Carte Bancaire', value: PaymentMethod.CREDIT_CARD },
 ];
 
 export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
