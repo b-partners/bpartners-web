@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react(), viteTsconfigPaths()],
     server: {
-      open: true,
       port: 3000,
     },
   };
