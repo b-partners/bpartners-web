@@ -52,8 +52,9 @@
     "typescript": "^4.9.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "test": "cypress run-ct --spec './**/!(*.it).cy.{js,jsx,tsx}'",
     "it": "cypress run-ct --spec \"src/__tests__/it/*.it.cy.js\" --config video=true",
     "cy:open": "cypress open-ct",
