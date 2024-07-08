@@ -1,5 +1,5 @@
+import { resetPassword } from '@aws-amplify/auth';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
-import { resetPassword } from 'aws-amplify/auth';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BP_BUTTON } from 'src/bp-theme';
