@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
-import { Auth } from 'aws-amplify';
+import { resetPassword } from 'aws-amplify/auth';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BP_BUTTON } from 'src/bp-theme';
@@ -11,7 +11,7 @@ const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
 
   const handleSubmitRequest = formState.handleSubmit(valueForm => {
     setLoading(true);
-    Auth.forgotPassword(valueForm.email)
+    resetPassword(valueForm.email)
       .then(data => {
         // mail envoyé avec succès
         handleDialog(true);

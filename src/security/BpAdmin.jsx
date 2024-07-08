@@ -1,6 +1,6 @@
+import { fetchAuthSession } from '@aws-amplify/auth';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
-import { Auth } from 'aws-amplify';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
@@ -28,8 +28,8 @@ import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsent
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
     try {
-      const session = await Auth.currentSession();
-      const expirationTime = new Date(session.getIdToken().payload.exp * 1000);
+      const session = (await fetchAuthSession()) || {};
+      const expirationTime = new Date(session.tokens?.idToken?.payload?.exp * 1000);
       return expirationTime;
     } catch (error) {
       console.error("Erreur lors de la récupération de la date d'expiration du token :", error);

@@ -1,5 +1,6 @@
+import { fetchAuthSession, signIn, signOut, updatePassword } from '@aws-amplify/auth';
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
-import { Amplify, Auth } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
@@ -18,14 +19,15 @@ const cacheAccounts = async () => {
 };
 
 export const whoami = async (): Promise<any> => {
-  const session = await Auth.currentSession();
-
+  const session = (await fetchAuthSession()) || {};
   const conf = new Configuration();
-  conf.accessToken = session.getIdToken().getJwtToken();
-  if (!session.getIdToken().getJwtToken()) {
+  const accessToken = session.tokens?.idToken?.toString();
+
+  conf.accessToken = accessToken;
+  if (!accessToken) {
     return null;
   }
-  cache.token(session.getIdToken().getJwtToken(), session.getRefreshToken().getToken());
+  cache.token(accessToken, session.tokens?.accessToken.toString());
   if (getCached.whoami()) {
     return getCached.whoami();
   }
@@ -55,8 +57,15 @@ export const authProvider = {
 
   login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<string> => {
     try {
-      const user = await Auth.signIn(username as string, password as string);
-      if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+      const user = await signIn({
+        username: username as string,
+        password: password as string,
+        options: {
+          clientMetadata: clientMetadata as any,
+        },
+      });
+
+      if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
         const encodedUsername = encodeURIComponent(toBase64(username as string));
         const encodedPassword = encodeURIComponent(toBase64(password as string));
         return `/login?${paramIsTemporaryPassword}=true&${paramUsername}=${encodedUsername}&${paramTemporaryPassword}=${encodedPassword}`;
@@ -69,7 +78,7 @@ export const authProvider = {
   },
 
   logout: async (): Promise<void> => {
-    await Auth.signOut();
+    await signOut();
     clearCache();
   },
 
@@ -109,8 +118,8 @@ export const authProvider = {
     const urlParams = new URLSearchParams(queryString);
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
     const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
-    const user = await Auth.signIn(username, temporaryPassword);
-    await Auth.completeNewPassword(user, newPassword, { phone_number: phoneNumber });
+    await signIn({ username, password: temporaryPassword });
+    await updatePassword({ oldPassword: temporaryPassword, newPassword });
     window.location.replace('/');
   },
 };

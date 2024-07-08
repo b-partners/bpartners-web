@@ -1,4 +1,3 @@
-// import { Auth } from 'aws-amplify';
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { redirect } from 'src/common/utils';

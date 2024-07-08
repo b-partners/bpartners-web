@@ -1,5 +1,5 @@
+import { resetPassword } from '@aws-amplify/auth';
 import { Button, CircularProgress, Typography } from '@mui/material';
-import { Auth } from 'aws-amplify';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BP_BUTTON } from 'src/bp-theme';
@@ -13,7 +13,7 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
 
   const handleSubmitConfirmation = formState.handleSubmit(values => {
     setLoading(true);
-    Auth.forgotPasswordSubmit(email, values.resetCode, values.newPassword)
+    resetPassword(email, values.resetCode, values.newPassword)
       .then(data => {
         // La réinitialisation du mot de passe a réussi
         setStepFunc('success');
