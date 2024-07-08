@@ -14,6 +14,7 @@
     "@react-admin/ra-rbac": "^4.1.1",
     "@sentry/react": "^7.94.1",
     "@sentry/tracing": "^7.94.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "aws-amplify": "^5.3.10",
     "axios": "^1.7.2",
     "date-fns-tz": "^2.0.0",
@@ -28,6 +29,8 @@
     "react-pdf": "^5.7.2",
     "recharts": "^2.10.4",
     "uuid": "^9.0.1",
+    "vite": "^5.3.3",
+    "vite-tsconfig-paths": "^4.3.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
