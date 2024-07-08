@@ -2,7 +2,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleto
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.vite';
 import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { useWindowResize } from 'src/common/hooks';
 import { handleSubmit } from 'src/common/utils';

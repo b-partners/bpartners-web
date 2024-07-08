@@ -26,7 +26,7 @@
     "react-admin": "^4.10.2",
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
-    "react-pdf": "^5.7.2",
+    "react-pdf": "^6.0.2",
     "recharts": "^2.10.4",
     "uuid": "^9.0.1",
     "vite": "^5.3.3",

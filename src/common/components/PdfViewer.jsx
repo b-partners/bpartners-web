@@ -1,7 +1,7 @@
 import { DownloadForOffline, Error } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.webpack';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.vite';
 import { HorizontalPagination } from './HorizontalPagination';
 
 import TooltipButton from './TooltipButton';
