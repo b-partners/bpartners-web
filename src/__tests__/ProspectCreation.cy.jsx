@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -56,7 +55,7 @@ describe(specTitle('Prospects'), () => {
       req.reply(req.body);
     }).as('createProspect');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 

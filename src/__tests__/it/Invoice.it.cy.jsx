@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
@@ -12,7 +11,7 @@ describe(specTitle('Invoice'), () => {
 
   it('is created from draft to confirmed', () => {
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="invoice"]').click();
     cy.wait('@getInvoicesSummary', { timeout: 10_000 });

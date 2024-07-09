@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -32,7 +31,7 @@ describe(specTitle('Prospects'), () => {
   it('should render the appropriate button', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
@@ -119,7 +118,7 @@ describe(specTitle('Prospects'), () => {
 
   it('should show empty list', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
@@ -134,7 +133,7 @@ describe(specTitle('Prospects'), () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
     cy.intercept('POST', `/users/${whoami1.user.id}/sheets/oauth2/consent`, redirectionUrl).as('consentGoogleSheet');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="administration-tab"]').click();
 
@@ -152,7 +151,7 @@ describe(specTitle('Prospects'), () => {
       req.reply(accountHolders1[0]);
     }).as('updateProspectingPerimeter');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="configuration-tab"]').click();

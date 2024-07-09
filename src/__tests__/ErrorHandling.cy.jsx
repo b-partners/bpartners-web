@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
@@ -18,7 +17,7 @@ xdescribe(specTitle('Error handling'), () => {
 
   it('Should stay logged after catching an error', () => {
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="account"]').click();
 

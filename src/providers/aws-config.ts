@@ -1,3 +1,4 @@
+import { fetchAuthSession, FetchAuthSessionOptions, resetPassword, signIn, SignInInput, signOut, updatePassword } from '@aws-amplify/auth';
 export const awsConfig = {
   aws_project_region: process.env.REACT_APP_AWS_REGION,
   aws_cognito_region: process.env.REACT_APP_AWS_REGION,
@@ -15,4 +16,12 @@ export const awsConfig = {
     passwordPolicyCharacters: ['REQUIRES_LOWERCASE', 'REQUIRES_UPPERCASE', 'REQUIRES_NUMBERS', 'REQUIRES_SYMBOLS'],
   },
   aws_cognito_verification_mechanisms: ['EMAIL'],
+};
+
+export const awsAuth = {
+  fetchAuthSession: async (options?: FetchAuthSessionOptions) => await fetchAuthSession(options),
+  signIn: async (input: SignInInput) => await signIn(input),
+  signOut,
+  updatePassword,
+  resetPassword,
 };

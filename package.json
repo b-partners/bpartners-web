@@ -1,6 +1,7 @@
 {
   "name": "bpartners-web",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@bpartners/annotator-component": "^0.11.1",
     "@bpartners/typescript-client": "^0.50.0",

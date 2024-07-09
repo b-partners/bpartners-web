@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -32,7 +31,7 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
 
   it('When a roofer creates a lead, he is redirected to the /annotator page after generating the image URL', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
     cy.wait('@getProspects');

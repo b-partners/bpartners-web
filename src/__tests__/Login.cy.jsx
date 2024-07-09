@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import LoginSuccessPage from '../security/LoginSuccessPage';
@@ -14,7 +13,7 @@ describe(specTitle('Login'), () => {
   it('Should show signIn and signUp form with validator', () => {
     Cypress.config('requestTimeout', 4000);
     cy.intercept('POST', '/onboarding', []);
-    mount(<App />);
+    cy.mount(<App />);
     cy.contains('Bienvenue !');
     cy.get('#register > .MuiTypography-root').click();
 
@@ -39,14 +38,14 @@ describe(specTitle('Login'), () => {
   });
 
   it('SuccessPage redirects to / on valid code', () => {
-    mount(<LoginSuccessPage />);
+    cy.mount(<LoginSuccessPage />);
     cy.contains('Vous êtes authentifiés !');
     cy.get('@redirect').should('have.been.calledOnce');
   });
 
   it.skip('MainPage redirects to onboarding url', () => {
     // TODO(cognito-signup)
-    mount(<App />);
+    cy.mount(<App />);
     cy.intercept('POST', '/onboardingInitiation', { redirectionUrl: 'https://authUrl.com' }).as('onboardingInitiation');
     cy.get('#register').contains(`Pas de compte ? C'est par ici`);
     cy.get('#register').click();
@@ -55,7 +54,7 @@ describe(specTitle('Login'), () => {
   });
 
   it('Test Login form', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.contains('Votre email');
     cy.get("[name='username']").type('dummy{enter}');
     cy.contains('Ce champ est requis');
@@ -66,7 +65,7 @@ describe(specTitle('Login'), () => {
   });
 
   it('Should show the CGU in a new tab', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.window().then(win => {
       cy.stub(win, 'open').as('windowOpen');
     });

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -28,7 +27,7 @@ describe(specTitle('Import Customers'), () => {
       });
     }).as('importWrongCustomerFile');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
 
@@ -72,7 +71,7 @@ describe(specTitle('Import Customers'), () => {
   it('Import valid clients file', () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/customers/upload`, customers1).as('importValidCustomers');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
 
@@ -103,7 +102,7 @@ describe(specTitle('Import Customers'), () => {
       });
     }).as('errorExportAllCustomers');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.get('[data-testid="export-button-customers"]').click();
@@ -112,7 +111,7 @@ describe(specTitle('Import Customers'), () => {
   it('Export all customers in CSV file', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/customers/export`, exportAllCustomers).as('validExportAllCustomers');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.get('[data-testid="export-button-customers"]').click();

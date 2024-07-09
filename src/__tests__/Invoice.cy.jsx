@@ -38,7 +38,7 @@ describe(specTitle('Invoice'), () => {
     });
     cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
 
-    cy.mount(<App />);
+    cy.cy.mount(<App />);
     cy.wait('@getUser1');
   });
 

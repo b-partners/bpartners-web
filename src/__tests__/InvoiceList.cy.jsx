@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
@@ -39,7 +38,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should show the money in major unit', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.contains('120,00 €');
@@ -47,7 +46,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Search invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     const toSearch = 'test search';
@@ -71,7 +70,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Test pagination', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.contains('invoice-ref-0');
@@ -95,7 +94,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should show the list of invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.contains('invoice-title-0');
@@ -121,7 +120,7 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('getAccountHolder2');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="invoice"]').click();
 
@@ -149,7 +148,7 @@ describe(specTitle('Invoice'), () => {
 
   it('Empty list', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, []);
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
 
     cy.wait('@whoami');

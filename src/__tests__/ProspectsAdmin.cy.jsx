@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -51,7 +50,7 @@ describe(specTitle('Customers'), () => {
     }).as('importProspectsError');
     const errorMessage = 'File(name=spreed Sheet Name test) does not exist or you do not have authorization to read it';
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="administration-tab"]').click();
 
@@ -70,7 +69,7 @@ describe(specTitle('Customers'), () => {
 
   it('should import prospects successfully', () => {
     cy.intercept('POST', `/accountHolders/${accountHolders1[0].id}/prospects/import`, importProspects).as('importProspectsSuccessfully');
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="administration-tab"]').click();
 
@@ -91,7 +90,7 @@ describe(specTitle('Customers'), () => {
     cy.intercept('GET', `/accountHolders?name=Numer`, accountHolders1[0]).as('getAccountHoldersByName');
     cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="administration-tab"]').click();
     cy.contains('Évaluation des prospects');
@@ -129,7 +128,7 @@ describe(specTitle('Customers'), () => {
       'getProspectEvaluationJobDetails'
     );
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('[data-cy="administration-tab"]').click();
 

@@ -1,5 +1,4 @@
-import { fetchAuthSession, signIn } from '@aws-amplify/auth';
-import { authProvider } from '../../src/providers';
+import { authProvider, awsAuth } from '../../src/providers';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
 
@@ -36,8 +35,8 @@ Cypress.Commands.add('cognitoLogin', () => {
   cy.intercept('GET', `/users/**`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
-  cy.stub({ fetchAuthSession }, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
-  cy.stub({ signIn }, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
+  cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
   cy.then(async () => await authProvider.login(loginParams));
 });
 

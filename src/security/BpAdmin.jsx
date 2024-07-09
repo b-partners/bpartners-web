@@ -1,4 +1,3 @@
-import { fetchAuthSession } from '@aws-amplify/auth';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
@@ -22,13 +21,13 @@ import { PartnersPage } from 'src/operations/partners/PartnersPage';
 import products from 'src/operations/products';
 import { prospects } from 'src/operations/prospects';
 import transactions from 'src/operations/transactions';
-import { authProvider, dataProvider } from 'src/providers';
+import { authProvider, awsAuth, dataProvider } from 'src/providers';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
     try {
-      const session = (await fetchAuthSession()) || {};
+      const session = (await awsAuth.fetchAuthSession()) || {};
       const expirationTime = new Date(session.tokens?.idToken?.payload?.exp * 1000);
       return expirationTime;
     } catch (error) {

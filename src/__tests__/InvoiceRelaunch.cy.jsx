@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
@@ -41,7 +40,7 @@ describe(specTitle('Invoice Relaunch'), () => {
   });
 
   it('should display modal to relaunch a quotation', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTabs-flexContainer > :nth-child(2)').click();
     cy.get('[data-testid="relaunch-invoice-PROPOSAL-1-id"]').click();
@@ -57,7 +56,7 @@ describe(specTitle('Invoice Relaunch'), () => {
   });
 
   it('should display modal to relaunch an invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
     cy.get('[data-testid="relaunch-invoice-CONFIRMED-1-id"]').click();
@@ -73,7 +72,7 @@ describe(specTitle('Invoice Relaunch'), () => {
   });
 
   it('should allow user to relaunch an invoice and attach some files and relaunch an invoice', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     // open an invoiceRelaunch modal
     cy.get('[name="invoice"]').click();
@@ -130,7 +129,7 @@ describe(specTitle('Invoice Relaunch'), () => {
   });
 
   it('Show invoice relaunch history', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     // open an invoiceRelaunch modal
     cy.get('[name="invoice"]').click();

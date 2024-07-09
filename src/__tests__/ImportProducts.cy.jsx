@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
@@ -27,7 +26,7 @@ describe(specTitle('Import Products'), () => {
         },
       });
     }).as('importWrongProductsFile');
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
     cy.wait('@getAllProducts');
 
@@ -70,7 +69,7 @@ describe(specTitle('Import Products'), () => {
 
   it('Import valid products file', () => {
     cy.intercept('POST', `/accounts/${accounts1[0].id}/products/upload`, products).as('importValidProductsFile');
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
     cy.wait('@getAllProducts');
 
@@ -102,7 +101,7 @@ describe(specTitle('Import Products'), () => {
       });
     }).as('errorExportAllProducts');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="products"]').click();
     cy.get('[data-testid="export-button-products"]').click();
@@ -111,7 +110,7 @@ describe(specTitle('Import Products'), () => {
   it('Export all products in CSV file', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products/export`, exportAllProducts).as('validExportAllProducts');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="products"]').click();
     cy.get('[data-testid="export-button-products"]').click();

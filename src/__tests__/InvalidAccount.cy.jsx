@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils/redirect';
@@ -28,7 +27,7 @@ describe(specTitle('Validate Account'), () => {
 
   it('should validate account', () => {
     cy.intercept('POST', '/users/mock-user-id1/accounts/mock-account-id1/initiateAccountValidation', validationRedirectionUrl).as('initiateAccountValidation');
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="transactions"]').click();
 

@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
@@ -32,7 +31,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('are displayed', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
     cy.contains('description 1');
     cy.contains('description 2');
@@ -71,7 +70,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should test pagination', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
     cy.contains('description 1');
     cy.contains('description 2');
@@ -86,7 +85,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('should validate empty input', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
 
     cy.wait('@getAccount1');
@@ -105,7 +104,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('should create well-defined product', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="products"]').click();
 
@@ -144,7 +143,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should edit a product', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="products"]').click();
 
@@ -196,7 +195,7 @@ describe(specTitle('Products'), () => {
       });
     }).as('getAccountHolder2');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="products"]').click();
 
     cy.wait('@getAccount1');
@@ -214,7 +213,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should exit of the edit or create node on click on the close button', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="products"]').click();
 
@@ -234,7 +233,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should archive product', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="products"]').click();
 

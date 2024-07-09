@@ -1,4 +1,4 @@
-import { resetPassword } from '@aws-amplify/auth';
+import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -11,7 +11,8 @@ const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
 
   const handleSubmitRequest = formState.handleSubmit(valueForm => {
     setLoading(true);
-    resetPassword(valueForm.email)
+    awsAuth
+      .resetPassword(valueForm.email)
       .then(data => {
         // mail envoyé avec succès
         handleDialog(true);

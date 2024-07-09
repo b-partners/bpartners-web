@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -27,7 +26,7 @@ describe(specTitle('Calendar'), () => {
     cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
     cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get("[name='calendar']").click();
     cy.contains(
       "Il semble que c'est la première fois que vous utilisez BPartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV."
@@ -53,7 +52,7 @@ describe(specTitle('Calendar'), () => {
     cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
     cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get("[name='calendar']").click();
     cy.contains(
       'Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV.'
@@ -80,7 +79,7 @@ describe(specTitle('Calendar'), () => {
     cy.intercept('GET', '/users/mock-user-id1/calendars', calendars).as('getAllCalendars');
     cy.intercept('GET', '/users/mock-user-id1/calendars/holydays-calendar-id/events**', calendarEvents).as('getAllCalendarEvents');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get("[name='calendar']").click();
     cy.contains("Aujourd'hui");
     cy.contains('Mois');

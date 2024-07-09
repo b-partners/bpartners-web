@@ -1,4 +1,4 @@
-import { resetPassword } from '@aws-amplify/auth';
+import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -13,7 +13,8 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
 
   const handleSubmitConfirmation = formState.handleSubmit(values => {
     setLoading(true);
-    resetPassword(email, values.resetCode, values.newPassword)
+    awsAuth
+      .resetPassword(email, values.resetCode, values.newPassword)
       .then(data => {
         // La réinitialisation du mot de passe a réussi
         setStepFunc('success');
@@ -36,7 +37,6 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
           <BpNumberField label='Code de confirmation' name='resetCode' />
           <BpFormField label='Nouveau mot de passe' type='password' name='newPassword' />
           <BpFormField label='Confirmez le mot de passe' type='password' name='confirmedPassword' />
-
           <Button
             mt={2}
             sx={BP_BUTTON}

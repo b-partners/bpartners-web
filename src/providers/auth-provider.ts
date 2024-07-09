@@ -1,10 +1,9 @@
-import { fetchAuthSession, signIn, signOut, updatePassword } from '@aws-amplify/auth';
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
 import loginRedirectionUrls from 'src/security/login-redirection-urls';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
-import { awsConfig } from './aws-config';
+import { awsAuth, awsConfig } from './aws-config';
 import { cache, clearCache, getCached } from './cache';
 import { profileProvider } from './profile-provider';
 
@@ -19,7 +18,7 @@ const cacheAccounts = async () => {
 };
 
 export const whoami = async (): Promise<any> => {
-  const session = (await fetchAuthSession()) || {};
+  const session = (await awsAuth.fetchAuthSession()) || {};
   const conf = new Configuration();
   const accessToken = session.tokens?.idToken?.toString();
 
@@ -57,7 +56,7 @@ export const authProvider = {
 
   login: async ({ username, password, clientMetadata }: Record<string, any>): Promise<string> => {
     try {
-      const user = await signIn({
+      const user = await awsAuth.signIn({
         username: username as string,
         password: password as string,
         options: {
@@ -78,7 +77,7 @@ export const authProvider = {
   },
 
   logout: async (): Promise<void> => {
-    await signOut();
+    await awsAuth.signOut();
     clearCache();
   },
 
@@ -118,8 +117,8 @@ export const authProvider = {
     const urlParams = new URLSearchParams(queryString);
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
     const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
-    await signIn({ username, password: temporaryPassword });
-    await updatePassword({ oldPassword: temporaryPassword, newPassword });
+    await awsAuth.signIn({ username, password: temporaryPassword });
+    await awsAuth.updatePassword({ oldPassword: temporaryPassword, newPassword });
     window.location.replace('/');
   },
 };

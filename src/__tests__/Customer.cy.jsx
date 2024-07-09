@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import * as Redirect from '../common/utils';
@@ -43,7 +42,7 @@ describe(specTitle('Customers'), () => {
       req.reply([customers2[3]]);
     }).as('modifyCustomers');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
 
@@ -80,7 +79,7 @@ describe(specTitle('Customers'), () => {
     /* test à faire :
       - au edit d'un client "PROFESSIONNEL", vérifier que le champ "name" existe
     */
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
     cy.contains('Email');
@@ -133,7 +132,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('Should archive customer', () => {
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="customers"]').click();
 
@@ -171,7 +170,7 @@ describe(specTitle('Customers'), () => {
   });
 
   it('Should display customer list', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="customers"]').click();
 

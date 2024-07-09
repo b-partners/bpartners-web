@@ -1,5 +1,4 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
@@ -42,7 +41,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('[data-testid="open-popover"]').click();
 
@@ -65,7 +64,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('[data-testid="open-popover"]').click();
 
@@ -161,7 +160,7 @@ describe(specTitle('Invoice creation'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('[data-testid="open-popover"]').click();
 
@@ -209,7 +208,7 @@ describe(specTitle('Invoice creation'), () => {
       req.reply([customers2[12]]);
     }).as('createCustomer');
 
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('[data-testid="open-popover"]').click();
 
@@ -253,7 +252,7 @@ describe(specTitle('Invoice creation'), () => {
       req.reply(newProduct);
     }).as('createNewProduct');
 
-    mount(<App />);
+    cy.mount(<App />);
 
     cy.get('[name="invoice"]').click();
 

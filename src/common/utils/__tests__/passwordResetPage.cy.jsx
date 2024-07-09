@@ -1,10 +1,9 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import PasswordResetPage from 'src/security/PasswordReset/PasswordResetPage';
 
 describe(specTitle('password reset page'), () => {
   it('be able to reset the password', () => {
-    mount(<PasswordResetPage />);
+    cy.mount(<PasswordResetPage />);
     cy.contains('Mot de passe oublié ?');
     cy.get("input[name='email']").type('{enter}');
     cy.contains('Ce champ est requis');

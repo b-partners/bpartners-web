@@ -1,4 +1,3 @@
-import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
@@ -17,7 +16,7 @@ describe(specTitle('administration tab not present for non admin users in prospe
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
   });
   it('should not display evaluation prospects section', () => {
-    mount(<App />);
+    cy.mount(<App />);
     cy.get('[name="prospects"]').click();
     cy.get('#closeWarning').click();
     cy.get('[data-cy="administration-tab"]').should('not.exist');
