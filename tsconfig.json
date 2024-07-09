@@ -18,6 +18,9 @@
     "lib": ["dom", "dom.iterable", "esnext"],    
     "target": "ESNext",    
     "types": ["vite/client", "cypress", "node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
   },
   "include": ["src", "cypress"],
 }

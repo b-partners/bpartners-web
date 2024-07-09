@@ -1,7 +1,7 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
-import App from '../../App';
+import App from '../@/App';
 
 describe(specTitle('Products'), () => {
   beforeEach(() => {

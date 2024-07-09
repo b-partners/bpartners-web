@@ -1,7 +1,7 @@
 import { mount } from '@cypress/react';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
-import App from '../App';
+import App from '@/App';
 
 import * as Redirect from 'src/common/utils';
 import { account1, account2, accountHolders1, accounts1, businessActivities } from './mocks/responses/account-api';
