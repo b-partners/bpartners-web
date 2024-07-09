@@ -53,9 +53,9 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "cypress run-ct --spec './**/!(*.it).cy.{js,jsx,tsx}'",
-    "it": "cypress run-ct --spec \"src/__tests__/it/*.it.cy.js\" --config video=true",
-    "cy:open": "cypress open-ct",
+    "test": "cypress run --spec './**/!(*.it).cy.{js,jsx,tsx}'",
+    "it": "cypress run --spec \"src/__tests__/it/*.it.cy.js\" --config video=true",
+    "cy:open": "cypress open --component",
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\""
