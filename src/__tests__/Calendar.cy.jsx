@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import * as Redirect from '../common/utils';
+import { redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -12,7 +12,7 @@ describe(specTitle('Calendar'), () => {
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
 
-    cy.stub(Redirect, 'redirect').as('redirect');
+    cy.stub({ redirect }, 'redirect').as('redirect');
     cy.window().then(win => {
       cy.stub(win, 'open').as('windowOpen');
     });

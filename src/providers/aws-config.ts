@@ -19,8 +19,8 @@ export const awsConfig = {
 };
 
 export const awsAuth = {
-  fetchAuthSession: async (options?: FetchAuthSessionOptions) => await fetchAuthSession(options),
-  signIn: async (input: SignInInput) => await signIn(input),
+  fetchAuthSession,
+  signIn,
   signOut,
   updatePassword,
   resetPassword,

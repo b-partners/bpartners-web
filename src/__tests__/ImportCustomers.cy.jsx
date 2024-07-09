@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import * as Redirect from '../common/utils';
+import { redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1, exportAllCustomers } from './mocks/responses/customer-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -14,7 +14,7 @@ describe(specTitle('Import Customers'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
 
-    cy.stub(Redirect, 'redirect').as('redirect');
+    cy.stub({ redirect }, 'redirect').as('redirect');
   });
 
   it('Import wrong clients file', () => {

@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import * as Redirect from '../common/utils';
+import { redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1, customers2, getCustomers, setCustomer } from './mocks/responses/customer-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -22,7 +22,7 @@ describe(specTitle('Customers'), () => {
     cy.intercept('POST', '/accounts/mock-account-id1/customers**', [customers1[0]]).as('createCustomers');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/customers/status`, [customers1[0]]).as('archiveCustomer');
 
-    cy.stub(Redirect, 'redirect').as('redirect');
+    cy.stub({ redirect }, 'redirect').as('redirect');
   });
 
   it('Should create customer', () => {

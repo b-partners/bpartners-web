@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import * as Redirect from '../common/utils/redirect';
+import { redirect } from '../common/utils/redirect';
 import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
 import { transactions, transactionsSummary } from './mocks/responses/paying-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -12,7 +12,7 @@ describe(specTitle('Validate Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
-    cy.stub(Redirect, 'redirect').as('redirect');
+    cy.stub({ redirect }, 'redirect').as('redirect');
 
     cy.intercept('GET', '/accounts/mock-account-id1/**', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');

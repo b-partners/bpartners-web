@@ -3,11 +3,11 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import App from 'src/App';
-import * as Redirect from '../common/utils';
+import { redirect } from '../common/utils';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {
-    cy.stub(Redirect, 'redirect').as('redirect');
+    cy.stub({ redirect }, 'redirect').as('redirect');
   });
 
   it('Should show signIn and signUp form with validator', () => {
