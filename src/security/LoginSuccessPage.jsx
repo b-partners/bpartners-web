@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { getUrlParams, redirect } from '../common/utils';
+import { getUrlParams, Redirect } from '../common/utils';
 import loginRedirectionUrls from './login-redirection-urls';
 
 import { printError } from 'src/common/utils';
@@ -15,7 +15,7 @@ const LoginSuccessPage = () => {
       const code = getUrlParams(window.location.search, 'code');
       await authProvider.login({ username: null, password: code, clientMetadata: { redirectionStatusUrls: loginRedirectionUrls } });
       let timeoutId = setTimeout(() => {
-        redirect(window.location.origin);
+        Redirect.toURL(window.location.origin);
         clearTimeout(timeoutId);
       }, 3000);
     }

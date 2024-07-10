@@ -2,7 +2,7 @@ import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material'
 import { useState } from 'react';
 import { useTranslate } from 'react-admin';
 import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
-import { redirect } from 'src/common/utils';
+import { Redirect } from 'src/common/utils';
 import { dataProvider } from 'src/providers';
 import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
@@ -15,7 +15,7 @@ export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId:
   const oauth2Init = async () => {
     setLoading(true);
     dataProvider.oauth2Init('calendar', currentCalendarId).then(({ data: { redirectionUrl } }) => {
-      redirect(redirectionUrl);
+      Redirect.toURL(redirectionUrl);
     });
   };
   const handleCheck = () => setChecked(!checked);

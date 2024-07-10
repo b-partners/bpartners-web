@@ -1,6 +1,6 @@
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { redirect } from 'src/common/utils';
+import { Redirect } from 'src/common/utils';
 import { DialogResetCodeSent } from './components/DialogResetCodeSent';
 import PasswordResetConfirmationLayout from './components/PasswordResetConfirmationLayout';
 import PasswordResetRequestLayout from './components/PasswordResetRequestLayout';
@@ -21,7 +21,7 @@ const PasswordResetPage = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (step === 'success') {
-        redirect('/login');
+        Redirect.toURL('/login');
       }
       return () => {
         clearTimeout(timeoutId);
@@ -39,7 +39,7 @@ const PasswordResetPage = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: '10%' }}>
           <Typography variant='h6'>
             Votre mot de passe a été réinitialisé avec succès ! Vous pouvez maintenant{' '}
-            <Button id='redirect-button-to-login' sx={{ fontWeight: 'bold' }} variant='text' onClick={() => redirect('/login')}>
+            <Button id='redirect-button-to-login' sx={{ fontWeight: 'bold' }} variant='text' onClick={() => Redirect.toURL('/login')}>
               vous connecter
             </Button>{' '}
             avec votre nouveau mot de passe.

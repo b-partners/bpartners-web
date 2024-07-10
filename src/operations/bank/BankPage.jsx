@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { handleSubmit, printError, redirect } from 'src/common/utils';
+import { handleSubmit, printError, Redirect } from 'src/common/utils';
 import { accountProvider, bankProvider, getCached } from 'src/providers';
 import AccountConfig from './AccountConfig';
 import { BankInformationForm } from './BankInformationForm';
@@ -51,7 +51,7 @@ const NoBank = ({ aside }) => {
     const fetch = async () => {
       setLoading(true);
       const redirectionUrl = await bankProvider.initiateConnection();
-      redirect(redirectionUrl.redirectionUrl);
+      Redirect.toURL(redirectionUrl.redirectionUrl);
     };
     fetch().catch(printError);
   };

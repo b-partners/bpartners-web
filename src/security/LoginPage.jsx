@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -61,7 +61,7 @@ const SignInForm = ({ onSignUp }) => {
   const login = formState.handleSubmit(async loginState => {
     setLoading(true);
     const redirectionUrl = await authProvider.login(loginState);
-    redirect(redirectionUrl);
+    Redirect.toURL(redirectionUrl);
   });
 
   return (

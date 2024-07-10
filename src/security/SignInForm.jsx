@@ -6,7 +6,7 @@ import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
 import { authProvider } from 'src/providers';
 import { BP_COLOR } from '../bp-theme';
 import { BpFormField } from '../common/components';
-import { handleSubmit, redirect } from '../common/utils';
+import { handleSubmit, Redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
 import DownloadAppBanner from './DownloadAppBanner';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
@@ -19,7 +19,7 @@ const SignInForm = () => {
   const login = formState.handleSubmit(async loginState => {
     setLoading(true);
     const redirectionUrl = await authProvider.login(loginState);
-    redirect(redirectionUrl);
+    Redirect.toURL(redirectionUrl);
   });
 
   const navigate = useNavigate();

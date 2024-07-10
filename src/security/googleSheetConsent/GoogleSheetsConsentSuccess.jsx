@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useLocation } from 'react-router-dom';
 import { BP_COLOR } from 'src/bp-theme.js';
-import { redirect } from 'src/common/utils/redirect';
+import { Redirect } from 'src/common/utils';
 import { sheetProvider } from 'src/providers/sheet-provider';
 
 const GoogleSheetsConsentSuccess = () => {
@@ -31,7 +31,7 @@ const GoogleSheetsConsentSuccess = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      redirect('/prospects?tab=administration');
+      Redirect.toURL('/prospects?tab=administration');
 
       return () => {
         clearTimeout(timeoutId);

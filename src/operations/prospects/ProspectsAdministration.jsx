@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { redirect } from 'src/common/utils';
+import { Redirect } from 'src/common/utils';
 import { sheetProvider } from 'src/providers/sheet-provider';
 import EvaluateProspects from './components/EvaluateProspects';
 import ImportProspects from './components/ImportProspects';
@@ -25,7 +25,7 @@ const ProspectsAdministration = () => {
     try {
       const response = await sheetProvider.oauth2Init();
       if (response) {
-        redirect(response.redirectionUrl);
+        Redirect.toURL(response.redirectionUrl);
       }
     } catch (error) {
       notify('Une erreur est survenue au moment de la redirection.', { type: 'warning' });

@@ -7,7 +7,7 @@ import bpLogo from '../../assets/bp-logo-full.webp';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 import { printError } from '../utils';
-import { redirect } from '../utils/redirect';
+import { Redirect } from '../utils';
 import { ShortWarning } from './BPBetaTestWarning';
 import BPDialog from './BPDialog';
 
@@ -71,7 +71,7 @@ const BPAppBar = () => {
   const accountValidation = async () => {
     try {
       const redirectionUrl = (await initiateAccountValidation()).redirectionUrl;
-      redirect(redirectionUrl);
+      Redirect.toURL(redirectionUrl);
     } catch (err) {
       notify('Une erreur est survenue au moment de la redirection.', { type: 'warning' });
     }
