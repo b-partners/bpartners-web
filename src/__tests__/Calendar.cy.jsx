@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -12,7 +12,7 @@ describe(specTitle('Calendar'), () => {
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
     cy.window().then(win => {
       cy.stub(win, 'open').as('windowOpen');
     });
@@ -39,7 +39,7 @@ describe(specTitle('Calendar'), () => {
     cy.contains('Connecter le calendrier Google').should('be.disabled');
     cy.get('[data-testid="control-cgs"]').click();
     cy.contains('Connecter le calendrier Google').click();
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
 
     cy.intercept('GET', '/users/mock-user-id1/calendars', calendars);
   });
@@ -69,7 +69,7 @@ describe(specTitle('Calendar'), () => {
     cy.contains('Connecter le calendrier Google').should('be.disabled');
     cy.get('[data-testid="control-cgs"]').click();
     cy.contains('Connecter le calendrier Google').click();
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
   });
 
   it('Should test calendar', () => {

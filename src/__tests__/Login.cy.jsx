@@ -3,11 +3,11 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import App from 'src/App';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('Should show signIn and signUp form with validator', () => {
@@ -40,7 +40,7 @@ describe(specTitle('Login'), () => {
   it('SuccessPage redirects to / on valid code', () => {
     cy.mount(<LoginSuccessPage />);
     cy.contains('Vous êtes authentifiés !');
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
   });
 
   it.skip('MainPage redirects to onboarding url', () => {
@@ -50,7 +50,7 @@ describe(specTitle('Login'), () => {
     cy.get('#register').contains(`Pas de compte ? C'est par ici`);
     cy.get('#register').click();
     cy.wait('@onboardingInitiation');
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
   });
 
   it('Test Login form', () => {

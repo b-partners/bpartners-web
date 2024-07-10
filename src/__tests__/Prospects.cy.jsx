@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { prospects } from './mocks/responses/prospects-api';
@@ -25,7 +25,7 @@ describe(specTitle('Prospects'), () => {
       );
     });
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('should render the appropriate button', () => {
@@ -140,7 +140,7 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Vous devez vous connecter à Google sheets pour importer ou évaluer des prospects');
     cy.get('[data-cy="evaluate-prospect"]').click();
 
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
   });
 
   it('change prospecting perimeter', () => {

@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect, reload } from '../common/utils';
+import { Redirect, reload } from '../common/utils';
 import {
   accountHolders1,
   accounts1,
@@ -41,7 +41,7 @@ describe(specTitle('Prospects'), () => {
       );
     });
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
     cy.stub({ reload }, 'reload').as('reload');
   });
 

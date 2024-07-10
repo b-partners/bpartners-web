@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect } from '../common/utils/redirect';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
 import { transactions, transactionsSummary } from './mocks/responses/paying-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -12,7 +12,7 @@ describe(specTitle('Validate Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
 
     cy.intercept('GET', '/accounts/mock-account-id1/**', transactions).as('getTransactions');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
@@ -36,6 +36,6 @@ describe(specTitle('Validate Account'), () => {
     cy.contains('Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.');
 
     cy.get('[data-testid="dialog-btn"]').click();
-    cy.get('@redirect').should('have.been.calledOnce');
+    cy.get('@toURL').should('have.been.calledOnce');
   });
 });

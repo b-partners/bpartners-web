@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { evaluationJobDetails, evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
 import { importProspects } from './mocks/responses/import-prospects-api';
@@ -36,7 +36,7 @@ describe(specTitle('Customers'), () => {
     futureExpirationDate.setMinutes(futureExpirationDate.getMinutes() + 30);
     cy.window().its('localStorage').invoke('setItem', 'expiredAt_validationToken_googleSheet', futureExpirationDate.toISOString());
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('should trigger an error during prospects import', () => {

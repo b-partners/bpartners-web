@@ -1,7 +1,7 @@
 import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
 import { contactedProspect, convertedProspect, prospects } from './mocks/responses/prospects-api';
@@ -25,7 +25,7 @@ describe(specTitle('Prospects'), () => {
       );
     });
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('should change status of a prospect', () => {

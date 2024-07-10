@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from 'src/App';
-import { redirect } from '../common/utils';
+import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { areaPictures } from './mocks/responses/area-pictures';
 import { getInvoices } from './mocks/responses/invoices-api';
@@ -26,7 +26,7 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
       );
     });
 
-    cy.stub({ redirect }, 'redirect').as('redirect');
+    cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('When a roofer creates a lead, he is redirected to the /annotator page after generating the image URL', () => {
