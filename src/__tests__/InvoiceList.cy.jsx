@@ -22,7 +22,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -55,7 +55,7 @@ describe(specTitle('Invoice'), () => {
     cy.get("[data-testid='invoice-search-bar'] input").type(toSearch);
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page, filters } = req.query;
+      const { pageSize, statusList = '', page, filters } = req.query;
       expect(filters).eq(expectedQuery);
       req.reply(
         getInvoices(

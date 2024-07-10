@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { areaPictureAnnotation, areaPictures } from './mocks/responses/area-pictures';
+import { areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, getInvoices, invoicesSummary, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
@@ -23,7 +23,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -38,7 +38,7 @@ describe(specTitle('Invoice'), () => {
     });
     cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
 
-    cy.cy.mount(<App />);
+    cy.mount(<App />);
     cy.wait('@getUser1');
   });
 
@@ -178,7 +178,7 @@ describe(specTitle('Invoice'), () => {
     });
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -188,7 +188,7 @@ describe(specTitle('Invoice'), () => {
       );
     });
     cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/${areaPictures.id}`, areaPictures).as('getAreaByPictureId');
-    cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, [areaPictureAnnotation]).as('getAreaPictureAnnotation');
+    cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, []).as('getAreaPictureAnnotation');
 
     cy.get('[name="invoice"]').click();
     cy.wait('@getAccount1');

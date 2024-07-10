@@ -28,7 +28,7 @@ describe(specTitle('Invoice Relaunch'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/invoices/*/relaunches**', [invoiceRelaunchHistory]);
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,

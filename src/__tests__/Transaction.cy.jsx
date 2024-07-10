@@ -183,7 +183,7 @@ describe(specTitle('Transactions'), () => {
     });
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -225,9 +225,9 @@ describe(specTitle('Transactions'), () => {
     cy.readFile('cypress/fixtures/test_image.jpg', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=TRANSACTION_SUPPORTING_DOCS`, document);
     });
-    cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions', transactions).as('getTransactions5');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -242,8 +242,6 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/transactions**', newTransaction).as('getTransactionsWithSupportingDoc');
     cy.mount(<App />);
     cy.get('[name="transactions"]').click();
-
-    cy.get('#categorized').click();
 
     cy.wait('@legalFiles');
 

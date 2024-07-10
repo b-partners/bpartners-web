@@ -15,7 +15,7 @@ describe(specTitle('Prospects.Actions'), () => {
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,

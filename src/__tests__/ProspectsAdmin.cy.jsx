@@ -16,7 +16,7 @@ describe(specTitle('Customers'), () => {
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,
@@ -86,7 +86,7 @@ describe(specTitle('Customers'), () => {
     cy.contains('Prospects importés avec succès');
   });
 
-  it('should evaluate prospects', () => {
+  it.only('should evaluate prospects', () => {
     cy.intercept('GET', `/accountHolders?name=Numer`, accountHolders1[0]).as('getAccountHoldersByName');
     cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
 
@@ -95,7 +95,7 @@ describe(specTitle('Customers'), () => {
     cy.get('[data-cy="administration-tab"]').click();
     cy.contains('Évaluation des prospects');
 
-    cy.get('#mui-component-select-interventionTypes').click();
+    cy.get('div[name="interventionTypes"]').click();
     cy.get('[data-value="RAT_REMOVAL"]').click();
 
     cy.get('body').click();

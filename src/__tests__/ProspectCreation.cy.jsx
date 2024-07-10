@@ -31,7 +31,7 @@ describe(specTitle('Prospects'), () => {
       'getAddressImage'
     );
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList, page } = req.query;
+      const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
           page - 1,

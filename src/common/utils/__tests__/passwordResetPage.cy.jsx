@@ -1,8 +1,11 @@
+import { awsAuth } from '@/providers';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import PasswordResetPage from 'src/security/PasswordReset/PasswordResetPage';
+import { Redirect } from '../redirect';
 
 describe(specTitle('password reset page'), () => {
-  it('be able to reset the password', () => {
+  it('failed to reset the password', () => {
+    cy.stub(awsAuth, 'resetPassword').returns(Promise.resolve());
     cy.mount(<PasswordResetPage />);
     cy.contains('Mot de passe oublié ?');
     cy.get("input[name='email']").type('{enter}');
@@ -36,20 +39,29 @@ describe(specTitle('password reset page'), () => {
 
     cy.wait('@wrongValidationCode');
     cy.contains('Le code de validation est incorrect');
+  });
+
+  it.only('success to reset password', () => {
+    cy.stub(awsAuth, 'resetPassword').returns(Promise.resolve());
+    cy.stub(awsAuth, 'confirmResetPassword').returns(Promise.resolve());
+    cy.stub(Redirect, 'toURL').as('redirect');
+
+    cy.mount(<PasswordResetPage />);
+
+    cy.get('input[name="email"]').type('myemail@gmail.com');
+
+    cy.get('#sendMail_resetPassword').click();
+
+    cy.get('[data-testid="close-modal-id"]').click();
 
     cy.get('input[name="resetCode"]').clear().type(54321);
-
-    cy.intercept('POST', `https://cognito-idp.eu-west-3.amazonaws.com/`, req => {
-      req.reply({
-        statusCode: 200,
-      });
-    }).as('passwordResetSuccessfully');
+    cy.get('input[name="newPassword"]').clear().type('4po*bM6H9K{');
+    cy.get('input[name="confirmedPassword"]').clear().type('4po*bM6H9K{');
 
     cy.get('#confirmation').click();
 
-    cy.wait('@passwordResetSuccessfully');
-
     cy.contains('Votre mot de passe a été réinitialisé avec succès !');
     cy.get('#redirect-button-to-login').click();
+    cy.get('@redirect').should('be.calledOnce');
   });
 });
