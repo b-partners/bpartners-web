@@ -7,7 +7,7 @@ import { VerticalPagination } from 'src/common/components/VerticalPagination';
 import { useWindowResize } from 'src/common/hooks';
 import { handleSubmit } from 'src/common/utils';
 import { EmptyList } from '../../common/components/EmptyList';
-import { reload } from '../../common/utils';
+import { Reload } from '../../common/utils';
 import { authProvider, cache, userAccountsApi } from '../../providers';
 import { DIALOG_CONTENT, LEGAL_FILE_TITLE, VERTICAL_PAGINATION } from './style';
 
@@ -60,7 +60,7 @@ export const GeneralConditionOfUse = () => {
       setLoading(true);
       await approveLegalFile();
 
-      activeLfIndex === legalFiles.length - 1 ? reload() : setActiveLfIndex(prevActiveLf => prevActiveLf + 1);
+      activeLfIndex === legalFiles.length - 1 ? Reload.force() : setActiveLfIndex(prevActiveLf => prevActiveLf + 1);
     } catch (e) {
       notify('messages.global.error', { type: 'error' });
     } finally {
