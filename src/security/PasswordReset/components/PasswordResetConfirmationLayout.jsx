@@ -13,8 +13,9 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
 
   const handleSubmitConfirmation = formState.handleSubmit(values => {
     setLoading(true);
+    const { resetCode, newPassword } = values;
     awsAuth
-      .resetPassword(email, values.resetCode, values.newPassword)
+      .confirmResetPassword({ confirmationCode: resetCode, newPassword, username: email })
       .then(data => {
         // La réinitialisation du mot de passe a réussi
         setStepFunc('success');

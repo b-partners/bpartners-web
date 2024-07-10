@@ -25,7 +25,7 @@ export const DialogProspectJobDetails = () => {
         <DialogContent>
           <Box>
             {!prospectsLengthLoading && prospectJobDetailsList('Nombre de prospects évalués', prospectsLength)}
-            {prospectJobDetailsList('Types intervention', prospectJobDetails?.metadata?.interventionTypes?.replace(/,/g, ', '))}
+            {prospectJobDetailsList(`Types d'intervention`, prospectJobDetails?.metadata?.interventionTypes?.replace(/,/g, ', '))}
             {prospectJobDetailsList('Date', parseRatingLastEvaluation(prospectJobDetails?.startedAt))}
             {prospectJobDetailsList("Type d'infestation", prospectJobDetails?.metadata?.infestationType)}
             {prospectJobDetailsList('Profession', prospectJobDetails?.metadata?.profession)}

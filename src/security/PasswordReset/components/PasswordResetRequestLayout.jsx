@@ -9,19 +9,19 @@ const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
   const [isLoading, setLoading] = useState(false);
   const formState = useForm({ mode: 'all' });
 
-  const handleSubmitRequest = formState.handleSubmit(valueForm => {
+  const handleSubmitRequest = formState.handleSubmit(({ email }) => {
     setLoading(true);
     awsAuth
-      .resetPassword(valueForm.email)
+      .resetPassword({ username: email })
       .then(data => {
         // mail envoyé avec succès
         handleDialog(true);
-        setStepFunc('confirmation', valueForm.email);
+        setStepFunc('confirmation', email);
         setLoading(false);
       })
       .catch(err => {
         setLoading(false);
-        console.log(err);
+        console.log('is this error', err);
       });
   });
 
