@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
-import App from '../@/App';
+import App from '@/App';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
-import App from '../@/App';
+import App from '@/App';
 import { invoicesSummary } from '../mocks/responses/invoices-api';
 
 describe(specTitle('Invoice'), () => {
@@ -23,8 +23,8 @@ describe(specTitle('Invoice'), () => {
 
     const ref = 'it-' + uuid().substring(0, 7);
     const comment = `Test comment for ${ref}`;
-    cy.get('[data-testid="ref-field-input"]').click().clear().type(ref);
-    cy.get('[data-testid="sendingDate-field-input"]').click().clear().type('2023-06-26');
+    cy.get('[data-testid="ref-field-input"] input').click().clear().type(ref);
+    cy.get('[data-testid="sendingDate-field-input"] input').click().clear().type('2023-06-26');
 
     cy.get('[data-testid="autocomplete-backend-for-customer"] input').type('Maurica');
     cy.contains('Maurica Fonenantsoa').click(); // F. Maurica
