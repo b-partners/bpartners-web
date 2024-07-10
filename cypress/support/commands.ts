@@ -10,16 +10,8 @@ const sessionStub = {
 };
 
 const cognitoResponse = {
-  signInUserSession: {
-    idToken: {
-      jwtToken: 'dummy',
-    },
-    refreshToken: {
-      token: 'dummy',
-    },
-    accessToken: {
-      jwtToken: 'dummy',
-    },
+  nextStep: {
+    signInStep: '',
   },
 };
 
@@ -37,6 +29,7 @@ Cypress.Commands.add('cognitoLogin', () => {
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
   cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
   cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.stub(authProvider, 'checkAuth').returns(Promise.resolve());
   cy.then(async () => await authProvider.login(loginParams));
 });
 

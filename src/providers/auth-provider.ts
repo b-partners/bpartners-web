@@ -33,6 +33,8 @@ export const whoami = async (): Promise<any> => {
   const securityApi = new SecurityApi(conf);
   const { data } = await securityApi.whoami();
   cache.whoami(data);
+  console.log(getCached.whoami(), 'whoami');
+
   await cacheAccounts();
   return data;
 };
