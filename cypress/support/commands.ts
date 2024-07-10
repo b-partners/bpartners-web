@@ -17,7 +17,7 @@ const cognitoResponse = {
 
 const loginParams = { username: 'dummy', password: 'dummy' };
 
-Cypress.Commands.add('cognitoLogin', () => {
+const mockCognitoLogin = () => {
   /*
       just replace all amplify functions to mock login
       we never call cognito
@@ -31,22 +31,27 @@ Cypress.Commands.add('cognitoLogin', () => {
   cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
   cy.stub(authProvider, 'checkAuth').returns(Promise.resolve());
   cy.then(async () => await authProvider.login(loginParams));
-});
+};
 
-Cypress.Commands.add('realCognitoLogin', () => {
+const realCognitoLogin = () => {
   const loginParams = {
     username: process.env.REACT_APP_IT_USERNAME,
     password: process.env.REACT_APP_IT_PASSWORD,
   };
   cy.then(async () => await authProvider.login(loginParams));
-});
+};
+const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${value}"]${additionalCommand}`);
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      dataCy(value: string): Chainable<JQuery<HTMLElement>>;
-      cognitoLogin(): void;
-      realCognitoLogin(): void;
+      dataCy: typeof dataCy;
+      cognitoLogin: typeof mockCognitoLogin;
+      realCognitoLogin: typeof realCognitoLogin;
     }
   }
 }
+
+Cypress.Commands.add('dataCy', dataCy);
+Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
+Cypress.Commands.add('cognitoLogin', mockCognitoLogin);

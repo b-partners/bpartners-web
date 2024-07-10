@@ -1,6 +1,8 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
+import { cache, clearCache } from '@/providers';
+import { NullableBooleanInput } from 'react-admin';
 import { accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { user2, whoami1 } from './mocks/responses/security-api';
@@ -155,14 +157,10 @@ describe(specTitle('Account'), () => {
     // close company edition
     cy.get('[data-testid="account-Informations sur la société-accordion"]').click();
 
-    cy.get(
-      '.css-1nghgb-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
-    ).click();
+    cy.dataCy('autocomplete-primary').click();
     cy.contains('Armurier').click();
 
-    cy.get(
-      '.css-1hgr5aa-MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root > .MuiAutocomplete-endAdornment > .MuiAutocomplete-popupIndicator > [data-testid="ArrowDropDownIcon"]'
-    ).click();
+    cy.dataCy('autocomplete-secondary').click();
     cy.contains('Barbier').click();
 
     const newAccountHolder = { ...accountHolders1[0] };
@@ -354,6 +352,7 @@ describe(specTitle('Account'), () => {
   });
 
   it('unverified user warning', () => {
+    cache.whoami({ user: user2 });
     cy.intercept('GET', `/users/${whoami1.user.id}`, user2).as('getUser2');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');

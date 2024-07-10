@@ -17,7 +17,7 @@ const CustomAutocomplete = props => {
         loadingText='Chargement...'
         onInputChange={(_e, value) => onChange(name, value)}
         sx={{ width: '45%', ...style }}
-        renderInput={params => <TextField required {...params} label={label} />}
+        renderInput={params => <TextField data-cy={`autocomplete-${name}`} required {...params} label={label} />}
       />
     </Tooltip>
   );

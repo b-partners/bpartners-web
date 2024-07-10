@@ -10,7 +10,7 @@ import { profileProvider } from './profile-provider';
 Amplify.configure(awsConfig);
 
 const cacheAccounts = async () => {
-  // is there is not account or account holder in the local storage,
+  // if there is not account or account holder in the local storage,
   // this function will refetch them otherwise it do nothing
   await accountProvider.getOne();
   await accountHolderProvider.getOne();
@@ -27,13 +27,13 @@ export const whoami = async (): Promise<any> => {
     return null;
   }
   cache.token(accessToken, session.tokens?.accessToken.toString());
-  if (getCached.whoami()) {
+  if (getCached.whoami() && getCached.user()) {
     return getCached.whoami();
   }
+
   const securityApi = new SecurityApi(conf);
   const { data } = await securityApi.whoami();
   cache.whoami(data);
-  console.log(getCached.whoami(), 'whoami');
 
   await cacheAccounts();
   return data;

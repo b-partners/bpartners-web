@@ -5,14 +5,13 @@ import { getCached } from 'src/providers/cache';
 import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {
-  const user = getCached.user();
   const { value: isOpen, handleClose, handleOpen } = useToggle();
 
-  const idVerified = user && user.idVerified;
-
   useEffect(() => {
+    const user = getCached.user();
+    const idVerified = user && user.idVerified;
     !idVerified && handleOpen();
-  }, [idVerified]);
+  }, []);
 
   return (
     <Modal open={isOpen} onClose={handleClose}>
