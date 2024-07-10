@@ -2,7 +2,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
 
-import * as Reload from '../common/utils';
+import { Reload } from '../common/utils';
 import { accountHolders1, accounts1, legalFiles1 } from './mocks/responses/account-api';
 import { products } from './mocks/responses/product-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
@@ -17,7 +17,7 @@ describe(specTitle('General Condition of Use'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/**`, products).as('getAllProducts');
-    cy.stub(Reload, 'reload').as('reload');
+    cy.stub(Reload, 'force').as('reload');
   });
 
   describe('There are unapproved cgu', () => {
