@@ -41,7 +41,7 @@ describe(specTitle('password reset page'), () => {
     cy.contains('Le code de validation est incorrect');
   });
 
-  it.only('success to reset password', () => {
+  it('success to reset password', () => {
     cy.stub(awsAuth, 'resetPassword').returns(Promise.resolve());
     cy.stub(awsAuth, 'confirmResetPassword').returns(Promise.resolve());
     cy.stub(Redirect, 'toURL').as('redirect');
