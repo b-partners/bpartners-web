@@ -26,6 +26,7 @@ export default defineConfig({
 
   component: {
     setupNodeEvents(on, config) {
+      require('@cypress/code-coverage/task')(on, config);
       on('after:run', result => {
         mergeReports(result, { mergeFileName: 'test-reports.xml' });
       });

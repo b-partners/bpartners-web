@@ -23,10 +23,10 @@
     "draft-js": "^0.11.7",
     "draft-js-export-html": "^1.4.1",
     "ra-language-french": "^4.16.7",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-admin": "^4.10.2",
     "react-cookie": "^6.1.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-pdf": "^6.0.2",
     "recharts": "^2.10.4",
     "uuid": "^9.0.1",
@@ -36,7 +36,12 @@
     "@cypress/code-coverage": "^3.9.12",
     "@cypress/react": "^5.12.4",
     "@types/draft-js": "^0.11.11",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-istanbul": "5.2.0",
     "cypress": "13.13.0",
     "cypress-multi-reporters": "^1.5.0",
@@ -48,11 +53,12 @@
     "prop-types": "15.8.1",
     "typescript": "^5.5.3",
     "vite": "^5.3.3",
+    "vite-plugin-istanbul": "^6.0.2",
     "vite-tsconfig-paths": "^4.3.2"
   },
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "cypress run --spec './**/!(*.it).cy.{js,jsx,tsx}' --component ",
     "it": "cypress run --spec 'src/__tests__/it/*.it.cy.{js,jsx}' --config video=true --component ",
@@ -60,23 +66,5 @@
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\""
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:cypress/recommended",
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
