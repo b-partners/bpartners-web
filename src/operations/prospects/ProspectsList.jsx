@@ -6,15 +6,15 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import ListComponent from 'src/common/components/ListComponent';
-import TabPanel from 'src/common/components/TabPanel';
-import { ProspectContextProvider } from 'src/common/store/prospect-store';
+import ListComponent from '@/common/components/ListComponent';
+import TabPanel from '@/common/components/TabPanel';
+import { ProspectContextProvider } from '@/common/store/prospect-store';
 import { ProspectDialog, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
-import { annotatorProvider } from 'src/providers/annotator-provider';
+import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, getCached, prospectingProvider } from '../../providers';

@@ -4,11 +4,11 @@ import { Button, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_COLOR } from 'src/bp-theme';
-import { BpFormField } from 'src/common/components';
-import { feedbackLinkResolver } from 'src/common/resolvers';
-import { handleSubmit } from 'src/common/utils';
-import { updateFeedbackLink } from 'src/providers';
+import { BP_COLOR } from '@/bp-theme';
+import { BpFormField } from '@/common/components';
+import { feedbackLinkResolver } from '@/common/resolvers';
+import { handleSubmit } from '@/common/utils';
+import { updateFeedbackLink } from '@/providers';
 
 export const FeedbackLinkForm = () => {
   const { record: accountHolder } = useShowContext();

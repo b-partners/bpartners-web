@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { ReactNode } from 'react';
-import TabPanel from 'src/common/components/TabPanel';
-import { InvoiceToolState, useInvoiceToolContext } from 'src/common/store/invoice';
+import TabPanel from '@/common/components/TabPanel';
+import { InvoiceToolState, useInvoiceToolContext } from '@/common/store/invoice';
 import InvoiceList from '../InvoiceList';
 
 const TAB_PANEL_STYLE = { padding: 0 };

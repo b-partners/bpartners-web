@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getUrlParams } from 'src/common/utils';
+import { getUrlParams } from '@/common/utils';
 
 const RedirectionMobilePage = () => {
   useEffect(() => {

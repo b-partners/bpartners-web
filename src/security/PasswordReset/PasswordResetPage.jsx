@@ -1,6 +1,6 @@
 import { Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Redirect } from 'src/common/utils';
+import { Redirect } from '@/common/utils';
 import { DialogResetCodeSent } from './components/DialogResetCodeSent';
 import PasswordResetConfirmationLayout from './components/PasswordResetConfirmationLayout';
 import PasswordResetRequestLayout from './components/PasswordResetRequestLayout';

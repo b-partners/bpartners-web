@@ -12,10 +12,10 @@ import { useEffect, useState } from 'react';
 
 import { FileType } from '@bpartners/typescript-client';
 import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
-import { BP_COLOR } from 'src/bp-theme';
-import { RaMoneyField } from 'src/common/components';
-import { getMimeType, prettyPrintMinors, printError } from 'src/common/utils';
-import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from 'src/providers';
+import { BP_COLOR } from '@/bp-theme';
+import { RaMoneyField } from '@/common/components';
+import { getMimeType, prettyPrintMinors, printError } from '@/common/utils';
+import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from '@/providers';
 import { v4 as uuid } from 'uuid';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';

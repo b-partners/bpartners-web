@@ -22,7 +22,7 @@ export const fileProvider: BpDataProviderType = {
     link.click();
     window.URL.revokeObjectURL(link.href);
   },
-  getList: function (page: number, perPage: number, filter: any): Promise<any[]> {
+  getList: function (_page: number, _perPage: number, _filter: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
   async saveOrUpdate(resources: any): Promise<any[]> {

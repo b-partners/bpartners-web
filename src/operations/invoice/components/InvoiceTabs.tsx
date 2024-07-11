@@ -1,5 +1,5 @@
 import { Tab, Tabs } from '@mui/material';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { useInvoiceToolContext } from '@/common/store/invoice';
 
 export const InvoiceTabs = () => {
   const { tab, setTab } = useInvoiceToolContext();

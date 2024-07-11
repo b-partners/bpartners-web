@@ -1,7 +1,7 @@
 import React from 'react';
 import { required, TextInput } from 'react-admin';
-import { RaNumberInput } from 'src/common/components';
-import useGetAccountHolder from 'src/common/hooks/use-get-account-holder';
+import { RaNumberInput } from '@/common/components';
+import useGetAccountHolder from '@/common/hooks/use-get-account-holder';
 
 const FormProduct = () => {
   const { companyInfo } = useGetAccountHolder();

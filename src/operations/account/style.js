@@ -1,4 +1,4 @@
-import { BP_COLOR } from 'src/bp-theme';
+import { BP_COLOR } from '@/bp-theme';
 
 export const SHOW_LAYOUT_STYLE = {
   height: '100%',

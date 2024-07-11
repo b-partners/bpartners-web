@@ -1,7 +1,7 @@
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
-import { parseUrlParams } from 'src/common/utils';
-import { annotatorProvider } from 'src/providers/annotator-provider';
+import { parseUrlParams } from '@/common/utils';
+import { annotatorProvider } from '@/providers/annotator-provider';
 
 export const useRetrievePolygons = () => {
   const { pictureId } = parseUrlParams();

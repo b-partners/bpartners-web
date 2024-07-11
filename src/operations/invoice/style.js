@@ -1,4 +1,4 @@
-import { BP_COLOR } from 'src/bp-theme';
+import { BP_COLOR } from '@/bp-theme';
 
 export const DEFAULT_TEXT_FIELD_WIDTH = 300;
 export const DEFAULT_ITEMS_WIDTH = 294;

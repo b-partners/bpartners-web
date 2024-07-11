@@ -1,8 +1,8 @@
 import { Clear } from '@mui/icons-material';
 import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
-import { UrlParams } from 'src/common/utils';
+import { UrlParams } from '@/common/utils';
 
-import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { useInvoiceToolContext } from '@/common/store/invoice';
 import PdfViewer from '../../common/components/PdfViewer';
 import { PDF_WIDTH } from './utils/utils';
 

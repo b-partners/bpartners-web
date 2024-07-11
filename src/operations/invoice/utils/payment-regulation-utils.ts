@@ -1,5 +1,5 @@
 import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { getNextMonthDate, toMajors, toMinors } from 'src/common/utils';
+import { getNextMonthDate, toMajors, toMinors } from '@/common/utils';
 
 // Payment regulation
 export const PAYMENT_TYPE = 'paymentType';

@@ -3,9 +3,9 @@ import { DoneAll as DoneAllIcon } from '@mui/icons-material';
 import { Box, Button, CircularProgress, MenuItem, Table, TableBody, TableCell, TableHead, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTranslate } from 'react-admin';
-import PopoverButton from 'src/common/components/PopoverButton';
-import { useChangeInvoiceStatus } from 'src/common/hooks';
-import { useGetConversionContext } from 'src/common/store/invoice';
+import PopoverButton from '@/common/components/PopoverButton';
+import { useChangeInvoiceStatus } from '@/common/hooks';
+import { useGetConversionContext } from '@/common/store/invoice';
 import PaymentRegulationRowItem from './PaymentRegulationRowItem';
 
 type InvoiceButtonConversionProps = {

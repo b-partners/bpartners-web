@@ -2,9 +2,9 @@ import { Box, CircularProgress } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useLocation } from 'react-router-dom';
-import { BP_COLOR } from 'src/bp-theme.js';
-import { Redirect } from 'src/common/utils';
-import { sheetProvider } from 'src/providers/sheet-provider';
+import { BP_COLOR } from '@/bp-theme.js';
+import { Redirect } from '@/common/utils';
+import { sheetProvider } from '@/providers/sheet-provider';
 
 const GoogleSheetsConsentSuccess = () => {
   const notify = useNotify();

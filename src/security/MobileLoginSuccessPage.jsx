@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { printError } from 'src/common/utils';
+import { printError } from '@/common/utils';
 
 const MobileLoginSuccessPage = () => {
   useEffect(() => {

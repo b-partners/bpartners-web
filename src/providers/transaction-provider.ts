@@ -6,7 +6,7 @@ const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
 
 export const transactionProvider: BpDataProviderType = {
-  async getOne(id: string) {
+  async getOne(_id: string) {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {

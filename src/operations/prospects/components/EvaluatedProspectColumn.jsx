@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardContent, Grid, Paper, Stack, Typography } from '@mui/material';
-import { useProspectContext } from 'src/common/store/prospect-store';
-import { prospectFormMapper } from 'src/providers/mappers/prospect-form-mapper';
-import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider';
+import { useProspectContext } from '@/common/store/prospect-store';
+import { prospectFormMapper } from '@/providers/mappers/prospect-form-mapper';
+import { prospectingJobsProvider } from '@/providers/prospecting-jobs-provider';
 import { parseRatingLastEvaluation } from '../utils';
 
 const EvaluatedProspectColumn = ({ title, data, color }) => {

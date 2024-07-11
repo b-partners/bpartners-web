@@ -1,5 +1,5 @@
 import { GeoPosition } from '@bpartners/typescript-client';
-import { ConverterPayloadGeoJSON, Geometry } from 'src/operations/annotator';
+import { ConverterPayloadGeoJSON, Geometry } from '@/operations/annotator';
 
 type GeoPolygonToRestMetaData = {
   filename: string;

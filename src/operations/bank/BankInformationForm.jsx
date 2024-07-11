@@ -3,9 +3,9 @@ import { Box, Button, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
-import { handleSubmit } from 'src/common/utils';
-import { accountProvider } from 'src/providers';
+import { BpFormField } from '@/common/components';
+import { handleSubmit } from '@/common/utils';
+import { accountProvider } from '@/providers';
 import { BIC_MESSAGE_CONTAINER } from './style';
 
 export const BankInformationForm = props => {
