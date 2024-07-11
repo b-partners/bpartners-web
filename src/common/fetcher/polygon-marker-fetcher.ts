@@ -1,7 +1,7 @@
-import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
-import { useMutation } from 'react-query';
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
 import { geojsonMapper, polygonConverterProvider, polygonMapper } from '@/providers';
+import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
+import { useMutation } from 'react-query';
 import { getFileUrl } from '../utils';
 
 const getImageSize = async (fileId: string) =>
@@ -13,7 +13,7 @@ const getImageSize = async (fileId: string) =>
         resolve(image.naturalWidth);
       };
     } catch (err) {
-      reject(err);
+      reject(err as Error);
     }
   });
 
