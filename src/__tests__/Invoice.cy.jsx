@@ -56,7 +56,9 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('POST', `/users/mock-user-id1/accountHolders/mock-accountHolder-id1/feedback`, req => {
       const actualFeedbackAsked = req.body || {};
       expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
-      expect(actualFeedbackAsked.message).contains('<p>').and().contains('<br/>').and().contains('Nous espérons que vous allez bien.');
+      expect(actualFeedbackAsked.message).contains('<p>');
+      expect(actualFeedbackAsked.message).contains('<br>');
+      expect(actualFeedbackAsked.message).contains('Nous espérons que vous allez bien.');
       req.reply({});
     }).as('AskFeedback');
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
