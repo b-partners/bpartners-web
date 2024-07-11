@@ -7,6 +7,7 @@ type InvoiceListModalProps = {
   type: ModalType;
   title: ReactNode;
   actions?: ReactNode;
+  children?: ReactNode;
 };
 
 export const InvoiceListModal: FC<InvoiceListModalProps> = ({ type, children, title, actions }) => {
