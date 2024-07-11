@@ -13,8 +13,9 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
+import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { SupportDialog } from 'src/common/components';
 import { printError } from 'src/common/utils';
@@ -36,22 +37,18 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
+  const { data: accountHolder = null } = useQuery({
+    retry: 7,
+    queryKey: ["accountHolder"],
+    onError: printError,
+    queryFn: () => accountHolderProvider.getOne()
+  });
 
   const toggleDialogState = () => setDialogState(e => !e);
   const contactSupport = e => {
     e.preventDefault();
     toggleDialogState();
   };
-
-  const [accountHolder, setAccountHolder] = useState(null);
-  useEffect(() => {
-    async function asyncSetAccountHolder() {
-      const fetchedAccountHolder = await accountHolderProvider.getOne();
-      setAccountHolder(fetchedAccountHolder);
-    }
-
-    asyncSetAccountHolder().catch(printError);
-  }, []);
 
   const hasBusinessActivities = accountHolder =>
     accountHolder != null &&
