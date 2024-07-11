@@ -1,6 +1,6 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 
-import App from '../App';
+import App from '@/App';
 import { accountHolders1, accounts1, areaPictures, createInvoices, customers1, invoiceAnnotations, products, whoami1 } from './mocks/responses';
 
 describe('Invoice Annotation', () => {

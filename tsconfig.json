@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "target": "ES2019",
-    "lib": ["ES2019", "dom"],
-    "types": ["cypress", "node"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -18,6 +15,12 @@
     "noEmit": true,
     "strictNullChecks": false,
     "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],    
+    "target": "ESNext",    
+    "types": ["vite/client", "cypress", "node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
   },
   "include": ["src", "cypress"],
 }

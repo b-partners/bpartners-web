@@ -81,7 +81,7 @@ export const CalendarCustomerSelection = () => {
           </li>
         )}
       />
-      {errors && !!errors['participants'] && <FormHelperText error>{errors['participants']?.message}</FormHelperText>}
+      {errors && !!errors['participants'] && <FormHelperText error>{errors['participants']?.message as string}</FormHelperText>}
     </Box>
   );
 };
