@@ -1,19 +1,23 @@
 import { FileDownload, FileUpload, InsertDriveFile } from '@mui/icons-material';
 import { Backdrop, Box, Button, Chip, CircularProgress, Divider, IconButton, Modal, Stack, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 
 import CustomerModel from '@/assets/CustomerModel.png';
 import ProductModel from '@/assets/ProductModel.png';
 import { importCustomers } from '@/providers/customer-provider';
 import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL_STYLE } from './style';
 
-import { useNotify, useRefresh } from 'react-admin';
 import { BP_BUTTON } from '@/bp-theme';
 import { useToggle } from '@/common/hooks';
 import { toArrayBuffer } from '@/common/utils';
 import { importProducts } from '@/providers/product-provider';
+import { useNotify, useRefresh } from 'react-admin';
 
-export const BPImport = props => {
+interface BPImportProps {
+  source: string;
+}
+
+export const BPImport: FC<BPImportProps> = props => {
   const notify = useNotify();
   const refresh = useRefresh();
   const { source } = props;
@@ -27,12 +31,12 @@ export const BPImport = props => {
     toggleHandlerClose();
   };
 
-  const [file, setFile] = useState();
-  const [fileName, setFileName] = useState();
-  const [errorMessage, setErrorMessage] = useState();
+  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string>('');
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = event => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
     const fetch = async () => {
       const binary = await toArrayBuffer(event);
@@ -44,9 +48,9 @@ export const BPImport = props => {
   };
 
   const handleDelete = () => {
-    setFile();
-    setFileName();
-    setErrorMessage();
+    setFile(null);
+    setFileName(null);
+    setErrorMessages(null);
   };
 
   const submitFile = () => {
@@ -60,18 +64,20 @@ export const BPImport = props => {
     fetch()
       .catch(({ response }) => {
         const {
-          data: { message },
+          data: { message: messageFromBackend },
           status,
         } = response;
 
+        const message = (messageFromBackend as string) || '';
+
         if (status === 400) {
-          let frenchMessage = message.replaceAll('instead of', 'à la place de');
-          frenchMessage = frenchMessage.replaceAll('at column', 'à la colonne');
+          let frenchMessage = message.replace(/instead\sof/gi, 'à la place de');
+          frenchMessage = frenchMessage.replace(/at\scolumn/gi, 'à la colonne');
           const endOfMessage = frenchMessage.indexOf('at the last column');
           frenchMessage = endOfMessage !== -1 ? `${frenchMessage.slice(0, endOfMessage)} à la dernière colonne.` : frenchMessage;
-          frenchMessage = frenchMessage.split('. ');
+          const frenchMessageArray = frenchMessage.split('. ');
 
-          setErrorMessage(frenchMessage.filter(item => item !== ''));
+          setErrorMessages(frenchMessageArray.filter(item => item !== ''));
         }
         notify(`Une erreur s'est produite lors de l'importation.`, { type: 'error' });
       })
@@ -108,16 +114,15 @@ export const BPImport = props => {
               </Tooltip>
             </a>
           </Typography>
-          {errorMessage && (
+          {errorMessages && (
             <Box sx={ERROR_BOX_STYLE}>
               <Typography variant='body2'>Les colonnes suivantes ne correspondent pas :</Typography>
               <ul>
-                {errorMessage &&
-                  errorMessage.map(item => (
-                    <li>
-                      <Typography variant='body2'>{item}</Typography>
-                    </li>
-                  ))}
+                {errorMessages.map((item, index) => (
+                  <li key={item + index}>
+                    <Typography variant='body2'>{item}</Typography>
+                  </li>
+                ))}
               </ul>
             </Box>
           )}
@@ -147,7 +152,7 @@ export const BPImport = props => {
               Annuler
             </Button>
             <Button
-              disabled={!file || errorMessage || isLoading}
+              disabled={!file || errorMessages.length > 0 || isLoading}
               variant='contained'
               data-testid='import-button'
               startIcon={isLoading ? <CircularProgress color='inherit' size={18} /> : <FileUpload />}
