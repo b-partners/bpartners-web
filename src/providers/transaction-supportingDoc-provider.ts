@@ -2,10 +2,10 @@ import { getMimeType, toArrayBuffer } from '@/common/utils';
 import { asyncGetUserInfo, BpDataProviderType, payingApi } from '.';
 
 export const transactionSupportingDocProvider: BpDataProviderType = {
-  async getOne(id: string) {
+  async getOne(_id: string) {
     throw new Error('Function not implemented.');
   },
-  getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {
+  getList: async function (_page: number, _perPage: number, _filters = {}): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
   saveOrUpdate: async function (resources: any): Promise<any> {

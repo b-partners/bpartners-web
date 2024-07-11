@@ -11,10 +11,10 @@ export const accountProvider: BpDataProviderType = {
     const account: Account = getCurrentAccount(data);
     return cache.account(account);
   },
-  async saveOrUpdate(resources: any) {
+  async saveOrUpdate(_resources: any) {
     throw new Error('Function not implemented.');
   },
-  async getList(page: number, perPage: number, filter: any) {
+  async getList(_page: number, _perPage: number, _filter: any) {
     const { userId } = getCached.userInfo();
     const { data } = await userAccountsApi().getAccountsByUserId(userId || '');
     return data;

@@ -114,7 +114,7 @@ export const authProvider = {
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get(paramIsTemporaryPassword) === 'true';
   },
-  setNewPassword: async (newPassword: string, phoneNumber: string): Promise<void> => {
+  setNewPassword: async (newPassword: string, _phoneNumber: string): Promise<void> => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;

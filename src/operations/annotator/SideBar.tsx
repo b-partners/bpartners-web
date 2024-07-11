@@ -60,7 +60,7 @@ const SideBar = () => {
     setPolygons((prev: Polygon[]) => prev.map((polygon: Polygon) => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
   };
 
-  const handleClickAccordion = (index: number) => (event: ChangeEvent<{}>, isExpanded: boolean) => {
+  const handleClickAccordion = (index: number) => (_event: ChangeEvent<{}>, isExpanded: boolean) => {
     setExpanded(isExpanded ? index : null);
   };
 
