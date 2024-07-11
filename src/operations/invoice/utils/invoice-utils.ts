@@ -1,5 +1,5 @@
 import { Invoice, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { emptyToNull, formatDateTo8601, isBlankNumber, toMajors, toMinors } from 'src/common/utils';
+import { emptyToNull, formatDateTo8601, isBlankNumber, toMajors, toMinors } from '@/common/utils';
 import {
   DefaultPaymentRegulation,
   missingPaymentRegulation,

@@ -2,8 +2,8 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { Autocomplete, Box, Button, CircularProgress, TextField, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { printError } from 'src/common/utils';
-import { accountHolderProvider, businessActivitiesProvider } from 'src/providers';
+import { printError } from '@/common/utils';
+import { accountHolderProvider, businessActivitiesProvider } from '@/providers';
 import { ACTIVITY_TOOLTIP_TITLE, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
 
 const CustomAutocomplete = props => {

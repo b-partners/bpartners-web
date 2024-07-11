@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import React from 'react';
-import { TRANSPARENT_BUTTON_STYLE } from 'src/security/style';
+import { TRANSPARENT_BUTTON_STYLE } from '@/security/style';
 
 interface ExternalLinkButtonProps {
   url: string;

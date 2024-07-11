@@ -2,8 +2,8 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Stack, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { printError } from 'src/common/utils';
-import accountProvider, { accountHoldersGetter } from 'src/providers/account-provider';
+import { printError } from '@/common/utils';
+import accountProvider, { accountHoldersGetter } from '@/providers/account-provider';
 
 const LocationEdition = () => {
   const notify = useNotify();

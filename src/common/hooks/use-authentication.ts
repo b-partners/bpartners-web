@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { authProvider, getCached } from 'src/providers';
+import { authProvider, getCached } from '@/providers';
 import { printError } from '../utils';
 
 /**

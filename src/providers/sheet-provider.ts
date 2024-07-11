@@ -1,4 +1,4 @@
-import sheetRedirectionUrls from 'src/security/googleSheetConsent/sheet-redirection-urls';
+import sheetRedirectionUrls from '@/security/googleSheetConsent/sheet-redirection-urls';
 import { BpDataProviderType, sheetApi } from '.';
 import { getCached } from './cache';
 

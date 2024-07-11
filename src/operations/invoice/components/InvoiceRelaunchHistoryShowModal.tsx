@@ -3,9 +3,9 @@ import { DownloadForOffline as DownloadForOfflineIcon } from '@mui/icons-materia
 import { Box, Button, Card, CardContent, CardHeader, Chip } from '@mui/material';
 import { ContentState, convertFromHTML, Editor, EditorState } from 'draft-js';
 import { useNotify } from 'react-admin';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { formatDatetime } from 'src/common/utils';
-import { fileProvider } from 'src/providers';
+import { useInvoiceToolContext } from '@/common/store/invoice';
+import { formatDatetime } from '@/common/utils';
+import { fileProvider } from '@/providers';
 import { InvoiceListModal } from '.';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
 

@@ -3,10 +3,10 @@ import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/ico
 import { Box, FormControl, FormHelperText, Paper } from '@mui/material';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { BPButton } from 'src/common/components/BPButton';
-import BPFormField from 'src/common/components/BPFormField';
-import BpTextAdornment from 'src/common/components/BpTextAdornment';
-import { handleSubmit } from 'src/common/utils';
+import { BPButton } from '@/common/components/BPButton';
+import BPFormField from '@/common/components/BPFormField';
+import BpTextAdornment from '@/common/components/BpTextAdornment';
+import { handleSubmit } from '@/common/utils';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,

@@ -2,9 +2,9 @@ import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { BP_COLOR } from 'src/bp-theme';
-import { printError } from 'src/common/utils';
-import { transactionCategoryProvider } from 'src/providers';
+import { BP_COLOR } from '@/bp-theme';
+import { printError } from '@/common/utils';
+import { transactionCategoryProvider } from '@/providers';
 
 const ICON_STYLE = {
   color: BP_COLOR[30],

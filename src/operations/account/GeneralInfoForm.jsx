@@ -3,10 +3,10 @@ import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField, BpNumberField } from 'src/common/components';
-import { generalInfoResolver } from 'src/common/resolvers';
-import { handleSubmit, printError, toMajors, toMinors } from 'src/common/utils';
-import { updateGlobalInformation } from 'src/providers/account-holder-Provider';
+import { BpFormField, BpNumberField } from '@/common/components';
+import { generalInfoResolver } from '@/common/resolvers';
+import { handleSubmit, printError, toMajors, toMinors } from '@/common/utils';
+import { updateGlobalInformation } from '@/providers/account-holder-Provider';
 import { generalInfoDiff } from './utils';
 
 const GeneralInfoForm = () => {

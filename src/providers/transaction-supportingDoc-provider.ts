@@ -1,4 +1,4 @@
-import { getMimeType, toArrayBuffer } from 'src/common/utils';
+import { getMimeType, toArrayBuffer } from '@/common/utils';
 import { asyncGetUserInfo, BpDataProviderType, payingApi } from '.';
 
 export const transactionSupportingDocProvider: BpDataProviderType = {

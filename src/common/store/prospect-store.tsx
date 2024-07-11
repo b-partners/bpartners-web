@@ -1,7 +1,7 @@
 import { ProspectEvaluationJobInfo } from '@bpartners/typescript-client';
 import { createContext, Dispatch, FC, ReactNode, useContext, useState } from 'react';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
-import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider';
+import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants/invoice';
+import { prospectingJobsProvider } from '@/providers/prospecting-jobs-provider';
 
 type RaProspectContext = {
   children?: ReactNode;

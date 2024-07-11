@@ -1,8 +1,8 @@
 import { Info } from '@mui/icons-material';
 import { FormControl, IconButton, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useCanvasAnnotationContext } from 'src/common/store/annotator/Canvas-annotation-store';
-import PENTES from 'src/constants/slope-images';
+import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
+import PENTES from '@/constants/slope-images';
 
 const SlopeSelect = ({ name }: { name: string }) => {
   const { register, setValue } = useFormContext();

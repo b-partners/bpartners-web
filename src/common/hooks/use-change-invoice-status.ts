@@ -2,9 +2,9 @@ import { Invoice, InvoiceStatus } from '@bpartners/typescript-client';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { invoiceMapper } from 'src/operations/invoice/utils/invoice-utils';
-import { draftInvoiceValidator, InvoiceFieldErrorMessage } from 'src/operations/invoice/utils/utils';
-import { invoiceProvider } from 'src/providers';
+import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
+import { draftInvoiceValidator, InvoiceFieldErrorMessage } from '@/operations/invoice/utils/utils';
+import { invoiceProvider } from '@/providers';
 import { useInvoiceToolContext } from '../store/invoice';
 import { handleSubmit } from '../utils';
 

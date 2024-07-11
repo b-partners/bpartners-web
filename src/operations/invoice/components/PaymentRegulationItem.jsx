@@ -1,7 +1,7 @@
 import { Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Avatar, Box, CardActions, CardContent, Collapse, Divider, IconButton, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { BP_COLOR } from 'src/bp-theme';
+import { BP_COLOR } from '@/bp-theme';
 import { INVOICE_EDITION } from '../style';
 
 const PaymentRegulationItem = props => {

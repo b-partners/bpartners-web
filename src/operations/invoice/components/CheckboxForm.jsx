@@ -1,7 +1,7 @@
 import { Box, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
+import { BpFormField } from '@/common/components';
 
 const CheckboxForm = props => {
   const { setValue } = useFormContext();

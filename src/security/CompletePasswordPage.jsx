@@ -1,10 +1,10 @@
 import { Button, Typography } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from 'src/bp-theme';
-import { BpFormField, BpNumberField } from 'src/common/components';
-import { completePasswordResolver } from 'src/common/resolvers';
-import { handleSubmit } from 'src/common/utils';
-import { authProvider } from 'src/providers';
+import { BP_BUTTON } from '@/bp-theme';
+import { BpFormField, BpNumberField } from '@/common/components';
+import { completePasswordResolver } from '@/common/resolvers';
+import { handleSubmit } from '@/common/utils';
+import { authProvider } from '@/providers';
 
 const CompletePasswordForm = () => {
   const form = useForm({ defaultValues: { newPassword: '', confirmedPassword: '', phoneNumber: '' }, mode: 'all', resolver: completePasswordResolver });

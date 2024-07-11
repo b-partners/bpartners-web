@@ -2,11 +2,11 @@ import { Box, Button, CircularProgress, Divider, Typography } from '@mui/materia
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from 'src/bp-theme';
-import { BpAutoComplete } from 'src/common/components/BpAutoComplete';
-import { importProspectsResolver } from 'src/common/resolvers/prospect-config-validator';
-import { SheetNames } from 'src/constants/sheet-names';
-import { importProspects } from 'src/providers';
+import { BP_BUTTON } from '@/bp-theme';
+import { BpAutoComplete } from '@/common/components/BpAutoComplete';
+import { importProspectsResolver } from '@/common/resolvers/prospect-config-validator';
+import { SheetNames } from '@/constants/sheet-names';
+import { importProspects } from '@/providers';
 import { BpFormField, BpNumberField } from '../../../common/components';
 
 const ImportProspects = () => {

@@ -1,8 +1,8 @@
 import { Box, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { Redirect } from 'src/common/utils';
-import { sheetProvider } from 'src/providers/sheet-provider';
+import { Redirect } from '@/common/utils';
+import { sheetProvider } from '@/providers/sheet-provider';
 import EvaluateProspects from './components/EvaluateProspects';
 import ImportProspects from './components/ImportProspects';
 

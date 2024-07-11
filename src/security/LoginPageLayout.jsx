@@ -1,8 +1,8 @@
 import { Box, Typography } from '@mui/material';
 
-import { BPLoader } from 'src/common/components';
-import useAuthentication from 'src/common/hooks/use-authentication';
-import { authProvider } from 'src/providers';
+import { BPLoader } from '@/common/components';
+import useAuthentication from '@/common/hooks/use-authentication';
+import { authProvider } from '@/providers';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { FLEX_CENTER } from './style.js';
 

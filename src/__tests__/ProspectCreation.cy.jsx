@@ -1,6 +1,6 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from 'src/App';
+import App from '@/App';
 import { Redirect, Reload } from '../common/utils';
 import {
   accountHolders1,

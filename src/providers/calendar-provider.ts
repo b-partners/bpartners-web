@@ -1,4 +1,4 @@
-import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from 'src/constants/redirection-url';
+import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from '@/constants/redirection-url';
 import { BpDataProviderType, calendarApi, getCached } from '.';
 
 export const calendarProvider: BpDataProviderType = {

@@ -2,9 +2,9 @@ import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Box, Card, CardContent, Table, TableBody, TableCell, TableRow, TextField as MuiTextField, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Datagrid, FunctionField, ListContextProvider, TextField, useList, useNotify } from 'react-admin';
-import useGetAccountHolder from 'src/common/hooks/use-get-account-holder';
-import { prettyPrintMinors } from 'src/common/utils';
-import { invoiceProvider } from 'src/providers';
+import useGetAccountHolder from '@/common/hooks/use-get-account-holder';
+import { prettyPrintMinors } from '@/common/utils';
+import { invoiceProvider } from '@/providers';
 
 const MAX_PER_PAGE = 500;
 const { PAID, CONFIRMED } = InvoiceStatus;

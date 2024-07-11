@@ -1,6 +1,6 @@
 import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
-import { getCurrentAccount } from 'src/common/utils';
-import loginRedirectionUrls from 'src/security/login-redirection-urls';
+import { getCurrentAccount } from '@/common/utils';
+import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {

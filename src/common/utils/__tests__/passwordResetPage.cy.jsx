@@ -1,6 +1,6 @@
 import { awsAuth } from '@/providers';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import PasswordResetPage from 'src/security/PasswordReset/PasswordResetPage';
+import PasswordResetPage from '@/security/PasswordReset/PasswordResetPage';
 import { Redirect } from '../redirect';
 
 describe(specTitle('password reset page'), () => {

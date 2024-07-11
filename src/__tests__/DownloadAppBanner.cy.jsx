@@ -1,5 +1,5 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from 'src/App';
+import App from '@/App';
 
 describe(specTitle('download app banner'), { viewportWidth: 1000 }, () => {
   it('show download app banner below 1000px', () => {

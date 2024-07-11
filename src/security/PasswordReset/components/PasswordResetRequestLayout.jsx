@@ -2,7 +2,7 @@ import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from 'src/bp-theme';
+import { BP_BUTTON } from '@/bp-theme';
 import { BpFormField } from '../../../common/components';
 
 const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {

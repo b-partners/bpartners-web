@@ -1,6 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { Account, AccountHolder, User, Whoami } from '@bpartners/typescript-client';
-import { AnnotationInfo, AnnotationsInfo, NumberAsString, PolygonsForm } from 'src/operations/annotator';
+import { AnnotationInfo, AnnotationsInfo, NumberAsString, PolygonsForm } from '@/operations/annotator';
 
 const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';
