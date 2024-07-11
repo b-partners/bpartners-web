@@ -1,4 +1,5 @@
 import { defineConfig } from 'cypress';
+import mergeReports from 'cypress-sonarqube-reporter/mergeReports';
 
 export default defineConfig({
   video: false,
@@ -11,8 +12,10 @@ export default defineConfig({
   viewportWidth: 2014,
   viewportHeight: 844,
   defaultCommandTimeout: 30000,
-  reporter: 'cypress-multi-reporters',
 
+  projectId: '4f6tz2',
+
+  reporter: 'cypress-multi-reporters',
   reporterOptions: {
     reporterEnabled: 'cypress-sonarqube-reporter',
     mergeFileName: 'test-reports.xml',
@@ -21,10 +24,12 @@ export default defineConfig({
     },
   },
 
-  projectId: '4f6tz2',
-
   component: {
-    setupNodeEvents(on, config) {},
+    setupNodeEvents(on, config) {
+      on('after:run', result => {
+        mergeReports(result, { mergeFileName: 'test-reports.xml' });
+      });
+    },
     specPattern: 'src/**/*.cy.{js,ts,jsx,tsx}',
     devServer: {
       framework: 'react',
