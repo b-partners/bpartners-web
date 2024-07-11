@@ -86,7 +86,7 @@ describe(specTitle('Customers'), () => {
     cy.contains('Prospects importés avec succès');
   });
 
-  it.only('should evaluate prospects', () => {
+  it('should evaluate prospects', () => {
     cy.intercept('GET', `/accountHolders?name=Numer`, accountHolders1[0]).as('getAccountHoldersByName');
     cy.intercept('PUT', ` /accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, {}).as('evaluateProspects');
 
