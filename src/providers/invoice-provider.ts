@@ -1,5 +1,5 @@
 import { ArchiveStatus } from '@bpartners/typescript-client';
-import { invoiceMapper } from 'src/operations/invoice/utils/invoice-utils';
+import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
 import { asyncGetAccountId, getCached, payingApi } from '.';
 import { BpDataProviderType } from './bp-data-provider-type';
 
@@ -17,7 +17,7 @@ export const invoiceProvider: BpDataProviderType = {
     const { data: invoice } = await payingApi().getInvoiceById(accountId, invoiceId);
     return invoiceMapper.toDomain(invoice);
   },
-  saveOrUpdate: async function (_invoices: any[], option = {}): Promise<any[]> {
+  saveOrUpdate: async function (_invoices: any[], _option = {}): Promise<any[]> {
     const { accountId } = getCached.userInfo();
     const restInvoice = invoiceMapper.toRest({ ..._invoices[0] });
 

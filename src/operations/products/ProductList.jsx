@@ -1,8 +1,8 @@
 import { Datagrid, FunctionField, List, TextInput, useListContext } from 'react-admin';
-import { RaMoneyField } from 'src/common/components';
-import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
-import { BPImport } from 'src/common/components/BPImport';
-import { RaPercentageField } from 'src/common/components/Field/RaPercentageField';
+import { RaMoneyField } from '@/common/components';
+import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
+import { BPImport } from '@/common/components/BPImport';
+import { RaPercentageField } from '@/common/components/Field/RaPercentageField';
 import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';

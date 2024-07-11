@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { transactionSupportingDocProvider } from 'src/providers';
-import { justifyTransaction } from 'src/providers/transaction-provider';
+import { transactionSupportingDocProvider } from '@/providers';
+import { justifyTransaction } from '@/providers/transaction-provider';
 import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
 
 const SelectionDialog = props => {

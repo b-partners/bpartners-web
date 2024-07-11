@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
-import { covering, wear } from 'src/constants';
+import { covering, wear } from '@/constants';
 import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm = ({ index, surface }) => {

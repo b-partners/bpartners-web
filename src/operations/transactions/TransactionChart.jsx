@@ -1,11 +1,11 @@
 import { Box, Card, CardContent, Grid, LinearProgress, Skeleton, Switch, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Cell, Legend, Pie, PieChart } from 'recharts';
-import emptyGraph from 'src/assets/noData.png';
+import emptyGraph from '@/assets/noData.png';
 
-import { BP_COLOR } from 'src/bp-theme';
-import { printError } from 'src/common/utils';
-import { accountProvider, payingApi } from 'src/providers';
+import { BP_COLOR } from '@/bp-theme';
+import { printError } from '@/common/utils';
+import { accountProvider, payingApi } from '@/providers';
 import BPDatePicker from '../../common/components/BPDatePicker';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, prettyPrintPercentMinors, toMajors, toMinors } from '../../common/utils';

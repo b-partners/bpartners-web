@@ -1,5 +1,5 @@
 import { Datagrid, List, TextField, TextInput, useListContext } from 'react-admin';
-import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
+import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import { BPImport } from '../../common/components/BPImport';
 import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';

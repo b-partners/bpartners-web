@@ -2,12 +2,12 @@ import { ImportProspect } from '@bpartners/typescript-client';
 import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {
-  getList: async function (page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
+  getList: async function (_page = 1, _perPage = maxPageSize, filters = {}): Promise<any[]> {
     const { searchName } = filters;
     const { accountHolderId } = getCached.userInfo();
     return (await prospectingApi().getProspects(accountHolderId, searchName)).data;
   },
-  getOne: function (id: string): Promise<any> {
+  getOne: function (_id: string): Promise<any> {
     throw new Error('Function not implemented.');
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {

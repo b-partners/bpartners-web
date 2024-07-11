@@ -3,8 +3,8 @@ import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
 import { useListContext, useNotify, useRefresh, useTranslate, useUnselectAll } from 'react-admin';
-import { BPButton } from 'src/common/components/BPButton';
-import { dataProvider } from 'src/providers';
+import { BPButton } from '@/common/components/BPButton';
+import { dataProvider } from '@/providers';
 
 const getValueFromSource = (resource, source) => {
   if (source.includes('|||')) {

@@ -2,7 +2,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
 
-import { Redirect } from 'src/common/utils';
+import { Redirect } from '@/common/utils';
 import { account1, accountHolders1, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';

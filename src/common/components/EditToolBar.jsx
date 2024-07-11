@@ -4,7 +4,7 @@ import { Button, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import { SaveButton, Toolbar, useNotify, useRedirect, useTranslate } from 'react-admin';
 import { useParams } from 'react-router-dom';
-import { dataProvider } from 'src/providers';
+import { dataProvider } from '@/providers';
 
 const EditToolBar = props => {
   const [isLoading, setLoading] = useState(false);

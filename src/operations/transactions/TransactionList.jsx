@@ -9,7 +9,7 @@ import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
 import { coloredPrettyPrintMinors, formatDatetime } from '../../common/utils';
 
-import { ModalProvider } from 'src/common/store/transaction';
+import { ModalProvider } from '@/common/store/transaction';
 import Pagination, { pageSize } from '../../common/components/Pagination';
 import { TRANSACTION_STATUSES } from '../../constants';
 import ExportLinkMailModal from './components/ExportLinkMailModal';

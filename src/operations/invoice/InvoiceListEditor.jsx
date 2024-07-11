@@ -6,8 +6,8 @@ import { useStore } from 'react-admin';
 import { AnnotationInfo } from '../annotator/components';
 import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
 
-import { printError } from 'src/common/utils';
-import { getInvoicesSummary } from 'src/providers';
+import { printError } from '@/common/utils';
+import { getInvoicesSummary } from '@/providers';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';

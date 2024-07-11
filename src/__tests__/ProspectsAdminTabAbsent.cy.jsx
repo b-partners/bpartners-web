@@ -1,5 +1,5 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from 'src/App';
+import App from '@/App';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { prospects } from './mocks/responses/prospects-api';
 import { user2, whoami2 } from './mocks/responses/security-api';

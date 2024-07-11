@@ -2,16 +2,16 @@ import { FileDownload, FileUpload, InsertDriveFile } from '@mui/icons-material';
 import { Backdrop, Box, Button, Chip, CircularProgress, Divider, IconButton, Modal, Stack, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import CustomerModel from 'src/assets/CustomerModel.png';
-import ProductModel from 'src/assets/ProductModel.png';
-import { importCustomers } from 'src/providers/customer-provider';
+import CustomerModel from '@/assets/CustomerModel.png';
+import ProductModel from '@/assets/ProductModel.png';
+import { importCustomers } from '@/providers/customer-provider';
 import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL_STYLE } from './style';
 
 import { useNotify, useRefresh } from 'react-admin';
-import { BP_BUTTON } from 'src/bp-theme';
-import { useToggle } from 'src/common/hooks';
-import { toArrayBuffer } from 'src/common/utils';
-import { importProducts } from 'src/providers/product-provider';
+import { BP_BUTTON } from '@/bp-theme';
+import { useToggle } from '@/common/hooks';
+import { toArrayBuffer } from '@/common/utils';
+import { importProducts } from '@/providers/product-provider';
 
 export const BPImport = props => {
   const notify = useNotify();

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { getUrlParams, Redirect } from '../common/utils';
 import loginRedirectionUrls from './login-redirection-urls';
 
-import { printError } from 'src/common/utils';
-import { authProvider } from 'src/providers';
+import { printError } from '@/common/utils';
+import { authProvider } from '@/providers';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 

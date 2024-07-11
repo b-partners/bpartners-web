@@ -1,7 +1,7 @@
 import { FileDownload } from '@mui/icons-material';
 import { Button, Stack } from '@mui/material';
 import { CreateButton, useNotify } from 'react-admin';
-import { exportCustomers, exportProducts } from 'src/providers';
+import { exportCustomers, exportProducts } from '@/providers';
 import { IMPORT_BUTTON_STYLE } from './BPImport/style';
 
 const BPListActions = props => {

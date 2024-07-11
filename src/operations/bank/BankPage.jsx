@@ -20,8 +20,8 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { handleSubmit, printError, Redirect } from 'src/common/utils';
-import { accountProvider, bankProvider, getCached } from 'src/providers';
+import { handleSubmit, printError, Redirect } from '@/common/utils';
+import { accountProvider, bankProvider, getCached } from '@/providers';
 import AccountConfig from './AccountConfig';
 import { BankInformationForm } from './BankInformationForm';
 import { BALANCE_ICON, BANK_CARD, BANK_LOGO, CARD_CONTENT, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';

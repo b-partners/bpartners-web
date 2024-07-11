@@ -3,10 +3,10 @@ import { Button, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useShowContext } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpNumberField } from 'src/common/components';
-import { revenueTargetResolver } from 'src/common/resolvers';
-import { handleSubmit } from 'src/common/utils';
-import { revenueTargetsProvider } from 'src/providers/account-holder-Provider';
+import { BpNumberField } from '@/common/components';
+import { revenueTargetResolver } from '@/common/resolvers';
+import { handleSubmit } from '@/common/utils';
+import { revenueTargetsProvider } from '@/providers/account-holder-Provider';
 import { toMajors, toMinors } from '../../common/utils';
 
 const RevenueTargetForm = () => {

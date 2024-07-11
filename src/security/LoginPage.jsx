@@ -4,11 +4,11 @@ import { Redirect } from '../common/utils';
 
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_COLOR } from 'src/bp-theme';
-import { BpFormField, BPLoader } from 'src/common/components';
-import useAuthentication from 'src/common/hooks/use-authentication';
-import { handleSubmit } from 'src/common/utils';
-import { authProvider } from 'src/providers';
+import { BP_COLOR } from '@/bp-theme';
+import { BpFormField, BPLoader } from '@/common/components';
+import useAuthentication from '@/common/hooks/use-authentication';
+import { handleSubmit } from '@/common/utils';
+import { authProvider } from '@/providers';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import CompletePasswordPage from './CompletePasswordPage';
 import { SignUpForm } from './SignUpForm';

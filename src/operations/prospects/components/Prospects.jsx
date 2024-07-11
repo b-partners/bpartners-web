@@ -1,7 +1,7 @@
 import { Box, Grid, TextField } from '@mui/material';
 import { groupBy } from 'lodash';
 import { Empty, useListContext } from 'react-admin';
-import { EmptyList } from 'src/common/components/EmptyList';
+import { EmptyList } from '@/common/components/EmptyList';
 import { BPButton } from '../../../common/components/BPButton';
 import { ProspectColumn } from './ProspectColumn';
 

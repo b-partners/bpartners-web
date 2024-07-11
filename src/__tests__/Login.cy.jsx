@@ -2,7 +2,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
-import App from 'src/App';
+import App from '@/App';
 import { Redirect } from '../common/utils';
 
 describe(specTitle('Login'), () => {
@@ -44,7 +44,6 @@ describe(specTitle('Login'), () => {
   });
 
   it.skip('MainPage redirects to onboarding url', () => {
-    // TODO(cognito-signup)
     cy.mount(<App />);
     cy.intercept('POST', '/onboardingInitiation', { redirectionUrl: 'https://authUrl.com' }).as('onboardingInitiation');
     cy.get('#register').contains(`Pas de compte ? C'est par ici`);

@@ -17,8 +17,8 @@ import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { SupportDialog } from 'src/common/components';
-import { printError } from 'src/common/utils';
+import { SupportDialog } from '@/common/components';
+import { printError } from '@/common/utils';
 import { accountHolderProvider, authProvider } from '../providers';
 
 const LogoutButton = () => {

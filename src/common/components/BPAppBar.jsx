@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { SidebarToggleButton, useNotify } from 'react-admin';
-import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from 'src/providers';
+import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import bpLogo from '../../assets/bp-logo-full.webp';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';

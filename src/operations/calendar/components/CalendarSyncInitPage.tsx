@@ -1,9 +1,9 @@
 import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTranslate } from 'react-admin';
-import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
-import { Redirect } from 'src/common/utils';
-import { dataProvider } from 'src/providers';
+import GOOGLE_CALENDAR_ICON from '@/assets/google_calendar_icon.png';
+import { Redirect } from '@/common/utils';
+import { dataProvider } from '@/providers';
 import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 

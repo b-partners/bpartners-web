@@ -1,6 +1,6 @@
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
-import loginRedirectionUrls from 'src/security/login-redirection-urls';
+import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
 import { awsAuth, awsConfig } from './aws-config';
@@ -114,7 +114,7 @@ export const authProvider = {
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get(paramIsTemporaryPassword) === 'true';
   },
-  setNewPassword: async (newPassword: string, phoneNumber: string): Promise<void> => {
+  setNewPassword: async (newPassword: string, _phoneNumber: string): Promise<void> => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;

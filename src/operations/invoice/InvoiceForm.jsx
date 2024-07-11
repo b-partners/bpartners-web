@@ -6,15 +6,15 @@ import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BPButton, BpFormField } from 'src/common/components';
+import { BPButton, BpFormField } from '@/common/components';
 import { AnnotationInfo } from '../annotator/components';
 import { ClientSelection, ProductSelection } from './components';
 
-import BpTextAdornment from 'src/common/components/BpTextAdornment';
-import { useToggle } from 'src/common/hooks';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { handleSubmit, printError } from 'src/common/utils';
-import { customerProvider, invoiceProvider } from 'src/providers';
+import BpTextAdornment from '@/common/components/BpTextAdornment';
+import { useToggle } from '@/common/hooks';
+import { useInvoiceToolContext } from '@/common/store/invoice';
+import { handleSubmit, printError } from '@/common/utils';
+import { customerProvider, invoiceProvider } from '@/providers';
 import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
@@ -28,7 +28,7 @@ import { validateDIPAllowed, validateDPPercent } from './utils';
 import { invoiceMapper } from './utils/invoice-utils';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
 
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants';
+import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants';
 import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
 import { PAYMENT_REGULATIONS, PAYMENT_TYPE, validatePaymentRegulation } from './utils/payment-regulation-utils';
 import {

@@ -3,11 +3,11 @@ import { useNotify } from 'react-admin';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import BPFormField from 'src/common/components/BPFormField';
-import { useToggle } from 'src/common/hooks';
-import { handleSubmit } from 'src/common/utils';
-import { phoneValidator } from 'src/operations/account/utils';
-import { onboarding } from 'src/providers/account-provider';
+import BPFormField from '@/common/components/BPFormField';
+import { useToggle } from '@/common/hooks';
+import { handleSubmit } from '@/common/utils';
+import { phoneValidator } from '@/operations/account/utils';
+import { onboarding } from '@/providers/account-provider';
 import { BP_COLOR } from '../bp-theme';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
