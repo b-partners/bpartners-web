@@ -1,31 +1,23 @@
-import { Auth } from 'aws-amplify';
-import { authProvider } from '../../src/providers';
+import { authProvider, awsAuth } from '../../src/providers';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
 
 const sessionStub = {
-  getIdToken: () => ({ getJwtToken: () => 'dummy' }),
-  getAccessToken: () => ({ getJwtToken: () => 'dummy' }),
-  getRefreshToken: () => ({ getToken: () => 'dummy' }),
+  tokens: {
+    idToken: { toString: () => 'dummy', payload: { exp: new Date().getTime() / 1000 + 1000 } },
+    accessToken: { toString: () => 'dummy' },
+  },
 };
 
 const cognitoResponse = {
-  signInUserSession: {
-    idToken: {
-      jwtToken: 'dummy',
-    },
-    refreshToken: {
-      token: 'dummy',
-    },
-    accessToken: {
-      jwtToken: 'dummy',
-    },
+  nextStep: {
+    signInStep: '',
   },
 };
 
 const loginParams = { username: 'dummy', password: 'dummy' };
 
-Cypress.Commands.add('cognitoLogin', () => {
+const mockCognitoLogin = () => {
   /*
       just replace all amplify functions to mock login
       we never call cognito
@@ -35,25 +27,31 @@ Cypress.Commands.add('cognitoLogin', () => {
   cy.intercept('GET', `/users/**`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
-  cy.stub(Auth, 'currentSession').returns(Promise.resolve(sessionStub));
-  cy.stub(Auth, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
+  cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.stub(authProvider, 'checkAuth').returns(Promise.resolve());
   cy.then(async () => await authProvider.login(loginParams));
-});
+};
 
-Cypress.Commands.add('realCognitoLogin', () => {
+const realCognitoLogin = () => {
   const loginParams = {
     username: process.env.REACT_APP_IT_USERNAME,
     password: process.env.REACT_APP_IT_PASSWORD,
   };
   cy.then(async () => await authProvider.login(loginParams));
-});
+};
+const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${value}"]${additionalCommand}`);
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      dataCy(value: string): Chainable<JQuery<HTMLElement>>;
-      cognitoLogin(): void;
-      realCognitoLogin(): void;
+      dataCy: typeof dataCy;
+      cognitoLogin: typeof mockCognitoLogin;
+      realCognitoLogin: typeof realCognitoLogin;
     }
   }
 }
+
+Cypress.Commands.add('dataCy', dataCy);
+Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
+Cypress.Commands.add('cognitoLogin', mockCognitoLogin);

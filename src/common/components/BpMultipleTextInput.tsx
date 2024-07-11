@@ -93,7 +93,7 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
         />
       </form>
       {/* cannot use TextField props helperText because of the BpButton static style */}
-      {!!errors[name] && <FormHelperText error>{errors[name].message}</FormHelperText>}
+      {!!errors[name] && <FormHelperText error>{errors[name].message as string}</FormHelperText>}
     </Box>
   );
 };
