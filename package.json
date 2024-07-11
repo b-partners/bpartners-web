@@ -15,7 +15,6 @@
     "@react-admin/ra-rbac": "^4.1.1",
     "@sentry/react": "^7.94.1",
     "@sentry/tracing": "^7.94.1",
-    "@vitejs/plugin-react": "^4.3.1",
     "aws-amplify": "^6.0.28",
     "axios": "^1.7.2",
     "date-fns-tz": "^2.0.0",
@@ -33,8 +32,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.12",
-    "@cypress/react": "^5.12.4",
+    "@cypress/code-coverage": "^3.12.41",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/draft-js": "^0.11.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -42,7 +41,6 @@
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",
-    "babel-plugin-istanbul": "5.2.0",
     "cypress": "13.13.0",
     "cypress-multi-reporters": "^1.5.0",
     "cypress-sonarqube-reporter": "^1.13.0",

@@ -1,7 +1,13 @@
+import taskCoverage from '@cypress/code-coverage/task';
 import { defineConfig } from 'cypress';
-import mergeReports from 'cypress-sonarqube-reporter/mergeReports';
+import mergeReport from 'cypress-sonarqube-reporter/mergeReports';
 
 export default defineConfig({
+  env: {
+    codeCoverage: {
+      exclude: ['cypress/**/*', 'src/**/*.cy.*'],
+    },
+  },
   video: false,
 
   retries: {
@@ -26,10 +32,11 @@ export default defineConfig({
 
   component: {
     setupNodeEvents(on, config) {
-      require('@cypress/code-coverage/task')(on, config);
+      taskCoverage(on, config);
       on('after:run', result => {
-        mergeReports(result, { mergeFileName: 'test-reports.xml' });
+        mergeReport(result, { mergeFileName: 'test-reports.xml' });
       });
+      return config;
     },
     specPattern: 'src/**/*.cy.{js,ts,jsx,tsx}',
     devServer: {
