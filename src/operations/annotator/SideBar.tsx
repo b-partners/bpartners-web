@@ -28,8 +28,8 @@ import { clearPolygons } from 'src/providers';
 import { annotatorProvider } from 'src/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from 'src/providers/mappers';
 import { v4 as uuidV4 } from 'uuid';
-import CalculInfo from '../../assets/pentes/calcul.png';
 import AnnotatorForm from './components/AnnotatorForm';
+import CalculInfo from '/pentes/calcul.png';
 
 const SideBar = () => {
   const redirect = useRedirect();

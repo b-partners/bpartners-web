@@ -1,1 +1,5 @@
-export const reload = () => window.location.reload();
+export class Reload {
+  public static force() {
+    window.location.reload();
+  }
+}

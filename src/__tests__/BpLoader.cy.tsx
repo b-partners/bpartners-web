@@ -1,11 +1,10 @@
-import { mount } from '@cypress/react';
 import { BPLoader } from 'src/common/components';
 
 const LOADING_MESSAGE = 'Loading...';
 
 describe('BPLoader Component', () => {
   it('should render the loader without message', () => {
-    mount(<BPLoader />);
+    cy.mount(<BPLoader />);
 
     cy.get("[data-testid='bp-loader-wrapper']")
       .should('have.css', 'display', 'flex')
@@ -15,7 +14,7 @@ describe('BPLoader Component', () => {
   });
 
   it('should render the loader with a message', () => {
-    mount(<BPLoader message={LOADING_MESSAGE} />);
+    cy.mount(<BPLoader message={LOADING_MESSAGE} />);
     cy.contains(LOADING_MESSAGE);
   });
 });

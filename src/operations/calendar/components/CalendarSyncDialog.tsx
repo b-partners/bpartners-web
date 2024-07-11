@@ -5,7 +5,7 @@ import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
 import { BPButton } from 'src/common/components/BPButton';
 import { useCheckAuth } from 'src/common/hooks';
 import { useCalendarContext } from 'src/common/store/calendar';
-import { redirect } from 'src/common/utils';
+import { Redirect } from 'src/common/utils';
 import { calendarEventProvider, dataProvider } from 'src/providers';
 import { calendarIntervalFilter } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
@@ -30,7 +30,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
   const oauth2Init = () => {
     setLoading(true);
     dataProvider.oauth2Init('calendar', calendarId).then(({ data: { redirectionUrl } }) => {
-      redirect(redirectionUrl);
+      Redirect.toURL(redirectionUrl);
     });
   };
   const handleCheck = () => setChecked(!checked);
