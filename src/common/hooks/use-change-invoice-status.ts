@@ -1,10 +1,10 @@
+import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
+import { draftInvoiceValidator, InvoiceFieldErrorMessage } from '@/operations/invoice/utils/utils';
+import { invoiceProvider } from '@/providers';
 import { Invoice, InvoiceStatus } from '@bpartners/typescript-client';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
-import { draftInvoiceValidator, InvoiceFieldErrorMessage } from '@/operations/invoice/utils/utils';
-import { invoiceProvider } from '@/providers';
 import { useInvoiceToolContext } from '../store/invoice';
 import { handleSubmit } from '../utils';
 
@@ -20,7 +20,7 @@ const getNextTab = (type: InvoiceStatus) => {
 };
 
 export const useChangeInvoiceStatus = (invoice: Invoice, convertTo: InvoiceStatus, successMessage: string) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { openModal, setTab } = useInvoiceToolContext();
   const notify = useNotify();
   const refresh = useRefresh();
@@ -30,7 +30,7 @@ export const useChangeInvoiceStatus = (invoice: Invoice, convertTo: InvoiceStatu
     if (convertTo === 'PROPOSAL' && !draftInvoiceValidator(invoice)) {
       notify(InvoiceFieldErrorMessage, { type: 'error' });
     } else {
-      setLoading(true);
+      setIsLoading(true);
       try {
         await invoiceProvider.saveOrUpdate([invoiceMapper.toDomain({ ...invoice, status: convertTo })], { isEdition: true });
         refresh();
@@ -42,7 +42,7 @@ export const useChangeInvoiceStatus = (invoice: Invoice, convertTo: InvoiceStatu
       } catch (err) {
         notify((err as AxiosError).message, { type: 'error' });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
   };
