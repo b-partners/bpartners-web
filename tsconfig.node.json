@@ -8,5 +8,4 @@
     "strict": true
   },
   "include": ["vite.config.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
 }
