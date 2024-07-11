@@ -1,9 +1,9 @@
-import sheetRedirectionUrls from 'src/security/googleSheetConsent/sheet-redirection-urls';
+import sheetRedirectionUrls from '@/security/googleSheetConsent/sheet-redirection-urls';
 import { BpDataProviderType, sheetApi } from '.';
 import { getCached } from './cache';
 
 export const sheetProvider: BpDataProviderType = {
-  async getList(page: number, perPage: number, filters: any) {
+  async getList(_page: number, _perPage: number, _filters: any) {
     throw new Error('Function not implemented.');
   },
   async oauth2Init() {
@@ -16,10 +16,10 @@ export const sheetProvider: BpDataProviderType = {
     const values = { code: code, redirectUrls: sheetRedirectionUrls };
     return (await sheetApi().exchangeSheetCode(userId, values)).data;
   },
-  getOne: function (id?: string, option?: any): Promise<any> {
+  getOne: function (_id?: string, _option?: any): Promise<any> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: function (resources: any[], option?: any): Promise<any[]> {
+  saveOrUpdate: function (_resources: any[], _option?: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
 };

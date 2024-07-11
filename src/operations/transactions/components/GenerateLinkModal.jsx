@@ -1,11 +1,11 @@
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
-import { useModalContext } from 'src/common/store/transaction';
-import { handleSubmit } from 'src/common/utils';
-import { invoiceDateValidator } from 'src/operations/invoice/utils';
-import { transactionProvider } from 'src/providers';
+import { BpFormField } from '@/common/components';
+import { useModalContext } from '@/common/store/transaction';
+import { handleSubmit } from '@/common/utils';
+import { invoiceDateValidator } from '@/operations/invoice/utils';
+import { transactionProvider } from '@/providers';
 
 const GenerateLinkModal = ({ isOpenModal, handleGenerateLinkModal, handleExportLinkMailModal }) => {
   const form = useForm({ mode: 'all' });

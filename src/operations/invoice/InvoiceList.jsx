@@ -3,12 +3,12 @@ import { Attachment, Check, DriveFileMove, History, TurnRight } from '@mui/icons
 import { Box, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
-import { RaMoneyField } from 'src/common/components';
-import ArchiveBulkAction from 'src/common/components/ArchiveBulkAction';
-import BPListActions from 'src/common/components/BPListActions';
-import { useAreaPictureFetcher } from 'src/common/fetcher';
-import { ConversionContext, useInvoiceToolContext } from 'src/common/store/invoice';
-import { invoiceProvider } from 'src/providers/invoice-provider';
+import { RaMoneyField } from '@/common/components';
+import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
+import BPListActions from '@/common/components/BPListActions';
+import { useAreaPictureFetcher } from '@/common/fetcher';
+import { ConversionContext, useInvoiceToolContext } from '@/common/store/invoice';
+import { invoiceProvider } from '@/providers/invoice-provider';
 import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';

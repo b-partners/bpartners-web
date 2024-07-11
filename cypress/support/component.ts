@@ -1,3 +1,4 @@
+import '@cypress/code-coverage/support';
 /* eslint-disable @typescript-eslint/no-namespace */
 // ***********************************************************
 // This example support/component.ts is processed and

@@ -2,8 +2,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Autocomplete, Backdrop, Box, Button, CircularProgress, Modal, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useRefresh } from 'react-admin';
-import { getCurrentAccount, printError } from 'src/common/utils';
-import { accountProvider, getCached, setCurrentAccount } from 'src/providers';
+import { getCurrentAccount, printError } from '@/common/utils';
+import { accountProvider, getCached, setCurrentAccount } from '@/providers';
 import { BIC_MESSAGE_CONTAINER } from './style';
 
 const AccountConfig = ({ setAccount: setGlobalAccount }) => {

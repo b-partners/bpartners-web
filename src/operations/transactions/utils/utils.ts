@@ -1,6 +1,6 @@
 import { ContentState, convertFromHTML, EditorState } from 'draft-js';
-import { formatDate } from 'src/common/utils';
-import { getCached } from 'src/providers';
+import { formatDate } from '@/common/utils';
+import { getCached } from '@/providers';
 
 type DataGenerateLinkFrom = {
   from: Date;

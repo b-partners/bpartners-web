@@ -1,6 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
-import { AnnotationInfo } from 'src/operations/annotator';
+import { AnnotationInfo } from '@/operations/annotator';
 import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
 

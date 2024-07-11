@@ -2,8 +2,8 @@
 import { useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteBackend } from 'src/common/components';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
+import { AutocompleteBackend } from '@/common/components';
+import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants/invoice';
 import { invoiceProvider } from '../../../providers';
 
 export const InvoiceSelection = props => {

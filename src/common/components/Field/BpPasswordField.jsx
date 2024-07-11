@@ -1,5 +1,5 @@
 import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { useToggle } from 'src/common/hooks';
+import { useToggle } from '@/common/hooks';
 import { BpTextField } from './BpTextField';
 
 export const BpPasswordField = props => {

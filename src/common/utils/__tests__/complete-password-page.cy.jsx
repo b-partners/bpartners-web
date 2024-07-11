@@ -1,6 +1,6 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { authProvider } from 'src/providers';
-import CompletePasswordPage from 'src/security/CompletePasswordPage';
+import { authProvider } from '@/providers';
+import CompletePasswordPage from '@/security/CompletePasswordPage';
 
 describe(specTitle('Complete password page'), () => {
   it('should test next button', () => {

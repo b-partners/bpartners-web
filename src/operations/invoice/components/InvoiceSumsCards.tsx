@@ -1,6 +1,6 @@
 import { Box, Paper, Skeleton, Typography } from '@mui/material';
 import { useStore } from 'react-admin';
-import { toMajors } from 'src/common/utils';
+import { toMajors } from '@/common/utils';
 import devis from '../../../assets/devis.svg';
 import invoicePaid from '../../../assets/invoice_paid.svg';
 import invoicePending from '../../../assets/invoice_pending.svg';

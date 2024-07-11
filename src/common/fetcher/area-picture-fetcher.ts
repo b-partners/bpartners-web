@@ -1,7 +1,7 @@
+import { annotatorProvider } from '@/providers/annotator-provider';
 import { UrlParams } from '@bpartners/annotator-component';
 import { FileType, Invoice } from '@bpartners/typescript-client';
 import { useMutation } from 'react-query';
-import { annotatorProvider } from 'src/providers/annotator-provider';
 import { getFileUrl } from '../utils';
 
 interface AreaPictureFetcher {
@@ -9,9 +9,7 @@ interface AreaPictureFetcher {
   invoice: Invoice;
 }
 
-interface CrupdateInvoiceFc {
-  (invoice: Invoice): void;
-}
+type CrupdateInvoiceFc = (invoice: Invoice) => void;
 
 export const useAreaPictureFetcher = (crupdateInvoice: CrupdateInvoiceFc) => {
   const query = useMutation({

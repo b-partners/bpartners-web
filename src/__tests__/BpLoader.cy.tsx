@@ -1,4 +1,4 @@
-import { BPLoader } from 'src/common/components';
+import { BPLoader } from '@/common/components';
 
 const LOADING_MESSAGE = 'Loading...';
 

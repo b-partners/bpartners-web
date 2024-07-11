@@ -1,6 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { cache, getCached } from 'src/providers';
+import { cache, getCached } from '@/providers';
 
 type annotationStore = {
   setPolygons: (data: any) => void;

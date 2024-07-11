@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import { useToggle } from 'src/common/hooks';
-import { getCached } from 'src/providers/cache';
+import { useToggle } from '@/common/hooks';
+import { getCached } from '@/providers/cache';
 import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {

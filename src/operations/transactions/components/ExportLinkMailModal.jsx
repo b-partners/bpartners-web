@@ -1,13 +1,13 @@
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
-import { RichTextForm } from 'src/common/components/RichTextForm';
-import { exportLinkMailResolver } from 'src/common/resolvers';
-import { useModalContext } from 'src/common/store/transaction';
-import { handleSubmit } from 'src/common/utils';
-import { mailingProvider } from 'src/providers';
-import { transactionMapper } from 'src/providers/mappers/transaction-mapper';
+import { BpFormField } from '@/common/components';
+import { RichTextForm } from '@/common/components/RichTextForm';
+import { exportLinkMailResolver } from '@/common/resolvers';
+import { useModalContext } from '@/common/store/transaction';
+import { handleSubmit } from '@/common/utils';
+import { mailingProvider } from '@/providers';
+import { transactionMapper } from '@/providers/mappers/transaction-mapper';
 import { v4 as uuid } from 'uuid';
 import { getExportLinkMailDefaultMessage, getExportLinkMailSubject } from '../utils';
 

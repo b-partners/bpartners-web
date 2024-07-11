@@ -4,11 +4,11 @@ import { EditorState } from 'draft-js';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { RichTextForm } from 'src/common/components/RichTextForm';
-import { invoiceRelaunchResolver as feedbackResolver } from 'src/common/resolvers';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { handleSubmit } from 'src/common/utils';
-import { feedbackProvider, getCached } from 'src/providers';
+import { RichTextForm } from '@/common/components/RichTextForm';
+import { invoiceRelaunchResolver as feedbackResolver } from '@/common/resolvers';
+import { useInvoiceToolContext } from '@/common/store/invoice';
+import { handleSubmit } from '@/common/utils';
+import { feedbackProvider, getCached } from '@/providers';
 import { getFeedbackDefaultMessage } from '../utils/utils';
 import { InvoiceListModal } from './InvoiceListModal';
 
