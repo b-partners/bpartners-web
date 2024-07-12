@@ -2,11 +2,13 @@ import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
+import { v4 as uuidv4 } from "uuid";
 import { useListContext, useNotify, useRefresh, useTranslate, useUnselectAll } from 'react-admin';
 import { BPButton } from '@/common/components/BPButton';
 import { dataProvider } from '@/providers';
+import { useToggle } from '../hooks/use-toggle';
 
-const getValueFromSource = (resource, source) => {
+const getValueFromSource = (resource: any, source: string) => {
   if (source.includes('|||')) {
     const [s1, s2] = source.split(' ||| ');
     return `${resource[s1]} ${resource[s2]}`;
@@ -14,31 +16,31 @@ const getValueFromSource = (resource, source) => {
   return resource[source];
 };
 
-const ArchiveBulkAction = ({ source, statusName }) => {
-  const { selectedIds, data, resource } = useListContext();
-  const [isDialogOpen, setDialogState] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+const ArchiveBulkAction = ({ source, statusName }: { source: string, statusName: string }) => {
+  const { selectedIds, data = [], resource } = useListContext();
+  const { value: isDialogOpen, handleClose, handleOpen } = useToggle();
+  const [isLoading, setIsLoading] = useState(false);
   const notify = useNotify();
   const refresh = useRefresh();
   const unselectAll = useUnselectAll(resource);
   const translate = useTranslate();
 
-  const handleClose = () => !isLoading && setDialogState(false);
-  const handleOpen = () => setDialogState(true);
+  const handleCloseDialog = () => !isLoading && handleClose();
+
   const handleSubmit = () => {
-    setLoading(true);
+    setIsLoading(true);
     const archive = async () => {
       const data = selectedIds.map(id => ({ id, [statusName || 'status']: ArchiveStatus.DISABLED }));
       await dataProvider.archive(resource, { data });
-      setLoading(false);
-      handleClose();
+      setIsLoading(false);
+      handleCloseDialog();
       refresh();
       unselectAll();
       notify(`${translate(`resources.${resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
     };
 
     archive().catch(() => {
-      setLoading(false);
+      setIsLoading(false);
       notify('messages.global.error', { type: 'error' });
     });
   };
@@ -54,21 +56,21 @@ const ArchiveBulkAction = ({ source, statusName }) => {
           onClick={handleOpen}
           icon={<ArchiveIcon />}
         />
-        <Dialog fullScreen={false} open={isDialogOpen} onClose={handleClose}>
+        <Dialog fullScreen={false} open={isDialogOpen} onClose={handleCloseDialog}>
           <DialogTitle>{`Les ${translate(`resources.${resource}.name`, { smart_count: 2 }).toLowerCase()} suivants vont être archivés :`}</DialogTitle>
           <DialogContent>
             <DialogContentText>
               <ul>
-                {(data || [])
+                {data
                   .filter(resource => selectedIds.includes(resource.id))
-                  .map(resource => (
-                    <li>{getValueFromSource(resource, source || 'description')}</li>
+                  .map((resource) => (
+                    <li key={uuidv4()}>{getValueFromSource(resource, source || 'description')}</li>
                   ))}
               </ul>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button disabled={isLoading} onClick={handleClose} autoFocus>
+            <Button disabled={isLoading} onClick={handleCloseDialog} autoFocus>
               Annuler
             </Button>
             <Button
@@ -86,4 +88,5 @@ const ArchiveBulkAction = ({ source, statusName }) => {
     )
   );
 };
+
 export default ArchiveBulkAction;

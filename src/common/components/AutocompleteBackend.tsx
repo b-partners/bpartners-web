@@ -60,6 +60,14 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
   };
 
   const Wrapper = asForm ? 'form' : 'div';
+
+  const getOptionLabel = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    return getLabel ? getLabel(option) : undefined;
+  }
+
   return (
     <Wrapper onSubmit={asForm ? handleSubmit : undefined}>
       <Autocomplete
@@ -68,7 +76,7 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
         noOptionsText='Aucun élément'
         clearIcon={false}
         value={value || null}
-        getOptionLabel={e => (typeof e === 'string' ? e : getLabel ? getLabel(e) : undefined)}
+        getOptionLabel={getOptionLabel}
         options={options}
         inputValue={query}
         inputMode='text'
