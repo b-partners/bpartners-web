@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { AnnotationInfo, NumberAsString } from '@/operations/annotator';
+import { cache, getCached } from '@/providers';
 import { Polygon } from '@bpartners/typescript-client';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { AnnotationInfo, NumberAsString } from '@/operations/annotator';
-import { cache, getCached } from '@/providers';
 
 const defaultAnnotationInfo: AnnotationInfo = {
   labelType: '',

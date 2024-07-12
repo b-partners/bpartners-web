@@ -1,6 +1,6 @@
+import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
-import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
 import { awsAuth, awsConfig } from './aws-config';

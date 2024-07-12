@@ -1,7 +1,7 @@
+import { InvoiceToolState } from '@/common/store/invoice';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import { FC } from 'react';
-import { InvoiceToolState } from '@/common/store/invoice';
 import { useConfirmedInvoiceToShow } from '../utils';
 import { EMPTY_BUTTON_STYLE } from './EmptyInvoiceList';
 import { InvoiceTabPanel } from './InvoiceTabPanel';

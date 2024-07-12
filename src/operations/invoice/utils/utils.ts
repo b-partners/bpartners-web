@@ -1,7 +1,7 @@
-import { CreateAttachment, FileType, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from '@bpartners/typescript-client';
-import { ContentState, convertFromHTML, EditorState } from 'draft-js';
 import { printError } from '@/common/utils';
 import { getCached } from '@/providers/cache';
+import { CreateAttachment, FileType, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from '@bpartners/typescript-client';
+import { ContentState, convertFromHTML, EditorState } from 'draft-js';
 import { formatDate, getFilenameMeta, getFileUrl } from '../../../common/utils';
 import { InvoiceStatusFR, PaymentRegulationStatusFR } from '../../../constants';
 

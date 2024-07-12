@@ -66,7 +66,7 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
       return option;
     }
     return getLabel ? getLabel(option) : undefined;
-  }
+  };
 
   return (
     <Wrapper onSubmit={asForm ? handleSubmit : undefined}>

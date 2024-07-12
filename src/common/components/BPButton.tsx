@@ -1,10 +1,16 @@
-import { Button, CircularProgress } from '@mui/material';
+import { Button, ButtonProps, CircularProgress } from '@mui/material';
 import { Link, useTranslate } from 'react-admin';
 
-const BPButtonTemplate = props => {
+export type BPButtonTemplateProps = ButtonProps & {
+  isLoading: boolean;
+  label: string;
+  icon: React.ReactElement;
+};
+
+const BPButtonTemplate = (props: BPButtonTemplateProps) => {
   const translate = useTranslate();
   const { label, icon, style, isLoading, endIcon, ...others } = props;
-  const width = style && style.width ? style.width : 300;
+  const width = style?.width ? style.width : 300;
 
   return (
     <Button
@@ -21,7 +27,7 @@ const BPButtonTemplate = props => {
   );
 };
 
-export const BPButton = props => {
+export const BPButton = (props: BPButtonTemplateProps) => {
   const { href, ...others } = props;
   return href ? (
     <Link to={href}>

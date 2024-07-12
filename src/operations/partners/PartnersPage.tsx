@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '@mui/material';
 import { BPConstruction } from '@/common/components/BPConstruction';
+import { Card, CardContent, CardHeader } from '@mui/material';
 import { partners } from './partners';
 import { PartnersCard } from './PartnersCard';
 import { CONTAINER } from './style';

@@ -1,11 +1,11 @@
+import { BPButton } from '@/common/components/BPButton';
+import { dataProvider } from '@/providers';
 import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
-import { v4 as uuidv4 } from "uuid";
 import { useListContext, useNotify, useRefresh, useTranslate, useUnselectAll } from 'react-admin';
-import { BPButton } from '@/common/components/BPButton';
-import { dataProvider } from '@/providers';
+import { v4 as uuidv4 } from 'uuid';
 import { useToggle } from '../hooks/use-toggle';
 
 const getValueFromSource = (resource: any, source: string) => {
@@ -16,7 +16,7 @@ const getValueFromSource = (resource: any, source: string) => {
   return resource[source];
 };
 
-const ArchiveBulkAction = ({ source, statusName }: { source: string, statusName: string }) => {
+const ArchiveBulkAction = ({ source, statusName }: { source: string; statusName: string }) => {
   const { selectedIds, data = [], resource } = useListContext();
   const { value: isDialogOpen, handleClose, handleOpen } = useToggle();
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +63,7 @@ const ArchiveBulkAction = ({ source, statusName }: { source: string, statusName:
               <ul>
                 {data
                   .filter(resource => selectedIds.includes(resource.id))
-                  .map((resource) => (
+                  .map(resource => (
                     <li key={uuidv4()}>{getValueFromSource(resource, source || 'description')}</li>
                   ))}
               </ul>

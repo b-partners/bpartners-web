@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, CircularProgress } from '@mui/material';
-import { useEffect } from 'react';
-import { useNotify } from 'react-admin';
-import { useNavigate } from 'react-router-dom';
 import { BP_COLOR } from '@/bp-theme';
 import { getUrlParams } from '@/common/utils';
 import { cache, dataProvider, prospectingJobsProvider } from '@/providers';
 import { ProspectEvaluateJobsMapper } from '@/providers/mappers/prospect-evaluate-jobs-mapper';
+import { Box, CircularProgress } from '@mui/material';
+import { useEffect } from 'react';
+import { useNotify } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
 import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 
 export const CalendarSync = () => {
