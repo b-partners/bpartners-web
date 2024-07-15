@@ -1,7 +1,7 @@
-import { Calendar, CalendarEvent } from '@bpartners/typescript-client';
-import { createContext, FC, ReactNode, useContext } from 'react';
 import { useTypedToggle } from '@/common/hooks';
 import { TRaCalendarEvent } from '@/providers/mappers';
+import { Calendar, CalendarEvent } from '@bpartners/typescript-client';
+import { createContext, FC, ReactNode, useContext, useMemo } from 'react';
 
 export type CalendarDialogToggle = 'CREATE' | 'EDIT';
 
@@ -26,9 +26,7 @@ export const CalendarContextProvider: FC<RaCalendarContext> = ({ currentCalendar
     defaultValue: false,
   });
 
-  return (
-    <CalendarContext.Provider value={{ currentCalendar, currentEvent, eventList, setCalendar, dialog: { getDialogStatus, setDialogStatus } }}>
-      {children}
-    </CalendarContext.Provider>
-  );
+  const store = useMemo(() => ({ currentCalendar, currentEvent, eventList, setCalendar, dialog: { getDialogStatus, setDialogStatus } }), []);
+
+  return <CalendarContext.Provider value={store}>{children}</CalendarContext.Provider>;
 };
