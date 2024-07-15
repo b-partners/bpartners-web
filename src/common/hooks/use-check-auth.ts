@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 
 export const useCheckAuth = (fetcher: () => Promise<any>) => {
-  const [isLoading, setLoading] = useState(true);
-  const [isAuthenticated, setAuthentication] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     fetcher()
-      .then(() => setAuthentication(true))
+      .then(() => setIsAuthenticated(true))
       .catch(err => {
-        setAuthentication(false);
+        setIsAuthenticated(false);
         console.log(err);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   }, [fetcher]);
 
   return { isLoading, isAuthenticated };
