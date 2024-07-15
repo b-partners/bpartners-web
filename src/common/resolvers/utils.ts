@@ -20,7 +20,7 @@ export const FieldErrorMessage = {
   noParticipant: 'Veuillez ajouter au moins un/une participant(e).',
 };
 
-export const requiredString = () => z.string({ required_error: FieldErrorMessage.required }).nonempty({ message: 'Ce champ est requis.' });
+export const requiredString = () => z.string({ required_error: FieldErrorMessage.required });
 
 export const requiredStringCustom = () => z.custom(str => str && `${str}`.length > 0, { message: FieldErrorMessage.required }).transform(str => `${str}`);
 
