@@ -2,9 +2,9 @@ import { Button, ButtonProps, CircularProgress } from '@mui/material';
 import { Link, useTranslate } from 'react-admin';
 
 export type BPButtonTemplateProps = ButtonProps & {
-  isLoading: boolean;
+  isLoading?: boolean;
   label: string;
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
 };
 
 const BPButtonTemplate = (props: BPButtonTemplateProps) => {
