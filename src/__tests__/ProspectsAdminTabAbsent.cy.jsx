@@ -1,5 +1,5 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { prospects } from './mocks/responses/prospects-api';
 import { user2, whoami2 } from './mocks/responses/security-api';
@@ -19,11 +19,11 @@ describe(specTitle('administration tab not present for non admin users in prospe
     cy.mount(<App />);
     cy.get('[name="prospects"]').click();
 
-    cy.wait("@getUser2")
-    cy.wait("@getAccount1")
-    cy.wait("@whoami")
+    cy.wait('@getUser2');
+    cy.wait('@getAccount1');
+    cy.wait('@whoami');
 
-    cy.get('#closeWarning').click();
+    cy.get('#closeWarning').click({ force: true });
     cy.get('[data-cy="administration-tab"]').should('not.exist');
   });
 });
