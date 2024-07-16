@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react';
 
 import TextField from '@mui/material/TextField';
+import { CalendarPickerProps, DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/fr';
 
-const BPDatePicker = props => {
+export type BPDatePickerProps<tDate> = Pick<CalendarPickerProps<tDate>, 'views'> & {
+  label: string;
+  setDate: (args: { year: number; month: number }) => void;
+};
+
+const BPDatePicker = (props: BPDatePickerProps<any>) => {
   const { views, label, setDate } = props;
-  const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(new Date()));
 
   useEffect(() => {
     const checkDate = () => {
       if (selectedDate) {
-        const { $M, $y } = selectedDate;
-        !isNaN($M + $y) && setDate({ year: $y, month: $M });
+        const month = selectedDate.month();
+        const year = selectedDate.year();
+        !isNaN(month + year) && setDate({ year, month });
       }
     };
     checkDate();

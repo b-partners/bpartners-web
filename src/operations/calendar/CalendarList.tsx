@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Calendar } from '@bpartners/typescript-client';
-import frLocale from '@fullcalendar/core/locales/fr';
-import { Calendar as RaCalendar, CalendarProps } from '@react-admin/ra-calendar';
-import { useEffect, useState } from 'react';
-import { List, useGetList } from 'react-admin';
 import { useTypedToggle } from '@/common/hooks';
 import { CalendarContextProvider } from '@/common/store/calendar';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from '@/providers/mappers';
+import { Calendar } from '@bpartners/typescript-client';
+import frLocale from '@fullcalendar/core/locales/fr';
+import { CalendarProps, Calendar as RaCalendar } from '@react-admin/ra-calendar';
+import { useEffect, useState } from 'react';
+import { List, useGetList } from 'react-admin';
 import { CalendarSaveDialog, CalendarSelection, CalendarSyncDialog, CalendarSyncInitPage } from './components';
 import { calendarIntervalFilter } from './utils';
 

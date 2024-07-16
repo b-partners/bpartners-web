@@ -1,8 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Dialog, DialogActions, DialogContent, DialogTitle, Toolbar } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
-import { useNotify, useRefresh } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
 import { calendarResolver } from '@/common/resolvers';
@@ -11,6 +7,10 @@ import { printError } from '@/common/utils';
 import { calendarEventProvider, getCached, prospectingJobsProvider } from '@/providers';
 import { calendarEventMapper, TRaCalendarEvent } from '@/providers/mappers';
 import { ProspectEvaluateJobsMapper } from '@/providers/mappers/prospect-evaluate-jobs-mapper';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Toolbar } from '@mui/material';
+import { FC, useEffect, useState } from 'react';
+import { useNotify, useRefresh } from 'react-admin';
+import { FormProvider, useForm } from 'react-hook-form';
 import { CalendarCustomerSelection } from './CalendarCustomerSelection';
 
 type CalendarEditDialogProps = {

@@ -1,7 +1,7 @@
 import { asyncGetUserInfo, BpDataProviderType, getCached, payingApi } from '.';
 
-import { ProductStatus } from '@bpartners/typescript-client';
 import { toMinors } from '@/common/utils';
+import { ProductStatus } from '@bpartners/typescript-client';
 import { productMapper } from './mappers';
 
 export const importProducts = async (body: any) => {
