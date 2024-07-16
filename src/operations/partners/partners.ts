@@ -1,5 +1,5 @@
-import { SxProps, Theme } from '@mui/material';
 import BREAD_LOGO from '@/assets/logo-bred.png';
+import { SxProps, Theme } from '@mui/material';
 
 type Message = {
   message: string;

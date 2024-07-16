@@ -1,8 +1,8 @@
+import PopoverButton from '@/common/components/PopoverButton';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { FC } from 'react';
-import PopoverButton from '@/common/components/PopoverButton';
 
 interface InvoiceCreationButtonProps {
   createInvoice: (type: InvoiceStatus) => void;

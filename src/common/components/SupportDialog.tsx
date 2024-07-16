@@ -1,8 +1,8 @@
+import { BP_COLOR } from '@/bp-theme';
 import { EmailOutlined } from '@mui/icons-material';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { FC } from 'react';
-import { BP_COLOR } from '@/bp-theme';
 
 type SupportDialogProps = {
   open: boolean;

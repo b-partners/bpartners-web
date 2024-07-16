@@ -1,5 +1,5 @@
-import { DatesSetArg } from '@fullcalendar/core';
 import { getCurrentMonth, getCurrentWeek } from '@/common/utils';
+import { DatesSetArg } from '@fullcalendar/core';
 
 export const calendarIntervalFilter = (dateInfo?: DatesSetArg, filterValues: any = {}) => {
   const { monday, nextMonday } = getCurrentWeek();

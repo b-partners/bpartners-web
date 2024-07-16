@@ -1,13 +1,13 @@
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Typography } from '@mui/material';
-import { FC } from 'react';
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AreaPictureMapLayer } from '@bpartners/typescript-client';
+import { Box, Typography } from '@mui/material';
+import { FC } from 'react';
 import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
 

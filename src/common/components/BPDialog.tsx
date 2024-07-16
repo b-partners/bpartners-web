@@ -1,6 +1,17 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { MouseEvent } from 'react';
 
-const BPDialog = props => {
+export type BPDialogProps = {
+  title: string;
+  open?: boolean;
+  btnLabel: string;
+  content: string[];
+  onClose?: () => void;
+  closeBtnLabel?: boolean;
+  handleClick: (event: MouseEvent<HTMLButtonElement>) => void;
+};
+
+const BPDialog = (props: BPDialogProps) => {
   const { title, content, btnLabel, handleClick, open = false, onClose = () => {}, closeBtnLabel = true } = props;
 
   return (
@@ -9,7 +20,7 @@ const BPDialog = props => {
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <DialogContent>
           {content.map((text, index) => (
-            <DialogContentText key={`${title}_text_key_${index}`} id={`text_${index}`}>
+            <DialogContentText key={`${title}_text_key_${index} `} id={`text_${index} `}>
               {text}
             </DialogContentText>
           ))}

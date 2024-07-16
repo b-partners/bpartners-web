@@ -6,8 +6,7 @@ import { accountProvider, authProvider, getCached, initiateAccountValidation, wh
 import bpLogo from '../../assets/bp-logo-full.webp';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
-import { printError } from '../utils';
-import { Redirect } from '../utils';
+import { Redirect, printError } from '../utils';
 import { ShortWarning } from './BPBetaTestWarning';
 import BPDialog from './BPDialog';
 
@@ -45,7 +44,7 @@ const BPAppBar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const isBeta = process.env.REACT_APP_BETA !== 'false';
   const cachedUser = getCached.user();
-  const isVerifiedUser = cachedUser && cachedUser.idVerified;
+  const isVerifiedUser = cachedUser?.idVerified;
   const notify = useNotify();
 
   useEffect(() => {
