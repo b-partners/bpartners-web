@@ -7,7 +7,13 @@ const useStyle = makeStyles(() => ({
   card: { border: 'none !important' },
 }));
 
-const BPFormLayout = props => {
+export type BPFormLayoutProps = {
+  children: React.ReactNode;
+  resource: string;
+  title: string;
+};
+
+const BPFormLayout = (props: BPFormLayoutProps) => {
   const { children, resource, title } = props;
   const classes = useStyle();
   return (
@@ -18,8 +24,7 @@ const BPFormLayout = props => {
   );
 };
 
-const CloseButton = props => {
-  const { resource } = props;
+const CloseButton = ({ resource }: { resource: string }) => {
   const redirect = useRedirect();
 
   const toList = () => {

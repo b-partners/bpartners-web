@@ -1,6 +1,15 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
+import { BPButton } from '@/common/components/BPButton';
+import { useAnnotationsInfoForm } from '@/common/forms';
+import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
+import { parseUrlParams } from '@/common/utils';
+import { labels } from '@/constants';
+import { Alphabet } from '@/constants/alphabet';
+import { clearPolygons } from '@/providers';
+import { annotatorProvider } from '@/providers/annotator-provider';
+import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import {
   Accordion,
   AccordionDetails,
@@ -18,15 +27,6 @@ import {
 import { ChangeEvent, useState } from 'react';
 import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
-import { BPButton } from '@/common/components/BPButton';
-import { useAnnotationsInfoForm } from '@/common/forms';
-import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
-import { parseUrlParams } from '@/common/utils';
-import { labels } from '@/constants';
-import { Alphabet } from '@/constants/alphabet';
-import { clearPolygons } from '@/providers';
-import { annotatorProvider } from '@/providers/annotator-provider';
-import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
 import CalculInfo from '/pentes/calcul.png';

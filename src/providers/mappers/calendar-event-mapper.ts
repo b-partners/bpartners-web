@@ -1,6 +1,6 @@
+import { dateForInput, dateForInputWithoutTimezone } from '@/common/utils';
 import { CalendarEvent } from '@bpartners/typescript-client';
 import { CalendarProps } from '@react-admin/ra-calendar';
-import { dateForInput, dateForInputWithoutTimezone } from '@/common/utils';
 import { v4 as uuidV4 } from 'uuid';
 export type TRaCalendarEvent = {
   id: string;

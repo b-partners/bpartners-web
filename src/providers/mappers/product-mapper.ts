@@ -1,5 +1,5 @@
-import { Product } from '@bpartners/typescript-client';
 import { emptyToNull, toMajors, toMinors } from '@/common/utils';
+import { Product } from '@bpartners/typescript-client';
 import { objectMapper } from './object-mapper';
 
 export const productMapper = {

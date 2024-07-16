@@ -1,5 +1,5 @@
-import { Point } from '@bpartners/annotator-component';
 import { ConverterResultGeoJSON } from '@/operations/annotator';
+import { Point } from '@bpartners/annotator-component';
 
 const getCenter = (coordinates: number[]) => {
   if (!coordinates) return 0;

@@ -1,6 +1,6 @@
+import { wearTranslation } from '@/constants';
 import { Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
-import { wearTranslation } from '@/constants';
 import { AnnotationInfoDetailsProps, AnnotationInfoProps } from '../types';
 
 const AnnotationInfoDetails: FC<AnnotationInfoDetailsProps> = ({ label, unity = '', value }) => {

@@ -1,5 +1,5 @@
-import { FileType } from '@bpartners/typescript-client';
 import { getCached } from '@/providers';
+import { FileType } from '@bpartners/typescript-client';
 
 export const getFileUrl = (id: string, type: FileType) => {
   const { accountId } = getCached.userInfo();

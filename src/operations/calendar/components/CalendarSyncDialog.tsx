@@ -1,12 +1,12 @@
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { FC, useState } from 'react';
-import { useTranslate } from 'react-admin';
 import GOOGLE_CALENDAR_ICON from '@/assets/google_calendar_icon.png';
 import { BPButton } from '@/common/components/BPButton';
 import { useCheckAuth } from '@/common/hooks';
 import { useCalendarContext } from '@/common/store/calendar';
 import { Redirect } from '@/common/utils';
 import { calendarEventProvider, dataProvider } from '@/providers';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { FC, useState } from 'react';
+import { useTranslate } from 'react-admin';
 import { calendarIntervalFilter } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 type CalendarSyncDialogProps = {

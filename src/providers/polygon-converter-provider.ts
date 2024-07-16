@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { ConverterPayloadGeoJSON, ConverterResultGeoJSON } from '@/operations/annotator';
+import axios from 'axios';
 
 export const polygonConverterProvider = {
   async coordinatesToPixel(geojson: ConverterPayloadGeoJSON): Promise<ConverterResultGeoJSON[]> {
