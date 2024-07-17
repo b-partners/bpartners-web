@@ -1,10 +1,10 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { prospects } from './mocks/responses/prospects-api';
+import { createProspect, prospects } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects'), () => {
@@ -29,13 +29,13 @@ describe(specTitle('Prospects'), () => {
   });
 
   it('should render the appropriate button', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, [...prospects, ...createProspect(100)]).as('getProspects');
 
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.get("[data-testid='prospect-filter']").clear();
+    cy.dataCy('prospect-filter').clear();
 
     // testing TO_CONTACT to CONTACTED
     cy.get('[data-testid="edit-prospect1_id"]').click();
@@ -114,6 +114,11 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Facture envoyée').click();
     cy.contains('Libérer ce client');
     cy.contains('Annuler').click();
+
+    cy.dataCy('À contacter-next-button').click();
+    cy.contains(2);
+    cy.dataCy('À contacter-prev-button').click();
+    cy.contains(1);
   });
 
   it('should show empty list', () => {
@@ -122,7 +127,7 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.contains('Pas encore de Prospect.');
+    cy.contains('Aucun enregistrement à afficher');
     cy.contains('Ajouter un prospect');
   });
 

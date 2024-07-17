@@ -1,19 +1,20 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import { Box, Link, Tab, Tabs } from '@mui/material';
+import { Box, Link, Stack, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 
 import ListComponent from '@/common/components/ListComponent';
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store/prospect-store';
-import { ProspectDialog, Prospects } from './components';
+import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
+import { BPButton } from '@/common/components';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
@@ -64,7 +65,7 @@ const ProspectsList = () => {
     handleLoading(true);
     const fetch = async () => {
       clearPolygons();
-      const prospectId = uuidv4();
+      const prospectId = uuidV4();
       await prospectingProvider.saveOrUpdate([
         {
           ...data,
@@ -76,8 +77,8 @@ const ProspectsList = () => {
       notify(`Prospect créé avec succès !`, { type: 'success' });
       const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
       if (isRoofer) {
-        const fileId = uuidv4();
-        const pictureId = uuidv4();
+        const fileId = uuidV4();
+        const pictureId = uuidV4();
         const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
         await annotatorProvider.getPictureFormAddress(pictureId, {
           address: data.address,
@@ -111,8 +112,19 @@ const ProspectsList = () => {
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-            <List queryOptions={{ refetchOnWindowFocus: false }} empty={false} pagination={false} component={ListComponent} actions={false}>
-              <Prospects toggleDialog={toggleDialog} />
+            <List
+              queryOptions={{ refetchOnWindowFocus: false }}
+              empty={false}
+              pagination={false}
+              component={ListComponent}
+              actions={
+                <Stack direction='row' width='100%' justifyContent='space-between' alignItems='center'>
+                  <ProspectFilterInput />
+                  <BPButton label='resources.prospects.add' onClick={toggleDialog} style={{ width: '15rem', height: '3rem' }} />
+                </Stack>
+              }
+            >
+              <Prospects />
               {isCreating && (
                 <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
                   <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
