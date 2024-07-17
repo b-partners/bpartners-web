@@ -30,7 +30,6 @@ import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
-import CalculInfo from '/pentes/calcul.png';
 
 const SideBar = () => {
   const redirect = useRedirect();
