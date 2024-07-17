@@ -133,7 +133,7 @@ const SideBar = () => {
         {slopeInfoOpen && (
           <Dialog open={slopeInfoOpen} onClose={handleSlopeInfoToggle}>
             <DialogContent>
-              <img src={CalculInfo} alt='Diagramme illustrant le calcul de la pente du toit' width={'100%'} />
+              <img src='/pentes/calcul.png' alt='Diagramme illustrant le calcul de la pente du toit' width={'100%'} />
             </DialogContent>
           </Dialog>
         )}

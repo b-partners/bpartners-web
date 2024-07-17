@@ -1,9 +1,9 @@
+import { printError } from '@/common/utils';
+import accountProvider, { accountHoldersGetter } from '@/providers/account-provider';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Stack, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { printError } from '@/common/utils';
-import accountProvider, { accountHoldersGetter } from '@/providers/account-provider';
 
 const LocationEdition = () => {
   const notify = useNotify();
@@ -53,31 +53,29 @@ const LocationEdition = () => {
       .finally(() => setLoading(false));
   };
   return (
-    <>
-      <Stack direction='column' spacing={1}>
-        <TextField variant='filled' name='latitude' label='latitude' type='number' sx={{ width: '45%' }} value={newLocation.latitude} onChange={handleChange} />
-        <TextField
-          variant='filled'
-          name='longitude'
-          label='longitude'
-          type='number'
-          sx={{ width: '45%' }}
-          value={newLocation.longitude}
-          onChange={handleChange}
-        />
-        <Button
-          name='submitLocation'
-          variant='contained'
-          size='small'
-          startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
-          disabled={tools.isLoading || tools.buttonDisable}
-          onClick={submitLocation}
-          sx={{ width: 'min-content', mt: 1 }}
-        >
-          Enregistrer
-        </Button>
-      </Stack>
-    </>
+    <Stack direction='column' spacing={1}>
+      <TextField variant='filled' name='latitude' label='latitude' type='number' sx={{ width: '45%' }} value={newLocation.latitude} onChange={handleChange} />
+      <TextField
+        variant='filled'
+        name='longitude'
+        label='longitude'
+        type='number'
+        sx={{ width: '45%' }}
+        value={newLocation.longitude}
+        onChange={handleChange}
+      />
+      <Button
+        name='submitLocation'
+        variant='contained'
+        size='small'
+        startIcon={tools.isLoading ? <CircularProgress color='inherit' size={18} /> : <SaveIcon />}
+        disabled={tools.isLoading || tools.buttonDisable}
+        onClick={submitLocation}
+        sx={{ width: 'min-content', mt: 1 }}
+      >
+        Enregistrer
+      </Button>
+    </Stack>
   );
 };
 
