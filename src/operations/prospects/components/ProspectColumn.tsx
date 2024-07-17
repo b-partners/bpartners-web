@@ -62,13 +62,25 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
         </CardContent>
         <CardActions sx={{ width: 'auto' }}>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <IconButton disabled={page === 0} style={{ marginRight: 6 }} color='primary' onClick={() => setPage(prev => prev - 1)}>
+            <IconButton
+              data-cy={`${title}-prev-button`}
+              disabled={page === 0}
+              style={{ marginRight: 6 }}
+              color='primary'
+              onClick={() => setPage(prev => prev - 1)}
+            >
               <ChevronLeft />
             </IconButton>
             <Box paddingX={2}>
               <Typography>{page + 1}</Typography>
             </Box>
-            <IconButton disabled={(page + 1) * perPage >= list.length} style={{ marginLeft: 6 }} color='primary' onClick={() => setPage(prev => prev + 1)}>
+            <IconButton
+              data-cy={`${title}-next-button`}
+              disabled={(page + 1) * perPage >= list.length}
+              style={{ marginLeft: 6 }}
+              color='primary'
+              onClick={() => setPage(prev => prev + 1)}
+            >
               <ChevronRight />
             </IconButton>
           </Stack>
