@@ -2,13 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import zod from 'zod';
 import { FieldErrorMessage, requiredString } from './utils';
 
-const matchCognitoPassword = (password: string) => {
+export const matchCognitoPassword = (password: string) => {
   const format = /[!@#$%^&*()_+\-=]/;
   const isIncorrect = password.length < 8 || !format.test(password) || !/\d/.test(password) || !/[A-Z]/.test(password);
   return !isIncorrect;
 };
 
-const comparePasswords = ({ newPassword, confirmedPassword }: any) => newPassword === confirmedPassword;
+export const comparePasswords = ({ newPassword, confirmedPassword }: any) => newPassword === confirmedPassword;
 
 const completePasswordValidator = zod
   .object({
