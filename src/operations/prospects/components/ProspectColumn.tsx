@@ -1,3 +1,4 @@
+import { EmptyList } from '@/common/components/EmptyList';
 import { Prospect } from '@bpartners/typescript-client';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Card, CardActions, CardContent, Grid, IconButton, Stack, Typography } from '@mui/material';
@@ -17,6 +18,7 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
   const perPage = 20;
 
   useEffect(() => {
+    setProspects(list.slice(page * perPage, page * perPage + perPage));
     if (list.length < perPage * page) {
       setPage(0);
     }
@@ -54,6 +56,7 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
               {prospects.map(item => (
                 <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />
               ))}
+              {prospects.length === 0 && <EmptyList />}
             </Stack>
           </Stack>
         </CardContent>
