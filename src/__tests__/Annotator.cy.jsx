@@ -1,6 +1,6 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { areaPictures } from './mocks/responses/area-pictures';
@@ -36,7 +36,7 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.get('[name="prospects"]').click();
     cy.wait('@getProspects');
 
-    cy.get('.css-69i1ev > .MuiButtonBase-root').click();
+    cy.contains('Ajouter un prospect').click();
 
     cy.get('[data-testid="email-field-input"]').clear().type('doejhonson@gmail.com');
     cy.get('[data-testid="phone-field-input"]').clear().type('+261340465399');
