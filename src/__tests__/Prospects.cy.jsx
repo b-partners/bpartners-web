@@ -1,6 +1,6 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
@@ -35,7 +35,7 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.get("[data-testid='prospect-filter']").clear();
+    cy.dataCy('prospect-filter').clear();
 
     // testing TO_CONTACT to CONTACTED
     cy.get('[data-testid="edit-prospect1_id"]').click();
@@ -122,7 +122,7 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.contains('Pas encore de Prospect.');
+    cy.contains('Aucun enregistrement à afficher');
     cy.contains('Ajouter un prospect');
   });
 
