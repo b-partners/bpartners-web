@@ -1,6 +1,6 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
@@ -55,7 +55,7 @@ describe(specTitle('Prospects.Actions'), () => {
       expect(req.query.name).eq(filterName);
       req.reply([contactedProspect, ...prospects.slice(1)]);
     }).as('filterProspect');
-    cy.get("[data-testid='prospect-filter']").type(filterName);
+    cy.dataCy('prospect-filter').type(filterName);
     cy.wait('@filterProspect');
   });
 });

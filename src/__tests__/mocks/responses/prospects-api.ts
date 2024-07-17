@@ -1,4 +1,5 @@
 import { Prospect, ProspectStatus } from '@bpartners/typescript-client';
+import { v4 as uuidV4 } from 'uuid';
 
 export const prospects: Prospect[] = [
   {
@@ -167,4 +168,28 @@ export const createdProspect = {
   defaultComment: 'create comment',
   invoiceID: 'invoice-DRAFT-1-id',
   contractAmount: '91',
+};
+
+export const createProspect = (number: number) => {
+  const prospects: Prospect[] = [];
+
+  for (let a = 0; a < number; a++) {
+    prospects.push({
+      id: uuidV4(),
+      name: null,
+      firstName: '',
+      phone: null,
+      email: null,
+      status: ProspectStatus.TO_CONTACT,
+      address: '30 Rue de la Montagne Sainte-Genevieve',
+      townCode: null,
+      comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      location: {
+        type: 'Point',
+        longitude: 2.347,
+        latitude: 48.8588,
+      },
+    });
+  }
+  return prospects;
 };
