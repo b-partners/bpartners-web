@@ -13,7 +13,7 @@ import { AnnotatorComponentProps } from './types';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
-const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width }) => {
+const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, updatePolygonList } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
 
@@ -76,10 +76,10 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           markerPosition={((polygons || []).length === 0 || (polygonFromProps || []).length === 0) && markerPosition}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
-          height='500px'
+          height={height || '500px'}
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
-          polygonList={polygonFromProps ? polygonFromProps : polygons}
+          polygonList={polygonFromProps || polygons}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
