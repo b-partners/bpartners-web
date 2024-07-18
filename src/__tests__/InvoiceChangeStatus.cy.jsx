@@ -60,6 +60,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('#form-save-id').click();
     cy.wait('@crupdate2');
+    cy.wait('@crupdate2');
 
     // check is payment regulations values are in Minor unity on change invoice status
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, req => {
