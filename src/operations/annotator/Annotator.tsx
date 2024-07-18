@@ -5,13 +5,13 @@ import AnnotatorComponent from './AnnotatorComponent';
 import SideBar from './SideBar';
 
 const Annotator = () => {
-  const { width } = useWindowResize();
+  const { width, height } = useWindowResize();
 
   return (
     <CanvasAnnotationContextProvider>
       <Grid container height='94%' pl={1}>
-        <Grid item xs={8.6} display='flex' justifyContent='center' alignItems='center' mr={'1%'}>
-          <AnnotatorComponent width={width * 0.6} />
+        <Grid item xs={8.6} display='flex' justifyContent='center' alignItems='start' mr={'1%'}>
+          <AnnotatorComponent width={width * 0.6} height={height * 0.8} />
         </Grid>
         <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
           <Stack flexGrow={2}>
