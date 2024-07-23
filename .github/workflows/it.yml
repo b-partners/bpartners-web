@@ -66,6 +66,9 @@ jobs:
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
       - run: REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} REACT_APP_BPARTNERS_API_URL=https://api.prod.bpartners.app REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' npm run it
         id: it-test
+      - name: Show test repports
+        if: always()
+        run: cat ./dist/test-reports.xml
       - name: Upload video to s3 if failure
         if: ${{ always() && steps.it-test.outcome == 'failure' }}
         run: aws s3 cp ./cypress/videos/__tests__/it/ s3://bpartners-web-it-videos/${{ env.time }}/ --recursive --profile bpartners
