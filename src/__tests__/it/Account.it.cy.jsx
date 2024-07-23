@@ -10,6 +10,8 @@ describe(specTitle('Account'), () => {
   it('is displayed on login', () => {
     cy.mount(<App />);
 
+    cy.skipBankSynchronisation()
+
     cy.get('[name="account"]').click();
 
     cy.contains('NUMER');

@@ -10,6 +10,8 @@ describe(specTitle('Customers'), () => {
 
   it('can be updated', () => {
     cy.mount(<App />);
+    
+    cy.skipBankSynchronisation();
 
     cy.get('[name="customers"]').click();
     cy.contains('Andriamahery IT').click();

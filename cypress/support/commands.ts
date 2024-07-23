@@ -1,6 +1,6 @@
-import { authProvider, awsAuth } from '../../src/providers';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
+import { authProvider, awsAuth, getCached } from '../../src/providers';
 
 const sessionStub = {
   tokens: {
@@ -42,12 +42,21 @@ const realCognitoLogin = () => {
 };
 const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${value}"]${additionalCommand}`);
 
+const skipBankSynchronisation = () => {
+  const { status } = getCached.account();
+  if (status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS' || status === 'SCA_REQUIRED') {
+    cy.contains('Mettez à jour votre banque');
+    cy.contains('Plus tard').click();
+  }
+};
+
 declare global {
   namespace Cypress {
     interface Chainable {
       dataCy: typeof dataCy;
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
+      skipBankSynchronisation: typeof skipBankSynchronisation;
     }
   }
 }
@@ -55,3 +64,4 @@ declare global {
 Cypress.Commands.add('dataCy', dataCy);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
+Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);

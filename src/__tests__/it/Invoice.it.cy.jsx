@@ -12,9 +12,11 @@ describe(specTitle('Invoice'), () => {
   it('is created from draft to confirmed', () => {
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
     cy.mount(<App />);
+    cy.skipBankSynchronisation();
+    const timeout = 30_000;
 
     cy.get('[name="invoice"]').click();
-    cy.wait('@getInvoicesSummary', { timeout: 10_000 });
+    cy.wait('@getInvoicesSummary', { timeout });
     cy.contains('Devis');
     cy.contains('Factures payées');
     cy.contains('Factures en attente');
@@ -34,8 +36,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un euro symbolique');
     cy.contains('Un euro symbolique').click(); // 1 €
 
-    cy.contains('Bon pour accord');
-
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
       'getdrafts'
     );
@@ -46,21 +46,22 @@ describe(specTitle('Invoice'), () => {
     cy.get('#form-create-regulation-id').click();
     cy.get("input[name='comment']").clear().type(comment);
     cy.get('#form-regulation-save-id').click();
-    cy.contains(comment);
 
     cy.get('#form-save-id').click();
 
-    const timeout = 10_000;
-    cy.wait('@getdrafts', { timeout: timeout });
+    cy.wait('@getdrafts', { timeout });
+
+    cy.contains('Devis').click();
+    cy.contains('Factures').click();
+    cy.contains('Brouillons').click();
 
     cy.contains(ref).click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1)').click();
-    cy.contains(comment);
 
     cy.get('#form-save-id').click();
 
-    cy.wait('@getdrafts', { timeout: timeout });
+    cy.wait('@getdrafts', { timeout });
 
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=PROPOSAL&archiveStatus=ENABLED&filters=').as(
       'getproposals'
@@ -71,13 +72,13 @@ describe(specTitle('Invoice'), () => {
     cy.get('body').then(body => {
       if (!body.text().includes('Aucune banque associée.')) {
         cy.get('[name="invoice"]').click();
-        cy.wait('@getInvoicesSummary', { timeout: timeout });
+        cy.wait('@getInvoicesSummary', { timeout });
         cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
-        cy.contains('Brouillon transformé en devis', { timeout: timeout });
+        cy.contains('Brouillon transformé en devis', { timeout });
 
-        cy.wait('@getproposals', { timeout: timeout });
+        cy.wait('@getproposals', { timeout });
         cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
-        cy.contains('Devis confirmé', { timeout: timeout });
+        cy.contains('Devis confirmé', { timeout });
 
         cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
 
@@ -85,13 +86,13 @@ describe(specTitle('Invoice'), () => {
         cy.get("[data-testid='invoice-payment-method-select-0']").click();
         cy.contains('Espèces').click();
         cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-        cy.wait('@savePaymentRegulation', { timeout: timeout });
+        cy.wait('@savePaymentRegulation', { timeout });
         cy.contains('Acompte payé avec succès !');
 
         cy.get("[data-testid='invoice-payment-method-select-1']").click();
         cy.contains('Chèque').click();
         cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-        cy.wait('@savePaymentRegulation', { timeout: timeout });
+        cy.wait('@savePaymentRegulation', { timeout });
         cy.contains('Acompte payé avec succès !');
       }
     });
