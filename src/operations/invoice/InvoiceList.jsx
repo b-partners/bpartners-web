@@ -1,14 +1,14 @@
-import { InvoiceStatus } from '@bpartners/typescript-client';
-import { Attachment, Check, DriveFileMove, History, TurnRight } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
-import { useEffect } from 'react';
-import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { RaMoneyField } from '@/common/components';
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import BPListActions from '@/common/components/BPListActions';
 import { useAreaPictureFetcher } from '@/common/fetcher';
 import { ConversionContext, useInvoiceToolContext } from '@/common/store/invoice';
 import { invoiceProvider } from '@/providers/invoice-provider';
+import { InvoiceStatus } from '@bpartners/typescript-client';
+import { Attachment, Check, DriveFileMove, History, TurnRight } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
@@ -49,8 +49,8 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
 
 const InvoiceGridTable = props => {
   const { crupdateInvoice, viewPdf: setPdf } = props;
-  const { isLoading } = useListContext();
-  const { openModal, setView } = useInvoiceToolContext();
+  const { isLoading, refetch } = useListContext();
+  const { openModal, setView, view } = useInvoiceToolContext();
   const { mutate: areaPictureFetcher, isLoading: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
   const { companyInfo } = useGetAccountHolder();
 
@@ -75,6 +75,10 @@ const InvoiceGridTable = props => {
       return areaPictureFetcher({ areaPictureId: data.idAreaPicture, invoice: { ...data } });
     }
   };
+
+  useEffect(() => {
+    refetch();
+  }, [view]);
 
   if (isLoading && areaPictureFetcherLoading) {
     return null;

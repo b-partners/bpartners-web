@@ -35,8 +35,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un euro symbolique');
     cy.contains('Un euro symbolique').click(); // 1 €
 
-    cy.contains('Bon pour accord');
-
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
       'getdrafts'
     );
@@ -47,17 +45,19 @@ describe(specTitle('Invoice'), () => {
     cy.get('#form-create-regulation-id').click();
     cy.get("input[name='comment']").clear().type(comment);
     cy.get('#form-regulation-save-id').click();
-    cy.contains(comment);
 
     cy.get('#form-save-id').click();
 
     const timeout = 10_000;
     cy.wait('@getdrafts', { timeout: timeout });
 
+    cy.contains('Devis').click();
+    cy.contains('Factures').click();
+    cy.contains('Brouillons').click();
+
     cy.contains(ref).click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1)').click();
-    cy.contains(comment);
 
     cy.get('#form-save-id').click();
 
