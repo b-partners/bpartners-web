@@ -1,5 +1,5 @@
-import { Typography, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-import ExternalLinkButton from 'src/common/components/BPExternalLinkButton';
+import ExternalLinkButton from '@/common/components/BPExternalLinkButton';
+import { Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
 
 type Props = {
   checked: boolean;

@@ -1,11 +1,12 @@
+import { useTypedToggle } from '@/common/hooks';
+import { TRaCalendarEvent } from '@/providers/mappers';
 import { Calendar, CalendarEvent } from '@bpartners/typescript-client';
-import { FC, createContext, useContext } from 'react';
-import { useTypedToggle } from 'src/common/hooks';
-import { TRaCalendarEvent } from 'src/providers/mappers';
+import { createContext, FC, ReactNode, useContext } from 'react';
 
 export type CalendarDialogToggle = 'CREATE' | 'EDIT';
 
 type RaCalendarContext = {
+  children?: ReactNode;
   currentEvent: TRaCalendarEvent;
   currentCalendar: Calendar;
   eventList: CalendarEvent[];

@@ -1,7 +1,7 @@
 import { BpDataProviderType, getCached, prospectingApi } from '.';
 
 export const prospectingJobsProvider: BpDataProviderType = {
-  getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {
+  getList: async function (_page: number, _perPage: number, _filters = {}): Promise<any[]> {
     const { accountHolderId } = getCached.userInfo();
     const { data } = await prospectingApi().getProspectEvaluationJobs(accountHolderId);
     return data;

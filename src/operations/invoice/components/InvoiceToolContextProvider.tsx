@@ -1,5 +1,5 @@
+import { InvoiceToolContext, InvoiceToolState } from '@/common/store/invoice';
 import { ReactElement, useState } from 'react';
-import { InvoiceToolContext, InvoiceToolState } from 'src/common/store/invoice';
 
 type InvoiceToolContextProviderProps = {
   children: ReactElement;

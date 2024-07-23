@@ -1,12 +1,12 @@
 import { Transaction, TransactionStatus } from '@bpartners/typescript-client';
-import { BpDataProviderType, asyncGetUserInfo, getCached, payingApi } from '.';
+import { asyncGetUserInfo, BpDataProviderType, getCached, payingApi } from '.';
 import { TRANSACTION_STATUSES } from '../constants';
 
 const toModelStatus = (status: TransactionStatus): TransactionStatus =>
   Object.keys(TRANSACTION_STATUSES).includes(status) ? status : TransactionStatus.UNKNOWN;
 
 export const transactionProvider: BpDataProviderType = {
-  async getOne(id: string) {
+  async getOne(_id: string) {
     throw new Error('Function not implemented.');
   },
   getList: async function (page: number, perPage: number, filters = {}): Promise<any[]> {

@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { BpFormField } from '@/common/components';
+import { BPButton } from '@/common/components/BPButton';
+import { calendarResolver } from '@/common/resolvers';
+import { useCalendarContext } from '@/common/store/calendar';
+import { printError } from '@/common/utils';
+import { calendarEventProvider, getCached, prospectingJobsProvider } from '@/providers';
+import { calendarEventMapper, TRaCalendarEvent } from '@/providers/mappers';
+import { ProspectEvaluateJobsMapper } from '@/providers/mappers/prospect-evaluate-jobs-mapper';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Toolbar } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BpFormField } from 'src/common/components';
-import { BPButton } from 'src/common/components/BPButton';
-import { calendarResolver } from 'src/common/resolvers';
-import { useCalendarContext } from 'src/common/store/calendar';
-import { printError } from 'src/common/utils';
-import { calendarEventProvider, getCached, prospectingJobsProvider } from 'src/providers';
-import { TRaCalendarEvent, calendarEventMapper } from 'src/providers/mappers';
 import { CalendarCustomerSelection } from './CalendarCustomerSelection';
-import { ProspectEvaluateJobsMapper } from 'src/providers/mappers/prospect-evaluate-jobs-mapper';
 
 type CalendarEditDialogProps = {
   open: boolean;

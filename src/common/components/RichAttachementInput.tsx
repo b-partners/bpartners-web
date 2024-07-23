@@ -1,8 +1,8 @@
+import { fileToAttachmentApi } from '@/operations/invoice/utils/utils';
 import { AttachFile } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { ChangeEvent, useContext } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { fileToAttachmentApi } from 'src/operations/invoice/utils/utils';
 import { filesToArrayBuffer, handleSubmit } from '../utils';
 import { AttachementContext } from './RichTextForm';
 

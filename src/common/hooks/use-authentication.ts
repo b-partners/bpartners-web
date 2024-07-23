@@ -1,6 +1,6 @@
+import { authProvider, getCached } from '@/providers';
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { authProvider, getCached } from 'src/providers';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { printError } from '../utils';
 
 /**
@@ -8,28 +8,28 @@ import { printError } from '../utils';
  *
  */
 const useAuthentication = () => {
-  const [isLoading, setState] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
     const { accessToken } = getCached.token();
     if (accessToken) {
-      setState(true);
+      setIsLoading(true);
       authProvider
         .checkAuth()
         .then(() => {
           if (/login/.test(pathname)) {
             navigate('/transactions');
           }
-          setState(false);
+          setIsLoading(false);
         })
         .catch(() => {
           navigate('/login');
           authProvider
             .logout()
             .catch(printError)
-            .finally(() => setState(false));
+            .finally(() => setIsLoading(false));
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

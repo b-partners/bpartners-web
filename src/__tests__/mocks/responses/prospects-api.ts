@@ -1,4 +1,5 @@
 import { Prospect, ProspectStatus } from '@bpartners/typescript-client';
+import { v4 as uuidV4 } from 'uuid';
 
 export const prospects: Prospect[] = [
   {
@@ -7,6 +8,7 @@ export const prospects: Prospect[] = [
     phone: '+261340465338 /',
     email: 'johnDoe@gmail.com',
     status: ProspectStatus.TO_CONTACT,
+    firstName: '',
     address: '30 Rue de la Montagne Sainte-Genevieve',
     townCode: 21547,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -23,6 +25,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect2_id',
     name: 'jane doe',
+    firstName: '',
     phone: '+261340465339',
     email: 'janeDoe@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -36,6 +39,7 @@ export const prospects: Prospect[] = [
   },
   {
     id: 'prospect3_id',
+    firstName: '',
     name: 'markus adams',
     phone: '+261340465340',
     email: 'markusAdams@gmail.com',
@@ -47,6 +51,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect4_id',
     name: 'Alyssa Hain',
+    firstName: '',
     phone: '+261340465341',
     email: 'alyssaHain@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -57,6 +62,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect5_id',
     name: 'Michele Klaffs',
+    firstName: '',
     phone: '+261340465342',
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONTACTED,
@@ -73,6 +79,7 @@ export const prospects: Prospect[] = [
     id: 'prospect6_id',
     name: 'Michele Klaffs',
     phone: '+261340465342',
+    firstName: '',
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONVERTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
@@ -81,6 +88,7 @@ export const prospects: Prospect[] = [
   },
   {
     id: 'prospect7_id',
+    firstName: '',
     name: 'Killy Waddilove',
     phone: '+261340465344',
     email: 'killyWaddilove@gmail.com',
@@ -95,6 +103,7 @@ export const prospects: Prospect[] = [
   {
     id: 'prospect8_id',
     name: null,
+    firstName: '',
     phone: null,
     email: null,
     status: ProspectStatus.TO_CONTACT,
@@ -114,6 +123,7 @@ export const updatedProspects: Prospect[] = [
     id: 'prospect1_id',
     name: 'Doe Jhonson',
     phone: '+261340465399',
+    firstName: '',
     email: 'doejhonson@gmail.com',
     status: ProspectStatus.TO_CONTACT,
     address: '30 Rue de la Montagne Sainte-Genevieve',
@@ -151,10 +161,35 @@ export const convertedProspect = {
 export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',
-  address: 'Evry',
-  name: 'Doe Jhonson',
+  address: 'Paris',
+  firstName: 'Doe',
+  name: 'Johnson',
   status: 'TO_CONTACT',
   defaultComment: 'create comment',
   invoiceID: 'invoice-DRAFT-1-id',
   contractAmount: '91',
+};
+
+export const createProspect = (number: number) => {
+  const prospects: Prospect[] = [];
+
+  for (let a = 0; a < number; a++) {
+    prospects.push({
+      id: uuidV4(),
+      name: null,
+      firstName: '',
+      phone: null,
+      email: null,
+      status: ProspectStatus.TO_CONTACT,
+      address: '30 Rue de la Montagne Sainte-Genevieve',
+      townCode: null,
+      comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      location: {
+        type: 'Point',
+        longitude: 2.347,
+        latitude: 48.8588,
+      },
+    });
+  }
+  return prospects;
 };

@@ -1,16 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { RichTextForm } from '@/common/components/RichTextForm';
+import { invoiceRelaunchResolver } from '@/common/resolvers';
+import { useInvoiceToolContext } from '@/common/store/invoice';
+import { handleSubmit } from '@/common/utils';
+import { authProvider, getCached, payingApi } from '@/providers';
 import { Button, CircularProgress, LinearProgress } from '@mui/material';
 import { EditorState } from 'draft-js';
 import { useEffect, useState } from 'react';
 import { ListContextProvider, useListController, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { RichTextForm } from 'src/common/components/RichTextForm';
-import { invoiceRelaunchResolver } from 'src/common/resolvers';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
-import { handleSubmit } from 'src/common/utils';
-import { authProvider, getCached, payingApi } from 'src/providers';
 import { InvoiceListModal } from '.';
-import { getEmailSubject, invoiceGetContext, getRelaunchDefaultMessage } from '../utils';
+import { getEmailSubject, getRelaunchDefaultMessage, invoiceGetContext } from '../utils';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
 
 export const InvoiceRelaunchModal = () => {

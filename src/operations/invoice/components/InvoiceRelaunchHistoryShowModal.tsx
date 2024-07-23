@@ -1,13 +1,13 @@
+import { useInvoiceToolContext } from '@/common/store/invoice';
+import { formatDatetime } from '@/common/utils';
+import { fileProvider } from '@/providers';
+import { Attachment, InvoiceRelaunch } from '@bpartners/typescript-client';
 import { DownloadForOffline as DownloadForOfflineIcon } from '@mui/icons-material';
-import { Button, Card, CardHeader, CardContent, Box, Chip } from '@mui/material';
-import { ContentState, Editor, EditorState, convertFromHTML } from 'draft-js';
-import { useInvoiceToolContext } from 'src/common/store/invoice';
+import { Box, Button, Card, CardContent, CardHeader, Chip } from '@mui/material';
+import { ContentState, convertFromHTML, Editor, EditorState } from 'draft-js';
+import { useNotify } from 'react-admin';
 import { InvoiceListModal } from '.';
 import { InvoiceModalTitle } from './InvoiceModalTitle';
-import { Attachment, InvoiceRelaunch } from '@bpartners/typescript-client';
-import { formatDatetime } from 'src/common/utils';
-import { fileProvider } from 'src/providers';
-import { useNotify } from 'react-admin';
 
 export const InvoiceRelaunchHistoryShowModal = () => {
   const {

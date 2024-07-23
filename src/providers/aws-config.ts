@@ -1,6 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
+import { confirmResetPassword, fetchAuthSession, resetPassword, signIn, signOut, updatePassword } from '@aws-amplify/auth';
 export const awsConfig = {
   aws_project_region: process.env.REACT_APP_AWS_REGION,
   aws_cognito_region: process.env.REACT_APP_AWS_REGION,
@@ -18,4 +16,13 @@ export const awsConfig = {
     passwordPolicyCharacters: ['REQUIRES_LOWERCASE', 'REQUIRES_UPPERCASE', 'REQUIRES_NUMBERS', 'REQUIRES_SYMBOLS'],
   },
   aws_cognito_verification_mechanisms: ['EMAIL'],
+};
+
+export const awsAuth = {
+  fetchAuthSession,
+  signIn,
+  signOut,
+  updatePassword,
+  resetPassword,
+  confirmResetPassword,
 };

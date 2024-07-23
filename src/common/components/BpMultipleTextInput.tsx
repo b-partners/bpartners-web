@@ -1,5 +1,5 @@
 import { Box, Chip, FormHelperText, SxProps, TextField, TextFieldProps, Typography } from '@mui/material';
-import { CSSProperties, ChangeEvent, FC, FormEvent, useState } from 'react';
+import { ChangeEvent, CSSProperties, FC, FormEvent, useState } from 'react';
 import { useTranslate } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BPButton } from './BPButton';
@@ -89,11 +89,11 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
           disabled={!state || state.length === 0}
           label='ra.action.add'
           onClick={handleAdd}
-          style={{ ...CUSTOM_BUTTON, ...(!!errors[name] ? ERROR_BORDER : BORDER) }}
+          style={{ ...CUSTOM_BUTTON, ...(!!errors[name] ? ERROR_BORDER : BORDER) } as CSSProperties}
         />
       </form>
       {/* cannot use TextField props helperText because of the BpButton static style */}
-      {!!errors[name] && <FormHelperText error>{errors[name].message}</FormHelperText>}
+      {!!errors[name] && <FormHelperText error>{errors[name].message as string}</FormHelperText>}
     </Box>
   );
 };

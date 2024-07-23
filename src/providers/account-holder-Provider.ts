@@ -7,7 +7,7 @@ import {
   CreateAnnualRevenueTarget,
   UpdateAccountHolder,
 } from '@bpartners/typescript-client';
-import { BpDataProviderType, asyncGetAccountId, asyncGetUser, cache, getCached, userAccountsApi } from '.';
+import { asyncGetAccountId, asyncGetUser, BpDataProviderType, cache, getCached, userAccountsApi } from '.';
 
 export const accountHolderProvider: BpDataProviderType = {
   async getOne() {
@@ -23,7 +23,7 @@ export const accountHolderProvider: BpDataProviderType = {
     const { data } = await userAccountsApi().updateCompanyInfo(userId, accountId, accountHolderId, { ...resources[0] });
     return [cache.accountHolder(data)];
   },
-  getList: async (page: number, perPage: number, filter: any) => {
+  getList: async (_page: number, _perPage: number, filter: any) => {
     const { name } = filter;
     const { data } = await userAccountsApi().getAllAccountHolders(name);
     return data;

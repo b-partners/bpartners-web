@@ -1,13 +1,13 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material';
+import GOOGLE_CALENDAR_ICON from '@/assets/google_calendar_icon.png';
+import { BPButton } from '@/common/components/BPButton';
+import { useCheckAuth } from '@/common/hooks';
+import { useCalendarContext } from '@/common/store/calendar';
+import { Redirect } from '@/common/utils';
+import { calendarEventProvider, dataProvider } from '@/providers';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, useState } from 'react';
-import { BPButton } from 'src/common/components/BPButton';
-import { useCheckAuth } from 'src/common/hooks';
-import { useCalendarContext } from 'src/common/store/calendar';
-import { redirect } from 'src/common/utils';
-import { calendarEventProvider, dataProvider } from 'src/providers';
-import { calendarIntervalFilter } from '../utils';
-import GOOGLE_CALENDAR_ICON from 'src/assets/google_calendar_icon.png';
 import { useTranslate } from 'react-admin';
+import { calendarIntervalFilter } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 type CalendarSyncDialogProps = {
   changeView: () => void;
@@ -30,7 +30,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
   const oauth2Init = () => {
     setLoading(true);
     dataProvider.oauth2Init('calendar', calendarId).then(({ data: { redirectionUrl } }) => {
-      redirect(redirectionUrl);
+      Redirect.toURL(redirectionUrl);
     });
   };
   const handleCheck = () => setChecked(!checked);

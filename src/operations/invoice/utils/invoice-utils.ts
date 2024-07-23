@@ -1,11 +1,11 @@
+import { emptyToNull, formatDateTo8601, isBlankNumber, toMajors, toMinors } from '@/common/utils';
 import { Invoice, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { formatDateTo8601, emptyToNull, isBlankNumber, toMajors, toMinors } from 'src/common/utils';
 import {
   DefaultPaymentRegulation,
   missingPaymentRegulation,
+  PAYMENT_REGULATIONS,
   paymentRegulationToMajor,
   paymentRegulationToMinor,
-  PAYMENT_REGULATIONS,
 } from './payment-regulation-utils';
 import { DELAY_IN_PAYMENT_ALLOWED, DELAY_PENALTY_PERCENT, GLOBAL_DISCOUNT, PERCENT_VALUE, SENDING_DATE, VALIDITY_DATE } from './utils';
 

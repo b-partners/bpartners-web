@@ -1,6 +1,6 @@
+import { emptyToNull, toMajors, toMinors } from '@/common/utils';
 import { Product } from '@bpartners/typescript-client';
 import { objectMapper } from './object-mapper';
-import { emptyToNull, toMajors, toMinors } from 'src/common/utils';
 
 export const productMapper = {
   toDomain(product: Product) {

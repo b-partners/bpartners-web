@@ -1,5 +1,5 @@
+import { invoiceDateValidator } from '@/operations/invoice/utils/utils';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { invoiceDateValidator } from 'src/operations/invoice/utils/utils';
 
 describe(specTitle('Date validator'), () => {
   it('', () => {

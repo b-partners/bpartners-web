@@ -1,5 +1,5 @@
+import { getPagination } from '@/common/utils/pagination-utilities';
 import { UpdateParams } from 'react-admin';
-import { getPagination } from 'src/common/utils/pagination-utilities';
 import {
   accountHolderProvider,
   accountProvider,

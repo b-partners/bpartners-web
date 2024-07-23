@@ -1,7 +1,7 @@
-import { Box, Button } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import PopoverButton from 'src/common/components/PopoverButton';
+import PopoverButton from '@/common/components/PopoverButton';
 import { InvoiceStatus } from '@bpartners/typescript-client';
+import { Add as AddIcon } from '@mui/icons-material';
+import { Box, Button } from '@mui/material';
 import { FC } from 'react';
 
 interface InvoiceCreationButtonProps {

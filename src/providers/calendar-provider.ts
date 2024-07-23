@@ -1,8 +1,8 @@
+import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from '@/constants/redirection-url';
 import { BpDataProviderType, calendarApi, getCached } from '.';
-import { calendarRedirectionUrls, getCalendarAuthRedirectionUrl } from 'src/constants/redirection-url';
 
 export const calendarProvider: BpDataProviderType = {
-  async getList(page: number, perPage: number, filters: any) {
+  async getList(_page: number, _perPage: number, _filters: any) {
     const { userId } = getCached.userInfo();
     return (await calendarApi().usersUserIdCalendarsGet(userId)).data as any;
   },
@@ -14,10 +14,10 @@ export const calendarProvider: BpDataProviderType = {
     const { userId } = getCached.userInfo();
     return (await calendarApi().exchangeCode(userId, getCalendarAuthRedirectionUrl(code, calendarId))).data;
   },
-  getOne: function (id?: string, option?: any): Promise<any> {
+  getOne: function (_id?: string, _option?: any): Promise<any> {
     throw new Error('Function not implemented.');
   },
-  saveOrUpdate: function (resources: any[], option?: any): Promise<any[]> {
+  saveOrUpdate: function (_resources: any[], _option?: any): Promise<any[]> {
     throw new Error('Function not implemented.');
   },
 };

@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { BP_COLOR } from '@/bp-theme';
+import { getUrlParams } from '@/common/utils';
+import { cache, dataProvider, prospectingJobsProvider } from '@/providers';
+import { ProspectEvaluateJobsMapper } from '@/providers/mappers/prospect-evaluate-jobs-mapper';
 import { Box, CircularProgress } from '@mui/material';
-import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
-import { BP_COLOR } from 'src/bp-theme';
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { getUrlParams } from 'src/common/utils';
 import { useNotify } from 'react-admin';
-import { cache, dataProvider, prospectingJobsProvider } from 'src/providers';
-import { ProspectEvaluateJobsMapper } from 'src/providers/mappers/prospect-evaluate-jobs-mapper';
+import { useNavigate } from 'react-router-dom';
+import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 
 export const CalendarSync = () => {
   const notify = useNotify();

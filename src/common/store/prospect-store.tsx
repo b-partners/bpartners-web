@@ -1,9 +1,10 @@
+import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants/invoice';
+import { prospectingJobsProvider } from '@/providers/prospecting-jobs-provider';
 import { ProspectEvaluationJobInfo } from '@bpartners/typescript-client';
-import { Dispatch, FC, createContext, useContext, useState } from 'react';
-import { AUTOCOMPLETE_LIST_LENGTH } from 'src/constants/invoice';
-import { prospectingJobsProvider } from 'src/providers/prospecting-jobs-provider';
+import { createContext, Dispatch, FC, ReactNode, useContext, useState } from 'react';
 
 type RaProspectContext = {
+  children?: ReactNode;
   loading: boolean;
   setLoading: Dispatch<React.SetStateAction<boolean>>;
   handleLoading: (isLoading: boolean) => void;

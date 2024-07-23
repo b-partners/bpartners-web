@@ -1,22 +1,22 @@
+import { getCurrentAccount } from '@/common/utils';
+import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
-import { getCurrentAccount } from 'src/common/utils';
-import loginRedirectionUrls from 'src/security/login-redirection-urls';
-import { BpDataProviderType, accountHolderProvider, cache, getCached, onboardingApi, userAccountsApi } from '.';
+import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
   async getOne(_userId?: string) {
     // TODO: return the account with the attribut current = true but wait for the backend to implement it
     const { userId } = getCached.userInfo();
-    const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId);
+    const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId || '');
     const account: Account = getCurrentAccount(data);
     return cache.account(account);
   },
-  async saveOrUpdate(resources: any) {
+  async saveOrUpdate(_resources: any) {
     throw new Error('Function not implemented.');
   },
-  async getList(page: number, perPage: number, filter: any) {
+  async getList(_page: number, _perPage: number, _filter: any) {
     const { userId } = getCached.userInfo();
-    const { data } = await userAccountsApi().getAccountsByUserId(userId);
+    const { data } = await userAccountsApi().getAccountsByUserId(userId || '');
     return data;
   },
   async updateOne(resource: UpdateAccountIdentity) {

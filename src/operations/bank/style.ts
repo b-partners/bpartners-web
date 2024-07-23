@@ -1,5 +1,5 @@
+import { BP_COLOR } from '@/bp-theme';
 import { SxProps, Theme } from '@mui/material';
-import { BP_COLOR } from 'src/bp-theme';
 
 export const LAYOUT: SxProps<Theme> = {
   width: '99%',

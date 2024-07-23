@@ -2,10 +2,12 @@ node_modules/
 dist/
 
 .idea
+.vscode
 **.log
 
 coverage/
 .nyc_output/
+cypress/integration/
 cypress/screenshots/
 cypress/downloads/
 cypress/videos
@@ -38,3 +40,5 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+tsconfig.tsbuildinfo

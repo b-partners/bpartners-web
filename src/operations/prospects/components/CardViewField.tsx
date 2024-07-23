@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { ReactElement, cloneElement } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 interface CardViewFieldProps {
   value: string;

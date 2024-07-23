@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { ModalType, useInvoiceToolContext } from '@/common/store/invoice';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, ReactNode } from 'react';
-import { ModalType, useInvoiceToolContext } from 'src/common/store/invoice';
 
 type InvoiceListModalProps = {
   type: ModalType;
   title: ReactNode;
   actions?: ReactNode;
+  children?: ReactNode;
 };
 
 export const InvoiceListModal: FC<InvoiceListModalProps> = ({ type, children, title, actions }) => {

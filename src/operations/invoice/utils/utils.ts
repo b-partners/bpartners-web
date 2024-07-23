@@ -1,10 +1,9 @@
-import { CreateAttachment, Invoice, InvoiceStatus, Product, FileType, InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
-import { getFileUrl, getFilenameMeta, formatDate } from '../../../common/utils';
-import { InvoiceStatusFR } from '../../../constants';
-import { printError } from 'src/common/utils';
-import { getCached } from 'src/providers/cache';
-import { ContentState, EditorState, convertFromHTML } from 'draft-js';
-import { PaymentRegulationStatusFR } from '../../../constants/payment-regulation-status';
+import { printError } from '@/common/utils';
+import { getCached } from '@/providers/cache';
+import { CreateAttachment, FileType, Invoice, InvoicePaymentTypeEnum, InvoiceStatus, Product } from '@bpartners/typescript-client';
+import { ContentState, convertFromHTML, EditorState } from 'draft-js';
+import { formatDate, getFilenameMeta, getFileUrl } from '../../../common/utils';
+import { InvoiceStatusFR, PaymentRegulationStatusFR } from '../../../constants';
 
 /**
  * **INVOICE**
@@ -121,14 +120,10 @@ export const totalPriceWithoutVatFromProductQuantity = (product: Product): numbe
 export const totalVatFromProductQuantity = (product: Product): number => (product.quantity * product.unitPrice * product.vatPercent) / 100 / 100;
 
 export const totalPriceWithVatFromProducts = (products: Array<Product>): number =>
-  products != null && products.length > 0
-    ? products.map(product => totalPriceWithVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
-    : 0;
+  (products || []).map(product => totalPriceWithVatFromProductQuantity(product)).reduce((acc, price) => acc + price, 0);
 
 export const totalPriceWithoutVatFromProducts = (products: Array<Product>): number =>
-  products != null && products.length > 0
-    ? products.map(product => totalPriceWithoutVatFromProductQuantity(product)).reduce((price1, price2) => price1 + price2)
-    : 0;
+  (products || []).map(product => totalPriceWithoutVatFromProductQuantity(product)).reduce((acc, price) => acc + price, 0);
 
 type InvoiceStatusLabel = keyof typeof InvoiceStatus;
 
@@ -196,6 +191,7 @@ export const invoiceInitialValue: Invoice = {
   comment: '',
   paymentType: InvoicePaymentTypeEnum.CASH,
   paymentRegulations: [],
+  idAreaPicture: '',
 };
 
 // viewScreen, if true display the list and the preview of the document else display the form and the pdf preview
