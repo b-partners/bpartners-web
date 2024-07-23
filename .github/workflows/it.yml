@@ -22,12 +22,12 @@ jobs:
     timeout-minutes: 50
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 17.x
       - id: install-aws-cli
@@ -76,7 +76,7 @@ jobs:
     needs: [tests]
     if: always()
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: install-aws-cli
