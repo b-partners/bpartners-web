@@ -74,7 +74,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
       )}
       {filename && (
         <AnnotatorCanvas
-          markerPosition={((polygons || []).length === 0 || (polygonFromProps || []).length === 0) && markerPosition}
+          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
