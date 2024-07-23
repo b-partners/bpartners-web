@@ -14,7 +14,7 @@ import { AnnotatorComponentProps } from './types';
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
-  const { polygons, updatePolygonList } = useCanvasAnnotationContext();
+  const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
 
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -40,6 +40,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
 
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
+    setPolygons([]);
   };
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
@@ -73,7 +74,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
       )}
       {filename && (
         <AnnotatorCanvas
-          markerPosition={((polygons || []).length === 0 || (polygonFromProps || []).length === 0) && markerPosition}
+          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
