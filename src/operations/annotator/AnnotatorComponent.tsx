@@ -3,8 +3,9 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams } from '@/common/utils';
+import { MEASUREMENT_MAP_ON_EXTENDED } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { FC } from 'react';
@@ -47,6 +48,11 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
+  const measurementMapper = (measurement: Measurement): Measurement => {
+    if (!isExtended) return measurement;
+    return { ...measurement, value: measurement.value * MEASUREMENT_MAP_ON_EXTENDED };
+  };
+
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelect && (
@@ -81,6 +87,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}
+          measurementMapper={measurementMapper}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,

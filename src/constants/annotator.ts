@@ -27,3 +27,5 @@ export const wearTranslation = {
   ADVANCED: 'Avancée',
   EXTREME: 'Extrême',
 };
+
+export const MEASUREMENT_MAP_ON_EXTENDED = 9;
