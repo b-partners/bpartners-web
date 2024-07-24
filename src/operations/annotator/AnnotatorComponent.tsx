@@ -6,6 +6,7 @@ import { getUrlParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
+
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { FC } from 'react';
