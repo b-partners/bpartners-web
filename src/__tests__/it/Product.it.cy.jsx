@@ -10,6 +10,8 @@ describe(specTitle('Products'), () => {
   it('are displayed', () => {
     cy.mount(<App />);
 
+    cy.skipBankSynchronisation();
+
     cy.get('[name="products"]').click();
     cy.contains('Un euro symbolique');
     cy.contains('Un micro-conseil');
