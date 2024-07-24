@@ -140,7 +140,14 @@ const SideBar = () => {
         )}
       </List>
       <Stack sx={{ position: 'absolute', bottom: 30, width: '100%' }} spacing={2}>
-        <BPButton type='submit' data-testid='submit-annotator-form' isLoading={isLoading} label='resources.annotator.save' style={{ width: '100%' }} />
+        <BPButton
+          type='submit'
+          data-testid='submit-annotator-form'
+          onClick={handleSubmitForms}
+          isLoading={isLoading}
+          label='resources.annotator.save'
+          style={{ width: '100%' }}
+        />
         <BPConstruction />
       </Stack>
     </>
