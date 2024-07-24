@@ -9,6 +9,7 @@ describe(specTitle('Products'), () => {
 
   it('are displayed', () => {
     cy.mount(<App />);
+
     cy.skipBankSynchronisation();
 
     cy.get('[name="products"]').click();

@@ -12,7 +12,7 @@ describe(specTitle('Invoice'), () => {
   it('is created from draft to confirmed', () => {
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
     cy.mount(<App />);
-             
+
     cy.skipBankSynchronisation();
     const timeout = 30_000;
 
@@ -48,7 +48,6 @@ describe(specTitle('Invoice'), () => {
     cy.get('#form-create-regulation-id').click();
     cy.get("input[name='comment']").clear().type(comment);
     cy.get('#form-regulation-save-id').click();
-
 
     cy.get('#form-save-id').click();
 
