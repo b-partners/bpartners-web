@@ -29,7 +29,8 @@
     "react-pdf": "^6.0.2",
     "recharts": "^2.10.4",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.12.41",
