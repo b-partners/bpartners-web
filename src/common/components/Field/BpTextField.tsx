@@ -1,27 +1,10 @@
 import { IconButton, TextField } from '@mui/material';
+import { FC } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { BP_TEXT_FIELD } from './style';
+import { BpFieldProps } from './types';
 
-const BP_TEXT_FIELD = {
-  minWidth: 300,
-  '.MuiInputBase-root': {
-    padding: 0,
-    textAlign: 'right',
-  },
-  '.MuiInputBase-input': {
-    paddingRight: '3rem',
-  },
-  '.MuiIconButton-root': {
-    position: 'absolute',
-    right: '0.4rem',
-    background: 'inherit',
-  },
-  'MuiTouchRipple-root': {
-    border: 'none !important',
-    outline: 'none !important',
-  },
-};
-
-export const BpTextField = props => {
+export const BpTextField: FC<BpFieldProps> = props => {
   const { name, icon, onClickOnIcon, ...others } = props;
   const {
     register,
@@ -36,9 +19,9 @@ export const BpTextField = props => {
       sx={BP_TEXT_FIELD}
       value={value}
       variant='filled'
-      error={errors[name]}
+      error={!!errors[name]}
       inputProps={{ icon }}
-      helperText={errors[name]?.message}
+      helperText={errors[name]?.message as string}
       data-testid={`${name}-field-input`}
       InputProps={{
         endAdornment: icon && <IconButton onClick={onClickOnIcon}>{icon}</IconButton>,

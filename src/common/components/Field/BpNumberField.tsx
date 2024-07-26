@@ -1,27 +1,10 @@
 import { IconButton, TextField } from '@mui/material';
+import { ChangeEvent, FC } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { BP_TEXT_FIELD } from './style';
+import { BpFieldProps } from './types';
 
-const BP_TEXT_FIELD = {
-  minWidth: 300,
-  '.MuiInputBase-root': {
-    padding: 0,
-    textAlign: 'right',
-  },
-  '.MuiInputBase-input': {
-    paddingRight: '3rem',
-  },
-  '.MuiIconButton-root': {
-    position: 'absolute',
-    right: '0.4rem',
-    background: 'inherit',
-  },
-  'MuiTouchRipple-root': {
-    border: 'none !important',
-    outline: 'none !important',
-  },
-};
-
-export const BpNumberField = ({ name, icon, onClickOnIcon, ...others }) => {
+export const BpNumberField: FC<BpFieldProps> = ({ name, icon, onClickOnIcon, ...others }) => {
   const {
     register,
     formState: { errors },
@@ -29,14 +12,16 @@ export const BpNumberField = ({ name, icon, onClickOnIcon, ...others }) => {
   } = useFormContext();
   const value = useWatch({ name });
 
-  const handleChange = event => {
-    const value = event.target.value;
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
     if (!/[^\d,+-]/.test(value)) {
       setValue(name, `${value}`.replace(',', '.'));
     }
   };
 
   const customRegister = { ...register(name), onChange: handleChange };
+  const error = errors[name];
+  const errorMessage = (error?.message as string) || '';
 
   return (
     <TextField
@@ -45,9 +30,9 @@ export const BpNumberField = ({ name, icon, onClickOnIcon, ...others }) => {
       sx={BP_TEXT_FIELD}
       value={`${value || ''}`.replace('.', ',')}
       variant='filled'
-      error={errors[name] && !errors[name].message.includes('Expected string')}
+      error={error && !errorMessage.includes('Expected string')}
       inputProps={{ icon }}
-      helperText={errors[name] && !errors[name].message.includes('Expected string') && errors[name]?.message}
+      helperText={error && !errorMessage.includes('Expected string') && errorMessage}
       data-testid={`${name}-field-input`}
       InputProps={{
         endAdornment: icon && (

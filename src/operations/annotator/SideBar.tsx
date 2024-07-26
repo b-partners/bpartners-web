@@ -30,7 +30,6 @@ import { SelectInput, TextInput, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
-import CalculInfo from '/pentes/calcul.png';
 
 const SideBar = () => {
   const redirect = useRedirect();
@@ -134,7 +133,7 @@ const SideBar = () => {
         {slopeInfoOpen && (
           <Dialog open={slopeInfoOpen} onClose={handleSlopeInfoToggle}>
             <DialogContent>
-              <img src={CalculInfo} alt='Diagramme illustrant le calcul de la pente du toit' width={'100%'} />
+              <img src='/pentes/calcul.png' alt='Diagramme illustrant le calcul de la pente du toit' width={'100%'} />
             </DialogContent>
           </Dialog>
         )}

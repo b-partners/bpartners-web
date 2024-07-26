@@ -1,22 +1,27 @@
-import SaveIcon from '@mui/icons-material/Save';
-import { Autocomplete, Backdrop, Box, Button, CircularProgress, Modal, Paper, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useRefresh } from 'react-admin';
 import { getCurrentAccount, printError } from '@/common/utils';
 import { accountProvider, getCached, setCurrentAccount } from '@/providers';
+import { Account } from '@bpartners/typescript-client';
+import SaveIcon from '@mui/icons-material/Save';
+import { Autocomplete, Backdrop, Box, Button, CircularProgress, Modal, Paper, TextField, Typography } from '@mui/material';
+import { FC, FormEvent, SyntheticEvent, useEffect, useState } from 'react';
+import { useRefresh } from 'react-admin';
 import { BIC_MESSAGE_CONTAINER } from './style';
 
-const AccountConfig = ({ setAccount: setGlobalAccount }) => {
+interface AccountConfigProps {
+  setAccount: (account: Account) => void;
+}
+
+const AccountConfig: FC<AccountConfigProps> = ({ setAccount: setGlobalAccount }) => {
   const [{ accounts, selectedAccount }, setAccounts] = useState({ accounts: [], selectedAccount: null });
   const [{ isLoading, buttonDisable }, setTool] = useState({ isLoading: false, buttonDisable: true });
   const refresh = useRefresh();
 
-  const setIsLoading = value => setTool({ isLoading: value, buttonDisable: true });
-  const setButtonDisable = value => setTool({ isLoading, buttonDisable: value });
+  const setIsLoading = (value: boolean) => setTool({ isLoading: value, buttonDisable: true });
+  const setButtonDisable = (value: boolean) => setTool({ isLoading, buttonDisable: value });
 
   const handleGlobalAccount = () => setGlobalAccount(selectedAccount);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const submit = async () => {
@@ -27,7 +32,7 @@ const AccountConfig = ({ setAccount: setGlobalAccount }) => {
     if (selectedAccount !== null) submit().catch(printError).finally(refresh);
   };
 
-  const handleChange = (_event, value) => {
+  const handleChange = (_event: SyntheticEvent, value: Account) => {
     if (value.id !== getCached.account().id) {
       setButtonDisable(false);
     }
@@ -36,7 +41,7 @@ const AccountConfig = ({ setAccount: setGlobalAccount }) => {
 
   useEffect(() => {
     const fetchAccounts = async () => {
-      const fetched = await accountProvider.getList();
+      const fetched = await accountProvider.getList(1, 500, {});
       const currentAccount = getCurrentAccount(fetched);
       setAccounts({ accounts: fetched, selectedAccount: currentAccount });
     };
@@ -46,7 +51,7 @@ const AccountConfig = ({ setAccount: setGlobalAccount }) => {
   return (
     <Box>
       <Paper sx={BIC_MESSAGE_CONTAINER}>
-        <Typography variant='p' component='div' sx={{ margin: 2 }}>
+        <Typography variant='body1' component='div' sx={{ margin: 2 }}>
           Changer de compte d’encaissement.
         </Typography>
       </Paper>
