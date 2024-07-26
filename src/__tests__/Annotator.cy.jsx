@@ -57,4 +57,33 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
 
     cy.contains('Créer').click();
   });
+
+  it('Show error message on address image not found', () => {
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.mount(<App />);
+    cy.wait('@getUser1');
+    cy.get('[name="prospects"]').click();
+    cy.wait('@getProspects');
+
+    cy.contains('Ajouter un prospect').click();
+
+    cy.get('[data-testid="email-field-input"]').clear().type('doejhonson@gmail.com');
+    cy.get('[data-testid="phone-field-input"]').clear().type('+261340465399');
+    cy.get('[data-testid="name-field-input"]').clear().type('Doe');
+    cy.get('[data-testid="address-field-input"]').type('Evry');
+    cy.get('[data-testid="firstName-field-input"]').clear().type('Jhonson');
+
+    cy.get('[data-testid="autocomplete-backend-for-invoice"]').click();
+    cy.contains('invoice-title-0').click();
+
+    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
+      req.reply(req.body);
+    });
+
+    cy.intercept('PUT', `/accounts/**/areaPictures/**`, req => req.reply({ statusCode: 500 }));
+
+    cy.contains('Créer').click();
+    cy.contains("L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.");
+    cy.contains('Fermer').click();
+  });
 });
