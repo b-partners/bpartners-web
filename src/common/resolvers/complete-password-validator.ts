@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import zod from 'zod';
+import { z as zod } from 'zod';
 import { FieldErrorMessage, requiredString } from './utils';
 
 export const matchCognitoPassword = (password: string) => {
@@ -15,10 +15,7 @@ const completePasswordValidator = zod
     phoneNumber: requiredString()
       .refine(value => value.length === 10, { message: FieldErrorMessage.phoneLength })
       .transform(phone => `+33${phone.slice(1)}`),
-    newPassword: zod
-      .string({ required_error: FieldErrorMessage.emptyPassword })
-      .min(8, { message: FieldErrorMessage.minPassword })
-      .refine(matchCognitoPassword, { message: FieldErrorMessage.badPassword }),
+    newPassword: requiredString().min(8, { message: FieldErrorMessage.minPassword }).refine(matchCognitoPassword, { message: FieldErrorMessage.badPassword }),
     confirmedPassword: requiredString(),
   })
   .refine(comparePasswords, { message: FieldErrorMessage.notMatchingPassword, path: ['confirmedPassword'] });

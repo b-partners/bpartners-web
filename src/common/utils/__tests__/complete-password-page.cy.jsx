@@ -1,6 +1,6 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { authProvider } from '@/providers';
 import CompletePasswordPage from '@/security/CompletePasswordPage';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 describe(specTitle('Complete password page'), () => {
   it('should test next button', () => {
@@ -14,7 +14,7 @@ describe(specTitle('Complete password page'), () => {
     cy.get("input[name='phoneNumber']").clear().type('0123456789');
 
     cy.get("input[name='newPassword']").type('{enter}');
-    cy.contains('Le mot de passe ne peut pas être vide.');
+    cy.contains('Ce champ est requis.');
     cy.get("input[name='newPassword']").type(12);
     cy.contains('Le mot de passe doit contenir au moins 8 caractères.');
     cy.get("input[name='newPassword']").type(121212);
