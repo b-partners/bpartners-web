@@ -5,7 +5,7 @@ import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState } from 'react';
 import { useListContext, useNotify, useRefresh, useTranslate, useUnselectAll } from 'react-admin';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 import { useToggle } from '../hooks/use-toggle';
 
 const getValueFromSource = (resource: any, source: string) => {
@@ -16,6 +16,12 @@ const getValueFromSource = (resource: any, source: string) => {
   return resource[source];
 };
 
+const useGetResourceName = () => {
+  const translate = useTranslate();
+  const translateOption = { smart_count: 2 };
+  return (resource: string) => translate(`resources.${resource}.name`, translateOption);
+};
+
 const ArchiveBulkAction = ({ source, statusName }: { source: string; statusName: string }) => {
   const { selectedIds, data = [], resource } = useListContext();
   const { value: isDialogOpen, handleClose, handleOpen } = useToggle();
@@ -23,7 +29,7 @@ const ArchiveBulkAction = ({ source, statusName }: { source: string; statusName:
   const notify = useNotify();
   const refresh = useRefresh();
   const unselectAll = useUnselectAll(resource);
-  const translate = useTranslate();
+  const getResourceName = useGetResourceName();
 
   const handleCloseDialog = () => !isLoading && handleClose();
 
@@ -36,7 +42,7 @@ const ArchiveBulkAction = ({ source, statusName }: { source: string; statusName:
       handleCloseDialog();
       refresh();
       unselectAll();
-      notify(`${translate(`resources.${resource}.name`, { smart_count: 2 })} archivés avec succès`, { type: 'success' });
+      notify(`${getResourceName(resource)} archivés avec succès`, { type: 'success' });
     };
 
     archive().catch(() => {
@@ -57,14 +63,14 @@ const ArchiveBulkAction = ({ source, statusName }: { source: string; statusName:
           icon={<ArchiveIcon />}
         />
         <Dialog fullScreen={false} open={isDialogOpen} onClose={handleCloseDialog}>
-          <DialogTitle>{`Les ${translate(`resources.${resource}.name`, { smart_count: 2 }).toLowerCase()} suivants vont être archivés :`}</DialogTitle>
+          <DialogTitle>{`Les ${getResourceName(resource).toLowerCase()} suivants vont être archivés :`}</DialogTitle>
           <DialogContent>
             <DialogContentText>
               <ul>
                 {data
                   .filter(resource => selectedIds.includes(resource.id))
                   .map(resource => (
-                    <li key={uuidv4()}>{getValueFromSource(resource, source || 'description')}</li>
+                    <li key={uuidV4()}>{getValueFromSource(resource, source || 'description')}</li>
                   ))}
               </ul>
             </DialogContentText>
