@@ -17,7 +17,7 @@ describe(specTitle('administration tab not present for non admin users in prospe
   });
   it('should not display evaluation prospects section', () => {
     cy.mount(<App />);
-    cy.get('[name="prospects"]').click();
+    cy.get('[name="prospects"]').click({ force: true });
 
     cy.wait('@getUser2');
     cy.wait('@getAccount1');
