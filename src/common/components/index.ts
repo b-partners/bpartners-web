@@ -1,4 +1,4 @@
-export * from "./ArchiveBulkAction";
+export * from './ArchiveBulkAction';
 export * from './AutocompleteBackend';
 export * from './BPButton';
 export * from './BPConstruction';
