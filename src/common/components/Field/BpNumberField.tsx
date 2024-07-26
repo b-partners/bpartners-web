@@ -21,7 +21,7 @@ export const BpNumberField: FC<BpFieldProps> = ({ name, icon, onClickOnIcon, ...
 
   const customRegister = { ...register(name), onChange: handleChange };
   const error = errors[name];
-  const errorMessage = (error.message as string) || '';
+  const errorMessage = (error?.message as string) || '';
 
   return (
     <TextField
