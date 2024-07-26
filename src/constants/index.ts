@@ -5,4 +5,3 @@ export * from './payment-regulation-status';
 export * from './payment-type';
 export * from './prospect';
 export * from './transaction-status';
-

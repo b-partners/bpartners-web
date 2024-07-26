@@ -12,13 +12,13 @@ export const BpFrenchMessages = {
       confirm: 'Confirmer',
       validate: 'Valider',
       prospect: {
-        abandon: "Abandonner ce prospect",
-        reserve: "Réserver ce prospect",
-        transformToClient: "Transformer ce prospect en client",
-        release: "Libérer ce prospect",
-        releaseClient: "Libérer ce client",
-        clientToProspect: "Remettre ce client en prospect"
-      }
+        abandon: 'Abandonner ce prospect',
+        reserve: 'Réserver ce prospect',
+        transformToClient: 'Transformer ce prospect en client',
+        release: 'Libérer ce prospect',
+        releaseClient: 'Libérer ce client',
+        clientToProspect: 'Remettre ce client en prospect',
+      },
     },
   },
   resources: {
