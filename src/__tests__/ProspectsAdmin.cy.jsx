@@ -1,6 +1,6 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { evaluationJobDetails, evaluationJobs } from './mocks/responses/Evaluation-jobs-api';
@@ -56,7 +56,7 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Importer des prospects dans la base de données depuis Google Sheet');
 
-    cy.get('[name="import_sheetName"]').click();
+    cy.get('[data-testid="import_sheetName-auto-complete"]').click();
     cy.contains('Daniderat').click();
     cy.get('[name="import_min"]').type(2);
     cy.get('[name="import_max"]').type(4);
@@ -75,7 +75,7 @@ describe(specTitle('Customers'), () => {
 
     cy.contains('Importer des prospects dans la base de données depuis Google Sheet');
 
-    cy.get('[name="import_sheetName"]').click();
+    cy.get('[data-testid="import_sheetName-auto-complete"]').click();
     cy.contains('Daniderat').click();
     cy.get('[name="import_min"]').type(2);
     cy.get('[name="import_max"]').type(4);
@@ -104,7 +104,7 @@ describe(specTitle('Customers'), () => {
 
     cy.wait('@getAccountHoldersByName');
 
-    cy.get('[name="sheetName"]').click();
+    cy.get('[data-testid="sheetName-auto-complete"]').click();
     cy.contains('Daniderat').click();
     cy.get('[name="min"]').type(2);
     cy.get('[name="max"]').type(4);
