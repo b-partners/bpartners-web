@@ -1,5 +1,5 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import { Box, Link, Stack, Tab, Tabs } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Stack, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
 import { BPButton } from '@/common/components';
+import { useDialog } from '@/common/store/dialog';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
@@ -60,6 +61,7 @@ const ProspectsList = () => {
   };
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
+  const { open: openDialog, close: closeDialog } = useDialog();
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
@@ -77,26 +79,41 @@ const ProspectsList = () => {
       notify(`Prospect créé avec succès !`, { type: 'success' });
       const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
       if (isRoofer) {
-        const fileId = uuidV4();
-        const pictureId = uuidV4();
-        const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-        await annotatorProvider.getPictureFormAddress(pictureId, {
-          address: data.address,
-          fileId,
-          filename: `Layer ${data.address}`,
-          prospectId,
-          zoomLevel: ZoomLevel.HOUSES_0,
-        });
-        navigate(
-          `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
-        );
-        return;
+        try {
+          const fileId = uuidV4();
+          const pictureId = uuidV4();
+          const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+          await annotatorProvider.getPictureFormAddress(pictureId, {
+            address: data.address,
+            fileId,
+            filename: `Layer ${data.address}`,
+            prospectId,
+            zoomLevel: ZoomLevel.HOUSES_0,
+          });
+          navigate(
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
+          );
+          return;
+        } catch {
+          toggleDialog();
+          openDialog(
+            <>
+              <DialogTitle>Adresse introuvable</DialogTitle>
+              <DialogContent>
+                <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={closeDialog}>Fermer</Button>
+              </DialogActions>
+            </>
+          );
+        }
       }
       handleLoading(false);
     };
+
     fetch().catch(() => {
       handleLoading(false);
-      notify(`messages.global.error`, { type: 'error' });
     });
   });
 
