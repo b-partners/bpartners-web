@@ -1,6 +1,8 @@
 export const BpFrenchMessages = {
   bp: {
     action: {
+      save: 'Enregistrer',
+      create: 'Créer',
       sync: 'Connecter le calendrier Google',
       finish: 'Terminer',
       next: 'Suivant',
@@ -8,6 +10,15 @@ export const BpFrenchMessages = {
       refocusImage: "Recentrer l'image",
       resetRefocusImage: "Réinitialiser l'image",
       confirm: 'Confirmer',
+      validate: 'Valider',
+      prospect: {
+        abandon: "Abandonner ce prospect",
+        reserve: "Réserver ce prospect",
+        transformToClient: "Transformer ce prospect en client",
+        release: "Libérer ce prospect",
+        releaseClient: "Libérer ce client",
+        clientToProspect: "Remettre ce client en prospect"
+      }
     },
   },
   resources: {
@@ -66,6 +77,13 @@ export const BpFrenchMessages = {
       },
       import: {
         success: 'Prospects importés avec succès',
+      },
+      creation: {
+        success: 'Prospect créé avec succès !',
+      },
+      edition: {
+        success: 'Prospect enregistré avec succès !',
+        button: 'Modifier le prospect',
       },
     },
     annotator: {

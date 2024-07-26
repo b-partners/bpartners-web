@@ -1,13 +1,6 @@
-import { Admin } from '@react-admin/ra-enterprise';
-import { Resource } from '@react-admin/ra-rbac';
-import polyglotI18nProvider from 'ra-i18n-polyglot';
-import frenchMessages from 'ra-language-french';
-import { useEffect } from 'react';
-import { CustomRoutes } from 'react-admin';
-import { Navigate, Route } from 'react-router-dom';
 import { BP_THEME } from '@/bp-theme';
+import { BPLayout } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
-import MyLayout from '@/common/components/BPLayout';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import Annotator from '@/operations/annotator/Annotator';
@@ -22,6 +15,13 @@ import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
+import { Admin } from '@react-admin/ra-enterprise';
+import { Resource } from '@react-admin/ra-rbac';
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import frenchMessages from 'ra-language-french';
+import { useEffect } from 'react';
+import { CustomRoutes } from 'react-admin';
+import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
@@ -60,7 +60,7 @@ export const BpAdmin = () => {
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       loginPage={false}
       theme={BP_THEME}
-      layout={MyLayout}
+      layout={BPLayout}
     >
       <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
@@ -69,7 +69,6 @@ export const BpAdmin = () => {
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
       <Resource name='calendar' {...calendar} />
-
       <CustomRoutes>
         <Route exact path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/calendar-sync' element={<CalendarSync />} />

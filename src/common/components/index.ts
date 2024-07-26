@@ -2,6 +2,7 @@ export * from './AutocompleteBackend';
 export * from './BPButton';
 export * from './BPConstruction';
 export * from './BPFormField';
+export * from './BPLayout';
 export * from './BPLoader';
 export * from './BpMultipleTextInput';
 export * from './EmptyListTemplate';
