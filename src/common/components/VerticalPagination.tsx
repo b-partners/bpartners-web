@@ -1,9 +1,10 @@
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, SxProps, Typography } from '@mui/material';
 import { useTheme } from '@mui/styles';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { BP_COLOR } from '../../bp-theme';
 
-const STYLE = {
+const STYLE: SxProps = {
   width: 'max-content',
   minHeight: 'max-content',
   height: 150,
@@ -16,8 +17,15 @@ const STYLE = {
   padding: '0.1rem',
 };
 
-export const VerticalPagination = ({ maxSteps, activeStep, setActiveStep, boxSx }) => {
-  const theme = useTheme();
+export type VerticalPaginationProps = {
+  maxSteps: number;
+  activeStep: number;
+  setActiveStep: Dispatch<SetStateAction<number>>;
+  boxSx?: SxProps;
+};
+
+export const VerticalPagination: FC<VerticalPaginationProps> = ({ maxSteps, activeStep, setActiveStep, boxSx }) => {
+  const theme = useTheme<{ direction: string }>();
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);

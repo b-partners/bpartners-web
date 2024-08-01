@@ -1,15 +1,15 @@
+import { dataProvider } from '@/providers';
 import { ProductStatus as ArchiveStatus } from '@bpartners/typescript-client';
 import { Archive as ArchiveIcon } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { FC, useState } from 'react';
 import { SaveButton, Toolbar, ToolbarProps, useNotify, useRedirect, useTranslate } from 'react-admin';
 import { useParams } from 'react-router-dom';
-import { dataProvider } from '@/providers';
 
 export type EditToolBarProps = ToolbarProps & {
   resource: string;
   pristine: boolean;
-}
+};
 
 const EditToolBar: FC<EditToolBarProps> = ({ resource, pristine, ...toolbarProps }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,10 +21,11 @@ const EditToolBar: FC<EditToolBarProps> = ({ resource, pristine, ...toolbarProps
   const handleSubmit = async () => {
     setIsLoading(true);
     const data = [{ id, status: ArchiveStatus.DISABLED }];
+    const message = `resources.${resource}.name`;
     await dataProvider.archive(resource, { data });
     setIsLoading(false);
     toList();
-    notify(`${translate(`resources.${resource}.name`, { smart_count: 1 })} archivé avec succès`, { type: 'success' });
+    notify(`${translate(message, { smart_count: 1 })} archivé avec succès`, { type: 'success' });
   };
 
   const toList = () => {

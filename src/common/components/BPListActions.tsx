@@ -1,18 +1,17 @@
+import { exportCustomers, exportProducts } from '@/providers';
 import { FileDownload } from '@mui/icons-material';
 import { Button, Stack } from '@mui/material';
+import { FC, ReactNode } from 'react';
 import { CreateButton, useNotify } from 'react-admin';
-import { exportCustomers, exportProducts } from '@/providers';
 import { IMPORT_BUTTON_STYLE } from './BPImport/style';
-import { ReactNode } from 'react';
-import { FC } from 'react';
 
 export type BPListActionsType = {
-  buttons?: ReactNode,
-  hasCreate?: boolean,
-  hasExport?: boolean,
-  importComponent: ReactNode,
+  buttons?: ReactNode;
+  hasCreate?: boolean;
+  hasExport?: boolean;
+  importComponent: ReactNode;
   fileName: string;
-}
+};
 
 const BPListActions: FC<BPListActionsType> = props => {
   const { buttons, hasCreate, hasExport, importComponent, fileName } = props;
@@ -41,13 +40,7 @@ const BPListActions: FC<BPListActionsType> = props => {
       {hasCreate && <CreateButton data-testid='create-button' label='Créer' sx={IMPORT_BUTTON_STYLE} />}
       {importComponent}
       {hasExport && (
-        <Button
-          variant='contained'
-          startIcon={<FileDownload />}
-          data-testid={`export-button-${fileName}`}
-          sx={IMPORT_BUTTON_STYLE}
-          onClick={exportCSV}
-        >
+        <Button variant='contained' startIcon={<FileDownload />} data-testid={`export-button-${fileName}`} sx={IMPORT_BUTTON_STYLE} onClick={exportCSV}>
           Exporter
         </Button>
       )}

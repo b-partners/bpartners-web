@@ -1,6 +1,6 @@
 import { Alert, Box } from '@mui/material';
-import { BP_COLOR } from '../../bp-theme';
 import { FC } from 'react';
+import { BP_COLOR } from '../../bp-theme';
 
 const EMPTY_LIST_STYLE = {
   border: 'none',

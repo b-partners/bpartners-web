@@ -9,7 +9,7 @@ const useGetAccountHolder = (): AccountHolder => {
   useEffect(() => {
     const getAH = async () => {
       const cached = getCached.accountHolder();
-      if (cached && cached.id) {
+      if (cached?.id) {
         setAccountHolder(cached);
       } else {
         const aH = await accountHolderProvider.getOne();

@@ -1,17 +1,17 @@
 import { FileDownload, FileUpload, InsertDriveFile } from '@mui/icons-material';
 import { Backdrop, Box, Button, Chip, CircularProgress, Divider, IconButton, Modal, Stack, Tooltip, Typography } from '@mui/material';
-import { useState, FC, ChangeEvent } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 
 import CustomerModel from '@/assets/CustomerModel.png';
 import ProductModel from '@/assets/ProductModel.png';
 import { importCustomers } from '@/providers/customer-provider';
 import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL_STYLE } from './style';
 
-import { useNotify, useRefresh } from 'react-admin';
+import { BP_BUTTON } from '@/bp-theme';
 import { useToggle } from '@/common/hooks';
 import { toArrayBuffer } from '@/common/utils';
 import { importProducts } from '@/providers/product-provider';
-import { BP_BUTTON } from '@/bp-theme';
+import { useNotify, useRefresh } from 'react-admin';
 
 export const BPImport: FC<{ source: string }> = props => {
   const notify = useNotify();
@@ -28,8 +28,8 @@ export const BPImport: FC<{ source: string }> = props => {
   };
 
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const [errorMessage, setErrorMessage] = useState < string[] > ([]);
+  const [fileName, setFileName] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ export const BPImport: FC<{ source: string }> = props => {
 
   const handleDelete = () => {
     setFile(null);
-    setFileName("");
+    setFileName('');
     setErrorMessage([]);
   };
 
@@ -108,16 +108,15 @@ export const BPImport: FC<{ source: string }> = props => {
               </Tooltip>
             </a>
           </Typography>
-          {errorMessage && (
+          {errorMessage.length > 0 && (
             <Box sx={ERROR_BOX_STYLE}>
               <Typography variant='body2'>Les colonnes suivantes ne correspondent pas :</Typography>
               <ul>
-                {errorMessage &&
-                  errorMessage.map((item: string, index: number) => (
-                    <li key={index}>
-                      <Typography variant='body2'>{item}</Typography>
-                    </li>
-                  ))}
+                {errorMessage.map(item => (
+                  <li key={item}>
+                    <Typography variant='body2'>{item}</Typography>
+                  </li>
+                ))}
               </ul>
             </Box>
           )}
