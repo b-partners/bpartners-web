@@ -7,10 +7,13 @@ import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
 import ProspectDialogActions from './ProspectDialogActions';
 
-export const ProspectDialog = props => {
-  const { open, close, prospect, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
+const getDialogTitle = (prospectName, isCreating) => {
+  return isCreating ? "Renseignez l'adresse de votre prospect ou votre client et analysez les images haute résolution de sa toiture." : `Prospect : ${prospectName}`;
+}
 
-  const { name, status, comment } = prospect || {};
+export const ProspectDialog = props => {
+  const { open, close, prospect = {}, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
+  const { name, status, comment } = prospect;
 
   const {
     setValue,
@@ -27,16 +30,16 @@ export const ProspectDialog = props => {
   return (
     <Dialog open={open} onClose={close}>
       <DialogTitle>
-        <Typography>Prospect : {name}</Typography>
+        <Typography>{getDialogTitle(name, isCreating)}</Typography>
       </DialogTitle>
       <DialogContent>
-        <BpFormField style={{ width: '100%' }} name='email' type='email' label='Email' />
-        <BpFormField style={{ width: '100%' }} name='phone' label='Téléphone' />
-        <BpFormField style={{ width: '100%' }} name='address' label='Adresse' />
-        <BpFormField style={{ width: '100%' }} name='name' label='Nom du prospect' />
-        <BpFormField style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
-        <BpFormField multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
-        {!isEditing && !isCreating && (
+        <BpFormField required style={{ width: '100%' }} name='address' label='Adresse' />
+        <BpFormField required style={{ width: '100%' }} name='name' label='Nom du prospect' />
+        <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
+        <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='email' type='email' label='Email' />
+        <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='phone' label='Téléphone' />
+        <BpFormField required={false} shouldValidate={false} multiline rows={4} style={{ width: '100%' }} name={comment ? 'comment' : 'defaultComment'} label='Commentaire' />
+        {(!isEditing && !isCreating) && (
           <Box>
             <FormControl>
               <RadioGroup
@@ -64,30 +67,38 @@ export const ProspectDialog = props => {
             </FormControl>
           </Box>
         )}
-        {status === 'TO_CONTACT' || isCreating ? (
-          <InvoiceSelection name='invoice' label='resources.invoices.status.proposal' invoiceTypes={['DRAFT']} />
-        ) : (
-          <InvoiceSelection name='invoice' label='resources.invoices.status.confirmed' invoiceTypes={['CONFIRMED', 'PAID']} />
-        )}
-        <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
-          {status === 'TO_CONTACT' || isCreating ? (
+        {
+          !isCreating && (
             <>
-              <Typography sx={{ marginRight: 4 }}>
-                Optionel <br />
-                Valeur potentielle du contrat en €
-              </Typography>
-              <BpNumberField style={{ width: '45%' }} name='contractAmount' label='Montant' />
+              {
+                status === 'TO_CONTACT' ? (
+                  <InvoiceSelection name='invoice' label={'resources.invoices.status.proposal'} invoiceTypes={['DRAFT']} />
+                ) : (
+                  <InvoiceSelection name='invoice' label='resources.invoices.status.confirmed' invoiceTypes={['CONFIRMED', 'PAID']} />
+                )
+              }
+              <Box sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
+                {status === 'TO_CONTACT' ? (
+                  <>
+                    <Typography sx={{ marginRight: 4 }}>
+                      Optionel <br />
+                      Valeur potentielle du contrat en €
+                    </Typography>
+                    <BpNumberField style={{ width: '45%' }} name='contractAmount' label='Montant' />
+                  </>
+                ) : (
+                  <>
+                    <Typography sx={{ marginRight: 4 }}>
+                      Obligatoire <br />
+                      Valeur potentielle du contrat en €
+                    </Typography>
+                    <BpNumberField style={{ width: '45%' }} name='contractAmount' label='Montant' required />
+                  </>
+                )}
+              </Box>
             </>
-          ) : (
-            <>
-              <Typography sx={{ marginRight: 4 }}>
-                Obligatoire <br />
-                Valeur potentielle du contrat en €
-              </Typography>
-              <BpNumberField style={{ width: '45%' }} name='contractAmount' label='Montant' required />
-            </>
-          )}
-        </Box>
+          )
+        }
       </DialogContent>
       <ProspectDialogActions
         prospectStatus={status}
