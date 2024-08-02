@@ -1,7 +1,8 @@
 import { Box, LinearProgress } from '@mui/material';
+import { FC, ReactNode } from 'react';
 import { useListContext } from 'react-admin';
 
-const ListComponent = ({ children }) => {
+const ListComponent: FC<{ children: ReactNode }> = ({ children }) => {
   const { isFetching } = useListContext();
 
   return (

@@ -1,5 +1,5 @@
-import { IconButton, Popover, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
+import { IconButton, Popover, SxProps, Tooltip, Typography } from '@mui/material';
+import { FC, MouseEvent, ReactElement, ReactNode, useState } from 'react';
 
 /**
  * @param {*} props icon, label, children, style
@@ -7,11 +7,13 @@ import { useState } from 'react';
  * On click on the button, show a popover
  * Use the chidren props to edit the popover content
  */
-const PopoverButton = props => {
+export type PopoverButtonProps = { children: ReactNode; icon: ReactElement; label: string; style?: SxProps; disabled?: boolean; 'data-testid'?: string };
+
+const PopoverButton: FC<PopoverButtonProps> = props => {
   const { children, icon, label, style, disabled } = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleClick = event => {
+  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -26,7 +28,7 @@ const PopoverButton = props => {
       </Tooltip>
       <Popover
         id={anchorEl && 'simple-popover'}
-        open={anchorEl ? true : false}
+        open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{

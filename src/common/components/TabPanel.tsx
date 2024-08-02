@@ -1,6 +1,13 @@
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
+import { FC, ReactNode } from 'react';
 
-const TabPanel = props => {
+export type TabPanelProps = BoxProps & {
+  children?: ReactNode;
+  value?: number;
+  index?: number;
+};
+
+const TabPanel: FC<TabPanelProps> = props => {
   const { children, value, index, ...other } = props;
 
   return (

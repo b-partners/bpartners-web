@@ -1,4 +1,5 @@
 import { Alert, Box } from '@mui/material';
+import { FC } from 'react';
 import { BP_COLOR } from '../../bp-theme';
 
 const EMPTY_LIST_STYLE = {
@@ -10,7 +11,7 @@ const EMPTY_LIST_STYLE = {
   },
 };
 
-export const EmptyList = ({ content = 'Aucun enregistrement à afficher' }) => (
+export const EmptyList: FC<{ content?: string }> = ({ content = 'Aucun enregistrement à afficher' }) => (
   <Box sx={{ p: 1 }}>
     <Alert severity='warning' sx={EMPTY_LIST_STYLE}>
       {content}
