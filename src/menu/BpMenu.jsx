@@ -1,3 +1,5 @@
+import { SupportDialog } from '@/common/components';
+import { printError } from '@/common/utils';
 import {
   AccountBalance,
   AccountCircle,
@@ -13,13 +15,11 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
-import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { SupportDialog } from '@/common/components';
-import { printError } from '@/common/utils';
-import { accountHolderProvider, authProvider } from '../providers';
+import { accountHolderProvider, authProvider, getCached } from '../providers';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -39,9 +39,9 @@ const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
   const { data: accountHolder = null } = useQuery({
     retry: 7,
-    queryKey: ["accountHolder"],
+    queryKey: ['accountHolder'],
     onError: printError,
-    queryFn: () => accountHolderProvider.getOne()
+    queryFn: () => accountHolderProvider.getOne(),
   });
 
   const toggleDialogState = () => setDialogState(e => !e);
@@ -75,7 +75,7 @@ const BpMenu = () => {
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
-        <Menu.Item to='/account' name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
+        <Menu.Item to={`/account/${getCached.account().id}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </Menu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
