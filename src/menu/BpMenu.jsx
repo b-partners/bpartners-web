@@ -50,10 +50,7 @@ const BpMenu = () => {
     toggleDialogState();
   };
 
-  const hasBusinessActivities = accountHolder =>
-    accountHolder != null &&
-    accountHolder.businessActivities != null &&
-    (accountHolder.businessActivities.primary != null || accountHolder.businessActivities.secondary != null);
+  const hasBusinessActivities = accountHolder => !!(accountHolder?.businessActivities?.primary || accountHolder?.businessActivities?.secondary);
   /* The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
    then the Prospects page will not be displayed */
   const shouldShowProspects = hasBusinessActivities(accountHolder);
@@ -75,7 +72,7 @@ const BpMenu = () => {
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
-        <Menu.Item to={`/account/${getCached.account().id}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
+        <Menu.Item to={`/account/${getCached.account()?.id || ''}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </Menu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
