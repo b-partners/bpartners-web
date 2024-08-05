@@ -1,7 +1,7 @@
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
 import { geojsonMapper, polygonConverterProvider, polygonMapper } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
 
 const getImageSize = async (fileId: string) =>

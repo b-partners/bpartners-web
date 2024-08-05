@@ -15,7 +15,7 @@ import {
 import { Box } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
