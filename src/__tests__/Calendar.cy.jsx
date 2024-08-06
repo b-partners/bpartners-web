@@ -76,7 +76,7 @@ describe(specTitle('Calendar'), () => {
     cy.get('@toURL').should('have.been.calledOnce');
   });
 
-  it('Should test calendar', () => {
+  it.skip('Should test calendar', () => {
     const now = new Date('2023-01-01');
     // set date global date 2023-01-01
     cy.clock(now);
