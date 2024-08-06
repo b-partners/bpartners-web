@@ -10,14 +10,14 @@ describe(specTitle('Customers'), () => {
 
   it('can be updated', () => {
     cy.mount(<App />);
-             
+
     cy.skipBankSynchronisation();
 
     cy.get('[name="customers"]').click();
     cy.contains('Andriamahery IT').click();
 
     const randomFirstName = 'it-' + uuid().substring(0, 7);
-    cy.get('#firstName').clear().type(randomFirstName);
+    cy.get('[name="firstName"]').clear().type(randomFirstName);
 
     cy.contains('Enregistrer').click();
     cy.contains(randomFirstName);
