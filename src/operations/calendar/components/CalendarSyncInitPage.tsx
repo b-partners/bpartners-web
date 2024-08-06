@@ -8,12 +8,12 @@ import { PRIMARY_CONTAINER, SECONDARY_CONTAINER } from '../utils';
 import CalendarCheckboxCGS from './CalendarCheckboxCGS';
 
 export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId: string }) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(false);
   const translate = useTranslate();
 
   const oauth2Init = async () => {
-    setLoading(true);
+    setIsLoading(true);
     dataProvider.oauth2Init('calendar', currentCalendarId).then(({ data: { redirectionUrl } }) => {
       Redirect.toURL(redirectionUrl);
     });

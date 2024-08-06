@@ -50,9 +50,11 @@ export const BpAdmin = () => {
     checkTokenExpiration();
   }, []);
 
-  return !authProvider.getCachedWhoami() ? (
-    <Navigate to='/login' />
-  ) : (
+  if (!authProvider.getCachedWhoami()) {
+    return <Navigate to='/login' />;
+  }
+
+  return (
     <Admin
       title='BPartners'
       authProvider={authProvider}

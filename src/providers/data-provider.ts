@@ -36,7 +36,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
 export const dataProvider: RaDataProviderType = {
   async getList(resourceType: string, params: any) {
     const pagination = params.pagination;
-    const page = pagination.page === 0 ? 1 /* TODO(empty-pages) */ : pagination.page;
+    const page = pagination.page === 0 ? 1 : pagination.page;
 
     let perPage = pagination.perPage;
     if (perPage > maxPageSize) {
