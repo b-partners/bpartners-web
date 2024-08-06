@@ -1,10 +1,10 @@
-import { InvoiceStatus } from '@bpartners/typescript-client';
-import { Box, Card, CardContent, Table, TableBody, TableCell, TableRow, TextField as MuiTextField, Typography } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
-import { Datagrid, FunctionField, ListContextProvider, TextField, useList, useNotify } from 'react-admin';
 import useGetAccountHolder from '@/common/hooks/use-get-account-holder';
 import { prettyPrintMinors } from '@/common/utils';
 import { invoiceProvider } from '@/providers';
+import { InvoiceStatus } from '@bpartners/typescript-client';
+import { Box, Card, CardContent, TextField as MuiTextField, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { Datagrid, FunctionField, ListContextProvider, ResourceContextProvider, TextField, useList, useNotify } from 'react-admin';
 
 const MAX_PER_PAGE = 500;
 const { PAID, CONFIRMED } = InvoiceStatus;
@@ -50,7 +50,7 @@ const InvoiceListSelection = props => {
   const handleChange = e => setFilter(e.target.value);
 
   return (
-    <>
+    <ResourceContextProvider value='invoice'>
       {!isLoading && (
         <Box>
           <MuiTextField label='Rechercher par titre' size='small' onChange={handleChange} />
@@ -84,7 +84,7 @@ const InvoiceListSelection = props => {
           </Card>
         )}
       </ListContextProvider>
-    </>
+    </ResourceContextProvider>
   );
 };
 

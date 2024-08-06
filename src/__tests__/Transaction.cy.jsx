@@ -27,15 +27,28 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('can be categorized', () => {
+    cy.intercept('POST', '/accounts/mock-account-id1/transactions/transaction3/transactionCategories', ({ body, reply }) => {
+      const expectedBody = [
+        {
+          vat: 1000,
+          type: 'Autre',
+          comment: 'Test',
+        },
+      ];
+
+      expect(body).to.deep.equal(expectedBody);
+      reply(transactions);
+    });
     cy.mount(<App />);
     cy.get('[name="transactions"]').click();
 
-    cy.get('#categorized').click();
+    cy.contains('Non Catégorisées');
 
     cy.wait('@legalFiles');
+    cy.wait('@getTransactions');
     cy.get('[data-testid="transaction-add-category-transaction3"]').click();
     cy.wait('@getTransactionCategory');
-    cy.get('.MuiButtonBase-root > [data-testid="ArrowDropDownIcon"]').click();
+    cy.get('.MuiDialog-container svg').click();
     cy.contains('Autres dépenses').click();
     cy.get('[name="comment"]').type('Test');
     cy.get('[name="vat"]').type(10);
@@ -53,7 +66,7 @@ describe(specTitle('Transactions'), () => {
     cy.contains('18/08/2022');
     cy.contains('05:34:20');
     cy.contains('Acceptée');
-    cy.get('#categorized').click();
+    cy.contains('Non Catégorisées').click();
     cy.contains('En attente');
     cy.contains('Rejetée');
     cy.contains('En traitement');
@@ -162,7 +175,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
-    cy.get('#categorized').check();
+    cy.contains('Non Catégorisées').click();
     cy.should('not.contain.text', 'TVA 20%');
   });
 
@@ -172,7 +185,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.wait('@legalFiles');
 
-    cy.get('#status').click();
+    cy.dataCy('transaction_list_select_filter').click();
 
     cy.contains('En réception').should('not.exist');
   });
@@ -196,7 +209,7 @@ describe(specTitle('Transactions'), () => {
     cy.mount(<App />);
     cy.get('[name="transactions"]').click();
 
-    cy.get('#categorized').click();
+    cy.contains('Non Catégorisées');
 
     cy.wait('@legalFiles');
     cy.wait('@getTransactions5');
@@ -214,7 +227,7 @@ describe(specTitle('Transactions'), () => {
     cy.wait('@linkInvoiceAndTransaction');
     cy.wait('@getTransactionsWithInvoice5');
 
-    cy.get('#categorized').click();
+    cy.contains('Non Catégorisées').click();
     cy.get('#document-button-transaction1').click();
     cy.contains('Justificatif');
     cy.get('[data-testid="ClearIcon"]').click();

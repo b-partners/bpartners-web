@@ -46,6 +46,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.BOOKED,
     type: TransactionTypeEnum.OUTCOME,
     invoice: null,
+    category: null,
     supportingDocs: [],
   },
   {
@@ -75,6 +76,7 @@ export const transactions: Array<any> = [
     status: TransactionStatus.UNKNOWN,
     type: TransactionTypeEnum.INCOME,
     invoice: null,
+    category: null,
     supportingDocs: [],
   },
   {
@@ -86,6 +88,7 @@ export const transactions: Array<any> = [
     status: 'A_TOTALLY_UNEXPECTED_STATUS',
     type: TransactionTypeEnum.INCOME, //TODO: test for forward compatibility
     invoice: null,
+    category: null,
     supportingDocs: [],
   },
 ];
