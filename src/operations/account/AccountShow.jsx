@@ -71,7 +71,7 @@ const SubscriptionLayout = () => (
 
     <Typography variant='h6'>Pour 7€ HT par mois:</Typography>
     <InfoShow
-      content='Activation de notre Intelligence artificielle qui génère des prospects en temps réel pour développer votre activité et obtenir de nouveaux clients.'
+      content='Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire'
       icon={<SmartToyIcon />}
       color={grey[500]}
     />
