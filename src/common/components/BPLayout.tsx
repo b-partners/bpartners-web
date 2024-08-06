@@ -10,12 +10,12 @@ import BPErrorPage from './BPErrorPage';
 type BPLayoutProps = LayoutProps;
 
 export const BPLayout: FC<BPLayoutProps> = props => {
-  const { isOpen: isDialogOpen, content: dialogContent, close: closeDialog } = useDialog();
+  const { isOpen: isDialogOpen, content: dialogContent, close: closeDialog, dialogProps = {} } = useDialog();
 
   return (
     <AppLocationContext>
       <Layout {...props} appBar={BPAppBar} menu={BpMenu} error={BPErrorPage} />
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
+      <Dialog open={isDialogOpen} onClose={closeDialog} {...dialogProps}>
         {dialogContent}
       </Dialog>
     </AppLocationContext>
