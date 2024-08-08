@@ -8,7 +8,7 @@ const getPrimaryButtonText = (prospectStatus, prospectFeedback, selectedStatus, 
   }
 
   if (isCreating) {
-    return 'Créer';
+    return 'Générer l’image';
   }
 
   const statuses = {

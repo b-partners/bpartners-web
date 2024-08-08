@@ -65,6 +65,11 @@ const ProspectsList = () => {
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
+
+    if (isCreating) {
+      notify('En cours de recherche de l’image de la zone');
+    }
+
     const fetch = async () => {
       clearPolygons();
       const prospectId = uuidV4();

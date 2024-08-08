@@ -44,9 +44,6 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.get('[data-testid="address-field-input"]').type('Evry');
     cy.get('[data-testid="firstName-field-input"]').clear().type('Jhonson');
 
-    cy.get('[data-testid="autocomplete-backend-for-invoice"]').click();
-    cy.contains('invoice-title-0').click();
-
     cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
       req.reply(req.body);
     });
@@ -55,7 +52,7 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.intercept('GET', '/accounts/**/areaPictures/**', areaPictures);
     cy.intercept('GET', '/accounts/**/files/**/raw');
 
-    cy.contains('Créer').click();
+    cy.contains("Générer l’image").click();
   });
 
   it('Show error message on address image not found', () => {
@@ -73,16 +70,13 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.get('[data-testid="address-field-input"]').type('Evry');
     cy.get('[data-testid="firstName-field-input"]').clear().type('Jhonson');
 
-    cy.get('[data-testid="autocomplete-backend-for-invoice"]').click();
-    cy.contains('invoice-title-0').click();
-
     cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects`, req => {
       req.reply(req.body);
     });
 
     cy.intercept('PUT', `/accounts/**/areaPictures/**`, req => req.reply({ statusCode: 500 }));
 
-    cy.contains('Créer').click();
+    cy.contains("Générer l’image").click();
     cy.contains("L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.");
     cy.contains('Fermer').click();
   });
