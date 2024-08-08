@@ -1,3 +1,6 @@
+import { useDialog } from '@/common/store/dialog';
+import { transactionSupportingDocProvider } from '@/providers';
+import { justifyTransaction } from '@/providers/transaction-provider';
 import { AddLink as AddLinkIcon, Clear as ClearIcon } from '@mui/icons-material';
 import {
   Box,
@@ -16,16 +19,13 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { transactionSupportingDocProvider } from '@/providers';
-import { justifyTransaction } from '@/providers/transaction-provider';
 import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
 
 const SelectionDialog = props => {
   const {
     transaction: { label, id },
-    open,
-    close,
   } = props;
+  const { close } = useDialog();
   const notify = useNotify();
   const refresh = useRefresh();
   const [isLoading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ const SelectionDialog = props => {
   };
 
   return (
-    <Dialog sx={{ height: '80vh', minHeight: '80vh' }} fullWidth={true} maxWidth='md' open={open} onClose={close}>
+    <>
       <DialogTitle>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
           <Typography>Lier la transaction "{label}" à une facture :</Typography>
@@ -128,17 +128,18 @@ const SelectionDialog = props => {
           Enregistrer
         </Button>
       </DialogActions>
-    </Dialog>
+    </>
   );
 };
 
 const TransactionLinkInvoice = props => {
   const [dialogState, setDialogState] = useState(false);
   const { transaction } = props;
+  const { open: openDialog } = useDialog();
 
   const toggleDialog = e => {
     e && e.stopPropagation();
-    setDialogState(e => !e);
+    openDialog(<SelectionDialog transaction={transaction} />, { sx: { height: '80vh', minHeight: '80vh' }, fullWidth: true, maxWidth: 'md' });
   };
 
   return (
@@ -148,7 +149,6 @@ const TransactionLinkInvoice = props => {
           <AddLinkIcon />
         </IconButton>
       </Tooltip>
-      <SelectionDialog transaction={transaction} open={dialogState} close={toggleDialog} />
     </Box>
   );
 };

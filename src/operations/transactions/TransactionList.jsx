@@ -75,9 +75,23 @@ const TransactionList = props => {
             actions={null}
             filterDefaultValues={{ categorized: true }}
             filters={[
-              <TextInput key='transaction_list_label_filter' label='Rechercher par titre' source='label' alwaysOn />,
-              <SelectInput key='transaction_list_select_filter' label='Statut' source='status' choices={transactionStatusChoices} alwaysOn resettable />,
-              <BooleanInput key='transaction_list_boolean_filter' label='Non Catégorisées' source='categorized' alwaysOn />,
+              <TextInput key='transaction_list_label_filter' data-cy='transaction_list_label_filter' label='Rechercher par titre' source='label' alwaysOn />,
+              <SelectInput
+                key='transaction_list_select_filter'
+                data-cy='transaction_list_select_filter'
+                label='Statut'
+                source='status'
+                choices={transactionStatusChoices}
+                alwaysOn
+                resettable
+              />,
+              <BooleanInput
+                key='transaction_list_boolean_filter'
+                data-cy='transaction_list_boolean_filter'
+                label='Non Catégorisées'
+                source='categorized'
+                alwaysOn
+              />,
             ]}
             component={ListComponent}
           >
@@ -95,6 +109,11 @@ const TransactionList = props => {
 
 const TransactionGrid = ({ onDocumentIconClicked }) => {
   const { isLoading } = useListContext();
+
+  const handleShowPdf = transaction => event => {
+    event.stopPropagation();
+    onDocumentIconClicked(transaction.invoice, transaction.supportingDocs);
+  };
 
   // TODO: allow inline edition
   return (
@@ -115,7 +134,7 @@ const TransactionGrid = ({ onDocumentIconClicked }) => {
                   <IconButton
                     id={`document-button-${transaction.id}`}
                     disabled={transaction.invoice === null && transaction.supportingDocs.length === 0}
-                    onClick={() => onDocumentIconClicked(transaction.invoice, transaction.supportingDocs)}
+                    onClick={handleShowPdf(transaction)}
                   >
                     <AttachmentIcon />
                   </IconButton>

@@ -1,8 +1,8 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
-import { cache } from '@/providers';
-import { accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
+import { cache, getCached } from '@/providers';
+import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { user2, whoami1 } from './mocks/responses/security-api';
 
@@ -11,6 +11,8 @@ const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
 describe(specTitle('Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
+    cy.stub(getCached, 'account').returns(account1);
+    cy.stub(navigator.clipboard, 'writeText').as('copyToClipboard');
   });
 
   it('is displayed on login', () => {
@@ -334,6 +336,7 @@ describe(specTitle('Account'), () => {
 
     cy.get('[data-testId="copy-link-button-id"]').click();
     cy.contains('Le texte a été copié avec succès !');
+    cy.get('@copyToClipboard').should('have.been.calledOnce');
 
     cy.contains('First Name 1');
     cy.contains('last Name 1');

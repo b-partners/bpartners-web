@@ -217,18 +217,18 @@ describe(specTitle('Invoice creation'), () => {
     cy.get('[data-testid="create-new-customer"]').click();
     cy.contains('Créer un nouveau client');
 
-    cy.get('#email').type('invalid email{enter}');
+    cy.get('[name="email"]').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
-    cy.get('#email').clear().type('test@gmail.com{enter}');
+    cy.get('[name="email"]').clear().type('test@gmail.com{enter}');
     cy.contains('Ce champ est requis');
 
-    cy.get('#customerType_INDIVIDUAL').click();
-    cy.get('#lastName').type('LastName 11');
-    cy.get('#firstName').type('FirstName 11');
-    cy.get('#address').type('Wall Street 2');
-    cy.get('#comment').type('comment');
-    cy.get('#phone').type('55 55 55{enter}');
+    cy.contains('Particulier').click();
+    cy.get('[name="lastName"]').type('LastName 11');
+    cy.get('[name="firstName"]').type('FirstName 11');
+    cy.get('[name="address"]').type('Wall Street 2');
+    cy.get('.MuiDialog-container [name="comment"]').type('comment');
+    cy.get('[name="phone"]').type('55 55 55{enter}');
 
     cy.wait('@createCustomer');
     cy.contains('Le client a été créé avec succès.');
@@ -265,9 +265,9 @@ describe(specTitle('Invoice creation'), () => {
 
     cy.contains('Créer un nouveau produit');
 
-    cy.get('#description').type('new description product');
-    cy.get('#unitPrice').type(1.04);
-    cy.get('#vatPercent').type(6);
+    cy.get('[name="description"]').type('new description product');
+    cy.get('[name="unitPrice"]').type(1.04);
+    cy.get('[name="vatPercent"]').type(6);
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@createNewProduct');
     cy.contains('Le produit a été créé avec succès.');

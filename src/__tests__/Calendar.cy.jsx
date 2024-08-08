@@ -1,9 +1,12 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
+import { setHours } from 'date-fns';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { setDateTime } from './mocks/utilities';
+import { createCustomer } from './mocks/responses';
 
 describe(specTitle('Calendar'), () => {
   beforeEach(() => {
@@ -19,9 +22,6 @@ describe(specTitle('Calendar'), () => {
   });
 
   it('Should sync calendar [Page]', () => {
-    const now = new Date('2023-01-01');
-    // set date global date 2023-01-01
-    cy.clock(now);
     cy.intercept('GET', '/users/mock-user-id1/calendars', []);
     cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
     cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
@@ -45,15 +45,16 @@ describe(specTitle('Calendar'), () => {
   });
 
   it('Should sync calendar [Dialog]', () => {
-    const now = new Date('2023-01-01');
-    // set date global date 2023-01-01
-    cy.clock(now);
-    cy.intercept('GET', '/users/mock-user-id1/calendars', calendars);
+    cy.intercept('GET', '/users/mock-user-id1/calendars', calendars).as('getCalendar');
     cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => req.reply({ statusCode: 403 })).as('editCalendarEvent');
+    cy.intercept('GET', '/users/mock-user-id1/calendars/holydays-calendar-id/events**', req => req.reply({ statusCode: 403 })).as('getCalendarEvents');
     cy.intercept('POST', '/users/mock-user-id1/calendars/oauth2/consent', { redirectionUrl: '/dummy' }).as('consent');
 
     cy.mount(<App />);
     cy.get("[name='calendar']").click();
+
+    cy.wait('@getCalendar');
+
     cy.contains(
       'Votre session Google Agenda a expiré, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de vos prochains RDV.'
     );
@@ -73,14 +74,14 @@ describe(specTitle('Calendar'), () => {
   });
 
   it('Should test calendar', () => {
-    const now = new Date('2023-01-01');
-    // set date global date 2023-01-01
-    cy.clock(now);
     cy.intercept('GET', '/users/mock-user-id1/calendars', calendars).as('getAllCalendars');
     cy.intercept('GET', '/users/mock-user-id1/calendars/holydays-calendar-id/events**', calendarEvents).as('getAllCalendarEvents');
+    cy.intercept('GET', '/accounts/mock-account-id1/customers**', createCustomer(3)).as('getAllCalendarEvents');
 
     cy.mount(<App />);
     cy.get("[name='calendar']").click();
+    cy.wait('@getAllCalendars');
+    cy.wait('@getAllCalendarEvents');
     cy.contains("Aujourd'hui");
     cy.contains('Mois');
     cy.contains('Semaine');
@@ -90,8 +91,8 @@ describe(specTitle('Calendar'), () => {
     // edit the event
     const participantMock = 'john@gmail.com';
     const titleMock = "New event's name.";
-    const startDateMock = '2023-01-01T10:00';
-    const endDateMock = '2023-01-01T10:30';
+    const startDateMock = setHours(new Date(), 13).toISOString();
+    const endDateMock = setHours(new Date(), 14).toISOString();
     cy.intercept('PUT', '/users/mock-user-id1/calendars/holydays-calendar-id/events', req => {
       const {
         body: [body],
@@ -108,8 +109,8 @@ describe(specTitle('Calendar'), () => {
     cy.contains('Édition');
     // change the event's name
     cy.get("[name='title']").clear().type(titleMock);
-    cy.get("[name='start']").invoke('removeAttr').clear().type(startDateMock);
-    cy.get("[name='end']").invoke('removeAttr').clear().type(endDateMock);
+    cy.get("[name='start']").then(setDateTime(startDateMock));
+    cy.get("[name='end']").then(setDateTime(endDateMock));
     cy.get("[name='location']").clear().type('New location');
 
     // remove old participant

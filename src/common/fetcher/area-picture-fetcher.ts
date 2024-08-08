@@ -1,7 +1,7 @@
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { UrlParams } from '@bpartners/annotator-component';
 import { FileType, Invoice } from '@bpartners/typescript-client';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
 
 interface AreaPictureFetcher {

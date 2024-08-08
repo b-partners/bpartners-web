@@ -13,7 +13,6 @@ export const transactionProvider: BpDataProviderType = {
     const { categorized, status, label } = filters;
     const { accountId } = await asyncGetUserInfo();
     const { data } = await payingApi().getTransactions(accountId, label, status, undefined, page, perPage);
-
     return data
       .filter(
         //TODO: following filter can be expressed in a single, well-known, logic operator. What is it?

@@ -1,3 +1,4 @@
+import { createTheme } from '@mui/material';
 import { defaultTheme } from 'react-admin';
 
 const important = value => `${value} !important`;
@@ -171,6 +172,11 @@ export const BP_THEME = {
     MuiButton: {
       styleOverrides: {
         root: BP_BUTTON,
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        size: 'small',
       },
     },
     MuiSwitch: {

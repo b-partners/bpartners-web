@@ -6,7 +6,6 @@ import { FC, useEffect } from 'react';
 
 export const CalendarSelection: FC = () => {
   const { currentCalendar, eventList, setCalendar } = useCalendarContext();
-
   useEffect(() => {
     if (!currentCalendar) {
       setCalendar && setCalendar(eventList[0]);
@@ -17,12 +16,11 @@ export const CalendarSelection: FC = () => {
 
   return (
     <TextField sx={{ minWidth: 300 }} select value={currentCalendar?.summary}>
-      {eventList &&
-        eventList.map(calendar => (
-          <MenuItem onClick={handleClick(calendar)} selected={currentCalendar?.id === calendar?.id} key={calendar?.id} value={calendar?.summary}>
-            {calendar?.summary}
-          </MenuItem>
-        ))}
+      {eventList?.map(calendar => (
+        <MenuItem onClick={handleClick(calendar)} selected={currentCalendar?.id === calendar?.id} key={calendar?.id} value={calendar?.summary}>
+          {calendar?.summary}
+        </MenuItem>
+      ))}
     </TextField>
   );
 };

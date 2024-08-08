@@ -10,12 +10,12 @@ import { Avatar, Badge, Box, FormControlLabel, FormGroup, IconButton, Paper, Ske
 import { green, grey, yellow } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
-import { FileType } from '@bpartners/typescript-client';
-import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { BP_COLOR } from '@/bp-theme';
 import { RaMoneyField } from '@/common/components';
 import { getMimeType, prettyPrintMinors, printError } from '@/common/utils';
 import { accountHolderProvider, cache, fileProvider, getAccountLogoUrl, getCached } from '@/providers';
+import { FileType } from '@bpartners/typescript-client';
+import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRefresh } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
@@ -273,7 +273,7 @@ const AccountShow = () => {
   };
 
   return (
-    <ShowBase resource='accountHolder' basePath='/account'>
+    <ShowBase id='' resource='accountHolder' basePath='/account'>
       {layout === ACCOUNT_HOLDER_LAYOUT.VIEW ? (
         <Box sx={SHOW_LAYOUT_STYLE}>
           <Box sx={BOX_CONTENT_STYLE}>

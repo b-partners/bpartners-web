@@ -18,7 +18,7 @@ export const createProduct = (n: number) => {
   return _products;
 };
 
-export let products: Product[] = createProduct(17);
+export const products: Product[] = createProduct(17);
 
 export const getProducts = (page: number, perPage: number) => products.slice(page * perPage, page * perPage + perPage);
 export const setProduct = (product: Product, index?: number) => {

@@ -26,7 +26,6 @@ export const useAnnotationsInfoForm = (polygons: Polygon[] = []) => {
   useEffect(() => {
     const cachedDefaultAnnotationInfo = getCached.annotationsInfo();
     if (cachedDefaultAnnotationInfo) {
-      console.log(cachedDefaultAnnotationInfo);
       Object.keys(cachedDefaultAnnotationInfo).forEach(index => form.setValue(index as NumberAsString, cachedDefaultAnnotationInfo[index as NumberAsString]));
     }
     form.watch(cache.annotationsInfo);

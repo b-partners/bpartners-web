@@ -1,5 +1,5 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
+import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1, customers2, getCustomers, setCustomer } from './mocks/responses/customer-api';
@@ -50,22 +50,22 @@ describe(specTitle('Customers'), () => {
 
     cy.get('[data-testid="create-button"]').click();
 
-    cy.get('#customerType_PROFESSIONAL').click();
+    cy.contains('Professionnel').click();
     cy.contains('Nom de la société');
 
-    cy.get('#email').type('invalid email{enter}');
+    cy.get('[name="email"]').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
-    cy.get('#email').clear().type('test@gmail.com{enter}');
+    cy.get('[name="email"]').clear().type('test@gmail.com{enter}');
     cy.contains('Ce champ est requis');
 
-    cy.get('#name').type('dummyCompany');
-    cy.get('#lastName').type('LastName 11');
+    cy.get('[name="name"]').type('dummyCompany');
+    cy.get('[name="lastName"]').type('LastName 11');
     cy.intercept('GET', '/accounts/mock-account-id1/customers?page=1&pageSize=15', customers2).as('getCustomers2');
-    cy.get('#firstName').type('FirstName 11');
-    cy.get('#address').type('Wall Street 2');
-    cy.get('#comment').type('comment');
-    cy.get('#phone').type('55 55 55{enter}');
+    cy.get('[name="firstName"]').type('FirstName 11');
+    cy.get('[name="address"]').type('Wall Street 2');
+    cy.get('[name="comment"]').type('comment');
+    cy.get('[name="phone"]').type('55 55 55{enter}');
 
     cy.wait('@modifyCustomers');
 
@@ -86,7 +86,7 @@ describe(specTitle('Customers'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-firstName').click();
     cy.contains('Édition de client');
 
-    cy.get('#email').type('invalid email{enter}');
+    cy.get('[name="email"]').type('invalid email{enter}');
     cy.contains('Doit être un email valide');
 
     cy.intercept('PUT', '/accounts/mock-account-id1/customers**', req => {
@@ -105,16 +105,16 @@ describe(specTitle('Customers'), () => {
       req.reply([updatedCustomer]);
     }).as('updateCustomers');
 
-    cy.get('#email').clear();
-    cy.get('#email').type('test@gmail.com');
+    cy.get('[name="email"]').clear();
+    cy.get('[name="email"]').type('test@gmail.com');
 
-    cy.get('#customerType_INDIVIDUAL').click();
-    cy.get('#lastName').clear().type('LastName 11');
-    cy.get('#firstName').clear().type('FirstName 11');
-    cy.get('#address').clear().type('Wall Street 2');
-    cy.get('#comment').contains('comment customer 1');
-    cy.get('#comment').clear();
-    cy.get('#phone').clear().type('55 55 55{enter}');
+    cy.contains('Particulier').click();
+    cy.get('[name="lastName"]').clear().type('LastName 11');
+    cy.get('[name="firstName"]').clear().type('FirstName 11');
+    cy.get('[name="address"]').clear().type('Wall Street 2');
+    cy.get('[name="comment"]').contains('comment customer 1');
+    cy.get('[name="comment"]').clear();
+    cy.get('[name="phone"]').clear().type('55 55 55{enter}');
 
     cy.wait('@updateCustomers');
 
