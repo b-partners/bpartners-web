@@ -1,3 +1,4 @@
+import { setHours } from 'date-fns';
 import { v4 as uuIdV4 } from 'uuid';
 
 export const redirectionUrl = {
@@ -26,9 +27,9 @@ export const calendarEventsGenerator = () => {
       summary: 'Event for today',
       organizer: 'Me',
       location: 'Antananarivo',
-      from: new Date('2023-01-01T09:10'),
+      from: setHours(new Date(), 10),
       id,
-      to: new Date('2023-01-01T10:10'),
+      to: setHours(new Date(), 12),
       participants: ['participant.1@gmail.com', 'participant.2@gmail.com'],
       updatedAt: new Date(),
     },
@@ -42,7 +43,7 @@ export const calendarEvents = [
     summary: 'Event for today',
     organizer: 'Me',
     location: 'Antananarivo',
-    from: new Date('2023-01-01T09:10'),
+    from: new Date(),
     id: 'today-event-id',
     to: new Date('2023-01-01T10:10'),
     participants: ['participant.1@gmail.com', 'participant.2@gmail.com'],

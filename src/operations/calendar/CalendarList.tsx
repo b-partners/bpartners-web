@@ -1,14 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useTypedToggle } from '@/common/hooks';
 import { CalendarContextProvider } from '@/common/store/calendar';
-import { calendarProvider } from '@/providers';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from '@/providers/mappers';
 import { Calendar } from '@bpartners/typescript-client';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { CalendarProps, Calendar as RaCalendar } from '@react-admin/ra-calendar';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { List } from 'react-admin';
+import { List, useGetList } from 'react-admin';
 import { CalendarSaveDialog, CalendarSelection, CalendarSyncDialog, CalendarSyncInitPage } from './components';
 import { calendarIntervalFilter } from './utils';
 
@@ -18,12 +16,7 @@ type TToShow = 'SYNC_PAGE' | 'CALENDAR' | 'LOADING';
 export const CalendarList = () => {
   const [toShow, setToShow] = useState<TToShow>('LOADING');
 
-  const { isPending, data, refetch } = useQuery({
-    queryKey: ['others', 'calendar'],
-    queryFn: () => calendarProvider.getList(1, 500, {}),
-  });
-
-  refetch();
+  const { isPending, data } = useGetList('calendar');
 
   const [currentCalendar, setCurrentCalendar] = useState<Calendar>((data || [null])[0]);
   const { getToggleStatus, setToggleStatus } = useTypedToggle<TypedToggle>({ defaultType: 'EDIT', defaultValue: false });
