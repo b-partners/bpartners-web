@@ -3,9 +3,8 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
 import { getUrlParams } from '@/common/utils';
-import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { FC } from 'react';
@@ -13,7 +12,8 @@ import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
-
+const MAX_ZOOM = 19;
+const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
 const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
@@ -47,11 +47,6 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
-
-  const measurementMapper = (measurement: Measurement): Measurement => {
-    if (!isExtended) return measurement;
-    return { ...measurement, value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH) };
-  };
 
   return (
     <Box width='100%' height='580px' position='relative'>
@@ -87,13 +82,12 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}
-          measurementMapper={measurementMapper}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
             converterApiUrl: `${CONVERTER_BASE_URL}/api/reference`,
           }}
-          zoom={newZoomLevelAsNumber}
+          zoom={getZoom(newZoomLevelAsNumber)}
         />
       )}
       {Object.keys(layer).length > 0 && (
