@@ -1,6 +1,3 @@
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { useNotify } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField } from '@/common/components';
 import { RichTextForm } from '@/common/components/RichTextForm';
 import { exportLinkMailResolver } from '@/common/resolvers';
@@ -8,10 +5,17 @@ import { useModalContext } from '@/common/store/transaction';
 import { handleSubmit } from '@/common/utils';
 import { mailingProvider } from '@/providers';
 import { transactionMapper } from '@/providers/mappers/transaction-mapper';
+import { CreateEmail } from '@bpartners/typescript-client';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { FC } from 'react';
+import { useNotify } from 'react-admin';
+import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
 import { getExportLinkMailDefaultMessage, getExportLinkMailSubject } from '../utils';
+import { ExportLinkMailModalProps } from './types';
 
-const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
+export const ExportLinkMailModal: FC<ExportLinkMailModalProps> = props => {
+  const { isOpenModal, handleExportLinkMailModal } = props;
   const id = uuid();
   const { dataForm } = useModalContext();
   const form = useForm({
@@ -26,7 +30,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
   const { isSubmitting } = form.formState;
   const notify = useNotify();
 
-  const handleEmailRequest = async (structuredData, status) => {
+  const handleEmailRequest = async (structuredData: CreateEmail[], status: string) => {
     try {
       await mailingProvider.saveOrUpdate(structuredData);
       notify(`messages.mail.${status}`, { type: 'success' });
@@ -36,7 +40,7 @@ const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
     }
   };
   const sendEmail = form.handleSubmit(async data => {
-    const structuredData = transactionMapper(data, id, 'SENT');
+    const structuredData = transactionMapper(data, id, 'SENT') as CreateEmail[];
     await handleEmailRequest(structuredData, 'sent');
   });
 
@@ -68,5 +72,3 @@ const ExportLinkMailModal = ({ isOpenModal, handleExportLinkMailModal }) => {
     </FormProvider>
   );
 };
-
-export default ExportLinkMailModal;
