@@ -30,7 +30,7 @@ const FormEvaluateProspects = () => {
   const id = uuid();
 
   const handleChange = value => {
-    if (!!value) {
+    if (value) {
       setSelectedOption_ArtisanOwner(value);
     }
   };

@@ -14,7 +14,7 @@ export const BP_COLOR = {
 
 const bp_button = {
   paddingInline: '10px',
-  boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)',
+  boxShadow: 'unset',
   minWidth: '10rem',
   color: '#fff',
   backgroundColor: BP_COLOR[10],
@@ -182,6 +182,9 @@ export const BP_THEME = {
             },
           },
           '& .RaList-actions .MuiButton-root': bp_button,
+          '& .RaList-actions': {
+            padding: '10px 5px 5px 10px',
+          },
         },
       },
     },
