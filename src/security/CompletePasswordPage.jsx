@@ -1,10 +1,9 @@
-import { Button, Typography } from '@mui/material';
-import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from '@/bp-theme';
 import { BpFormField, BpNumberField } from '@/common/components';
 import { completePasswordResolver } from '@/common/resolvers';
 import { handleSubmit } from '@/common/utils';
 import { authProvider } from '@/providers';
+import { Button, Typography } from '@mui/material';
+import { FormProvider, useForm } from 'react-hook-form';
 
 const CompletePasswordForm = () => {
   const form = useForm({ defaultValues: { newPassword: '', confirmedPassword: '', phoneNumber: '' }, mode: 'all', resolver: completePasswordResolver });
@@ -24,7 +23,7 @@ const CompletePasswordForm = () => {
         <BpFormField type='password' label='Nouveau mot de passe' name='newPassword' />
         <BpFormField type='password' label='Confirmez le mot de passe' name='confirmedPassword' />
         <br />
-        <Button mt={2} sx={BP_BUTTON} type='submit'>
+        <Button mt={2} type='submit'>
           Enregistrer
         </Button>
       </form>

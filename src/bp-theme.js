@@ -1,4 +1,3 @@
-import { createTheme } from '@mui/material';
 import { defaultTheme } from 'react-admin';
 
 const important = value => `${value} !important`;
@@ -13,13 +12,16 @@ export const BP_COLOR = {
   solid_grey: 'rgb(0, 0, 0, 0.05)',
 };
 
-export const BP_BUTTON = {
+const bp_button = {
+  paddingInline: '10px',
+  boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.3)',
+  minWidth: '10rem',
   color: '#fff',
   backgroundColor: BP_COLOR[10],
-  margin: '5px',
+  marginBlock: '5px',
   textTransform: 'unset',
   '&:hover, &:active': {
-    backgroundColor: BP_COLOR['20'],
+    backgroundColor: BP_COLOR[20],
     cursor: 'pointer',
   },
   '&:disabled': {
@@ -166,16 +168,26 @@ export const BP_THEME = {
     RaList: {
       styleOverrides: {
         root: {
-          '& .RaList-main button': BP_BUTTON,
-          '& .RaList-actions': {
-            marginBottom: '5px',
+          '& .RaList-main button': {
+            color: '#fff',
+            backgroundColor: BP_COLOR[10],
+            margin: '5px',
+            textTransform: 'unset',
+            '&:hover, &:active': {
+              backgroundColor: BP_COLOR['20'],
+              cursor: 'pointer',
+            },
+            '&:disabled': {
+              backgroundColor: BP_COLOR['solid_grey'],
+            },
           },
+          '& .RaList-actions .MuiButton-root': bp_button,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
-        root: BP_BUTTON,
+        root: bp_button,
       },
     },
     MuiTextField: {

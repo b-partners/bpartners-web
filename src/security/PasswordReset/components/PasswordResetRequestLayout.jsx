@@ -1,4 +1,3 @@
-import { BP_BUTTON } from '@/bp-theme';
 import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -37,7 +36,6 @@ const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
           </Typography>
           <BpFormField label='Votre adresse mail' type='email' name='email' />
           <Button
-            sx={BP_BUTTON}
             id='sendMail_resetPassword'
             style={{ marginTop: '0.5rem' }}
             type='submit'
