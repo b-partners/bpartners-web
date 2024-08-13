@@ -1,22 +1,22 @@
+import { BpFormField } from '@/common/components';
+import { BPButton } from '@/common/components/BPButton';
+import BpTextAdornment from '@/common/components/BpTextAdornment';
+import { handleSubmit } from '@/common/utils';
 import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { Add as AddIcon, Cancel as CancelIcon, Save as SaveIcon } from '@mui/icons-material';
 import { Box, FormControl, FormHelperText, Paper } from '@mui/material';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { BPButton } from '@/common/components/BPButton';
-import BPFormField from '@/common/components/BPFormField';
-import BpTextAdornment from '@/common/components/BpTextAdornment';
-import { handleSubmit } from '@/common/utils';
+import { FormProvider, useForm } from 'react-hook-form';
 import { INVOICE_EDITION } from '../style';
 import {
   DefaultPaymentRegulation,
   getNextMaturityDate,
   getPercentValue,
   missingPaymentRegulation,
-  paymentRegulationErrorMessage,
-  paymentRegulationToMajor,
   PAYMENT_REGULATIONS,
   PAYMENT_TYPE,
+  paymentRegulationErrorMessage,
+  paymentRegulationToMajor,
   ScreenMode,
   validatePaymentRegulation,
   validateRegulationPercentage,
@@ -63,7 +63,7 @@ const PaymentRegulationsForm = props => {
     <FormControl sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} error={error}>
       {(paymentRegulations || []).length > 0 && (
         <Box sx={INVOICE_EDITION.LONG_LIST}>
-          {paymentRegulations && paymentRegulations.map(paymentRegulationItems(handleEdit, handleRemove))}
+          {paymentRegulations?.map(paymentRegulationItems(handleEdit, handleRemove))}
           <PaymentRegulationItem data={paymentRegulationRest} percentValue={paymentRegulationRest.percent} />
         </Box>
       )}
@@ -115,34 +115,35 @@ const RegulationsForm = props => {
   return (
     <Paper elevation={3}>
       <FormControl sx={{ margin: 1 }}>
-        <CustomBpField
-          validate={validatePercentage}
-          type='number'
-          form={form}
-          name={percentName}
-          label='Pourcentage'
-          InputProps={{
-            endAdornment: <BpTextAdornment label='%' />,
-          }}
-        />
-        <CustomBpField type='date' form={form} name='maturityDate' label='Date limite de paiement' />
-        <CustomBpField type='text' form={form} name='comment' label='Commentaire' shouldValidate={false} />
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <BPButton
-            style={{ width: 284 }}
-            id='form-regulation-save-id'
-            onClick={handleSubmit(onSaveSubmit)}
-            label={isCreation ? 'Créer' : 'Modifier'}
-            icon={<SaveIcon />}
-            sx={{ marginBlock: 1 }}
+        <FormProvider {...form}>
+          <CustomBpField
+            validate={validatePercentage}
+            type='number'
+            name={percentName}
+            label='Pourcentage'
+            InputProps={{
+              endAdornment: <BpTextAdornment label='%' />,
+            }}
           />
-          <BPButton style={{ width: 284 }} id='form-regulation-cancel-id' onClick={onCancel} label='Annuler' icon={<CancelIcon />} sx={{ marginBlock: 1 }} />
-        </Box>
+          <CustomBpField type='date' name='maturityDate' label='Date limite de paiement' />
+          <CustomBpField type='text' name='comment' label='Commentaire' shouldValidate={false} />
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <BPButton
+              style={{ width: 284 }}
+              id='form-regulation-save-id'
+              onClick={handleSubmit(onSaveSubmit)}
+              label={isCreation ? 'Créer' : 'Modifier'}
+              icon={<SaveIcon />}
+              sx={{ marginBlock: 1 }}
+            />
+            <BPButton style={{ width: 284 }} id='form-regulation-cancel-id' onClick={onCancel} label='Annuler' icon={<CancelIcon />} sx={{ marginBlock: 1 }} />
+          </Box>
+        </FormProvider>
       </FormControl>
     </Paper>
   );
 };
 
-const CustomBpField = props => <BPFormField style={{ width: 284 }} {...props} />;
+const CustomBpField = props => <BpFormField style={{ width: 284 }} {...props} />;
 
 export default PaymentRegulationsForm;
