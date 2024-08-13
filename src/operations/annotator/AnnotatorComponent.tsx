@@ -6,7 +6,7 @@ import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
@@ -51,7 +51,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelect && (
-        <>
+        <Stack direction='row' spacing={1} marginBlock={1}>
           <BpSelect
             value={newZoomLevel}
             handleChange={handleZoomLvl}
@@ -71,7 +71,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
             label="Source d'image"
           />
           <RefocusDialog onAccept={refocusImgClick} disabled={isExtended} />
-        </>
+        </Stack>
       )}
       {filename && (
         <AnnotatorCanvas
