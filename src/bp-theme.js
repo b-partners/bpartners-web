@@ -16,6 +16,7 @@ export const BP_COLOR = {
 export const BP_BUTTON = {
   color: '#fff',
   backgroundColor: BP_COLOR[10],
+  margin: '5px',
   textTransform: 'unset',
   '&:hover, &:active': {
     backgroundColor: BP_COLOR['20'],
@@ -166,6 +167,9 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '& .RaList-main button': BP_BUTTON,
+          '& .RaList-actions': {
+            marginBottom: '5px',
+          },
         },
       },
     },

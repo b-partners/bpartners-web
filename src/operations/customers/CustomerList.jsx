@@ -1,5 +1,5 @@
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
-import { Datagrid, List, TextField, TextInput, useListContext } from 'react-admin';
+import { Datagrid, List, TextField, TextInput } from 'react-admin';
 import { BPImport } from '../../common/components/BPImport';
 import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
@@ -34,16 +34,6 @@ const CustomerList = props => (
       '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
     }}
   >
-    <CustomerGrid />
-  </List>
-);
-
-const CustomerGrid = () => {
-  const { isLoading } = useListContext();
-
-  if (isLoading) return null;
-
-  return (
     <Datagrid rowClick='edit' empty={<EmptyList />}>
       <TextField source='lastName' label='Nom' />
       <TextField source='firstName' label='Prénom' />
@@ -51,7 +41,7 @@ const CustomerGrid = () => {
       <TextField source='address' label='Adresse' />
       <TextField source='phone' label='Téléphone' />
     </Datagrid>
-  );
-};
+  </List>
+);
 
 export default CustomerList;
