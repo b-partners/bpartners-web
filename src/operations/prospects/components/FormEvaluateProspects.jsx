@@ -1,8 +1,3 @@
-import { Button, Tooltip } from '@mui/material';
-import { useState } from 'react';
-import { SelectArrayInput } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from '@/bp-theme';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { prospectConfigResolver } from '@/common/resolvers/prospect-config-validator';
 import { useProspectContext } from '@/common/store/prospect-store';
@@ -12,6 +7,10 @@ import { SheetNames } from '@/constants/sheet-names';
 import { accountHolderProvider } from '@/providers';
 import { prospectFormMapper } from '@/providers/mappers/prospect-form-mapper';
 import { prospectingJobsProvider } from '@/providers/prospecting-jobs-provider';
+import { Button, Tooltip } from '@mui/material';
+import { useState } from 'react';
+import { SelectArrayInput } from 'react-admin';
+import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuid } from 'uuid';
 import { AutocompleteBackend, BpFormField, BpNumberField } from '../../../common/components';
 
@@ -31,7 +30,7 @@ const FormEvaluateProspects = () => {
   const id = uuid();
 
   const handleChange = value => {
-    if (!!value) {
+    if (value) {
       setSelectedOption_ArtisanOwner(value);
     }
   };
@@ -107,8 +106,7 @@ const FormEvaluateProspects = () => {
         <BpNumberField label='Nombre maximum de lignes' name='max' />
         <BpNumberField label='Note minimale du client' name='minCustomerRating' />
         <BpNumberField label='Note minimale des prospects' name='minProspectRating' />
-
-        <Button mt={2} sx={BP_BUTTON} id='evaluateProspectsSubmit' type='submit'>
+        <Button mt={2} id='evaluateProspectsSubmit' type='submit'>
           Évaluer les prospects
         </Button>
       </form>

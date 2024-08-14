@@ -1,7 +1,6 @@
 import { useDialog } from '@/common/store/dialog';
-import { transactionSupportingDocProvider } from '@/providers';
-import { justifyTransaction } from '@/providers/transaction-provider';
-import { AddLink as AddLinkIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { justifyTransaction, transactionSupportingDocProvider } from '@/providers';
+import { Clear as ClearIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -9,7 +8,6 @@ import {
   CardContent,
   Chip,
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -17,27 +15,30 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { useNotify, useRefresh } from 'react-admin';
-import InvoiceListSelection, { SelectedInvoiceTable } from './InvoiceListSelection';
+import { ChangeEventHandler, FC, useState } from 'react';
+import { RowClickFunction, useNotify, useRefresh } from 'react-admin';
+import InvoiceListSelection from '../InvoiceListSelection';
+import { SelectedInvoiceTable } from './SelectedInvoiceTable';
+import { SelectionDialogProps } from './types';
 
-const SelectionDialog = props => {
+export const SelectionDialog: FC<SelectionDialogProps> = props => {
   const {
     transaction: { label, id },
   } = props;
   const { close } = useDialog();
   const notify = useNotify();
   const refresh = useRefresh();
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [invoiceToLink, setInvoiceToLink] = useState(null);
   const [file, setFile] = useState(null);
 
-  const handleRowClick = (_id, _resource, record) => {
+  const handleRowClick: RowClickFunction = (_id, _resource, record) => {
     setInvoiceToLink(record);
     setFile(null);
+    return '';
   };
 
-  const handleImportFile = file => {
+  const handleImportFile: ChangeEventHandler<HTMLInputElement> = file => {
     const targetFile = file.target.files[0];
 
     if (targetFile?.name) {
@@ -62,22 +63,22 @@ const SelectionDialog = props => {
 
   const importFileSubmit = async () => {
     const resources = { file: file, tId: id };
-    await transactionSupportingDocProvider.saveOrUpdate(resources);
+    await transactionSupportingDocProvider.saveOrUpdate(resources as unknown as []);
     notify('Document ajouté avec succès.', { type: 'success' });
     close();
     refresh();
   };
 
   const handleSubmit = () => {
-    setLoading(true);
+    setIsLoading(true);
     if (invoiceToLink && !file) {
       fetch()
         .catch(() => notify('messages.global.error', { type: 'error' }))
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     } else {
       importFileSubmit()
         .catch(() => notify('messages.global.error', { type: 'error' }))
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     }
   };
 
@@ -95,13 +96,11 @@ const SelectionDialog = props => {
         <Card>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', margin: 0, padding: 0 }}>
-              {invoiceToLink && !file ? (
-                <SelectedInvoiceTable invoice={invoiceToLink} />
-              ) : file ? (
+              {invoiceToLink && !file && <SelectedInvoiceTable invoice={invoiceToLink} />}
+              {invoiceToLink && file && (
                 <Chip sx={{ marginTop: '0.3rem', marginLeft: '0.3rem' }} label={file?.target.files[0].name} onDelete={() => setFile(null)} />
-              ) : (
-                <Typography>Veuillez sélectionner une facture </Typography>
               )}
+              {!invoiceToLink && !file && <Typography>Veuillez sélectionner une facture </Typography>}
               {!file && (
                 <Typography>
                   ou{' '}
@@ -131,26 +130,3 @@ const SelectionDialog = props => {
     </>
   );
 };
-
-const TransactionLinkInvoice = props => {
-  const [dialogState, setDialogState] = useState(false);
-  const { transaction } = props;
-  const { open: openDialog } = useDialog();
-
-  const toggleDialog = e => {
-    e && e.stopPropagation();
-    openDialog(<SelectionDialog transaction={transaction} />, { sx: { height: '80vh', minHeight: '80vh' }, fullWidth: true, maxWidth: 'md' });
-  };
-
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-      <Tooltip title='Lier à une facture'>
-        <IconButton data-testid={`${transaction.id}-link-invoice-button`} onClick={toggleDialog}>
-          <AddLinkIcon />
-        </IconButton>
-      </Tooltip>
-    </Box>
-  );
-};
-
-export default TransactionLinkInvoice;

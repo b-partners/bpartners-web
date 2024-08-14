@@ -142,7 +142,7 @@ const ProspectsList = () => {
               actions={
                 <Stack direction='row' width='100%' justifyContent='space-between' alignItems='center'>
                   <ProspectFilterInput />
-                  <BPButton label='resources.prospects.add' onClick={toggleDialog} style={{ width: '15rem', height: '3rem' }} />
+                  <BPButton label='resources.prospects.add' onClick={toggleDialog} />
                 </Stack>
               }
             >

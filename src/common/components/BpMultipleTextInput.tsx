@@ -89,7 +89,7 @@ export const BpMultipleTextInput: FC<BpMultipleTextInputProps> = ({ name, label,
           disabled={!state || state.length === 0}
           label='ra.action.add'
           onClick={handleAdd}
-          style={{ ...CUSTOM_BUTTON, ...(!!errors[name] ? ERROR_BORDER : BORDER) } as CSSProperties}
+          style={{ ...CUSTOM_BUTTON, ...(errors[name] ? ERROR_BORDER : BORDER) } as CSSProperties}
         />
       </form>
       {/* cannot use TextField props helperText because of the BpButton static style */}

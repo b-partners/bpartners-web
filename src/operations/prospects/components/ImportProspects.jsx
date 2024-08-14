@@ -1,12 +1,11 @@
-import { Box, Button, CircularProgress, Divider, Typography } from '@mui/material';
-import { useState } from 'react';
-import { useNotify } from 'react-admin';
-import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from '@/bp-theme';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { importProspectsResolver } from '@/common/resolvers/prospect-config-validator';
 import { SheetNames } from '@/constants/sheet-names';
 import { importProspects } from '@/providers';
+import { Box, Button, CircularProgress, Divider, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useNotify } from 'react-admin';
+import { FormProvider, useForm } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
 
 const ImportProspects = () => {
@@ -55,14 +54,7 @@ const ImportProspects = () => {
           <BpNumberField label='Nombre minimum de lignes' name='import_min' />
           <BpNumberField label='Nombre maximum de lignes' name='import_max' />
 
-          <Button
-            mt={2}
-            sx={BP_BUTTON}
-            id='importProspectsSubmit'
-            type='submit'
-            disabled={isLoading}
-            startIcon={isLoading && <CircularProgress color='inherit' size={18} />}
-          >
+          <Button mt={2} id='importProspectsSubmit' type='submit' disabled={isLoading} startIcon={isLoading && <CircularProgress color='inherit' size={18} />}>
             Importer des prospects
           </Button>
         </form>

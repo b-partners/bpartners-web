@@ -7,7 +7,6 @@ import ProductModel from '@/assets/ProductModel.png';
 import { importCustomers } from '@/providers/customer-provider';
 import { CANCEL_BUTTON_STYLE, ERROR_BOX_STYLE, IMPORT_BUTTON_STYLE, IMPORT_MODAL_STYLE } from './style';
 
-import { BP_BUTTON } from '@/bp-theme';
 import { useToggle } from '@/common/hooks';
 import { toArrayBuffer } from '@/common/utils';
 import { importProducts } from '@/providers/product-provider';
@@ -102,7 +101,7 @@ export const BPImport: FC<{ source: string }> = props => {
             Ou mieux encore, téléchargez ce modèle et copiez vos {subject} pour être sûr que les colonnes correspondent.
             <a href={source === 'customer' ? customerTemplateUrl : productTemplateUrl} target='_blank' rel='noreferrer' download>
               <Tooltip title='Télécharger le modèle'>
-                <IconButton size='small' component='span' sx={BP_BUTTON}>
+                <IconButton size='small' component='span'>
                   <FileDownload />
                 </IconButton>
               </Tooltip>
@@ -126,7 +125,7 @@ export const BPImport: FC<{ source: string }> = props => {
             ) : (
               <label htmlFor='file-input' id='upload-file-label'>
                 <Tooltip title='importer un fichier'>
-                  <IconButton component='span' sx={BP_BUTTON}>
+                  <IconButton component='span'>
                     <InsertDriveFile />
                   </IconButton>
                 </Tooltip>

@@ -1,11 +1,11 @@
+import { BP_COLOR } from '@/bp-theme';
+import { MAX_ATTACHMENT_NAME_LENGTH } from '@/operations/invoice/utils/utils';
 import { ExpandMore, InsertDriveFile } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Chip, FormHelperText, List, Typography } from '@mui/material';
 import { createContext } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BP_COLOR } from '@/bp-theme';
-import { MAX_ATTACHMENT_NAME_LENGTH } from '@/operations/invoice/utils/utils';
 import { stringCutter } from '../utils';
-import { BpFormField } from './BPFormField';
+import { BpFormField } from './BpFormField';
 import RichTextEditor from './RichTextEditor';
 
 export const AttachementContext = createContext({ attachments: false });

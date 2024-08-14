@@ -3,7 +3,6 @@ import { useToggle } from '@/common/hooks';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { FC } from 'react';
 import { useTranslate } from 'react-admin';
-import { REFOCUS_BUTTON } from './style';
 import { RefocusDialogProps } from './types';
 
 export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, disabled }) => {
@@ -22,7 +21,6 @@ export const RefocusDialog: FC<RefocusDialogProps> = ({ onAccept, isLoading, dis
         onClick={handleOpen}
         data-testid='center-img-btn'
         label={`bp.action.${!disabled ? 'refocusImage' : 'resetRefocusImage'}`}
-        style={REFOCUS_BUTTON}
         isLoading={isLoading}
       />
       <Dialog open={isOpen} onClose={handleClose} aria-labelledby='alert-dialog-title' aria-describedby='alert-dialog-description'>

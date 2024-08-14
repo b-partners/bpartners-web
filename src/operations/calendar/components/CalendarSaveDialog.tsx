@@ -22,7 +22,7 @@ type CalendarEditDialogProps = {
 export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: closeDialog, open, title }) => {
   const { currentEvent, currentCalendar } = useCalendarContext();
   const form = useForm({ mode: 'all', resolver: calendarResolver, defaultValues: currentEvent || {} });
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const notify = useNotify();
   const refresh = useRefresh();
 
@@ -40,7 +40,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
     const to = new Date(data?.end);
     const fetch = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         await calendarEventProvider.saveOrUpdate([restData], { calendarId: currentCalendar?.id });
         // transform Calendar Event To Prospect
         const requestBody = ProspectEvaluateJobsMapper(from, to, currentCalendar?.id);
@@ -50,7 +50,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
       } catch (err) {
         notify('messages.global.error', { type: 'error' });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetch().catch(printError);
@@ -60,11 +60,11 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
     <Dialog onClose={closeDialog} open={open}>
       <DialogTitle>{title}</DialogTitle>
       <FormProvider {...form}>
-        <DialogContent sx={{ width: 500 }}>
-          <BpFormField style={{ width: 500 }} label='Titre' name='title' />
-          <BpFormField style={{ width: 500 }} type='datetime-local' label='Date de début' name='start' />
-          <BpFormField style={{ width: 500 }} type='datetime-local' label='Date de fin' name='end' />
-          <BpFormField style={{ width: 500 }} label='Adresse' multiline name='location' />
+        <DialogContent sx={{ width: 500, '& .MuiTextField-root': { width: 500 } }}>
+          <BpFormField label='Titre' name='title' />
+          <BpFormField type='datetime-local' label='Date de début' name='start' />
+          <BpFormField type='datetime-local' label='Date de fin' name='end' />
+          <BpFormField label='Adresse' multiline name='location' />
           <CalendarCustomerSelection />
         </DialogContent>
         <DialogActions>
@@ -74,6 +74,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
           </Toolbar>
         </DialogActions>
       </FormProvider>
+      c
     </Dialog>
   );
 };
