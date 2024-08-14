@@ -1,33 +1,27 @@
-import { DownloadForOffline, Error } from '@mui/icons-material';
+import { DownloadForOffline } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, LinearProgress, Stack, Typography } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.vite';
-import { HorizontalPagination } from './HorizontalPagination';
+import { HorizontalPagination } from '../HorizontalPagination';
+import TooltipButton from '../TooltipButton';
+import { PdfErrorHandling } from './PdfErrorHandling';
+import { PdfViewerProps } from './types';
 
-import TooltipButton from './TooltipButton';
-
-export const ErrorHandling = ({ errorMessage }) => (
-  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-    <Error style={{ fontSize: 40 }} />
-    <Typography variant='body2'>{errorMessage}</Typography>
-  </Box>
-);
-
-const PdfViewer = props => {
+export const PdfViewer: FC<PdfViewerProps> = props => {
   const { url, filename, isPending, noData, onLoadError, children, ...others } = props;
   const loadErrorMessage = 'Échec de chargement du document';
   const [pages, setPages] = useState({ current: 1, last: null });
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const pdfRef = useRef(null);
 
-  const stopLoading = () => setLoading(false);
-  const startLoading = useCallback(() => setLoading(true), [setLoading]);
+  const stopLoading = () => setIsLoading(false);
+  const startLoading = useCallback(() => setIsLoading(true), [setIsLoading]);
 
-  const setLastPage = ({ numPages }) => {
+  const setLastPage = ({ numPages }: any) => {
     setPages(e => ({ ...e, last: numPages }));
   };
 
-  const setPage = callback => {
+  const setPage = (callback: any) => {
     setPages(e => ({ ...e, current: callback(e.current) }));
   };
 
@@ -44,7 +38,7 @@ const PdfViewer = props => {
             {url && !isLoading && <HorizontalPagination activeStep={pages.current} maxSteps={pages.last} setActiveStep={setPage} />}
             {children}
             <a href={url} target='_blank' rel='noreferrer' download={filename + '.pdf'}>
-              <TooltipButton title='Télécharger' icon={<DownloadForOffline />} size='small' />
+              <TooltipButton title='Télécharger' icon={<DownloadForOffline />} />
             </a>
           </Stack>
         </Box>
@@ -52,7 +46,7 @@ const PdfViewer = props => {
           {url ? (
             <Pdf
               noData={noData || <Typography variant='body2'>En attente du document ...</Typography>}
-              error={onLoadError || <ErrorHandling errorMessage={loadErrorMessage} />}
+              error={onLoadError || <PdfErrorHandling message={loadErrorMessage} />}
               loading={<LoadingMessage />}
               file={!isPending ? url : null}
               onLoadSuccess={setLastPage}
@@ -77,5 +71,3 @@ const PdfViewer = props => {
 };
 
 const LoadingMessage = () => <Typography variant='body2'>Chargement du document ...</Typography>;
-
-export default PdfViewer;

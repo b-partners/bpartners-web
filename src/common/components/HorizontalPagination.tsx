@@ -14,9 +14,9 @@ const STYLE = {
   padding: '0.1rem',
 };
 
-export type HorizontalPaginationProps = { maxSteps: number; activeStep: number; setActiveStep: Dispatch<SetStateAction<number>>; boxSx: SxProps };
+export type HorizontalPaginationProps = { maxSteps: number; activeStep: number; setActiveStep: Dispatch<SetStateAction<number>>; boxSx?: SxProps };
 
-export const HorizontalPagination: FC<HorizontalPaginationProps> = ({ maxSteps, activeStep, setActiveStep, boxSx }) => {
+export const HorizontalPagination: FC<HorizontalPaginationProps> = ({ maxSteps, activeStep, setActiveStep, boxSx = {} }) => {
   const theme = useTheme<{ direction: string }>();
 
   const handleNext = () => {
