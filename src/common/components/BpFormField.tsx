@@ -9,8 +9,18 @@ const textFieldStyle = {
   width: 300,
 };
 
+const passwordStyle = {
+  '.MuiInputBase-root': {
+    padding: 0,
+  },
+  '.MuiIconButton-root': {
+    position: 'absolute',
+    right: '0.4rem',
+  },
+};
+
 // work with context, remove form in props
-export const BpFormField: FC<BpFormFieldProps> = (props: any) => {
+export const BpFormField: FC<BpFormFieldProps> = props => {
   const { name, label, type, validate, style, shouldValidate, ...others } = props;
   const {
     register,
@@ -25,7 +35,7 @@ export const BpFormField: FC<BpFormFieldProps> = (props: any) => {
 
   const dateProps = (type || '').includes('date') ? { InputLabelProps: { shrink: true } } : {};
 
-  const errorStyle = errors[name] ? { error: true, helperText: errors[name].message } : { error: false };
+  const errorStyle = errors[name] ? { error: true, helperText: errors[name].message as string } : { error: false };
 
   // if there is an specific validation other than required, it will used
   // and if shouldValidate is false, no validation will used
@@ -34,19 +44,7 @@ export const BpFormField: FC<BpFormFieldProps> = (props: any) => {
 
   return (
     <TextField
-      sx={
-        type === 'password'
-          ? {
-              '.MuiInputBase-root': {
-                padding: 0,
-              },
-              '.MuiIconButton-root': {
-                position: 'absolute',
-                right: '0.4rem',
-              },
-            }
-          : {}
-      }
+      sx={{ ...(style || textFieldStyle), ...(type === 'password' ? passwordStyle : {}) }}
       label={label}
       {...dateProps}
       {...errorStyle}
@@ -55,7 +53,6 @@ export const BpFormField: FC<BpFormFieldProps> = (props: any) => {
       {...customRegister}
       data-testid={`${name}-field-input`}
       type={type === 'password' ? passwordType : type}
-      style={style || textFieldStyle}
       value={record[name] || ''}
       InputProps={{
         endAdornment: type === 'password' && (
