@@ -60,11 +60,11 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
     <Dialog onClose={closeDialog} open={open}>
       <DialogTitle>{title}</DialogTitle>
       <FormProvider {...form}>
-        <DialogContent sx={{ width: 500 }}>
-          <BpFormField style={{ width: 500 }} label='Titre' name='title' />
-          <BpFormField style={{ width: 500 }} type='datetime-local' label='Date de début' name='start' />
-          <BpFormField style={{ width: 500 }} type='datetime-local' label='Date de fin' name='end' />
-          <BpFormField style={{ width: 500 }} label='Adresse' multiline name='location' />
+        <DialogContent sx={{ width: 500, '& .MuiTextField-root': { width: 500 } }}>
+          <BpFormField label='Titre' name='title' />
+          <BpFormField type='datetime-local' label='Date de début' name='start' />
+          <BpFormField type='datetime-local' label='Date de fin' name='end' />
+          <BpFormField label='Adresse' multiline name='location' />
           <CalendarCustomerSelection />
         </DialogContent>
         <DialogActions>
