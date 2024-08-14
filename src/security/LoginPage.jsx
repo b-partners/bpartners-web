@@ -2,13 +2,13 @@ import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
 import { Redirect } from '../common/utils';
 
-import { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
 import { BP_COLOR } from '@/bp-theme';
-import { BpFormField, BPLoader } from '@/common/components';
+import { BpFormField, BPLoader, BpPasswordField } from '@/common/components';
 import useAuthentication from '@/common/hooks/use-authentication';
 import { handleSubmit } from '@/common/utils';
 import { authProvider } from '@/providers';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import BpBackgroundImage from '../assets/bp-bg-image.png';
 import CompletePasswordPage from './CompletePasswordPage';
 import { SignUpForm } from './SignUpForm';
@@ -16,9 +16,9 @@ import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
 
 const BpLoginPage = () => {
   const { isLoading } = useAuthentication();
-  const [isLogin, setFormState] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
 
-  const toggleForm = () => setFormState(!isLogin);
+  const toggleForm = () => setIsLogin(!isLogin);
 
   return isLoading && authProvider.getCachedWhoami() ? (
     <BPLoader message="Chargement des informations d'authentification, veuillez patienter..." />
@@ -56,10 +56,10 @@ const BpLoginPage = () => {
 
 const SignInForm = ({ onSignUp }) => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const login = formState.handleSubmit(async loginState => {
-    setLoading(true);
+    setIsLoading(true);
     const redirectionUrl = await authProvider.login(loginState);
     Redirect.toURL(redirectionUrl);
   });
@@ -72,10 +72,10 @@ const SignInForm = ({ onSignUp }) => {
           Bienvenue !
         </Typography>
         <BpFormField name='username' label='Votre email' />
-        <BpFormField name='password' type='password' label='Mot de passe' />
+        <BpPasswordField name='password' label='Mot de passe' />
         <Button
           id='login'
-          endIcon={isLoading && <CircularProgress size={20} color='inherit' />}
+          endIcon={isLoadings && <CircularProgress size={20} color='inherit' />}
           disabled={isLoading}
           style={{ marginTop: '0.5rem' }}
           type='submit'

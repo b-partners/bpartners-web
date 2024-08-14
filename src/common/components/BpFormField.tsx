@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormFieldProps } from './types';
 
 const textFieldStyle = {
-  marginBlock: 3,
+  marginBlock: 0.5,
   width: 300,
 };
 
