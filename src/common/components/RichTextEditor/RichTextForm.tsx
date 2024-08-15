@@ -1,6 +1,6 @@
 import { BP_COLOR } from '@/bp-theme';
 import { Box, FormHelperText } from '@mui/material';
-import { createContext, FC } from 'react';
+import { createContext, FC, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { BpFormField } from '../BpFormField';
 import { AttachmentForm } from './RichAttachementForm';
@@ -16,8 +16,10 @@ export const RichTextForm: FC<RichTextFormProps> = ({ attachments }) => {
 
   const richeErrorStyle = errors['message'] ? { border: 'solid 1px red' } : { border: `solid 2px ${BP_COLOR['solid_grey']}` };
 
+  const contextValues = useMemo(() => ({ attachments }), [attachments]);
+
   return (
-    <AttachementContext.Provider value={{ attachments }}>
+    <AttachementContext.Provider value={contextValues}>
       <Box width='50vw'>
         <BpFormField style={{ width: '30rem' }} name='subject' label='Objet' data-test-item='subject-field' fullWidth />
         <Box sx={{ mt: 2, ...richeErrorStyle, p: 2, paddingTop: 0, borderRadius: 2, height: '30vh', overflowY: 'auto' }}>
