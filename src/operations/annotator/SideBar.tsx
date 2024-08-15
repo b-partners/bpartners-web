@@ -4,7 +4,7 @@ import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as Vis
 import { BPConstruction } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
 import { useAnnotationsInfoForm } from '@/common/forms';
-import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
+import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { labels } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
