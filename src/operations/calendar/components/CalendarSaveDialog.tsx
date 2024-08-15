@@ -2,7 +2,7 @@
 import { BpFormField } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
 import { calendarResolver } from '@/common/resolvers';
-import { useCalendarContext } from '@/common/store/calendar';
+import { useCalendarContext } from '@/common/store';
 import { printError } from '@/common/utils';
 import { calendarEventProvider, getCached, prospectingJobsProvider } from '@/providers';
 import { calendarEventMapper, TRaCalendarEvent } from '@/providers/mappers';

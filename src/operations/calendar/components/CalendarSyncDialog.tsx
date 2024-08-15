@@ -1,7 +1,7 @@
 import GOOGLE_CALENDAR_ICON from '@/assets/google_calendar_icon.png';
 import { BPButton } from '@/common/components/BPButton';
 import { useCheckAuth } from '@/common/hooks';
-import { useCalendarContext } from '@/common/store/calendar';
+import { useCalendarContext } from '@/common/store';
 import { Redirect } from '@/common/utils';
 import { calendarEventProvider, dataProvider } from '@/providers';
 import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
