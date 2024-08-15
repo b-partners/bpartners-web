@@ -1,5 +1,4 @@
-import { BpFormField } from '@/common/components';
-import { RichTextForm } from '@/common/components/RichTextForm';
+import { BpFormField, RichTextForm } from '@/common/components';
 import { exportLinkMailResolver } from '@/common/resolvers';
 import { useModalContext } from '@/common/store/transaction';
 import { handleSubmit } from '@/common/utils';
