@@ -1,14 +1,13 @@
 import { stringCutter } from '@/common/utils';
 import { MAX_ATTACHMENT_NAME_LENGTH } from '@/operations/invoice/utils';
 import { ExpandMore as ExpandMoreIcon, InsertDriveFile as InsertDriveFileIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Badge, Chip, Typography } from '@mui/material';
-import { List } from 'react-admin';
+import { Accordion, AccordionDetails, AccordionSummary, Badge, Chip, List, Typography } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { RichAttachementAccordionStyle } from './style';
 
 export const AttachmentForm = () => {
   const { setValue } = useFormContext();
-  const { attachments } = useWatch();
+  const { attachments = [] } = useWatch();
 
   const handleDeleteAttachment = (idx: number) => {
     const localVarAttachments = attachments.slice();
@@ -24,7 +23,7 @@ export const AttachmentForm = () => {
           <InsertDriveFileIcon />
         </Badge>
       </AccordionSummary>
-      <AccordionDetails sx={{ py: 0 }}>
+      <AccordionDetails>
         <List>
           {attachments.map((attachment: any, idx: number) => {
             const { name: filename } = attachment;

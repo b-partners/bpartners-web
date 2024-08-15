@@ -43,4 +43,8 @@ export const RichAttachementAccordionStyle: SxProps = {
     marginTop: '0.3rem',
     marginLeft: '0.3rem',
   },
+  '& .MuiAccordionDetails-root': {
+    paddingY: 0,
+    minHeight: '10rem',
+  },
 };
