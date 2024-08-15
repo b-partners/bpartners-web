@@ -8,7 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import ListComponent from '@/common/components/ListComponent';
 import TabPanel from '@/common/components/TabPanel';
-import { ProspectContextProvider } from '@/common/store/prospect-store';
+import { ProspectContextProvider } from '@/common/store';
 import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';

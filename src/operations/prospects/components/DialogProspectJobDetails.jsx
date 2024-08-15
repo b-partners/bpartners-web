@@ -1,4 +1,4 @@
-import { useProspectContext } from '@/common/store/prospect-store';
+import { useProspectContext } from '@/common/store';
 import { prospectingJobsProvider } from '@/providers';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';

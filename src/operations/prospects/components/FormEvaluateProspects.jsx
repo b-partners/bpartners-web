@@ -1,6 +1,6 @@
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { prospectConfigResolver } from '@/common/resolvers/prospect-config-validator';
-import { useProspectContext } from '@/common/store/prospect-store';
+import { useProspectContext } from '@/common/store';
 import { NewInterventionOptions } from '@/constants/intervention-types';
 import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants/invoice';
 import { SheetNames } from '@/constants/sheet-names';

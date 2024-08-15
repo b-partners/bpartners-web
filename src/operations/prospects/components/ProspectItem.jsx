@@ -7,7 +7,7 @@ import { useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldErrorMessage } from '../../../common/resolvers';
 import { prospectInfoResolver } from '../../../common/resolvers/prospect-info-validator';
-import { useProspectContext } from '../../../common/store/prospect-store';
+import { useProspectContext } from '../../../common/store';
 import { getGeoJsonUrl, handleSubmit } from '../../../common/utils';
 import { prospectingProvider } from '../../../providers';
 import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
