@@ -1,4 +1,4 @@
-import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
+import { useCanvasAnnotationContext } from '@/common/store';
 import PENTES from '@/constants/slope-images';
 import { Info } from '@mui/icons-material';
 import { FormControl, IconButton, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
@@ -34,7 +34,7 @@ const SlopeSelect = ({ name }: { name: string }) => {
       >
         {PENTES.map((slope, key) => {
           return (
-            <MenuItem value={slope.value} key={key}>
+            <MenuItem value={slope.value} key={`${key}-${slope.value}`}>
               <Tooltip title={slope.title}>
                 <img width={'50px'} src={slope.url} alt={slope.title} />
               </Tooltip>

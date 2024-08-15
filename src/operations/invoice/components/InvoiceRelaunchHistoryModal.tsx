@@ -1,7 +1,7 @@
 import { EmptyListTemplate } from '@/common/components';
 import Pagination from '@/common/components/Pagination';
 import { useInvoiceToolContext } from '@/common/store/invoice';
-import { formatDatetime, stringCutter } from '@/common/utils';
+import { formatDateTime, stringCutter } from '@/common/utils';
 import { InvoiceRelaunch } from '@bpartners/typescript-client';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { Avatar, Box, Button, Divider, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
@@ -51,7 +51,7 @@ export const InvoiceRelaunchHistoryModal = () => {
                     <Avatar>{k + 1}</Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`Devis relancé le ${formatDatetime(new Date(relaunch?.creationDatetime))}`}
+                    primary={`Devis relancé le ${formatDateTime(new Date(relaunch?.creationDatetime))}`}
                     secondary={stringCutter(relaunch?.emailInfo?.emailObject, 50)}
                   />
                 </ListItem>

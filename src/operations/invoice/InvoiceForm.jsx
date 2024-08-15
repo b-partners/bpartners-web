@@ -1,3 +1,4 @@
+import { BPButton, BpFormField, PdfViewer } from '@/common/components';
 import { InvoicePaymentTypeEnum } from '@bpartners/typescript-client';
 import { RefreshOutlined as RefreshIcon, Save } from '@mui/icons-material';
 import { Box, Checkbox, FormControl, FormControlLabel, IconButton, Typography } from '@mui/material';
@@ -6,7 +7,6 @@ import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BPButton, BpFormField } from '@/common/components';
 import { AnnotationInfo } from '../annotator/components';
 import { ClientSelection, ProductSelection } from './components';
 
@@ -15,7 +15,6 @@ import { useToggle } from '@/common/hooks';
 import { useInvoiceToolContext } from '@/common/store/invoice';
 import { handleSubmit, printError } from '@/common/utils';
 import { customerProvider, invoiceProvider } from '@/providers';
-import PdfViewer from '../../common/components/PdfViewer';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
@@ -39,8 +38,8 @@ import {
   InvoiceActionType,
   invoiceDateValidator,
   PDF_EDITION_WIDTH,
-  productValidationHandling,
   PRODUCT_NAME,
+  productValidationHandling,
   retryOnError,
   titleValidator,
   totalPriceWithoutVatFromProducts,

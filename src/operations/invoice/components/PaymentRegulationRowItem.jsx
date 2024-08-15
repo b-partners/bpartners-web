@@ -4,7 +4,7 @@ import { Button, CircularProgress, MenuItem, TableCell, TableRow, TextField, Typ
 import { useState } from 'react';
 import { useNotify, useRefresh, useTranslate } from 'react-admin';
 import { useInvoiceToolContext } from '../../../common/store/invoice';
-import { formatDatetime, prettyPrintMoney } from '../../../common/utils';
+import { formatDateTime, prettyPrintMoney } from '../../../common/utils';
 import { updatePaymentReg } from '../../../providers';
 import { getPaymentRegulationStatusInFr } from '../utils/utils';
 
@@ -66,7 +66,7 @@ const PaymentRegulationRowItem = props => {
       </TableCell>
       <TableCell>
         {status?.paymentStatus === 'PAID' ? (
-          <Typography style={{ textAlign: 'center' }}>Payée le: {formatDatetime(new Date(status?.updatedAt))}</Typography>
+          <Typography style={{ textAlign: 'center' }}>Payée le: {formatDateTime(new Date(status?.updatedAt))}</Typography>
         ) : (
           <Button
             title={translate(`resources.invoices.conversion.PAID.title`, { smart_count: 2 })}

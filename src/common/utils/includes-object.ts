@@ -1,4 +1,4 @@
-export const includesObject = (array, key, value) => {
+export const includesObject = (array: Record<string, any>[], key: string, value: any) => {
   for (let a of array) {
     if (a[key] === value) {
       return true;

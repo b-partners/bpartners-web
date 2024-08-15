@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { BooleanInput, Datagrid, FunctionField, List, SelectInput, TextField, TextInput } from 'react-admin';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
-import { coloredPrettyPrintMinors, formatDatetime } from '../../common/utils';
+import { coloredPrettyPrintMinors, formatDateTime } from '../../common/utils';
 
 import { ModalProvider } from '@/common/store/transaction';
 import Pagination, { pageSize } from '../../common/components/Pagination';
@@ -100,7 +100,7 @@ const TransactionList = props => {
               <TextField source='label' label='Titre' />
               <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
               <FunctionField render={record => <StatusField status={record.status} />} label='Statut' />
-              <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
+              <FunctionField render={record => formatDateTime(new Date(record.paymentDatetime))} label='Date de paiement' />
               <FunctionField
                 render={transaction => {
                   return (

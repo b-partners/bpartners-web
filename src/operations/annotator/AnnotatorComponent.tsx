@@ -1,7 +1,7 @@
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
-import { useCanvasAnnotationContext } from '@/common/store/annotator/Canvas-annotation-store';
+import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';

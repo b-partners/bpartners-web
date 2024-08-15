@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 
 interface DataProps {
   from: Date;
@@ -23,7 +23,9 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     setDataForm(data);
   };
 
-  return <ModalContext.Provider value={{ dataForm, setDataGenerateLinkFrom }}>{children}</ModalContext.Provider>;
+  const contextValues = useMemo(() => ({ dataForm, setDataGenerateLinkFrom }), [dataForm, setDataGenerateLinkFrom]);
+
+  return <ModalContext.Provider value={contextValues}>{children}</ModalContext.Provider>;
 };
 
 const useModalContext = () => {

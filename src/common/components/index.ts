@@ -8,5 +8,6 @@ export * from './BPLoader';
 export * from './BpMultipleTextInput';
 export * from './EmptyListTemplate';
 export * from './Field';
+export * from './Pdf';
 export * from './RichTextEditor';
 export * from './SupportDialog';
