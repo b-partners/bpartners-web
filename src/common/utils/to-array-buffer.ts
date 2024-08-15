@@ -1,4 +1,6 @@
-export const toArrayBuffer = e =>
+import { ChangeEvent } from 'react';
+
+export const toArrayBuffer = (e: ChangeEvent<HTMLInputElement>) =>
   new Promise((resolve, reject) => {
     let file = e.target.files[0];
     const reader = new FileReader();

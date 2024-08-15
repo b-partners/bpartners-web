@@ -1,7 +1,7 @@
 import React from 'react';
 import { FunctionField, Show, SimpleShowLayout, TextField } from 'react-admin';
 
-import { formatDatetime, prettyPrintMinors } from '../../common/utils';
+import { formatDateTime, prettyPrintMinors } from '../../common/utils';
 
 export const TransactionLayout = () => {
   return (
@@ -10,7 +10,7 @@ export const TransactionLayout = () => {
       <TextField source='swanTransactionId' label='Transaction ID' />
       <FunctionField source='amount' render={record => prettyPrintMinors(record.amount)} label='Montant' />
       <FunctionField source='category' render={record => record.label} label='Catégorie' />
-      <FunctionField render={record => formatDatetime(new Date(record.paymentDatetime))} label='Date de paiement' />
+      <FunctionField render={record => formatDateTime(new Date(record.paymentDatetime))} label='Date de paiement' />
     </SimpleShowLayout>
   );
 };

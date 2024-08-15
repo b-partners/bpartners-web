@@ -2,9 +2,9 @@ import { getCached } from '@/providers';
 import { endOfMonth, nextMonday as findNextMonday, isMonday, isSunday, previousMonday, set } from 'date-fns';
 import { format, formatInTimeZone } from 'date-fns-tz';
 
-const INPUT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
+const INPUT_DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 
-export const formatDatetime = (date: Date) => date.toLocaleString('pt-BR');
+export const formatDateTime = (date: Date) => date.toLocaleString('pt-BR');
 
 export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' ')[0].replace(/,/g, '');
 
@@ -15,7 +15,7 @@ export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' '
  * @returns date in 8601 format
  * @ex '2023-01-25T20:10:20.000Z'
  */
-export const formatDateTo8601 = (date: String, time: String) => date && new Date(date + 'T' + time).toISOString();
+export const formatDateTo8601 = (date: string, time: string) => date && new Date(date + 'T' + time).toISOString();
 export const getNextMonthDate = (date: string) => {
   const currentMonth = date.split('-')[1];
   const currentDate = new Date(date.split('T')[0]);
@@ -23,8 +23,8 @@ export const getNextMonthDate = (date: string) => {
   return currentDate.toLocaleDateString('fr-ca').split('T')[0];
 };
 
-export const dateForInput = (date: Date, timezone?: string) => formatInTimeZone(date, timezone || getCached.timeZone(), INPUT_DATETIME_FORMAT);
-export const dateForInputWithoutTimezone = (date: Date) => format(date, INPUT_DATETIME_FORMAT);
+export const dateForInput = (date: Date, timezone?: string) => formatInTimeZone(date, timezone || getCached.timeZone(), INPUT_DATE_TIME_FORMAT);
+export const dateForInputWithoutTimezone = (date: Date) => format(date, INPUT_DATE_TIME_FORMAT);
 
 export const getCurrentWeek = () => {
   const currentDate = new Date();

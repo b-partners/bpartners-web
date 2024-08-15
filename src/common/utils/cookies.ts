@@ -18,12 +18,12 @@ export const getCookie = (name: string) => {
   let cookieName = name + '=';
   let cookies = document.cookie.split(';');
 
-  for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i];
-    while (cookie.charAt(0) === ' ') {
+  for (let _cookie of cookies) {
+    let cookie = `${_cookie}`;
+    while (cookie.startsWith(' ')) {
       cookie = cookie.substring(1);
     }
-    if (cookie.indexOf(cookieName) === 0) {
+    if (cookie.startsWith(cookieName)) {
       return decodeURIComponent(cookie.substring(cookieName.length));
     }
   }
