@@ -19,7 +19,7 @@ import { FunctionField, ShowBase, SimpleShowLayout, TextField, useNotify, useRef
 import { v4 as uuid } from 'uuid';
 import { SmallAvatar } from '../../common/components/SmallAvatar';
 import TabPanel from '../../common/components/TabPanel';
-import AccountEditionLayout from './AccountEditionLayout';
+import { AccountEditionLayout } from './AccountEditionLayout';
 import { FeedbackLink } from './components';
 import { ACCOUNT_HOLDER_STYLE, BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
 import { ACCOUNT_HOLDER_LAYOUT } from './utils';
