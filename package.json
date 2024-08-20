@@ -16,7 +16,7 @@
     "@sentry/react": "^7.94.1",
     "@sentry/tracing": "^7.94.1",
     "aws-amplify": "^6.0.28",
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "date-fns-tz": "^2.0.0",
     "dayjs": "^1.11.10",
     "draft-js": "^0.11.7",
