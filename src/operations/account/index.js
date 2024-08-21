@@ -1,4 +1,4 @@
-import AccountShow from './AccountShow';
+import { AccountShow } from './AccountShow';
 
 const account = {
   show: AccountShow,

@@ -1,4 +1,5 @@
-import { AutocompleteProps, SxProps, TextFieldProps } from '@mui/material';
+import * as Icons from '@mui/icons-material';
+import { AutocompleteProps, IconButtonProps, SxProps, TextFieldProps } from '@mui/material';
 
 export interface BpAutoCompleteProps extends AutocompleteProps<any, any, any, any> {
   name: string;
@@ -11,4 +12,9 @@ export interface BpFormFieldProps extends Omit<TextFieldProps, 'style'> {
   validate?: any;
   shouldValidate?: boolean;
   style?: SxProps;
+}
+
+export interface IconTipButtonProps extends IconButtonProps {
+  icon: keyof typeof Icons;
+  title: string;
 }
