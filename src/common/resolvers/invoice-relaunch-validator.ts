@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
-import zod from 'zod';
+import { z } from 'zod';
 import { FieldErrorMessage, requiredString } from './utils';
 
 const getHTML = (editorState: EditorState) => {
@@ -18,16 +18,16 @@ export const messageValidator = (_editorState: unknown) => {
 const transform = (_editorState: unknown) => getHTML(_editorState as EditorState);
 
 const invoiceRelaunchValidator = (validators: Record<any, any>) =>
-  zod.object({
+  z.object({
     subject: requiredString(),
-    message: zod.custom(messageValidator, { message: FieldErrorMessage.required }).transform(transform),
-    attachments: zod.any(),
+    message: z.custom(messageValidator, { message: FieldErrorMessage.required }).transform(transform),
+    attachments: z.any(),
     ...validators,
   });
 
 export const invoiceRelaunchResolver = zodResolver(invoiceRelaunchValidator({}));
 export const exportLinkMailResolver = zodResolver(
   invoiceRelaunchValidator({
-    recipient: zod.string().nonempty(FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
+    recipient: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
   })
 );
