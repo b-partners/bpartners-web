@@ -70,18 +70,17 @@ export const InvoiceButtonToPaid = (props: InvoiceButtonConversionProps) => {
               <TableCell></TableCell>
             </TableHead>
             <TableBody>
-              {paymentRegulations &&
-                paymentRegulations.map((paymentRegulationItem, index) => {
-                  return (
-                    <PaymentRegulationRowItem
-                      index={index}
-                      key={`paymentRegulation-key-${index}`}
-                      invoice={invoice}
-                      paymentRegulationItem={paymentRegulationItem}
-                      paymentMethodList={paymentMethodList}
-                    />
-                  );
-                })}
+              {paymentRegulations?.map((paymentRegulationItem, index) => {
+                return (
+                  <PaymentRegulationRowItem
+                    index={index}
+                    key={`paymentRegulation-key-${index}`}
+                    invoice={invoice}
+                    paymentRegulationItem={paymentRegulationItem}
+                    paymentMethodList={paymentMethodList}
+                  />
+                );
+              })}
             </TableBody>
           </Table>
         </Box>

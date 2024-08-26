@@ -1,8 +1,9 @@
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { FC, ReactNode } from 'react';
 import FrequencyConfig from './FrequencyConfig';
 
-const CustomAccordion = ({ content, title }) => {
+const CustomAccordion: FC<{ content: ReactNode; title: string }> = ({ content, title }) => {
   return (
     <Accordion defaultExpanded>
       <AccordionSummary data-testid={`${title}-configuration-accordion`} expandIcon={<ExpandMoreIcon />}>
