@@ -1,11 +1,11 @@
-import { Box, Typography } from '@mui/material';
-import { useMemo } from 'react';
-import { SelectInput, TextInput } from 'react-admin';
 import { covering, wear } from '@/constants';
+import { Box, Typography } from '@mui/material';
+import { FC, useMemo } from 'react';
+import { SelectInput, TextInput } from 'react-admin';
 import SlopeSelect from './SlopeSelect';
 
-const AnnotatorForm = ({ index, surface }) => {
-  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((e, k) => ({ id: k * 10, name: k * 10 })), []);
+const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
+  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
 
   return (
     <Box sx={{ p: 2 }}>
