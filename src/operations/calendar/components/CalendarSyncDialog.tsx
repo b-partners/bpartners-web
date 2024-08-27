@@ -14,7 +14,7 @@ type CalendarSyncDialogProps = {
 };
 
 export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(false);
   const {
     currentCalendar: { id: calendarId },
@@ -28,7 +28,7 @@ export const CalendarSyncDialog: FC<CalendarSyncDialogProps> = ({ changeView }) 
   const { isLoading: isCheckAuthLoading, isAuthenticated } = useCheckAuth(fetcher);
 
   const oauth2Init = () => {
-    setLoading(true);
+    setIsLoading(true);
     dataProvider.oauth2Init('calendar', calendarId).then(({ data: { redirectionUrl } }) => {
       Redirect.toURL(redirectionUrl);
     });

@@ -4,7 +4,7 @@ import { Box, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-const CheckboxForm: FC<{ children: ReactNode; name: string; switchlabel: string; source: string } & Partial<BpFormFieldProps>> = props => {
+const CheckboxForm: FC<{ children?: ReactNode; name: string; switchlabel: string; source: string } & Partial<BpFormFieldProps>> = props => {
   const { setValue } = useFormContext();
   const { children, name, switchlabel, source } = props;
   const [state, setState] = useState(false);

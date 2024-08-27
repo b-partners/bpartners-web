@@ -1,10 +1,18 @@
+import { BP_COLOR } from '@/bp-theme';
+import { PaymentRegulation } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, Edit as EditIcon, ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Avatar, Box, CardActions, CardContent, Collapse, Divider, IconButton, Paper, Typography } from '@mui/material';
-import { useState } from 'react';
-import { BP_COLOR } from '@/bp-theme';
+import { FC, useState } from 'react';
 import { INVOICE_EDITION } from '../style';
 
-const PaymentRegulationItem = props => {
+export type PaymentRegulationItemProps = {
+  data: PaymentRegulation & { comment: string };
+  onEdit: () => void;
+  onRemove: () => void;
+  percentValue: number;
+};
+
+const PaymentRegulationItem: FC<PaymentRegulationItemProps> = props => {
   const { data, onEdit, onRemove, percentValue } = props;
   const { maturityDate } = data;
   const comment = data.comment || (data.paymentRequest && data.paymentRequest.comment) || '';
@@ -14,7 +22,7 @@ const PaymentRegulationItem = props => {
 
   const haveComment = comment && comment.length > 0;
 
-  const commentCutter = (comment, show = true) => {
+  const commentCutter = (comment: string, show = true) => {
     if (comment.length > 23) {
       return { comment: show ? `${comment.slice(0, 23)}...` : 'Commentaire : ', needExpand: true };
     }

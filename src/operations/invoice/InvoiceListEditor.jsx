@@ -41,7 +41,7 @@ const AnnotatorComponentShow = () => {
     <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
       <Box sx={{ width: '333px' }}>
         {annotations?.annotations.map((annotation, index) => (
-          <AnnotationInfo areaPictureAnnotationInstance={annotation} key={index} />
+          <AnnotationInfo areaPictureAnnotationInstance={annotation} key={annotation.id} />
         ))}
       </Box>
       <Box width={PDF_EDITION_WIDTH}>
