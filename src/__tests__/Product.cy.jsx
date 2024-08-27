@@ -41,8 +41,8 @@ describe(specTitle('Products'), () => {
     const descriptionFilterTest = 'test description';
     const priceFilterTest = 100;
 
-    cy.get('#descriptionFilter').type(descriptionFilterTest);
-    cy.get('#priceFilter').type(priceFilterTest);
+    cy.get('[name="descriptionFilter"]').type(descriptionFilterTest);
+    cy.get('[name="priceFilter"]').type(priceFilterTest);
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
       const { page, pageSize, descriptionFilter, priceFilter } = req.query;
       expect(descriptionFilter).to.be.eq(descriptionFilterTest);
@@ -97,7 +97,7 @@ describe(specTitle('Products'), () => {
 
     cy.get('[data-testid="create-button"]').click();
 
-    cy.get('#description').type('test description').blur();
+    cy.get('[name="description"]').type('test description').blur();
 
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.contains('Ce champ est requis');
@@ -117,9 +117,9 @@ describe(specTitle('Products'), () => {
 
     cy.get('[data-testid="create-button"]').click();
 
-    cy.get('#description').type('new description');
-    cy.get('#unitPrice').type(1.03);
-    cy.get('#vatPercent').type(5);
+    cy.get('[name="description"]').type('new description');
+    cy.get('[name="unitPrice"]').type(1.03);
+    cy.get('[name="vatPercent"]').type(5);
 
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       expect(req.body).to.deep.eq([
@@ -176,9 +176,9 @@ describe(specTitle('Products'), () => {
     });
 
     const editionDescription = 'edit this product test';
-    cy.get('#description').clear().type(editionDescription);
-    cy.get('#unitPrice').clear().type(1);
-    cy.get('#vatPercent').clear().type(1);
+    cy.get('[name="description"]').clear().type(editionDescription);
+    cy.get('[name="unitPrice"]').clear().type(1);
+    cy.get('[name="vatPercent"]').clear().type(1);
     cy.get('.MuiToolbar-root > .MuiButton-contained').click();
 
     cy.contains('edit this product test');

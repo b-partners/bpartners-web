@@ -1,6 +1,6 @@
 import { annotatorProvider } from '@/providers';
 import { AreaPictureDetails, CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { parseUrlParams } from '../utils';
 
 export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: AreaPictureDetails) => void) => {

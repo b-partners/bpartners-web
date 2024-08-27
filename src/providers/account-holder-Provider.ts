@@ -11,7 +11,6 @@ import { asyncGetAccountId, asyncGetUser, BpDataProviderType, cache, getCached, 
 
 export const accountHolderProvider: BpDataProviderType = {
   async getOne() {
-    // TODO: return the account with the attribut current = true but wait for the backend to implement it
     const { userId } = getCached.userInfo();
     const aId = await asyncGetAccountId();
     const { data } = await userAccountsApi().getAccountHolders(userId, aId);
@@ -50,7 +49,7 @@ export const revenueTargetsProvider = {
 };
 
 export const updateGlobalInformation = async (resources: UpdateAccountHolder): Promise<AccountHolder> => {
-  const { userId, accountId, accountHolderId } = await getCached.userInfo();
+  const { userId, accountId, accountHolderId } = getCached.userInfo();
   const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, accountHolderId, resources);
   return cache.accountHolder(data);
 };

@@ -41,6 +41,7 @@ const realCognitoLogin = () => {
   cy.then(async () => await authProvider.login(loginParams));
 };
 const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${value}"]${additionalCommand}`);
+const name = (value: string, additionalCommand = '') => cy.get(`[name="${value}"]${additionalCommand}`);
 
 const skipBankSynchronisation = () => {
   const { status } = getCached.account();
@@ -53,6 +54,7 @@ const skipBankSynchronisation = () => {
 declare global {
   namespace Cypress {
     interface Chainable {
+      name: typeof name;
       dataCy: typeof dataCy;
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
@@ -61,6 +63,7 @@ declare global {
   }
 }
 
+Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);

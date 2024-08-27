@@ -1,34 +1,26 @@
-import { InvoiceStatus } from '@bpartners/typescript-client';
-import { Box, Card, CardContent, Table, TableBody, TableCell, TableRow, TextField as MuiTextField, Typography } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
-import { Datagrid, FunctionField, ListContextProvider, TextField, useList, useNotify } from 'react-admin';
 import useGetAccountHolder from '@/common/hooks/use-get-account-holder';
 import { prettyPrintMinors } from '@/common/utils';
 import { invoiceProvider } from '@/providers';
+import { InvoiceStatus } from '@bpartners/typescript-client';
+import { Box, Card, CardContent, TextField as MuiTextField, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { Datagrid, FunctionField, ListContextProvider, ResourceContextProvider, TextField, useList, useNotify } from 'react-admin';
 
 const MAX_PER_PAGE = 500;
 const { PAID, CONFIRMED } = InvoiceStatus;
 
-// const PARAMETERS = {
-//   filter: { invoiceTypes: [PAID, CONFIRMED] },
-//   pagination: {
-//     page: 1,
-//     perPage: MAX_PER_PAGE,
-//   },
-// };
-
 const useInvoiceList = () => {
   const [list, setList] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const notify = useNotify();
 
   useEffect(() => {
     const getInvoiceList = async () => {
-      setLoading(true);
+      setIsLoading(true);
       const data = await invoiceProvider.getList(1, MAX_PER_PAGE, { invoiceTypes: [PAID, CONFIRMED] });
       setList(data);
-      setLoading(false);
+      setIsLoading(false);
     };
     getInvoiceList().catch(() => notify('messages.global.error', { type: 'error' }));
   }, [notify]);
@@ -50,7 +42,7 @@ const InvoiceListSelection = props => {
   const handleChange = e => setFilter(e.target.value);
 
   return (
-    <>
+    <ResourceContextProvider value='invoice'>
       {!isLoading && (
         <Box>
           <MuiTextField label='Rechercher par titre' size='small' onChange={handleChange} />
@@ -84,37 +76,18 @@ const InvoiceListSelection = props => {
           </Card>
         )}
       </ListContextProvider>
-    </>
+    </ResourceContextProvider>
   );
 };
 
 const PriceRenderer = () => {
   const { companyInfo } = useGetAccountHolder();
-  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
+  const isSubjectToVat = companyInfo?.isSubjectToVat;
 
   const label = isSubjectToVat ? 'Prix total (TTC)' : 'Prix total (HT)';
   const price = isSubjectToVat ? 'totalPriceWithVat' : 'totalPriceWithoutVat';
 
   return <FunctionField render={data => prettyPrintMinors(data[price])} label={label} />;
-};
-
-export const SelectedInvoiceTable = ({ invoice }) => {
-  const { companyInfo } = useGetAccountHolder();
-  const isSubjectToVat = companyInfo && companyInfo.isSubjectToVat;
-  const price = isSubjectToVat ? 'totalPriceWithVat' : 'totalPriceWithoutVat';
-
-  return (
-    <Table>
-      <TableBody>
-        <TableRow>
-          <TableCell>{invoice.ref}</TableCell>
-          <TableCell>{invoice.title}</TableCell>
-          <TableCell>{invoice.customer.name}</TableCell>
-          <TableCell>{prettyPrintMinors(invoice[price])}</TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  );
 };
 
 export default InvoiceListSelection;

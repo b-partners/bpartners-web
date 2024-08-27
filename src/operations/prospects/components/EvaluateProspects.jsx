@@ -1,7 +1,7 @@
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Box, Button, CircularProgress, Divider, Grid, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useProspectContext } from '@/common/store/prospect-store';
+import { useProspectContext } from '@/common/store';
 import { DialogProspectJobDetails } from '../components/DialogProspectJobDetails';
 import EvaluatedProspectColumn from '../components/EvaluatedProspectColumn';
 import FormEvaluateProspects from '../components/FormEvaluateProspects';

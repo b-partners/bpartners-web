@@ -1,22 +1,8 @@
 import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants/invoice';
 import { prospectingJobsProvider } from '@/providers/prospecting-jobs-provider';
 import { ProspectEvaluationJobInfo } from '@bpartners/typescript-client';
-import { createContext, Dispatch, FC, ReactNode, useContext, useState } from 'react';
-
-type RaProspectContext = {
-  children?: ReactNode;
-  loading: boolean;
-  setLoading: Dispatch<React.SetStateAction<boolean>>;
-  handleLoading: (isLoading: boolean) => void;
-  selectedStatus: string;
-  setSelectedStatus: Dispatch<React.SetStateAction<string>>;
-  evaluatedProspectsList: ProspectEvaluationJobInfo[];
-  getProspectingJobs: () => Promise<void>;
-  refreshLoading: boolean;
-  isOpenPopup: boolean;
-  prospectJobDetails: ProspectEvaluationJobInfo;
-  toggleJobDetailsPopup: (item: ProspectEvaluationJobInfo) => void;
-};
+import { createContext, FC, useContext, useMemo, useState } from 'react';
+import { RaProspectContext } from './types';
 
 const ProspectContext = createContext<RaProspectContext>({
   loading: false,
@@ -31,6 +17,7 @@ const ProspectContext = createContext<RaProspectContext>({
   prospectJobDetails: {},
   toggleJobDetailsPopup: () => {},
 });
+
 export const useProspectContext = () => useContext(ProspectContext);
 
 export const ProspectContextProvider: FC<RaProspectContext> = ({ children, loading, setLoading }) => {
@@ -59,25 +46,34 @@ export const ProspectContextProvider: FC<RaProspectContext> = ({ children, loadi
     setIsOpenPopup(!isOpenPopup);
   };
 
-  return (
-    <ProspectContext.Provider
-      value={{
-        loading,
-        setLoading,
-        handleLoading,
-        selectedStatus,
-        setSelectedStatus,
-        evaluatedProspectsList,
-        getProspectingJobs,
-        refreshLoading,
-        //
-        isOpenPopup,
-        prospectJobDetails,
-        toggleJobDetailsPopup,
-        //
-      }}
-    >
-      {children}
-    </ProspectContext.Provider>
+  const contextValues = useMemo(
+    () => ({
+      loading,
+      setLoading,
+      handleLoading,
+      selectedStatus,
+      setSelectedStatus,
+      evaluatedProspectsList,
+      getProspectingJobs,
+      refreshLoading,
+      isOpenPopup,
+      prospectJobDetails,
+      toggleJobDetailsPopup,
+    }),
+    [
+      loading,
+      setLoading,
+      handleLoading,
+      selectedStatus,
+      setSelectedStatus,
+      evaluatedProspectsList,
+      getProspectingJobs,
+      refreshLoading,
+      isOpenPopup,
+      prospectJobDetails,
+      toggleJobDetailsPopup,
+    ]
   );
+
+  return <ProspectContext.Provider value={contextValues}>{children}</ProspectContext.Provider>;
 };

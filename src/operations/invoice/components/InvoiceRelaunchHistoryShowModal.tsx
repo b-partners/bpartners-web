@@ -1,5 +1,5 @@
 import { useInvoiceToolContext } from '@/common/store/invoice';
-import { formatDatetime } from '@/common/utils';
+import { formatDateTime } from '@/common/utils';
 import { fileProvider } from '@/providers';
 import { Attachment, InvoiceRelaunch } from '@bpartners/typescript-client';
 import { DownloadForOffline as DownloadForOfflineIcon } from '@mui/icons-material';
@@ -38,7 +38,7 @@ export const InvoiceRelaunchHistoryShowModal = () => {
       }
     >
       <Card>
-        <CardHeader title={emailObject} subheader={formatDatetime(new Date(creationDatetime))} />
+        <CardHeader title={emailObject} subheader={formatDateTime(new Date(creationDatetime))} />
         <CardContent>
           <Editor onChange={() => {}} readOnly editorState={richEmailBody} />
           <Box sx={{ marginTop: '2rem' }}>

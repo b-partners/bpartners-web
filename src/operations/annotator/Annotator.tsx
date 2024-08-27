@@ -1,5 +1,5 @@
 import { useWindowResize } from '@/common/hooks';
-import { CanvasAnnotationContextProvider } from '@/common/store/annotator/Canvas-annotation-store';
+import { CanvasAnnotationContextProvider } from '@/common/store';
 import { Grid, Stack } from '@mui/material';
 import AnnotatorComponent from './AnnotatorComponent';
 import SideBar from './SideBar';

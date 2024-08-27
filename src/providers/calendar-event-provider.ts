@@ -7,7 +7,7 @@ export const calendarEventProvider: BpDataProviderType = {
     const { userId } = getCached.userInfo();
     const { calendarId, start_gte, start_lte } = filters;
     if (!calendarId || calendarId.length === 0) return [];
-    const { data } = await calendarApi().getCalendarEvents(userId, calendarId, CalendarProvider.GOOGLE_CALENDAR, new Date(start_gte), new Date(start_lte));
+    const { data = [] } = await calendarApi().getCalendarEvents(userId, calendarId, CalendarProvider.GOOGLE_CALENDAR, new Date(start_gte), new Date(start_lte));
     return data.map(calendarEventMapper.toDomain);
   },
   async saveOrUpdate(resources: any[], options = {}) {

@@ -15,7 +15,7 @@ const BpSelect = <T,>({ value, handleChange, loading, options, getOptionKey, get
   return (
     <FormControl sx={{ minWidth: 200, mr: 1 }}>
       <InputLabel id='dynamic-select-label'>{label}</InputLabel>
-      <Select labelId='dynamic-select-label' id='dynamic-select' value={value} label={label} onChange={handleChange}>
+      <Select labelId='dynamic-select-label' id='dynamic-select' value={value} size='small' label={label} onChange={handleChange}>
         {loading ? (
           <MenuItem disabled>Chargement en cours...</MenuItem>
         ) : (

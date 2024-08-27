@@ -6,18 +6,16 @@ export const calendarIntervalFilter = (dateInfo?: DatesSetArg, filterValues: any
   const { begin, end } = getCurrentMonth();
   const viewType = dateInfo?.view?.type;
 
-  switch (viewType) {
-    case 'dayGridMonth':
-      return {
-        ...filterValues,
-        start_gte: begin,
-        start_lte: end,
-      };
-    default:
-      return {
-        ...filterValues,
-        start_gte: monday,
-        start_lte: nextMonday,
-      };
+  if (viewType === 'dayGridMonth') {
+    return {
+      ...filterValues,
+      start_gte: begin,
+      start_lte: end,
+    };
   }
+  return {
+    ...filterValues,
+    start_gte: monday,
+    start_lte: nextMonday,
+  };
 };

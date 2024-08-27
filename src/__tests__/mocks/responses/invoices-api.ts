@@ -2,11 +2,22 @@ import { ArchiveStatus, Invoice, InvoicePaymentTypeEnum, InvoiceStatus } from '@
 import { customers1 } from './customer-api';
 import { products } from './product-api';
 
+const getCustomerNumber = (index: number) => {
+  if (index < 2) {
+    return 0;
+  }
+  if (index < 4) {
+    return 1;
+  }
+
+  return 2;
+};
+
 export const createInvoices = (n: number, status: InvoiceStatus) => {
   const invoices: Invoice[] = [];
   for (let i = 0; i < n; i++) {
     invoices.push({
-      customer: customers1[i < 2 ? 0 : i < 4 ? 1 : 2],
+      customer: customers1[getCustomerNumber(i)],
       fileId: 'file-id',
       id: `invoice-${status}-${i}-id`,
       paymentUrl: 'paymentUrl-' + i,

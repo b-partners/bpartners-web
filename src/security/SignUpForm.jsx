@@ -1,9 +1,9 @@
 import { Box, Button, Typography } from '@mui/material';
 import { useNotify } from 'react-admin';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import BPFormField from '@/common/components/BPFormField';
+import { BpFormField } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
 import { phoneValidator } from '@/operations/account/utils';
@@ -45,14 +45,16 @@ export const SignUpForm = () => {
           Inscription
         </Typography>
         <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={handleSubmit(onSubmit)}>
-          <BPFormField label='Nom' name='lastName' form={form} />
-          <BPFormField label='Prénom' name='firstName' form={form} />
-          <BPFormField label='Adresse mail' name='email' form={form} />
-          <BPFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
-          <BPFormField label='Nom de la société' name='companyName' form={form} />
-          <Button disabled={isLoading} id='login' type='submit' sx={{ ...LOGIN_FORM_BUTTON, marginTop: 3 }}>
-            S'inscrire
-          </Button>
+          <FormProvider {...form}>
+            <BpFormField label='Nom' name='lastName' form={form} />
+            <BpFormField label='Prénom' name='firstName' form={form} />
+            <BpFormField label='Adresse mail' name='email' form={form} />
+            <BpFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
+            <BpFormField label='Nom de la société' name='companyName' form={form} />
+            <Button disabled={isLoading} id='login' type='submit' sx={{ ...LOGIN_FORM_BUTTON, marginTop: 3 }}>
+              S'inscrire
+            </Button>
+          </FormProvider>
         </form>
         <Button
           id='register'

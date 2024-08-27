@@ -8,7 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import ListComponent from '@/common/components/ListComponent';
 import TabPanel from '@/common/components/TabPanel';
-import { ProspectContextProvider } from '@/common/store/prospect-store';
+import { ProspectContextProvider } from '@/common/store';
 import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
@@ -65,6 +65,11 @@ const ProspectsList = () => {
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
     handleLoading(true);
+
+    if (isCreating) {
+      notify('En cours de recherche de l’image de la zone');
+    }
+
     const fetch = async () => {
       clearPolygons();
       const prospectId = uuidV4();
@@ -137,7 +142,7 @@ const ProspectsList = () => {
               actions={
                 <Stack direction='row' width='100%' justifyContent='space-between' alignItems='center'>
                   <ProspectFilterInput />
-                  <BPButton label='resources.prospects.add' onClick={toggleDialog} style={{ width: '15rem', height: '3rem' }} />
+                  <BPButton label='resources.prospects.add' onClick={toggleDialog} />
                 </Stack>
               }
             >

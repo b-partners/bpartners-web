@@ -1,10 +1,9 @@
+import { PasswordResolver } from '@/common/resolvers/reset-password-validator';
+import { FieldErrorMessage } from '@/common/resolvers/utils';
 import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { BP_BUTTON } from '@/bp-theme';
-import { PasswordResolver } from '@/common/resolvers/reset-password-validator';
-import { FieldErrorMessage } from '@/common/resolvers/utils';
 import { BpFormField, BpNumberField } from '../../../common/components';
 
 const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
@@ -38,14 +37,7 @@ const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
           <BpNumberField label='Code de confirmation' name='resetCode' />
           <BpFormField label='Nouveau mot de passe' type='password' name='newPassword' />
           <BpFormField label='Confirmez le mot de passe' type='password' name='confirmedPassword' />
-          <Button
-            mt={2}
-            sx={BP_BUTTON}
-            id='confirmation'
-            type='submit'
-            endIcon={isLoading && <CircularProgress size={20} color='inherit' />}
-            disabled={isLoading}
-          >
+          <Button mt={2} id='confirmation' type='submit' endIcon={isLoading && <CircularProgress size={20} color='inherit' />} disabled={isLoading}>
             Confirmer
           </Button>
         </form>

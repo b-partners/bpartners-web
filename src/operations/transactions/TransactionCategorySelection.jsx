@@ -1,10 +1,10 @@
+import { BP_COLOR } from '@/bp-theme';
+import { printError } from '@/common/utils';
+import { transactionCategoryProvider } from '@/providers';
 import { AddCircleOutlineRounded, Edit } from '@mui/icons-material';
 import { Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
-import { BP_COLOR } from '@/bp-theme';
-import { printError } from '@/common/utils';
-import { transactionCategoryProvider } from '@/providers';
 
 const ICON_STYLE = {
   color: BP_COLOR[30],
@@ -83,7 +83,7 @@ const SelectionDialog = props => {
   };
 
   return (
-    <Dialog open={open} onClose={close}>
+    <Dialog onClick={e => e.stopPropagation()} open={open} onClose={close}>
       <DialogTitle>
         <Typography>Catégorisez votre transaction :</Typography>
         {label}

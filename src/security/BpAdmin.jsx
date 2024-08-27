@@ -50,9 +50,11 @@ export const BpAdmin = () => {
     checkTokenExpiration();
   }, []);
 
-  return !authProvider.getCachedWhoami() ? (
-    <Navigate to='/login' />
-  ) : (
+  if (!authProvider.getCachedWhoami()) {
+    return <Navigate to='/login' />;
+  }
+
+  return (
     <Admin
       title='BPartners'
       authProvider={authProvider}
@@ -72,7 +74,7 @@ export const BpAdmin = () => {
       <CustomRoutes>
         <Route exact path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/calendar-sync' element={<CalendarSync />} />
-        <Route exact path='/account' element={<account.show />} />
+        <Route exact path='/account/:id' element={<account.show />} />
         <Route exact path='/configurations' element={<Configuration />} />
         <Route exact path='/bank' element={<BankPage />} />
         <Route exact path='/partners' element={<PartnersPage />} />

@@ -11,7 +11,6 @@ export * from './get-mime-type';
 export * from './get-params';
 export * from './includes-object';
 export * from './isBlank';
-export * from './list-details';
 export * from './money';
 export * from './pagination-utilities';
 export * from './percent';
