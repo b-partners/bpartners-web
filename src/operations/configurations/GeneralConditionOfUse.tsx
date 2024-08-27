@@ -1,11 +1,11 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useEffect, useState } from 'react';
-import { useNotify } from 'react-admin';
-import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.vite';
 import { VerticalPagination } from '@/common/components/VerticalPagination';
 import { useWindowResize } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Stack, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
+import { useNotify } from 'react-admin';
+import { Document as Pdf, Page as PdfPage } from 'react-pdf/dist/esm/entry.vite';
 import { EmptyList } from '../../common/components/EmptyList';
 import { Reload } from '../../common/utils';
 import { authProvider, cache, userAccountsApi } from '../../providers';
@@ -15,7 +15,7 @@ const INIT_LEGAL_FILE = {
   id: '',
   name: '',
   fileUrl: 'dummy-url.com',
-  approvalDatetime: null,
+  approvalDatetime: null as any,
 };
 
 export const GeneralConditionOfUse = () => {
@@ -106,7 +106,11 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LEGAL_FILE }) => {
+const GeneralConditionOfUseContent: FC<{ setLoading: Dispatch<SetStateAction<boolean>>; loading: boolean; legalFile: any }> = ({
+  setLoading,
+  loading,
+  legalFile = INIT_LEGAL_FILE,
+}) => {
   const classes = useStyle();
   const { width: windowWidth } = useWindowResize();
   const [activeStep, setActiveStep] = useState(1);
@@ -133,7 +137,7 @@ const GeneralConditionOfUseContent = ({ setLoading, loading, legalFile = INIT_LE
               className={classes.PDF}
               error={<EmptyList content="Une erreur s'est produite" />}
               loading={<></>}
-              onLoadSuccess={({ numPages }) => {
+              onLoadSuccess={({ numPages }: { numPages: number }) => {
                 setMaxSteps(numPages);
                 maxSteps > 0 && setActiveStep(1);
                 setLoading(false);

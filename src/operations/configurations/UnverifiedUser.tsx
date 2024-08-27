@@ -1,7 +1,7 @@
-import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
-import { useEffect } from 'react';
 import { useToggle } from '@/common/hooks';
 import { getCached } from '@/providers/cache';
+import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { UNVERIFIED_USER_BOX } from './style';
 
 const UnverifiedUser = () => {
@@ -9,7 +9,7 @@ const UnverifiedUser = () => {
 
   useEffect(() => {
     const user = getCached.user();
-    const idVerified = user && user.idVerified;
+    const idVerified = user?.idVerified;
     !idVerified && handleOpen();
   }, []);
 

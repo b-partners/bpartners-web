@@ -31,10 +31,10 @@ const FeedbackModal = () => {
   }, [invoice]);
 
   const askFeedback = form.handleSubmit(data => {
-    const fetch = async _event => {
+    const fetch = async () => {
       if (invoice && invoice.customer) {
         setIsLoading(true);
-        await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data });
+        await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data } as any);
         closeModal();
         setIsLoading(false);
         notify('messages.feedback.success', { type: 'success' });

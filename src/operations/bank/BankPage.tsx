@@ -1,7 +1,11 @@
+import { handleSubmit, printError, Redirect } from '@/common/utils';
+import { accountProvider, bankProvider, getCached } from '@/providers';
+import { Account, Bank as BankType } from '@bpartners/typescript-client';
 import { AccountBalance as AccountBalanceIcon } from '@mui/icons-material';
 import {
   Backdrop,
   Box,
+  BoxProps,
   Button,
   Card,
   CardContent,
@@ -18,10 +22,8 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { CSSProperties, Dispatch, FC, ReactNode, SetStateAction, useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { handleSubmit, printError, Redirect } from '@/common/utils';
-import { accountProvider, bankProvider, getCached } from '@/providers';
 import AccountConfig from './AccountConfig';
 import { BankInformationForm } from './BankInformationForm';
 import { BALANCE_ICON, BANK_CARD, BANK_LOGO, CARD_CONTENT, HERE_LINK, NO_BANK_CARD, TEXT_MESSAGE } from './style';
@@ -44,12 +46,12 @@ export const BankPage = () => {
   );
 };
 
-const NoBank = ({ aside }) => {
-  const [isLoading, setLoading] = useState(false);
+const NoBank = ({ aside }: { aside: ReactNode }) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const initiateBankConnectionAsync = () => {
     const fetch = async () => {
-      setLoading(true);
+      setIsLoading(true);
       const redirectionUrl = await bankProvider.initiateConnection();
       Redirect.toURL(redirectionUrl.redirectionUrl);
     };
@@ -65,12 +67,10 @@ const NoBank = ({ aside }) => {
     >
       <CardContent style={CARD_CONTENT}>
         <Paper sx={NO_BANK_CARD}>
-          <AccountBalanceIcon style={BALANCE_ICON} />
+          <AccountBalanceIcon style={BALANCE_ICON as CSSProperties} />
           <Box sx={{ zIndex: 2, m: 5, '.MuiTypography-root': { fontSize: '1.3rem' } }}>
-            <Typography component='div' variant='p'>
-              Aucune banque associée.
-            </Typography>
-            <Typography component='div' variant='p' mt={15}>
+            <Typography component='div'>Aucune banque associée.</Typography>
+            <Typography component='div' mt={15}>
               Cliquez{' '}
               <span
                 data-testid='initiate-bank-connection-button'
@@ -96,11 +96,11 @@ const NoBank = ({ aside }) => {
   );
 };
 
-const Bank = ({ account, setAccount, aside }) => {
-  const [isDialogOpen, setDialogState] = useState(false);
+const Bank: FC<{ account: Account; setAccount: Dispatch<SetStateAction<Account>>; aside: ReactNode }> = ({ account, setAccount, aside }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleCloseDialog = () => setDialogState(false);
-  const handleOpenDialog = () => setDialogState(true);
+  const handleCloseDialog = () => setIsDialogOpen(false);
+  const handleOpenDialog = () => setIsDialogOpen(true);
 
   return (
     <>
@@ -128,7 +128,7 @@ const Bank = ({ account, setAccount, aside }) => {
         <CardContent style={CARD_CONTENT}>
           <Stack direction='row' spacing={2}>
             <Paper sx={BANK_CARD}>
-              <img src={account.bank.logoUrl} style={BANK_LOGO} alt='bank-logo' />
+              <img src={account.bank.logoUrl} style={BANK_LOGO as CSSProperties} alt='bank-logo' />
               <Typography mt={1} variant='h4'>
                 {account.bank.name}
               </Typography>
@@ -147,22 +147,25 @@ const Bank = ({ account, setAccount, aside }) => {
   );
 };
 
-const BankCardText = ({ title, label, ...others }) => (
+const BankCardText: FC<{ title: string; label: string } & BoxProps> = ({ title, label, ...others }) => (
   <Box {...others}>
-    <Typography variant='p' component='div'>
-      {title}
-    </Typography>
-    <Typography component='div' variant='p' style={TEXT_MESSAGE}>
+    <Typography component='div'>{title}</Typography>
+    <Typography component='div' style={TEXT_MESSAGE as CSSProperties}>
       {label}
     </Typography>
   </Box>
 );
 
-const BankDisconnection = ({ isOpen, onClose, bank, setAccount }) => {
-  const [isLoading, setLoading] = useState(false);
+const BankDisconnection: FC<{ isOpen: boolean; onClose: () => void; bank: BankType; setAccount: Dispatch<SetStateAction<Account>> }> = ({
+  isOpen,
+  onClose,
+  bank,
+  setAccount,
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
   const notify = useNotify();
   const handleDisconnectBank = async () => {
-    setLoading(true);
+    setIsLoading(true);
     const fetch = async () => {
       const newAccount = await bankProvider.endConnection();
       setAccount(newAccount);
@@ -171,7 +174,7 @@ const BankDisconnection = ({ isOpen, onClose, bank, setAccount }) => {
     };
     fetch()
       .catch(() => notify('messages.global.error', { type: 'error' }))
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
   return (
     <Dialog open={isOpen} onClose={onClose}>
