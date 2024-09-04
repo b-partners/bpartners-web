@@ -44,7 +44,8 @@ const SideBar = () => {
   const handleSubmitForms = formState.handleSubmit(async data => {
     setIsLoading(true);
     const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
-    const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId);
+    const isDraft = false;
+    const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
 
     await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
     setIsLoading(false);

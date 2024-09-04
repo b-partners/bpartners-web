@@ -4,7 +4,7 @@ import { AreaPictureAnnotation, AreaPictureAnnotationInstance } from '@bpartners
 import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
 
-export const annotatorMapper = (annotationAttributeMapped: AreaPictureAnnotationInstance[], pictureId: string, annotationId: string): AreaPictureAnnotation => {
+export const annotatorMapper = (annotationAttributeMapped: AreaPictureAnnotationInstance[], pictureId: string, annotationId: string, isDraft: boolean): AreaPictureAnnotation => {
   const currentDate = new Date();
 
   return {
@@ -12,6 +12,7 @@ export const annotatorMapper = (annotationAttributeMapped: AreaPictureAnnotation
     idAreaPicture: pictureId,
     creationDatetime: currentDate,
     annotations: annotationAttributeMapped,
+    isDraft
   };
 };
 
