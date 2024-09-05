@@ -27,8 +27,6 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with:
-          node-version: 16.17.0
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.3
         with:
@@ -49,7 +47,6 @@ jobs:
         run: |
           sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
           sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
-      - run: npm config set always-auth true
       - run: npm install --legacy-peer-deps
       - name: Cypress dependencies
         # From: https://docs.cypress.io/guides/getting-started/installing-cypress#System-requirements, Ubuntu section
