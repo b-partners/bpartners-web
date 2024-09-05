@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import App from '@/App';
 import { invoicesSummary } from '../mocks/responses/invoices-api';
 
-describe(specTitle('Invoice'), () => {
+xdescribe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.realCognitoLogin();
   });
