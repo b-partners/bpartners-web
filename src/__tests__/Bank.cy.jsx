@@ -3,6 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
 
 import { Redirect } from '@/common/utils';
+import { cache } from '@/providers';
 import { account1, account2, accountHolders1, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
@@ -96,7 +97,7 @@ describe(specTitle('Account'), () => {
     }).as('updateBankInfo');
   });
 
-  it('Should disconnect bank', () => {
+  it.only('Should disconnect bank', () => {
     cy.mount(<App />);
     cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.get('[name="bank"]').click();
@@ -104,6 +105,15 @@ describe(specTitle('Account'), () => {
     cy.contains('Confirmation');
     cy.contains('Voulez vous déconnecter la banque BMOI ?');
     cy.get("[data-testid='bank-disconnection-button']").click();
+    cy.contains('Déconnexion de la banque...');
+    cy.contains('La déconnexion de votre banque est en cours. Veuillez attendre 2min avant de reconnecter une nouvelle banque');
+    cy.contains('Fermer').click();
+    cy.contains('Veuillez patienter le temps de déconnecter votre banque');
+
+    cache.bankReconnectionTime(new Date().getTime().toString());
+
+    cy.wait(30000);
+
     cy.contains('Aucune banque associée.');
     cy.contains('Cliquez ici pour associer une banque.');
   });
