@@ -25,6 +25,7 @@ export const BpFrenchMessages = {
   resources: {
     draftsAnnotations: {
       add: 'Enregistrer en tant que brouillon',
+      finish: 'Finaliser le brouillon',
       creation: {
         success: 'Brouillon sauvegardé avec succès !',
       },

@@ -45,30 +45,29 @@ const SideBar = () => {
   const {
     polygons: draftsPolygons,
     annotations,
-    isAnnotationEmpty,
+    isAnnotationEmpty: isDraftAnnotationEmpty,
   } = useRetrievePolygons(async areaPictureId => {
     return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
   });
 
   useEffect(() => {
-    if (polygons.length !== 0 || isAnnotationEmpty) {
+    if (polygons.length !== 0 || isDraftAnnotationEmpty) {
       return;
     }
     setPolygons(draftsPolygons);
-  }, [isAnnotationEmpty, polygons.length]);
+  }, [isDraftAnnotationEmpty, polygons.length]);
 
   const formState = useAnnotationsInfoForm(polygons);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async data => {
       setIsLoading(true);
-      const annotationId = isAnnotationEmpty ? uuidV4() : annotations.id!;
+      const annotationId = isDraftAnnotationEmpty ? uuidV4() : annotations.id!;
       const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
 
       const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
       await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
       setIsLoading(false);
-      clearPolygons();
 
       if (isDraft) {
         notify('resources.draftsAnnotations.creation.success', { type: 'success' });
@@ -76,6 +75,7 @@ const SideBar = () => {
         return;
       }
 
+      clearPolygons();
       redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
     });
     handleSubmitForms(event);
