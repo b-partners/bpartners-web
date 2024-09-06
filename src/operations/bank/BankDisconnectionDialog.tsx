@@ -18,8 +18,24 @@ export const BankDisconnection: FC<BankDisconnectionProps> = ({ bank, setAccount
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <BPButton label='Déconnecter' isLoading={isPending} onClick={() => disconnectBank()} data-testid='bank-disconnection-button' />
-        <BPButton label='Annuler' isLoading={isPending} onClick={closeDialog} />
+        <BPButton label='bp.action.disconnect' isLoading={isPending} onClick={() => disconnectBank()} data-testid='bank-disconnection-button' />
+        <BPButton label='ra.action.cancel' isLoading={isPending} onClick={closeDialog} />
+      </DialogActions>
+    </>
+  );
+};
+
+export const BankDisconnectionMessage = () => {
+  const { close: closeDialog } = useDialog();
+
+  return (
+    <>
+      <DialogTitle id='alert-dialog-title'>Confirmation</DialogTitle>
+      <DialogContent sx={{ width: 500 }}>
+        <DialogContentText>La déconnexion de votre banque est en cours. Veuillez attendre 5min avant de reconnecter une nouvelle banque</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <BPButton label='Fermer' onClick={closeDialog} />
       </DialogActions>
     </>
   );

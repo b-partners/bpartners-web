@@ -14,6 +14,7 @@ const timeZoneItem = 'bp_time_zone';
 const calendarSyncItem = 'bp_calendar_sync_item';
 const polygonsItem = 'bp_polygons_item';
 const annotationsInfoItem = 'bp_annotations_info_item';
+const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -66,6 +67,10 @@ export const cache = {
   annotationsInfo: (info: AnnotationInfo[]) => {
     return cacheObject(annotationsInfoItem, info);
   },
+  bankReconnectionTime: (date: string) => {
+    localStorage.setItem(bankReconnectionTime, date);
+    return date;
+  },
 };
 
 export const getCached = {
@@ -113,6 +118,9 @@ export const getCached = {
   },
   annotationsInfo: () => {
     return getCachedObject<AnnotationsInfo>(annotationsInfoItem);
+  },
+  bankReconnectionTime: () => {
+    return localStorage.getItem(bankReconnectionTime);
   },
 };
 

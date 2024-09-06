@@ -1,12 +1,35 @@
 import { printError } from '@/common/utils';
 import { accountProvider, getCached } from '@/providers';
-import { useEffect, useState } from 'react';
+import { Container, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import AccountConfig from './AccountConfig';
 import { Bank } from './Bank';
 import { NoBank } from './NoBank';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(getCached.account());
+  const [isInDisconnection, setIsInDisconnection] = useState(false);
+  const ref = useRef<NodeJS.Timeout>(null);
+
+  useEffect(() => {
+    const bankDisconnectionTime = getCached.bankReconnectionTime();
+    if (bankDisconnectionTime && new Date().getTime() < +bankDisconnectionTime && !isInDisconnection) {
+      setIsInDisconnection(true);
+    }
+    if (!ref.current) {
+      ref.current = setInterval(() => {
+        if (!bankDisconnectionTime || new Date().getTime() > +bankDisconnectionTime) {
+          setIsInDisconnection(false);
+          clearInterval(ref.current);
+          ref.current = null;
+          return;
+        }
+        if (!isInDisconnection) {
+          setIsInDisconnection(true);
+        }
+      }, 30000);
+    }
+  }, []);
 
   useEffect(() => {
     const updateAccount = async () => {
@@ -15,6 +38,14 @@ export const BankPage = () => {
     };
     updateAccount().catch(printError);
   }, []);
+
+  if (isInDisconnection) {
+    return (
+      <Container>
+        <Typography>Veuillez patienter le temps de déconnecter votre banque</Typography>
+      </Container>
+    );
+  }
 
   return account?.bank ? (
     <Bank aside={<AccountConfig setAccount={setAccount} />} account={account} setAccount={setAccount} />

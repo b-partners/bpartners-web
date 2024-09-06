@@ -7,6 +7,7 @@ export const BpFrenchMessages = {
       finish: 'Terminer',
       next: 'Suivant',
       notNow: 'Pas maintenant',
+      disconnect: 'Déconnecter',
       refocusImage: "Recentrer l'image",
       resetRefocusImage: "Réinitialiser l'image",
       confirm: 'Confirmer',
@@ -88,12 +89,12 @@ export const BpFrenchMessages = {
     },
     annotator: {
       name: 'Annotation |||| Annotations',
-      save: 'Générer un devis',
+      save: 'Générer un `de`vis',
     },
   },
   messages: {
     disconnection: {
-      success: 'Déconnexion effectuée avec succès.',
+      success: 'Déconnexion en cours.',
     },
     global: {
       error: "Une erreur s'est produite.",
