@@ -1,4 +1,5 @@
 import { Polygon } from '@bpartners/annotator-component';
+import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
 import { BPConstruction } from '@/common/components';
@@ -10,6 +11,7 @@ import { labels } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
+import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import {
   Accordion,
@@ -25,33 +27,59 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { ChangeEvent, useState } from 'react';
-import { SelectInput, TextInput, useRedirect } from 'react-admin';
+import { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from 'react';
+import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
+import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import AnnotatorForm from './components/AnnotatorForm';
 
 const SideBar = () => {
   const redirect = useRedirect();
-  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
-  const annotationId = uuidV4();
+  const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
+  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
+  const {
+    polygons: draftsPolygons,
+    annotations,
+    isAnnotationEmpty,
+  } = useRetrievePolygons(async areaPictureId => {
+    return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
+  });
+
+  useEffect(() => {
+    if (polygons.length !== 0 || isAnnotationEmpty) {
+      return;
+    }
+    setPolygons(draftsPolygons);
+  }, [isAnnotationEmpty, polygons.length]);
+
   const formState = useAnnotationsInfoForm(polygons);
 
-  const handleSubmitForms = formState.handleSubmit(async data => {
-    setIsLoading(true);
-    const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
-    const isDraft = false;
-    const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
+  const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
+    const handleSubmitForms = formState.handleSubmit(async data => {
+      setIsLoading(true);
+      const annotationId = isAnnotationEmpty ? uuidV4() : annotations.id!;
+      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
 
-    await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
-    setIsLoading(false);
-    clearPolygons();
-    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
-  });
+      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
+      await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
+      setIsLoading(false);
+      clearPolygons();
+
+      if (isDraft) {
+        notify('resources.draftsAnnotations.creation.success', { type: 'success' });
+        redirect('/prospects?tab=drafts');
+        return;
+      }
+
+      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
+    });
+    handleSubmitForms(event);
+  };
 
   const removeAnnotation = (polygonId: string) => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
@@ -71,7 +99,7 @@ const SideBar = () => {
         <Box py={2}>
           {polygons.length > 0 ? (
             <FormProvider {...formState}>
-              <form onSubmit={handleSubmitForms}>
+              <form onSubmit={event => handleSubmitFormsWrapper(event, true)}>
                 {polygons.map((polygon, i) => {
                   return (
                     <Box key={polygon.id}>
@@ -139,13 +167,21 @@ const SideBar = () => {
           </Dialog>
         )}
       </List>
-      <Stack sx={{ position: 'absolute', bottom: 30, width: '100%' }} spacing={2}>
+      <Stack sx={{ position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
         <BPButton
           type='submit'
-          data-testid='submit-annotator-form'
-          onClick={handleSubmitForms}
           isLoading={isLoading}
+          data-testid='submit-annotator-form'
+          onClick={event => handleSubmitFormsWrapper(event, false)}
           label='resources.annotator.save'
+          style={{ width: '100%' }}
+        />
+        <BPButton
+          type='submit'
+          isLoading={isLoading}
+          label='resources.draftsAnnotations.add'
+          data-testid='submit-draft-annotation'
+          onClick={event => handleSubmitFormsWrapper(event, true)}
           style={{ width: '100%' }}
         />
         <BPConstruction />

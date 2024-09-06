@@ -23,6 +23,12 @@ export const BpFrenchMessages = {
     },
   },
   resources: {
+    draftsAnnotations: {
+      add: 'Enregistrer en tant que brouillon',
+      creation: {
+        success: 'Brouillon sauvegardé avec succès !',
+      },
+    },
     annotation: {
       text: {
         refocusImage: "Cette action va agrandir la zone couverte par l'image.",

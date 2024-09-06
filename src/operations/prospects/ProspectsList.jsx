@@ -146,7 +146,7 @@ const ProspectsList = () => {
         <Box sx={{ p: 2 }}>
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
-            <Tab label='Mes brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
+            <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
             <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
             {BP_USER?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
           </Tabs>
