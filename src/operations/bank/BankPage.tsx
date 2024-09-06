@@ -1,3 +1,4 @@
+import { useBankDisconnection } from '@/common/store';
 import { printError } from '@/common/utils';
 import { accountProvider, getCached } from '@/providers';
 import { Container, Typography } from '@mui/material';
@@ -8,7 +9,7 @@ import { NoBank } from './NoBank';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(getCached.account());
-  const [isInDisconnection, setIsInDisconnection] = useState(false);
+  const { isInDisconnection, setIsInDisconnection } = useBankDisconnection();
   const ref = useRef<NodeJS.Timeout>(null);
 
   useEffect(() => {

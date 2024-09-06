@@ -30,12 +30,12 @@ export const BankDisconnectionMessage = () => {
 
   return (
     <>
-      <DialogTitle id='alert-dialog-title'>Confirmation</DialogTitle>
+      <DialogTitle id='alert-dialog-title'>Déconnexion de la banque...</DialogTitle>
       <DialogContent sx={{ width: 500 }}>
-        <DialogContentText>La déconnexion de votre banque est en cours. Veuillez attendre 5min avant de reconnecter une nouvelle banque</DialogContentText>
+        <DialogContentText>La déconnexion de votre banque est en cours. Veuillez attendre 2min avant de reconnecter une nouvelle banque</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <BPButton label='Fermer' onClick={closeDialog} />
+        <BPButton label='ra.action.close' onClick={closeDialog} />
       </DialogActions>
     </>
   );
