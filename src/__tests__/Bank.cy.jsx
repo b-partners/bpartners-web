@@ -97,7 +97,7 @@ describe(specTitle('Account'), () => {
     }).as('updateBankInfo');
   });
 
-  it.only('Should disconnect bank', () => {
+  it('Should disconnect bank', () => {
     cy.mount(<App />);
     cy.intercept('POST', `/users/mock-user-id1/disconnectBank`, { ...account1, bank: null });
     cy.get('[name="bank"]').click();
