@@ -1,5 +1,6 @@
 import { BP_COLOR } from '@/bp-theme';
 import { SxProps, Theme } from '@mui/material';
+import { CSSProperties } from 'react';
 
 export const LAYOUT: SxProps<Theme> = {
   width: '99%',
@@ -11,7 +12,7 @@ export const LAYOUT: SxProps<Theme> = {
 
 export const TEXT_MESSAGE: SxProps<Theme> = {
   fontWeight: 'bold',
-  marginBottom: 10,
+  marginBottom: 1,
 };
 
 export const BANK_CARD: SxProps<Theme> = {
@@ -53,7 +54,7 @@ export const USER_CARD = {
   boxShadow: 'none',
 };
 
-export const BANK_LOGO = {
+export const BANK_LOGO: CSSProperties = {
   position: 'absolute',
   top: '1.5rem',
   right: 0,
@@ -98,3 +99,35 @@ export const BALANCE_ICON = {
 };
 
 export const HERE_LINK = { textDecorationLine: 'underline', cursor: 'pointer', fontWeight: 'bold', color: BP_COLOR[10] };
+
+export const BANK_PAGE_CARD: SxProps<Theme> = {
+  border: 'none',
+  outline: 'none',
+  '& .MuiCardHeader-root .MuiToolbar-root': { display: 'flex', alignItems: 'center', justifyContent: 'flex-end' },
+  '& .MuiCardHeader-root .MuiToolbar-root svg': { mx: 1, transform: 'translateY(-2px)' },
+  '& .MuiCardContent-root': CARD_CONTENT,
+  '& .MuiCardContent-root > .MuiStack-root > .MuiPaper-root': { ...BANK_CARD },
+  '& .MuiCardContent-root > .MuiStack-root > .MuiPaper-root > img': BANK_LOGO,
+};
+
+export const NO_BANK_PAGE_CARD: SxProps<Theme> = {
+  border: 'none',
+  outline: 'none',
+  '& .MuiCardContent-root': CARD_CONTENT,
+  '& .MuiCardContent-root > .MuiPaper-root': NO_BANK_CARD,
+  '& .MuiCardContent-root > .MuiPaper-root svg': BALANCE_ICON,
+  '& .MuiCardContent-root > .MuiPaper-root > .MuiBox-root': { zIndex: 2, m: 5, '.MuiTypography-root': { fontSize: '1.3rem' } },
+  '& .MuiCardContent-root > .MuiPaper-root > .MuiBox-root > .MuiTypography-root > a': HERE_LINK,
+  '& .MuiCardContent-root > .MuiModal-root > .MuiBackdrop-root': { display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1999 },
+};
+
+export const BANK_DISCONNECTION_WAITER_PAGE: SxProps = {
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  textAlign: 'center',
+  '& .MuiStack-root': {
+    alignItems: "center"
+  },
+};
