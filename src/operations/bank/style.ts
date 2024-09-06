@@ -120,3 +120,14 @@ export const NO_BANK_PAGE_CARD: SxProps<Theme> = {
   '& .MuiCardContent-root > .MuiPaper-root > .MuiBox-root > .MuiTypography-root > a': HERE_LINK,
   '& .MuiCardContent-root > .MuiModal-root > .MuiBackdrop-root': { display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1999 },
 };
+
+export const BANK_DISCONNECTION_WAITER_PAGE: SxProps = {
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  textAlign: 'center',
+  '& .MuiStack-root': {
+    alignItems: "center"
+  },
+};

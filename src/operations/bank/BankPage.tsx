@@ -1,11 +1,12 @@
 import { useBankDisconnection } from '@/common/store';
 import { printError } from '@/common/utils';
 import { accountProvider, getCached } from '@/providers';
-import { Container, Typography } from '@mui/material';
+import { CircularProgress, Container, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import AccountConfig from './AccountConfig';
 import { Bank } from './Bank';
 import { NoBank } from './NoBank';
+import { BANK_DISCONNECTION_WAITER_PAGE } from './style';
 
 export const BankPage = () => {
   const [account, setAccount] = useState(getCached.account());
@@ -42,8 +43,11 @@ export const BankPage = () => {
 
   if (isInDisconnection) {
     return (
-      <Container>
-        <Typography>Veuillez patienter le temps de déconnecter votre banque</Typography>
+      <Container sx={BANK_DISCONNECTION_WAITER_PAGE}>
+        <Stack spacing={2}>
+          <Typography>Veuillez patienter le temps de déconnecter votre banque</Typography>
+          <CircularProgress />
+        </Stack>
       </Container>
     );
   }
