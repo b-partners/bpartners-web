@@ -1,6 +1,6 @@
 import { useDialog } from '@/common/store/dialog';
 import { AccountBalance as AccountBalanceIcon } from '@mui/icons-material';
-import { Box, Button, Card, CardContent, CardHeader, Paper, Stack, Toolbar, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Paper, Stack, Toolbar, Typography } from '@mui/material';
 import { FC } from 'react';
 import { BankCardText } from './BankCardText';
 import { BankDisconnection } from './BankDisconnectionDialog';
