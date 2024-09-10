@@ -173,22 +173,24 @@ export const createProspect = (number: number, status?: ProspectStatus) => {
   const prospects: Prospect[] = [];
 
   for (let a = 0; a < number; a++) {
-    prospects.push({
+    const prospect: Prospect = {
       id: `prospect-${status}-${a}`,
-      name: null,
-      firstName: '',
-      phone: null,
-      email: null,
+      name: 'John Doe',
+      firstName: 'John Doe',
+      phone: '+261340465338',
+      email: 'johnDoe@gmail.com',
       status: status || ProspectStatus.TO_CONTACT,
       address: '30 Rue de la Montagne Sainte-Genevieve',
       townCode: null,
+      rating: { value: a % 2 === 0 ? 10 : 6 },
       comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       location: {
         type: 'Point',
         longitude: 2.347,
         latitude: 48.8588,
       },
-    });
+    };
+    prospects.push(prospect);
   }
   return prospects;
 };
