@@ -141,22 +141,6 @@ export const updatedProspects: Prospect[] = [
   ...prospects,
 ];
 
-export const contactedProspect = {
-  ...prospects[0],
-  status: 'CONTACTED',
-  prospectFeedback: 'INTERESTED',
-  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  contractAmount: '',
-};
-
-export const convertedProspect = {
-  ...prospects[1],
-  status: 'CONVERTED',
-  prospectFeedback: 'INVOICE_SENT',
-  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  contractAmount: '321',
-};
-
 export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',
@@ -182,7 +166,7 @@ export const createProspect = (number: number, status?: ProspectStatus) => {
       status: status || ProspectStatus.TO_CONTACT,
       address: '30 Rue de la Montagne Sainte-Genevieve',
       townCode: null,
-      rating: { value: a % 2 === 0 ? 10 : 6 },
+      rating: { value: a % 2 === 0 ? 10 : 6, lastEvaluation: new Date('2024-07-07') },
       comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       location: {
         type: 'Point',
@@ -197,4 +181,19 @@ export const createProspect = (number: number, status?: ProspectStatus) => {
 
 export const getProspect = (_page: number, pageSize: number, status: ProspectStatus) => {
   return createProspect(pageSize, status);
+};
+
+export const contactedProspect = {
+  ...getProspect(1, 2, ProspectStatus.CONTACTED)[1],
+  id: 'prospect-TO_CONTACT-1',
+  prospectFeedback: 'INTERESTED',
+  contractAmount: '',
+};
+
+export const convertedProspect = {
+  ...getProspect(1, 2, ProspectStatus.CONVERTED)[1],
+  id: 'prospect-CONTACTED-1',
+  prospectFeedback: 'INVOICE_SENT',
+  comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  contractAmount: '321',
 };
