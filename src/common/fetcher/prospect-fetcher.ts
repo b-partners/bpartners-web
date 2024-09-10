@@ -1,5 +1,5 @@
 import { ProspectStatus } from '@bpartners/typescript-client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetList } from 'react-admin';
 import { useProspectSearchStore } from '../store';
 
@@ -8,6 +8,10 @@ const perPage = 20;
 export const useProspectFetcher = (status: ProspectStatus) => {
   const [page, setPage] = useState(1);
   const { searchName } = useProspectSearchStore();
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchName]);
 
   const { data: prospects = [], pageInfo, isFetching, isPending } = useGetList('prospects', { filter: { status, searchName, pagination: { page, perPage } } });
 
