@@ -165,7 +165,7 @@ export const createProspect = (number: number, status?: ProspectStatus) => {
       email: 'johnDoe@gmail.com',
       status: status || ProspectStatus.TO_CONTACT,
       address: '30 Rue de la Montagne Sainte-Genevieve',
-      townCode: null,
+      townCode: 21547,
       rating: { value: a % 2 === 0 ? 10 : 6, lastEvaluation: new Date('2024-07-07') },
       comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       location: {
