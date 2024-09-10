@@ -1,5 +1,4 @@
 import { Polygon } from '@bpartners/annotator-component';
-import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
 import { BPConstruction } from '@/common/components';
@@ -11,7 +10,6 @@ import { labels } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
-import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import {
   Accordion,
@@ -27,14 +25,17 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { BaseSyntheticEvent, ChangeEvent, useEffect, useState } from 'react';
+import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
 import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
-import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import AnnotatorForm from './components/AnnotatorForm';
 
-const SideBar = () => {
+export type SideBarProps = {
+  draftAnnotationId?: string;
+};
+
+const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -42,32 +43,18 @@ const SideBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
-  const {
-    polygons: draftsPolygons,
-    annotations,
-    isAnnotationEmpty: isDraftAnnotationEmpty,
-  } = useRetrievePolygons(async areaPictureId => {
-    return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
-  });
-
-  useEffect(() => {
-    if (polygons.length !== 0 || isDraftAnnotationEmpty) {
-      return;
-    }
-    setPolygons(draftsPolygons);
-  }, [isDraftAnnotationEmpty, polygons.length]);
-
   const formState = useAnnotationsInfoForm(polygons);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async data => {
       setIsLoading(true);
-      const annotationId = isDraftAnnotationEmpty ? uuidV4() : annotations.id!;
-      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
+      const annotationIdValue = draftAnnotationId || uuidV4();
 
-      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
-      await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
+      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationIdValue);
+      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+      await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
       setIsLoading(false);
+      clearPolygons();
 
       if (isDraft) {
         notify('resources.draftsAnnotations.creation.success', { type: 'success' });
@@ -75,8 +62,7 @@ const SideBar = () => {
         return;
       }
 
-      clearPolygons();
-      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
+      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
     });
     handleSubmitForms(event);
   };

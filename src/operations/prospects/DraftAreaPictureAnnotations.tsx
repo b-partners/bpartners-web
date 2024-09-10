@@ -9,7 +9,11 @@ const DRAFT_ANNOTATION_ITEM_WRAPPER_SX: SxProps = {
   width: '100%',
   display: 'flex',
   alignItems: 'stretch',
-  justifyContent: 'start',
+  flexWrap: 'wrap',
+  justifyContent: {
+    sm: 'center',
+    lg: 'start',
+  },
   gap: 2,
 };
 

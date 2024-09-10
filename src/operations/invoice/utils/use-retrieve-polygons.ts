@@ -7,6 +7,7 @@ export type AreaPictureAnnotationFetcherType = (pictureId: string) => Promise<Ar
 
 export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAnnotationFetcherType) => {
   const { pictureId } = parseUrlParams();
+  const [isLoading, setIsLoading] = useState(true);
   const [annotations, setAnnotations] = useState<AreaPictureAnnotation>({});
   const [polygons, setPolygons] = useState<Polygon[]>([]);
 
@@ -18,19 +19,28 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
     }
 
     if (areaPictureAnnotationFetcher) {
-      areaPictureAnnotationFetcher(pictureId).then(annotations => {
-        if (annotations.length > 0) {
-          setAnnotations(annotations[0]);
-        }
-      });
+      areaPictureAnnotationFetcher(pictureId)
+        .then(annotations => {
+          if (annotations.length > 0) {
+            setAnnotations(annotations[0]);
+          }
+        })
+        .then(() => {
+          setIsLoading(false);
+        });
       return;
     }
 
-    annotatorProvider.getAnnotationsPicture(pictureId).then(annotations => {
-      if (annotations.length > 0) {
-        setAnnotations(annotations[0]);
-      }
-    });
+    annotatorProvider
+      .getAnnotationsPicture(pictureId)
+      .then(annotations => {
+        if (annotations.length > 0) {
+          setAnnotations(annotations[0]);
+        }
+      })
+      .then(() => {
+        setIsLoading(false);
+      });
   }, [pictureId]);
 
   useEffect(() => {
@@ -45,5 +55,5 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
     }
   }, [annotations, setPolygons, isAnnotationEmpty]);
 
-  return { polygons, annotations, isAnnotationEmpty };
+  return { polygons, annotations, isAnnotationEmpty, isLoading };
 };

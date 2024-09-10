@@ -1,5 +1,6 @@
 import { BPButton } from '@/common/components';
 import { formatDateTime, getFileUrl } from '@/common/utils';
+import { clearPolygons } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Comment, Home, LocalPhoneOutlined, MailOutline, Star, Update } from '@mui/icons-material';
 import { Box, Paper, SxProps, Typography } from '@mui/material';
@@ -11,7 +12,10 @@ import { CardViewField } from './CardViewField';
 
 const DRAFT_ANNOTATION_ITEM_SX: SxProps = {
   width: '100%',
-  maxWidth: '400px',
+  maxWidth: {
+    lg: '400px',
+    sm: '100%',
+  },
   p: 1,
   gap: 2,
 };
@@ -22,13 +26,14 @@ export type DraftAnnotationItemProps = {
 
 export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotation }) => {
   const navigate = useNavigate();
-  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.id });
+  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
 
   const navigateToAnnotation = () => {
     const { fileId, prospectId, id: pictureId } = draftAnnotation.areaPicture;
     const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+    clearPolygons();
     navigate(
-      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
+      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}&useDrafts=true`
     );
   };
 
@@ -39,13 +44,17 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     [isLoading]
   );
 
-  const getLastEvaluationValue = useCallback(() => {
+  const getLastEvaluationValue = () => {
     const lastEvaluation = prospect?.rating?.lastEvaluation;
     if (isLoading) {
       return 'Chargement...';
     }
+
+    if (!lastEvaluation) {
+      return 'Non renseigné';
+    }
     return typeof lastEvaluation === 'string' ? new Date(lastEvaluation).toISOString() : lastEvaluation.toISOString();
-  }, [isLoading, prospect?.rating?.lastEvaluation]);
+  };
 
   return (
     <Paper data-cy='draft-item' sx={DRAFT_ANNOTATION_ITEM_SX} component='div'>
@@ -63,7 +72,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
         <CardViewField icon={<Star />} value={getLoadingValue(parseRatingValue(prospect?.rating?.value))} />
         <CardViewField icon={<Update />} value={getLastEvaluationValue()} />
       </Box>
-      <BPButton label='resources.draftsAnnotations.finish' onClick={navigateToAnnotation} />
+      <BPButton label='resources.draftsAnnotations.finish' onClick={navigateToAnnotation} sx={{ width: '98% !important', display: 'block' }} />
     </Paper>
   );
 };

@@ -1,6 +1,6 @@
 import { cache, getCached } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, FC, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 type annotationStore = {
   setPolygons: (data: any) => void;
@@ -19,8 +19,12 @@ const CanvasAnnotationContext = createContext<annotationStore>({
 });
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
 
-export const CanvasAnnotationContextProvider = ({ children }: any) => {
-  const [polygons, setPolygons] = useState<Polygon[]>([]);
+export type CanvasAnnotationContextProviderProps = {
+  children: ReactNode;
+  defaultPolygons?: Polygon[];
+};
+export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [] }) => {
+  const [polygons, setPolygons] = useState<Polygon[]>(defaultPolygons);
   const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
 
   useEffect(() => {
