@@ -6,7 +6,7 @@ import { Box, Paper, SxProps, Typography } from '@mui/material';
 import { FC, useCallback } from 'react';
 import { useGetOne } from 'react-admin';
 import { useNavigate } from 'react-router';
-import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
+import { parseRatingValue } from '../utils';
 import { CardViewField } from './CardViewField';
 
 const DRAFT_ANNOTATION_ITEM_SX: SxProps = {
@@ -39,11 +39,16 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     [isLoading]
   );
 
-  const lastEvaluation =
-    prospect?.rating?.lastEvaluation === null ? 'Non renseigné' : parseRatingLastEvaluation(prospect?.rating?.lastEvaluation.toISOString());
+  const getLastEvaluationValue = useCallback(() => {
+    const lastEvaluation = prospect?.rating?.lastEvaluation;
+    if (isLoading) {
+      return 'Chargement...';
+    }
+    return typeof lastEvaluation === 'string' ? new Date(lastEvaluation).toISOString() : lastEvaluation.toISOString();
+  }, [isLoading, prospect?.rating?.lastEvaluation]);
 
   return (
-    <Paper sx={DRAFT_ANNOTATION_ITEM_SX} component='div'>
+    <Paper data-cy='draft-item' sx={DRAFT_ANNOTATION_ITEM_SX} component='div'>
       <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
         {getLoadingValue(prospect.name || 'Non renseigné')}
       </Typography>
@@ -56,7 +61,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
         <CardViewField icon={<Home />} value={getLoadingValue(prospect.address)} />
         <CardViewField icon={<Comment />} value={getLoadingValue(prospect.comment ? prospect.comment : prospect.defaultComment)} />
         <CardViewField icon={<Star />} value={getLoadingValue(parseRatingValue(prospect?.rating?.value))} />
-        <CardViewField icon={<Update />} value={getLoadingValue(lastEvaluation)} />
+        <CardViewField icon={<Update />} value={getLastEvaluationValue()} />
       </Box>
       <BPButton label='resources.draftsAnnotations.finish' onClick={navigateToAnnotation} />
     </Paper>
