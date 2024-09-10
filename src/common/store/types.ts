@@ -15,3 +15,12 @@ export interface RaProspectContext {
   prospectJobDetails: ProspectEvaluationJobInfo;
   toggleJobDetailsPopup: (item: ProspectEvaluationJobInfo) => void;
 }
+
+interface BankDisconnectionState {
+  isInDisconnection: boolean;
+}
+interface BankDisconnectionAction {
+  setIsInDisconnection: (value: boolean) => void;
+}
+
+export type TBankDisconnectionStore = BankDisconnectionState & BankDisconnectionAction;

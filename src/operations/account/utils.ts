@@ -4,7 +4,7 @@ import { toMajors } from '../../common/utils';
 export const ACTIVITY_TOOLTIP_TITLE = "Sélectionnez votre métier dans la liste. S'il n'y figure pas, écrivez-le directement dans le champ de saisie.";
 
 // BusinessActivities default values
-type BusinessActiVitiesValues = { new: CompanyBusinessActivity; current: CompanyBusinessActivity };
+export type BusinessActiVitiesValues = { new: CompanyBusinessActivity; current: CompanyBusinessActivity };
 export const businessActivityDefaultValues: BusinessActiVitiesValues = {
   new: { primary: null, secondary: null },
   current: { primary: null, secondary: null },

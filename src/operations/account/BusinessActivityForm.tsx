@@ -1,13 +1,22 @@
-import { Save as SaveIcon } from '@mui/icons-material';
-import { Autocomplete, Box, Button, CircularProgress, TextField, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useNotify } from 'react-admin';
 import { printError } from '@/common/utils';
 import { accountHolderProvider, businessActivitiesProvider } from '@/providers';
-import { ACTIVITY_TOOLTIP_TITLE, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
+import { Save as SaveIcon } from '@mui/icons-material';
+import { Autocomplete, Box, Button, CircularProgress, SxProps, TextField, Tooltip } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useNotify } from 'react-admin';
+import { ACTIVITY_TOOLTIP_TITLE, BusinessActiVitiesValues, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
 
-const CustomAutocomplete = props => {
-  const { label, onChange, name, resource = {}, options, style } = props;
+export type CustomAutocompleteProps<ResourceType extends Record<string, any>, Name extends keyof ResourceType> = {
+  label: string;
+  name: Name;
+  resource?: ResourceType;
+  options: Record<string, any>[];
+  style?: SxProps;
+  onChange: (name: Name, value: string) => void;
+};
+
+const CustomAutocomplete = <ResourceType extends Record<string, any>, Name extends keyof ResourceType>(props: CustomAutocompleteProps<ResourceType, Name>) => {
+  const { label, onChange, name, resource = {} as ResourceType, options, style = {} } = props;
   return (
     <Tooltip title={ACTIVITY_TOOLTIP_TITLE}>
       <Autocomplete
@@ -17,7 +26,7 @@ const CustomAutocomplete = props => {
         loadingText='Chargement...'
         onInputChange={(_e, value) => onChange(name, value)}
         sx={{ width: '45%', ...style }}
-        renderInput={params => <TextField data-cy={`autocomplete-${name}`} required {...params} label={label} />}
+        renderInput={params => <TextField data-cy={`autocomplete-${name as string}`} required {...params} label={label} />}
       />
     </Tooltip>
   );
@@ -30,11 +39,11 @@ const BusinessActivitiesInputs = () => {
   const [tools, setTools] = useState({ isLoading: false, isButtonDisable: true });
   const [businessActivities, setBusinessActivities] = useState(businessActivityDefaultValues);
 
-  const setSaveButtonDisable = newBusinessActivities => {
+  const setSaveButtonDisable = (newBusinessActivities: BusinessActiVitiesValues) => {
     setTools(properties => ({ ...properties, isButtonDisable: shouldSaveButtonDisable(newBusinessActivities.current, newBusinessActivities.new) }));
   };
 
-  const handleChange = (name, value) => {
+  const handleChange = (name: string, value: string) => {
     setBusinessActivities(properties => {
       const newBusinessActivities = { ...properties, new: { ...properties.new, [name]: value } };
       setSaveButtonDisable(newBusinessActivities);
@@ -42,7 +51,7 @@ const BusinessActivitiesInputs = () => {
     });
   };
 
-  const setLoading = state => {
+  const setLoading = (state: any) => {
     setTools(properties => ({ ...properties, isLoading: state }));
   };
 

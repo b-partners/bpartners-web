@@ -1,8 +1,18 @@
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { CSSProperties, Dispatch, FC, ReactNode, SetStateAction } from 'react';
 import { errorStyle, INVOICE_EDITION } from '../style';
 
-const InvoiceAccordion = props => {
+export type InvoiceAccordionProps = {
+  label: string;
+  children: ReactNode;
+  index: number;
+  isExpanded: number;
+  onExpand: Dispatch<SetStateAction<number>>;
+  error?: boolean;
+} & Pick<CSSProperties, 'width'>;
+
+const InvoiceAccordion: FC<InvoiceAccordionProps> = props => {
   const { label, children, index, isExpanded, onExpand, error = false, width } = props;
 
   const handleClick = () => onExpand(lastIndex => (lastIndex === index ? 0 : index));

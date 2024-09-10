@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader } from '@mui/material';
+import { FC } from 'react';
 import { CancelButton, ContextCancelButton } from './InvoicePdfDocument';
 
-const TransactionSupportingDoc = ({ onClose, url }) => {
+const TransactionSupportingDoc: FC<{ onClose: () => void; url: string }> = ({ onClose, url }) => {
   return (
     <Card sx={{ border: 'none' }}>
       <CardHeader title='Justificatif' action={onClose ? <CancelButton onClose={onClose} /> : <ContextCancelButton />} />
