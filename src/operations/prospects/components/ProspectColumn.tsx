@@ -1,32 +1,19 @@
 import { EmptyList } from '@/common/components/EmptyList';
-import { Prospect } from '@bpartners/typescript-client';
+import { useProspectFetcher } from '@/common/fetcher';
+import { ProspectStatus } from '@bpartners/typescript-client';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Card, CardActions, CardContent, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { ProspectItem } from './ProspectItem';
 interface ProspectColumnProps {
   color: string;
-  list: Prospect[];
+  status: ProspectStatus;
   title: string;
 }
 
 export const ProspectColumn: FC<ProspectColumnProps> = props => {
-  const { title, list = [], color } = props;
-
-  const [prospects, setProspects] = useState([]);
-  const [page, setPage] = useState(0);
-  const perPage = 20;
-
-  useEffect(() => {
-    setProspects(list.slice(page * perPage, page * perPage + perPage));
-    if (list.length < perPage * page) {
-      setPage(0);
-    }
-  }, [list]);
-
-  useEffect(() => {
-    setProspects(list.slice(page * perPage, page * perPage + perPage));
-  }, [page]);
+  const { title, status, color } = props;
+  const { nextPage, prevPage, prospects, hasNextPage, hasPreviousPage, page } = useProspectFetcher(status);
 
   return (
     <Grid item xs={4}>
@@ -62,25 +49,13 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
         </CardContent>
         <CardActions sx={{ width: 'auto' }}>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <IconButton
-              data-cy={`${title}-prev-button`}
-              disabled={page === 0}
-              style={{ marginRight: 6 }}
-              color='primary'
-              onClick={() => setPage(prev => prev - 1)}
-            >
+            <IconButton data-cy={`${title}-prev-button`} disabled={!hasPreviousPage} style={{ marginRight: 6 }} color='primary' onClick={prevPage}>
               <ChevronLeft />
             </IconButton>
             <Box paddingX={2}>
               <Typography>{page + 1}</Typography>
             </Box>
-            <IconButton
-              data-cy={`${title}-next-button`}
-              disabled={(page + 1) * perPage >= list.length}
-              style={{ marginLeft: 6 }}
-              color='primary'
-              onClick={() => setPage(prev => prev + 1)}
-            >
+            <IconButton data-cy={`${title}-next-button`} disabled={!hasNextPage} style={{ marginLeft: 6 }} color='primary' onClick={nextPage}>
               <ChevronRight />
             </IconButton>
           </Stack>
