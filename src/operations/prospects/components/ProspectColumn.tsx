@@ -13,7 +13,7 @@ interface ProspectColumnProps {
 
 export const ProspectColumn: FC<ProspectColumnProps> = props => {
   const { title, status, color } = props;
-  const { nextPage, prevPage, prospects, hasNextPage, hasPreviousPage, page } = useProspectFetcher(status);
+  const { nextPage, prevPage, prospects, hasNextPage, page } = useProspectFetcher(status);
 
   return (
     <Grid item xs={4}>
@@ -49,11 +49,11 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
         </CardContent>
         <CardActions sx={{ width: 'auto' }}>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <IconButton data-cy={`${title}-prev-button`} disabled={!hasPreviousPage} style={{ marginRight: 6 }} color='primary' onClick={prevPage}>
+            <IconButton data-cy={`${title}-prev-button`} disabled={page === 1} style={{ marginRight: 6 }} color='primary' onClick={prevPage}>
               <ChevronLeft />
             </IconButton>
             <Box paddingX={2}>
-              <Typography>{page + 1}</Typography>
+              <Typography>{page}</Typography>
             </Box>
             <IconButton data-cy={`${title}-next-button`} disabled={!hasNextPage} style={{ marginLeft: 6 }} color='primary' onClick={nextPage}>
               <ChevronRight />
