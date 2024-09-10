@@ -1,5 +1,4 @@
 import { Prospect, ProspectStatus } from '@bpartners/typescript-client';
-import { v4 as uuidV4 } from 'uuid';
 
 export const prospects: Prospect[] = [
   {
@@ -170,17 +169,17 @@ export const createdProspect = {
   contractAmount: '91',
 };
 
-export const createProspect = (number: number) => {
+export const createProspect = (number: number, status?: ProspectStatus) => {
   const prospects: Prospect[] = [];
 
   for (let a = 0; a < number; a++) {
     prospects.push({
-      id: uuidV4(),
+      id: `prospect-${status}-${a}`,
       name: null,
       firstName: '',
       phone: null,
       email: null,
-      status: ProspectStatus.TO_CONTACT,
+      status: status || ProspectStatus.TO_CONTACT,
       address: '30 Rue de la Montagne Sainte-Genevieve',
       townCode: null,
       comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -192,4 +191,8 @@ export const createProspect = (number: number) => {
     });
   }
   return prospects;
+};
+
+export const getProspect = (_page: number, pageSize: number, status: ProspectStatus) => {
+  return createProspect(pageSize, status);
 };
