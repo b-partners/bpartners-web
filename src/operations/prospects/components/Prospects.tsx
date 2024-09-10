@@ -2,7 +2,6 @@ import { Box, Grid } from '@mui/material';
 import { ProspectColumn } from './ProspectColumn';
 
 export const Prospects = () => {
-
   return (
     <Box>
       <Grid container justifyContent='space-between' spacing={2}>
