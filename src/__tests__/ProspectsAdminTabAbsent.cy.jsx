@@ -13,7 +13,7 @@ describe(specTitle('administration tab not present for non admin users in prospe
     cy.intercept('GET', `/users/${whoami2.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami2.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, prospects).as('getProspects');
   });
   it('should not display evaluation prospects section', () => {
     cy.mount(<App />);

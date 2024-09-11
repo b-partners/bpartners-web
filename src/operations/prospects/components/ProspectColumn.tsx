@@ -1,32 +1,19 @@
 import { EmptyList } from '@/common/components/EmptyList';
-import { Prospect } from '@bpartners/typescript-client';
+import { useProspectFetcher } from '@/common/fetcher';
+import { ProspectStatus } from '@bpartners/typescript-client';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { Box, Card, CardActions, CardContent, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { Box, Card, CardActions, CardContent, CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { FC } from 'react';
 import { ProspectItem } from './ProspectItem';
 interface ProspectColumnProps {
   color: string;
-  list: Prospect[];
+  status: ProspectStatus;
   title: string;
 }
 
 export const ProspectColumn: FC<ProspectColumnProps> = props => {
-  const { title, list = [], color } = props;
-
-  const [prospects, setProspects] = useState([]);
-  const [page, setPage] = useState(0);
-  const perPage = 20;
-
-  useEffect(() => {
-    setProspects(list.slice(page * perPage, page * perPage + perPage));
-    if (list.length < perPage * page) {
-      setPage(0);
-    }
-  }, [list]);
-
-  useEffect(() => {
-    setProspects(list.slice(page * perPage, page * perPage + perPage));
-  }, [page]);
+  const { title, status, color } = props;
+  const { nextPage, prevPage, prospects, hasNextPage, page, isLoading } = useProspectFetcher(status);
 
   return (
     <Grid item xs={4}>
@@ -53,34 +40,25 @@ export const ProspectColumn: FC<ProspectColumnProps> = props => {
                 '&::-webkit-scrollbar': { display: 'none' },
               }}
             >
-              {prospects.map(item => (
-                <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />
-              ))}
-              {prospects.length === 0 && <EmptyList />}
+              {isLoading && (
+                <Stack width='100%' alignItems='center' height='20rem' justifyContent='center'>
+                  <CircularProgress />
+                </Stack>
+              )}
+              {!isLoading && prospects.map(item => <ProspectItem key={`prospect-item-${item.id}`} prospect={item} />)}
+              {!isLoading && prospects.length === 0 && <EmptyList />}
             </Stack>
           </Stack>
         </CardContent>
         <CardActions sx={{ width: 'auto' }}>
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
-            <IconButton
-              data-cy={`${title}-prev-button`}
-              disabled={page === 0}
-              style={{ marginRight: 6 }}
-              color='primary'
-              onClick={() => setPage(prev => prev - 1)}
-            >
+            <IconButton data-cy={`${title}-prev-button`} disabled={page === 1 || isLoading} style={{ marginRight: 6 }} color='primary' onClick={prevPage}>
               <ChevronLeft />
             </IconButton>
             <Box paddingX={2}>
-              <Typography>{page + 1}</Typography>
+              <Typography>{page}</Typography>
             </Box>
-            <IconButton
-              data-cy={`${title}-next-button`}
-              disabled={(page + 1) * perPage >= list.length}
-              style={{ marginLeft: 6 }}
-              color='primary'
-              onClick={() => setPage(prev => prev + 1)}
-            >
+            <IconButton data-cy={`${title}-next-button`} disabled={!hasNextPage || isLoading} style={{ marginLeft: 6 }} color='primary' onClick={nextPage}>
               <ChevronRight />
             </IconButton>
           </Stack>

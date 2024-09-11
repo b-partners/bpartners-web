@@ -24,3 +24,12 @@ interface BankDisconnectionAction {
 }
 
 export type TBankDisconnectionStore = BankDisconnectionState & BankDisconnectionAction;
+
+interface ProspectSearchState {
+  searchName: string;
+}
+interface ProspectSearchAction {
+  setSearchName: (value: string) => void;
+}
+
+export type TProspectSearchStore = ProspectSearchAction & ProspectSearchState;
