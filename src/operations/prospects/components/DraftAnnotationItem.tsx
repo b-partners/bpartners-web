@@ -72,7 +72,12 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
         <CardViewField icon={<Star />} value={getLoadingValue(parseRatingValue(prospect?.rating?.value))} />
         <CardViewField icon={<Update />} value={getLastEvaluationValue()} />
       </Box>
-      <BPButton label='resources.draftsAnnotations.finish' onClick={navigateToAnnotation} sx={{ width: '98% !important', display: 'block' }} />
+      <BPButton
+        data-cy='finish-draft-btn'
+        label='resources.draftsAnnotations.finish'
+        onClick={navigateToAnnotation}
+        sx={{ width: '98% !important', display: 'block' }}
+      />
     </Paper>
   );
 };

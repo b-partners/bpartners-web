@@ -88,7 +88,7 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
               <form onSubmit={event => handleSubmitFormsWrapper(event, true)}>
                 {polygons.map((polygon, i) => {
                   return (
-                    <Box key={polygon.id}>
+                    <Box data-cy='annotation-info-item' key={polygon.id}>
                       <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                         <IconButton
                           aria-label='toggle polygon visibility'
@@ -119,6 +119,9 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
                           <TextInput
                             name={`${i}.labelName`}
                             source={'labelName'}
+                            inputProps={{
+                              'data-cy': 'label-name-input',
+                            }}
                             label={'Nom du label'}
                             defaultValue={`Polygone ${Alphabet[i]}`}
                             helperText={false}
