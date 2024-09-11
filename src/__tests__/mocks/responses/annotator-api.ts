@@ -16,6 +16,7 @@ export const invoiceAnnotations: AreaPictureAnnotation[] = [
   {
     id: 'a74ead26-c7f6-46bb-a6ad-c5abda36c20c',
     idAreaPicture: 'b437dfbf-a522-4999-88b2-dd5b66a65d00',
+    isDraft: false,
     annotations: [
       {
         id: '312f26d8-f178-4baf-b99d-2567237cd4f3',

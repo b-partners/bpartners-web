@@ -1,3 +1,5 @@
+import { AreaPictureDetails } from '@bpartners/typescript-client';
+
 const availableLayers = [
   {
     id: 'cee23f9b-d3ca-4a47-b27a-d7d62b5119c7',
@@ -27,7 +29,7 @@ const availableLayers = [
   },
 ];
 
-export const areaPictures = {
+export const areaPictures: any = {
   id: '8631544e-f84e-47bb-9601-5baeee5062c5',
   xTile: 519192,
   yTile: 370917,
@@ -82,3 +84,5 @@ export const areaPicturesBuildingZoomTousFrLayerExtended = {
   isExtended: true,
   fileId: 'areaPicturesBuildingZoomTousFrLayer-file-id',
 };
+
+export const areaPicture1 = areaPictures as AreaPictureDetails;

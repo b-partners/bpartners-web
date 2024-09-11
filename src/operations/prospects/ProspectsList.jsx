@@ -24,6 +24,7 @@ import ListComponent from '@/common/components/ListComponent';
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
 import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
+import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -52,8 +53,10 @@ const ProspectsList = () => {
     if (index === 0) {
       searchParams.set('tab', 'prospects');
     } else if (index === 1) {
-      searchParams.set('tab', 'configuration');
+      searchParams.set('tab', 'drafts');
     } else if (index === 2) {
+      searchParams.set('tab', 'configuration');
+    } else if (index === 3) {
       searchParams.set('tab', 'administration');
     }
     const newURL = `${location.pathname}?${searchParams.toString()}`;
@@ -143,6 +146,7 @@ const ProspectsList = () => {
         <Box sx={{ p: 2 }}>
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
+            <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
             <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
             {BP_USER?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
           </Tabs>
@@ -165,11 +169,15 @@ const ProspectsList = () => {
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
+            <DraftAreaPictureAnnotations />
+          </TabPanel>
+
+          <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
             <ProspectsConfiguration />
           </TabPanel>
 
           {BP_USER?.roles[0] === 'EVAL_PROSPECT' && (
-            <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
+            <TabPanel value={tabIndex} index={3} sx={{ p: 3 }}>
               <ProspectsAdministration />
             </TabPanel>
           )}

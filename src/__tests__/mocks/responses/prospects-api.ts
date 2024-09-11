@@ -197,3 +197,5 @@ export const convertedProspect = {
   comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   contractAmount: '321',
 };
+
+export const prospectOne = prospects[0];

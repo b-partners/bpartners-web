@@ -70,6 +70,7 @@ export const BpAdmin = () => {
       <Resource name='invoices' {...invoice} />
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
+      <Resource name='drafts-annotations' />
       <Resource name='calendar' {...calendar} />
       <CustomRoutes>
         <Route exact path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />

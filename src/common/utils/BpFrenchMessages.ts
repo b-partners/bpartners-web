@@ -23,6 +23,13 @@ export const BpFrenchMessages = {
     },
   },
   resources: {
+    draftsAnnotations: {
+      add: 'Enregistrer en tant que brouillon',
+      finish: 'Finaliser le brouillon',
+      creation: {
+        success: 'Brouillon sauvegardé avec succès !',
+      },
+    },
     annotation: {
       text: {
         refocusImage: "Cette action va agrandir la zone couverte par l'image.",
@@ -89,7 +96,7 @@ export const BpFrenchMessages = {
     },
     annotator: {
       name: 'Annotation |||| Annotations',
-      save: 'Générer un `de`vis',
+      save: 'Générer un devis',
     },
   },
   messages: {
