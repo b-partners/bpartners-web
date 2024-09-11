@@ -3,9 +3,9 @@ import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {
   getList: async function (_page = 1, _perPage = maxPageSize, filters = {}): Promise<any[]> {
-    const { searchName } = filters;
+    const { searchName, status } = filters;
     const { accountHolderId } = getCached.userInfo();
-    return (await prospectingApi().getProspects(accountHolderId, searchName)).data;
+    return (await prospectingApi().getProspects(accountHolderId, searchName, undefined, status, _page, _perPage)).data;
   },
   getOne: function (_id: string): Promise<any> {
     throw new Error('Function not implemented.');

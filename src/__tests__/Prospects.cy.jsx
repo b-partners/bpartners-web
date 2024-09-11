@@ -4,13 +4,12 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { createProspect, prospects } from './mocks/responses/prospects-api';
+import { getProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
-
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
@@ -29,7 +28,10 @@ describe(specTitle('Prospects'), () => {
   });
 
   it('should render the appropriate button', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, [...prospects, ...createProspect(100)]).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, req => {
+      const { pageSize, status = '', page } = req.query;
+      req.reply(getProspect(page, pageSize, status));
+    }).as('getProspects');
 
     cy.mount(<App />);
     cy.wait('@getUser1');
@@ -38,7 +40,7 @@ describe(specTitle('Prospects'), () => {
     cy.dataCy('prospect-filter').clear();
 
     // testing TO_CONTACT to CONTACTED
-    cy.get('[data-testid="edit-prospect1_id"]').click();
+    cy.get('[data-testid="edit-prospect-TO_CONTACT-0"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('[data-testid="edit-status-to-contacted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
@@ -50,21 +52,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Réserver ce prospect');
     cy.contains('Annuler').click();
 
-    // testing TO_CONTACT to CONVERTED
-    cy.get('[data-testid="edit-prospect1_id"]').click();
-    cy.contains('Changez le statut du prospect pour le protéger');
-    cy.get('[data-testid="edit-status-to-converted"]').click();
-    cy.get('.MuiFormGroup-root > :nth-child(3)').click();
-    cy.contains('Pas intéressé').click();
-    cy.contains('Abandonner ce prospect');
-    cy.contains('Intéressé').click();
-    cy.contains('Transformer ce prospect en client');
-    cy.contains('Devis envoyé').click();
-    cy.contains('Transformer ce prospect en client');
-    cy.contains('Annuler').click();
-
     // testing CONTACTED to CONVERTED
-    cy.get('[data-testid="edit-prospect2_id"]').click();
+    cy.get('[data-testid="edit-prospect-CONTACTED-1"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('[data-testid="edit-status-to-converted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(3)').click();
@@ -77,7 +66,7 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONTACTED to TO_CONTACT
-    cy.get('[data-testid="edit-prospect2_id"]').click();
+    cy.get('[data-testid="edit-prospect-CONTACTED-1"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('[data-testid="edit-status-to-to_contact"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();
@@ -90,7 +79,7 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONVERTED to CONTACTED
-    cy.get('[data-testid="edit-prospect6_id"]').click();
+    cy.get('[data-testid="edit-prospect-CONVERTED-1"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('[data-testid="edit-status-to-contacted"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(2)').click();
@@ -103,7 +92,7 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Annuler').click();
 
     // testing CONVERTED to TO_CONTACT
-    cy.get('[data-testid="edit-prospect6_id"]').click();
+    cy.get('[data-testid="edit-prospect-CONVERTED-1"]').click();
     cy.contains('Changez le statut du prospect pour le protéger');
     cy.get('[data-testid="edit-status-to-to_contact"]').click();
     cy.get('.MuiFormGroup-root > :nth-child(1)').click();

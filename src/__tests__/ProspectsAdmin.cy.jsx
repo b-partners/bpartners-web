@@ -25,7 +25,7 @@ describe(specTitle('Customers'), () => {
         )
       );
     });
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, []).as('getProspects1');
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects/evaluationJobs`, evaluationJobs).as('getEvaluationJobs');
     cy.intercept('GET', `/accountHolders?name=`, req => {
       req.reply(accountHolders1);

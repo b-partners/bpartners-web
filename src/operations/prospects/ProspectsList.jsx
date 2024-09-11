@@ -1,5 +1,19 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Stack, Tab, Tabs } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Link,
+  Stack,
+  Tab,
+  Tabs,
+} from '@mui/material';
 import { useState } from 'react';
 import { List, useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -134,25 +148,20 @@ const ProspectsList = () => {
           </Tabs>
 
           <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-            <List
-              queryOptions={{ refetchOnWindowFocus: false }}
-              empty={false}
-              pagination={false}
-              component={ListComponent}
-              actions={
-                <Stack direction='row' width='100%' justifyContent='space-between' alignItems='center'>
+            <Card>
+              <CardContent>
+                <Stack direction='row' width='100%' mb={1} justifyContent='space-between' alignItems='center'>
                   <ProspectFilterInput />
                   <BPButton label='resources.prospects.add' onClick={toggleDialog} />
                 </Stack>
-              }
-            >
-              <Prospects />
-              {isCreating && (
-                <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
-                </form>
-              )}
-            </List>
+                <Prospects />
+                {isCreating && (
+                  <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} isCreating={isCreating} />
+                  </form>
+                )}
+              </CardContent>
+            </Card>
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>

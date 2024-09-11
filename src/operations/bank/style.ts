@@ -128,6 +128,6 @@ export const BANK_DISCONNECTION_WAITER_PAGE: SxProps = {
   alignItems: 'center',
   textAlign: 'center',
   '& .MuiStack-root': {
-    alignItems: "center"
+    alignItems: 'center',
   },
 };

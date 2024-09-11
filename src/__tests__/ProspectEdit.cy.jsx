@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { prospects, updatedProspects } from './mocks/responses/prospects-api';
+import { getProspect, prospects, updatedProspects } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects'), () => {
@@ -29,48 +29,55 @@ describe(specTitle('Prospects'), () => {
   });
 
   it('should edit a prospect', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, req => {
+      const { pageSize, status = '', page } = req.query;
+      req.reply(getProspect(page, pageSize, status));
+    }).as('getProspects');
 
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
 
-    cy.wait('@getProspects');
-
-    cy.get('[data-testid="edit-prospect1_id"]').click();
-    cy.get('[data-testid="edit-prospect-prospect1_id"]').click();
+    cy.get('[data-testid="edit-prospect-TO_CONTACT-1"]').click();
+    cy.get('[data-testid="edit-prospect-prospect-TO_CONTACT-1"]').click();
 
     const updatedProspect = {
-      ...prospects[0],
-      name: 'Doe Jhonson',
+      ...getProspect(0, 2, 'TO_CONTACT')[1],
+      id: 'prospect-TO_CONTACT-1',
+      name: 'Doe Johnson',
       comment: 'Update comment',
       phone: '+261340465399',
-      email: 'doejhonson@gmail.com',
+      email: 'doejohnson@gmail.com',
       contractAmount: '',
     };
 
     updatedProspect.rating.lastEvaluation = updatedProspect.rating.lastEvaluation.toISOString();
 
-    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects/${prospects[0].id}`, req => {
+    cy.intercept('PUT', `/accountHolders/${accountHolders1[0].id}/prospects/prospect-TO_CONTACT-1`, req => {
       expect(req.body).deep.eq(updatedProspect);
-
       req.reply(req.body);
     }).as('updateProspect');
 
-    cy.get('[data-testid="email-field-input"] > .MuiInputBase-root').clear().type('doejhonson@gmail.com');
+    cy.get('[data-testid="email-field-input"] > .MuiInputBase-root').clear().type('doejohnson@gmail.com');
     cy.get('[data-testid="phone-field-input"] > .MuiInputBase-root').clear().type('+261340465399');
-    cy.get('[data-testid="name-field-input"] > .MuiInputBase-root').clear().type('Doe Jhonson');
+    cy.get('[data-testid="name-field-input"] > .MuiInputBase-root').clear().type('Doe Johnson');
     cy.get('[data-testid="comment-field-input"] > .MuiInputBase-root').clear().type('Update comment');
 
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, updatedProspects).as('getupdatedProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, req => {
+      const { pageSize, status = '', page } = req.query;
+      const res = getProspect(page, pageSize, status);
+      res[1].name = 'Doe Johnson';
+      res[1].comment = 'Update comment';
+      req.reply(res);
+    }).as('getProspects');
+
     cy.get('.MuiDialogActions-root > :nth-child(2)').click();
 
     cy.wait('@updateProspect');
 
-    cy.wait('@getupdatedProspects');
     cy.contains('Prospect mis à jour avec succès !');
 
-    cy.contains('Doe Jhonson');
+    cy.contains('Doe Johnson');
     cy.contains('Update comment');
   });
 });

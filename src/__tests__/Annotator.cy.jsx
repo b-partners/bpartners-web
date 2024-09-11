@@ -5,7 +5,7 @@ import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { areaPictures } from './mocks/responses/area-pictures';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { prospects } from './mocks/responses/prospects-api';
+import { getProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle("tester le fonctionnement de l'annotator"), () => {
@@ -25,12 +25,15 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
         )
       );
     });
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, req => {
+      const { pageSize, status = '', page } = req.query;
+      req.reply(getProspect(page, pageSize, status));
+    }).as('getProspects');
 
     cy.stub(Redirect, 'toURL').as('toURL');
   });
 
   it('When a roofer creates a lead, he is redirected to the /annotator page after generating the image URL', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
@@ -52,11 +55,10 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.intercept('GET', '/accounts/**/areaPictures/**', areaPictures);
     cy.intercept('GET', '/accounts/**/files/**/raw');
 
-    cy.contains("Générer l’image").click();
+    cy.contains('Générer l’image').click();
   });
 
   it('Show error message on address image not found', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();
@@ -76,7 +78,7 @@ describe(specTitle("tester le fonctionnement de l'annotator"), () => {
 
     cy.intercept('PUT', `/accounts/**/areaPictures/**`, req => req.reply({ statusCode: 500 }));
 
-    cy.contains("Générer l’image").click();
+    cy.contains('Générer l’image').click();
     cy.contains("L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.");
     cy.contains('Fermer').click();
   });

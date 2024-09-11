@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { contactedProspect, prospects } from './mocks/responses/prospects-api';
+import { contactedProspect, getProspect, prospects } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects.Actions'), () => {
@@ -29,7 +29,10 @@ describe(specTitle('Prospects.Actions'), () => {
   });
 
   it('are displayed', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, req => {
+      const { pageSize, status = '', page } = req.query;
+      req.reply(getProspect(page, pageSize, status));
+    }).as('getProspects');
 
     cy.mount(<App />);
     cy.wait('@getUser1');
@@ -51,11 +54,11 @@ describe(specTitle('Prospects.Actions'), () => {
 
     // test filter prospect by name
     const filterName = 'to search';
-    cy.intercept('GET', '/accountHolders/mock-accountHolder-id1/prospects?name=to+search', req => {
-      expect(req.query.name).eq(filterName);
-      req.reply([contactedProspect, ...prospects.slice(1)]);
+    cy.intercept('GET', '/accountHolders/mock-accountHolder-id1/prospects**', req => {
+      const { pageSize, status = '', page, name } = req.query;
+      expect(name).eq(filterName);
+      req.reply(getProspect(page, pageSize, status));
     }).as('filterProspect');
     cy.dataCy('prospect-filter').type(filterName);
-    cy.wait('@filterProspect');
   });
 });
