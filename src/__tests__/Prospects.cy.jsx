@@ -4,13 +4,12 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { createProspect, getProspect, prospects } from './mocks/responses/prospects-api';
+import { getProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
-
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
