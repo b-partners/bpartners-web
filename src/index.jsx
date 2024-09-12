@@ -1,12 +1,11 @@
-import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import * as Sentry from '@sentry/browser';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
-  integrations: [new BrowserTracing()],
+  integrations: [Sentry.browserTracingIntegration()],
   tracesSampleRate: 1.0,
   environment: process.env.REACT_APP_SENTRY_ENV,
 });
