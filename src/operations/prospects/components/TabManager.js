@@ -7,10 +7,12 @@ const TabManager = ({ location, setTabIndex }) => {
     const tabValue = params.get('tab');
     if (tabValue === 'prospects') {
       return 0;
-    } else if (tabValue === 'configuration') {
+    } else if (tabValue === 'drafts') {
       return 1;
-    } else if (tabValue === 'administration') {
+    } else if (tabValue === 'configuration') {
       return 2;
+    } else if (tabValue === 'administration') {
+      return 3;
     } else {
       return 0;
     }

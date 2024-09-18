@@ -7,8 +7,11 @@ export const prospectingProvider: BpDataProviderType = {
     const { accountHolderId } = getCached.userInfo();
     return (await prospectingApi().getProspects(accountHolderId, searchName, undefined, status, _page, _perPage)).data;
   },
-  getOne: function (_id: string): Promise<any> {
-    throw new Error('Function not implemented.');
+  getOne: async function (id: string): Promise<any> {
+    const { accountHolderId } = getCached.userInfo();
+    return prospectingApi()
+      .getProspectById(accountHolderId, id)
+      .then(response => response.data);
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
     const { accountHolderId } = getCached.userInfo();

@@ -25,33 +25,47 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { ChangeEvent, useState } from 'react';
-import { SelectInput, TextInput, useRedirect } from 'react-admin';
+import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
+import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
 
-const SideBar = () => {
+export type SideBarProps = {
+  draftAnnotationId?: string;
+};
+
+const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
-  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
-  const annotationId = uuidV4();
+  const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
+  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
   const formState = useAnnotationsInfoForm(polygons);
 
-  const handleSubmitForms = formState.handleSubmit(async data => {
-    setIsLoading(true);
-    const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationId);
-    const isDraft = false;
-    const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationId, isDraft);
+  const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
+    const handleSubmitForms = formState.handleSubmit(async data => {
+      setIsLoading(true);
+      const annotationIdValue = draftAnnotationId || uuidV4();
 
-    await annotatorProvider.annotatePicture(pictureId, annotationId, requestBody);
-    setIsLoading(false);
-    clearPolygons();
-    redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationId}&showCreateQuote=true`);
-  });
+      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationIdValue);
+      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+      await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
+      setIsLoading(false);
+      clearPolygons();
+
+      if (isDraft) {
+        notify('resources.draftsAnnotations.creation.success', { type: 'success' });
+        redirect('/prospects?tab=drafts');
+        return;
+      }
+
+      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
+    });
+    handleSubmitForms(event);
+  };
 
   const removeAnnotation = (polygonId: string) => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
@@ -71,10 +85,10 @@ const SideBar = () => {
         <Box py={2}>
           {polygons.length > 0 ? (
             <FormProvider {...formState}>
-              <form onSubmit={handleSubmitForms}>
+              <form onSubmit={event => handleSubmitFormsWrapper(event, true)}>
                 {polygons.map((polygon, i) => {
                   return (
-                    <Box key={polygon.id}>
+                    <Box data-cy='annotation-info-item' key={polygon.id}>
                       <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                         <IconButton
                           aria-label='toggle polygon visibility'
@@ -105,6 +119,9 @@ const SideBar = () => {
                           <TextInput
                             name={`${i}.labelName`}
                             source={'labelName'}
+                            inputProps={{
+                              'data-cy': 'label-name-input',
+                            }}
                             label={'Nom du label'}
                             defaultValue={`Polygone ${Alphabet[i]}`}
                             helperText={false}
@@ -139,13 +156,21 @@ const SideBar = () => {
           </Dialog>
         )}
       </List>
-      <Stack sx={{ position: 'absolute', bottom: 30, width: '100%' }} spacing={2}>
+      <Stack sx={{ position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
         <BPButton
           type='submit'
-          data-testid='submit-annotator-form'
-          onClick={handleSubmitForms}
           isLoading={isLoading}
+          data-testid='submit-annotator-form'
+          onClick={event => handleSubmitFormsWrapper(event, false)}
           label='resources.annotator.save'
+          style={{ width: '100%' }}
+        />
+        <BPButton
+          type='submit'
+          isLoading={isLoading}
+          label='resources.draftsAnnotations.add'
+          data-testid='submit-draft-annotation'
+          onClick={event => handleSubmitFormsWrapper(event, true)}
           style={{ width: '100%' }}
         />
         <BPConstruction />
