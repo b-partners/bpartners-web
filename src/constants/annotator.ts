@@ -7,11 +7,16 @@ export const labels: Label[] = [
   { id: 'roof', name: 'Toit' },
   { id: 'velux', name: 'Velux' },
 ];
+
 export const covering = [
-  { id: 'tuiles', name: 'Tuiles' },
+  { id: 'tuiles-canal', name: 'Tuiles canal' },
+  { id: 'tuiles-plates', name: 'Tuiles plates' },
   { id: 'ardoise', name: 'Ardoise' },
   { id: 'beton', name: 'Béton' },
-  { id: 'autre', name: 'Autre' },
+  { id: 'bacacier', name: 'Bacacier' },
+  { id: 'bardeaux-bitumineux', name: 'Bardeaux bitumineux' },
+  { id: 'fibro-ciment', name: 'Fibro-ciment' },
+  { id: 'autres', name: 'Autres' },
 ];
 
 export const wear = [
