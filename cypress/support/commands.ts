@@ -44,7 +44,7 @@ const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${va
 const name = (value: string, additionalCommand = '') => cy.get(`[name="${value}"]${additionalCommand}`);
 
 const skipBankSynchronisation = () => {
-  const { status } = getCached.account();
+  const { status } = getCached.account() || {};
   if (status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS' || status === 'SCA_REQUIRED') {
     cy.contains('Mettez à jour votre banque');
     cy.contains('Plus tard').click();
