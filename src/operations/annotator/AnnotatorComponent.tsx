@@ -4,12 +4,21 @@ import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Point } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
+
+const centerMarker = (isExtended: boolean, markerPosition: Point) => {
+  if (!isExtended) return markerPosition;
+  const { x, y } = markerPosition;
+  return {
+    x: x + 1024,
+    y: y + 1024,
+  };
+};
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
@@ -75,7 +84,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
       )}
       {filename && (
         <AnnotatorCanvas
-          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && centerMarker(isExtended, markerPosition)}
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
