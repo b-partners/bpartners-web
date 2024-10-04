@@ -48,6 +48,8 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
+  console.log(markerPosition);
+
   return (
     <Box width='100%' height='580px' position='relative'>
       {allowSelect && (
