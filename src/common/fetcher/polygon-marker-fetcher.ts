@@ -18,7 +18,7 @@ const getImageSize = async (fileId: string) =>
     }
   });
 
-const defaultOffset = 1024 * 3;
+const defaultOffset = 256 * 1;
 const setMarkerOffset = (point: Point, isExtended: boolean) => {
   const { x, y } = point || {};
   let offset = 0;
