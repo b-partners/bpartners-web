@@ -1,5 +1,5 @@
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
-import { geojsonMapper, polygonConverterProvider, polygonMapper } from '@/providers';
+import { cache, geojsonMapper, getCached, polygonConverterProvider, polygonMapper } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
@@ -17,6 +17,18 @@ const getImageSize = async (fileId: string) =>
     }
   });
 
+const setMarkerOffset = (areaPictureDetails: AreaPictureDetails, currentImageSize: number) => {
+  const { imageSize, markerPosition } = getCached.initialMarker(areaPictureDetails.id) || {};
+  const { x, y } = markerPosition || {};
+
+  const offset = (currentImageSize - imageSize) / 2;
+
+  return {
+    x: x + offset,
+    y: y + offset,
+  };
+};
+
 export const usePolygonMarkerFetcher = () => {
   const mutation = useMutation({
     mutationKey: ['usePolygonMarkerFetcher'],
@@ -30,8 +42,16 @@ export const usePolygonMarkerFetcher = () => {
       } = areaPictureDetails;
       const image_size = await getImageSize(areaPictureDetails.fileId);
       const geoJson: ConverterPayloadGeoJSON = polygonMapper.toRest(areaPictureDetails.geoPositions, { filename, image_size, x_tile, y_tile, zoom });
-      return await polygonConverterProvider.coordinatesToPixel(geoJson);
+      const markerPoint = ((await polygonConverterProvider.coordinatesToPixel(geoJson)) || [null])[0];
+      const mappedPoint = geojsonMapper.toMarker(markerPoint)[0];
+      if (!areaPictureDetails.isExtended) {
+        cache.initialMarker(areaPictureDetails.id, mappedPoint, image_size);
+        return mappedPoint;
+      } else {
+        return setMarkerOffset(areaPictureDetails, image_size);
+      }
     },
   });
-  return { ...mutation, data: geojsonMapper.toMarker((mutation.data || [null])[0])[0] };
+
+  return { ...mutation, data: mutation.data };
 };
