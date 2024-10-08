@@ -1,6 +1,6 @@
 import { AnnotationInfo, AnnotationsInfo, NumberAsString, PolygonsForm } from '@/operations/annotator';
 import { Polygon } from '@bpartners/annotator-component';
-import { Account, AccountHolder, User, Whoami } from '@bpartners/typescript-client';
+import { Account, AccountHolder, Point, User, Whoami } from '@bpartners/typescript-client';
 
 const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';
@@ -14,6 +14,7 @@ const timeZoneItem = 'bp_time_zone';
 const calendarSyncItem = 'bp_calendar_sync_item';
 const polygonsItem = 'bp_polygons_item';
 const annotationsInfoItem = 'bp_annotations_info_item';
+const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 
 const cacheObject = <T>(key: string, value: T) => {
@@ -71,6 +72,10 @@ export const cache = {
     localStorage.setItem(bankReconnectionTime, date);
     return date;
   },
+  initialMarker(areaPictureId: string, point: Point, imageSize: number) {
+    const data = { point, imageSize };
+    return cacheObject(`${initialMarkerItem}_${areaPictureId}`, data);
+  },
 };
 
 export const getCached = {
@@ -121,6 +126,9 @@ export const getCached = {
   },
   bankReconnectionTime: () => {
     return localStorage.getItem(bankReconnectionTime);
+  },
+  initialMarker(areaPictureId: string) {
+    return getCachedObject(`${initialMarkerItem}_${areaPictureId}`);
   },
 };
 
