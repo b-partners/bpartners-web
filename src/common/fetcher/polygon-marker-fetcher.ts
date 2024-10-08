@@ -1,6 +1,5 @@
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
 import { cache, geojsonMapper, getCached, polygonConverterProvider, polygonMapper } from '@/providers';
-import { Point } from '@bpartners/annotator-component';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
