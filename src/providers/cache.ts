@@ -33,6 +33,11 @@ const getCachedObject = <T>(key: string): T => {
   return JSON.parse(valueAsString);
 };
 
+type TInitialMarkerInfo = {
+  markerPosition: Point;
+  imageSize: number;
+};
+
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
@@ -72,9 +77,9 @@ export const cache = {
     localStorage.setItem(bankReconnectionTime, date);
     return date;
   },
-  initialMarker(areaPictureId: string, point: Point, imageSize: number) {
-    const data = { point, imageSize };
-    return cacheObject(`${initialMarkerItem}_${areaPictureId}`, data);
+  initialMarker(areaPictureId: string, markerPosition: Point, imageSize: number) {
+    const data = { markerPosition, imageSize };
+    return cacheObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`, data);
   },
 };
 
@@ -128,7 +133,7 @@ export const getCached = {
     return localStorage.getItem(bankReconnectionTime);
   },
   initialMarker(areaPictureId: string) {
-    return getCachedObject(`${initialMarkerItem}_${areaPictureId}`);
+    return getCachedObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`);
   },
 };
 
