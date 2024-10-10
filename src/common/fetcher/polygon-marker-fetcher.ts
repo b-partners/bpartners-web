@@ -27,7 +27,7 @@ const setMarkerOffset = (areaPictureDetails: AreaPictureDetails, currentImageSiz
   const horizontalShift = (areaPictureDetails.shiftNb || 0) * defaultImageShiftSize;
 
   return {
-    x: x + offset + horizontalShift,
+    x: x + offset - horizontalShift,
     y: y + offset,
   };
 };
