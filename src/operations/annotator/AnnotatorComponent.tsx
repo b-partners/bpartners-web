@@ -6,14 +6,15 @@ import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { ArrowLeft, ArrowRight, ZoomIn, ZoomInMap, ZoomOut } from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
+import { annotatorButtonsActions } from './components';
 import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
+
 const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
 const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
@@ -87,39 +88,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
-          buttonsComponent={({ scaleDown, scaleReste, scaleUp }) => (
-            <Stack direction='row' gap={2}>
-              <Tooltip onClick={scaleUp} title='Zoom +'>
-                <IconButton>
-                  <ZoomIn />
-                </IconButton>
-              </Tooltip>
-              <Tooltip onClick={scaleReste} title='Reset'>
-                <IconButton>
-                  <ZoomInMap />
-                </IconButton>
-              </Tooltip>
-              <Tooltip onClick={scaleDown} title='Zoom -'>
-                <IconButton>
-                  <ZoomOut />
-                </IconButton>
-              </Tooltip>
-              {areaPictureDetailsMutated?.isExtended && (
-                <>
-                  <Tooltip onClick={() => shiftImage(-1)} title="Décaler l'image vers le gauche">
-                    <IconButton>
-                      <ArrowLeft />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip onClick={() => shiftImage(+1)} title="Décaler l'image vers la droite">
-                    <IconButton>
-                      <ArrowRight />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              )}
-            </Stack>
-          )}
+          buttonsComponent={annotatorButtonsActions(shiftImage, !!areaPictureDetailsMutated?.isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}
