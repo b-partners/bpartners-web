@@ -122,6 +122,7 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
                             inputProps={{
                               'data-cy': 'label-name-input',
                             }}
+                            onClick={e => e.stopPropagation()}
                             label={'Nom du label'}
                             defaultValue={`Polygone ${Alphabet[i]}`}
                             helperText={false}
