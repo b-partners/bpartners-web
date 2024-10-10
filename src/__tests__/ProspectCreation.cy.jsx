@@ -170,12 +170,14 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Attention! Toutes les annotations seront tous supprimé.');
     cy.contains('Confirmer').click();
 
+    cy.get('[aria-label="Zoom +"]').click()
+    cy.get('[aria-label="Zoom +"]').click()
+
     // Draw annotation
     cy.get('[data-cy="annotator-canvas-cursor"]').click(600, 200, { force: true });
     cy.get('[data-cy="annotator-canvas-cursor"]').click(700, 200, { force: true });
     cy.get('[data-cy="annotator-canvas-cursor"]').click(700, 300, { force: true });
     cy.get('[data-cy="annotator-canvas-cursor"]').click(600, 200, { force: true });
-    cy.get('[data-cy="annotator-canvas-cursor"]').click(700, 200, { force: true });
 
     // change label
     cy.get('[data-cy="label-name-input"]').clear().type('New Label');
