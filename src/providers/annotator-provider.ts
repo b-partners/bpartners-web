@@ -13,10 +13,8 @@ export const annotatorProvider = {
   async getPictureFormAddress(pictureId: string, crupdateAreaPictureDetails: CrupdateAreaPictureDetails) {
     const { accountId } = getCached.userInfo();
     const { data } = await areaPictureApi().crupdateAreaPictureDetails(accountId, pictureId, {
-      ...crupdateAreaPictureDetails,
-      shiftRight: false,
-      shiftLeft: false,
       shiftNb: 0,
+      ...crupdateAreaPictureDetails,
     } as any);
     return data;
   },
