@@ -5,18 +5,12 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureDetails, AreaPictureMapLayer } from '@bpartners/typescript-client';
+import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { ArrowLeft, ArrowRight, ZoomIn, ZoomInMap, ZoomOut } from '@mui/icons-material';
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { FC } from 'react';
 import { RefocusDialog } from './RefocusDialog';
 import { AnnotatorComponentProps } from './types';
-
-const defaultShiftProperty: Pick<AreaPictureDetails, 'shiftNb' | 'leftShift' | 'rightShift'> = {
-  leftShift: false,
-  rightShift: false,
-  shiftNb: undefined,
-};
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
