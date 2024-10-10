@@ -8,8 +8,7 @@ import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
-import { annotatorButtonsActions } from './components';
-import { RefocusDialog } from './RefocusDialog';
+import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
@@ -27,6 +26,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   const {
     filename,
     isExtended,
+    shiftNb,
     zoom: { level: newZoomLevel, number: newZoomLevelAsNumber },
     actualLayer: layer,
     otherLayers,
@@ -47,8 +47,8 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   };
 
   const shiftImage = (shift: number) => {
-    if (areaPictureDetailsMutated.isExtended) {
-      mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (areaPictureDetailsMutated.shiftNb || 0) + shift });
+    if (isExtended) {
+      mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       setPolygons([]);
     }
   };
@@ -79,7 +79,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
             getOptionLabel={(option: AreaPictureMapLayer) => `${option.name} ${option.year} ${option.precisionLevelInCm}cm`}
             label="Source d'image"
           />
-          <RefocusDialog onAccept={refocusImgClick} disabled={isExtended} />
+          <RefocusImageButton onAccept={refocusImgClick} isExtended={isExtended} />
         </Stack>
       )}
       {filename && (
@@ -88,7 +88,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
-          buttonsComponent={annotatorButtonsActions(shiftImage, !!areaPictureDetailsMutated?.isExtended)}
+          buttonsComponent={annotatorButtonsActions(shiftImage, isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}

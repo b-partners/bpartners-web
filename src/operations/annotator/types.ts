@@ -23,10 +23,10 @@ export type AnnotationsInfo = Record<`${number}`, AnnotationInfo>;
 
 export type NumberAsString = `${number}`;
 
-export type RefocusDialogProps = {
+export type RefocusImageButtonProps = {
   onAccept: () => void;
   isLoading?: boolean;
-  disabled?: boolean;
+  isExtended?: boolean;
 };
 
 export type AnnotationInfoProps = {
