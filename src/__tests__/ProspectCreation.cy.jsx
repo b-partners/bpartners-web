@@ -87,11 +87,11 @@ describe(specTitle('Prospects'), () => {
       };
       expect(request.body).to.deep.equal(expectedPayload);
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
-      const { url } = request;
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, req => {
+      const { url } = req;
       fileId = PathVariable.getFileId(url);
+      req.reply({ fixture: 'test-annotator-image.jpeg' });
     });
-
     // should be in the annotator page
     cy.contains('x : 0');
     cy.contains('y : 0');
@@ -112,11 +112,12 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@createImageToAnnotate2').then(({ request }) => {
       expect(request.body.zoomLevel).to.equal('BUILDING');
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, request => {
       const { url } = request;
       const newFileId = PathVariable.getFileId(url);
       expect(fileId).not.equal(newFileId);
       fileId = newFileId;
+      request.reply({ fixture: 'test-annotator-image.jpeg' });
     });
 
     // change image source
@@ -127,11 +128,12 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@createImageToAnnotate3').then(({ request }) => {
       expect(request.body.layerId).to.equal('2cb589c1-45b0-4cb8-b84e-f1ed40e97bd8');
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, request => {
       const { url } = request;
       const newFileId = PathVariable.getFileId(url);
       expect(fileId).not.equal(newFileId);
       fileId = newFileId;
+      request.reply({ fixture: 'test-annotator-image.jpeg' });
     });
 
     // Check if all the fields have been properly updated.
@@ -170,8 +172,8 @@ describe(specTitle('Prospects'), () => {
     cy.contains('Attention! Toutes les annotations seront tous supprimé.');
     cy.contains('Confirmer').click();
 
-    cy.get('[aria-label="Zoom +"]').click()
-    cy.get('[aria-label="Zoom +"]').click()
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
 
     // Draw annotation
     cy.get('[data-cy="annotator-canvas-cursor"]').click(600, 200, { force: true });
