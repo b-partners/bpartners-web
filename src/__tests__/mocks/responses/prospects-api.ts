@@ -149,8 +149,6 @@ export const createdProspect = {
   name: 'Johnson',
   status: 'TO_CONTACT',
   defaultComment: 'create comment',
-  invoiceID: 'invoice-DRAFT-1-id',
-  contractAmount: '91',
 };
 
 export const createProspect = (number: number, status?: ProspectStatus) => {
