@@ -8,11 +8,12 @@ import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
-import { RefocusDialog } from './RefocusDialog';
+import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
+
 const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
 const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
@@ -25,6 +26,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   const {
     filename,
     isExtended,
+    shiftNb,
     zoom: { level: newZoomLevel, number: newZoomLevelAsNumber },
     actualLayer: layer,
     otherLayers,
@@ -44,11 +46,16 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     setPolygons([]);
   };
 
+  const shiftImage = (shift: number) => {
+    if (isExtended) {
+      mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
+      setPolygons([]);
+    }
+  };
+
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
-
-  console.log(markerPosition);
 
   return (
     <Box width='100%' height='580px' position='relative'>
@@ -72,7 +79,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
             getOptionLabel={(option: AreaPictureMapLayer) => `${option.name} ${option.year} ${option.precisionLevelInCm}cm`}
             label="Source d'image"
           />
-          <RefocusDialog onAccept={refocusImgClick} disabled={isExtended} />
+          <RefocusImageButton onAccept={refocusImgClick} isExtended={isExtended} />
         </Stack>
       )}
       {filename && (
@@ -81,6 +88,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
+          buttonsComponent={annotatorButtonsActions(shiftImage, isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}

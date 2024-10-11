@@ -1,6 +1,6 @@
+import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import App from '@/App';
 import { Redirect, Reload } from '../common/utils';
 import {
   accountHolders1,
@@ -46,7 +46,7 @@ describe(specTitle('Prospects'), () => {
   });
 
   it.skip('should create a TO_CONTACT prospect', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, prospects).as('getProspects');
 
     cy.intercept('PUT', `/accountHolders/mock-accountHolder-id1/prospects`, req => {
       const response = req.body;
@@ -60,9 +60,9 @@ describe(specTitle('Prospects'), () => {
     cy.get('[name="prospects"]').click();
 
     cy.wait('@getProspects');
-    cy.get('.css-69i1ev > .MuiButtonBase-root').click();
+    cy.contains('Ajouter un prospect').click();
 
-    cy.contains('Créer').click();
+    cy.contains('Générer l’image').click();
     cy.contains('Ce champ est requis');
 
     cy.get('[data-testid="email-field-input"] > .MuiInputBase-root').type(createdProspect.email);
@@ -72,12 +72,7 @@ describe(specTitle('Prospects'), () => {
     cy.get('[data-testid="firstName-field-input"] > .MuiInputBase-root').type(createdProspect.firstName);
     cy.get('[data-testid="defaultComment-field-input"] > .MuiInputBase-root').type(createdProspect.defaultComment);
 
-    cy.get('[data-testid="autocomplete-backend-for-invoice"] > .MuiFormControl-root > .MuiInputBase-root').click();
-    cy.contains('invoice-title-1').click();
-
-    cy.get('[data-testid="contractAmount-field-input"] > .MuiInputBase-root').type('91');
-
-    cy.contains('Créer').click();
+    cy.contains('Générer l’image').click();
 
     cy.wait('@createProspect');
     cy.contains('Prospect créé avec succès !');
@@ -88,14 +83,15 @@ describe(specTitle('Prospects'), () => {
         filename: `Layer ${createdProspect.address}`,
         zoomLevel: 'HOUSES_0',
         prospectId: request.body.prospectId,
+        shiftNb: 0,
       };
       expect(request.body).to.deep.equal(expectedPayload);
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
-      const { url } = request;
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, req => {
+      const { url } = req;
       fileId = PathVariable.getFileId(url);
+      req.reply({ fixture: 'test-annotator-image.jpeg' });
     });
-
     // should be in the annotator page
     cy.contains('x : 0');
     cy.contains('y : 0');
@@ -116,11 +112,12 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@createImageToAnnotate2').then(({ request }) => {
       expect(request.body.zoomLevel).to.equal('BUILDING');
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, request => {
       const { url } = request;
       const newFileId = PathVariable.getFileId(url);
       expect(fileId).not.equal(newFileId);
       fileId = newFileId;
+      request.reply({ fixture: 'test-annotator-image.jpeg' });
     });
 
     // change image source
@@ -131,11 +128,12 @@ describe(specTitle('Prospects'), () => {
     cy.wait('@createImageToAnnotate3').then(({ request }) => {
       expect(request.body.layerId).to.equal('2cb589c1-45b0-4cb8-b84e-f1ed40e97bd8');
     });
-    cy.wait('@getAddressImage').then(({ request }) => {
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=dummy&fileType=AREA_PICTURE`, request => {
       const { url } = request;
       const newFileId = PathVariable.getFileId(url);
       expect(fileId).not.equal(newFileId);
       fileId = newFileId;
+      request.reply({ fixture: 'test-annotator-image.jpeg' });
     });
 
     // Check if all the fields have been properly updated.
@@ -143,13 +141,39 @@ describe(specTitle('Prospects'), () => {
     cy.contains('tous_fr 0 20cm');
 
     // Refocus the image.
-    cy.get('[data-testid="center-img-btn"]').click();
-    cy.contains("Recentrer l'image");
+    cy.contains("Recentrer l'image").click();
     cy.contains('Attention! Toutes les annotations seront tous supprimé.');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/**`, areaPicturesBuildingZoomTousFrLayerExtended);
-    cy.get('.MuiDialogActions-root > .MuiButton-contained').click();
-    cy.get('@reload').should('have.been.calledOnce');
-    cy.get('[data-testid="center-img-btn"]').should('be.disabled');
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/areaPictures/**`, areaPicturesBuildingZoomTousFrLayerExtended);
+    cy.contains('Confirmer').click();
+
+    // Check is isExtended had an effect
+    cy.contains("Réinitialiser l'image");
+    cy.get(`[aria-label="Décaler l'image vers la droite"]`).should('exist');
+    cy.get(`[aria-label="Décaler l'image vers la gauche"]`).should('exist');
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/areaPictures/**`, req => {
+      expect(req.body.shiftNb).to.eq(-1);
+      req.reply({ ...areaPicturesBuildingZoomTousFrLayerExtended, shiftNb: -1 });
+    });
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/**`, { ...areaPicturesBuildingZoomTousFrLayerExtended, shiftNb: -1 });
+    cy.get(`[aria-label="Décaler l'image vers la droite"]`).click();
+    cy.contains('Attention! Toutes les annotations seront tous supprimé.');
+    cy.contains('Confirmer').click();
+
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/areaPictures/**`, req => {
+      expect(req.body.shiftNb).to.eq(0);
+      req.reply({ ...areaPicturesBuildingZoomTousFrLayerExtended, shiftNb: 0 });
+    });
+    cy.get(`[aria-label="Décaler l'image vers la droite"]`).should('exist');
+    cy.get(`[aria-label="Décaler l'image vers la gauche"]`).should('exist');
+
+    cy.get(`[aria-label="Décaler l'image vers la gauche"]`).click();
+    cy.contains('Attention! Toutes les annotations seront tous supprimé.');
+    cy.contains('Confirmer').click();
+
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
 
     // Draw annotation
     cy.get('[data-cy="annotator-canvas-cursor"]').click(600, 200, { force: true });
@@ -158,29 +182,34 @@ describe(specTitle('Prospects'), () => {
     cy.get('[data-cy="annotator-canvas-cursor"]').click(600, 200, { force: true });
 
     // change label
-    cy.get('#labelType').click();
-    cy.contains('Toit').click();
+    cy.get('[data-cy="label-name-input"]').clear().type('New Label');
+    cy.get('[name="0.covering"]').parent().click();
+
+    cy.contains('Tuiles plates');
+    cy.contains('Tuiles canal');
+    cy.contains('Béton');
+    cy.contains('Ardoise');
+    cy.contains('Bardeaux bitumineux');
+    cy.contains('Bacacier');
+    cy.contains('Autres');
+    cy.contains('Fibro-ciment').click();
 
     cy.contains('Surface');
 
-    // specify covering
-    cy.get('#covering').click();
-    cy.contains('Béton').click();
-
     // specify slope
-    cy.get('#demo-simple-select').click();
+    cy.get('[name="0.slope"]').parent().click();
     cy.get("img[aria-label='Pente 1/12']").click();
 
     // specify wear
-    cy.get('#wear').click();
+    cy.get('[name="0.wear"]').parent().click();
     cy.contains('1. Minime').click();
 
     // specify wearLevel
-    cy.get('#wearLevel').click();
+    cy.get('[name="0.wearLevel"]').parent().click();
     cy.contains('10').click();
 
     // specify moldRate
-    cy.get('#moldRate').click(0);
+    cy.get('[name="0.moldRate"]').parent().click();
     cy.contains('50').click();
 
     cy.get('[data-testid="ExpandMoreIcon"]').click();

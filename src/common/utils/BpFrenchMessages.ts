@@ -21,6 +21,12 @@ export const BpFrenchMessages = {
         clientToProspect: 'Remettre ce client en prospect',
       },
     },
+    confirmationMessages: {
+      shiftRight: "Cette action décalé l'image de 256px vers la droite.",
+      shiftLeft: "Cette action décalé l'image de 256px vers la gauche.",
+      refocusImage: "Cette action va agrandir la zone couverte par l'image.",
+      resetRefocusImage: "Cette action va réinitialiser la position de l'image à son état d'origine.",
+    },
   },
   resources: {
     draftsAnnotations: {
@@ -28,12 +34,6 @@ export const BpFrenchMessages = {
       finish: 'Finaliser le brouillon',
       creation: {
         success: 'Brouillon sauvegardé avec succès !',
-      },
-    },
-    annotation: {
-      text: {
-        refocusImage: "Cette action va agrandir la zone couverte par l'image.",
-        resetRefocusImage: "Cette action va réinitialiser la position de l'image à son état d'origine.",
       },
     },
     products: {

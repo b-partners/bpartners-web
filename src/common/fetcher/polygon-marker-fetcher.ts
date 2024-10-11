@@ -4,6 +4,8 @@ import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
 
+const defaultImageShiftSize = 256;
+
 const getImageSize = async (fileId: string) =>
   new Promise<number>((resolve, reject) => {
     try {
@@ -22,9 +24,10 @@ const setMarkerOffset = (areaPictureDetails: AreaPictureDetails, currentImageSiz
   const { x, y } = markerPosition || {};
 
   const offset = (currentImageSize - imageSize) / 2;
+  const horizontalShift = (areaPictureDetails.shiftNb || 0) * defaultImageShiftSize;
 
   return {
-    x: x + offset,
+    x: x + offset - horizontalShift,
     y: y + offset,
   };
 };
