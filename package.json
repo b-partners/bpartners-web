@@ -68,9 +68,9 @@
     "start": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "cypress run --spec './**/!(*.it).cy.{js,jsx,tsx}' --component ",
-    "it": "cypress run --spec 'src/__tests__/it/*.it.cy.{js,jsx}' --config video=true --component ",
-    "cy:open": "cypress open --component",
+    "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --spec './**/!(*.it).cy.{js,jsx,tsx}' --component ",
+    "it": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --spec 'src/__tests__/it/*.it.cy.{js,jsx}' --config video=true --component ",
+    "cy:open": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress open --component",
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\""
