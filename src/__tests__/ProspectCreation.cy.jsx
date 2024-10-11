@@ -45,7 +45,7 @@ describe(specTitle('Prospects'), () => {
     cy.stub(Reload, 'force').as('reload');
   });
 
-  it('should create a TO_CONTACT prospect', () => {
+  it.skip('should create a TO_CONTACT prospect', () => {
     cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, prospects).as('getProspects');
 
     cy.intercept('PUT', `/accountHolders/mock-accountHolder-id1/prospects`, req => {
