@@ -45,12 +45,12 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
       </Tooltip>
       {showShiftButtons && (
         <>
-          <Tooltip onClick={() => handleShift(true)} title="Décaler l'image vers la gauche">
+          <Tooltip onClick={() => handleShift(false)} title="Décaler l'image vers la gauche">
             <IconButton>
               <ArrowLeftIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={() => handleShift(false)} title="Décaler l'image vers la droite">
+          <Tooltip onClick={() => handleShift(true)} title="Décaler l'image vers la droite">
             <IconButton>
               <ArrowRightIcon />
             </IconButton>
