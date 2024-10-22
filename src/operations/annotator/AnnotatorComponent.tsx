@@ -3,8 +3,9 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
+import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
@@ -53,6 +54,11 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     }
   };
 
+  const measurementMapper = (measurement: Measurement): Measurement => {
+    if (!isExtended) return measurement;
+    return { ...measurement, value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH) };
+  };
+
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
@@ -92,6 +98,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}
+          measurementMapper={measurementMapper}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
