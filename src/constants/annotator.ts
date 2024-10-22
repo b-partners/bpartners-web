@@ -33,5 +33,5 @@ export const wearTranslation = {
   EXTREME: 'Extrême',
 };
 
-export const MEASUREMENT_MAP_ON_EXTENDED_AREA = 9;
-export const MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 3;
+export const MEASUREMENT_MAP_ON_EXTENDED_AREA = 49;
+export const MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 7;
