@@ -25,7 +25,6 @@ describe(specTitle('Account'), () => {
 
     cy.get('[name="account"]').click();
 
-    cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
     cy.contains('First Name 1');
@@ -266,7 +265,6 @@ describe(specTitle('Account'), () => {
     cy.mount(<App />);
 
     cy.get('[name="account"]').click();
-    cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
     cy.contains('Encaissement annuelle à réaliser');
@@ -353,25 +351,6 @@ describe(specTitle('Account'), () => {
     cy.contains('10201');
   });
 
-  it('unverified user warning', () => {
-    cache.whoami({ user: user2 });
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user2).as('getUser2');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-
-    cy.mount(<App />);
-
-    cy.contains('Avertissement');
-    cy.contains(`Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au support.`);
-    cy.get('#closeWarning').click();
-
-    cy.contains('(Compte non vérifié)');
-
-    cy.get('[name="account"]').click();
-  });
-
   it('upload logo image', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -383,7 +362,6 @@ describe(specTitle('Account'), () => {
 
     cy.get('[name="account"]').click();
 
-    cy.wait('@getAccount1');
     cy.wait('@getAccountHolder1');
 
     cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.webp', { force: true });

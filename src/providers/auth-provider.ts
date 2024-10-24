@@ -35,7 +35,8 @@ export const whoami = async (): Promise<any> => {
   const { data } = await securityApi.whoami();
   cache.whoami(data);
 
-  await cacheAccounts();
+  const unapprovedFiles = getCached.unapprovedFiles();
+  if ((unapprovedFiles || 1) === 0) await cacheAccounts();
   return data;
 };
 
@@ -49,8 +50,8 @@ const paramIsTemporaryPassword = 't';
 const paramUsername = 'u';
 const paramTemporaryPassword = 'p';
 
-const toBase64 = (param: string) => Buffer.from(param).toString('base64');
-const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii');
+const toBase64 = (param: string) => btoa(param);
+const fromBase64 = (param: string) => atob(param);
 
 export const authProvider = {
   // --------------------- ra functions -------------------------------------------
@@ -67,8 +68,8 @@ export const authProvider = {
       });
 
       if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
-        const encodedUsername = encodeURIComponent(toBase64(username as string));
-        const encodedPassword = encodeURIComponent(toBase64(password as string));
+        const encodedUsername = encodeURIComponent(toBase64(username));
+        const encodedPassword = encodeURIComponent(toBase64(password));
         return `/login?${paramIsTemporaryPassword}=true&${paramUsername}=${encodedUsername}&${paramTemporaryPassword}=${encodedPassword}`;
       }
       await whoami();
@@ -88,7 +89,7 @@ export const authProvider = {
   checkError: ({ status }: any): Promise<any> => {
     const unapprovedFiles = getCached.unapprovedFiles();
 
-    if ((status === 401 || status === 403) && (!unapprovedFiles || unapprovedFiles === 0)) {
+    if ((status === 401 || status === 403) && (unapprovedFiles || 0) === 0) {
       return Promise.reject({ message: false });
     } else if (status === 200) {
       return Promise.resolve();
@@ -117,10 +118,12 @@ export const authProvider = {
   setNewPassword: async (newPassword: string, _phoneNumber: string): Promise<void> => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
-    const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
-    await awsAuth.signIn({ username, password: temporaryPassword });
-    await awsAuth.updatePassword({ oldPassword: temporaryPassword, newPassword });
+    const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername)));
+    const oldPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword)));
+    await awsAuth.signIn({ username, password: oldPassword });
+    await awsAuth.confirmSignIn({ challengeResponse: newPassword });
+    await awsAuth.signOut();
+    cache.unapprovedFiles(1);
     window.location.replace('/');
   },
 };
