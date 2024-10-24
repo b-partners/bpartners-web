@@ -1,6 +1,6 @@
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
-import { authProvider, awsAuth, getCached } from '../../src/providers';
+import { authProvider, awsAuth } from '../../src/providers';
 
 const sessionStub = {
   tokens: {
@@ -44,11 +44,15 @@ const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${va
 const name = (value: string, additionalCommand = '') => cy.get(`[name="${value}"]${additionalCommand}`);
 
 const skipBankSynchronisation = () => {
-  const { status } = getCached.account() || {};
-  if (status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS' || status === 'SCA_REQUIRED') {
-    cy.contains('Mettez à jour votre banque');
-    cy.contains('Plus tard').click();
-  }
+  cy.intercept('/users/*/accounts').as('getAccount');
+  cy.wait('@getAccount').then(request => {
+    const accountStatus = request?.response?.body[0].status;
+    console.log(accountStatus);
+    if (accountStatus === 'VALIDATION_REQUIRED' || accountStatus === 'INVALID_CREDENTIALS' || accountStatus === 'SCA_REQUIRED') {
+      cy.contains('Mettez à jour votre banque');
+      cy.contains('Plus tard').click();
+    }
+  });
 };
 
 declare global {
