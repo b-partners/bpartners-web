@@ -1,13 +1,14 @@
 import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
 import { awsAuth, awsConfig } from './aws-config';
 import { cache, clearCache, getCached } from './cache';
 import { profileProvider } from './profile-provider';
 
-Amplify.configure(awsConfig);
+Amplify.configure(awsConfig, { ssr: true });
 
 const cacheAccounts = async () => {
   // if there is not account or account holder in the local storage,
@@ -49,8 +50,8 @@ const paramIsTemporaryPassword = 't';
 const paramUsername = 'u';
 const paramTemporaryPassword = 'p';
 
-const toBase64 = (param: string) => Buffer.from(param).toString('base64');
-const fromBase64 = (param: string) => Buffer.from(param, 'base64').toString('ascii');
+const toBase64 = (param: string) => btoa(param);
+const fromBase64 = (param: string) => atob(param);
 
 export const authProvider = {
   // --------------------- ra functions -------------------------------------------
@@ -66,14 +67,18 @@ export const authProvider = {
         },
       });
 
+      console.log(user);
+
       if (user.nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
-        const encodedUsername = encodeURIComponent(toBase64(username as string));
-        const encodedPassword = encodeURIComponent(toBase64(password as string));
+        const encodedUsername = encodeURIComponent(toBase64(username));
+        const encodedPassword = encodeURIComponent(toBase64(password));
         return `/login?${paramIsTemporaryPassword}=true&${paramUsername}=${encodedUsername}&${paramTemporaryPassword}=${encodedPassword}`;
       }
       await whoami();
       return loginRedirectionUrls.successUrl;
     } catch (error) {
+      console.log(error);
+
       return loginRedirectionUrls.failureUrl;
     }
   },
@@ -117,10 +122,11 @@ export const authProvider = {
   setNewPassword: async (newPassword: string, _phoneNumber: string): Promise<void> => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername) as string)) as string;
-    const temporaryPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword) as string)) as string;
-    await awsAuth.signIn({ username, password: temporaryPassword });
-    await awsAuth.updatePassword({ oldPassword: temporaryPassword, newPassword });
+    const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername)));
+    const oldPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword)));
+    await awsAuth.signIn({ username, password: oldPassword });
+
+    await awsAuth.updatePassword({ newPassword, oldPassword });
     window.location.replace('/');
   },
 };
