@@ -1,4 +1,4 @@
-import { confirmResetPassword, fetchAuthSession, resetPassword, signIn, signOut, updatePassword } from '@aws-amplify/auth';
+import { confirmResetPassword, confirmSignIn, fetchAuthSession, resetPassword, signIn, signOut, updatePassword } from '@aws-amplify/auth';
 export const awsConfig = {
   aws_project_region: process.env.REACT_APP_AWS_REGION,
   aws_cognito_region: process.env.REACT_APP_AWS_REGION,
@@ -25,4 +25,5 @@ export const awsAuth = {
   updatePassword,
   resetPassword,
   confirmResetPassword,
+  confirmSignIn,
 };
