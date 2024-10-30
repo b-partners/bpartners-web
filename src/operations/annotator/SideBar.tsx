@@ -8,7 +8,7 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { labels } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
-import { clearPolygons } from '@/providers';
+import { cache, clearPolygons, getCached } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import {
@@ -71,6 +71,8 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) =
 
   const removeAnnotation = (polygonId: string) => {
     setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
+    const newAnnotationInfo = getCached.annotationsInfoList().filter((info: AnnotationInfo) => info.polygonId !== polygonId);
+    cache.annotationsInfo(newAnnotationInfo);
   };
 
   const togglePolygonVisibility = (polygonId: string) => {
@@ -171,6 +173,7 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) =
         <BPButton
           type='submit'
           isLoading={isLoading}
+          disabled={isLoading || polygons.length === 0}
           label='resources.draftsAnnotations.add'
           data-testid='submit-draft-annotation'
           onClick={event => handleSubmitFormsWrapper(event, true)}

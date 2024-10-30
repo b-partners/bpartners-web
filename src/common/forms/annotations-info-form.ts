@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { AnnotationInfo, NumberAsString } from '@/operations/annotator';
 import { cache, getCached } from '@/providers';
-import { Polygon } from '@bpartners/typescript-client';
+import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -20,7 +20,7 @@ const defaultAnnotationInfo: AnnotationInfo = {
 };
 
 export const useAnnotationsInfoForm = (polygons: Polygon[] = [], annotationInfo: AnnotationInfo[] | undefined) => {
-  const defaultValues = polygons.map(() => defaultAnnotationInfo);
+  const defaultValues = polygons.map(polygon => ({ ...defaultAnnotationInfo, polygonId: polygon.id }) as AnnotationInfo);
   const form = useForm<AnnotationInfo[]>({ defaultValues: annotationInfo ?? defaultValues });
 
   useEffect(() => {

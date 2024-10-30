@@ -48,22 +48,25 @@ const AnnotatorWithDraftAnnotation = () => {
   } = useRetrievePolygons(async areaPictureId => {
     return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
   });
-  const cachedPolygons = useMemo(() => getCached.polygons() || [], [getCached]);
-  const defaultPolygons = cachedPolygons.length > 0 ? cachedPolygons : draftsPolygons;
   const { annotations: annotationInstances = [] } = annotations;
+  const cachedPolygons = useMemo(() => getCached.polygons() || [], [getCached]);
+  const cachedAnnotationInfo = useMemo(() => getCached.annotationsInfoList(), [getCached]);
   const draftAnnotationInfo = useMemo(
     () => annotationInstances.map(annotationInstance => mapAreaAnnotationInstanceToAnnotationInfo(annotationInstance)),
-    [annotations?.id, defaultPolygons]
+    [annotations?.id, draftsPolygons]
   );
+
+  const defaultPolygons = cachedPolygons.length > 0 ? cachedPolygons : draftsPolygons;
+  const defaultAnnotationInfo = cachedAnnotationInfo.length > 0 ? cachedAnnotationInfo : draftAnnotationInfo;
 
   useLayoutEffect(() => {
     if (defaultPolygons.length > 0) {
-      cache.polygons(draftsPolygons as Polygon[]);
-      cache.annotationsInfo(draftAnnotationInfo);
+      cache.polygons(defaultPolygons as Polygon[]);
+      cache.annotationsInfo(defaultAnnotationInfo);
     }
   }, [annotations.id, defaultPolygons, cache]);
 
-  if (isLoading || defaultPolygons.length === 0 || draftAnnotationInfo.length === 0) {
+  if (isLoading || defaultPolygons.length === 0 || defaultAnnotationInfo.length === 0) {
     return <BPLoader message="Chargement des brouillons d'annotation" />;
   }
 

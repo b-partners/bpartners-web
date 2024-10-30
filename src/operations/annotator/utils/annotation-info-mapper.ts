@@ -5,6 +5,7 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
   const { metadata = {}, labelName = '', labelType = '' } = annotationInstance;
   const { fillColor = '', strokeColor = '', comment = '', covering = '', wearLevel = 0, slope = 0, wearness = null, moldRate = 0, obstacle = '' } = metadata;
   return {
+    polygonId: annotationInstance.id,
     labelType,
     covering,
     slope,
