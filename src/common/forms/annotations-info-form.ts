@@ -19,9 +19,9 @@ const defaultAnnotationInfo: AnnotationInfo = {
   strokeColor: '',
 };
 
-export const useAnnotationsInfoForm = (polygons: Polygon[] = []) => {
+export const useAnnotationsInfoForm = (polygons: Polygon[] = [], annotationInfo: AnnotationInfo[] | undefined) => {
   const defaultValues = polygons.map(() => defaultAnnotationInfo);
-  const form = useForm<AnnotationInfo[]>({ defaultValues });
+  const form = useForm<AnnotationInfo[]>({ defaultValues: annotationInfo ?? defaultValues });
 
   useEffect(() => {
     const cachedDefaultAnnotationInfo = getCached.annotationsInfo();

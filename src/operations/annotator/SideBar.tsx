@@ -30,12 +30,14 @@ import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
+import { AnnotationInfo } from './types';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
+  draftAnnotationInfo?: AnnotationInfo[];
 };
 
-const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
+const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -43,7 +45,7 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
-  const formState = useAnnotationsInfoForm(polygons);
+  const formState = useAnnotationsInfoForm(polygons, draftAnnotationInfo);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async data => {

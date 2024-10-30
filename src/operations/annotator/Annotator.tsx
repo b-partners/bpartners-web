@@ -7,18 +7,20 @@ import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annota
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Grid, Stack } from '@mui/material';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useLayoutEffect, useMemo } from 'react';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import AnnotatorComponent from './AnnotatorComponent';
-import SideBar from './SideBar';
+import SideBar, { SideBarProps } from './SideBar';
+import { mapAreaAnnotationInstanceToAnnotationInfo } from './utils/annotation-info-mapper';
 
 const Annotator = () => {
   const { useDrafts = false } = parseUrlParams();
   return useDrafts ? <AnnotatorWithDraftAnnotation /> : <AnnotatorBaseContent />;
 };
 
-const AnnotatorBaseContent: FC<Pick<CanvasAnnotationContextProviderProps, 'defaultPolygons'> & { draftAnnotationId?: string }> = ({
+const AnnotatorBaseContent: FC<Pick<CanvasAnnotationContextProviderProps, 'defaultPolygons'> & SideBarProps> = ({
   defaultPolygons,
+  draftAnnotationInfo,
   draftAnnotationId,
 }) => {
   const { width, height } = useWindowResize();
@@ -30,7 +32,7 @@ const AnnotatorBaseContent: FC<Pick<CanvasAnnotationContextProviderProps, 'defau
         </Grid>
         <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
           <Stack flexGrow={2} position='relative'>
-            <SideBar draftAnnotationId={draftAnnotationId} />
+            <SideBar draftAnnotationId={draftAnnotationId} draftAnnotationInfo={draftAnnotationInfo} />
           </Stack>
         </Grid>
       </Grid>
@@ -41,24 +43,30 @@ const AnnotatorBaseContent: FC<Pick<CanvasAnnotationContextProviderProps, 'defau
 const AnnotatorWithDraftAnnotation = () => {
   const {
     polygons: draftsPolygons,
-    annotations,
+    annotations = {},
     isLoading,
   } = useRetrievePolygons(async areaPictureId => {
     return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
   });
   const cachedPolygons = useMemo(() => getCached.polygons() || [], [getCached]);
   const defaultPolygons = cachedPolygons.length > 0 ? cachedPolygons : draftsPolygons;
+  const { annotations: annotationInstances = [] } = annotations;
+  const draftAnnotationInfo = useMemo(
+    () => annotationInstances.map(annotationInstance => mapAreaAnnotationInstanceToAnnotationInfo(annotationInstance)),
+    [annotations?.id, defaultPolygons]
+  );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (defaultPolygons.length > 0) {
       cache.polygons(draftsPolygons as Polygon[]);
+      cache.annotationsInfo(draftAnnotationInfo);
     }
   }, [annotations.id, defaultPolygons, cache]);
 
-  if (isLoading || defaultPolygons.length === 0) {
+  if (isLoading || defaultPolygons.length === 0 || draftAnnotationInfo.length === 0) {
     return <BPLoader message="Chargement des brouillons d'annotation" />;
   }
 
-  return <AnnotatorBaseContent draftAnnotationId={annotations.id} defaultPolygons={draftsPolygons as Polygon[]} />;
+  return <AnnotatorBaseContent draftAnnotationId={annotations.id} draftAnnotationInfo={draftAnnotationInfo} defaultPolygons={draftsPolygons as Polygon[]} />;
 };
 export default Annotator;
