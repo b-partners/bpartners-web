@@ -6,9 +6,9 @@ export const InvoiceTabs = () => {
 
   return (
     <Tabs value={tab} onChange={setTab} variant='fullWidth'>
-      <Tab label='Brouillons' />
-      <Tab label='Devis' />
-      <Tab label='Factures' />
+      <Tab data-testid="invoice-tabs-brouillons" label='Brouillons' />
+      <Tab data-testid="invoice-tabs-devis" label='Devis' />
+      <Tab data-testid="invoice-tabs-facture" label='Factures' />
     </Tabs>
   );
 };

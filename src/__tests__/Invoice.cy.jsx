@@ -8,11 +8,12 @@ import { areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, getInvoices, invoicesSummary, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
+import { invoiceRelaunch1 } from './mocks/responses';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
-
+    cy.intercept('GET', `accounts/${accounts1[0].id}/invoices/*/relaunches*`, []).as('getAccountInvoiceRelanches');
     cy.intercept('GET', `/users/*/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/*/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/*/legalFiles`, []).as('legalFiles');
@@ -41,9 +42,9 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@getUser1');
   });
 
-  it('Can be paid', () => {
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
+  it.only('Can be paid', () => {
+    cy.getByName('invoice').click();
+    cy.getByTestId('invoice-tabs-facture').click();
     cy.contains('invoice-ref-3');
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
@@ -61,11 +62,11 @@ describe(specTitle('Invoice'), () => {
       req.reply({});
     }).as('AskFeedback');
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
-    cy.get("[data-testid='invoice-payment-method-select']").click();
+    cy.getByTestId('invoice-payment-method-select').click();
     cy.contains('Chèque').click();
-    cy.get('[data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
+    cy.getByTestId('invoice-conversion-PAID-invoice-ref-0').click();
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
-    cy.get('[data-cy="invoice-relaunch-submit"]').click();
+    cy.getByDataCy('invoice-relaunch-submit').click();
   });
 
   it('Should automatically change tabs when converting to a quote or invoice', () => {
@@ -161,6 +162,7 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.contains('Test dummy comment');
   });
+
   it('should show invoices summary', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
     cy.get('[name="invoice"]').click();

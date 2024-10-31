@@ -67,12 +67,11 @@ const InvoiceListEditor = () => {
     setUrl(getReceiptUrl(selectedInvoice.fileId, 'INVOICE'));
   }, [selectedInvoice]);
 
-  const amounts = {
+  const [, setInvoicesSummary] = useStore('amounts', {
     paid: 0,
     unpaid: 0,
     proposal: 0,
-  };
-  const [, setInvoicesSummary] = useStore('amounts', amounts);
+  });
 
   useEffect(() => {
     const getInvoicesSummaryData = async () => {

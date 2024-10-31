@@ -7,7 +7,6 @@ import { useAnnotationsInfoForm } from '@/common/forms';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { labels } from '@/constants';
-import { Alphabet } from '@/constants/alphabet';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
@@ -35,6 +34,7 @@ export type SideBarProps = {
   draftAnnotationId?: string;
 };
 
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
@@ -124,7 +124,7 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
                             }}
                             onClick={e => e.stopPropagation()}
                             label={'Nom du label'}
-                            defaultValue={`Polygone ${Alphabet[i]}`}
+                            defaultValue={`Polygone ${ALPHABET[i]}`}
                             helperText={false}
                           />
                         </AccordionSummary>

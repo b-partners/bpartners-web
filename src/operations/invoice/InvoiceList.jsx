@@ -29,8 +29,6 @@ import FeedbackModal from './components/FeedbackModal';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
 
-const LIST_ACTION_STYLE = { display: 'flex' };
-
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
     event.stopPropagation();
@@ -99,7 +97,7 @@ const InvoiceGridTable = props => {
       <FunctionField
         render={data => (
           <ConversionContext.Provider value={{ invoice: data }}>
-            <Box sx={LIST_ACTION_STYLE}>
+            <Box sx={{ display: "flex" }}>
               <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
               {data.status === InvoiceStatus.DRAFT && <InvoiceButtonConversion icon={<DriveFileMove />} to='PROPOSAL' />}
               {data.status === InvoiceStatus.PROPOSAL && (
@@ -130,9 +128,9 @@ const InvoiceGridTable = props => {
                     data-testid={`relaunch-${data.id}`}
                   />
                   <TooltipButton
+                    icon={<History />}
                     disabled={data.status === InvoiceStatus.PAID}
                     title='Voir les historiques de relance'
-                    icon={<History />}
                     onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
                     data-testid={`relaunch-history-${data.id}`}
                   />

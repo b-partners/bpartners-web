@@ -2,21 +2,25 @@ import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
 import { authProvider, awsAuth, userAccountsApi } from '../../src/providers';
 
-const sessionStub = {
+const DUMMY_LOGIN_PARAMS = { username: 'dummy', password: 'dummy' };
+const SESSION_STUB = {
   tokens: {
     idToken: { toString: () => 'dummy', payload: { exp: new Date().getTime() / 1000 + 1000 } },
     accessToken: { toString: () => 'dummy' },
   },
 };
 
-const cognitoResponse = {
+const COGNITO_RESPONSE = {
   nextStep: {
     signInStep: '',
   },
 };
 
-const loginParams = { username: 'dummy', password: 'dummy' };
-
+const dataCy = <Subject = any,>(value: string, additionalCommand = '') => cy.get<Subject>(`[data-cy="${value}"]${additionalCommand}`);
+const name = <Subject = any,>(value: string, additionalCommand = '') => cy.get<Subject>(`[name="${value}"]${additionalCommand}`);
+const getByTestId = <Subject = any>(id: string) => cy.get<Subject>(`[data-testid='${id}']`);
+const getByName = <Subject = any>(value: string) => cy.get<Subject>(`[name='${value}']`);
+const getByDataCy = <Subject = any>(value: string) => cy.get<Subject>(`[data-cy='${value}']`);
 const mockCognitoLogin = () => {
   /*
       just replace all amplify functions to mock login
@@ -27,10 +31,10 @@ const mockCognitoLogin = () => {
   cy.intercept('GET', `/users/**`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
-  cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
-  cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
+  cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(SESSION_STUB));
+  cy.stub(awsAuth, 'signIn').returns(Promise.resolve(COGNITO_RESPONSE));
   cy.stub(authProvider, 'checkAuth').returns(Promise.resolve());
-  cy.then(async () => await authProvider.login(loginParams));
+  cy.then(async () => await authProvider.login(DUMMY_LOGIN_PARAMS));
 };
 
 const realCognitoLogin = () => {
@@ -40,8 +44,6 @@ const realCognitoLogin = () => {
   };
   cy.then(async () => await authProvider.login(loginParams));
 };
-const dataCy = (value: string, additionalCommand = '') => cy.get(`[data-cy="${value}"]${additionalCommand}`);
-const name = (value: string, additionalCommand = '') => cy.get(`[name="${value}"]${additionalCommand}`);
 
 const skipBankSynchronisation = () => {
   cy.intercept('/users/*/accounts').as('getAccount');
@@ -70,23 +72,12 @@ const e2eLogin = () => {
   skipBankSynchronisation();
 };
 
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      name: typeof name;
-      dataCy: typeof dataCy;
-      e2eLogin: typeof e2eLogin;
-      cognitoLogin: typeof mockCognitoLogin;
-      realCognitoLogin: typeof realCognitoLogin;
-      removeApiDummyUser: typeof removeApiDummyUser;
-      skipBankSynchronisation: typeof skipBankSynchronisation;
-    }
-  }
-}
-
 Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
 Cypress.Commands.add('e2eLogin', e2eLogin);
+Cypress.Commands.add('getByName', getByName);
+Cypress.Commands.add('getByTestId', getByTestId);
+Cypress.Commands.add('getByDataCy', getByDataCy);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
