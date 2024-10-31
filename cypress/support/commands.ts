@@ -54,11 +54,20 @@ const skipBankSynchronisation = () => {
   });
 };
 
+const e2eLogin = () => {
+  cy.clearAllLocalStorage();
+  cy.visit(process.env.REACT_APP_PROD_URL);
+  cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
+  cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
+  skipBankSynchronisation();
+};
+
 declare global {
   namespace Cypress {
     interface Chainable {
       name: typeof name;
       dataCy: typeof dataCy;
+      e2eLogin: typeof e2eLogin;
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
       skipBankSynchronisation: typeof skipBankSynchronisation;
@@ -68,6 +77,7 @@ declare global {
 
 Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
+Cypress.Commands.add('e2eLogin', e2eLogin);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
 Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);
