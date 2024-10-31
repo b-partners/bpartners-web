@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useLocation } from 'react-router-dom';
-import { BP_COLOR } from '@/bp-theme.js';
+import { BP_COLOR } from '@/bp-theme';
 import { Redirect } from '@/common/utils';
 import { sheetProvider } from '@/providers/sheet-provider';
 

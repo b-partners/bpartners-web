@@ -1,8 +1,9 @@
+import { ResourceProps } from 'react-admin';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import CustomerCreate from '../customers/CustomerCreate';
 import InvoiceListEditor from './InvoiceListEditor';
 
-const invoice = {
+const invoice: Partial<ResourceProps> = {
   list: InvoiceListEditor,
   create: CustomerCreate,
   icon: ReceiptIcon,

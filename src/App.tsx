@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
 import { CookiesProvider } from 'react-cookie';
 
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
@@ -18,9 +17,8 @@ const App = () => {
     <CookiesProvider>
       <BrowserRouter>
         <Routes>
-          <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+          <Route path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
           <Route
-            exact
             path='/login'
             element={
               <BpLoginPageLayout>
@@ -36,10 +34,10 @@ const App = () => {
               </BpLoginPageLayout>
             }
           />
-          <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
-          <Route exact path='/password/reset' element={<PasswordResetPage />} />
-          <Route exact path='/redirection' element={<RedirectionMobilePage />} />
-          <Route exact path='*' element={<BpAdmin />} />
+          <Route path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
+          <Route path='/password/reset' element={<PasswordResetPage />} />
+          <Route path='/redirection' element={<RedirectionMobilePage />} />
+          <Route path='*' element={<BpAdmin />} />
         </Routes>
       </BrowserRouter>
     </CookiesProvider>

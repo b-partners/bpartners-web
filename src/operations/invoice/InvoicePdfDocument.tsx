@@ -1,12 +1,28 @@
-import { UrlParams } from '@/common/utils';
-import { Clear } from '@mui/icons-material';
+import { FC, ReactNode } from 'react';
+import { Invoice } from '@bpartners/typescript-client';
 import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
-
+import { Clear } from '@mui/icons-material';
+import { UrlParams } from '@/common/utils';
 import { PdfViewer } from '@/common/components';
 import { useInvoiceToolContext } from '@/common/store/invoice';
 import { PDF_WIDTH } from './utils/utils';
 
-export const CancelButton = ({ onClose }) => {
+export type CancelButtonProps = {
+  onClose?: () => void;
+}
+
+export type ContextCancelButtonProps = {
+  clearUrlParams?: boolean;
+}
+
+export type InvoicePdfDocumentProps = {
+  selectedInvoice: Invoice;
+  onClose?: () => void;
+  url?: string;
+  children: ReactNode;
+}
+
+export const CancelButton: FC<CancelButtonProps> = ({ onClose }) => {
   return (
     <Tooltip title='Retourner à la liste'>
       <IconButton onClick={onClose}>
@@ -16,7 +32,7 @@ export const CancelButton = ({ onClose }) => {
   );
 };
 
-export const ContextCancelButton = ({ clearUrlParams = false }) => {
+export const ContextCancelButton: FC<ContextCancelButtonProps> = ({ clearUrlParams = false }) => {
   const { setView } = useInvoiceToolContext();
   const handleOnClose = () => {
     setView('list');
@@ -25,7 +41,7 @@ export const ContextCancelButton = ({ clearUrlParams = false }) => {
   return <CancelButton onClose={handleOnClose} />;
 };
 
-const InvoicePdfDocument = ({ selectedInvoice, onClose, url, children = null }) => {
+const InvoicePdfDocument: FC<InvoicePdfDocumentProps> = ({ selectedInvoice, onClose, url, children = null }) => {
   return (
     <Card sx={{ border: 'none' }}>
       <CardHeader

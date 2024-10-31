@@ -8,7 +8,7 @@ export interface ErrorHandlingProps {
 export interface PdfViewerProps extends BoxProps {
   url: string;
   filename: string;
-  isPending: boolean;
-  noData: ReactNode | string;
-  onLoadError: ReactNode | string;
+  isPending?: boolean;
+  noData?: ReactNode | string;
+  onLoadError?: ReactNode | string;
 }

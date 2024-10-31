@@ -1,6 +1,6 @@
 import { defaultTheme } from 'react-admin';
 
-const important = value => `${value} !important`;
+const important = (value: string | number) => `${value} !important`;
 
 export const BP_COLOR = {
   2: '#ab005650',
