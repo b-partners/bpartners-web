@@ -13,6 +13,7 @@ describe(specTitle('Account'), () => {
     cy.skipBankSynchronisation()
 
     cy.get('[name="account"]').click();
+    cy.get('[name="account"]').click();
 
     cy.contains('NUMER');
 
