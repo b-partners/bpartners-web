@@ -1,6 +1,6 @@
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
-import { authProvider, awsAuth } from '../../src/providers';
+import { authProvider, awsAuth, userAccountsApi } from '../../src/providers';
 
 const sessionStub = {
   tokens: {
@@ -54,6 +54,14 @@ const skipBankSynchronisation = () => {
   });
 };
 
+const removeApiDummyUser = async () => {
+  try {
+    await userAccountsApi().deleteUser();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const e2eLogin = () => {
   cy.clearAllLocalStorage();
   cy.visit(process.env.REACT_APP_PROD_URL);
@@ -70,6 +78,7 @@ declare global {
       e2eLogin: typeof e2eLogin;
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
+      removeApiDummyUser: typeof removeApiDummyUser;
       skipBankSynchronisation: typeof skipBankSynchronisation;
     }
   }
@@ -78,6 +87,7 @@ declare global {
 Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
 Cypress.Commands.add('e2eLogin', e2eLogin);
-Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
+Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
+Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
 Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);

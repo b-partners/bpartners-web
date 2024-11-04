@@ -39,7 +39,7 @@ export default defineConfig({
       });
       return config;
     },
-    specPattern: 'src/**/*.cy.{js,ts,jsx,tsx}',
+    specPattern: 'src/**/!(*.it).cy.{js,ts,jsx,tsx}',
     devServer: {
       framework: 'react',
       bundler: 'vite',
@@ -50,5 +50,6 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       on('file:preprocessor', vitePreprocessor());
     },
+    specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
   },
 });
