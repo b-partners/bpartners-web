@@ -64,7 +64,7 @@ const removeApiDummyUser = async () => {
 
 const e2eLogin = () => {
   cy.clearAllLocalStorage();
-  cy.visit(process.env.REACT_APP_BPARTNERS_API_URL);
+  cy.visit(process.env.REACT_APP_PROD_URL);
   cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
   cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
   skipBankSynchronisation();
