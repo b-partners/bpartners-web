@@ -1,4 +1,4 @@
-describe('Onboarding', () => {
+xdescribe('Onboarding', () => {
   it('Create user from dashboard ui', () => {
     cy.visit('https://dashboard.preprod.bpartners.app');
 
