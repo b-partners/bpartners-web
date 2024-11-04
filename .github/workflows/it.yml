@@ -65,7 +65,7 @@ jobs:
         id: it-test
       - name: Show test repports
         if: always()
-        run: cat ./dist/test-reports.xml
+        run: find "./dist/src/__tests__/it" -iname "*xml" -exec cat {} +
       - name: Upload video to s3 if failure
         if: ${{ always() && steps.it-test.outcome == 'failure' }}
         run: aws s3 cp ./cypress/videos/__tests__/it/ s3://bpartners-web-it-videos/${{ env.time }}/ --recursive --profile bpartners
