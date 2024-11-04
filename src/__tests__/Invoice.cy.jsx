@@ -3,6 +3,8 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
 
+import transactions from '@/operations/transactions';
+import { invoiceRelaunch1 } from './mocks/responses';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
@@ -11,15 +13,17 @@ import { products } from './mocks/responses/product-api';
 
 describe(specTitle('Invoice'), () => {
   beforeEach(() => {
+    cy.clearAllLocalStorage();
     cy.cognitoLogin();
-
-    cy.intercept('GET', `/users/*/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/*/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/users/*/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/accounts/mock-account-id1/transactions?page=1&pageSize=15`, transactions);
+    cy.intercept('GET', `/users/*/accounts**`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/*/accounts/${accounts1[0].id}/accountHolders**`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/*/legalFiles**`, []).as('legalFiles');
 
     cy.intercept('GET', '/accounts/*/customers**', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/*/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/*/invoices/*`, createInvoices(1)[0]).as('crupdate1');
+    cy.intercept('PUT', `/accounts/mock-account-id1/invoices/invoice-CONFIRMED-0-id/relaunches?page=1&pageSize=10`, invoiceRelaunch1).as('crupdate1');
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
       const { pageSize, statusList = '', page } = req.query;
@@ -35,10 +39,9 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
-    cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
+    cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary**', invoicesSummary).as('getInvoicesSummary');
 
     cy.mount(<App />);
-    cy.wait('@getUser1');
   });
 
   it('Can be paid', () => {
@@ -161,16 +164,18 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.contains('Test dummy comment');
   });
+
   it('should show invoices summary', () => {
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices?**`, invoicesToChangeStatus);
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
     cy.get('[name="invoice"]').click();
-    // cy.wait('@getInvoicesSummary', { timeout: 20_000 });
     cy.contains('Devis');
     cy.contains('Factures payées');
     cy.contains('Factures en attente');
-    // cy.contains('5500,00');
-    // cy.contains('3250,00');
-    // cy.contains('100,00');
+    cy.wait('@getInvoicesSummary');
+    cy.contains('5500,00');
+    cy.contains('3250,00');
+    cy.contains('100,00');
   });
 
   it('should show annotation on preview', () => {
