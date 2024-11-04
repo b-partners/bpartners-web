@@ -32,7 +32,7 @@ const FeedbackModal = () => {
 
   const askFeedback = form.handleSubmit(data => {
     const fetch = async () => {
-      if (invoice && invoice.customer) {
+      if (invoice?.customer) {
         setIsLoading(true);
         await feedbackProvider.ask({ attachments: null, customerIds: [invoice.customer.id], ...data } as any);
         closeModal();

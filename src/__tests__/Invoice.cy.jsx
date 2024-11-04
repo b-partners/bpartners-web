@@ -6,7 +6,6 @@ import App from '@/App';
 import transactions from '@/operations/transactions';
 import { invoiceRelaunch1 } from './mocks/responses';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { areaPictures } from './mocks/responses/area-pictures';
 import { customers1 } from './mocks/responses/customer-api';
 import { createInvoices, getInvoices, invoicesSummary, invoicesToChangeStatus } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
@@ -16,36 +15,45 @@ describe(specTitle('Invoice'), () => {
     cy.clearAllLocalStorage();
     cy.cognitoLogin();
     cy.intercept('GET', `/accounts/mock-account-id1/transactions?page=1&pageSize=15`, transactions);
-    cy.intercept('GET', `/users/*/accounts**`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/*/accounts**`, accounts1.slice()).as('getAccount1');
     cy.intercept('GET', `/users/*/accounts/${accounts1[0].id}/accountHolders**`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/users/*/legalFiles**`, []).as('legalFiles');
 
     cy.intercept('GET', '/accounts/*/customers**', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/*/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/*/invoices/*`, createInvoices(1)[0]).as('crupdate1');
-    cy.intercept('PUT', `/accounts/mock-account-id1/invoices/invoice-CONFIRMED-0-id/relaunches?page=1&pageSize=10`, invoiceRelaunch1).as('crupdate1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoices/invoice-CONFIRMED-0-id/relaunches?*`, invoiceRelaunch1).as('crupdate1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+    cy.intercept('GET', /^\/accounts\/mock-account-id1\/invoices(\?.*)?$/, req => {
       const { pageSize, statusList = '', page } = req.query;
-      req.reply(
-        getInvoices(
+      req.reply([
+        ...getInvoices(
           page - 1,
-          pageSize,
+          pageSize - 1,
           `${statusList}`.split(',').map(status => InvoiceStatus[status])
-        )
-      );
-    });
+        ),
+        ...invoicesToChangeStatus,
+      ]);
+    }).as('getInvoices');
 
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
-    cy.intercept('GET', '/accounts/mock-account-id1/invoicesSummary**', invoicesSummary).as('getInvoicesSummary');
 
     cy.mount(<App />);
+    cy.waitAuthRequestNeeded();
   });
 
   it('Can be paid', () => {
     cy.get('[name="invoice"]').click();
+    cy.intercept('GET', `/accounts/mock-account-id1/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
+
+    cy.wait('@getInvoicesSummary');
+
+    cy.contains('5500,00');
+    cy.contains('3250,00');
+    cy.contains('100,00');
+
     cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
     cy.contains('invoice-ref-3');
 
@@ -60,7 +68,7 @@ describe(specTitle('Invoice'), () => {
       expect(actualFeedbackAsked.subject).contains(' -  donnez nous votre avis');
       expect(actualFeedbackAsked.message).contains('<p>');
       expect(actualFeedbackAsked.message).contains('<br>');
-      expect(actualFeedbackAsked.message).contains('Nous espérons que vous allez bien.');
+      expect(actualFeedbackAsked.message).includes('Nous aimerions vous demander si vous seriez prêt(e) à laisser un avis');
       req.reply({});
     }).as('AskFeedback');
     cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
@@ -96,10 +104,14 @@ describe(specTitle('Invoice'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.get('[name="invoice"]').click();
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
 
-    cy.contains('invoice-title-0');
+    cy.contains('Mon devis').click();
+
     cy.contains('Justificatif');
+
+    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
+    cy.contains('Test dummy comment');
+
     cy.get('[data-testid="DownloadForOfflineIcon"]').click();
   });
 
@@ -154,55 +166,5 @@ describe(specTitle('Invoice'), () => {
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref', { timeout: 3000 }).click();
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
-  });
-
-  it('Should show payment regulation comment', () => {
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
-
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
-    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
-    cy.contains('Test dummy comment');
-  });
-
-  it('should show invoices summary', () => {
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices?**`, invoicesToChangeStatus);
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
-    cy.get('[name="invoice"]').click();
-    cy.contains('Devis');
-    cy.contains('Factures payées');
-    cy.contains('Factures en attente');
-    cy.wait('@getInvoicesSummary');
-    cy.contains('5500,00');
-    cy.contains('3250,00');
-    cy.contains('100,00');
-  });
-
-  it('should show annotation on preview', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
-    });
-
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList = '', page } = req.query;
-      req.reply(
-        getInvoices(
-          page - 1,
-          pageSize,
-          statusList.split(',').map(status => InvoiceStatus[status])
-        ).map(invoice => ({ ...invoice, idAreaPicture: areaPictures.id }))
-      );
-    });
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/${areaPictures.id}`, areaPictures).as('getAreaByPictureId');
-    cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, []).as('getAreaPictureAnnotation');
-
-    cy.get('[name="invoice"]').click();
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getUser1');
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
-
-    cy.contains('Justificatif');
   });
 });

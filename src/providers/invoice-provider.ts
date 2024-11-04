@@ -1,6 +1,6 @@
 import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
 import { ArchiveStatus } from '@bpartners/typescript-client';
-import { asyncGetAccountId, getCached, payingApi } from '.';
+import { asyncGetAccountId, asyncGetUserInfo, getCached, payingApi } from '.';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 export const invoiceProvider: BpDataProviderType = {
@@ -41,6 +41,6 @@ export const updatePaymentReg = async (invoiceId: string, paymentRegulation: any
   ).data;
 };
 export const getInvoicesSummary = async () => {
-  const { accountId } = getCached.userInfo();
+  const { accountId } = await asyncGetUserInfo();
   return (await payingApi().getInvoicesSummary(accountId || '')).data;
 };
