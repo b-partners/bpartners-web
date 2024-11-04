@@ -46,7 +46,7 @@ import {
   totalPriceWithVatFromProducts,
 } from './utils/utils';
 
-const InvoiceForm = props => {
+export const InvoiceForm = props => {
   const { toEdit, onPending, nbPendingInvoiceCrupdate, selectedInvoiceRef, documentUrl } = props;
   const form = useForm({ mode: 'all' });
   const notify = useNotify();
@@ -273,5 +273,3 @@ const InvoiceTotalPrice = props => {
     </Box>
   );
 };
-
-export default InvoiceForm;

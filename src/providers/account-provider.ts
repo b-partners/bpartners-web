@@ -1,6 +1,6 @@
 import { getCurrentAccount } from '@/common/utils';
 import loginRedirectionUrls from '@/security/login-redirection-urls';
-import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
+import { AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
@@ -8,7 +8,7 @@ export const accountProvider: BpDataProviderType = {
     // TODO: return the account with the attribut current = true but wait for the backend to implement it
     const { userId } = getCached.userInfo();
     const { data } = await userAccountsApi().getAccountsByUserId(_userId || userId || '');
-    const account: Account = getCurrentAccount(data);
+    const account = getCurrentAccount(data);
     return cache.account(account);
   },
   async saveOrUpdate(_resources: any) {

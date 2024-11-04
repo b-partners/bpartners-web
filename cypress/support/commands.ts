@@ -18,9 +18,11 @@ const COGNITO_RESPONSE = {
 
 const dataCy = <Subject = any,>(value: string, additionalCommand = '') => cy.get<Subject>(`[data-cy="${value}"]${additionalCommand}`);
 const name = <Subject = any,>(value: string, additionalCommand = '') => cy.get<Subject>(`[name="${value}"]${additionalCommand}`);
-const getByTestId = <Subject = any>(id: string) => cy.get<Subject>(`[data-testid='${id}']`);
-const getByName = <Subject = any>(value: string) => cy.get<Subject>(`[name='${value}']`);
-const getByDataCy = <Subject = any>(value: string) => cy.get<Subject>(`[data-cy='${value}']`);
+const getByAttribute = <Subject = any>(attribute: string, value: string) => cy.get<Subject>(`[${attribute}='${value}']`);
+const getByTestId = <Subject = any>(id: string) => getByAttribute<Subject>("data-testid", id);
+const getByAriaLabel = <Subject = any>(value: string) => getByAttribute<Subject>("aria-label", value);
+const getByName = <Subject = any>(value: string) => getByAttribute<Subject>("name", value);
+const getByDataCy = <Subject = any>(value: string) => getByAttribute<Subject>("data-cy", value);
 const mockCognitoLogin = () => {
   /*
       just replace all amplify functions to mock login
@@ -28,7 +30,7 @@ const mockCognitoLogin = () => {
     */
 
   cy.intercept('GET', '/whoami', whoami1).as('whoami');
-  cy.intercept('GET', `/users/**`, user1).as('getUser1');
+  cy.intercept('GET', `/users/${user1.id}`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
   cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(SESSION_STUB));
@@ -75,6 +77,8 @@ const e2eLogin = () => {
 Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
 Cypress.Commands.add('e2eLogin', e2eLogin);
+Cypress.Commands.add('getByAttribute', getByAttribute);
+Cypress.Commands.add('getByAriaLabel', getByAriaLabel);
 Cypress.Commands.add('getByName', getByName);
 Cypress.Commands.add('getByTestId', getByTestId);
 Cypress.Commands.add('getByDataCy', getByDataCy);

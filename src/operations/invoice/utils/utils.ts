@@ -155,11 +155,12 @@ export const getPaymentRegulationStatusInFr = (status: string): string => {
       throw new Error(`Unknown status: ${status}`);
   }
 };
+
 export const InvoiceActionType = {
   START_PENDING: 'startPending',
   STOP_PENDING: 'stopPending',
   SET: 'set',
-};
+} as const;
 
 export const ProductActionType = {
   UPDATE: 'update',

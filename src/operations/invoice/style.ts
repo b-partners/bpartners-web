@@ -1,9 +1,10 @@
 import { BP_COLOR } from '@/bp-theme';
+import { SxProps } from '@mui/material';
 
 export const DEFAULT_TEXT_FIELD_WIDTH = 300;
 export const DEFAULT_ITEMS_WIDTH = 294;
 
-export const INVOICE_EDITION = {
+export const INVOICE_EDITION: Record<string, SxProps> = {
   LAYOUT: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -45,7 +46,7 @@ export const INVOICE_EDITION = {
   },
 };
 
-export const errorStyle = {
+export const errorStyle: SxProps = {
   border: '2px solid rgba(255, 0, 0, 0.6)',
   borderRadius: 1,
 };

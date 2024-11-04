@@ -1,25 +1,21 @@
-import { InvoiceStatus } from '@bpartners/typescript-client';
+import { Invoice, InvoiceStatus } from '@bpartners/typescript-client';
+import { Polygon } from '@bpartners/annotator-component';
 import { Box, Card, CardContent, CardHeader } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
 import { AnnotationInfo } from '../annotator/components';
 import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
+import { InvoiceForm } from './InvoiceForm';
 
 import { printError } from '@/common/utils';
 import { getInvoicesSummary } from '@/providers';
 import AnnotatorComponent from '../annotator/AnnotatorComponent';
-import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
 import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, PDF_EDITION_WIDTH, viewScreenState } from './utils/utils';
 
-const useStyle = makeStyles(() => ({
-  card: { border: 'none' },
-  form: { transform: 'translateY(-1rem)' },
-}));
-
-const invoiceListReducer = (state, { type, payload }) => {
+type InvoiceActionTypeValues = (typeof InvoiceActionType)[keyof typeof InvoiceActionType];
+const invoiceListReducer = (state: any, { type, payload }: { type: InvoiceActionTypeValues, payload: any }) => {
   switch (type) {
     case InvoiceActionType.START_PENDING:
       return { ...state, nbPendingInvoiceCrupdate: state.nbPendingInvoiceCrupdate + 1, documentUrl: payload.documentUrl };
@@ -45,7 +41,7 @@ const AnnotatorComponentShow = () => {
         ))}
       </Box>
       <Box width={PDF_EDITION_WIDTH}>
-        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />
+        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons as Polygon[]} allowSelect={false} />
       </Box>
     </Box>
   );
@@ -53,12 +49,11 @@ const AnnotatorComponentShow = () => {
 
 const InvoiceListEditor = () => {
   const [url, setUrl] = useState('');
-  const classes = useStyle();
   const [{ selectedInvoice, tabIndex, nbPendingInvoiceCrupdate, documentUrl }, dispatch] = useReducer(invoiceListReducer, invoiceListInitialState);
-  const stateChangeHandling = values => dispatch({ type: InvoiceActionType.SET, payload: values });
-  const handlePending = (type, documentUrl) => dispatch({ type, payload: { documentUrl } });
+  const stateChangeHandling = (values: any) => dispatch({ type: InvoiceActionType.SET, payload: values });
+  const handlePending = (type: InvoiceActionTypeValues, documentUrl: string) => dispatch({ type, payload: { documentUrl } });
 
-  const returnToList = invoice => {
+  const returnToList = (invoice: Invoice | undefined) => {
     const newTabIndex = invoice && invoice.status === InvoiceStatus.CONFIRMED ? 2 : tabIndex;
     stateChangeHandling({ viewScreen: viewScreenState.LIST, tabIndex: newTabIndex });
   };
@@ -105,7 +100,6 @@ const InvoiceListEditor = () => {
             />
             <CardContent>
               <InvoiceForm
-                className={classes.form}
                 onClose={returnToList}
                 onPending={handlePending}
                 selectedInvoiceRef={selectedInvoice.ref}
