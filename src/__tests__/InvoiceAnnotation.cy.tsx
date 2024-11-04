@@ -1,7 +1,7 @@
 import { InvoiceStatus } from '@bpartners/typescript-client';
 
 import App from '@/App';
-import { accountHolders1, accounts1, areaPictures, createInvoices, customers1, getInvoices, invoiceAnnotations, products, whoami1 } from './mocks/responses';
+import { accountHolders1, accounts1, areaPictures, createInvoices, customers1, invoiceAnnotations, products, whoami1 } from './mocks/responses';
 
 describe('Invoice Annotation', () => {
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('Invoice Annotation', () => {
     );
   });
 
-  it.skip('should show annotation on edit an invoice', () => {
+  it('should show annotation on edit an invoice', () => {
     cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.contains('invoice-ref-0').click();
@@ -37,38 +37,29 @@ describe('Invoice Annotation', () => {
     cy.contains('x : 0');
     cy.contains('y : 0');
 
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click();
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
 
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(4)').click();
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(3)').click();
-  });
-
-  it('should show annotation on preview', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
-      cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
-    });
-
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
-      const { pageSize, statusList = '', page = 1 } = req.query;
-      req.reply(
-        getInvoices(
-          +page - 1,
-          +pageSize,
-          (statusList as string).split(',').map(status => InvoiceStatus[status as keyof typeof InvoiceStatus])
-        ).map(invoice => ({ ...invoice, idAreaPicture: areaPictures.id }))
-      );
-    });
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/areaPictures/${areaPictures.id}`, areaPictures).as('getAreaByPictureId');
-    cy.intercept('GET', `/accounts/*/areaPictures/*/annotations`, []).as('getAreaPictureAnnotation');
-
-    cy.get('[name="invoice"]').click();
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getUser1');
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Justificatif"]').click();
-
+    cy.contains('8.40m');
+    
+    cy.get('.css-1vol7lq-MuiPaper-root-MuiCard-root > :nth-child(1) > .MuiCardHeader-action').click();
+    cy.get('[aria-label="Justificatif"]').click();
+    
+    cy.contains('Polygone A');
+    cy.contains('Polygone B');
+    cy.contains('Surface: 10 m²');
+    cy.contains("Source de l'image: vendee, 20cm, 2023");
+    cy.contains('invoice-title-0');
+    cy.contains('invoice-ref-0');
     cy.contains('Justificatif');
+    cy.contains('x : 0');
+    cy.contains('y : 0');
+    
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
+
+    cy.contains('4.40m');
   });
 });
