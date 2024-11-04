@@ -121,7 +121,7 @@ export const authProvider = {
     const username = fromBase64(decodeURIComponent(urlParams.get(paramUsername)));
     const oldPassword = fromBase64(decodeURIComponent(urlParams.get(paramTemporaryPassword)));
     await awsAuth.signIn({ username, password: oldPassword });
-    await awsAuth.confirmSignIn({ challengeResponse: newPassword });
+    await awsAuth.confirmSignIn({ challengeResponse: newPassword, options: { userAttributes: { phone_number: _phoneNumber } } });
     await awsAuth.signOut();
     cache.unapprovedFiles(1);
     window.location.replace('/');
