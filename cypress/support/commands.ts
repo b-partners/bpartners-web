@@ -1,6 +1,6 @@
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
-import { authProvider, awsAuth } from '../../src/providers';
+import { authProvider, awsAuth, userAccountsApi } from '../../src/providers';
 
 const sessionStub = {
   tokens: {
@@ -54,13 +54,31 @@ const skipBankSynchronisation = () => {
   });
 };
 
+const removeApiDummyUser = async () => {
+  try {
+    await userAccountsApi().deleteUser();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const e2eLogin = () => {
+  cy.clearAllLocalStorage();
+  cy.visit(process.env.REACT_APP_PROD_URL);
+  cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
+  cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
+  skipBankSynchronisation();
+};
+
 declare global {
   namespace Cypress {
     interface Chainable {
       name: typeof name;
       dataCy: typeof dataCy;
+      e2eLogin: typeof e2eLogin;
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
+      removeApiDummyUser: typeof removeApiDummyUser;
       skipBankSynchronisation: typeof skipBankSynchronisation;
     }
   }
@@ -68,6 +86,8 @@ declare global {
 
 Cypress.Commands.add('name', name);
 Cypress.Commands.add('dataCy', dataCy);
-Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
+Cypress.Commands.add('e2eLogin', e2eLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
+Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
+Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
 Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);

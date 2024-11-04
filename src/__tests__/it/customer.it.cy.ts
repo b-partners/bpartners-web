@@ -1,17 +1,8 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
-import App from '@/App';
-
-describe(specTitle('Customers'), () => {
-  beforeEach(() => {
-    cy.realCognitoLogin();
-  });
-
+describe('Customers', () => {
   it('can be updated', () => {
-    cy.mount(<App />);
-
-    cy.skipBankSynchronisation();
+    cy.e2eLogin();
 
     cy.get('[name="customers"]').click();
     cy.contains('Andriamahery IT').click();
