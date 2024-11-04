@@ -1,24 +1,15 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { v4 as uuid } from 'uuid';
 
-import App from '@/App';
-import { invoicesSummary } from '../mocks/responses/invoices-api';
-
-xdescribe(specTitle('Invoice'), () => {
-  beforeEach(() => {
-    cy.realCognitoLogin();
-  });
-
-  it('is created from draft to confirmed', () => {
-    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary', invoicesSummary).as('getInvoicesSummary');
-    cy.mount(<App />);
-
-    cy.skipBankSynchronisation();
+describe('Test invoice', () => {
+  it('Create invoice from draft to paid', () => {
+    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoicesSummary').as('getInvoicesSummary');
     const timeout = 30_000;
+
+    cy.e2eLogin();
 
     cy.get('[name="invoice"]').click();
     cy.wait('@getInvoicesSummary', { timeout });
-    
+
     cy.contains('Devis');
     cy.contains('Factures payées');
     cy.contains('Factures en attente');
@@ -57,17 +48,14 @@ xdescribe(specTitle('Invoice'), () => {
     cy.contains('Factures').click();
     cy.contains('Brouillons').click();
 
-    cy.contains(ref).click();
+    cy.get('input[type="text"]').type(ref);
+    cy.contains(ref, { timeout }).click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
     cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1)').click();
 
     cy.get('#form-save-id').click();
 
     cy.wait('@getdrafts', { timeout });
-
-    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=PROPOSAL&archiveStatus=ENABLED&filters=').as(
-      'getproposals'
-    );
 
     cy.get('[name="bank"]').click();
 
@@ -79,7 +67,6 @@ xdescribe(specTitle('Invoice'), () => {
         cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
         cy.contains('Brouillon transformé en devis', { timeout });
 
-        cy.wait('@getproposals', { timeout });
         cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
         cy.contains('Devis confirmé', { timeout });
 
@@ -99,7 +86,7 @@ xdescribe(specTitle('Invoice'), () => {
         cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
 
         cy.wait('@savePaymentRegulation', { timeout });
-        
+
         cy.contains('Acompte payé avec succès !');
       }
     });

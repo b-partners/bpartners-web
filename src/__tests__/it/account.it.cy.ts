@@ -1,16 +1,10 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
-
-import App from '@/App';
-
-describe(specTitle('Account'), () => {
+describe('Account', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
   });
 
   it('is displayed on login', () => {
-    cy.mount(<App />);
-
-    cy.skipBankSynchronisation()
+    cy.e2eLogin();
 
     cy.get('[name="account"]').click();
     cy.get('[name="account"]').click();

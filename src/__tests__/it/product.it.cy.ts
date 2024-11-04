@@ -1,16 +1,6 @@
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
-
-import App from '@/App';
-
-describe(specTitle('Products'), () => {
-  beforeEach(() => {
-    cy.realCognitoLogin();
-  });
-
+describe('Products', () => {
   it('are displayed', () => {
-    cy.mount(<App />);
-
-    cy.skipBankSynchronisation();
+    cy.e2eLogin();
 
     cy.get('[name="products"]').click();
     cy.contains('Un euro symbolique');
