@@ -1,19 +1,21 @@
 import App from '@/App';
+import transactions from '@/operations/transactions';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { setHours } from 'date-fns';
 import { Redirect } from '../common/utils';
+import { createCustomer } from './mocks/responses';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { setDateTime } from './mocks/utilities';
-import { createCustomer } from './mocks/responses';
 
 describe(specTitle('Calendar'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts*`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders*`, carreleurs).as('getAccountHolder1');
+    cy.intercept('GET', '/accounts/mock-account-id1/transactions**', transactions).as('getTransactions');
 
     cy.stub(Redirect, 'toURL').as('toURL');
     cy.window().then(win => {

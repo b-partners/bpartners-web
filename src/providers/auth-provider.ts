@@ -1,6 +1,7 @@
 import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Configuration, SecurityApi } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
+import { AxiosError } from 'axios';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
 import { awsAuth, awsConfig } from './aws-config';
@@ -86,8 +87,14 @@ export const authProvider = {
 
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject({ message: false })),
 
-  checkError: ({ status }: any): Promise<any> => {
+  checkError: ({ response }: any): Promise<any> => {
+    const { status, url } = response;
+
     const unapprovedFiles = getCached.unapprovedFiles();
+
+    if (((url as string).includes('calendars') || url.includes('events')) && status === 403) {
+      return Promise.resolve();
+    }
 
     if ((status === 401 || status === 403) && (unapprovedFiles || 0) === 0) {
       return Promise.reject({ message: false });
