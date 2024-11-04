@@ -60,7 +60,7 @@ export const InvoiceRelaunchHistoryModal = () => {
             ))}
           </List>
         )}
-        {!isLoading && data.length !== 0 && <Pagination />}
+        {!isLoading && (data?.length || 0) !== 0 && <Pagination />}
       </InvoiceListModal>
     </ListContextProvider>
   );
