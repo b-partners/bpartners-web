@@ -11,7 +11,7 @@ env:
   PREPROD_WEBCLIENT_ID: 4v0n3pk2j0b12m3aascud4us6h
   PREPROD_OAUTH_DOMAIN: preprod-bpartners-api.auth.eu-west-3.amazoncognito.com
   PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
-  REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
+  REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net
   REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
 
 jobs:
