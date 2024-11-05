@@ -70,7 +70,7 @@ jobs:
           npm test
       - name: Show test repports
         if: always()
-        run: cat ./dist/test-reports.xml
+        run: find "./dist/src/__tests__/" -iname "*xml" -exec cat {} +
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
