@@ -161,7 +161,6 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@getAccount1');
     cy.wait('@whoami');
     cy.wait('@getAccountHolder1');
-    cy.wait('@getUser1');
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref', { timeout: 3000 }).click();
     cy.get('#form-refresh-preview').click();
