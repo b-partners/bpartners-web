@@ -26,25 +26,24 @@ export const productProvider: BpDataProviderType = {
       sort: { field, order },
     } = filters;
     const { accountId } = await asyncGetUserInfo();
-    const data = (
-      await payingApi().getProducts(
-        accountId,
-        true,
-        field === 'description' ? order : undefined,
-        field === 'unitPrice' ? order : undefined,
-        field === 'createdAt' ? order : undefined,
-        descriptionFilter,
-        priceFilter ? toMinors(+priceFilter) : undefined,
-        //TODO: use status from filter instead of static product status
-        ProductStatus.ENABLED,
-        page,
-        perPage
-      )
-    ).data;
+    const { data } = await payingApi().getProducts(
+      accountId,
+      true,
+      field === 'description' ? order : undefined,
+      field === 'unitPrice' ? order : undefined,
+      field === 'createdAt' ? order : undefined,
+      descriptionFilter,
+      priceFilter ? toMinors(+priceFilter) : undefined,
+      //TODO: use status from filter instead of static product status
+      ProductStatus.ENABLED,
+      page,
+      perPage
+    );
 
     if (filters.mapped) {
       return data.map(productMapper.toDomain);
     }
+
     return data;
   },
   saveOrUpdate: async function (resources: any[]): Promise<any[]> {
