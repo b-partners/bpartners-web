@@ -1,11 +1,19 @@
-import { accountProvider, getCached, profileProvider } from '.';
+import { accountProvider, getCached, profileProvider, whoami } from '.';
 import { accountHolderProvider } from './account-holder-Provider';
 
 export const asyncGetUserInfo = async () => {
   const { accountHolderId, accountId, userId } = getCached.userInfo();
-  const res = { accountHolderId, accountId, userId };
+  const cachedWhoami = getCached.whoami()
+  const res = { accountHolderId, accountId, userId, cachedWhoami };
+  
+  if(!cachedWhoami){
+    res.cachedWhoami = await whoami()
+  }
+  if (!userId) {
+    res.userId = res.cachedWhoami.user.id;
+  }
   if (!accountId) {
-    res.accountId = (await accountProvider.getOne()).id;
+    res.accountId = (await accountProvider.getOne(res.userId)).id;
   }
   if (!accountHolderId) {
     res.accountHolderId = (await accountHolderProvider.getOne()).id;
