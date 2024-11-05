@@ -23,7 +23,7 @@ export const InvoiceGridTable: FC<InvoiceGridTableProps> = props => {
   const { mutate: areaPictureFetcher, isPending: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
   const { companyInfo } = useGetAccountHolder();
 
-  const nameRenderer = ({ customer }: Invoice) => <Typography>{`${customer.name}`}</Typography>;
+  const nameRenderer = ({ customer }: Invoice) => <Typography>{`${customer?.firstName} ${customer?.lastName}`}</Typography>;
 
   const editInvoice: RowClickFunction = async (_id, _resourceName, record) => {
     const invoice = { ...record } as Invoice;
