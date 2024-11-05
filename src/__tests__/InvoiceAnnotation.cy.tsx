@@ -42,10 +42,10 @@ describe('Invoice Annotation', () => {
     cy.get('[aria-label="Zoom +"]').click();
 
     cy.contains('8.40m');
-    
+
     cy.get('.css-1vol7lq-MuiPaper-root-MuiCard-root > :nth-child(1) > .MuiCardHeader-action').click();
     cy.get('[aria-label="Justificatif"]').click();
-    
+
     cy.contains('Polygone A');
     cy.contains('Polygone B');
     cy.contains('Surface: 10 m²');
@@ -55,7 +55,7 @@ describe('Invoice Annotation', () => {
     cy.contains('Justificatif');
     cy.contains('x : 0');
     cy.contains('y : 0');
-    
+
     cy.get('[aria-label="Zoom +"]').click();
     cy.get('[aria-label="Zoom +"]').click();
     cy.get('[aria-label="Zoom +"]').click();

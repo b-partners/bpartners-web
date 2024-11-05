@@ -3,11 +3,11 @@ import { accountHolderProvider } from './account-holder-Provider';
 
 export const asyncGetUserInfo = async () => {
   const { accountHolderId, accountId, userId } = getCached.userInfo();
-  const cachedWhoami = getCached.whoami()
+  const cachedWhoami = getCached.whoami();
   const res = { accountHolderId, accountId, userId, cachedWhoami };
-  
-  if(!cachedWhoami){
-    res.cachedWhoami = await whoami()
+
+  if (!cachedWhoami) {
+    res.cachedWhoami = await whoami();
   }
   if (!userId) {
     res.userId = res.cachedWhoami.user.id;
