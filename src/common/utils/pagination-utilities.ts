@@ -6,7 +6,8 @@ type TFetcher = (page: number) => Promise<any[]>;
 type TGetPagination = { resource: string; filters: any; page: number; perPage: number; fetcher: TFetcher };
 
 export const getPagination = async (params: TGetPagination) => {
-  const { filters, page = 1, perPage, resource, fetcher } = params;
+  const { filters, page, perPage, resource, fetcher } = params;
+
   const currentList = await fetcher(page);
   const { pagination: _pagination, ...filtersWithoutPatination } = filters;
   const paginationName = getPaginationName(resource, filtersWithoutPatination, perPage);

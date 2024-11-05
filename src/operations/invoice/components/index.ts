@@ -7,6 +7,8 @@ export * from './InvoiceButtonConversion';
 export * from './InvoiceButtonToPaid';
 export * from './InvoiceConfirmedPayedTabPanel';
 export * from './InvoiceCreationButton';
+export * from './InvoiceGridTable';
+export * from './InvoiceListActionsButtonRenderer';
 export * from './InvoiceListModal';
 export * from './InvoiceRelaunchHistoryModal';
 export * from './InvoiceRelaunchHistoryShowModal';

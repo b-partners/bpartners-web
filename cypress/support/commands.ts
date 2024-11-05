@@ -22,7 +22,8 @@ const mockCognitoLogin = () => {
       just replace all amplify functions to mock login
       we never call cognito
     */
-
+  cy.clearAllLocalStorage();
+  cy.clearAllCookies();
   cy.intercept('GET', '/whoami', whoami1).as('whoami');
   cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
