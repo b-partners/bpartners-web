@@ -23,6 +23,14 @@ export default defineConfig({
   projectId: '4f6tz2',
   reporter: 'cypress-multi-reporters',
 
+  reporterOptions: {
+    reporterEnabled: 'cypress-sonarqube-reporter',
+    mergeFileName: 'test-reports.xml',
+    cypressSonarqubeReporterReporterOptions: {
+      overwrite: true,
+    },
+  },
+
   component: {
     setupNodeEvents(on, config) {
       taskCoverage(on, config);
@@ -35,13 +43,6 @@ export default defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'vite',
-    },
-    reporterOptions: {
-      reporterEnabled: 'cypress-sonarqube-reporter',
-      mergeFileName: 'test-reports.xml',
-      cypressSonarqubeReporterReporterOptions: {
-        overwrite: true,
-      },
     },
   },
 
