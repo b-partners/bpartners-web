@@ -56,7 +56,7 @@ export const dataProvider: RaDataProviderType = {
       fetcher: p => getProvider(resourceType).getList(p, perPage, { ...filter, sort: params.sort || {} }),
     });
 
-    return { data, pageInfo, total: data.length };
+    return { data, pageInfo, total: data.length === 0 ? 0 : Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {
     const result = await getProvider(resourceType).getOne(params.id);

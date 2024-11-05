@@ -5,7 +5,7 @@ import App from '@/App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
+import { createInvoices, getInvoices, invoicesSummary } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
@@ -20,8 +20,9 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers**', customers1).as('getCustomers');
     cy.intercept('GET', `/accounts/mock-account-id1/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
+    cy.intercept('GET', `/accounts/mock-account-id1/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, req => {
+    cy.intercept('GET', /^\/accounts\/mock-account-id1\/invoices(\?.*)?$/, req => {
       const { pageSize, statusList = '', page } = req.query;
       req.reply(
         getInvoices(
@@ -78,6 +79,7 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('invoice-ref-15');
+    cy.contains('invoice-ref-29');
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('invoice-ref-34');
 

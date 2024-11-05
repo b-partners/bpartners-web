@@ -1,25 +1,19 @@
-import { RaMoneyField } from '@/common/components';
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import BPListActions from '@/common/components/BPListActions';
-import { useAreaPictureFetcher } from '@/common/fetcher';
-import { ConversionContext, useInvoiceToolContext } from '@/common/store/invoice';
+import { useInvoiceToolContext } from '@/common/store/invoice';
 import { invoiceProvider } from '@/providers/invoice-provider';
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { Attachment, Check, DriveFileMove, History, TurnRight } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useEffect } from 'react';
-import { Datagrid, FunctionField, List, TextField, useListContext, useNotify, useRefresh } from 'react-admin';
+import { List, useNotify, useRefresh } from 'react-admin';
+import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
-import TooltipButton from '../../common/components/TooltipButton';
-import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
-import { formatDate, parseUrlParams } from '../../common/utils';
 import {
   EmptyInvoiceList,
-  InvoiceButtonConversion,
-  InvoiceButtonToPaid,
   InvoiceCreationButton,
+  InvoiceGridTable,
   InvoiceRelaunchHistoryModal,
   InvoiceRelaunchHistoryShowModal,
   InvoiceRelaunchModal,
@@ -27,7 +21,7 @@ import {
 } from './components';
 import FeedbackModal from './components/FeedbackModal';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
-import { getInvoiceStatusInFr, invoiceInitialValue, viewScreenState } from './utils/utils';
+import { invoiceInitialValue, viewScreenState } from './utils/utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -47,106 +41,6 @@ const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, han
     });
 };
 
-const InvoiceGridTable = props => {
-  const { crupdateInvoice, viewPdf: setPdf } = props;
-  const { isLoading, refetch } = useListContext();
-  const { openModal, setView, view } = useInvoiceToolContext();
-  const { mutate: areaPictureFetcher, isLoading: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
-  const { companyInfo } = useGetAccountHolder();
-
-  const nameRenderer = ({ customer }) => <Typography>{`${customer?.lastName} ${customer?.firstName}`}</Typography>;
-
-  const editInvoice = async (_id, _resourceName, record) => {
-    if (record.status !== InvoiceStatus.DRAFT) {
-      return;
-    }
-    crupdateInvoice({ ...record });
-    setView('edition');
-    if (record.idAreaPicture) {
-      return areaPictureFetcher({ areaPictureId: record.idAreaPicture, invoice: { ...record } });
-    }
-  };
-
-  const viewPdf = (event, data) => {
-    setPdf(event, data);
-    setView('preview');
-
-    if (data.idAreaPicture) {
-      return areaPictureFetcher({ areaPictureId: data.idAreaPicture, invoice: { ...data } });
-    }
-  };
-
-  useEffect(() => {
-    refetch();
-  }, [view]);
-
-  if (isLoading && areaPictureFetcherLoading) {
-    return null;
-  }
-
-  return (
-    <Datagrid rowClick={editInvoice}>
-      <TextField source='ref' label='Référence' />
-      <TextField source='title' label='Titre' />
-      <FunctionField render={nameRenderer} label='Client' />
-      <RaMoneyField
-        render={data => (companyInfo && companyInfo.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
-        label='Prix TTC'
-        variant='body2'
-      />
-      <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
-      <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
-      <FunctionField
-        render={data => (
-          <ConversionContext.Provider value={{ invoice: data }}>
-            <Box sx={LIST_ACTION_STYLE}>
-              <TooltipButton title='Justificatif' onClick={event => viewPdf(event, data)} icon={<Attachment />} disabled={data.fileId ? false : true} />
-              {data.status === InvoiceStatus.DRAFT && <InvoiceButtonConversion icon={<DriveFileMove />} to='PROPOSAL' />}
-              {data.status === InvoiceStatus.PROPOSAL && (
-                <>
-                  <InvoiceButtonConversion icon={<Check />} to='CONFIRMED' />
-                  <TooltipButton
-                    title='Envoyer ou relancer ce devis'
-                    icon={<TurnRight />}
-                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
-                    data-testid={`relaunch-${data.id}`}
-                  />
-                  <TooltipButton
-                    title='Voir les historiques de relance'
-                    icon={<History />}
-                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                    data-testid={`relaunch-history-${data.id}`}
-                  />
-                </>
-              )}
-              {data.status !== InvoiceStatus.PROPOSAL && data.status !== InvoiceStatus.DRAFT && (
-                <>
-                  <InvoiceButtonToPaid disabled={data.status === InvoiceStatus.PAID} />
-                  <TooltipButton
-                    disabled={data.status === InvoiceStatus.PAID}
-                    title='Envoyer ou relancer cette facture'
-                    icon={<TurnRight />}
-                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH' })}
-                    data-testid={`relaunch-${data.id}`}
-                  />
-                  <TooltipButton
-                    disabled={data.status === InvoiceStatus.PAID}
-                    title='Voir les historiques de relance'
-                    icon={<History />}
-                    onClick={() => openModal({ invoice: data, isOpen: true, type: 'RELAUNCH_HISTORY' })}
-                    data-testid={`relaunch-history-${data.id}`}
-                  />
-                </>
-              )}
-            </Box>
-          </ConversionContext.Provider>
-        )}
-        label=''
-      />
-    </Datagrid>
-  );
-};
-
 const InvoiceList = props => {
   const notify = useNotify();
   const refresh = useRefresh();
@@ -157,7 +51,6 @@ const InvoiceList = props => {
     modal: { isOpen },
   } = useInvoiceToolContext();
 
-  const sendInvoice = (event, data, successMessage, tabIndex) => saveInvoice(event, data, notify, refresh, successMessage, tabIndex, setTab);
   const crupdateInvoice = selectedInvoice => onStateChange({ selectedInvoice, viewScreen: viewScreenState.EDITION });
   const viewPdf = (event, selectedInvoice) => {
     event.stopPropagation();
@@ -169,14 +62,13 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { showCreateQuote } = parseUrlParams();
+  const { showCreateQuote } = useParams();
 
   useEffect(() => {
     if (showCreateQuote === 'true') {
       crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });
       setView('creation');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCreateQuote]);
 
   return (
@@ -190,7 +82,7 @@ const InvoiceList = props => {
         filter={{ invoiceTypes }}
         component={ListComponent}
         empty={<EmptyInvoiceList actions={emptyAction} createInvoice={createInvoice} />}
-        pagination={<Pagination filter={{ invoiceTypes }} name={invoiceTypes[0]} />}
+        pagination={<Pagination />}
         perPage={pageSize}
         actions={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -210,7 +102,7 @@ const InvoiceList = props => {
           </Box>
         }
       >
-        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} convertToProposal={sendInvoice} />
+        <InvoiceGridTable crupdateInvoice={crupdateInvoice} viewPdf={viewPdf} />
       </List>
       {isOpen && (
         <>
