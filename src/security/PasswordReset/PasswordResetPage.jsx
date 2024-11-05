@@ -11,17 +11,6 @@ const PasswordResetPage = () => {
     setIsOpen(value);
   };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (step === 'success') {
-        navigate('/login');
-      }
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }, 5000);
-  }, []);
-
   return (
     <>
       <PasswordResetRequestLayout handleDialog={handleDialog} />
