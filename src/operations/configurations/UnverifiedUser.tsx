@@ -1,5 +1,5 @@
 import { useToggle } from '@/common/hooks';
-import { getCached } from '@/providers/cache';
+import { asyncGetUser } from '@/providers';
 import { Box, Button, Divider, Link, Modal, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { UNVERIFIED_USER_BOX } from './style';
@@ -8,9 +8,11 @@ const UnverifiedUser = () => {
   const { value: isOpen, handleClose, handleOpen } = useToggle();
 
   useEffect(() => {
-    const user = getCached.user();
-    const idVerified = user?.idVerified;
-    !idVerified && handleOpen();
+    asyncGetUser().then(user => {
+      const idVerified = user?.idVerified;
+      console.log(user);
+      !idVerified && handleOpen();
+    });
   }, []);
 
   return (
