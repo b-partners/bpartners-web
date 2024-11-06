@@ -1,21 +1,23 @@
 import { PasswordResolver } from '@/common/resolvers/reset-password-validator';
 import { FieldErrorMessage } from '@/common/resolvers/utils';
+import { UrlParams } from '@/common/utils';
 import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { BpFormField, BpNumberField } from '../../../common/components';
 
 const PasswordResetConfirmationLayout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const formState = useForm({ mode: 'all', resolver: PasswordResolver });
-  const { email } = useParams();
+
   const navigate = useNavigate();
 
   const handleSubmitConfirmation = formState.handleSubmit(values => {
     setIsLoading(true);
     const { resetCode, newPassword } = values;
+    const email = UrlParams.get('email');
     awsAuth
       .confirmResetPassword({ confirmationCode: resetCode, newPassword, username: email })
       .then(data => {
@@ -24,6 +26,7 @@ const PasswordResetConfirmationLayout = () => {
         setIsLoading(false);
       })
       .catch(error => {
+        console.log(error);
         // La réinitialisation du mot de passe a échoué
         formState.setError('resetCode', { message: FieldErrorMessage.resetCode });
         setIsLoading(false);
