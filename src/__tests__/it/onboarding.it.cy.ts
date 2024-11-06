@@ -1,4 +1,3 @@
-import { userAccountsApi } from '@/providers';
 import axios from 'axios';
 
 describe('Onboarding', () => {
