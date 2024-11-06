@@ -11,13 +11,11 @@ env:
   PREPROD_WEBCLIENT_ID: 4v0n3pk2j0b12m3aascud4us6h
   PREPROD_OAUTH_DOMAIN: preprod-bpartners-api.auth.eu-west-3.amazoncognito.com
   PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
+  REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net
+  REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
 
 jobs:
   tests:
-    env:
-      REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net/api
-      REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
-
     timeout-minutes: 35
     runs-on: ubuntu-latest
     steps:
@@ -53,14 +51,28 @@ jobs:
         run: |
           sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
       - run: |
+          echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
+          echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
+          echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} >> .env
+
           if ${{ github.ref_name == 'prod' }}; then
-            REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} npm test
+            echo REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} >> .env
+            echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
+            echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
+            echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
           else
-            REACT_APP_AWS_REGION=${{ env.AWS_REGION }} REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} npm test
+            echo REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} >> .env
+            echo REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} >> .env
+            echo REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} >> .env
+            echo REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} >> .env
           fi
-      - name: Show test repports
+
+          npm test
+      - name: Merge and show test reports
         if: always()
-        run: cat ./dist/test-reports.xml
+        run: |
+          npm run test-report-merge
+          cat ./dist/test-reports.xml
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0

@@ -4,26 +4,29 @@ import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router';
 import { BpFormField, BpNumberField } from '../../../common/components';
 
-const PasswordResetConfirmationLayout = ({ setStepFunc, email }) => {
-  const [isLoading, setLoading] = useState(false);
+const PasswordResetConfirmationLayout = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const formState = useForm({ mode: 'all', resolver: PasswordResolver });
+  const { email } = useParams();
+  const navigate = useNavigate();
 
   const handleSubmitConfirmation = formState.handleSubmit(values => {
-    setLoading(true);
+    setIsLoading(true);
     const { resetCode, newPassword } = values;
     awsAuth
       .confirmResetPassword({ confirmationCode: resetCode, newPassword, username: email })
       .then(data => {
         // La réinitialisation du mot de passe a réussi
-        setStepFunc('success');
-        setLoading(false);
+        navigate('/password/reset/success');
+        setIsLoading(false);
       })
       .catch(error => {
         // La réinitialisation du mot de passe a échoué
         formState.setError('resetCode', { message: FieldErrorMessage.resetCode });
-        setLoading(false);
+        setIsLoading(false);
       });
   });
 

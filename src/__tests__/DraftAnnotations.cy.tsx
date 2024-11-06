@@ -48,13 +48,13 @@ describe('draft-annotations view', () => {
 
   it('Can show empty drafts annotations', () => {
     cy.intercept('GET', `/accounts/${account1.id}/annotations/drafts*`, []).as('getDraftAnnotations');
-    cy.intercept('GET', `/accountHolders/${accountHolder1.id}/prospects*`, prospects).as('getProspects');
+    cy.intercept('GET', `/accountHolders/${accountHolder1.id}/prospects*`, []).as('getProspects');
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name=prospects]').click();
     cy.get('[data-cy="drafts-tab"]').click();
     cy.wait('@getDraftAnnotations');
-    cy.contains('Pas encore de Prospect avec brouillon.');
+    cy.contains('Pas encore de Prospect avec brouillons.');
   });
 
   it('should get draft annotations if redirected with useDraft=true and save draft annotations', () => {

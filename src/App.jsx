@@ -9,6 +9,8 @@ import { BpAdmin } from './security/BpAdmin';
 import BpLoginPageLayout from './security/LoginPageLayout';
 import LoginSuccessPage from './security/LoginSuccessPage';
 import MobileLoginSuccessPage from './security/MobileLoginSuccessPage';
+import { PasswordResetPassword } from './security/PasswordReset/components';
+import PasswordResetConfirmationLayout from './security/PasswordReset/components/PasswordResetConfirmationLayout';
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
@@ -38,6 +40,8 @@ const App = () => {
           />
           <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
           <Route exact path='/password/reset' element={<PasswordResetPage />} />
+          <Route exact path='/password/reset/code' element={<PasswordResetConfirmationLayout />} />
+          <Route exact path='/password/reset/success' element={<PasswordResetPassword />} />
           <Route exact path='/redirection' element={<RedirectionMobilePage />} />
           <Route exact path='*' element={<BpAdmin />} />
         </Routes>

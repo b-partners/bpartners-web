@@ -3,7 +3,7 @@ import { InvoiceStatus } from '@bpartners/typescript-client';
 import App from '@/App';
 import { accountHolders1, accounts1, areaPictures, createInvoices, customers1, invoiceAnnotations, products, whoami1 } from './mocks/responses';
 
-describe('Invoice Annotation', () => {
+xdescribe('Invoice Annotation', () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
@@ -26,7 +26,7 @@ describe('Invoice Annotation', () => {
     );
   });
 
-  it.skip('should show annotation on edit an invoice', () => {
+  it('should show annotation on edit an invoice', () => {
     cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.contains('invoice-ref-0').click();
@@ -37,10 +37,25 @@ describe('Invoice Annotation', () => {
     cy.contains('x : 0');
     cy.contains('y : 0');
 
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click();
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(2)').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
 
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(4)').click();
-    cy.get('[data-cy="annotator-top-bar"] > :nth-child(3)').click();
+    cy.get('.css-1vol7lq-MuiPaper-root-MuiCard-root > :nth-child(1) > .MuiCardHeader-action').click();
+    cy.get('[aria-label="Justificatif"]').click();
+
+    cy.contains('Polygone A');
+    cy.contains('Polygone B');
+    cy.contains('Surface: 10 m²');
+    cy.contains("Source de l'image: vendee, 20cm, 2023");
+    cy.contains('invoice-title-0');
+    cy.contains('invoice-ref-0');
+    cy.contains('Justificatif');
+    cy.contains('x : 0');
+    cy.contains('y : 0');
+
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
+    cy.get('[aria-label="Zoom +"]').click();
   });
 });

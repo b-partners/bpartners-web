@@ -22,15 +22,22 @@ const mockCognitoLogin = () => {
       just replace all amplify functions to mock login
       we never call cognito
     */
-
+  cy.clearAllLocalStorage();
+  cy.clearAllCookies();
   cy.intercept('GET', '/whoami', whoami1).as('whoami');
-  cy.intercept('GET', `/users/**`, user1).as('getUser1');
+  cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
   cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(sessionStub));
   cy.stub(awsAuth, 'signIn').returns(Promise.resolve(cognitoResponse));
   cy.stub(authProvider, 'checkAuth').returns(Promise.resolve());
   cy.then(async () => await authProvider.login(loginParams));
+};
+
+const waitAuthRequestNeeded = () => {
+  cy.wait('@whoami');
+  cy.wait('@getUser1');
+  cy.wait('@getLegalFile');
 };
 
 const realCognitoLogin = () => {
@@ -79,6 +86,7 @@ declare global {
       cognitoLogin: typeof mockCognitoLogin;
       realCognitoLogin: typeof realCognitoLogin;
       removeApiDummyUser: typeof removeApiDummyUser;
+      waitAuthRequestNeeded: typeof waitAuthRequestNeeded;
       skipBankSynchronisation: typeof skipBankSynchronisation;
     }
   }
@@ -90,4 +98,5 @@ Cypress.Commands.add('e2eLogin', e2eLogin);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
+Cypress.Commands.add('waitAuthRequestNeeded', waitAuthRequestNeeded);
 Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);

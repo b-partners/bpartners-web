@@ -56,7 +56,7 @@ export const dataProvider: RaDataProviderType = {
       fetcher: p => getProvider(resourceType).getList(p, perPage, { ...filter, sort: params.sort || {} }),
     });
 
-    return { data, pageInfo, total: Number.MAX_SAFE_INTEGER };
+    return { data, pageInfo, total: data.length === 0 ? 0 : Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {
     const result = await getProvider(resourceType).getOne(params.id);
@@ -73,6 +73,8 @@ export const dataProvider: RaDataProviderType = {
   },
   async create(resourceType: string, params: any) {
     const result = await getProvider(resourceType).saveOrUpdate([params.data]);
+    console.log(result);
+
     return { data: result[0] };
   },
   async archive(resourceType, params) {

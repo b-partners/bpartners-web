@@ -2,21 +2,20 @@ import { awsAuth } from '@/providers';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
 import { BpFormField } from '../../../common/components';
 
-const PasswordResetRequestLayout = ({ setStepFunc, handleDialog }) => {
+const PasswordResetRequestLayout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const formState = useForm({ mode: 'all' });
+  const navigate = useNavigate();
 
   const handleSubmitRequest = formState.handleSubmit(({ email }) => {
     setIsLoading(true);
     awsAuth
       .resetPassword({ username: email })
       .then(data => {
-        // mail envoyé avec succès
-        handleDialog(true);
-        setStepFunc('confirmation', email);
-        setIsLoading(false);
+        navigate('/password/reset/code?email=' + email);
       })
       .catch(err => {
         setIsLoading(false);

@@ -17,12 +17,12 @@ describe(specTitle('Products'), () => {
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?**`, req => {
+    cy.intercept('GET', /^\/accounts\/mock-account-id1\/products(\?.*)?$/, req => {
       const { page, pageSize } = req.query;
       req.reply(getProducts(page - 1, pageSize));
     }).as('getProducts');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products/**`, req => {
-      req.reply({ ...getProducts(0, 1)[0], id: 'product-15-id' });
+      req.reply({ ...getProducts(0, 1)[0], id: req.url.split('products/')[1] });
     }).as('getOneProduct');
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       req.reply(req.body);
@@ -120,7 +120,7 @@ describe(specTitle('Products'), () => {
     cy.get('[name="description"]').type('new description');
     cy.get('[name="unitPrice"]').type(1.03);
     cy.get('[name="vatPercent"]').type(5);
-
+    let newProduct;
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
       expect(req.body).to.deep.eq([
         {
@@ -133,10 +133,16 @@ describe(specTitle('Products'), () => {
           unitPriceWithVat: null,
         },
       ]);
-      setProduct(req.body[0]);
+      newProduct = [{ ...req.body[0], id: 'new-product-id', status: 'ENABLED' }];
+      req.reply(newProduct);
     }).as('postNewProduct');
+
     cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
     cy.wait('@postNewProduct');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/products?**`, req => {
+      const { page, pageSize } = req.query;
+      req.reply([...newProduct, ...getProducts(page - 1, pageSize)]);
+    });
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('new description');
     cy.contains('103,00 €');
@@ -156,14 +162,14 @@ describe(specTitle('Products'), () => {
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
     cy.contains('Édition de produit');
-
+    cy.intercept('GET', '/accounts/mock-account-id1/products/product-0-id', getProducts(1, 1)[0]);
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
       const editedProduct = [
         {
           description: editionDescription,
           unitPrice: 100,
           vatPercent: 100,
-          id: 'product-15-id',
+          id: 'product-0-id',
           quantity: 1,
           totalPriceWithVat: null,
           totalVat: null,
@@ -250,7 +256,7 @@ describe(specTitle('Products'), () => {
     cy.get('[data-testid="submit-archive-products"]').click();
     cy.wait('@archiveProduct').then(res => {
       const expectedPayload = [
-        { id: 'product-15-id', status: 'DISABLED' },
+        { id: 'product-0-id', status: 'DISABLED' },
         { id: 'product-1-id', status: 'DISABLED' },
       ];
       const body = res.request.body;
