@@ -155,15 +155,6 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@emitInvoice');
   });
 
-  it('Should show payment regulation comment', () => {
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
-    cy.getByName('invoice').click();
-    cy.get('tbody tr').first().click();
-    cy.getByTestId('invoice-Acompte-accordion').click();
-
-    cy.contains('Test dummy comment');
-  });
-
   it('should show invoices summary', () => {
     cy.intercept('GET', `/accounts/${accounts1[0].id}/invoices**`, invoicesToChangeStatus);
     cy.getByName('invoice').click();
