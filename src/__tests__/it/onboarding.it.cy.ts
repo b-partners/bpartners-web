@@ -1,4 +1,7 @@
-xdescribe('Onboarding', () => {
+import { userAccountsApi } from '@/providers';
+import axios from 'axios';
+
+describe('Onboarding', () => {
   it('Create user from dashboard ui', () => {
     cy.visit('https://dashboard.preprod.bpartners.app');
 
@@ -33,7 +36,9 @@ xdescribe('Onboarding', () => {
     let clickCount = 0;
 
     const clickUntilSuccess = () => {
-      cy.get('#rcmbtn111')
+      cy.get('#rcmbtn111').click();
+      cy.contains('Sent').click();
+      cy.contains('Inbox')
         .click()
         .then(() => {
           clickCount += 1;
@@ -58,7 +63,7 @@ xdescribe('Onboarding', () => {
       .its('0.contentDocument.body')
       .find('[class="rcmBody"] > ul > li:last-child > strong')
       .then(res => {
-        cy.exec(`echo 'export COGNITO_PASSWORD="${res.html()}"' >> ~/.bashrc && source ~/.bashrc`);
+        cy.exec(`touch cognito_password.txt && echo "${res.html()}" > cognito_password.txt`);
       });
 
     cy.get('#rcmbtn123').click();
@@ -68,7 +73,8 @@ xdescribe('Onboarding', () => {
     cy.visit('https://dashboard.preprod.bpartners.app');
 
     cy.name('username').type(process.env.REACT_APP_IT_ONBOARD_USERNAME);
-    cy.exec(`echo $COGNITO_PASSWORD`).then(({ stdout }) => {
+
+    cy.exec(`cat cognito_password.txt`).then(({ stdout }) => {
       cy.name('password').type(stdout + '{enter}');
     });
 
@@ -77,5 +83,10 @@ xdescribe('Onboarding', () => {
     cy.name('phoneNumber').type(process.env.REACT_APP_IT_ONBOARD_PHONE_NUMBER);
     cy.name('newPassword').type(process.env.REACT_APP_IT_PASSWORD);
     cy.name('confirmedPassword').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
+  });
+
+  it('Should remove the created user', async () => {
+    cy.exec('rm cognito_password.txt');
+    await axios.delete('https://api.preprod.bpartners.app/dummy-user');
   });
 });
