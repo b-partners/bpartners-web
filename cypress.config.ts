@@ -1,6 +1,5 @@
 import taskCoverage from '@cypress/code-coverage/task';
 import { defineConfig } from 'cypress';
-import mergeReport from 'cypress-sonarqube-reporter/mergeReports';
 import vitePreprocessor from 'cypress-vite';
 
 export default defineConfig({
@@ -34,9 +33,6 @@ export default defineConfig({
   component: {
     setupNodeEvents(on, config) {
       taskCoverage(on, config);
-      on('after:run', result => {
-        mergeReport(result, { mergeFileName: 'test-reports.xml' });
-      });
       return config;
     },
     specPattern: 'src/**/!(*.it).cy.{js,ts,jsx,tsx}',

@@ -42,6 +42,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.12.41",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@skodaflow/sonar-report-merger": "^1.0.2",
     "@types/draft-js": "^0.11.11",
     "@types/lodash": "^4.17.7",
     "@types/react": "^18.3.3",
@@ -69,11 +70,12 @@
     "start": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --spec './**/!(*.it).cy.{js,jsx,tsx}' --component ",
+    "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --component ",
     "it": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --config video=true --e2e",
     "cy:open": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress open",
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
-    "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\""
+    "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
+    "test-report-merge": "srm ./dist/test-reports.xml \"./dist/**/!(*test-reports).xml\""
   }
 }

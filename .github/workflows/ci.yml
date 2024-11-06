@@ -68,9 +68,11 @@ jobs:
           fi
 
           npm test
-      - name: Show test repports
+      - name: Merge and show test reports
         if: always()
-        run: find "./dist/src/__tests__/" -iname "*xml" -exec cat {} +
+        run: |
+          npm run test-report-merge
+          cat ./dist/test-reports.xml
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
