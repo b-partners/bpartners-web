@@ -47,8 +47,8 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
     if (!isAnnotationEmpty) {
       const newPolygons = annotations?.annotations.map(annotation => ({
         id: annotation.id,
-        fillColor: '#00ff0040',
-        strokeColor: '#00ff00',
+        fillColor: annotation.metadata?.fillColor || '#00ff0040',
+        strokeColor: annotation.metadata?.strokeColor || '#00ff00',
         points: annotation.polygon?.points,
       }));
       setPolygons(newPolygons);

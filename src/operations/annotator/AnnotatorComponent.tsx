@@ -5,12 +5,13 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
+import { getNewPolygonColor } from './utils/annotation-colors';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
@@ -54,9 +55,14 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     }
   };
 
-  const measurementMapper = (measurement: Measurement): Measurement => {
-    if (!isExtended) return measurement;
-    return { ...measurement, value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH) };
+  const measurementMapper = (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
+    const isFirstPolygon = currentPolygons[0]?.id === measurement.polygonId;
+    if (!isExtended) return { ...measurement, isInvisible: !isFirstPolygon };
+    return {
+      ...measurement,
+      isInvisible: !isFirstPolygon,
+      value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH),
+    };
   };
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
@@ -99,6 +105,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           setPolygons={updatePolygonList}
           polygonList={polygonFromProps || polygons}
           measurementMapper={measurementMapper}
+          getNewPolygonColor={getNewPolygonColor}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
