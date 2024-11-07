@@ -6,7 +6,6 @@ import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { useEffect } from 'react';
 import { List, useNotify, useRefresh } from 'react-admin';
-import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
@@ -22,6 +21,7 @@ import {
 import FeedbackModal from './components/FeedbackModal';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { invoiceInitialValue, viewScreenState } from './utils/utils';
+import { parseUrlParams } from '@/common/utils';
 
 const LIST_ACTION_STYLE = { display: 'flex' };
 
@@ -62,8 +62,7 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { showCreateQuote } = useParams();
-
+  const { showCreateQuote } = parseUrlParams();
   useEffect(() => {
     if (showCreateQuote === 'true') {
       crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });

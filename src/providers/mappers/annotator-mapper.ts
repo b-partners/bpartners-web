@@ -37,6 +37,8 @@ export const annotationsAttributeMapper = (data: any, polygons: Polygon[], pictu
       metadata: {
         area: correspondingPolygon.surface,
         wearness: wear,
+        fillColor: correspondingPolygon.fillColor,
+        strokeColor: correspondingPolygon.strokeColor,
         ...others,
       },
       userId: userId,
