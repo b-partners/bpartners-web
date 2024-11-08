@@ -3,12 +3,10 @@ import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as Vis
 
 import { BPConstruction } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
-import { useAnnotationsInfoForm } from '@/common/forms';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { labels } from '@/constants';
-import { Alphabet } from '@/constants/alphabet';
-import { cache, clearPolygons, getCached } from '@/providers';
+import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import {
@@ -27,56 +25,51 @@ import {
 } from '@mui/material';
 import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
 import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, UseFieldArrayReturn, UseFormReturn } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
-import { AnnotationInfo } from './types';
+import { AnnotationItem } from './types';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
-  draftAnnotationInfo?: AnnotationInfo[];
-};
+  formState: UseFormReturn<{ annotations: AnnotationItem[] }, any, undefined>;
+  fieldArrayState: UseFieldArrayReturn<{ annotations: AnnotationItem[]; }, "annotations", "id">;
+}
 
-const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) => {
+export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, fieldArrayState, formState }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
+  const { polygons, removeAnnotationByPolygonId, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
 
-  const formState = useAnnotationsInfoForm(polygons, draftAnnotationInfo);
-
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
-    const handleSubmitForms = formState.handleSubmit(async data => {
-      setIsLoading(true);
-      const annotationIdValue = draftAnnotationId || uuidV4();
+    const handleSubmitForms = formState.handleSubmit(async ({ annotations = [] }) => {
+      // setIsLoading(true);
+      console.log("annotations", annotations);
+      // const annotationIdValue = draftAnnotationId || uuidV4();
+      // const annotationAttributeMapped = annotationsAttributeMapper(annotations, pictureId, annotationIdValue);
+      // const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+      // await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
+      // setIsLoading(false);
+      // clearPolygons();
 
-      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationIdValue);
-      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
-      await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
-      setIsLoading(false);
-      clearPolygons();
+      // if (isDraft) {
+      //   notify('resources.draftsAnnotations.creation.success', { type: 'success' });
+      //   redirect('/prospects?tab=drafts');
+      //   return;
+      // }
 
-      if (isDraft) {
-        notify('resources.draftsAnnotations.creation.success', { type: 'success' });
-        redirect('/prospects?tab=drafts');
-        return;
-      }
-
-      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
+      // redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
     });
     handleSubmitForms(event);
   };
 
-  const removeAnnotation = (polygonId: string) => {
-    setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
-    const newAnnotationInfo = getCached.annotationsInfoList().filter((info: AnnotationInfo) => info.polygonId !== polygonId);
-    cache.annotationsInfo(newAnnotationInfo);
-  };
-
-  const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons((prev: Polygon[]) => prev.map((polygon: Polygon) => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
+  const togglePolygonVisibility = (annotationIndex: number) => {
+    const currentValue = fieldArrayState.fields[annotationIndex];
+    const mappedAnnotationItem = { ...currentValue, polygon: { ...currentValue.polygon, isInvisible: !currentValue.polygon.isInvisible } };
+    fieldArrayState.update(annotationIndex, mappedAnnotationItem);
   };
 
   const handleClickAccordion = (index: number) => (_event: ChangeEvent<{}>, isExpanded: boolean) => {
@@ -95,25 +88,25 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) =
                     <Box data-cy='annotation-info-item' key={polygon.id}>
                       <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                         <IconButton
-                          aria-label='toggle polygon visibility'
                           edge='end'
+                          aria-label='toggle polygon visibility'
                           style={{ marginTop: '15px', marginRight: '0' }}
-                          onClick={() => togglePolygonVisibility(polygon.id)}
+                          onClick={() => togglePolygonVisibility(i)}
                         >
                           {polygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
                         </IconButton>
                       </Tooltip>
                       <SelectInput
-                        name={`${i}.labelType`}
-                        source={'labelType'}
-                        label='Type de label'
-                        choices={labels}
                         alwaysOn
                         resettable
+                        choices={labels}
+                        label='Type de label'
                         sx={{ width: '70%' }}
+                        name={`annotations.${i}.annotationInfo.labelType`}
+                        source={`annotations.${i}.annotationInfo.labelType`}
                       />
                       <Tooltip title='supprimer le polygone'>
-                        <IconButton aria-label='delete polygon' edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
+                        <IconButton aria-label='delete polygon' edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotationByPolygonId(polygon.id)}>
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
@@ -121,14 +114,13 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) =
                       <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
                         <AccordionSummary expandIcon={<ExpandMore />}>
                           <TextInput
-                            name={`${i}.labelName`}
-                            source={'labelName'}
+                            name={`annotations.${i}.annotationInfo.labelName`}
+                            source={`annotations.${i}.annotationInfo.labelName`}
                             inputProps={{
                               'data-cy': 'label-name-input',
                             }}
                             onClick={e => e.stopPropagation()}
                             label={'Nom du label'}
-                            defaultValue={`Polygone ${Alphabet[i]}`}
                             helperText={false}
                           />
                         </AccordionSummary>
@@ -184,5 +176,3 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId, draftAnnotationInfo }) =
     </>
   );
 };
-
-export default SideBar;

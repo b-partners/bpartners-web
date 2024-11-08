@@ -17,7 +17,7 @@ import { handleSubmit, printError } from '@/common/utils';
 import { customerProvider, invoiceProvider } from '@/providers';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
-import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotatorComponent } from '../annotator';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';

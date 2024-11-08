@@ -1,8 +1,7 @@
-import { AnnotationInfo } from '@/operations/annotator';
-import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
+import { AnnotationItem } from '@/operations/annotator';
 
 export const annotatorMapper = (
   annotationAttributeMapped: AreaPictureAnnotationInstance[],
@@ -21,32 +20,28 @@ export const annotatorMapper = (
   };
 };
 
-export const annotationsAttributeMapper = (data: any, polygons: Polygon[], pictureId: string, annotationId: string) => {
+export const annotationsAttributeMapper = (annotations: AnnotationItem[], areaPictureId: string, annotationId: string): AreaPictureAnnotationInstance[] => {
   const { userId } = getCached.userInfo();
 
-  return Object.entries<any>(data).map(([index, attributes]) => {
-    const polygonIndex = parseInt(index, 10);
-    const correspondingPolygon = polygons[polygonIndex];
-
-    const { labelType, labelName, wear, ...others } = attributes as AnnotationInfo;
-
+  return annotations.map(({ annotationInfo, polygon }) => {
+    const { labelType, labelName, wear, ...others } = annotationInfo;
     return {
       id: uuidV4(),
-      areaPictureId: pictureId,
-      annotationId: annotationId,
-      metadata: {
-        area: correspondingPolygon.surface,
-        wearness: wear,
-        fillColor: correspondingPolygon.fillColor,
-        strokeColor: correspondingPolygon.strokeColor,
-        ...others,
-      },
-      userId: userId,
+      userId,
       labelName,
       labelType,
+      annotationId,
+      areaPictureId,
       polygon: {
-        points: correspondingPolygon.points,
+        points: polygon.points,
       },
-    } as AreaPictureAnnotationInstance;
+      metadata: {
+        area: polygon.surface,
+        wearness: wear,
+        fillColor: polygon.fillColor,
+        strokeColor: polygon.strokeColor,
+        ...others,
+      },
+    }
   });
 };

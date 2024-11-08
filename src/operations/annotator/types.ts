@@ -18,6 +18,11 @@ export interface AnnotationInfo {
   labelName?: string;
 }
 
+export type AnnotationItem = {
+  polygon: Polygon;
+  annotationInfo: AnnotationInfo;
+};
+
 export type PolygonsForm = Record<`${number}`, Polygon>;
 
 export type AnnotationsInfo = Record<`${number}`, AnnotationInfo>;

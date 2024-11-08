@@ -16,13 +16,25 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
             {surface} m²
           </Typography>
         </Box>
-        <SelectInput name={`${index}.covering`} source='covering' label='Revêtement' choices={covering} alwaysOn resettable />
-        <SlopeSelect name={`${index}.slope`} />
-        <SelectInput name={`${index}.wear`} source='wear' label='Usure' choices={wear} alwaysOn resettable />
-        <SelectInput name={`${index}.wearLevel`} source='wearLevel' label="Taux d'usure" choices={percentagesLevel} alwaysOn resettable />
-        <SelectInput name={`${index}.moldRate`} source='moldRate' label='Taux de moisissure' choices={percentagesLevel} alwaysOn resettable />
-        <TextInput name={`${index}.obstacle`} source='obstacle' label='Obstacle' />
-        <TextInput name={`${index}.comment`} source='comment' label='Commentaire' multiline />
+        <SelectInput
+          label='Revêtement'
+          choices={covering} alwaysOn resettable
+          name={`annotations.${index}.annotationInfo.covering`}
+          source={`annotations.${index}.annotationInfo.covering`}
+        />
+        <SlopeSelect name={`annotations.${index}.annotationInfo.slope`} />
+        <SelectInput
+          name={`annotations.${index}.annotationInfo.wear`}
+          source={`annotations.${index}.annotationInfo.wear`}
+          label='Usure'
+          choices={wear}
+          alwaysOn
+          resettable
+        />
+        <SelectInput name={`annotations.${index}.annotationInfo.wearLevel`} source={`annotations.${index}.annotationInfo.wearlevel`} label="Taux d'usure" choices={percentagesLevel} alwaysOn resettable />
+        <SelectInput name={`annotations.${index}.annotationInfo.moldRate`} source={`annotations.${index}.annotationInfo.moldRate`} label='Taux de moisissure' choices={percentagesLevel} alwaysOn resettable />
+        <TextInput name={`annotations.${index}.annotationInfo.obstacle`} source={`annotations.${index}.annotationInfo.obstacle`} label='Obstacle' />
+        <TextInput name={`annotations.${index}.annotationInfo.comment`} source={`annotations.${index}.annotationInfo.comment`} label='Commentaire' multiline />
       </div>
     </Box>
   );

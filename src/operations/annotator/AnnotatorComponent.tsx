@@ -17,10 +17,9 @@ const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL
 const MAX_ZOOM = 19;
 
 const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
-const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
-  const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
+export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
+  const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
@@ -56,11 +55,12 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
   };
 
   const measurementMapper = (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
-    const isFirstPolygon = currentPolygons[0]?.id === measurement.polygonId;
-    if (!isExtended) return { ...measurement, isInvisible: !isFirstPolygon };
+    const firstPolygon = currentPolygons[0];
+    const isInvisible = firstPolygon?.id !== measurement.polygonId;
+    if (!isExtended) return { ...measurement, isInvisible };
     return {
       ...measurement,
-      isInvisible: !isFirstPolygon,
+      isInvisible,
       value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH),
     };
   };
@@ -102,7 +102,7 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           height={height || '500px'}
           buttonsComponent={annotatorButtonsActions(shiftImage, isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
-          setPolygons={updatePolygonList}
+          setPolygons={setPolygons}
           polygonList={polygonFromProps || polygons}
           measurementMapper={measurementMapper}
           getNewPolygonColor={getNewPolygonColor}
@@ -124,5 +124,3 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     </Box>
   );
 };
-
-export default AnnotatorComponent;

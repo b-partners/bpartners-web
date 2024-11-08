@@ -10,7 +10,6 @@ const UnverifiedUser = () => {
   useEffect(() => {
     asyncGetUser().then(user => {
       const idVerified = user?.idVerified;
-      console.log(user);
       !idVerified && handleOpen();
     });
   }, []);

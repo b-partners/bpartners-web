@@ -130,9 +130,9 @@ export const getCached = {
     return getCachedObject<AnnotationsInfo>(annotationsInfoItem);
   },
   annotationsInfoList: () => {
-    const annotationInfo = getCachedObject<AnnotationsInfo>(annotationsInfoItem);
-    if (annotationInfo) {
-      return Object.values(annotationInfo) as AnnotationsInfo[];
+    const annotationInfos = getCachedObject<AnnotationsInfo>(annotationsInfoItem);
+    if (annotationInfos) {
+      return Object.values(annotationInfos) as AnnotationInfo[];
     }
     return [];
   },

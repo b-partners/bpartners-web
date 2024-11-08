@@ -1,4 +1,5 @@
 import { parseUrlParams } from '@/common/utils';
+import { stringifyObj } from '@/common/utils/stringify';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
@@ -25,9 +26,9 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             setAnnotations(annotations[0]);
           }
         })
-        .then(() => {
+        .finally(() => {
           setIsLoading(false);
-        });
+        })
       return;
     }
 
@@ -38,7 +39,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
           setAnnotations(annotations[0]);
         }
       })
-      .then(() => {
+      .finally(() => {
         setIsLoading(false);
       });
   }, [pictureId]);
@@ -53,7 +54,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       }));
       setPolygons(newPolygons);
     }
-  }, [annotations, setPolygons, isAnnotationEmpty]);
+  }, [stringifyObj(annotations), setPolygons, isAnnotationEmpty]);
 
   return { polygons, annotations, isAnnotationEmpty, isLoading };
 };
