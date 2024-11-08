@@ -84,7 +84,7 @@ describe('Onboarding', () => {
     cy.name('confirmedPassword').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
   });
 
-  it('Should remove the created user', async () => {
+  after(async () => {
     cy.exec('rm cognito_password.txt');
     await axios.delete('https://api.preprod.bpartners.app/dummy-user');
   });

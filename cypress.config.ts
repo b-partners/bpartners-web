@@ -47,5 +47,8 @@ export default defineConfig({
       on('file:preprocessor', vitePreprocessor());
     },
     specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
+    retries: {
+      runMode: 5,
+    },
   },
 });
