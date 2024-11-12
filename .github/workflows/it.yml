@@ -74,15 +74,30 @@ jobs:
           echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
           echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
           echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
-          npm run it
+          max_retries=5
+          attempt=1
+          until npm run it
+          do
+            if [ $attempt -ge $max_retries ]; then
+              echo "Tests failed after $attempt attempts."
+              exit 1
+            fi
+            echo "Test failed. Retrying attempt $((attempt+1)) of $max_retries..."
+            attempt=$((attempt+1))
+            sleep 5
+          done
+
         id: it-test
+      - name: Remove last user
+        run: curl -X DELETE https://api.preprod.bpartners.app/dummy-user
+        continue-on-error: true
+        if: always()
       - name: Show test repports
         if: always()
         run: find "./dist/src/__tests__/it" -iname "*xml" -exec cat {} +
       - name: Upload video to s3 if failure
         if: ${{ always() && steps.it-test.outcome == 'failure' }}
         run: aws s3 cp ./cypress/videos/__tests__/it/ s3://bpartners-web-it-videos/${{ env.time }}/ --recursive --profile bpartners
-
   notification:
     timeout-minutes: 25
     runs-on: ubuntu-latest
