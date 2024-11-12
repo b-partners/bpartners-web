@@ -1,7 +1,8 @@
-import { AreaPictureAnnotation, AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
+import { AnnotationInfo } from '@/operations/annotator';
+import { Polygon } from '@bpartners/annotator-component';
+import { AreaPictureAnnotation, AreaPictureAnnotationInstance, Wearness } from '@bpartners/typescript-client';
 import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
-import { AnnotationItem } from '@/operations/annotator';
 
 export const annotatorMapper = (
   annotationAttributeMapped: AreaPictureAnnotationInstance[],
@@ -20,11 +21,24 @@ export const annotatorMapper = (
   };
 };
 
-export const annotationsAttributeMapper = (annotations: AnnotationItem[], areaPictureId: string, annotationId: string): AreaPictureAnnotationInstance[] => {
+export const annotationsAttributeMapper = (
+  polygons: Polygon[],
+  annotationInfos: AnnotationInfo[],
+  areaPictureId: string,
+  annotationId: string
+): AreaPictureAnnotationInstance[] => {
   const { userId } = getCached.userInfo();
 
-  return annotations.map(({ annotationInfo, polygon }) => {
+  return polygons.map(polygon => {
+    const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id);
+
+    if (!annotationInfo) {
+      throw new Error('Annotation info is missing for this polygon');
+    }
+
     const { labelType, labelName, wear, ...others } = annotationInfo;
+    const wearness = (wear as Wearness | '') === '' ? null : wear;
+
     return {
       id: uuidV4(),
       userId,
@@ -36,12 +50,12 @@ export const annotationsAttributeMapper = (annotations: AnnotationItem[], areaPi
         points: polygon.points,
       },
       metadata: {
+        ...others,
         area: polygon.surface,
-        wearness: wear,
+        wearness,
         fillColor: polygon.fillColor,
         strokeColor: polygon.strokeColor,
-        ...others,
       },
-    }
+    };
   });
 };

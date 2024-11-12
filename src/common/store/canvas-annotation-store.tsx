@@ -1,13 +1,13 @@
+import { cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
 import { NOOP_FN } from '../utils/noop_fn';
-import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react';
 import { stringifyObj } from '../utils/stringify';
 
 export type AnnotationStore = {
   polygons: Polygon[];
   slopeInfoOpen: boolean;
-  setPolygons: (polygons: Polygon[]) => void;
-  removeAnnotationByPolygonId: (polygonId: string) => void;
+  setPolygons: Dispatch<SetStateAction<Polygon[]>>;
   handleSlopeInfoToggle: () => void;
 };
 
@@ -16,21 +16,17 @@ const CanvasAnnotationContext = createContext<AnnotationStore>({
   slopeInfoOpen: false,
   setPolygons: NOOP_FN,
   handleSlopeInfoToggle: NOOP_FN,
-  removeAnnotationByPolygonId: NOOP_FN
 });
 
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
 
 export type CanvasAnnotationContextProviderProps = {
   children: ReactNode;
-} & Partial<Pick<AnnotationStore, "removeAnnotationByPolygonId" | "polygons" | "setPolygons">>
+  defaultPolygons?: Polygon[];
+};
 
-export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({
-  children,
-  polygons = [],
-  setPolygons = NOOP_FN,
-  removeAnnotationByPolygonId = NOOP_FN,
-}) => {
+export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [] }) => {
+  const [polygons, setPolygons] = useState<Polygon[]>(defaultPolygons);
   const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
 
   const handleSlopeInfoToggle = () => {
@@ -38,13 +34,13 @@ export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProvider
   };
 
   const contextValues: AnnotationStore = useMemo(
-    () => ({ polygons, slopeInfoOpen, setPolygons, removeAnnotationByPolygonId, handleSlopeInfoToggle }),
-    [slopeInfoOpen, stringifyObj(polygons), setPolygons, removeAnnotationByPolygonId, handleSlopeInfoToggle]
+    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle }),
+    [slopeInfoOpen, stringifyObj(polygons), setPolygons, handleSlopeInfoToggle]
   );
 
-  return (
-    <CanvasAnnotationContext.Provider value={contextValues}>
-      {children}
-    </CanvasAnnotationContext.Provider>
-  );
+  useEffect(() => {
+    cache.polygons(polygons);
+  }, [stringifyObj(polygons)]);
+
+  return <CanvasAnnotationContext.Provider value={contextValues}>{children}</CanvasAnnotationContext.Provider>;
 };
