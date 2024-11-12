@@ -1,4 +1,3 @@
-import { Polygon } from '@bpartners/annotator-component';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
 import { BPConstruction } from '@/common/components';
@@ -38,6 +37,7 @@ export type SideBarProps = {
 
 export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, fieldArrayState, formState }) => {
   const redirect = useRedirect();
+
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, removeAnnotationByPolygonId, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
@@ -46,22 +46,21 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, fieldArrayState, 
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotations = [] }) => {
-      // setIsLoading(true);
-      console.log("annotations", annotations);
-      // const annotationIdValue = draftAnnotationId || uuidV4();
-      // const annotationAttributeMapped = annotationsAttributeMapper(annotations, pictureId, annotationIdValue);
-      // const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
-      // await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
-      // setIsLoading(false);
-      // clearPolygons();
+      setIsLoading(true);
+      const annotationIdValue = draftAnnotationId || uuidV4();
+      const annotationAttributeMapped = annotationsAttributeMapper(annotations, pictureId, annotationIdValue);
+      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+      await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
+      setIsLoading(false);
+      clearPolygons();
 
-      // if (isDraft) {
-      //   notify('resources.draftsAnnotations.creation.success', { type: 'success' });
-      //   redirect('/prospects?tab=drafts');
-      //   return;
-      // }
+      if (isDraft) {
+        notify('resources.draftsAnnotations.creation.success', { type: 'success' });
+        redirect('/prospects?tab=drafts');
+        return;
+      }
 
-      // redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
+      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
     });
     handleSubmitForms(event);
   };
@@ -80,12 +79,12 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, fieldArrayState, 
     <>
       <List sx={{ maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
         <Box py={2}>
-          {polygons.length > 0 ? (
+          {fieldArrayState.fields.length > 0 ? (
             <FormProvider {...formState}>
-              <form onSubmit={event => handleSubmitFormsWrapper(event, true)}>
-                {polygons.map((polygon, i) => {
+              <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
+                {fieldArrayState.fields.map(({ id: fieldId, polygon }, i) => {
                   return (
-                    <Box data-cy='annotation-info-item' key={polygon.id}>
+                    <Box data-cy='annotation-info-item' key={fieldId}>
                       <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                         <IconButton
                           edge='end'
@@ -163,7 +162,6 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, fieldArrayState, 
           style={{ width: '100%' }}
         />
         <BPButton
-          type='submit'
           isLoading={isLoading}
           disabled={isLoading || polygons.length === 0}
           label='resources.draftsAnnotations.add'

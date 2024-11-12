@@ -19,28 +19,31 @@ import { stringifyObj } from '@/common/utils/stringify';
 
 export const Annotator = () => {
   const { useDrafts } = parseUrlParams();
-  return useDrafts === 'true' ? <AnnotatorWithDraftAnnotation /> : <AnnotatorDefaultCacheManager />;
+  return useDrafts === 'true' ? <AnnotatorWithDraftAnnotation /> : <AnnotatorWithDefaultCacheManager />;
 };
 
 type AnnotatorUIProps = { defaultAnnotationItems?: AnnotationItem[], draftAnnotationId?: string };
 const AnnotatorUI: FC<AnnotatorUIProps> = ({ draftAnnotationId, defaultAnnotationItems = [] }) => {
   const { width, height } = useWindowResize();
   const {
-    fieldArrayState,
     formState,
+    fieldArrayState,
     setPolygons,
     removeAnnotationByPolygonId
   } = useAnnotationItemsForm(defaultAnnotationItems);
   const polygons = fieldArrayState.fields.map(annotation => annotation.polygon);
 
   useEffect(() => {
-    formState.watch((values) => {
-      console.log("values", values);
+    const subscription = formState.watch((values) => {
       const polygons = values.annotations?.map(annotation => annotation.polygon);
       const annotationInfos = values.annotations?.map(annotation => annotation.annotationInfo);
       cache.annotationsInfo(annotationInfos);
       cache.polygons(polygons as Polygon[]);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    }
   }, []);
 
   return (
@@ -59,7 +62,7 @@ const AnnotatorUI: FC<AnnotatorUIProps> = ({ draftAnnotationId, defaultAnnotatio
   )
 }
 
-const AnnotatorDefaultCacheManager: FC<AnnotatorUIProps> = ({
+const AnnotatorWithDefaultCacheManager: FC<AnnotatorUIProps> = ({
   draftAnnotationId,
   defaultAnnotationItems = []
 }) => {
@@ -87,7 +90,7 @@ const AnnotatorDefaultCacheManager: FC<AnnotatorUIProps> = ({
 
 const AnnotatorWithDraftAnnotation = () => {
   const {
-    isLoading,
+    isAnnotationEmpty,
     polygons: draftsPolygons,
     annotations = {},
   } = useRetrievePolygons(async areaPictureId => {
@@ -100,10 +103,10 @@ const AnnotatorWithDraftAnnotation = () => {
   );
   const draftAnnotationItems = mapPolygonsToAnnotationItems(draftsPolygons as Polygon[], draftAnnotationInfo);
 
-  if (isLoading || draftAnnotationItems.length === 0) {
+  if (isAnnotationEmpty) {
     return <BPLoader message="Chargement des brouillons d'annotation..." />;
   }
 
-  return <AnnotatorDefaultCacheManager draftAnnotationId={annotations.id} defaultAnnotationItems={draftAnnotationItems} />;
+  return <AnnotatorWithDefaultCacheManager draftAnnotationId={annotations.id} defaultAnnotationItems={draftAnnotationItems} />;
 };
 export default Annotator;

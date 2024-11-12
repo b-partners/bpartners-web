@@ -1,17 +1,30 @@
-import { parseUrlParams } from '@/common/utils';
-import { stringifyObj } from '@/common/utils/stringify';
-import { annotatorProvider } from '@/providers/annotator-provider';
-import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
+import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
+import { parseUrlParams } from '@/common/utils';
+import { annotatorProvider } from '@/providers/annotator-provider';
+
+export type RetrievedPolygonsType = {
+  annotations: AreaPictureAnnotation;
+  polygons: Polygon[];
+}
+
+const getPolygonsFromAreaPictureAnnotation = (areaPictureAnnotation: AreaPictureAnnotation): Polygon[] => {
+  return areaPictureAnnotation.annotations.map(annotation => ({
+    id: annotation.id,
+    fillColor: annotation.metadata?.fillColor || '#00ff0040',
+    strokeColor: annotation.metadata?.strokeColor || '#00ff00',
+    points: annotation.polygon?.points,
+  }));
+};
 
 export type AreaPictureAnnotationFetcherType = (pictureId: string) => Promise<AreaPictureAnnotation[]>;
-
 export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAnnotationFetcherType) => {
   const { pictureId } = parseUrlParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const [annotations, setAnnotations] = useState<AreaPictureAnnotation>({});
-  const [polygons, setPolygons] = useState<Polygon[]>([]);
-
+  const [retrievedPolygon, setRetrievedPolygon] = useState<RetrievedPolygonsType>({
+    annotations: {},
+    polygons: []
+  });
+  const { polygons, annotations } = retrievedPolygon;
   const isAnnotationEmpty = !annotations || Object.keys(annotations || {}).length === 0;
 
   useEffect(() => {
@@ -21,40 +34,32 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
 
     if (areaPictureAnnotationFetcher) {
       areaPictureAnnotationFetcher(pictureId)
-        .then(annotations => {
-          if (annotations.length > 0) {
-            setAnnotations(annotations[0]);
+        .then(areaPictureAnnotations => {
+          if (areaPictureAnnotations.length > 0) {
+            const areaPictureAnnotation = areaPictureAnnotations[0];
+            const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+            setRetrievedPolygon({
+              polygons,
+              annotations: areaPictureAnnotation
+            });
           }
-        })
-        .finally(() => {
-          setIsLoading(false);
         })
       return;
     }
 
     annotatorProvider
       .getAnnotationsPicture(pictureId)
-      .then(annotations => {
-        if (annotations.length > 0) {
-          setAnnotations(annotations[0]);
+      .then(areaPictureAnnotations => {
+        if (areaPictureAnnotations.length > 0) {
+          const areaPictureAnnotation = areaPictureAnnotations[0];
+          const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+          setRetrievedPolygon({
+            polygons,
+            annotations: areaPictureAnnotation
+          });
         }
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
   }, [pictureId]);
 
-  useEffect(() => {
-    if (!isAnnotationEmpty) {
-      const newPolygons = annotations?.annotations.map(annotation => ({
-        id: annotation.id,
-        fillColor: annotation.metadata?.fillColor || '#00ff0040',
-        strokeColor: annotation.metadata?.strokeColor || '#00ff00',
-        points: annotation.polygon?.points,
-      }));
-      setPolygons(newPolygons);
-    }
-  }, [stringifyObj(annotations), setPolygons, isAnnotationEmpty]);
-
-  return { polygons, annotations, isAnnotationEmpty, isLoading };
+  return { polygons, annotations, isAnnotationEmpty };
 };
