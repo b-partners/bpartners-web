@@ -23,8 +23,6 @@ import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { invoiceInitialValue, viewScreenState } from './utils/utils';
 import { parseUrlParams } from '@/common/utils';
 
-const LIST_ACTION_STYLE = { display: 'flex' };
-
 const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
   if (event) {
     event.stopPropagation();

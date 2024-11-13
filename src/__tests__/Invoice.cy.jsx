@@ -45,7 +45,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Can be paid', () => {
-    cy.get('[name="invoice"]').click();
+    cy.getByName('invoice').click();
     cy.intercept('GET', `/accounts/mock-account-id1/invoicesSummary`, invoicesSummary).as('getInvoicesSummary');
 
     cy.wait('@getInvoicesSummary');
@@ -54,7 +54,7 @@ describe(specTitle('Invoice'), () => {
     cy.contains('3250,00');
     cy.contains('100,00');
 
-    cy.get('.MuiTabs-flexContainer > :nth-child(3)').click();
+    cy.getByTestId('invoice-tabs-facture').click();
     cy.contains('invoice-ref-3');
 
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
@@ -71,29 +71,29 @@ describe(specTitle('Invoice'), () => {
       expect(actualFeedbackAsked.message).includes('Nous aimerions vous demander si vous seriez prêt(e) à laisser un avis');
       req.reply({});
     }).as('AskFeedback');
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [data-testid="invoice-conversion-PAID-invoice-ref-0-1"]').click();
-    cy.get("[data-testid='invoice-payment-method-select']").click();
+    cy.getByTestId('invoice-conversion-PAID-invoice-ref-0-1').click();
+    cy.getByTestId("invoice-payment-method-select").click();
     cy.contains('Chèque').click();
-    cy.get('[data-testid="invoice-conversion-PAID-invoice-ref-0"]').click();
+    cy.getByTestId('invoice-conversion-PAID-invoice-ref-0').click();
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
-    cy.get('[data-cy="invoice-relaunch-submit"]').click();
+    cy.getByDataCy('invoice-relaunch-submit').click();
   });
 
   it('Should automatically change tabs when converting to a quote or invoice', () => {
-    cy.get('[name="invoice"]').click();
+    cy.getByName('invoice').click();
 
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Convertir en devis"]').click();
+    cy.getByAriaLabel('Convertir en devis').first().click();
     cy.contains('À confirmer');
     cy.contains('Brouillon transformé en devis !');
 
-    cy.get(':nth-child(1) > :nth-child(8) > .MuiTypography-root > .MuiBox-root > [aria-label="Transformer en facture"]').click();
+    cy.getByAriaLabel('Transformer en facture').first().click();
     cy.contains('À payer');
     cy.contains('Devis confirmé');
   });
 
   it('Check if date label are corrects', () => {
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+    cy.getByName('invoice').click();
+    cy.get('tbody tr').first().click();
 
     cy.contains("Date d'émission");
     cy.contains('Date limite de validité');
@@ -103,25 +103,24 @@ describe(specTitle('Invoice'), () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-    cy.get('[name="invoice"]').click();
+    cy.getByName('invoice').click();
 
     cy.contains('Mon devis').click();
 
     cy.contains('Justificatif');
 
-    cy.get('[data-testid="invoice-Acompte-accordion"]').click();
+    cy.getByTestId('invoice-Acompte-accordion').click();
     cy.contains('Test dummy comment');
 
-    cy.get('[data-testid="DownloadForOfflineIcon"]').click();
+    cy.getByTestId('DownloadForOfflineIcon').click();
   });
 
   it('Should send the request even if there is not comment', () => {
     cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
-
-    cy.get('[name="invoice"]').click();
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
+    cy.getByName('invoice').click();
+    cy.get('tbody tr').first().click();
     const simpleComment = 'This is a simple comment';
     cy.get('form textarea[name=comment]').type(simpleComment);
 
@@ -156,13 +155,13 @@ describe(specTitle('Invoice'), () => {
       });
     }).as('emitInvoice');
 
-    cy.get('[name="invoice"]').click();
+    cy.getByName('invoice').click();
 
     cy.wait('@getAccount1');
     cy.wait('@whoami');
     cy.wait('@getAccountHolder1');
 
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref', { timeout: 3000 }).click();
+    cy.get('tbody tr', { timeout: 3000 }).first().click();
     cy.get('#form-refresh-preview').click();
     cy.wait('@emitInvoice');
   });
