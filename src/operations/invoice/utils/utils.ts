@@ -92,7 +92,7 @@ export const productValidator = (products: Product[]): ProductValidatorResult =>
   if ((products || []).length === 0) {
     return { isValid: false, message: 'Veuillez sélectionner au moins un produit' };
   }
-  for (let product of products) {
+  for (const product of products) {
     if (!product.quantity || product.quantity === 0) {
       return { isValid: false, message: 'La quantité de chaque produit doit être supérieur à zéro (0)' };
     }

@@ -1,6 +1,6 @@
 import { getCookie, setCookie } from './cookies';
 
-export const getPaginationName = (resource: string, filters: {}, perPage: number) => `pagination-${resource}-${perPage}-${Object.values(filters).join('-')}`;
+export const getPaginationName = (resource: string, filters: object, perPage: number) => `pagination-${resource}-${perPage}-${Object.values(filters).join('-')}`;
 
 type TFetcher = (page: number) => Promise<any[]>;
 type TGetPagination = { resource: string; filters: any; page: number; perPage: number; fetcher: TFetcher };

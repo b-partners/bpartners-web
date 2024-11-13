@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { debounce } from '@mui/material/utils';
 import { useEffect, useMemo, useState } from 'react';
 

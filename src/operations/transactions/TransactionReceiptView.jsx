@@ -25,7 +25,7 @@ const TransactionReceiptView = ({ selectedDoc, onClose }) => {
       const blob = await response.blob();
       setUrl(URL.createObjectURL(blob));
       return blob ? blob.type.split('/')[1] : '';
-    } catch (error) {
+    } catch {
       notify('messages.global.error', { type: 'error' });
     }
   };
@@ -36,7 +36,6 @@ const TransactionReceiptView = ({ selectedDoc, onClose }) => {
       setFileExtension(fileExtension);
     };
     getFileExtension();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

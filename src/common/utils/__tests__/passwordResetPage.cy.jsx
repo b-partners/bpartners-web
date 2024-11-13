@@ -1,8 +1,6 @@
 import App from '@/App';
 import { awsAuth } from '@/providers';
-import PasswordResetPage from '@/security/PasswordReset/PasswordResetPage';
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Redirect } from '../redirect';
 
 describe(specTitle('password reset page'), () => {

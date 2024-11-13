@@ -32,7 +32,6 @@ export function AutocompleteBackend<T extends Record<'id', string>>(props: Autoc
     error,
     sync = false,
     renderOption,
-    autocompleteController,
     onInputSubmit,
     isRequired = false,
     asForm = true,

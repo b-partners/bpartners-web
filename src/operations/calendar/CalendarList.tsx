@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useTypedToggle } from '@/common/hooks';
 import { CalendarContextProvider } from '@/common/store';
 import { raCalendarEventCreationMapper, raCalendarEventMapper } from '@/providers/mappers';

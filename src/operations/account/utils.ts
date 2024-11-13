@@ -19,7 +19,7 @@ export const shouldSaveButtonDisable = (currentActivities: CompanyBusinessActivi
   return true;
 };
 
-const isObjectElementsBlank = (obj: Object): boolean => {
+const isObjectElementsBlank = (obj: object): boolean => {
   Object.keys(obj).forEach(e => {
     if (!e || e.length === 0) {
       return true;

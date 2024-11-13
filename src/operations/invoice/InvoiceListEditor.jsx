@@ -84,7 +84,6 @@ const InvoiceListEditor = () => {
       });
     };
     getInvoicesSummaryData().catch(printError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

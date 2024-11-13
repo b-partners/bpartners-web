@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';

@@ -44,7 +44,6 @@ const RevenueTargetForm = () => {
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateRevenuTargetSubmit = form.handleSubmit(data => {

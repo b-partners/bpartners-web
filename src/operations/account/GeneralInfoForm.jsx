@@ -42,7 +42,6 @@ const GeneralInfoForm = () => {
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateGlobalInformationSubmit = form.handleSubmit(data => {

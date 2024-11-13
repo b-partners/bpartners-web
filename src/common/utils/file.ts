@@ -2,7 +2,7 @@ type FileTransformer<T> = (reader: FileReader, file: File) => T;
 
 export const filesToArrayBuffer = <T = unknown>(files: FileList, transform?: FileTransformer<T>) => {
   const allFiles = Array.from(files).map<Promise<T>>(file => {
-    let reader = new FileReader();
+    const reader = new FileReader();
 
     return new Promise(resolve => {
       reader.onload = () => {

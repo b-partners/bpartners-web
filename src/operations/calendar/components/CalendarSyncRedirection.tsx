@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { BP_COLOR } from '@/bp-theme';
 import { getUrlParams } from '@/common/utils';
 import { cache, dataProvider, prospectingJobsProvider } from '@/providers';
@@ -33,7 +32,7 @@ export const CalendarSync = () => {
           cache.calendarSync(true);
           transformEventCalendarToProspects();
           navigate('/calendar');
-        } catch (error) {
+        } catch {
           notify('messages.global.error', { type: 'error' });
           navigate('/calendar');
         }

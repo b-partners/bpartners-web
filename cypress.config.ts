@@ -43,7 +43,7 @@ export default defineConfig({
   },
 
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on, _config) {
       on('file:preprocessor', vitePreprocessor());
     },
     specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
