@@ -129,6 +129,13 @@ export const getCached = {
   annotationsInfo: () => {
     return getCachedObject<AnnotationsInfo>(annotationsInfoItem);
   },
+  annotationsInfoList: () => {
+    const annotationInfos = getCachedObject<AnnotationsInfo>(annotationsInfoItem);
+    if (annotationInfos) {
+      return Object.values(annotationInfos) as AnnotationInfo[];
+    }
+    return [];
+  },
   bankReconnectionTime: () => {
     return localStorage.getItem(bankReconnectionTime);
   },

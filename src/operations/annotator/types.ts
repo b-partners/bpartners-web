@@ -4,6 +4,7 @@ import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 type Wear = 'LOW' | 'PARTIAL' | 'ADVANCED' | 'EXTREME';
 
 export interface AnnotationInfo {
+  polygonId?: string;
   labelType?: string;
   covering?: string;
   slope?: number;
