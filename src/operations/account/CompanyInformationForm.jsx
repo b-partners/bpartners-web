@@ -35,7 +35,6 @@ const CompanyInformationForm = () => {
         setTools(properties => ({ ...properties, buttonDisable: isDifferent }));
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const saveOrUpdateAccountSubmit = form.handleSubmit(data => {

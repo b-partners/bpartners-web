@@ -32,7 +32,7 @@ export const GenerateLinkModal: FC<GenerateLinkModalProps> = props => {
       handleGenerateLinkModal();
       handleExportLinkMailModal();
       return response;
-    } catch (error) {
+    } catch {
       notify('messages.global.error', { type: 'error' });
     }
   });

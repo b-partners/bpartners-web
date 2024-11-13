@@ -20,7 +20,7 @@ const PasswordResetConfirmationLayout = () => {
     const email = UrlParams.get('email');
     awsAuth
       .confirmResetPassword({ confirmationCode: resetCode, newPassword, username: email })
-      .then(data => {
+      .then(_data => {
         // La réinitialisation du mot de passe a réussi
         navigate('/password/reset/success');
         setIsLoading(false);

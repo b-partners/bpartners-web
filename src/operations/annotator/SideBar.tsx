@@ -73,7 +73,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
     setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
   };
 
-  const handleClickAccordion = (index: number) => (_event: ChangeEvent<{}>, isExpanded: boolean) => {
+  const handleClickAccordion = (index: number) => (_event: ChangeEvent<unknown>, isExpanded: boolean) => {
     setExpanded(isExpanded ? index : null);
   };
 

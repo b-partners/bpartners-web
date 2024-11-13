@@ -4,7 +4,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { getInvoices } from './mocks/responses/invoices-api';
-import { contactedProspect, getProspect, prospects } from './mocks/responses/prospects-api';
+import { getProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Prospects.Actions'), () => {

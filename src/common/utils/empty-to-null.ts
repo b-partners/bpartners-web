@@ -4,7 +4,7 @@
  * @returns mappedObject
  */
 export const emptyToNull = (obj: any): any => {
-  let mappedObject = { ...obj };
+  const mappedObject = { ...obj };
   Object.keys(mappedObject).forEach(e => {
     if (!mappedObject[e] || (typeof mappedObject[e] === 'string' && mappedObject[e].length === 0)) {
       mappedObject[e] = null;

@@ -34,7 +34,7 @@ export const ExportLinkMailModal: FC<ExportLinkMailModalProps> = props => {
       await mailingProvider.saveOrUpdate(structuredData);
       notify(`messages.mail.${status}`, { type: 'success' });
       handleExportLinkMailModal();
-    } catch (error) {
+    } catch {
       notify('messages.global.error', { type: 'error' });
     }
   };

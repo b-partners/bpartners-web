@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { RichTextForm } from '@/common/components';
 import { invoiceRelaunchResolver } from '@/common/resolvers';
 import { useInvoiceToolContext } from '@/common/store/invoice';

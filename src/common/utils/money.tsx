@@ -16,7 +16,7 @@ export const prettyPrintMinors = (amount: number, type?: TransactionTypeEnum): s
 };
 
 export const prettyPrintMoney = (_amount: number, mapToMajor = true) => {
-  let amount = mapToMajor ? toMajors(+_amount || 0) : +_amount || 0;
+  const amount = mapToMajor ? toMajors(+_amount || 0) : +_amount || 0;
   return `${amount.toFixed(2).toLocaleString()} ${Currency.EUR}`.replace('.', ',');
 };
 

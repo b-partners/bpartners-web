@@ -30,7 +30,6 @@ const LogoutButton = () => {
         navigate('/login');
       })
       .catch(printError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <Menu.Item to='#' onClick={logout} name='logout' primaryText='Se déconnecter' leftIcon={<Lock />} />;
 };

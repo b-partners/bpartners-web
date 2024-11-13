@@ -130,13 +130,11 @@ const InvoiceForm = props => {
   useEffect(() => {
     onPending(InvoiceActionType.STOP_PENDING, getReceiptUrl(toEdit.fileId, 'INVOICE'));
     updateInvoiceForm(toEdit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);
 
   useEffect(() => {
     const onSubmitDebounced = debounce(onSubmit, 1000);
     form.watch(() => onSubmitDebounced());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { companyInfo } = useGetAccountHolder();

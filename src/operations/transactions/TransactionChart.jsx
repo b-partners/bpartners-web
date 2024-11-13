@@ -10,6 +10,7 @@ import BPDatePicker from '../../common/components/BPDatePicker';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, prettyPrintPercentMinors, toMajors, toMinors } from '../../common/utils';
 
+const COLORS = ['#1D9661', '#B30000', '#003D7A'];
 const AnnualTargetGraph = ({ year }) => {
   const revenueTargets = useGetAccountHolder().revenueTargets;
   const currentRevenueTargets = revenueTargets ? revenueTargets.filter(item => item.year === year)[0] : false;
@@ -96,10 +97,10 @@ const TransactionChart = () => {
     setLastUpdateDate(transactionOfTheMonth && transactionOfTheMonth.updatedAt);
     transactionOfTheMonth
       ? setData([
-          { name: 'Encaissement', value: transactionOfTheMonth.income },
-          { name: 'Décaissement', value: transactionOfTheMonth.outcome },
-          { name: 'Trésorerie', value: transactionOfTheMonth.cashFlow },
-        ])
+        { name: 'Encaissement', value: transactionOfTheMonth.income },
+        { name: 'Décaissement', value: transactionOfTheMonth.outcome },
+        { name: 'Trésorerie', value: transactionOfTheMonth.cashFlow },
+      ])
       : setData([]);
   };
 
@@ -107,10 +108,10 @@ const TransactionChart = () => {
     setLastUpdateDate(transactionsSummary && transactionsSummary.updatedAt);
     transactionsSummary && transactionsSummary.summary && transactionsSummary.summary.length !== 0
       ? setData([
-          { name: `Encaissement ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
-          { name: `Décaissement ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
-          { name: `Trésorerie ${transactionsSummary.year}`, value: transactionsSummary.annualCashFlow },
-        ])
+        { name: `Encaissement ${transactionsSummary.year}`, value: transactionsSummary.annualIncome },
+        { name: `Décaissement ${transactionsSummary.year}`, value: transactionsSummary.annualOutcome },
+        { name: `Trésorerie ${transactionsSummary.year}`, value: transactionsSummary.annualCashFlow },
+      ])
       : setData([]);
   };
 
@@ -127,15 +128,11 @@ const TransactionChart = () => {
 
   useEffect(() => {
     checkTransactionsSummary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date, annualSummary]);
 
   useEffect(() => {
     transactionsSummary && annualSummary ? getAnnualSummary() : getMonthlyTransaction(date.month);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionsSummary]);
-
-  const COLORS = ['#1D9661', '#B30000', '#003D7A'];
 
   return (
     <Card sx={{ border: 0 }}>

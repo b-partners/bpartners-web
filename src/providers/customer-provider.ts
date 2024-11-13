@@ -13,14 +13,14 @@ export const exportCustomers = async () => {
 
 const rmRaProps = (dirtyCustomer: any): Customer => {
   if (dirtyCustomer.config) {
-    const { config, headers, request, data, status, statusText, ...customer } = dirtyCustomer;
+    const { config: _config, headers: _headers, request: _request, data, status: _status, statusText: _statusText, ...customer } = dirtyCustomer;
     return { ...customer, status: data.status };
   }
   return dirtyCustomer;
 };
 
 export const customerProvider: BpDataProviderType = {
-  getList: async function (page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
+  getList: async function(page = 1, perPage = maxPageSize, filters = {}): Promise<any[]> {
     const { customerListSearch } = filters;
     const searchValues = ((customerListSearch as string) || '').split(' ');
     const { accountId } = await asyncGetUserInfo();
@@ -40,15 +40,15 @@ export const customerProvider: BpDataProviderType = {
     );
     return data;
   },
-  getOne: async function (customerId: string): Promise<any> {
+  getOne: async function(customerId: string): Promise<any> {
     const { accountId } = getCached.userInfo();
     return (await customerApi().getCustomerById(accountId, customerId)).data;
   },
-  saveOrUpdate: async function ([resource]: any[]): Promise<any[]> {
+  saveOrUpdate: async function([resource]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
     return (await customerApi().createCustomers(accountId, [rmRaProps(resource)])).data;
   },
-  update: async function ([resource]: any[]): Promise<any[]> {
+  update: async function([resource]: any[]): Promise<any[]> {
     const { accountId } = getCached.userInfo();
     return (await customerApi().updateCustomers(accountId, [rmRaProps(resource)])).data;
   },

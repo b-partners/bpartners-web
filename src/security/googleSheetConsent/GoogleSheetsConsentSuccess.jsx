@@ -1,5 +1,5 @@
 import { Box, CircularProgress } from '@mui/material';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useNotify } from 'react-admin';
 import { useLocation } from 'react-router-dom';
 import { BP_COLOR } from '@/bp-theme.js';
@@ -21,12 +21,11 @@ const GoogleSheetsConsentSuccess = () => {
         const code = getCode();
         const response = await sheetProvider.oauth2ExchangeToken(code);
         localStorage.setItem('expiredAt_validationToken_googleSheet', response.expiredAt);
-      } catch (error) {
+      } catch {
         notify('messages.global.error', { type: 'error' });
       }
     };
     sheetProviderFunc();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCode]);
 
   useEffect(() => {

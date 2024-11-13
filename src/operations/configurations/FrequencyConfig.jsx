@@ -16,7 +16,6 @@ const FrequencyConfig = () => {
 
   useEffect(() => {
     userId && initializeFrequency().catch(printError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = e => {

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { BpFormField } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
 import { calendarResolver } from '@/common/resolvers';
@@ -47,7 +46,7 @@ export const CalendarSaveDialog: FC<CalendarEditDialogProps> = ({ onClose: close
         await prospectingJobsProvider.saveOrUpdate(requestBody);
         closeDialog();
         refresh();
-      } catch (err) {
+      } catch {
         notify('messages.global.error', { type: 'error' });
       } finally {
         setIsLoading(false);

@@ -14,10 +14,10 @@ const PasswordResetRequestLayout = () => {
     setIsLoading(true);
     awsAuth
       .resetPassword({ username: email })
-      .then(data => {
+      .then((_data) => {
         navigate('/password/reset/code?email=' + email);
       })
-      .catch(err => {
+      .catch(() => {
         setIsLoading(false);
       });
   });

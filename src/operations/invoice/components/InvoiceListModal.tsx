@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ModalType, useInvoiceToolContext } from '@/common/store/invoice';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, ReactNode } from 'react';

@@ -74,7 +74,7 @@ export const authProvider = {
       }
       await whoami();
       return loginRedirectionUrls.successUrl;
-    } catch (error) {
+    } catch {
       return loginRedirectionUrls.failureUrl;
     }
   },
