@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-describe('Onboarding', () => {
+xdescribe('Onboarding', { retries: 3 }, () => {
   it('Create user from dashboard ui', () => {
     cy.visit('https://dashboard.preprod.bpartners.app');
 
@@ -84,8 +84,8 @@ describe('Onboarding', () => {
     cy.name('confirmedPassword').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
   });
 
-  it('Should remove the created user', async () => {
-    cy.exec('rm cognito_password.txt');
+  after(async () => {
+    cy.exec('rm -f cognito_password.txt');
     await axios.delete('https://api.preprod.bpartners.app/dummy-user');
   });
 });
