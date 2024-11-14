@@ -60,6 +60,7 @@
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.12.0",
+    "husky": "^9.1.6",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
     "pretty-quick": "^4.0.0",
@@ -81,6 +82,7 @@
     "eject": "react-scripts eject",
     "prettier:check": "prettier --check \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,ts,tsx}\" \"./**/*.{json,yml,yaml}\"",
-    "test-report-merge": "srm ./dist/test-reports.xml \"./dist/**/!(*test-reports).xml\""
+    "test-report-merge": "srm ./dist/test-reports.xml \"./dist/**/!(*test-reports).xml\"",
+    "prepare": "husky"
   }
 }
