@@ -27,7 +27,7 @@ const ProspectsAdministration = () => {
       if (response) {
         Redirect.toURL(response.redirectionUrl);
       }
-    } catch (error) {
+    } catch {
       notify('Une erreur est survenue au moment de la redirection.', { type: 'warning' });
     }
   };

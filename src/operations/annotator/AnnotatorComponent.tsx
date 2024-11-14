@@ -5,21 +5,21 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Measurement } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
+import { getNewPolygonColor } from './utils/annotation-colors';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 const MAX_ZOOM = 19;
 
 const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
-const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
-  const { polygons, updatePolygonList, setPolygons } = useCanvasAnnotationContext();
+export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
+  const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
@@ -54,9 +54,15 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     }
   };
 
-  const measurementMapper = (measurement: Measurement): Measurement => {
-    if (!isExtended) return measurement;
-    return { ...measurement, value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH) };
+  const measurementMapper = (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
+    const firstPolygon = currentPolygons[0];
+    const isInvisible = firstPolygon?.id !== measurement.polygonId;
+    if (!isExtended) return { ...measurement, isInvisible };
+    return {
+      ...measurement,
+      isInvisible,
+      value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH),
+    };
   };
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
@@ -96,9 +102,10 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
           height={height || '500px'}
           buttonsComponent={annotatorButtonsActions(shiftImage, isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
-          setPolygons={updatePolygonList}
+          setPolygons={setPolygons}
           polygonList={polygonFromProps || polygons}
           measurementMapper={measurementMapper}
+          getNewPolygonColor={getNewPolygonColor}
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
@@ -117,5 +124,3 @@ const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = tru
     </Box>
   );
 };
-
-export default AnnotatorComponent;

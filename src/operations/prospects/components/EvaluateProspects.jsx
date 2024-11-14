@@ -12,7 +12,6 @@ const EvaluateProspects = () => {
 
   useEffect(() => {
     tokenValid && getProspectingJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenValid]);
 
   useEffect(() => {

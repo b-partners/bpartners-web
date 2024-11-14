@@ -1,13 +1,10 @@
-import { Polygon } from '@bpartners/annotator-component';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
 import { BPConstruction } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
-import { useAnnotationsInfoForm } from '@/common/forms';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { parseUrlParams } from '@/common/utils';
+import { parseUrlParams, printError } from '@/common/utils';
 import { labels } from '@/constants';
-import { Alphabet } from '@/constants/alphabet';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
@@ -30,86 +27,102 @@ import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import AnnotatorForm from './components/AnnotatorForm';
+import { AnnotationInfo } from './types';
+import { useAnnotationInfosForm } from './utils/annotations-info-form';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
+  defaultAnnotationInfos: AnnotationInfo[];
 };
 
-const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
+export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotationInfos }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons, setPolygons, slopeInfoOpen, handleSlopeInfoToggle } = useCanvasAnnotationContext();
+  const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0);
-
-  const formState = useAnnotationsInfoForm(polygons);
+  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
-    const handleSubmitForms = formState.handleSubmit(async data => {
-      setIsLoading(true);
-      const annotationIdValue = draftAnnotationId || uuidV4();
-
-      const annotationAttributeMapped = annotationsAttributeMapper(data, polygons, pictureId, annotationIdValue);
-      const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
-      await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
-      setIsLoading(false);
-      clearPolygons();
-
-      if (isDraft) {
-        notify('resources.draftsAnnotations.creation.success', { type: 'success' });
-        redirect('/prospects?tab=drafts');
-        return;
+    const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
+      try {
+        setIsLoading(true);
+        const annotationIdValue = draftAnnotationId || uuidV4();
+        const annotationAttributeMapped = annotationsAttributeMapper(polygons, annotationInfos, pictureId, annotationIdValue);
+        const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+        await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
+        clearPolygons();
+        if (isDraft) {
+          notify('resources.draftsAnnotations.creation.success', { type: 'success' });
+          redirect('/prospects?tab=drafts');
+          return;
+        }
+        redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
+      } catch (e) {
+        printError(e);
+        notify('resources.annotations.creation.error', { type: 'error' });
+      } finally {
+        setIsLoading(false);
       }
-
-      redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
     });
     handleSubmitForms(event);
   };
 
-  const removeAnnotation = (polygonId: string) => {
-    setPolygons((prev: Polygon[]) => prev.filter((polygon: Polygon) => polygon.id !== polygonId));
-  };
-
   const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons((prev: Polygon[]) => prev.map((polygon: Polygon) => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
+    setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
   };
 
-  const handleClickAccordion = (index: number) => (_event: ChangeEvent<{}>, isExpanded: boolean) => {
+  const handleClickAccordion = (index: number) => (_event: ChangeEvent<unknown>, isExpanded: boolean) => {
     setExpanded(isExpanded ? index : null);
+  };
+
+  const removeAnnotationByPolygonId = (polygonId: string) => {
+    setPolygons(prev => prev.filter(polygon => polygon.id !== polygonId));
   };
 
   return (
     <>
       <List sx={{ maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
         <Box py={2}>
-          {polygons.length > 0 ? (
+          {fieldArrayState.fields.length > 0 ? (
             <FormProvider {...formState}>
-              <form onSubmit={event => handleSubmitFormsWrapper(event, true)}>
-                {polygons.map((polygon, i) => {
+              <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
+                {fieldArrayState.fields.map((annotationInfo, i) => {
+                  const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
+
+                  if (!currentPolygon) {
+                    return null;
+                  }
+
                   return (
-                    <Box data-cy='annotation-info-item' key={polygon.id}>
-                      <Tooltip title={polygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
+                    <Box data-cy='annotation-info-item' key={annotationInfo.id}>
+                      <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                         <IconButton
-                          aria-label='toggle polygon visibility'
                           edge='end'
+                          aria-label='toggle polygon visibility'
                           style={{ marginTop: '15px', marginRight: '0' }}
-                          onClick={() => togglePolygonVisibility(polygon.id)}
+                          onClick={() => togglePolygonVisibility(currentPolygon.id)}
                         >
-                          {polygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                          {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
                         </IconButton>
                       </Tooltip>
                       <SelectInput
-                        name={`${i}.labelType`}
-                        source={'labelType'}
-                        label='Type de label'
-                        choices={labels}
                         alwaysOn
                         resettable
+                        choices={labels}
+                        label='Type de label'
                         sx={{ width: '70%' }}
+                        name={`annotationInfos.${i}.labelType`}
+                        source={`annotationInfos.${i}.labelType`}
                       />
                       <Tooltip title='supprimer le polygone'>
-                        <IconButton aria-label='delete polygon' edge='end' style={{ marginTop: '15px' }} onClick={() => removeAnnotation(polygon.id)}>
+                        <IconButton
+                          aria-label='delete polygon'
+                          edge='end'
+                          style={{ marginTop: '15px' }}
+                          onClick={() => removeAnnotationByPolygonId(currentPolygon.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
@@ -117,19 +130,18 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
                       <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
                         <AccordionSummary expandIcon={<ExpandMore />}>
                           <TextInput
-                            name={`${i}.labelName`}
-                            source={'labelName'}
+                            name={`annotationInfos.${i}.labelName`}
+                            source={`annotationInfos.${i}.labelName`}
                             inputProps={{
                               'data-cy': 'label-name-input',
                             }}
                             onClick={e => e.stopPropagation()}
                             label={'Nom du label'}
-                            defaultValue={`Polygone ${Alphabet[i]}`}
                             helperText={false}
                           />
                         </AccordionSummary>
                         <AccordionDetails>
-                          <AnnotatorForm index={i} surface={polygon.surface} />
+                          <AnnotatorForm index={i} surface={currentPolygon.surface} />
                         </AccordionDetails>
                       </Accordion>
                       <Divider />
@@ -167,8 +179,8 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
           style={{ width: '100%' }}
         />
         <BPButton
-          type='submit'
           isLoading={isLoading}
+          disabled={isLoading || polygons.length === 0}
           label='resources.draftsAnnotations.add'
           data-testid='submit-draft-annotation'
           onClick={event => handleSubmitFormsWrapper(event, true)}
@@ -179,5 +191,3 @@ const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
     </>
   );
 };
-
-export default SideBar;

@@ -1,6 +1,6 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { Polygon } from '@bpartners/annotator-component';
-import { AreaPictureAnnotation, AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
+import { AreaPictureAnnotation, AreaPictureAnnotationInstance, Wearness } from '@bpartners/typescript-client';
 import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
 
@@ -21,30 +21,41 @@ export const annotatorMapper = (
   };
 };
 
-export const annotationsAttributeMapper = (data: any, polygons: Polygon[], pictureId: string, annotationId: string) => {
+export const annotationsAttributeMapper = (
+  polygons: Polygon[],
+  annotationInfos: AnnotationInfo[],
+  areaPictureId: string,
+  annotationId: string
+): AreaPictureAnnotationInstance[] => {
   const { userId } = getCached.userInfo();
 
-  return Object.entries<any>(data).map(([index, attributes]) => {
-    const polygonIndex = parseInt(index, 10);
-    const correspondingPolygon = polygons[polygonIndex];
+  return polygons.map(polygon => {
+    const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id);
 
-    const { labelType, labelName, wear, ...others } = attributes as AnnotationInfo;
+    if (!annotationInfo) {
+      throw new Error('Annotation info is missing for this polygon');
+    }
+
+    const { labelType, labelName, wear, ...others } = annotationInfo;
+    const wearness = (wear as Wearness | '') === '' ? null : wear;
 
     return {
       id: uuidV4(),
-      areaPictureId: pictureId,
-      annotationId: annotationId,
-      metadata: {
-        area: correspondingPolygon.surface,
-        wearness: wear,
-        ...others,
-      },
-      userId: userId,
+      userId,
       labelName,
       labelType,
+      annotationId,
+      areaPictureId,
       polygon: {
-        points: correspondingPolygon.points,
+        points: polygon.points,
       },
-    } as AreaPictureAnnotationInstance;
+      metadata: {
+        ...others,
+        area: polygon.surface,
+        wearness,
+        fillColor: polygon.fillColor,
+        strokeColor: polygon.strokeColor,
+      },
+    };
   });
 };

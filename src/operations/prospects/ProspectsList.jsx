@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -15,12 +14,11 @@ import {
   Tabs,
 } from '@mui/material';
 import { useState } from 'react';
-import { List, useNotify } from 'react-admin';
+import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 
-import ListComponent from '@/common/components/ListComponent';
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
 import { ProspectDialog, ProspectFilterInput, Prospects } from './components';

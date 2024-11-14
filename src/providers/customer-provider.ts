@@ -13,7 +13,7 @@ export const exportCustomers = async () => {
 
 const rmRaProps = (dirtyCustomer: any): Customer => {
   if (dirtyCustomer.config) {
-    const { config, headers, request, data, status, statusText, ...customer } = dirtyCustomer;
+    const { config: _config, headers: _headers, request: _request, data, status: _status, statusText: _statusText, ...customer } = dirtyCustomer;
     return { ...customer, status: data.status };
   }
   return dirtyCustomer;

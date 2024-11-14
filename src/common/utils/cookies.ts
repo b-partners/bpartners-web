@@ -7,7 +7,7 @@
 export const setCookie = (name: string, value: any, expiration: number) => {
   let cookie = name + '=' + encodeURIComponent(value);
 
-  let expirationDate = new Date();
+  const expirationDate = new Date();
   expirationDate.setTime(expirationDate.getTime() + expiration);
 
   cookie += '; expires=' + expirationDate.toString();
@@ -15,10 +15,10 @@ export const setCookie = (name: string, value: any, expiration: number) => {
 };
 
 export const getCookie = (name: string) => {
-  let cookieName = name + '=';
-  let cookies = document.cookie.split(';');
+  const cookieName = name + '=';
+  const cookies = document.cookie.split(';');
 
-  for (let _cookie of cookies) {
+  for (const _cookie of cookies) {
     let cookie = `${_cookie}`;
     while (cookie.startsWith(' ')) {
       cookie = cookie.substring(1);

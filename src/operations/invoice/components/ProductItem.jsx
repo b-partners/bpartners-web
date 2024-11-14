@@ -18,7 +18,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const CustomTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme }) => ({
+const CustomTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme: _theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
     fontSize: 11,
     maxWidth: '200px',

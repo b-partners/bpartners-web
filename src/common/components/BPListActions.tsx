@@ -30,7 +30,7 @@ const BPListActions: FC<BPListActionsType> = props => {
       a.click();
       window.URL.revokeObjectURL(url);
       notify('messages.export.success', { type: 'success' });
-    } catch (error) {
+    } catch {
       notify('messages.export.error', { type: 'error' });
     }
   };

@@ -17,7 +17,7 @@ import { handleSubmit, printError } from '@/common/utils';
 import { customerProvider, invoiceProvider } from '@/providers';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
-import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotatorComponent } from '../annotator';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';
@@ -130,13 +130,11 @@ const InvoiceForm = props => {
   useEffect(() => {
     onPending(InvoiceActionType.STOP_PENDING, getReceiptUrl(toEdit.fileId, 'INVOICE'));
     updateInvoiceForm(toEdit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toEdit]);
 
   useEffect(() => {
     const onSubmitDebounced = debounce(onSubmit, 1000);
     form.watch(() => onSubmitDebounced());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { companyInfo } = useGetAccountHolder();

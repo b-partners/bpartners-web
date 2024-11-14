@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCalendarContext } from '@/common/store';
 import { Calendar } from '@bpartners/typescript-client';
 import { MenuItem, TextField } from '@mui/material';

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Save as SaveIcon } from '@mui/icons-material';
 import { Button, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';

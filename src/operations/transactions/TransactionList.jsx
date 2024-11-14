@@ -42,7 +42,7 @@ const TransactionList = props => {
 
   const transactionStatusChoices = Object.keys(TRANSACTION_STATUSES)
     .filter(status => status !== 'UNKNOWN')
-    .map((status, k) => ({ id: status, name: TRANSACTION_STATUSES[status].label }));
+    .map((status) => ({ id: status, name: TRANSACTION_STATUSES[status].label }));
 
   const handleShowPdf = transaction => event => {
     event.stopPropagation();

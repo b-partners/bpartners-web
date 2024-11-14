@@ -29,6 +29,11 @@ export const BpFrenchMessages = {
     },
   },
   resources: {
+    annotations: {
+      creation: {
+        error: "Une erreur s'est produite lors de la sauvegarde des annotations",
+      },
+    },
     draftsAnnotations: {
       add: 'Enregistrer en tant que brouillon',
       finish: 'Finaliser le brouillon',

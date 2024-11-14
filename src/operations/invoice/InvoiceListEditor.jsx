@@ -8,7 +8,7 @@ import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToo
 
 import { printError } from '@/common/utils';
 import { getInvoicesSummary } from '@/providers';
-import AnnotatorComponent from '../annotator/AnnotatorComponent';
+import { AnnotatorComponent } from '../annotator';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
@@ -84,7 +84,6 @@ const InvoiceListEditor = () => {
       });
     };
     getInvoicesSummaryData().catch(printError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

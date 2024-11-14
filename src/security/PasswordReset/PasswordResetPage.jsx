@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState } from 'react';
 import { DialogResetCodeSent } from './components/DialogResetCodeSent';
 import PasswordResetRequestLayout from './components/PasswordResetRequestLayout';
 
 const PasswordResetPage = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   const handleDialog = value => {
     setIsOpen(value);

@@ -61,7 +61,7 @@ export const GeneralConditionOfUse = () => {
       await approveLegalFile();
 
       activeLfIndex === legalFiles.length - 1 ? Reload.force() : setActiveLfIndex(prevActiveLf => prevActiveLf + 1);
-    } catch (e) {
+    } catch {
       notify('messages.global.error', { type: 'error' });
     } finally {
       setLoading(false);

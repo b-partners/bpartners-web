@@ -36,7 +36,6 @@ const LocationEdition = () => {
         ? { ...tools, buttonDisable: false }
         : { ...tools, buttonDisable: true }
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newLocation.longitude, newLocation.latitude]);
 
   const submitLocation = () => {

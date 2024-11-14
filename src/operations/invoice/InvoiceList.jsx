@@ -1,12 +1,10 @@
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import BPListActions from '@/common/components/BPListActions';
 import { useInvoiceToolContext } from '@/common/store/invoice';
-import { invoiceProvider } from '@/providers/invoice-provider';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { useEffect } from 'react';
-import { List, useNotify, useRefresh } from 'react-admin';
-import { useParams } from 'react-router-dom';
+import { List } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 import ListComponent from '../../common/components/ListComponent';
 import Pagination, { pageSize } from '../../common/components/Pagination';
@@ -22,31 +20,11 @@ import {
 import FeedbackModal from './components/FeedbackModal';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { invoiceInitialValue, viewScreenState } from './utils/utils';
-
-const LIST_ACTION_STYLE = { display: 'flex' };
-
-const saveInvoice = (event, data, notify, refresh, successMessage, tabIndex, handleSwitchTab) => {
-  if (event) {
-    event.stopPropagation();
-  }
-  invoiceProvider
-    .saveOrUpdate([data])
-    .then(() => {
-      notify(successMessage, { type: 'success' });
-      handleSwitchTab(null, tabIndex);
-      refresh();
-    })
-    .catch(() => {
-      notify('messages.global.error', { type: 'error' });
-    });
-};
+import { parseUrlParams } from '@/common/utils';
 
 const InvoiceList = props => {
-  const notify = useNotify();
-  const refresh = useRefresh();
   const { onStateChange, invoiceTypes, actions, emptyAction } = props;
   const {
-    setTab,
     setView,
     modal: { isOpen },
   } = useInvoiceToolContext();
@@ -62,8 +40,7 @@ const InvoiceList = props => {
     setView('creation');
   };
 
-  const { showCreateQuote } = useParams();
-
+  const { showCreateQuote } = parseUrlParams();
   useEffect(() => {
     if (showCreateQuote === 'true') {
       crupdateInvoice({ ...invoiceInitialValue, id: uuid(), status: InvoiceStatus.DRAFT });

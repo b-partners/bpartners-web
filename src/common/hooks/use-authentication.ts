@@ -32,7 +32,6 @@ const useAuthentication = () => {
             .finally(() => setIsLoading(false));
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   return { isLoading };

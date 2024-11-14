@@ -71,7 +71,7 @@ const BPAppBar = () => {
     try {
       const redirectionUrl = (await initiateAccountValidation()).redirectionUrl;
       Redirect.toURL(redirectionUrl);
-    } catch (err) {
+    } catch {
       notify('Une erreur est survenue au moment de la redirection.', { type: 'warning' });
     }
   };

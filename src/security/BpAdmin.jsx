@@ -3,7 +3,7 @@ import { BPLayout } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
-import Annotator from '@/operations/annotator/Annotator';
+import { Annotator } from '@/operations/annotator';
 import { BankPage } from '@/operations/bank';
 import { calendar } from '@/operations/calendar';
 import { CalendarSync } from '@/operations/calendar/components';
