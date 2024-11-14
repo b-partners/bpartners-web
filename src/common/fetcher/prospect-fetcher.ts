@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useGetList } from 'react-admin';
 import { useProspectSearchStore } from '../store';
 
-const perPage = 20;
+const PROSPECT_PER_PAGE = 20;
 
 export const useProspectFetcher = (status: ProspectStatus) => {
   const [page, setPage] = useState(1);
@@ -13,15 +13,20 @@ export const useProspectFetcher = (status: ProspectStatus) => {
     setPage(1);
   }, [searchName]);
 
-  const { data: prospects = [], pageInfo, isFetching, isPending } = useGetList('prospects', { filter: { status, searchName, pagination: { page, perPage } } });
-
-  const { hasNextPage, hasPreviousPage } = pageInfo || {};
+  const {
+    data: prospects = [],
+    pageInfo = {},
+    isFetching,
+    isPending,
+  } = useGetList('prospects', { pagination: { page, perPage: PROSPECT_PER_PAGE }, filter: { status, searchName } });
+  const { hasNextPage, hasPreviousPage } = pageInfo;
 
   const nextPage = () => {
     if (hasNextPage) {
       setPage(page + 1);
     }
   };
+
   const prevPage = () => {
     if (hasPreviousPage) {
       setPage(page - 1);
