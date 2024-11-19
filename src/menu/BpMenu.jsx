@@ -16,10 +16,11 @@ import {
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Menu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { accountHolderProvider, authProvider, getCached } from '../providers';
+import { useDialog } from '@/common/store/dialog';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const LogoutButton = () => {
 };
 
 const BpMenu = () => {
-  const [dialogState, setDialogState] = useState(false);
+  const { open: openDialog, close: closeDialog } = useDialog();
   const { data: accountHolder = null } = useQuery({
     retry: 7,
     queryKey: ['accountHolder'],
@@ -43,10 +44,9 @@ const BpMenu = () => {
     queryFn: () => accountHolderProvider.getOne(),
   });
 
-  const toggleDialogState = () => setDialogState(e => !e);
   const contactSupport = e => {
     e.preventDefault();
-    toggleDialogState();
+    openDialog(<SupportDialog onClose={closeDialog} />);
   };
 
   const hasBusinessActivities = accountHolder => !!(accountHolder?.businessActivities?.primary || accountHolder?.businessActivities?.secondary);
@@ -75,7 +75,6 @@ const BpMenu = () => {
         <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </Menu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
-        <SupportDialog onToggle={toggleDialogState} open={dialogState} />
         <Menu>
           <Menu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
           <Menu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />

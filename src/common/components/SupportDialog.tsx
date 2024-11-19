@@ -1,13 +1,8 @@
 import { BP_COLOR } from '@/bp-theme';
 import { EmailOutlined } from '@mui/icons-material';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { FC } from 'react';
-
-type SupportDialogProps = {
-  open: boolean;
-  onToggle: () => void;
-};
 
 const D_CONTENT = {
   display: 'flex',
@@ -32,9 +27,9 @@ const D_ICON_CONTAINER = {
 
 const D_ICON = { fontSize: '7rem', color: grey['400'] };
 
-export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
+export const SupportDialog: FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
-    <Dialog open={open} onClose={onToggle}>
+    <>
       <DialogTitle>Support</DialogTitle>
       <DialogContent sx={D_CONTENT}>
         <Box sx={D_ICON_CONTAINER}>
@@ -51,10 +46,10 @@ export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button id='support_close_button_id' onClick={onToggle}>
+        <Button id='support_close_button_id' onClick={onClose}>
           Fermer
         </Button>
       </DialogActions>
-    </Dialog>
+    </>
   );
 };

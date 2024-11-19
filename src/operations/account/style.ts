@@ -1,6 +1,7 @@
 import { BP_COLOR } from '@/bp-theme';
+import { SxProps } from '@mui/material';
 
-export const SHOW_LAYOUT_STYLE = {
+export const SHOW_LAYOUT_STYLE: SxProps = {
   height: '100%',
   position: 'relative',
   borderRadius: '0',
@@ -11,7 +12,7 @@ export const SHOW_LAYOUT_STYLE = {
   padding: '5rem 2rem 2rem 2rem',
 };
 
-export const BOX_CONTENT_STYLE = {
+export const BOX_CONTENT_STYLE: SxProps = {
   backgroundColor: '#fff',
   width: '100%',
   height: '100%',
@@ -19,7 +20,7 @@ export const BOX_CONTENT_STYLE = {
   border: `1px solid ${BP_COLOR['solid_grey']}`,
 };
 
-export const ACCOUNT_HOLDER_STYLE = {
+export const ACCOUNT_HOLDER_STYLE: SxProps = {
   height: '10rem',
   display: 'grid',
   padding: '1.3rem',
@@ -29,7 +30,7 @@ export const ACCOUNT_HOLDER_STYLE = {
   alignItems: 'center',
 };
 
-export const BACKDROP_STYLE = {
+export const BACKDROP_STYLE: SxProps = {
   position: 'absolute',
   top: '0',
   left: '0',
@@ -40,7 +41,7 @@ export const BACKDROP_STYLE = {
   borderRadius: '10px 10px 0 0',
 };
 
-export const FEEDBACK_LINK_TEXT = {
+export const FEEDBACK_LINK_TEXT: SxProps = {
   width: 250,
   px: 1,
   overflowX: 'scroll',
@@ -60,4 +61,4 @@ export const FEEDBACK_LINK_TEXT = {
   position: 'relative',
 };
 
-export const FEEDBACK_LINK_TEXT_CONTAINER = { display: 'flex', bgcolor: BP_COLOR['solid_grey'], alignItems: 'center', p: 1, width: 'fit-content' };
+export const FEEDBACK_LINK_TEXT_CONTAINER: SxProps = { display: 'flex', bgcolor: BP_COLOR['solid_grey'], alignItems: 'center', p: 1, width: 'fit-content' };

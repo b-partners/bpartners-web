@@ -1,6 +1,7 @@
 import { BP_COLOR } from '@/bp-theme';
+import { SxProps } from '@mui/material';
 
-export const ERROR_BOX_STYLE = {
+export const ERROR_BOX_STYLE: SxProps = {
   bgcolor: BP_COLOR[40],
   color: 'red',
   borderRadius: 2,
@@ -10,12 +11,12 @@ export const ERROR_BOX_STYLE = {
   '&::-webkit-scrollbar': { display: 'none' },
 };
 
-export const IMPORT_BUTTON_STYLE = {
+export const IMPORT_BUTTON_STYLE: SxProps = {
   width: '10rem',
   paddingBlock: 1,
 };
 
-export const IMPORT_MODAL_STYLE = {
+export const IMPORT_MODAL_STYLE: SxProps = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -30,7 +31,7 @@ export const IMPORT_MODAL_STYLE = {
   '&::-webkit-scrollbar': { display: 'none' },
 };
 
-export const CANCEL_BUTTON_STYLE = {
+export const CANCEL_BUTTON_STYLE: SxProps = {
   color: BP_COLOR[20],
   backgroundColor: BP_COLOR['solid_grey'],
   '&:hover, &:active': {
