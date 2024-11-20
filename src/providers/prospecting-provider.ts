@@ -2,18 +2,18 @@ import { ImportProspect } from '@bpartners/typescript-client';
 import { BpDataProviderType, getCached, maxPageSize, prospectingApi } from '.';
 
 export const prospectingProvider: BpDataProviderType = {
-  getList: async function (_page = 1, _perPage = maxPageSize, filters = {}): Promise<any[]> {
+  getList: async function (page = 1, perPage = maxPageSize, filters = {}) {
     const { searchName, status } = filters;
     const { accountHolderId } = getCached.userInfo();
-    return (await prospectingApi().getProspects(accountHolderId, searchName, undefined, status, _page, _perPage)).data;
+    return (await prospectingApi().getProspects(accountHolderId, searchName, undefined, status, page, perPage)).data;
   },
-  getOne: async function (id: string): Promise<any> {
+  getOne: async function (id: string) {
     const { accountHolderId } = getCached.userInfo();
     return prospectingApi()
       .getProspectById(accountHolderId, id)
       .then(response => response.data);
   },
-  saveOrUpdate: async function (resources: any[]): Promise<any[]> {
+  saveOrUpdate: async function (resources: any[]) {
     const { accountHolderId } = getCached.userInfo();
     return (await prospectingApi().updateProspects(accountHolderId, resources)).data;
   },

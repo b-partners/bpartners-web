@@ -49,7 +49,10 @@ export const usePolygonMarkerFetcher = () => {
       const mappedPoint = geojsonMapper.toMarker(markerPoint)[0];
       if (!areaPictureDetails.isExtended) {
         cache.initialMarker(areaPictureDetails.id, mappedPoint, image_size);
-        return mappedPoint;
+        return {
+          x: 128,
+          y: 128,
+        };
       } else {
         return setMarkerOffset(areaPictureDetails, image_size);
       }
