@@ -16,70 +16,55 @@ import {
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
 import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
-import TabManager from './components/TabManager';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
 import { BPButton } from '@/common/components';
 import { useDialog } from '@/common/store/dialog';
+import { useTabManager, useLoadingHandler } from '@/common/hooks';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, getCached, prospectingProvider } from '../../providers';
+import { parseLocalStorage } from '@/common/utils/local-storage';
 
+const PROSPECT_LIST_TABS = [
+  "prospects",
+  "drafts",
+  "configuration",
+  "administration"
+]
+const BP_USER_CACHE_NAME = "bp_user";
 const ProspectsList = () => {
-  const [tabIndex, setTabIndex] = useState(0);
-  const [isCreating, setIsCreating] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { handleTabChange, tabIndex } = useTabManager({
+    values: PROSPECT_LIST_TABS
+  });
 
-  const location = useLocation();
+  const { isLoading, stopLoading, startLoading, setIsLoading } = useLoadingHandler();
+  const [isCreating, setIsCreating] = useState(false);
+
   const notify = useNotify();
   const navigate = useNavigate();
-  const BP_USER = JSON.parse(localStorage.getItem('bp_user'));
+  const BP_USER = parseLocalStorage(BP_USER_CACHE_NAME);
   const accountHolder = getCached.accountHolder();
-
-  // Fonction pour mettre à jour l'URL avec le nouvel onglet sélectionné
-  const updateURLWithTab = index => {
-    const searchParams = new URLSearchParams();
-    if (index === 0) {
-      searchParams.set('tab', 'prospects');
-    } else if (index === 1) {
-      searchParams.set('tab', 'drafts');
-    } else if (index === 2) {
-      searchParams.set('tab', 'configuration');
-    } else if (index === 3) {
-      searchParams.set('tab', 'administration');
-    }
-    const newURL = `${location.pathname}?${searchParams.toString()}`;
-    window.history.pushState({}, '', newURL);
-  };
-
-  const handleTabChange = (event, newTabIndex) => {
-    setTabIndex(newTabIndex);
-    updateURLWithTab(newTabIndex);
-  };
 
   const toggleDialog = e => {
     e?.stopPropagation();
     setIsCreating(!isCreating);
   };
 
-  const handleLoading = isLoading => {
-    setLoading(isLoading);
-  };
-
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(async data => {
-    handleLoading(true);
+    startLoading();
 
     if (isCreating) {
       notify('En cours de recherche de l’image de la zone');
@@ -129,20 +114,19 @@ const ProspectsList = () => {
           );
         }
       }
-      handleLoading(false);
+      stopLoading();
     };
 
     fetch().catch(() => {
-      handleLoading(false);
+      stopLoading();
     });
   });
 
   return (
-    <ProspectContextProvider loading={loading} setLoading={setLoading}>
+    <ProspectContextProvider loading={isLoading} setLoading={setIsLoading}>
       <FormProvider {...form}>
-        <TabManager location={location} setTabIndex={setTabIndex} />
         <Box sx={{ p: 2 }}>
-          <Tabs value={tabIndex} onChange={handleTabChange}>
+          <Tabs value={tabIndex} onChange={(_e, newTabIndex) => handleTabChange(newTabIndex)}>
             <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
             <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
             <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
@@ -184,4 +168,5 @@ const ProspectsList = () => {
     </ProspectContextProvider>
   );
 };
+
 export default ProspectsList;

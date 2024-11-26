@@ -8,6 +8,7 @@ import {
   ContactSupport,
   Euro,
   Handshake,
+  Home as HomeIcon,
   Lock,
   People,
   Receipt,
@@ -66,6 +67,7 @@ const BpMenu = () => {
       }}
     >
       <Menu>
+        <Menu.Item to='/' name='home' primaryText='Acceuil' leftIcon={<HomeIcon />} />
         <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
@@ -79,7 +81,7 @@ const BpMenu = () => {
         <Menu>
           <Menu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
           <Menu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />
-          <Menu.Item to='/' onClick={contactSupport} primaryText='Besoin d’aide ?' name='support' leftIcon={<ContactSupport />} />
+          <Menu.Item to='/helps' onClick={contactSupport} primaryText='Besoin d’aide ?' name='support' leftIcon={<ContactSupport />} />
           <Menu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
         </Menu>
