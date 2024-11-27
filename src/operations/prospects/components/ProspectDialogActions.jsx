@@ -48,13 +48,11 @@ const ProspectDialogActions = props => {
   const { loading, selectedStatus } = useProspectContext();
   const { prospectFeedback } = useWatch();
 
-  const renderCancelButton = () => <Button onClick={close}>Annuler</Button>;
-
   const primaryButtonText = getPrimaryButtonText(prospectStatus, prospectFeedback, selectedStatus, isEditing, isCreating);
 
   return (
     <DialogActions sx={{ marginRight: '1rem' }}>
-      {renderCancelButton()}
+      <Button onClick={close}>Annuler</Button>
       <Button onClick={saveOrUpdateProspectSubmit} disabled={loading} startIcon={loading && <CircularProgress color='inherit' size={18} />}>
         {primaryButtonText}
       </Button>

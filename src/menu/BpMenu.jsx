@@ -67,7 +67,7 @@ const BpMenu = () => {
       }}
     >
       <Menu>
-        <Menu.Item to='/' name='home' primaryText='Acceuil' leftIcon={<HomeIcon />} />
+        <Menu.Item to='/' name='home' primaryText='Accueil' leftIcon={<HomeIcon />} />
         <Menu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />

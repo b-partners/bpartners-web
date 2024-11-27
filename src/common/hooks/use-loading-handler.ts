@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useLoadingHandler = (defaultValue: boolean = false) => {
+export const useLoadingHandler = (defaultValue = false) => {
   const [isLoading, setIsLoading] = useState(defaultValue);
   return {
     isLoading,
