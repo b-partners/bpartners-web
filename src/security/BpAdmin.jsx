@@ -1,6 +1,7 @@
 import { BP_THEME } from '@/bp-theme';
-import { BPLayout } from '@/common/components';
+import { BPLayout, SubscriptionModal } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
+import { useDialog } from '@/common/store/dialog';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
@@ -14,7 +15,8 @@ import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
-import { authProvider, awsAuth, dataProvider } from '@/providers';
+import { asyncGetUser, authProvider, awsAuth, dataProvider, getCached } from '@/providers';
+import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
@@ -26,6 +28,7 @@ import { Home } from '@/operations/home/Home';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
+  const { open: openDialog } = useDialog();
   const getTokenExpiration = async () => {
     try {
       const session = (await awsAuth.fetchAuthSession()) || {};
@@ -49,6 +52,13 @@ export const BpAdmin = () => {
       }
     };
     checkTokenExpiration();
+  }, []);
+
+  useEffect(() => {
+    const whoami = getCached.whoami();
+    if (whoami.user.subscriptionStatus === UserSubscriptionStatus.EMPTY) {
+      openDialog(<SubscriptionModal />, undefined, false);
+    }
   }, []);
 
   if (!authProvider.getCachedWhoami()) {

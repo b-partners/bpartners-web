@@ -7,10 +7,11 @@ interface DialogState {
   content: ReactNode;
   isOpen: boolean;
   dialogProps?: TDialogProps;
+  backdropClose?: boolean;
 }
 
 interface DialogAction {
-  open: (content: ReactNode, dialogProps?: TDialogProps) => void;
+  open: (content: ReactNode, dialogProps?: TDialogProps, backdropClose?: boolean) => void;
   close: () => void;
 }
 
