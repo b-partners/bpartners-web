@@ -1,4 +1,5 @@
 const PENTES = [
+  { url: '/pentes/pente0.png', value: 0, title: 'Toit Plat' },
   { url: '/pentes/pente1.png', value: 1, title: 'Pente 1/12' },
   { url: '/pentes/pente2.png', value: 2, title: 'Pente 2/12' },
   { url: '/pentes/pente3.png', value: 3, title: 'Pente 3/12' },

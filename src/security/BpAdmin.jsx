@@ -22,6 +22,7 @@ import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
 import { CustomRoutes } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
+import { Home } from '@/operations/home/Home';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
@@ -57,6 +58,7 @@ export const BpAdmin = () => {
   return (
     <Admin
       title='BPartners'
+      dashboard={Home}
       authProvider={authProvider}
       dataProvider={dataProvider}
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}

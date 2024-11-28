@@ -9,6 +9,7 @@ export * from './BpMultipleTextInput';
 export * from './Buttons';
 export * from './EmptyListTemplate';
 export * from './Field';
+export * from './FlexBox';
 export * from './Pdf';
 export * from './RichTextEditor';
 export * from './SupportDialog';
