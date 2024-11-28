@@ -40,11 +40,11 @@ export const SubscriptionModal = () => {
         </ul>
         <p>
           votre abonnement à tout moment dans l’application. Si vous avez la moindre question, N’hésitez à nous appeler au{' '}
-          <a href='tel:0668624836' target='_blank'>
+          <a rel='noreferrer' href='tel:0668624836' target='_blank'>
             06.68.62.48.36
           </a>{' '}
           ou par mail à{' '}
-          <a href='mailto:contact@bpartners.app' target='_blank'>
+          <a rel='noreferrer' href='mailto:contact@bpartners.app' target='_blank'>
             contact@bpartners.app
           </a>
         </p>
