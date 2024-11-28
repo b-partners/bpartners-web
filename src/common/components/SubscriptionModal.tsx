@@ -36,10 +36,10 @@ export const SubscriptionModal = () => {
         <p>💡 Pas d’inquiétude :</p>
         <ul>
           <li>Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.</li>
-          <li>⁠Vous pouvez arrêter</li>
+          <li>⁠Vous pouvez arrêter votre abonnement à tout moment dans l’application.</li>
         </ul>
         <p>
-          votre abonnement à tout moment dans l’application. Si vous avez la moindre question, N’hésitez à nous appeler au{' '}
+          Si vous avez la moindre question, N’hésitez à nous appeler au{' '}
           <a rel='noreferrer' href='tel:0668624836' target='_blank'>
             06.68.62.48.36
           </a>{' '}

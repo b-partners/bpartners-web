@@ -43,7 +43,7 @@ export const SubscriptionLayout = () => (
       </Box>
     </Box>
 
-    <Typography variant='h6'>Pour 7€ HT par mois:</Typography>
+    <Typography variant='h6'>Pour 49€ par mois:</Typography>
     {infos.map(props => (
       <InfoShow {...props} key={props.icon} />
     ))}

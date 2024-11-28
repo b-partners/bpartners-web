@@ -16,7 +16,7 @@ import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
-import { authProvider, awsAuth, dataProvider, getCached } from '@/providers';
+import { authProvider, awsAuth, dataProvider, whoami } from '@/providers';
 import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
@@ -56,13 +56,18 @@ export const BpAdmin = () => {
   }, []);
 
   useEffect(() => {
-    const whoami = getCached.whoami();
-    if (whoami.user.subscriptionStatus === UserSubscriptionStatus.EMPTY) {
-      openDialog(<SubscriptionModal />, undefined, false);
-    }
-    if (searchParams.get("stripeStatus") === 'done') {
-      openDialog(<SubscriptionSuccessModal />);
-    }
+    (async function () {
+      try {
+        const currentWhoami = await whoami();
+        console.log(currentWhoami);
+        if (currentWhoami?.user?.subscriptionStatus === UserSubscriptionStatus.EMPTY) {
+          openDialog(<SubscriptionModal />, undefined, false);
+        }
+        if (searchParams.get('stripeStatus') === 'done') {
+          openDialog(<SubscriptionSuccessModal />);
+        }
+      } catch {}
+    })();
   }, []);
 
   if (!authProvider.getCachedWhoami()) {
