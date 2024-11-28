@@ -8,7 +8,7 @@ export class Redirect {
   public static toMail(email: string) {
     return this.toURL(`mailto:${email}`);
   }
-  public static toPone(phone: string) {
+  public static toPhone(phone: string) {
     return this.toURL(`tel:${phone}`);
   }
 }

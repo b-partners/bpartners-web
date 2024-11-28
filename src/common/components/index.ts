@@ -12,4 +12,6 @@ export * from './Field';
 export * from './FlexBox';
 export * from './Pdf';
 export * from './RichTextEditor';
+export * from './SubscriptionModal';
+export * from './SubscriptionSuccessModal';
 export * from './SupportDialog';
