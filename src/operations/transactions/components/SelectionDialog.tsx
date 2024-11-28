@@ -35,7 +35,7 @@ export const SelectionDialog: FC<SelectionDialogProps> = props => {
   const handleRowClick: RowClickFunction = (_id, _resource, record) => {
     setInvoiceToLink(record);
     setFile(null);
-    return '';
+    return false;
   };
 
   const handleImportFile: ChangeEventHandler<HTMLInputElement> = file => {

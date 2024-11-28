@@ -10,6 +10,7 @@ export const user1: User = {
   logoFileId: 'file-id-1',
   idVerified: true,
   roles: [UserRole.EVAL_PROSPECT],
+  subscriptionStatus: 'ACTIVE',
 };
 export const user2: User = { ...user1, idVerified: false, roles: [] };
 export const whoami1: Whoami = { user: user1 };

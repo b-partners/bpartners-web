@@ -10,6 +10,7 @@ import {
   SecurityApi,
   SheetApi,
   UserAccountsApi,
+  UserSubscriptionApi,
 } from '@bpartners/typescript-client';
 import { authProvider } from '.';
 
@@ -24,3 +25,4 @@ export const calendarApi = () => new CalendarApi(authProvider.getCachedAuthConf(
 export const sheetApi = () => new SheetApi(authProvider.getCachedAuthConf());
 export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf());
 export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());
+export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.getCachedAuthConf());
