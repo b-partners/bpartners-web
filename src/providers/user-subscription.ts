@@ -3,8 +3,8 @@ import { asyncGetUser } from './asyncGetUserInfo';
 
 const getStripeRedirectionUrl = () => {
   return {
-    failureUrl: `${process.env.REACT_APP_URL}?error="Une erreur s'est produite, veuillez recommencer"`,
-    successUrl: `${process.env.REACT_APP_URL}"`,
+    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
+    successUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=done`).href,
   };
 };
 

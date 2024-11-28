@@ -1,4 +1,4 @@
-import { userSubscriptionProvider } from '@/providers';
+import { cache, userSubscriptionProvider } from '@/providers';
 import { Alert, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { BPButton } from './BPButton';
 
 const mutationFn = async () => {
   const { redirectionUrl } = await userSubscriptionProvider.init();
+  cache.whoami(undefined);
+  cache.user(undefined);
   Redirect.toURL(redirectionUrl);
   return redirectionUrl;
 };
@@ -16,7 +18,7 @@ export const SubscriptionModal = () => {
 
   const [searchParams] = useSearchParams();
 
-  const error = searchParams.get('error');
+  const error = searchParams.get('stripeStatus');
 
   return (
     <>
@@ -24,7 +26,7 @@ export const SubscriptionModal = () => {
       <DialogContent>
         {error && (
           <Alert severity='error' variant='filled'>
-            {error}
+            Une erreur s'est produite, veuillez recommencer.
           </Alert>
         )}
         <p>
