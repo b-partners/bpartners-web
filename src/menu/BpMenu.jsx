@@ -21,6 +21,7 @@ import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { accountHolderProvider, authProvider, getCached } from '../providers';
+import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -37,11 +38,12 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
+  const isSubscribed = authProvider.isSubscribed();
   const { data: accountHolder = null } = useQuery({
     retry: 7,
     queryKey: ['accountHolder'],
     onError: printError,
-    queryFn: () => accountHolderProvider.getOne(),
+    queryFn: () => isSubscribed ? accountHolderProvider.getOne() : null,
   });
 
   const toggleDialogState = () => setDialogState(e => !e);

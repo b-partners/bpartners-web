@@ -14,15 +14,15 @@ import PasswordResetConfirmationLayout from './security/PasswordReset/components
 import PasswordResetPage from './security/PasswordReset/PasswordResetPage';
 import { PasswordChangeableLogin } from './security/SignInForm';
 import { SignUpForm } from './security/SignUpForm';
+import { UserSubscriptionCheckWrapper } from './security/UserSubscriptionCheckWrapper';
 
 const App = () => {
   return (
     <CookiesProvider>
       <BrowserRouter>
         <Routes>
-          <Route exact path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
+          <Route path={loginSuccessRelUrl} element={<LoginSuccessPage />} />
           <Route
-            exact
             path='/login'
             element={
               <BpLoginPageLayout>
@@ -38,12 +38,19 @@ const App = () => {
               </BpLoginPageLayout>
             }
           />
-          <Route exact path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
-          <Route exact path='/password/reset' element={<PasswordResetPage />} />
-          <Route exact path='/password/reset/code' element={<PasswordResetConfirmationLayout />} />
-          <Route exact path='/password/reset/success' element={<PasswordResetPassword />} />
-          <Route exact path='/redirection' element={<RedirectionMobilePage />} />
-          <Route exact path='*' element={<BpAdmin />} />
+          <Route path='/login/mobile/success' element={<MobileLoginSuccessPage />} />
+          <Route path='/password/reset' element={<PasswordResetPage />} />
+          <Route path='/password/reset/code' element={<PasswordResetConfirmationLayout />} />
+          <Route path='/password/reset/success' element={<PasswordResetPassword />} />
+          <Route path='/redirection' element={<RedirectionMobilePage />} />
+          <Route
+            path='*'
+            element={
+              <UserSubscriptionCheckWrapper>
+                <BpAdmin />
+              </UserSubscriptionCheckWrapper>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </CookiesProvider>
