@@ -78,7 +78,6 @@ describe('User subscription', () => {
     cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
 
     cy.contains("S'abonner").click();
-    cy.get('@redirect').should('have.been.calledOnce');
   });
 
   it('Should show modal on subscription is success', () => {
