@@ -1,6 +1,7 @@
 import { BP_THEME } from '@/bp-theme';
-import { BPLayout } from '@/common/components';
+import { BPLayout, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
+import { useDialog } from '@/common/store/dialog';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
@@ -15,17 +16,21 @@ import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
-import { authProvider, awsAuth, dataProvider } from '@/providers';
+import { authProvider, awsAuth, dataProvider, whoami } from '@/providers';
+import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Route, useSearchParams } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
+  const { open: openDialog } = useDialog();
+  const [searchParams] = useSearchParams();
+
   const getTokenExpiration = async () => {
     try {
       const session = (await awsAuth.fetchAuthSession()) || {};
@@ -49,6 +54,22 @@ export const BpAdmin = () => {
       }
     };
     checkTokenExpiration();
+  }, []);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        const currentWhoami = await whoami();
+        if (currentWhoami?.user?.subscription?.status === UserSubscriptionStatus.EMPTY) {
+          openDialog(<SubscriptionModal />, undefined, false);
+        }
+        console.log(searchParams.get('stripeStatus'));
+
+        if (searchParams.get('stripeStatus') === 'done') {
+          openDialog(<SubscriptionSuccessModal />);
+        }
+      } catch {}
+    })();
   }, []);
 
   if (!authProvider.getCachedWhoami()) {
