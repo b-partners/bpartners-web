@@ -46,6 +46,7 @@ export const GeneralConditionOfUse = () => {
         }
       }
     };
+
     fetchLegalFiles()
       .catch(() => notify('messages.global.error', { type: 'error' }))
       .finally(() => setLoading(false));

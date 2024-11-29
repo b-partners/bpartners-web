@@ -1,7 +1,6 @@
 import { BP_THEME } from '@/bp-theme';
-import { BPLayout, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
+import { BPLayout } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
-import { useDialog } from '@/common/store/dialog';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
@@ -16,20 +15,17 @@ import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
-import { authProvider, awsAuth, dataProvider, whoami } from '@/providers';
-import { UserSubscriptionStatus } from '@bpartners/typescript-client';
+import { authProvider, awsAuth, dataProvider } from '@/providers';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
-import { CustomRoutes } from 'react-admin';
-import { Navigate, Route, useSearchParams } from 'react-router-dom';
+import { CustomRoutes, DataProvider } from 'react-admin';
+import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
-  const { open: openDialog } = useDialog();
-  const [searchParams] = useSearchParams();
   const getTokenExpiration = async () => {
     try {
       const session = (await awsAuth.fetchAuthSession()) || {};
@@ -48,26 +44,11 @@ export const BpAdmin = () => {
         const currentTime = new Date();
         if (currentTime >= tokenExpiration) {
           // La session a expiré, déconnectez l'utilisateur
-          await Auth.signOut();
+          await awsAuth.signOut();
         }
       }
     };
     checkTokenExpiration();
-  }, []);
-
-  useEffect(() => {
-    (async function () {
-      try {
-        const currentWhoami = await whoami();
-        console.log(currentWhoami);
-        if (currentWhoami?.user?.subscriptionStatus === UserSubscriptionStatus.EMPTY) {
-          openDialog(<SubscriptionModal />, undefined, false);
-        }
-        if (searchParams.get('stripeStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal />);
-        }
-      } catch {}
-    })();
   }, []);
 
   if (!authProvider.getCachedWhoami()) {
@@ -79,7 +60,7 @@ export const BpAdmin = () => {
       title='BPartners'
       dashboard={Home}
       authProvider={authProvider}
-      dataProvider={dataProvider}
+      dataProvider={dataProvider as DataProvider}
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       loginPage={false}
       theme={BP_THEME}
@@ -94,14 +75,14 @@ export const BpAdmin = () => {
       <Resource name='drafts-annotations' />
       <Resource name='calendar' {...calendar} />
       <CustomRoutes>
-        <Route exact path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
+        <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/calendar-sync' element={<CalendarSync />} />
-        <Route exact path='/account/:id' element={<account.show />} />
-        <Route exact path='/configurations' element={<Configuration />} />
-        <Route exact path='/bank' element={<BankPage />} />
-        <Route exact path='/partners' element={<PartnersPage />} />
-        <Route exact path='/annotator' element={<Annotator />} />
-        <Route exact path='/error' element={<BPErrorPage />} />
+        <Route path='/account/:id' element={<account.show />} />
+        <Route path='/configurations' element={<Configuration />} />
+        <Route path='/bank' element={<BankPage />} />
+        <Route path='/partners' element={<PartnersPage />} />
+        <Route path='/annotator' element={<Annotator />} />
+        <Route path='/error' element={<BPErrorPage />} />
       </CustomRoutes>
     </Admin>
   );

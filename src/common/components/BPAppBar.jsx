@@ -45,6 +45,7 @@ const BPAppBar = () => {
   const isBeta = process.env.REACT_APP_BETA !== 'false';
   const cachedUser = getCached.user();
   const isVerifiedUser = cachedUser?.idVerified;
+  const isSubscribed = authProvider.isSubscribed();
   const notify = useNotify();
 
   useEffect(() => {
@@ -95,7 +96,6 @@ const BPAppBar = () => {
           <SidebarToggleButton className={classes.sidebarToggleButton} />
         </Box>
       </Box>
-
       <BPDialog
         title='Mettez à jour votre banque'
         content={[
@@ -107,8 +107,8 @@ const BPAppBar = () => {
         handleClick={accountValidation}
         onClose={onClose}
       />
-      <GeneralConditionOfUse />
-      {<UnverifiedUser />}
+      {isSubscribed && <GeneralConditionOfUse />}
+      <UnverifiedUser />
     </>
   );
 };
