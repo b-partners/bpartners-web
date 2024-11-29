@@ -34,7 +34,7 @@ const infos: InfoShowProps[] = [
 export const SubscriptionLayout = () => {
   const { data, isLoading } = useQuery<Whoami>({ queryKey: ['subscription', 'layout', 'account'], queryFn: whoami });
   const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'layout', 'account', 'cancel'], mutationFn: userSubscriptionProvider.cancelRenew });
-
+  const allowSubscription = JSON.parse(process.env.REACT_APP_ALLOW_SUBSCRIPTION || 'false');
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2, mb: 2 }}>
@@ -65,14 +65,16 @@ export const SubscriptionLayout = () => {
       {infos.map(props => (
         <InfoShow {...props} key={props.icon} />
       ))}
-      <Box>
-        <BPButton
-          isLoading={isPending}
-          onClick={() => mutate()}
-          disabled={!(data?.user?.subscription?.status && data?.user?.subscription?.status !== 'CANCELLED')}
-          label='Annuler le renouvellement de mon abonnement'
-        />
-      </Box>
+      {allowSubscription && (
+        <Box>
+          <BPButton
+            isLoading={isPending}
+            onClick={() => mutate()}
+            disabled={!(data?.user?.subscription?.status && data?.user?.subscription?.status !== 'CANCELLED')}
+            label='Annuler le renouvellement de mon abonnement'
+          />
+        </Box>
+      )}
     </SimpleShowLayout>
   );
 };

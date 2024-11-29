@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, IconButton, Tooltip } from '@mui/materia
 import { PdfViewer } from '@/common/components';
 import { useInvoiceToolContext } from '@/common/store/invoice';
 import { PDF_WIDTH } from './utils/utils';
-import { useSearchParams } from 'react-router-dom';
 
 export const CancelButton = ({ onClose }) => {
   return (

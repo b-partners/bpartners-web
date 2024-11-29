@@ -15,7 +15,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
   const redirect = useRedirect();
 
   useLayoutEffect(() => {
-    (async function () {
+    async function checkSubscription() {
       try {
         const currentWhoami = await whoami();
         if (currentWhoami?.user?.subscription?.status === UserSubscriptionStatus.EMPTY) {
@@ -30,7 +30,9 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
       } finally {
         stopLoading();
       }
-    })();
+    }
+
+    checkSubscription();
   }, [isLoading]);
 
   return isLoading ? <BPLoader message="Chargement des données d' authentification" /> : children;
