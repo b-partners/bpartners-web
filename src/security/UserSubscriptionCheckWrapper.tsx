@@ -18,7 +18,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
     (async function () {
       try {
         const currentWhoami = await whoami();
-        if (currentWhoami?.user?.subscriptionStatus === UserSubscriptionStatus.EMPTY) {
+        if (currentWhoami?.user?.subscription?.status === UserSubscriptionStatus.EMPTY) {
           redirect('/');
           openDialog(<SubscriptionModal />, undefined, false);
         }
