@@ -21,7 +21,6 @@ import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { accountHolderProvider, authProvider, getCached } from '../providers';
-import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
