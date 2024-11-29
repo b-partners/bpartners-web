@@ -104,7 +104,7 @@ export const Home = () => {
                   fontSize: getResponsiveValue('.8rem', '1rem', '1.2rem'),
                 }}
               >
-                NODE DEGRADATION GLOBALE: 41%
+                NOTE DÉGRADATION GLOBALE: 41%
               </Typography>
             </ShadowedBoxImage>
           </FlexBox>
@@ -120,16 +120,16 @@ export const Home = () => {
               <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='TYPE' value='PLAT' />
               <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='PENTE' value='0°' />
               <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label="TAUX D'HUMIDITE" value='26%' />
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='FISSURE CASSURE' value='NEANT' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='FISSURE CASSURE' value='NÉANT' />
               <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='RÊVETEMENT' value='ASPHALTE GRAY' />
             </Box>
             <Box>
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='MUTATION HUM' value='DEGRADATION' />
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='TAUX DE REPARATION' value='0%' />
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label="TAUX D'USURE / MOISISURE" value='47%' />
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='RISQUE FEU' value='NEANT' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='MUTATION HUM' value='DÉGRADATION' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='TAUX DE RÉPARATION' value='0%' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label="TAUX D'USURE / MOISISSURE" value='47%' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='RISQUE FEU' value='NÉANT' />
               <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='OBSTACLE' value='7%' />
-              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='HETEROGENEITE DES RÊVETEMENTS' value='74%' />
+              <HomeAnnotationInfo getResponsiveValue={getResponsiveValue} label='HÉTÉROGÉNÉITÉ DES REVÊTEMENTS' value='74%' />
             </Box>
           </FlexBox>
         </Box>
