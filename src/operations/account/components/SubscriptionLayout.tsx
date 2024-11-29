@@ -1,6 +1,11 @@
 import { BP_COLOR } from '@/bp-theme';
-import { Avatar, Box, Typography } from '@mui/material';
+import { BPButton } from '@/common/components';
+import { formatDate } from '@/common/utils';
+import { userSubscriptionProvider, whoami } from '@/providers';
+import { Whoami } from '@bpartners/typescript-client';
+import { Avatar, Box, Skeleton, Stack, Typography } from '@mui/material';
 import { green, grey, yellow } from '@mui/material/colors';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { SimpleShowLayout } from 'react-admin';
 import { InfoShow } from './InfoShow';
 import { InfoShowProps } from './types';
@@ -26,26 +31,48 @@ const infos: InfoShowProps[] = [
   { content: 'Support 7/7', icon: 'AccessTime', color: green[500] },
 ];
 
-export const SubscriptionLayout = () => (
-  <SimpleShowLayout>
-    <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2, mb: 2 }}>
-      <Avatar
-        variant='rounded'
-        sx={{ background: BP_COLOR[5] }}
-        alt='Votre abonnement'
-        src='https://www.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png'
-      />
-      <Box ml={2}>
-        <Typography variant='h5'>L'essentiel</Typography>
-        <Typography color='text.secondary' component='b'>
-          Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant
-        </Typography>
-      </Box>
-    </Box>
+export const SubscriptionLayout = () => {
+  const { data, isLoading } = useQuery<Whoami>({ queryKey: ['subscription', 'layout', 'account'], queryFn: whoami });
+  const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'layout', 'account', 'cancel'], mutationFn: userSubscriptionProvider.cancelRenew });
 
-    <Typography variant='h6'>Pour 49€ par mois:</Typography>
-    {infos.map(props => (
-      <InfoShow {...props} key={props.icon} />
-    ))}
-  </SimpleShowLayout>
-);
+  return (
+    <SimpleShowLayout>
+      <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2, mb: 2 }}>
+        <Stack direction='row' alignItems='center' flexGrow={1}>
+          <Avatar
+            variant='rounded'
+            sx={{ background: BP_COLOR[5] }}
+            alt='Votre abonnement'
+            src='https://www.bpartners.app/static/media/essentiel.cb090d9cf088f1bc56cf.png'
+          />
+          <Box ml={2}>
+            <Typography variant='h5'>L'essentiel</Typography>
+            <Typography color='text.secondary' component='b'>
+              Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant
+            </Typography>
+          </Box>
+        </Stack>
+        <Stack>
+          <Typography color='text.secondary' component='b'>
+            Date d'expiration
+          </Typography>
+          {!isLoading && <Typography variant='h5'>{formatDate(new Date(data?.user.subscription?.end))}</Typography>}
+          {isLoading && <Skeleton width='100%' />}
+        </Stack>
+      </Box>
+
+      <Typography variant='h6'>Pour 49€ par mois:</Typography>
+      {infos.map(props => (
+        <InfoShow {...props} key={props.icon} />
+      ))}
+      <Box>
+        <BPButton
+          isLoading={isPending}
+          onClick={() => mutate()}
+          disabled={!(data?.user?.subscription?.status && data?.user?.subscription?.status !== 'CANCELLED')}
+          label='Annuler le renouvellement de mon abonnement'
+        />
+      </Box>
+    </SimpleShowLayout>
+  );
+};
