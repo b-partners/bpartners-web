@@ -18,7 +18,7 @@ export const SubscriptionModal = () => {
 
   const [searchParams] = useSearchParams();
 
-  const error = searchParams.get('stripeStatus');
+  const error = searchParams.get('stripeStatus') === 'error';
 
   return (
     <>

@@ -1,6 +1,7 @@
 import App from '@/App';
 import { Redirect } from '@/common/utils';
 import { BpAdmin } from '@/security/BpAdmin';
+import { UserSubscriptionCheckWrapper } from '@/security/UserSubscriptionCheckWrapper';
 import { Redirection2, User, Whoami } from '@bpartners/typescript-client';
 import { FC, ReactNode, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router';
@@ -34,7 +35,6 @@ const user_cancelled_stripe: User = {
     status: 'CANCELLED',
   },
 };
-// const whoami_cancelled_stripe: Whoami = { user: user_cancelled_stripe };
 
 const expectedStripeSubscriptionBody = {
   redirectionStatusUrls: {
@@ -66,25 +66,11 @@ describe('User subscription', () => {
     cy.intercept('GET', `/users/${user_empty_stripe.id}/accounts`, accounts1);
   });
 
-  it('Show modal if user do not have subscription', () => {
-    cy.cognitoLogin({ user: user_empty_stripe, whoami: whoami_empty_stripe });
-    cy.intercept('POST', `/users/${user_empty_stripe.id}/subscriptionInitiation`, req => {
-      expect(req.body).deep.equal(expectedStripeSubscriptionBody);
-      req.reply(stripeSubscriptionResponse);
-    });
-    cy.mount(<App />);
-
-    cy.contains('Finalisez votre inscription en toute sérénité !');
-    cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
-
-    cy.contains("S'abonner").click();
-  });
-
   it('Should show modal on subscription is success', () => {
+    cy.cognitoLogin({ user: user_active_stripe, whoami: whoami_active_stripe });
     cy.intercept('GET', `/users/${user_active_stripe.id}/accounts`, accounts1);
     cy.intercept('GET', `/users/${user_active_stripe.id}/accounts/${accounts1[0].id}/accountHolders`, [accountHolder1]);
     cy.intercept('POST', `/users/${user_active_stripe.id}/subscriptionCancel`, user_cancelled_stripe);
-    cy.cognitoLogin({ user: user_active_stripe, whoami: whoami_active_stripe });
     cy.mount(
       <BrowserRouter>
         <Routes>
@@ -92,7 +78,9 @@ describe('User subscription', () => {
             path='*'
             element={
               <Wrapper>
-                <BpAdmin />
+                <UserSubscriptionCheckWrapper>
+                  <BpAdmin />
+                </UserSubscriptionCheckWrapper>
               </Wrapper>
             }
           />
@@ -107,5 +95,19 @@ describe('User subscription', () => {
     cy.contains('10/10/2024');
     cy.contains('Pour 49€ par mois:');
     cy.contains('Annuler le renouvellement de mon abonnement').click();
+  });
+
+  it('Show modal if user do not have subscription', () => {
+    cy.cognitoLogin({ user: user_empty_stripe, whoami: whoami_empty_stripe });
+    cy.intercept('POST', `/users/${user_empty_stripe.id}/subscriptionInitiation`, req => {
+      expect(req.body).deep.equal(expectedStripeSubscriptionBody);
+      req.reply(stripeSubscriptionResponse);
+    });
+    cy.mount(<App />);
+
+    cy.contains('Finalisez votre inscription en toute sérénité !');
+    cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
+
+    cy.contains("S'abonner").click();
   });
 });

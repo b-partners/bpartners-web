@@ -133,6 +133,6 @@ export const authProvider = {
     window.location.replace('/');
   },
   isSubscribed: () => {
-    return getCached.whoami()?.user?.subscriptionStatus !== UserSubscriptionStatus.EMPTY;
+    return getCached.whoami()?.user?.subscription.status !== UserSubscriptionStatus.EMPTY;
   },
 };
