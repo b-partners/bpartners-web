@@ -1,6 +1,7 @@
 import TabPanel from '@/common/components/TabPanel';
 import { Box, Tab, Tabs, TabsProps } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { AccountHolderLayout } from './AccountHolderLayout';
 import { SubscriptionLayout } from './SubscriptionLayout';
 import { AdditionalInformationProps } from './types';
@@ -12,6 +13,14 @@ export const AdditionalInformation: FC<AdditionalInformationProps> = props => {
   const handleTabChange: TabsProps['onChange'] = (_event, newTabIndex) => {
     setTabIndex(newTabIndex);
   };
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('stripeStatus') === 'done') {
+      handleTabChange(undefined, 1);
+    }
+  }, []);
 
   return (
     <Box sx={{ p: 2 }}>

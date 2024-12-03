@@ -66,7 +66,11 @@ export const LogoShowLayout = () => {
         <Badge
           overlap='circular'
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          badgeContent={<SmallAvatar alt='PhotoCamera' children={<PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />} />}
+          badgeContent={
+            <SmallAvatar alt='PhotoCamera'>
+              <PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />
+            </SmallAvatar>
+          }
         >
           {!logoLoading ? (
             <Avatar

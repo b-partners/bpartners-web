@@ -1,5 +1,5 @@
 import loginRedirectionUrls from '@/security/login-redirection-urls';
-import { Configuration, SecurityApi } from '@bpartners/typescript-client';
+import { Configuration, SecurityApi, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
@@ -131,5 +131,8 @@ export const authProvider = {
     await awsAuth.signOut();
     cache.unapprovedFiles(1);
     window.location.replace('/');
+  },
+  isSubscribed: () => {
+    return getCached.whoami()?.user?.subscription.status !== UserSubscriptionStatus.EMPTY;
   },
 };

@@ -9,13 +9,16 @@ const POLYGON_COLORS: PolygonColor[] = [
   { fillColor: '#CDDC3940', strokeColor: '#CDDC39' },
   { fillColor: '#2196F340', strokeColor: '#2196F3' },
   { fillColor: '#E91E6340', strokeColor: '#E91E63' },
-  { fillColor: '#331E0A40', strokeColor: '#331E0A' },
   { fillColor: '#8A2BE240', strokeColor: '#8A2BE2' },
   { fillColor: '#00BCD440', strokeColor: '#00BCD4' },
 ];
 
 export const getNewPolygonColor = (polygons: Polygon[]) => {
-  const currentIndex = polygons.length % POLYGON_COLORS.length;
+  if (polygons.length === 0) {
+    return { fillColor: '#00000000', strokeColor: '#000000' };
+  }
+
+  const currentIndex = (polygons.length % POLYGON_COLORS.length) - 1;
   const lastPolygon = polygons[polygons.length - 1];
 
   // If the new color would match the last polygon's color, increment the index

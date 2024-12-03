@@ -29,7 +29,7 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose, url, children = null }) 
   return (
     <Card sx={{ border: 'none' }}>
       <CardHeader
-        action={onClose ? <CancelButton onClose={onClose} /> : <ContextCancelButton />}
+        action={onClose ? <CancelButton onClose={onClose} /> : <ContextCancelButton clearUrlParams />}
         title={selectedInvoice.title}
         subheader={selectedInvoice.ref}
       />

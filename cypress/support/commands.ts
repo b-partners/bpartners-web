@@ -1,3 +1,4 @@
+import { User, Whoami } from '@bpartners/typescript-client';
 import { images1 } from '../../src/__tests__/mocks/responses/file-api';
 import { user1, whoami1 } from '../../src/__tests__/mocks/responses/security-api';
 import { authProvider, awsAuth, userAccountsApi } from '../../src/providers';
@@ -17,15 +18,19 @@ const COGNITO_RESPONSE = {
 
 const LOGIN_PARAMS = { username: 'dummy', password: 'dummy' };
 
-const mockCognitoLogin = () => {
+export interface MockCognitoLoginOptions {
+  whoami?: Whoami;
+  user?: User;
+}
+const mockCognitoLogin = (options?: MockCognitoLoginOptions) => {
   /*
       just replace all amplify functions to mock login
       we never call cognito
     */
   cy.clearAllLocalStorage();
   cy.clearAllCookies();
-  cy.intercept('GET', '/whoami', whoami1).as('whoami');
-  cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getUser1');
+  cy.intercept('GET', '/whoami', options?.whoami || whoami1).as('whoami');
+  cy.intercept('GET', `/users/${(options?.whoami || whoami1).user.id}`, options?.user || user1).as('getUser1');
   cy.intercept('GET', `/accounts/**/files/**/raw**`, images1).as('fetchLogo');
   cy.intercept('GET', `users/**/legalFiles`, []).as('getLegalFile');
   cy.stub(awsAuth, 'fetchAuthSession').returns(Promise.resolve(SESSION_STUB));
@@ -51,10 +56,10 @@ const realCognitoLogin = () => {
 const dataCy = <Subject = any>(value: string, additionalCommand = '') => cy.get<Subject>(`[data-cy="${value}"]${additionalCommand}`);
 const name = <Subject = any>(value: string, additionalCommand = '') => cy.get<Subject>(`[name="${value}"]${additionalCommand}`);
 const getByAttribute = <Subject = any>(attribute: string, value: string) => cy.get<Subject>(`[${attribute}='${value}']`);
-const getByTestId = <Subject = any>(id: string) => getByAttribute<Subject>("data-testid", id);
-const getByAriaLabel = <Subject = any>(value: string) => getByAttribute<Subject>("aria-label", value);
-const getByName = <Subject = any>(value: string) => getByAttribute<Subject>("name", value);
-const getByDataCy = <Subject = any>(value: string) => getByAttribute<Subject>("data-cy", value);
+const getByTestId = <Subject = any>(id: string) => getByAttribute<Subject>('data-testid', id);
+const getByAriaLabel = <Subject = any>(value: string) => getByAttribute<Subject>('aria-label', value);
+const getByName = <Subject = any>(value: string) => getByAttribute<Subject>('name', value);
+const getByDataCy = <Subject = any>(value: string) => getByAttribute<Subject>('data-cy', value);
 
 const skipBankSynchronisation = () => {
   cy.intercept('/users/*/accounts').as('getAccount');

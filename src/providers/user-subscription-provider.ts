@@ -18,4 +18,9 @@ export const userSubscriptionProvider = {
     });
     return data;
   },
+  async cancelRenew() {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().cancelUserSubscription(id);
+    return data;
+  },
 };

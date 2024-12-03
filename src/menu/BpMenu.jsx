@@ -37,11 +37,12 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
+  const isSubscribed = authProvider.isSubscribed();
   const { data: accountHolder = null } = useQuery({
     retry: 7,
     queryKey: ['accountHolder'],
     onError: printError,
-    queryFn: () => accountHolderProvider.getOne(),
+    queryFn: () => isSubscribed ? accountHolderProvider.getOne() : null,
   });
 
   const toggleDialogState = () => setDialogState(e => !e);

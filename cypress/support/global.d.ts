@@ -1,3 +1,5 @@
+import { MockCognitoLoginOptions } from './commands';
+
 export declare global {
   namespace Cypress {
     interface Chainable {
@@ -9,7 +11,7 @@ export declare global {
       getByAttribute<Subject>(attribute: string, value: string): Chainable<Subject>;
       getByName<Subject>(name: string): Chainable<Subject>;
       e2eLogin(): void;
-      cognitoLogin(): void;
+      cognitoLogin(options?: MockCognitoLoginOptions): void;
       realCognitoLogin(): void;
       removeApiDummyUser(): void;
       waitAuthRequestNeeded(): void;
