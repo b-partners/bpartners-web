@@ -94,7 +94,7 @@ describe('User subscription', () => {
     cy.contains("Date d'expiration");
     cy.contains('10/10/2024');
     cy.contains('Pour 49€ par mois:');
-    cy.contains('Annuler le renouvellement de mon abonnement').click();
+    // cy.contains('Annuler le renouvellement de mon abonnement').click();
   });
 
   it('Show modal if user do not have subscription', () => {

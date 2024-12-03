@@ -15,7 +15,7 @@ const POLYGON_COLORS: PolygonColor[] = [
 
 export const getNewPolygonColor = (polygons: Polygon[]) => {
   if (polygons.length === 0) {
-    return { fillColor: '#00000020', strokeColor: '#000000' };
+    return { fillColor: '#00000000', strokeColor: '#000000' };
   }
 
   const currentIndex = (polygons.length % POLYGON_COLORS.length) - 1;
