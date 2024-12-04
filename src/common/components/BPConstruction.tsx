@@ -1,11 +1,6 @@
 import { Alert, SxProps } from '@mui/material';
 import { FC } from 'react';
 
-export const COMMON_STYLE = {
-  border: 'none',
-  opacity: 0.85,
-};
-
 interface BPConstructionProps {
   sx?: SxProps;
 }
@@ -13,7 +8,6 @@ interface BPConstructionProps {
 export const BPConstruction: FC<BPConstructionProps> = ({ sx }) => (
   <Alert
     sx={{
-      ...COMMON_STYLE,
       padding: '.2rem .9rem',
       opacity: 0.8,
       mr: 2,
