@@ -17,6 +17,7 @@ const SlopeSelect = ({ name }: { name: string }) => {
     <FormControl fullWidth>
       <InputLabel id='demo-simple-select-label'>Pente</InputLabel>
       <Select
+        fullWidth
         labelId='demo-simple-select-label'
         id='demo-simple-select'
         value={value || 0}

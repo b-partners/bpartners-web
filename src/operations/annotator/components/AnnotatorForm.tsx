@@ -8,43 +8,50 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
 
   return (
-    <Box sx={{ p: 2 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Box>
-          Surface :
-          <Typography component='span' fontWeight='bold'>
-            {surface} m²
-          </Typography>
-        </Box>
-        <SelectInput
-          label='Revêtement'
-          choices={covering}
-          alwaysOn
-          resettable
-          name={`annotationInfos.${index}.covering`}
-          source={`annotationInfos.${index}.covering`}
-        />
-        <SlopeSelect name={`annotationInfos.${index}.slope`} />
-        <SelectInput name={`annotationInfos.${index}.wear`} source={`annotationInfos.${index}.wear`} label='Usure' choices={wear} alwaysOn resettable />
-        <SelectInput
-          name={`annotationInfos.${index}.wearLevel`}
-          source={`annotationInfos.${index}.wearlevel`}
-          label="Taux d'usure"
-          choices={percentagesLevel}
-          alwaysOn
-          resettable
-        />
-        <SelectInput
-          name={`annotationInfos.${index}.moldRate`}
-          source={`annotationInfos.${index}.moldRate`}
-          label='Taux de moisissure'
-          choices={percentagesLevel}
-          alwaysOn
-          resettable
-        />
-        <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle' />
-        <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
-      </div>
+    <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Typography sx={{ fontSize: '14px' }}>
+        Surface : (
+        <Typography component='span' fontWeight='bold'>
+          {surface} m²
+        </Typography>
+        )
+      </Typography>
+      <SelectInput
+        alwaysOn
+        resettable
+        label='Revêtement'
+        choices={covering}
+        name={`annotationInfos.${index}.covering`}
+        source={`annotationInfos.${index}.covering`}
+      />
+      <SlopeSelect name={`annotationInfos.${index}.slope`} />
+      <SelectInput
+        sx={{ mt: 3 }}
+        name={`annotationInfos.${index}.wear`}
+        source={`annotationInfos.${index}.wear`}
+        label='Usure'
+        choices={wear}
+        alwaysOn
+        resettable
+      />
+      <SelectInput
+        name={`annotationInfos.${index}.wearLevel`}
+        source={`annotationInfos.${index}.wearlevel`}
+        label="Taux d'usure"
+        choices={percentagesLevel}
+        alwaysOn
+        resettable
+      />
+      <SelectInput
+        name={`annotationInfos.${index}.moldRate`}
+        source={`annotationInfos.${index}.moldRate`}
+        label='Taux de moisissure'
+        choices={percentagesLevel}
+        alwaysOn
+        resettable
+      />
+      <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle' />
+      <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
     </Box>
   );
 };

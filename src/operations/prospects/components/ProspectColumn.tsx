@@ -5,14 +5,14 @@ import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Card, CardActions, CardContent, CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { ProspectItem } from './ProspectItem';
+
 interface ProspectColumnProps {
   color: string;
   status: ProspectStatus;
   title: string;
 }
 
-export const ProspectColumn: FC<ProspectColumnProps> = props => {
-  const { title, status, color } = props;
+export const ProspectColumn: FC<ProspectColumnProps> = ({ title, status, color }) => {
   const { nextPage, prevPage, prospects, hasNextPage, page, isLoading } = useProspectFetcher(status);
 
   return (

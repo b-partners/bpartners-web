@@ -1,7 +1,8 @@
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
-import { BPConstruction } from '@/common/components';
+import { BPConstruction, FlexBox } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
+import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
 import { labels } from '@/constants';
@@ -40,14 +41,14 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle } = useCanvasAnnotationContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const [expanded, setExpanded] = useState<number | null>(0);
   const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
       try {
-        setIsLoading(true);
+        startLoading();
         const annotationIdValue = draftAnnotationId || uuidV4();
         const annotationAttributeMapped = annotationsAttributeMapper(polygons, annotationInfos, pictureId, annotationIdValue);
         const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
@@ -63,7 +64,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
         printError(e);
         notify('resources.annotations.creation.error', { type: 'error' });
       } finally {
-        setIsLoading(false);
+        stopLoading();
       }
     });
     handleSubmitForms(event);
@@ -83,7 +84,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
 
   return (
     <>
-      <List sx={{ maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
+      <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
         <Box py={2}>
           {fieldArrayState.fields.length > 0 ? (
             <FormProvider {...formState}>
@@ -97,37 +98,33 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
 
                   return (
                     <Box data-cy='annotation-info-item' key={annotationInfo.id}>
-                      <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
-                        <IconButton
-                          edge='end'
-                          aria-label='toggle polygon visibility'
-                          style={{ marginTop: '15px', marginRight: '0' }}
-                          onClick={() => togglePolygonVisibility(currentPolygon.id)}
-                        >
-                          {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </IconButton>
-                      </Tooltip>
-                      <SelectInput
-                        alwaysOn
-                        resettable
-                        choices={labels}
-                        label='Type de label'
-                        sx={{ width: '70%' }}
-                        name={`annotationInfos.${i}.labelType`}
-                        source={`annotationInfos.${i}.labelType`}
-                      />
-                      <Tooltip title='supprimer le polygone'>
-                        <IconButton
-                          aria-label='delete polygon'
-                          edge='end'
-                          style={{ marginTop: '15px' }}
-                          onClick={() => removeAnnotationByPolygonId(currentPolygon.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Accordion style={{ marginTop: '-15px', marginBottom: '20px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
+                      <FlexBox sx={{ alignItems: 'start', width: '100%', mt: '15px' }}>
+                        <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
+                          <IconButton
+                            edge='end'
+                            aria-label='toggle polygon visibility'
+                            style={{ marginRight: '0' }}
+                            onClick={() => togglePolygonVisibility(currentPolygon.id)}
+                          >
+                            {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                          </IconButton>
+                        </Tooltip>
+                        <SelectInput
+                          alwaysOn
+                          resettable
+                          choices={labels}
+                          label='Type de label'
+                          sx={{ width: '70%', m: 0 }}
+                          name={`annotationInfos.${i}.labelType`}
+                          source={`annotationInfos.${i}.labelType`}
+                        />
+                        <Tooltip title='supprimer le polygone'>
+                          <IconButton aria-label='delete polygon' edge='end' onClick={() => removeAnnotationByPolygonId(currentPolygon.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </FlexBox>
+                      <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
                         <AccordionSummary expandIcon={<ExpandMore />}>
                           <TextInput
                             name={`annotationInfos.${i}.labelName`}
@@ -169,7 +166,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           </Dialog>
         )}
       </List>
-      <Stack sx={{ position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
+      <Stack sx={{ zIndex: 99999, position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
         <BPButton
           type='submit'
           isLoading={isLoading}
@@ -186,7 +183,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           onClick={event => handleSubmitFormsWrapper(event, true)}
           style={{ width: '100%' }}
         />
-        <BPConstruction />
+        <BPConstruction sx={{ width: '100%' }} />
       </Stack>
     </>
   );
