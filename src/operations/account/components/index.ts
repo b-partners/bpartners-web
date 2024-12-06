@@ -2,6 +2,7 @@ export * from './AccountEditionAccordion';
 export * from './AccountHolderIncomeTargets';
 export * from './AccountHolderLayout';
 export * from './AdditionalInformation';
+export * from './CancelSubscriptionDialog';
 export * from './FeedbackLink';
 export * from './InfoShow';
 export * from './LogoShowLayout';
