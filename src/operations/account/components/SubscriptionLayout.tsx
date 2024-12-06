@@ -20,6 +20,8 @@ export const SubscriptionLayout = () => {
     !isLoading && data && !isAlreadyCancelled && openDialog(<CancelSubscriptionDialog whoami={data} />);
   };
 
+  const endingDate = data?.user.subscription?.end;
+
   return (
     <SimpleShowLayout>
       <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${BP_COLOR['solid_grey']}`, pb: 2, mb: 2 }}>
@@ -42,10 +44,12 @@ export const SubscriptionLayout = () => {
           title="Votre abonnement prendra fin à cette date et vous ne pourrez plus utiliser l'application sans vous réabonner."
         >
           <Stack>
-            <Typography color='text.secondary' component='b'>
-              Date d'expiration
-            </Typography>
-            {!isLoading && <Typography variant='h6'>{formatDate(new Date(data?.user.subscription?.end))}</Typography>}
+            {endingDate && (
+              <Typography color='text.secondary' component='b'>
+                Date d'expiration
+              </Typography>
+            )}
+            {!isLoading && endingDate && <Typography variant='h6'>{formatDate(new Date(endingDate))}</Typography>}
             {isLoading && <Skeleton width='100%' />}
           </Stack>
         </Tooltip>
