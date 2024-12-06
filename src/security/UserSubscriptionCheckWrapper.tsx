@@ -23,7 +23,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
           openDialog(<SubscriptionModal />, undefined, false);
         }
         if (searchParams.get('stripeStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal />);
+          openDialog(<SubscriptionSuccessModal />, {}, false);
         }
       } catch (error) {
         printError(error);

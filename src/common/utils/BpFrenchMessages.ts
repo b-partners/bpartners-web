@@ -134,6 +134,9 @@ export const BpFrenchMessages = {
     product: {
       create: 'Le produit a été créé avec succès.',
     },
+    subscription: {
+      cancelSuccess: "Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au %{endDate}",
+    },
   },
   0: '0',
   10: '10',

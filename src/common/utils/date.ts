@@ -7,6 +7,12 @@ const INPUT_DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 export const formatDateTime = (date: Date) => date.toLocaleString('pt-BR');
 
 export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' ')[0].replace(/,/g, '');
+export const formatFrenchDate = (date: Date) =>
+  date.toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
 /**
  * Create new date in 8601 format

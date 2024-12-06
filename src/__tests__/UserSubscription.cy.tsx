@@ -1,5 +1,5 @@
 import App from '@/App';
-import { Redirect } from '@/common/utils';
+import { Redirect, Reload } from '@/common/utils';
 import { BpAdmin } from '@/security/BpAdmin';
 import { UserSubscriptionCheckWrapper } from '@/security/UserSubscriptionCheckWrapper';
 import { Redirection2, User, Whoami } from '@bpartners/typescript-client';
@@ -63,7 +63,28 @@ const Wrapper: FC<{ children?: ReactNode }> = ({ children }) => {
 describe('User subscription', () => {
   beforeEach(() => {
     cy.stub(Redirect, 'toURL').as('redirect');
+    cy.stub(Reload, 'force').as('reload');
     cy.intercept('GET', `/users/${user_empty_stripe.id}/accounts`, accounts1);
+  });
+
+  it('Show modal on cancel user subscription', () => {
+    cy.cognitoLogin({ user: user_active_stripe, whoami: whoami_active_stripe });
+    cy.intercept('GET', `/users/${user_active_stripe.id}/accounts`, accounts1);
+    cy.intercept('GET', `/users/${user_active_stripe.id}/accounts/${accounts1[0].id}/accountHolders`, [accountHolder1]);
+    cy.intercept('POST', `/users/${user_active_stripe.id}/subscriptionCancel`, user_cancelled_stripe);
+    cy.mount(<App />);
+
+    cy.contains('Mon compte').click();
+    cy.contains('Mon compte').click();
+
+    cy.contains('Mon abonnement').click();
+    cy.contains('Annuler le renouvellement de mon abonnement').click();
+    cy.contains("Vous conserverez l'accès à toutes les fonctionnalités de votre abonnement jusqu'au 10 octobre 2024");
+    cy.contains("Confirmation de l'annulation du renouvellement automatique");
+
+    cy.contains('Confirmer').click();
+
+    cy.contains("Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au 10 octobre 2024");
   });
 
   it('Should show modal on subscription is success', () => {
@@ -94,7 +115,6 @@ describe('User subscription', () => {
     cy.contains("Date d'expiration");
     cy.contains('10/10/2024');
     cy.contains('Pour 49€ par mois:');
-    // cy.contains('Annuler le renouvellement de mon abonnement').click();
   });
 
   it('Show modal if user do not have subscription', () => {
