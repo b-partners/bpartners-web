@@ -4,12 +4,18 @@ import { BPButton } from './BPButton';
 
 export const SubscriptionSuccessModal = () => {
   const { close } = useDialog();
+
+  const handleClose = () => {
+    window.location.reload();
+    close();
+  };
+
   return (
     <>
       <DialogTitle>Inscription terminée</DialogTitle>
       <DialogContent>Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.</DialogContent>
       <DialogActions>
-        <BPButton onClick={close} label='Fermer' />
+        <BPButton onClick={handleClose} label='Fermer' />
       </DialogActions>
     </>
   );
