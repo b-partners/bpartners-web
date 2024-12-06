@@ -1,5 +1,5 @@
 import App from '@/App';
-import { Redirect } from '@/common/utils';
+import { Redirect, Reload } from '@/common/utils';
 import { BpAdmin } from '@/security/BpAdmin';
 import { UserSubscriptionCheckWrapper } from '@/security/UserSubscriptionCheckWrapper';
 import { Redirection2, User, Whoami } from '@bpartners/typescript-client';
@@ -63,6 +63,7 @@ const Wrapper: FC<{ children?: ReactNode }> = ({ children }) => {
 describe('User subscription', () => {
   beforeEach(() => {
     cy.stub(Redirect, 'toURL').as('redirect');
+    cy.stub(Reload, 'force').as('reload');
     cy.intercept('GET', `/users/${user_empty_stripe.id}/accounts`, accounts1);
   });
 

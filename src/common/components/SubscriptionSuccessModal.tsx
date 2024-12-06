@@ -1,12 +1,13 @@
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useDialog } from '../store/dialog';
+import { Reload } from '../utils';
 import { BPButton } from './BPButton';
 
 export const SubscriptionSuccessModal = () => {
   const { close } = useDialog();
 
   const handleClose = () => {
-    window.location.reload();
+    Reload.force();
     close();
   };
 
