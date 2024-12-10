@@ -16,6 +16,7 @@ export interface AnnotationInfo {
   fillColor?: string;
   strokeColor?: string;
   labelName?: string;
+  humidityLevel?: number;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;

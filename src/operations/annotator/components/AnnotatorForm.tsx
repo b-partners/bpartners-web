@@ -50,6 +50,14 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         alwaysOn
         resettable
       />
+      <SelectInput
+        name={`annotationInfos.${index}.humidityLevel`}
+        source={`annotationInfos.${index}.humidityLevel`}
+        label="Taux d'humidité"
+        choices={percentagesLevel}
+        alwaysOn
+        resettable
+      />
       <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle' />
       <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
     </Box>

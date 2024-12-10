@@ -18,7 +18,7 @@ export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationI
   const { labelName } = areaPictureAnnotationInstance;
   const infos = useMemo(() => {
     const { metadata, labelType } = areaPictureAnnotationInstance;
-    const { area, comment, covering, wearLevel, slope, wearness, moldRate, obstacle } = metadata || {};
+    const { area, comment, covering, wearLevel, slope, wearness, moldRate, obstacle, humidityLevel } = metadata || {};
     return [
       { label: 'Type', value: labelType },
       { label: 'Surface', value: area, unity: 'm²' },
@@ -27,6 +27,7 @@ export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationI
       { label: 'Usure', value: wearTranslation[wearness] },
       { label: "Taux d'usure", value: wearLevel },
       { label: 'Taux de moisissure', value: moldRate },
+      { label: "Taux d'humidité", value: humidityLevel },
       { label: 'Obstacle', value: obstacle },
       { label: 'Commentaire', value: comment },
     ];
