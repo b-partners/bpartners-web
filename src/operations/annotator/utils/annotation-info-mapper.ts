@@ -3,7 +3,18 @@ import { AnnotationInfo } from '../types';
 
 export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: AreaPictureAnnotationInstance): AnnotationInfo => {
   const { metadata = {}, labelName = '', labelType = '' } = annotationInstance;
-  const { fillColor = '', strokeColor = '', comment = '', covering = '', wearLevel = 0, slope = 0, wearness = null, moldRate = 0, obstacle = '' } = metadata;
+  const {
+    humidityLevel = 0,
+    fillColor = '',
+    strokeColor = '',
+    comment = '',
+    covering = '',
+    wearLevel = 0,
+    slope = 0,
+    wearness = null,
+    moldRate = 0,
+    obstacle = '',
+  } = metadata;
   return {
     polygonId: annotationInstance.id,
     labelType,
@@ -17,5 +28,6 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
     fillColor,
     labelName,
     strokeColor,
+    humidityLevel,
   };
 };
