@@ -17,7 +17,7 @@ const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL
 const MAX_ZOOM = 19;
 
 const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
-export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
+export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ showFileSource = true, buttonComponent, allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -100,7 +100,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotatio
           allowAnnotation={allowAnnotation}
           width={width || '100%'}
           height={height || '500px'}
-          buttonsComponent={annotatorButtonsActions(shiftImage, isExtended)}
+          buttonsComponent={buttonComponent ? buttonComponent : annotatorButtonsActions(shiftImage, isExtended)}
           image={getUrlParams(window.location.search, 'imgUrl')}
           setPolygons={setPolygons}
           polygonList={polygonFromProps || polygons}
@@ -114,7 +114,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotatio
           zoom={getZoom(newZoomLevelAsNumber)}
         />
       )}
-      {Object.keys(layer).length > 0 && (
+      {(showFileSource && Object.keys(layer).length > 0) && (
         <Box sx={{ textAlign: 'center', p: 1, border: '1px solid #ebebeb' }}>
           <Typography variant='body2' style={{ fontWeight: 'bold' }}>
             Source de l'image: {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}

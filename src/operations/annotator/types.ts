@@ -1,4 +1,4 @@
-import { Polygon } from '@bpartners/annotator-component';
+import { Polygon, ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 
 type Wear = 'LOW' | 'PARTIAL' | 'ADVANCED' | 'EXTREME';
@@ -97,4 +97,6 @@ export interface AnnotatorComponentProps {
   polygons?: Polygon[];
   width?: number;
   height?: number;
+  buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode
+  showFileSource?: boolean;
 }

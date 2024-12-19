@@ -1,0 +1,17 @@
+body [data-cy="annotator-top-bar"] {
+  display: none
+}
+
+@media print {
+  body .hide-on-print {
+    display: none;
+  }
+
+  @page {
+    margin: 0 !important;
+  }
+
+  body {
+    margin: 0;
+  }
+}

@@ -24,6 +24,7 @@ import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
+import { ExportAnalyse } from '@/operations/annotator/components';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
@@ -83,6 +84,9 @@ export const BpAdmin = () => {
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path='/export-analyse-preview' element={<ExportAnalyse />} />
       </CustomRoutes>
     </Admin>
   );
