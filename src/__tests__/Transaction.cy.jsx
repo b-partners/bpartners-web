@@ -10,6 +10,8 @@ import { whoami1 } from './mocks/responses/security-api';
 import transactionCategory1 from './mocks/responses/transaction-category-api';
 import { createEmailResponse, transactionExportLinkResponse } from './mocks/responses/transaction-mailing-api';
 
+const currentYear = new Date().getFullYear();
+
 describe(specTitle('Transactions'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
@@ -80,15 +82,15 @@ describe(specTitle('Transactions'), () => {
     const today = new Date();
     cy.wait('@getTransactionsSummary');
     cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
-    cy.get('[name="datePicker"]').clear().type(2024);
+    cy.get('[name="datePicker"]').clear().type(currentYear);
 
     cy.contains('Vue mensuelle');
     cy.contains('Vue annuelle');
     cy.contains('Sélectionnez une année');
 
-    cy.contains('Décaissement 2024');
-    cy.contains('Encaissement 2024');
-    cy.contains('Trésorerie 2024');
+    cy.contains(`Décaissement ${currentYear}`);
+    cy.contains(`Encaissement ${currentYear}`);
+    cy.contains(`Trésorerie ${currentYear}`);
 
     cy.contains('2100,00 €');
     cy.contains('1000,00 €');
@@ -102,7 +104,7 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
 
-    cy.get('[name="datePicker"]').clear().type('janvier 2024');
+    cy.get('[name="datePicker"]').clear().type(`janvier ${currentYear}`);
 
     cy.contains('120,00 €');
     cy.contains('0,00 €');
@@ -113,17 +115,17 @@ describe(specTitle('Transactions'), () => {
 
     cy.contains('Dernière modification');
 
-    cy.get('[name="datePicker"]').clear().type('avril 2024');
+    cy.get('[name="datePicker"]').clear().type(`avril ${currentYear}`);
 
     cy.contains('130,00 €');
     cy.contains('10,00 €');
     cy.contains('330,00 €');
 
-    cy.get('[name="datePicker"]').clear().type('décembre 2024');
+    cy.get('[name="datePicker"]').clear().type(`décembre ${currentYear}`);
 
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
 
-    cy.get('[name="datePicker"]').clear().type('avril 2022');
+    cy.get('[name="datePicker"]').clear().type(`avril 2024`);
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
 
@@ -135,7 +137,7 @@ describe(specTitle('Transactions'), () => {
     const today = new Date();
     cy.wait('@getTransactionsSummary');
     cy.get('[name="datePicker"]').should('have.value', today.getFullYear());
-    cy.get('[name="datePicker"]').clear().type(2024);
+    cy.get('[name="datePicker"]').clear().type(currentYear);
 
     cy.contains('Objectif annuel (10,00 % atteint)');
     cy.contains('Encaissement de cette année : 12000,00 €');
@@ -150,7 +152,7 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('display current balance all the time', () => {
-    const newDate = new Date(2024, 1, 1);
+    const newDate = new Date(currentYear, 1, 1);
     cy.clock(newDate);
     cy.mount(<App />);
     cy.get('[name="transactions"]').click();
@@ -161,10 +163,10 @@ describe(specTitle('Transactions'), () => {
 
     cy.get('#annualSummarySwitch').click();
 
-    cy.get('[name="datePicker"]').clear().type('janvier 2024');
+    cy.get('[name="datePicker"]').clear().type(`janvier ${currentYear}`);
     cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains('Trésorerie');
-    cy.get('[name="datePicker"]').clear().type('décembre 2024');
+    cy.get('[name="datePicker"]').clear().type(`décembre ${currentYear}`);
     cy.contains('Solde du compte d’encaissement : 220,00 €');
     cy.contains(`Vous n'avez pas de transaction sur cette période.`);
   });
