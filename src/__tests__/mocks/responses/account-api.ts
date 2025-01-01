@@ -70,7 +70,7 @@ export const accountHolder1: AccountHolder = {
   },
   revenueTargets: [
     {
-      year: 2024,
+      year: new Date().getFullYear(),
       amountTarget: 12000000,
       amountAttempted: 1200000,
       amountAttemptedPercent: 1000,

@@ -17,11 +17,13 @@ const user_empty_stripe: User = {
 };
 const whoami_empty_stripe: Whoami = { user: user_empty_stripe };
 
+const currentYear = new Date().getFullYear();
+
 const user_active_stripe: User = {
   ...user1,
   subscription: {
-    end: new Date('2024-10-10'),
-    start: new Date('2024-09-10'),
+    end: new Date(new Date().getFullYear() + '-10-10'),
+    start: new Date(new Date().getFullYear() + '-09-10'),
     status: 'ACTIVE',
   },
 };
@@ -30,8 +32,8 @@ const whoami_active_stripe: Whoami = { user: user_active_stripe };
 const user_cancelled_stripe: User = {
   ...user1,
   subscription: {
-    end: new Date('2024-10-10'),
-    start: new Date('2024-09-10'),
+    end: new Date(new Date().getFullYear() + '-10-10'),
+    start: new Date(new Date().getFullYear() + '-09-10'),
     status: 'CANCELLED',
   },
 };
@@ -79,12 +81,12 @@ describe('User subscription', () => {
 
     cy.contains('Mon abonnement').click();
     cy.contains('Annuler le renouvellement de mon abonnement').click();
-    cy.contains("Vous conserverez l'accès à toutes les fonctionnalités de votre abonnement jusqu'au 10 octobre 2024");
+    cy.contains("Vous conserverez l'accès à toutes les fonctionnalités de votre abonnement jusqu'au 10 octobre " + currentYear);
     cy.contains("Confirmation de l'annulation du renouvellement automatique");
 
     cy.contains('Confirmer').click();
 
-    cy.contains("Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au 10 octobre 2024");
+    cy.contains("Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au 10 octobre " + currentYear);
   });
 
   it('Should show modal on subscription is success', () => {
@@ -113,7 +115,7 @@ describe('User subscription', () => {
     cy.contains('Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.');
     cy.contains('Fermer').click();
     cy.contains("Date d'expiration");
-    cy.contains('10/10/2024');
+    cy.contains('10/10/' + currentYear);
     cy.contains('Pour 49€ par mois:');
   });
 
