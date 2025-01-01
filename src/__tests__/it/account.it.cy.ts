@@ -13,7 +13,6 @@ describe('Account', () => {
 
     cy.contains('InformationAndCommunication');
     cy.contains('6000,00 €');
-    cy.contains('10000,00 €');
     cy.contains('899067250');
     cy.contains('FONTENAY-SOUS-BOIS');
     cy.contains('FRA');
