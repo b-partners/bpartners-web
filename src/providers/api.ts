@@ -12,17 +12,17 @@ import {
   UserAccountsApi,
   UserSubscriptionApi,
 } from '@bpartners/typescript-client';
-import { configureApi } from './api-conf';
+import { authProvider } from '.';
 
-export const securityApi = configureApi(SecurityApi);
-export const userAccountsApi = configureApi(UserAccountsApi);
-export const payingApi = configureApi(PayingApi);
-export const customerApi = configureApi(CustomersApi);
-export const FileApi = configureApi(FilesApi);
-export const prospectingApi = configureApi(ProspectingApi);
-export const onboardingApi = configureApi(OnboardingApi);
-export const calendarApi = configureApi(CalendarApi);
-export const sheetApi = configureApi(SheetApi);
-export const mailingApi = configureApi(MailingApi);
-export const areaPictureApi = configureApi(AreaPictureApi);
-export const userSubscriptionApi = configureApi(UserSubscriptionApi);
+export const securityApi = () => new SecurityApi(authProvider.getCachedAuthConf());
+export const userAccountsApi = () => new UserAccountsApi(authProvider.getCachedAuthConf());
+export const payingApi = () => new PayingApi(authProvider.getCachedAuthConf());
+export const customerApi = () => new CustomersApi(authProvider.getCachedAuthConf());
+export const FileApi = () => new FilesApi(authProvider.getCachedAuthConf());
+export const prospectingApi = () => new ProspectingApi(authProvider.getCachedAuthConf());
+export const onboardingApi = () => new OnboardingApi(authProvider.getCachedAuthConf());
+export const calendarApi = () => new CalendarApi(authProvider.getCachedAuthConf());
+export const sheetApi = () => new SheetApi(authProvider.getCachedAuthConf());
+export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf());
+export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());
+export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.getCachedAuthConf());

@@ -4,6 +4,7 @@ import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
+import { ExportAnalyse } from '@/operations/annotator/components';
 import { BankPage } from '@/operations/bank';
 import { calendar } from '@/operations/calendar';
 import { CalendarSync } from '@/operations/calendar/components';
@@ -24,7 +25,6 @@ import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
-import { ExportAnalyse } from '@/operations/annotator/components';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {

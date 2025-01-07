@@ -1,5 +1,6 @@
 import { Polygon, ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
+import { SxProps } from '@mui/material';
 
 type Wear = 'LOW' | 'PARTIAL' | 'ADVANCED' | 'EXTREME';
 
@@ -97,6 +98,7 @@ export interface AnnotatorComponentProps {
   polygons?: Polygon[];
   width?: number;
   height?: number;
-  buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode
+  buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode;
   showFileSource?: boolean;
+  boxWrapperSx?: SxProps;
 }

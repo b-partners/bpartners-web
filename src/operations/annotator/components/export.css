@@ -1,5 +1,13 @@
 body [data-cy="annotator-top-bar"] {
-  display: none
+  display: none;
+}
+
+body {
+  background-color: '#F3F3F3'
+}
+
+._container_1cjhy_1 {
+  background-color: transparent !important;
 }
 
 @media print {
@@ -9,9 +17,24 @@ body [data-cy="annotator-top-bar"] {
 
   @page {
     margin: 0 !important;
+    size: A4;
   }
 
   body {
     margin: 0;
+  }
+
+  .pdf-page {
+    margin: 0;
+    border: none;
+    padding: 20px;
+    max-width: none;
+    max-height: none;
+    border-radius: 0px;
+    box-shadow: 0 0 0 #FFFFFF00 !important;
+  }
+
+  .pdf-header {
+    top: 50px;
   }
 }
