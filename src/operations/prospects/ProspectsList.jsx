@@ -1,18 +1,5 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Link,
-  Stack,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import { Box, Button, Card, CardContent, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Stack, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -27,32 +14,26 @@ import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
 import { BPButton } from '@/common/components';
+import { useLoadingHandler, useTabManager } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
-import { useTabManager, useLoadingHandler } from '@/common/hooks';
+import { parseLocalStorage } from '@/common/utils/local-storage';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
-import { clearPolygons, getCached, prospectingProvider } from '../../providers';
-import { parseLocalStorage } from '@/common/utils/local-storage';
+import { clearPolygons, prospectingProvider } from '../../providers';
 
-const BP_USER_CACHE_NAME = "bp_user";
+const BP_USER_CACHE_NAME = 'bp_user';
 export const ProspectDialogProvider = ({ ComponentChild }) => {
   const notify = useNotify();
   const navigate = useNavigate();
-  const {
-    isLoading,
-    stopLoading,
-    startLoading,
-    setIsLoading
-  } = useLoadingHandler();
+  const { isLoading, stopLoading, startLoading, setIsLoading } = useLoadingHandler();
   const bpUser = parseLocalStorage(BP_USER_CACHE_NAME);
-  const accountHolder = getCached.accountHolder();
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
-    const doSubmit = form.handleSubmit((async data => {
+    const doSubmit = form.handleSubmit(async data => {
       startLoading();
 
       if (isCreating) {
@@ -71,37 +52,34 @@ export const ProspectDialogProvider = ({ ComponentChild }) => {
           },
         ]);
         notify(`Prospect créé avec succès !`, { type: 'success' });
-        const isRoofer = accountHolder?.businessActivities?.primary === 'Couvreur' || accountHolder?.businessActivities?.secondary === 'Couvreur';
-        if (isRoofer) {
-          try {
-            const fileId = uuidV4();
-            const pictureId = uuidV4();
-            const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-            await annotatorProvider.getPictureFormAddress(pictureId, {
-              address: data.address,
-              fileId,
-              filename: `Layer ${data.address}`,
-              prospectId,
-              zoomLevel: ZoomLevel.HOUSES_0,
-            });
-            navigate(
-              `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
-            );
-            return;
-          } catch {
-            toggleDialog();
-            openDialog(
-              <>
-                <DialogTitle>Adresse introuvable</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={closeDialog}>Fermer</Button>
-                </DialogActions>
-              </>
-            );
-          }
+        try {
+          const fileId = uuidV4();
+          const pictureId = uuidV4();
+          const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+          await annotatorProvider.getPictureFormAddress(pictureId, {
+            address: data.address,
+            fileId,
+            filename: `Layer ${data.address}`,
+            prospectId,
+            zoomLevel: ZoomLevel.HOUSES_0,
+          });
+          navigate(
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}`
+          );
+          return;
+        } catch {
+          toggleDialog();
+          openDialog(
+            <>
+              <DialogTitle>Adresse introuvable</DialogTitle>
+              <DialogContent>
+                <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={closeDialog}>Fermer</Button>
+              </DialogActions>
+            </>
+          );
         }
         stopLoading();
       };
@@ -109,35 +87,25 @@ export const ProspectDialogProvider = ({ ComponentChild }) => {
       fetch().catch(() => {
         stopLoading();
       });
-    }));
+    });
 
     doSubmit(event);
-  }
+  };
 
   return (
     <ProspectContextProvider loading={isLoading} setLoading={setIsLoading}>
       <FormProvider {...form}>
-        <ComponentChild
-          bpUser={bpUser}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
-        />
+        <ComponentChild bpUser={bpUser} isLoading={isLoading} setIsLoading={setIsLoading} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
       </FormProvider>
     </ProspectContextProvider>
-  )
-}
+  );
+};
 
-const PROSPECT_LIST_TABS = [
-  "prospects",
-  "drafts",
-  "configuration",
-  "administration"
-]
+const PROSPECT_LIST_TABS = ['prospects', 'drafts', 'configuration', 'administration'];
 const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   const [isCreating, setIsCreating] = useState(false);
   const { tabIndex, handleTabChange } = useTabManager({
-    values: PROSPECT_LIST_TABS
+    values: PROSPECT_LIST_TABS,
   });
 
   const toggleDialog = e => {
@@ -145,7 +113,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
     setIsCreating(!isCreating);
   };
 
-  const saveOrUpdateProspect = (event) => saveOrUpdateProspectSubmit(toggleDialog, isCreating, event);
+  const saveOrUpdateProspect = event => saveOrUpdateProspectSubmit(toggleDialog, isCreating, event);
 
   return (
     <Box sx={{ p: 2 }}>
