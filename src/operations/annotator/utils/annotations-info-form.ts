@@ -32,5 +32,9 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
     };
   }, []);
 
+  useEffect(() => {
+    cache.annotationsInfo(formState.getValues('annotationInfos'));
+  }, []);
+
   return { formState, fieldArrayState };
 };

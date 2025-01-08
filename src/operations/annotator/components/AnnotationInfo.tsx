@@ -3,11 +3,11 @@ import { Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { AnnotationInfoDetailsProps, AnnotationInfoProps } from '../types';
 
-const AnnotationInfoDetails: FC<AnnotationInfoDetailsProps> = ({ label, unity = '', value }) => {
+export const AnnotationInfoDetails: FC<AnnotationInfoDetailsProps> = ({ label, unity = '', value }) => {
   return (
     <Typography variant='body2'>
-      <span>{label}: </span>
-      <Typography component='span' fontWeight={'bold'}>
+      <span style={{ fontWeight: 'bold' }}>{label}: </span>
+      <Typography component='span' fontWeight={'normal'}>
         {value ? value + ' ' + unity : 'Non renseigné'}
       </Typography>
     </Typography>
