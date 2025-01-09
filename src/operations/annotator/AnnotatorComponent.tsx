@@ -14,9 +14,6 @@ import { AnnotatorComponentProps } from './types';
 import { getNewPolygonColor } from './utils/annotation-colors';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
-const MAX_ZOOM = 19;
-
-const getZoom = (zoom: number) => Math.min(MAX_ZOOM, zoom);
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotation = true, polygons: polygonFromProps, allowSelect = true, width, height }) => {
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
@@ -111,7 +108,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({ allowAnnotatio
             showLineSize: true,
             converterApiUrl: `${CONVERTER_BASE_URL}/api/reference`,
           }}
-          zoom={getZoom(newZoomLevelAsNumber)}
+          zoom={newZoomLevelAsNumber}
         />
       )}
       {Object.keys(layer).length > 0 && (
