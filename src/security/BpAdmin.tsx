@@ -4,6 +4,7 @@ import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
+import { ExportAnalyse } from '@/operations/annotator/components';
 import { BankPage } from '@/operations/bank';
 import { calendar } from '@/operations/calendar';
 import { CalendarSync } from '@/operations/calendar/components';
@@ -83,6 +84,9 @@ export const BpAdmin = () => {
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
+      </CustomRoutes>
+      <CustomRoutes noLayout>
+        <Route path='/export-analyse-preview' element={<ExportAnalyse />} />
       </CustomRoutes>
     </Admin>
   );

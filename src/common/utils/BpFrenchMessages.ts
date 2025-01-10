@@ -35,6 +35,7 @@ export const BpFrenchMessages = {
       },
     },
     draftsAnnotations: {
+      export: "Exporter l'analyse",
       add: 'Enregistrer en tant que brouillon',
       finish: 'Finaliser le brouillon',
       creation: {

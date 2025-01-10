@@ -1,12 +1,13 @@
+import { FC, useCallback } from 'react';
+import { useGetOne } from 'react-admin';
+import { useNavigate } from 'react-router';
+
 import { BPButton } from '@/common/components';
 import { formatDateTime, getFileUrl } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Comment, Home, LocalPhoneOutlined, MailOutline, Star, Update } from '@mui/icons-material';
 import { Box, Paper, SxProps, Typography } from '@mui/material';
-import { FC, useCallback } from 'react';
-import { useGetOne } from 'react-admin';
-import { useNavigate } from 'react-router';
 import { parseRatingValue } from '../utils';
 import { CardViewField } from './CardViewField';
 
@@ -29,11 +30,11 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
   const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
 
   const navigateToAnnotation = () => {
-    const { fileId, prospectId, id: pictureId } = draftAnnotation.areaPicture;
+    const { fileId, id: pictureId } = draftAnnotation.areaPicture;
     const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
     clearPolygons();
     navigate(
-      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&prospectId=${prospectId}&fileId=${fileId}&useDrafts=true`
+      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
     );
   };
 
@@ -73,6 +74,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
         <CardViewField icon={<Update />} value={getLastEvaluationValue()} />
       </Box>
       <BPButton
+        disabled={isLoading}
         data-cy='finish-draft-btn'
         label='resources.draftsAnnotations.finish'
         onClick={navigateToAnnotation}
