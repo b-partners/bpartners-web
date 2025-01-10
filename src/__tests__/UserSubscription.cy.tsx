@@ -114,7 +114,8 @@ describe('User subscription', () => {
 
     cy.contains('Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.');
     cy.contains('Fermer').click();
-    cy.contains("Date d'expiration");
+    cy.contains("Début de la période d'abonnement en cours");
+    cy.contains("Fin de la période d'abonnement en cours");
     cy.contains('10/10/' + currentYear);
     cy.contains('Pour 49€ par mois:');
   });
