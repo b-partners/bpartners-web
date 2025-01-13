@@ -76,7 +76,7 @@ export const ExportAnalyse = () => {
   const annotationInfosPages = splitArrayIntoGroups(annotations, 3 /* can show only 3 annotations informations per page*/);
 
   return (
-    <Box sx={{ mx: 'auto' }}>
+    <Box sx={{ mx: 'auto' }} className='export-on'>
       <Typography className='hide-on-print' sx={{ fontWeight: 'bold', my: 1, textAlign: 'center', opacity: 0.9, fontSize: '1.2rem' }}>
         Exporter l'analyse sous format PDF
       </Typography>
