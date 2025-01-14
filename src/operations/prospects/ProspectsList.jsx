@@ -64,8 +64,8 @@ export const ProspectDialogProvider = ({ ComponentChild }) => {
             zoomLevel: ZoomLevel.HOUSES_0,
           });
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false`
-          )
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
+          );
           return;
         } catch {
           toggleDialog();
