@@ -11,7 +11,7 @@ import { SimpleShowLayout } from 'react-admin';
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog';
 import { InfoShow } from './InfoShow';
 
-const SUBSCRIPTION_RANGE_LABELS: {
+export const SUBSCRIPTION_RANGE_LABELS: {
   [T in keyof typeof UserSubscriptionStatus]?: {
     start?: string;
     end?: string;
