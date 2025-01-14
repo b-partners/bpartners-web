@@ -1,9 +1,9 @@
-body [data-cy="annotator-top-bar"] {
+.export-on [data-cy='annotator-top-bar'] {
   display: none;
 }
 
 body {
-  background-color: '#F3F3F3'
+  background-color: '#F3F3F3';
 }
 
 ._container_1cjhy_1 {
@@ -31,7 +31,7 @@ body {
     max-width: none;
     max-height: none;
     border-radius: 0px;
-    box-shadow: 0 0 0 #FFFFFF00 !important;
+    box-shadow: 0 0 0 #ffffff00 !important;
   }
 
   .pdf-header {
