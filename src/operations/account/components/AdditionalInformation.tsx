@@ -26,7 +26,7 @@ export const AdditionalInformation: FC<AdditionalInformationProps> = props => {
     <Box sx={{ p: 2 }}>
       <Tabs value={tabIndex} onChange={handleTabChange} variant='fullWidth'>
         <Tab label='Ma société' />
-        <Tab label='Mon abonnement' />
+        <Tab data-testid='my-abonnement-tab' label='Mon abonnement' />
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
