@@ -45,8 +45,8 @@ export const FreeTrialSubscriptionModal = () => {
         </p>
       </DialogContent>
       <DialogActions>
-        <BPButton onClick={close} label='Plus tard' />
-        <BPButton label="M'abonner" onClick={goToAbonnmentPage} />
+        <BPButton data-testid='close-dialog' onClick={close} label='Plus tard' />
+        <BPButton data-testid='do-abonnement-btn' label="M'abonner" onClick={goToAbonnmentPage} />
       </DialogActions>
     </>
   );
