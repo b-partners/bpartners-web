@@ -1,5 +1,5 @@
 import { BP_COLOR } from '@/bp-theme';
-import { BPButton } from '@/common/components';
+import { BPButton, SubscriptionModal } from '@/common/components';
 import { useDialog } from '@/common/store/dialog';
 import { formatDate } from '@/common/utils';
 import { SubscriptionInfos } from '@/constants';
@@ -49,11 +49,16 @@ export const SubscriptionLayout = () => {
   const isAlreadyCancelled = userSubscriptionStatus === 'CANCELLED';
   const isActiveSubscription = userSubscriptionStatus === 'ACTIVE';
   const isEmptySubcription = userSubscriptionStatus === 'EMPTY';
+  const isFreeTrialSubscription = userSubscriptionStatus === 'FREE_TRIAL';
   const endingDate = data?.user.subscription?.end;
   const startingDate = data?.user.subscription?.start;
 
   const handleCancelSubscription = () => {
     !isLoading && data && !isAlreadyCancelled && openDialog(<CancelSubscriptionDialog whoami={data} />);
+  };
+
+  const handleDoSubscription = () => {
+    openDialog(<SubscriptionModal allowClose />, undefined, true);
   };
 
   const subcriptionLabels = SUBSCRIPTION_RANGE_LABELS[userSubscriptionStatus];
@@ -126,7 +131,11 @@ export const SubscriptionLayout = () => {
         <InfoShow {...props} key={props.icon} />
       ))}
       <Box>
-        <BPButton onClick={handleCancelSubscription} disabled={!isActiveSubscription} label='Annuler le renouvellement de mon abonnement' />
+        {isFreeTrialSubscription ? (
+          <BPButton onClick={handleDoSubscription} label="M'abonner" />
+        ) : (
+          <BPButton onClick={handleCancelSubscription} disabled={!isActiveSubscription} label='Annuler le renouvellement de mon abonnement' />
+        )}
       </Box>
     </SimpleShowLayout>
   );

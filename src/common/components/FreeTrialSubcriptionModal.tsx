@@ -1,21 +1,19 @@
 import { getCached } from '@/providers';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import dayjs from 'dayjs';
-import { useRedirect } from 'react-admin';
 import { useDialog } from '../store/dialog';
 import { formatDate } from '../utils';
 import { BPButton } from './BPButton';
+import { SubscriptionModal } from './SubscriptionModal';
 
 export const FreeTrialSubscriptionModal = () => {
-  const { close } = useDialog();
+  const { close, open: openDialog } = useDialog();
   const whoami = getCached.whoami();
-  const redirect = useRedirect();
   const today = dayjs();
   const remainingDays = dayjs(whoami?.user?.subscription?.end).diff(today, 'day');
 
-  const goToAbonnmentPage = () => {
-    close();
-    redirect(`/account/${whoami?.user?.id}?tab=abonnement`);
+  const handleDoSubscription = () => {
+    openDialog(<SubscriptionModal allowClose />, undefined, true);
   };
 
   return (
@@ -32,6 +30,7 @@ export const FreeTrialSubscriptionModal = () => {
           <li>
             <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
           </li>
+          <li style={{ fontWeight: 'bold' }}>Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.</li>
         </ul>
         <p>
           Si vous avez la moindre question, N’hésitez à nous appeler au{' '}
@@ -46,7 +45,7 @@ export const FreeTrialSubscriptionModal = () => {
       </DialogContent>
       <DialogActions>
         <BPButton data-testid='close-dialog' onClick={close} label='Plus tard' />
-        <BPButton data-testid='do-abonnement-btn' label="M'abonner" onClick={goToAbonnmentPage} />
+        <BPButton data-testid='do-abonnement-btn' label="M'abonner" onClick={handleDoSubscription} />
       </DialogActions>
     </>
   );

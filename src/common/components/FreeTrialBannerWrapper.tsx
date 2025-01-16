@@ -1,26 +1,25 @@
-import { BPButton, FlexBox } from '@/common/components';
+import { BPButton, FlexBox, SubscriptionModal } from '@/common/components';
 import { whoami } from '@/providers';
 import { Whoami } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { FC, PropsWithChildren } from 'react';
-import { useRedirect } from 'react-admin';
+import { useDialog } from '../store/dialog';
 
 export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
+  const { open: openDialog } = useDialog();
   const { data: whoamiValue } = useQuery<Whoami>({
     queryFn: () => whoami(),
     queryKey: ['whoami', 'user'],
   });
-  const redirect = useRedirect();
 
   const today = dayjs();
   const isFreeTrialSubscription = whoamiValue?.user?.subscription?.status === 'FREE_TRIAL';
   const remainingDays = dayjs(whoamiValue?.user?.subscription?.end).diff(today, 'day');
 
-  const goToAbonnmentPage = () => {
-    close();
-    redirect(`/account/${whoamiValue?.user?.id}?tab=abonnement`);
+  const handleDoSubscription = () => {
+    openDialog(<SubscriptionModal allowClose />, undefined, true);
   };
 
   return isFreeTrialSubscription ? (
@@ -48,7 +47,7 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
           >
             Débloquer toutes les fonctionnalités IA pour les couvreurs
           </Typography>
-          <BPButton onClick={goToAbonnmentPage} sx={{ maxWidth: '50px' }} label="M'abonner" />
+          <BPButton onClick={handleDoSubscription} sx={{ maxWidth: '50px' }} label="M'abonner" />
         </FlexBox>
       </FlexBox>
       {children}

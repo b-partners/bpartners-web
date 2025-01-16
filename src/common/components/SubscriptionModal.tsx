@@ -1,6 +1,8 @@
+import { useDialog } from '@/common/store/dialog';
 import { cache, userSubscriptionProvider } from '@/providers';
 import { Alert, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
@@ -13,8 +15,9 @@ const mutationFn = async () => {
   return redirectionUrl;
 };
 
-export const SubscriptionModal = () => {
+export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
   const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const { close } = useDialog();
 
   const [searchParams] = useSearchParams();
 
@@ -35,7 +38,6 @@ export const SubscriptionModal = () => {
         </p>
         <p>💡 Pas d’inquiétude :</p>
         <ul>
-          <li>Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.</li>
           <li>⁠Vous pouvez arrêter votre abonnement à tout moment dans l’application.</li>
         </ul>
         <p>
@@ -50,6 +52,7 @@ export const SubscriptionModal = () => {
         </p>
       </DialogContent>
       <DialogActions>
+        {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
         <BPButton onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
       </DialogActions>
     </>
