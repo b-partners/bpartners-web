@@ -33,14 +33,16 @@ export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProvider
     setSlopeInfoOpen(!slopeInfoOpen);
   };
 
+  const stringifiedPolygons = stringifyObj(polygons);
+
   const contextValues: AnnotationStore = useMemo(
     () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle }),
-    [slopeInfoOpen, stringifyObj(polygons), setPolygons, handleSlopeInfoToggle]
+    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle]
   );
 
   useEffect(() => {
     cache.polygons(polygons);
-  }, [stringifyObj(polygons)]);
+  }, [stringifiedPolygons]);
 
   return <CanvasAnnotationContext.Provider value={contextValues}>{children}</CanvasAnnotationContext.Provider>;
 };

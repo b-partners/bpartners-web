@@ -10,6 +10,8 @@ export * from './Buttons';
 export * from './EmptyListTemplate';
 export * from './Field';
 export * from './FlexBox';
+export * from './FreeTrialBannerWrapper';
+export * from './FreeTrialSubcriptionModal';
 export * from './Pdf';
 export * from './RichTextEditor';
 export * from './SubscriptionModal';

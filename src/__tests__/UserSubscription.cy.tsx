@@ -2,54 +2,23 @@ import App from '@/App';
 import { Redirect, Reload } from '@/common/utils';
 import { BpAdmin } from '@/security/BpAdmin';
 import { UserSubscriptionCheckWrapper } from '@/security/UserSubscriptionCheckWrapper';
-import { Redirection2, User, Whoami } from '@bpartners/typescript-client';
 import { FC, ReactNode, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router';
 import { BrowserRouter, useSearchParams } from 'react-router-dom';
-import { account1, accountHolder1, accounts1, user1 } from './mocks/responses';
-const user_empty_stripe: User = {
-  ...user1,
-  subscription: {
-    end: null,
-    start: null,
-    status: 'EMPTY',
-  },
-};
-const whoami_empty_stripe: Whoami = { user: user_empty_stripe };
+import {
+  account1,
+  accountHolder1,
+  accounts1,
+  expectedStripeSubscriptionBody,
+  stripeSubscriptionResponse,
+  user_active_stripe,
+  user_cancelled_stripe,
+  user_empty_stripe,
+  whoami_active_stripe,
+  whoami_empty_stripe,
+} from './mocks/responses';
 
 const currentYear = new Date().getFullYear();
-
-const user_active_stripe: User = {
-  ...user1,
-  subscription: {
-    end: new Date(new Date().getFullYear() + '-10-10'),
-    start: new Date(new Date().getFullYear() + '-09-10'),
-    status: 'ACTIVE',
-  },
-};
-const whoami_active_stripe: Whoami = { user: user_active_stripe };
-
-const user_cancelled_stripe: User = {
-  ...user1,
-  subscription: {
-    end: new Date(new Date().getFullYear() + '-10-10'),
-    start: new Date(new Date().getFullYear() + '-09-10'),
-    status: 'CANCELLED',
-  },
-};
-
-const expectedStripeSubscriptionBody = {
-  redirectionStatusUrls: {
-    failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
-    successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripeStatus=done',
-  },
-  subscriptionType: 'ESSENTIAL',
-};
-
-const stripeSubscriptionResponse: Redirection2 = {
-  redirectionStatusUrls: expectedStripeSubscriptionBody.redirectionStatusUrls,
-  redirectionUrl: 'http://dummy-url.com',
-};
 
 const Wrapper: FC<{ children?: ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -114,7 +83,8 @@ describe('User subscription', () => {
 
     cy.contains('Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.');
     cy.contains('Fermer').click();
-    cy.contains("Date d'expiration");
+    cy.contains("Début de la période d'abonnement en cours");
+    cy.contains("Fin de la période d'abonnement en cours");
     cy.contains('10/10/' + currentYear);
     cy.contains('Pour 49€ par mois:');
   });
@@ -128,7 +98,6 @@ describe('User subscription', () => {
     cy.mount(<App />);
 
     cy.contains('Finalisez votre inscription en toute sérénité !');
-    cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
 
     cy.contains("S'abonner").click();
   });
