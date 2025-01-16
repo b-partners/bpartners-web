@@ -98,7 +98,6 @@ describe('User subscription', () => {
     cy.mount(<App />);
 
     cy.contains('Finalisez votre inscription en toute sérénité !');
-    cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
 
     cy.contains("S'abonner").click();
   });

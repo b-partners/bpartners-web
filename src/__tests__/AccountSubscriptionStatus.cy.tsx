@@ -15,7 +15,7 @@ import {
 } from './mocks/responses';
 
 const doSubscriptionStatusTest = (subscription: UserSubscriptionStatus, user: User, whoami: Whoami, middleware: () => void = NOOP_FN) => {
-  cy.intercept('GET', `/users/${user.id}/accounts`, accounts1);
+  cy.intercept('GET', `/users/${user.id}/accounts`, accounts1).as('getAccount1');
   cy.cognitoLogin({ user, whoami });
   const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Carreleur' } }];
   cy.intercept('GET', `/users/${whoami.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
@@ -23,6 +23,7 @@ const doSubscriptionStatusTest = (subscription: UserSubscriptionStatus, user: Us
   const labels = SUBSCRIPTION_RANGE_LABELS[subscription];
   middleware();
   cy.getByName('account').click();
+  cy.wait('@getAccount1');
   cy.getByTestId('my-abonnement-tab').click();
   cy.contains(labels.title);
   cy.contains(labels.start);
@@ -39,6 +40,7 @@ describe('Account subscription status', () => {
   it('should show correct subscription infos when user subscription = FREE_TRIAL', () => {
     doSubscriptionStatusTest('FREE_TRIAL', user_free_trial_stripe, whoami_free_trial_stripe, () => {
       cy.contains("Vous bénéficiez actuellement d'une période d'essai gratuite");
+      cy.contains('Aucun prélèvement ne se fera avant la fin de votre période d’essai de 14 jours.');
       cy.getByTestId('close-dialog').click();
       cy.contains('Débloquer toutes les fonctionnalités IA pour les couvreurs');
     });
