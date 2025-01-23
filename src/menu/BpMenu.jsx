@@ -16,11 +16,10 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
 import { Menu } from 'react-admin';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { accountHolderProvider, authProvider, getCached } from '../providers';
+import { authProvider, getCached } from '../providers';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -37,24 +36,11 @@ const LogoutButton = () => {
 
 const BpMenu = () => {
   const [dialogState, setDialogState] = useState(false);
-  const isSubscribed = authProvider.isSubscribed();
-  const { data: accountHolder = null } = useQuery({
-    retry: 7,
-    queryKey: ['accountHolder'],
-    onError: printError,
-    queryFn: () => isSubscribed ? accountHolderProvider.getOne() : null,
-  });
-
   const toggleDialogState = () => setDialogState(e => !e);
   const contactSupport = e => {
     e.preventDefault();
     toggleDialogState();
   };
-
-  const hasBusinessActivities = accountHolder => !!(accountHolder?.businessActivities?.primary || accountHolder?.businessActivities?.secondary);
-  /* The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
-   then the Prospects page will not be displayed */
-  const shouldShowProspects = hasBusinessActivities(accountHolder);
 
   return (
     <Box
@@ -73,7 +59,7 @@ const BpMenu = () => {
         <Menu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <Menu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <Menu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
-        {shouldShowProspects && <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />}
+        <Menu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
         <Menu.Item to={`/account/${getCached.account()?.id || ''}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
         <Menu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </Menu>
