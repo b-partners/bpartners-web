@@ -158,5 +158,5 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   );
 };
 
-const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
+const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />
 export default ProspectsList;
