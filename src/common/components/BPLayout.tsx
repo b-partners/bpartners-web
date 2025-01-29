@@ -1,3 +1,4 @@
+import { AccountHolderHandlerWrapper } from '@/security/AccountHolderHandlerWrapper';
 import { Dialog } from '@mui/material';
 import { AppLocationContext } from '@react-admin/ra-navigation';
 import { FC } from 'react';
@@ -14,12 +15,14 @@ export const BPLayout: FC<BPLayoutProps> = ({ children, ...layoutProps }) => {
   const { isOpen: isDialogOpen, content: dialogContent, close: closeDialog, dialogProps = {}, backdropClose } = useDialog();
   return (
     <AppLocationContext>
-      <Layout {...layoutProps} appBar={BPAppBar} menu={BpMenu} error={BPErrorPage}>
-        <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
-      </Layout>
-      <Dialog open={isDialogOpen} onClose={backdropClose ? closeDialog : undefined} {...dialogProps}>
-        {dialogContent}
-      </Dialog>
+      <AccountHolderHandlerWrapper>
+        <Layout {...layoutProps} appBar={BPAppBar} menu={BpMenu} error={BPErrorPage}>
+          <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
+        </Layout>
+        <Dialog open={isDialogOpen} onClose={backdropClose ? closeDialog : undefined} {...dialogProps}>
+          {dialogContent}
+        </Dialog>
+      </AccountHolderHandlerWrapper>
     </AppLocationContext>
   );
 };

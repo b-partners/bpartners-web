@@ -29,8 +29,6 @@ describe(specTitle('Validate Account'), () => {
     cy.intercept('POST', '/users/mock-user-id1/accounts/mock-account-id1/initiateAccountValidation', validationRedirectionUrl).as('initiateAccountValidation');
     cy.mount(<App />);
 
-    cy.get('[name="transactions"]').click();
-
     cy.wait('@legalFiles');
     cy.contains('Mettez à jour votre banque');
     cy.contains('Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.');

@@ -42,6 +42,7 @@ describe(specTitle('Transactions'), () => {
       reply(transactions);
     });
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     cy.contains('Non Catégorisées');
@@ -59,6 +60,7 @@ describe(specTitle('Transactions'), () => {
 
   it('are displayed', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
 
@@ -76,6 +78,7 @@ describe(specTitle('Transactions'), () => {
 
   it('display graphic summary', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
 
@@ -131,6 +134,7 @@ describe(specTitle('Transactions'), () => {
 
   it('display graphic of revenue targets', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
 
@@ -152,8 +156,6 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('display current balance all the time', () => {
-    const newDate = new Date(currentYear, 1, 1);
-    cy.clock(newDate);
     cy.mount(<App />);
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
@@ -173,6 +175,7 @@ describe(specTitle('Transactions'), () => {
 
   it('are filterable', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
@@ -183,6 +186,7 @@ describe(specTitle('Transactions'), () => {
 
   it('Should show the appropriate status', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
@@ -209,6 +213,7 @@ describe(specTitle('Transactions'), () => {
     });
     cy.intercept('PUT', `/accounts/mock-account-id1/transactions/transaction3/invoices/invoice-PAID-0-id`, transactions[0]).as('linkInvoiceAndTransaction');
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     cy.contains('Non Catégorisées');
@@ -256,6 +261,7 @@ describe(specTitle('Transactions'), () => {
     newTransaction[2].supportingDocs = supportingDoc;
     cy.intercept('GET', '/accounts/mock-account-id1/transactions**', newTransaction).as('getTransactionsWithSupportingDoc');
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     cy.wait('@legalFiles');
@@ -282,6 +288,7 @@ describe(specTitle('Transactions'), () => {
 
   it('Filter transaction by label', () => {
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
 
     const labelToSearch = 'to search';
@@ -301,6 +308,7 @@ describe(specTitle('Transactions'), () => {
     cy.intercept('PUT', '/users/mock-user-id1/emails', createEmailResponse).as('sendEmails');
 
     cy.mount(<App />);
+    cy.wait("@getAccountHolder1")
     cy.get('[name="transactions"]').click();
     cy.contains('Export comptable').click();
     // tester l'ouverture et la fermeture du GenerateLinkModal
