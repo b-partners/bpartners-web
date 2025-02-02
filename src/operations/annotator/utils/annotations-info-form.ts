@@ -4,7 +4,7 @@ import { cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getSynchronizedAnnotationInfos } from './annotation-item-mapper';
+import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
 
 export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInfos: AnnotationInfo[] = []) => {
   const formState = useForm<{ annotationInfos: AnnotationInfo[] }>({ defaultValues: { annotationInfos: defaultAnnotationInfos } });

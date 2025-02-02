@@ -4,7 +4,7 @@ import {
   ExportAreaPictureAnnotationMeasurement,
 } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
-import { createDefaultAnnotationInfo } from './annotation-item-mapper';
+import { createDefaultAnnotationInfo } from './annotation-info-mapper';
 import { translateAnnotationInfo } from './annotation-info-translator';
 import { emptyToNull } from '@/common/utils';
 

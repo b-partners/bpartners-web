@@ -3,7 +3,7 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
-import { AnnotationInfo } from '../annotator/components';
+import { AnnotationInfoShow } from '../annotator/components';
 import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
 
 import { printError } from '@/common/utils';
@@ -41,7 +41,7 @@ const AnnotatorComponentShow = () => {
     <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
       <Box sx={{ width: '333px' }}>
         {annotations?.annotations.map((annotation, index) => (
-          <AnnotationInfo areaPictureAnnotationInstance={annotation} key={index} />
+          <AnnotationInfoShow areaPictureAnnotationInstance={annotation} key={index} />
         ))}
       </Box>
       <Box width={PDF_EDITION_WIDTH}>

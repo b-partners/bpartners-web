@@ -7,7 +7,7 @@ import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { AnnotationInfo } from '../annotator/components';
+import { AnnotationInfoShow } from '../annotator/components';
 import { ClientSelection, ProductSelection } from './components';
 
 import BpTextAdornment from '@/common/components/BpTextAdornment';
@@ -165,7 +165,7 @@ const InvoiceForm = props => {
           {!isAnnotationEmpty && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
               {annotations?.annotations.map((annotation, i) => (
-                <AnnotationInfo areaPictureAnnotationInstance={annotation} key={i} />
+                <AnnotationInfoShow areaPictureAnnotationInstance={annotation} key={i} />
               ))}
             </InvoiceAccordion>
           )}

@@ -1,30 +1,18 @@
 import { Typography } from '@mui/material';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
-import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { FC, useMemo } from 'react';
 import { translateAnnotationInfo } from '../utils/annotation-info-translator';
+import { mapAreaAnnotationInstanceToAnnotationInfo } from '../utils/annotation-info-mapper';
 
-export type AnnotationInfoProps = {
+export type AnnotationInfoShowProps = {
   areaPictureAnnotationInstance: AreaPictureAnnotationInstance;
 };
 
-export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationInstance }) => {
-  const { labelName } = areaPictureAnnotationInstance;
+export const AnnotationInfoShow: FC<AnnotationInfoShowProps> = ({ areaPictureAnnotationInstance }) => {
+  const labelName = areaPictureAnnotationInstance?.labelName;
   const infos = useMemo(() => {
-    const { metadata, labelType } = areaPictureAnnotationInstance;
-    const { area, comment, covering, wearLevel, slope, wearness, moldRate, obstacle, humidityLevel } = metadata || {};
-    return translateAnnotationInfo({
-      labelType: labelType as keyof AnnotationLabelsType,
-      area,
-      covering: covering as keyof AnnotationCoveringType,
-      slope,
-      wear: wearness,
-      wearLevel,
-      moldRate,
-      humidityLevel,
-      obstacle,
-      comment,
-    });
+    const annotationInfo = mapAreaAnnotationInstanceToAnnotationInfo(areaPictureAnnotationInstance);
+    return translateAnnotationInfo({ ...annotationInfo, area: areaPictureAnnotationInstance?.metadata?.area });
   }, [areaPictureAnnotationInstance]);
 
   return (
