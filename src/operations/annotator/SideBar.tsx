@@ -3,10 +3,10 @@ import { BPButton } from '@/common/components/BPButton';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
+import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
-import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import {
   Accordion,
@@ -27,7 +27,7 @@ import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { ZoomLevel } from '@bpartners/typescript-client';
+import { ExportAnnotationConfirmButton } from './components';
 import AnnotatorForm from './components/AnnotatorForm';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils/annotations-info-form';
@@ -40,17 +40,11 @@ export type SideBarProps = {
 export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotationInfos }) => {
   const redirect = useRedirect();
   const notify = useNotify();
-  const { pictureId, imgUrl, address } = parseUrlParams();
+  const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle } = useCanvasAnnotationContext();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const [expanded, setExpanded] = useState<number | null>(0);
   const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos);
-
-  const exportAnalayse = () => {
-    redirect(
-      `/export-analyse-preview?imgUrl=${encodeURIComponent(imgUrl)}&useDrafts=${draftAnnotationId ? 'true' : 'false'}&address=${address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}`
-    );
-  };
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -90,7 +84,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   };
 
   return (
-    <>
+    <Box>
       <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
         <Box py={2}>
           {fieldArrayState.fields.length > 0 ? (
@@ -190,16 +184,8 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           onClick={event => handleSubmitFormsWrapper(event, true)}
           style={{ width: '100%' }}
         />
-        <BPButton
-          type='button'
-          style={{ width: '100%' }}
-          onClick={exportAnalayse}
-          isLoading={isLoading}
-          disabled={isLoading || polygons.length === 0}
-          label='resources.draftsAnnotations.export'
-          data-testid='submit-annotation-export'
-        />
+        <ExportAnnotationConfirmButton formState={formState} />
       </Stack>
-    </>
+    </Box>
   );
 };

@@ -1,12 +1,12 @@
+import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
-import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 
 const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
-  labelType: '' as AnnotationInfo["labelType"],
-  covering: '' as AnnotationInfo["covering"],
+  labelType: '' as AnnotationInfo['labelType'],
+  covering: '' as AnnotationInfo['covering'],
   slope: 0,
   wearLevel: 0,
   obstacle: '',

@@ -1,12 +1,9 @@
+import { emptyToNull } from '@/common/utils';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
-import {
-  ExportAreaPictureAnnotation,
-  ExportAreaPictureAnnotationMeasurement,
-} from '@bpartners/typescript-client';
+import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationMeasurement } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
 import { createDefaultAnnotationInfo } from './annotation-info-mapper';
 import { translateAnnotationInfo } from './annotation-info-translator';
-import { emptyToNull } from '@/common/utils';
 
 export type ExportAnnotationMapperArgs = {
   imageUrl: string;
@@ -27,8 +24,8 @@ export const exportAnnotationMapper = ({ annotationInfos, imageUrl, address, pol
         labelName: annotationInfo?.labelName,
         fillColor: polygon?.fillColor,
         strokeColor: polygon?.strokeColor,
-        measurements: polygon.measurements.slice(1).map(exportMeasurementMapper),
-        infos: translateAnnotationInfo({ ...(emptyToNull(annotationInfo)), area: polygon.surface }),
+        measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper),
+        infos: translateAnnotationInfo({ ...emptyToNull(annotationInfo), area: polygon.surface }),
       };
     }),
   };

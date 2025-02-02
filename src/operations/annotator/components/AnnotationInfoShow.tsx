@@ -1,8 +1,8 @@
-import { Typography } from '@mui/material';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
+import { Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
-import { translateAnnotationInfo } from '../utils/annotation-info-translator';
 import { mapAreaAnnotationInstanceToAnnotationInfo } from '../utils/annotation-info-mapper';
+import { translateAnnotationInfo } from '../utils/annotation-info-translator';
 
 export type AnnotationInfoShowProps = {
   areaPictureAnnotationInstance: AreaPictureAnnotationInstance;
@@ -21,7 +21,7 @@ export const AnnotationInfoShow: FC<AnnotationInfoShowProps> = ({ areaPictureAnn
         {labelName}
       </Typography>
       {infos.map(({ label, value }) => (
-        <Typography variant='body2'>
+        <Typography key={label} variant='body2'>
           <span style={{ fontWeight: 'bold' }}>{label}: </span>
           <Typography component='span' fontWeight={'normal'}>
             {value}
