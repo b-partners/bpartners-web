@@ -1,17 +1,11 @@
-import { wearTranslation } from '@/constants';
 import { Typography } from '@mui/material';
+import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
+import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { FC, useMemo } from 'react';
-import { AnnotationInfoDetailsProps, AnnotationInfoProps } from '../types';
+import { translateAnnotationInfo } from '../utils/annotation-info-translator';
 
-export const AnnotationInfoDetails: FC<AnnotationInfoDetailsProps> = ({ label, unity = '', value }) => {
-  return (
-    <Typography variant='body2'>
-      <span style={{ fontWeight: 'bold' }}>{label}: </span>
-      <Typography component='span' fontWeight={'normal'}>
-        {value ? value + ' ' + unity : 'Non renseigné'}
-      </Typography>
-    </Typography>
-  );
+export type AnnotationInfoProps = {
+  areaPictureAnnotationInstance: AreaPictureAnnotationInstance;
 };
 
 export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationInstance }) => {
@@ -19,18 +13,18 @@ export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationI
   const infos = useMemo(() => {
     const { metadata, labelType } = areaPictureAnnotationInstance;
     const { area, comment, covering, wearLevel, slope, wearness, moldRate, obstacle, humidityLevel } = metadata || {};
-    return [
-      { label: 'Type', value: labelType },
-      { label: 'Surface', value: area, unity: 'm²' },
-      { label: 'Revêtement', value: covering },
-      { label: 'Pente', value: slope, unity: '/12' },
-      { label: 'Usure', value: wearTranslation[wearness] },
-      { label: "Taux d'usure", value: wearLevel },
-      { label: 'Taux de moisissure', value: moldRate },
-      { label: "Taux d'humidité", value: humidityLevel },
-      { label: 'Obstacle', value: obstacle },
-      { label: 'Commentaire', value: comment },
-    ];
+    return translateAnnotationInfo({
+      labelType: labelType as keyof AnnotationLabelsType,
+      area,
+      covering: covering as keyof AnnotationCoveringType,
+      slope,
+      wear: wearness,
+      wearLevel,
+      moldRate,
+      humidityLevel,
+      obstacle,
+      comment,
+    });
   }, [areaPictureAnnotationInstance]);
 
   return (
@@ -38,8 +32,13 @@ export const AnnotationInfo: FC<AnnotationInfoProps> = ({ areaPictureAnnotationI
       <Typography component='span' fontWeight={'bold'} fontSize={'18px'}>
         {labelName}
       </Typography>
-      {infos.map(({ label, value, unity }) => (
-        <AnnotationInfoDetails key={label} label={label} unity={unity} value={value} />
+      {infos.map(({ label, value }) => (
+        <Typography variant='body2'>
+          <span style={{ fontWeight: 'bold' }}>{label}: </span>
+          <Typography component='span' fontWeight={'normal'}>
+            {value}
+          </Typography>
+        </Typography>
       ))}
     </>
   );

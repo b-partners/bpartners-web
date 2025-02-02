@@ -3,8 +3,8 @@ import { AnnotationInfo } from '@/operations/annotator';
 import { Polygon } from '@bpartners/annotator-component';
 
 const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
-  labelType: '',
-  covering: '',
+  labelType: '' as AnnotationInfo["labelType"],
+  covering: '' as AnnotationInfo["covering"],
   slope: 0,
   wearLevel: 0,
   obstacle: '',
@@ -16,7 +16,7 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
   strokeColor: '',
 };
 
-const createDefaultAnnotationInfo = (polygonId: string, index: number): AnnotationInfo => {
+export const createDefaultAnnotationInfo = (polygonId: string, index: number): AnnotationInfo => {
   return { ...DEFAULT_ANNOTATION_INFO, polygonId, labelName: `Polygone ${Alphabet[index]}` };
 };
 

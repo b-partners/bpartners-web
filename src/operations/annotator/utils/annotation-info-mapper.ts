@@ -1,5 +1,6 @@
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
+import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 
 export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: AreaPictureAnnotationInstance): AnnotationInfo => {
   const { metadata = {}, labelName = '', labelType = '' } = annotationInstance;
@@ -17,8 +18,8 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
   } = metadata;
   return {
     polygonId: annotationInstance.id,
-    labelType,
-    covering,
+    labelType: labelType as keyof AnnotationLabelsType,
+    covering: covering as keyof AnnotationCoveringType,
     slope,
     wear: wearness,
     wearLevel,

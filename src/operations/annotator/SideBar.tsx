@@ -3,10 +3,10 @@ import { BPButton } from '@/common/components/BPButton';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
-import { labels } from '@/constants';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
+import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import {
   Accordion,
@@ -119,7 +119,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
                         <SelectInput
                           alwaysOn
                           resettable
-                          choices={labels}
+                          choices={ANNOTATION_LABELS_CHOICES}
                           label='Type de label'
                           sx={{ width: '70%', m: 0 }}
                           name={`annotationInfos.${i}.labelType`}

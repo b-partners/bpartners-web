@@ -1,40 +1,37 @@
-interface Label {
-  id: string;
-  name: string;
-}
+import { toRaInputChoices } from "@/common/utils/to-ra-input-choices";
+import { Wearness } from "@bpartners/typescript-client";
 
-export const labels: Label[] = [
-  { id: 'roof', name: 'Toit' },
-  { id: 'velux', name: 'Velux' },
-];
+export const ANNOTATION_LABELS_TRANSLATION = {
+  roof: 'Toit',
+  velux: 'Velux'
+} as const
+export type AnnotationLabelsType = typeof ANNOTATION_LABELS_TRANSLATION;
+export const ANNOTATION_LABELS_CHOICES = toRaInputChoices(ANNOTATION_LABELS_TRANSLATION);
 
-export const covering = [
-  { id: 'tuiles-canal', name: 'Tuiles canal' },
-  { id: 'tuiles-plates', name: 'Tuiles plates' },
-  { id: 'ardoise', name: 'Ardoise' },
-  { id: 'zinc', name: 'Zinc' },
-  { id: 'shingle', name: 'Shingle' },
-  { id: 'beton', name: 'Béton' },
-  { id: 'bac-acier', name: 'Bac acier' },
-  { id: 'bardeaux-bitumineux', name: 'Bardeaux bitumineux' },
-  { id: 'fibro-ciment', name: 'Fibro-ciment' },
-  { id: 'membrane-elastomere', name: 'Membrane élastomère' },
-  { id: 'autres', name: 'Autres' },
-];
+export const ANNOTATION_COVERING_TRANSLATION = {
+  'tuiles-canal': 'Tuiles canal',
+  'tuiles-plates': 'Tuiles plates',
+  'ardoise': 'Ardoise',
+  'zinc': 'Zinc',
+  'shingle': 'Shingle',
+  'beton': 'Béton',
+  'bac-acier': 'Bac acier',
+  'bardeaux-bitumineux': 'Bardeaux bitumineux',
+  'fibro-ciment': 'Fibro-ciment',
+  'membrane-elastomere': 'Membrane élastomère',
+  'autres': 'Autres',
+} as const
+export type AnnotationCoveringType = typeof ANNOTATION_COVERING_TRANSLATION;
+export const ANNOTATION_COVERING_CHOICES = toRaInputChoices(ANNOTATION_COVERING_TRANSLATION);
 
-export const wear = [
-  { id: 'LOW', name: '1. Minime' },
-  { id: 'PARTIAL', name: '2. Partielle' },
-  { id: 'ADVANCED', name: '3. Avancée' },
-  { id: 'EXTREME', name: '4. Extrême' },
-];
-
-export const wearTranslation = {
+export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
   LOW: 'Minime',
   PARTIAL: 'Partielle',
   ADVANCED: 'Avancée',
-  EXTREME: 'Extrême',
-};
+  EXTREME: 'Extrême'
+} as const
+export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;
+export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLATION, (value, index) => `${index + 1}. ${value}`);
 
 export const MEASUREMENT_MAP_ON_EXTENDED_AREA = 9;
 export const MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 3;
