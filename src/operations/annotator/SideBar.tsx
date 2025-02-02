@@ -1,4 +1,4 @@
-import { BPConstruction, FlexBox } from '@/common/components';
+import { FlexBox } from '@/common/components';
 import { BPButton } from '@/common/components/BPButton';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
@@ -199,7 +199,6 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           label='resources.draftsAnnotations.export'
           data-testid='submit-annotation-export'
         />
-        <BPConstruction sx={{ width: '100%' }} />
       </Stack>
     </>
   );
