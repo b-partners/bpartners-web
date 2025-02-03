@@ -34,7 +34,7 @@ export const exportAnnotationMapper = ({ annotationInfos, imageUrl, address, pol
 const exportMeasurementMapper = (measurment: Measurement): ExportAreaPictureAnnotationMeasurement => {
   return {
     unit: measurment.unity,
-    value: measurment.value,
+    value: parseFloat(measurment.value.toFixed(2)),
     isInvisible: measurment.isInvisible,
   };
 };

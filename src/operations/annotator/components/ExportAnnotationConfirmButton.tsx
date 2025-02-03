@@ -79,10 +79,10 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
         confirm='Exporter'
         confirmColor={'white' as ConfirmProps['confirmColor']}
         ConfirmIcon={Download}
-        title="Exportation du rapport d'analyse"
+        title="Exportation de l'analyse"
         content={
           <Box>
-            <Alert severity='warning'>Veuillez vous assurer que les mesures de l'annotation sont affichées avant d'exporter l'analyse.</Alert>
+            <Alert severity='warning'>Les mesures de l'annotation doivent être visibles avant de pouvoir exporter l'analyse.</Alert>
           </Box>
         }
       />

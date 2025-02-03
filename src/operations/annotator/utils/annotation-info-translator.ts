@@ -1,7 +1,7 @@
 import { ANNOTATION_COVERING_TRANSLATION, ANNOTATION_LABELS_TRANSLATION, ANNOTATION_WEAR_TRANSLATION } from '@/constants';
 import { AnnotationInfo } from '../types';
 
-const EMPTY_ANNOTATION_VALUE = 'Non renseigné';
+export const EMPTY_ANNOTATION_INFO_VALUE = 'Non renseigné';
 type FormatInfoArgs<T extends object = any, K extends keyof T = any> = {
   label: string;
   value?: K;
@@ -9,9 +9,9 @@ type FormatInfoArgs<T extends object = any, K extends keyof T = any> = {
   unit?: string;
 };
 const formatInfo = <T extends object = any, K extends keyof T = any>({ label, translator, value, unit = '' }: FormatInfoArgs<T, K>) => {
-  if (!value) return { label, value: EMPTY_ANNOTATION_VALUE };
+  if (!value) return { label, value: EMPTY_ANNOTATION_INFO_VALUE };
   const translatedValue = translator ? translator[value] : value;
-  return { label, value: translatedValue + unit };
+  return { label, value: translatedValue ? translatedValue + unit : EMPTY_ANNOTATION_INFO_VALUE };
 };
 
 export const translateAnnotationInfo = (info: AnnotationInfo & { area: number }): { label: string; value: string }[] => {
