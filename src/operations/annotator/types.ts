@@ -1,18 +1,16 @@
+import { AnnotationCoveringType, AnnotationLabelsType, AnnotationWearType } from '@/constants';
 import { Polygon, ScaleCallbacks } from '@bpartners/annotator-component';
-import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { SxProps } from '@mui/material';
-
-type Wear = 'LOW' | 'PARTIAL' | 'ADVANCED' | 'EXTREME';
 
 export interface AnnotationInfo {
   polygonId?: string;
-  labelType?: string;
-  covering?: string;
+  labelType?: keyof AnnotationLabelsType;
+  covering?: keyof AnnotationCoveringType;
   slope?: number;
   wearLevel?: number;
   obstacle?: string;
   comment?: string;
-  wear?: Wear;
+  wear?: keyof AnnotationWearType;
   moldRate?: number;
   fillColor?: string;
   strokeColor?: string;
@@ -30,10 +28,6 @@ export type RefocusImageButtonProps = {
   onAccept: () => void;
   isLoading?: boolean;
   isExtended?: boolean;
-};
-
-export type AnnotationInfoProps = {
-  areaPictureAnnotationInstance: AreaPictureAnnotationInstance;
 };
 
 export type AnnotationInfoDetailsProps = {

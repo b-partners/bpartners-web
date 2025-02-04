@@ -92,7 +92,7 @@ const TransactionChart = () => {
   };
 
   const getMonthlyTransaction = month => {
-    const transactionOfTheMonth = transactionsSummary && transactionsSummary.summary.filter(item => item.month === month)[0];
+    const transactionOfTheMonth = transactionsSummary && (transactionsSummary?.summary ?? []).filter(item => item.month === month)[0];
 
     setLastUpdateDate(transactionOfTheMonth && transactionOfTheMonth.updatedAt);
     transactionOfTheMonth

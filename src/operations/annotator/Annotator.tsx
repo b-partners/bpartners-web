@@ -53,12 +53,12 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
 
   return (
     <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>
-      <Grid container height='94%' pl={1}>
+      <Grid container height='100%' pl={1}>
         <Grid item xs={8.6} display='flex' justifyContent='center' alignItems='start' mr={'1%'}>
           <AnnotatorComponent width={width * 0.5} height={height * 0.7} />
         </Grid>
         <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
-          <Stack flexGrow={2} position='relative'>
+          <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
             <SideBar defaultAnnotationInfos={defaultAnnotations.annotationInfos} draftAnnotationId={draftAnnotationId} />
           </Stack>
         </Grid>

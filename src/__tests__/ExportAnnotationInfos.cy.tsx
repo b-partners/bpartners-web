@@ -1,7 +1,7 @@
 import App from '@/App';
-import { Redirect } from '@/common/utils';
+import { getFileUrl, Redirect } from '@/common/utils';
 import { customers } from '@/operations/customers';
-import { InvoiceStatus } from '@bpartners/typescript-client';
+import { ExportAreaPictureAnnotation, FileType, InvoiceStatus } from '@bpartners/typescript-client';
 import {
   account1,
   accountHolder1,
@@ -27,10 +27,13 @@ describe('annotation-export view', () => {
       const { pageSize, statusList = '', page } = req.query;
       req.reply(getInvoices((page as number) - 1, pageSize as number, (statusList as string).split(',') as InvoiceStatus[]));
     });
+    cy.fixture('export-annotation.pdf', 'binary').then(document => {
+      cy.intercept('POST', `/accounts/${account1.id}/annotations/exports`, document).as('exportAnnotation');
+    });
     cy.stub(Redirect, 'toURL').as('toURL');
   });
 
-  it('should redirect one export page if submit export and redirect back to annotator', () => {
+  it('can export annotation to a file', () => {
     cy.intercept('GET', `/accounts/${account1.id}/annotations/drafts*`, draftAnnotations).as('getDraftAnnotations');
     cy.intercept('GET', `/accounts/${account1.id}/areaPictures/${areaPicture1.id}/annotations/drafts*`, draftAnnotations).as('getDraftAreaPictureAnnotaitons');
     cy.intercept('GET', `/accountHolders/${accountHolder1.id}/prospects*`, prospects).as('getProspects');
@@ -50,13 +53,17 @@ describe('annotation-export view', () => {
     cy.wait('@getDraftAnnotationOneProspect');
 
     cy.getByDataCy('finish-draft-btn').first().click();
-    cy.wait('@getDraftAreaPictureAnnotaitons');
     cy.getByTestId('submit-annotation-export').click();
+    cy.get('.ra-confirm').click();
+    cy.wait('@exportAnnotation').then(intersection => {
+      const { areaPicture } = draftAnnotationOne;
+      const { fileId } = areaPicture;
+      const imageUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+      const requestBody = intersection.request.body as ExportAreaPictureAnnotation;
 
-    cy.getByTestId('export-pdf-title').contains(prospectOne.address);
-    cy.contains(draftAnnotationOne.annotations[0].labelName);
-    cy.getByTestId('go-back-to-annotator-btn').click();
-    cy.wait('@getDraftAreaPictureAnnotaitons');
-    cy.getByTestId('submit-annotation-export').should('be.visible');
+      expect(requestBody.address).to.be.equal(prospectOne.address);
+      expect(requestBody.imageUrl).to.be.equal(imageUrl);
+      expect(requestBody.annotations.length).to.be.equal(draftAnnotationOne.annotations.length);
+    });
   });
 });

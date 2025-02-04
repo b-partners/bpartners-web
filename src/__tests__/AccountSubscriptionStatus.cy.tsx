@@ -31,7 +31,7 @@ const doSubscriptionStatusTest = (subscription: UserSubscriptionStatus, user: Us
   cy.contains(labels.description);
 };
 
-describe('Account subscription status', () => {
+describe('Account Subscription Status', () => {
   beforeEach(() => {
     cy.stub(Redirect, 'toURL').as('redirect');
     cy.stub(Reload, 'force').as('reload');

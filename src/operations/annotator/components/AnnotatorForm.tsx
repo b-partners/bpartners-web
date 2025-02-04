@@ -1,4 +1,4 @@
-import { covering, wear } from '@/constants';
+import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
 import { Box, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
@@ -20,7 +20,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         alwaysOn
         resettable
         label='Revêtement'
-        choices={covering}
+        choices={ANNOTATION_COVERING_CHOICES}
         name={`annotationInfos.${index}.covering`}
         source={`annotationInfos.${index}.covering`}
       />
@@ -30,7 +30,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         name={`annotationInfos.${index}.wear`}
         source={`annotationInfos.${index}.wear`}
         label='Usure'
-        choices={wear}
+        choices={ANNOTATION_WEAR_CHOICES}
         alwaysOn
         resettable
       />
