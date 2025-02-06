@@ -50,8 +50,8 @@ export const usePolygonMarkerFetcher = () => {
       if (!areaPictureDetails.isExtended) {
         cache.initialMarker(areaPictureDetails.id, mappedPoint, image_size);
         return {
-          x: 128,
-          y: 128,
+          x: image_size / 2,
+          y: image_size / 2,
         };
       } else {
         return setMarkerOffset(areaPictureDetails, image_size);
