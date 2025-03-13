@@ -3,7 +3,6 @@ export * from './AutocompleteBackend';
 export * from './BPButton';
 export * from './BPConstruction';
 export * from './BpFormField';
-export * from './BPLayout';
 export * from './BPLoader';
 export * from './BpMultipleTextInput';
 export * from './Buttons';

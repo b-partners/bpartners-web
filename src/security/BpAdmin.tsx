@@ -1,5 +1,4 @@
 import { BP_THEME } from '@/bp-theme';
-import { BPLayout } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
@@ -24,6 +23,7 @@ import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
+import { Layout } from "@/layout"
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
@@ -64,7 +64,7 @@ export const BpAdmin = () => {
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       loginPage={false}
       theme={BP_THEME}
-      layout={BPLayout}
+      layout={Layout}
     >
       <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
