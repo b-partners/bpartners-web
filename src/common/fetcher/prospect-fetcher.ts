@@ -18,7 +18,22 @@ export const useProspectFetcher = (status: ProspectStatus) => {
     pageInfo = {},
     isFetching,
     isPending,
-  } = useGetList('prospects', { pagination: { page, perPage: PROSPECT_PER_PAGE }, filter: { status, searchName } });
+  } = useGetList(
+    'prospects',
+    {
+      pagination: {
+        page,
+        perPage: PROSPECT_PER_PAGE,
+      },
+      filter: {
+        status,
+        searchName,
+      },
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
   const { hasNextPage, hasPreviousPage } = pageInfo;
 
   const nextPage = () => {

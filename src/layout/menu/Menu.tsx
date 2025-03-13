@@ -16,8 +16,8 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { Menu as RaMenu } from 'react-admin';
 import { MouseEventHandler, useCallback, useState } from 'react';
+import { Menu as RaMenu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { authProvider, getCached } from '../../providers';
 
@@ -37,7 +37,7 @@ const LogoutButton = () => {
 export const Menu = () => {
   const [dialogState, setDialogState] = useState(false);
   const toggleDialogState = () => setDialogState(e => !e);
-  const contactSupport: MouseEventHandler<HTMLElement> = (e) => {
+  const contactSupport: MouseEventHandler<HTMLElement> = e => {
     e.preventDefault();
     toggleDialogState();
   };
