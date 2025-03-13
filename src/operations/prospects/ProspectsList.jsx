@@ -1,5 +1,5 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import { Box, Button, Card, CardContent, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Stack, Tab, Tabs } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -13,7 +13,7 @@ import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
-import { BPButton } from '@/common/components';
+import { BPButton, FlexBox } from '@/common/components';
 import { useLoadingHandler, useTabManager } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { parseLocalStorage } from '@/common/utils/local-storage';
@@ -21,6 +21,8 @@ import { annotatorProvider } from '@/providers/annotator-provider';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, prospectingProvider } from '../../providers';
+import { Add } from '@mui/icons-material';
+import { BP_COLOR } from '@/bp-theme';
 
 const BP_USER_CACHE_NAME = 'bp_user';
 export const ProspectDialogProvider = ({ ComponentChild }) => {
@@ -116,7 +118,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   const saveOrUpdateProspect = event => saveOrUpdateProspectSubmit(toggleDialog, isCreating, event);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ pb: 2, px: 2, mt: 1 }}>
       <Tabs value={tabIndex} onChange={(_e, newTabIndex) => handleTabChange(newTabIndex)}>
         <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
         <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
@@ -124,21 +126,20 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
         {bpUser?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
       </Tabs>
 
-      <TabPanel value={tabIndex} index={0} sx={{ p: 3 }}>
-        <Card>
-          <CardContent>
-            <Stack direction='row' width='100%' mb={1} justifyContent='space-between' alignItems='center'>
-              <ProspectFilterInput />
-              <BPButton label='resources.prospects.add' onClick={toggleDialog} />
-            </Stack>
-            <Prospects />
-            {isCreating && (
-              <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-                <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
-              </form>
-            )}
-          </CardContent>
-        </Card>
+      <TabPanel value={tabIndex} index={0} sx={{ mt: 1 }}>
+        <FlexBox sx={{ justifyContent: "end", gap: 2, mb: 1 }}>
+          <ProspectFilterInput
+            variant='outlined'
+            style={{ width: "400px" }}
+          />
+          <BPButton sx={{ bgcolor: BP_COLOR["5"] }} style={{ width: 200 }} size='large' icon={<Add />} label='resources.prospects.add' onClick={toggleDialog} />
+        </FlexBox>
+        <Prospects />
+        {isCreating && (
+          <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
+            <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+          </form>
+        )}
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>

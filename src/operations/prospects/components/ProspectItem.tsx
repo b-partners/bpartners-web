@@ -1,9 +1,10 @@
-import { Prospect } from '@bpartners/typescript-client';
-import { Comment, Home, LocalPhoneOutlined, LocationOn, MailOutline, Star, Update } from '@mui/icons-material';
+import { BP_COLOR } from '@/bp-theme';
+import { FlexBox } from '@/common/components';
+import { Prospect, ProspectStatus } from '@bpartners/typescript-client';
+import { Comment, Edit, LocalPhoneOutlined, LocationOn, LocationOnOutlined, MailOutline, Star, Update } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Link, Paper, Popover, Stack, Tooltip, Typography } from '@mui/material';
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { useNotify, useRefresh } from 'react-admin';
+import { FC, useState } from 'react';
+import { IconButtonWithTooltip, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FieldErrorMessage } from '../../../common/resolvers';
 import { prospectInfoResolver } from '../../../common/resolvers/prospect-info-validator';
@@ -14,7 +15,7 @@ import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
 import { CardViewField } from './CardViewField';
 import { ProspectDialog } from './ProspectDialog';
 
-export const ProspectItem = ({ prospect }) => {
+export const ProspectItem: FC<{ prospect: Prospect }> = ({ prospect }) => {
   const [isProspectDialogOpen, setIsProspectDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -23,14 +24,14 @@ export const ProspectItem = ({ prospect }) => {
   const refresh = useRefresh();
   const { handleLoading } = useProspectContext();
 
-  const toggleDialog = (e, isEditing) => {
+  const toggleDialog = (e?: any, isEditing?: boolean) => {
     e?.stopPropagation();
     setIsProspectDialogOpen(e => !e);
     setIsEditing(isEditing);
     closePopover();
   };
 
-  const openPopover = event => {
+  const openPopover = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -38,14 +39,14 @@ export const ProspectItem = ({ prospect }) => {
     setAnchorEl(null);
   };
 
-  const changeStatus = e => {
+  const changeStatus = (e: any) => {
     const { value } = e.target;
     form.setValue('status', value);
     setSelectedStatus(value);
     toggleDialog(e, false);
   };
 
-  const form = useForm({ mode: 'all', defaultValues: prospect || {}, resolver: prospectInfoResolver });
+  const form = useForm<any>({ mode: 'all', defaultValues: prospect || {}, resolver: prospectInfoResolver });
 
   const saveOrUpdateProspectSubmit = form.handleSubmit(data => {
     handleLoading(true);
@@ -95,9 +96,9 @@ export const ProspectItem = ({ prospect }) => {
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(saveOrUpdateProspectSubmit)} style={{ display: 'flex', flexDirection: 'column' }}>
-        <Paper elevation={2} sx={{ p: 1, bgcolor: prospect?.contactNature === 'OLD_CUSTOMER' ? '#dceeff' : '' }}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center' spacing={2}>
-            <Typography variant='subtitle1' sx={{ textTransform: 'uppercase' }}>
+        <Paper elevation={2} sx={{ p: 2, borderRadius: '12px', bgcolor: prospect?.contactNature === 'OLD_CUSTOMER' ? '#dceeff' : '', transition: 'linear 0s' }}>
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Typography sx={{ fontWeight: 'bold', textTransform: 'uppercase' }} variant='subtitle1'>
               {prospect.name || 'Non renseigné'}
             </Typography>
             <Stack direction='row' alignItems='center'>
@@ -110,21 +111,15 @@ export const ProspectItem = ({ prospect }) => {
                   </Tooltip>
                 </Link>
               )}
-              <Button
-                style={{
-                  background: 'transparent',
-                  color: '#000',
-                  padding: '4px',
-                  border: '1px solid #74737378',
-                  fontSize: '12px',
-                }}
-                variant='text'
+              <IconButtonWithTooltip
+                label='Modifier'
+                sx={{ color: BP_COLOR['5'] }}
                 data-testid={`edit-${prospect.id}`}
                 aria-describedby={id}
                 onClick={openPopover}
               >
-                Modifier
-              </Button>
+                <Edit />
+              </IconButtonWithTooltip>
               <Popover
                 id={id}
                 open={open}
@@ -153,17 +148,25 @@ export const ProspectItem = ({ prospect }) => {
               </Popover>
             </Stack>
           </Stack>
-          <Box sx={{ color: '#4d4d4d' }}>
-            <CardViewField icon={<MailOutline />} value={prospect.email} />
-            <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
-            <CardViewField icon={<Home />} value={prospect.address} />
+          <FlexBox
+            sx={{
+              gap: '5px',
+              color: '#4d4d4d',
+              flexDirection: 'column',
+              alignItems: 'start',
+              justifyContent: 'start',
+            }}
+          >
+            <CardViewField icon={<LocationOnOutlined color='primary' />} value={prospect.address} />
+            <CardViewField icon={<MailOutline color='success' />} value={prospect.email} />
+            <CardViewField icon={<LocalPhoneOutlined color='warning' />} value={prospect.phone} />
             <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField
               icon={<Update />}
-              value={prospect?.rating?.lastEvaluation === null ? 'Non renseigné' : parseRatingLastEvaluation(prospect?.rating?.lastEvaluation)}
+              value={prospect?.rating?.lastEvaluation === null ? 'Non renseigné' : parseRatingLastEvaluation(prospect?.rating?.lastEvaluation as any)}
             />
-          </Box>
+          </FlexBox>
           {isProspectDialogOpen && (
             <ProspectDialog
               open={isProspectDialogOpen}
@@ -178,11 +181,8 @@ export const ProspectItem = ({ prospect }) => {
     </FormProvider>
   );
 };
-ProspectItem.propTypes = {
-  prospect: PropTypes.shape(Prospect).isRequired,
-};
 
-const changeStatusButtons = (status, changeStatus) => {
+const changeStatusButtons = (status: ProspectStatus, changeStatus: any) => {
   return (
     <Box sx={{ m: 1, textAlign: 'center' }}>
       {status === 'TO_CONTACT' ? (

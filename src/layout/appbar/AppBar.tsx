@@ -1,3 +1,6 @@
+import { ShortWarning } from '@/common/components/BPBetaTestWarning';
+import BPDialog from '@/common/components/BPDialog';
+import { printError, Redirect } from '@/common/utils';
 import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -6,9 +9,6 @@ import { SidebarToggleButton, useNotify } from 'react-admin';
 import bpLogo from '../../assets/bp-logo-full.webp';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
-import { Redirect, printError } from '../utils';
-import { ShortWarning } from './BPBetaTestWarning';
-import BPDialog from './BPDialog';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -36,7 +36,7 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const BPAppBar = () => {
+export const AppBar = () => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
@@ -112,4 +112,3 @@ const BPAppBar = () => {
     </>
   );
 };
-export default BPAppBar;

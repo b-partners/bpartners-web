@@ -1,24 +1,22 @@
+import { FreeTrialBannerWrapper } from '@/common/components';
+import BPErrorPage from '@/common/components/BPErrorPage';
+import { useDialog } from '@/common/store/dialog';
 import { AccountHolderHandlerWrapper } from '@/security/AccountHolderHandlerWrapper';
 import { Dialog } from '@mui/material';
 import { AppLocationContext } from '@react-admin/ra-navigation';
 import { FC } from 'react';
-import { Layout, LayoutProps } from 'react-admin';
-import BpMenu from '../../menu/BpMenu';
-import { useDialog } from '../store/dialog';
-import BPAppBar from './BPAppBar';
-import BPErrorPage from './BPErrorPage';
-import { FreeTrialBannerWrapper } from './FreeTrialBannerWrapper';
+import { LayoutProps, Layout as RaLayout } from 'react-admin';
+import { AppBar } from './appbar';
+import { Menu } from './menu';
 
-type BPLayoutProps = LayoutProps;
-
-export const BPLayout: FC<BPLayoutProps> = ({ children, ...layoutProps }) => {
+export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
   const { isOpen: isDialogOpen, content: dialogContent, close: closeDialog, dialogProps = {}, backdropClose } = useDialog();
   return (
     <AppLocationContext>
       <AccountHolderHandlerWrapper>
-        <Layout {...layoutProps} appBar={BPAppBar} menu={BpMenu} error={BPErrorPage}>
+        <RaLayout sx={{ bgcolor: '#F9FAFB0' }} {...layoutProps} appBar={AppBar} menu={Menu} error={BPErrorPage}>
           <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
-        </Layout>
+        </RaLayout>
         <Dialog open={isDialogOpen} onClose={backdropClose ? closeDialog : undefined} {...dialogProps}>
           {dialogContent}
         </Dialog>

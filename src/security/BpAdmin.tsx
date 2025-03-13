@@ -1,7 +1,7 @@
 import { BP_THEME } from '@/bp-theme';
-import { BPLayout } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
+import { Layout } from '@/layout';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
 import { BankPage } from '@/operations/bank';
@@ -64,7 +64,7 @@ export const BpAdmin = () => {
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       loginPage={false}
       theme={BP_THEME}
-      layout={BPLayout}
+      layout={Layout}
     >
       <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
