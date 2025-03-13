@@ -41,7 +41,6 @@ export const ProspectColumn: FC<ProspectColumnProps> = ({ title, status }) => {
           <Typography color={color.text} variant='h6'>
             {title}
           </Typography>
-          <Typography sx={{ color: color.text }}>9 Prospects</Typography>
         </Box>
 
         <Stack

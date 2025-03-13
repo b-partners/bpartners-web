@@ -1,5 +1,5 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
-import { Box, Button, Card, CardContent, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Stack, Tab, Tabs } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -118,7 +118,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   const saveOrUpdateProspect = event => saveOrUpdateProspectSubmit(toggleDialog, isCreating, event);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ pb: 2, px: 2, mt: 1 }}>
       <Tabs value={tabIndex} onChange={(_e, newTabIndex) => handleTabChange(newTabIndex)}>
         <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
         <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />

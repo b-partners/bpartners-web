@@ -157,9 +157,9 @@ export const ProspectItem: FC<{ prospect: Prospect }> = ({ prospect }) => {
               justifyContent: 'start',
             }}
           >
-            <CardViewField icon={<LocationOnOutlined sx={{ color: 'blue !important' }} />} value={prospect.address} />
-            <CardViewField icon={<MailOutline />} value={prospect.email} />
-            <CardViewField icon={<LocalPhoneOutlined />} value={prospect.phone} />
+            <CardViewField icon={<LocationOnOutlined color='primary' />} value={prospect.address} />
+            <CardViewField icon={<MailOutline color='success' />} value={prospect.email} />
+            <CardViewField icon={<LocalPhoneOutlined color='warning' />} value={prospect.phone} />
             <CardViewField icon={<Comment />} value={prospect.comment ? prospect.comment : prospect.defaultComment} />
             <CardViewField icon={<Star />} value={parseRatingValue(prospect?.rating?.value)} />
             <CardViewField
