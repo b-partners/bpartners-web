@@ -25,6 +25,9 @@ export const DraftAreaPictureAnnotations = () => {
       empty={<Empty resource='prospect avec brouillon' />}
       resource='drafts-annotations'
       pagination={<Pagination />}
+      queryOptions={{
+        refetchOnWindowFocus: false,
+      }}
     >
       <DraftAreaPictureAnnotationContent />
     </List>
