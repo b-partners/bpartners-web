@@ -1,4 +1,4 @@
-import taskCoverage from '@cypress/code-coverage/task';
+import taskCoverage from '@cypress/code-coverage/task.js';
 import { defineConfig } from 'cypress';
 import vitePreprocessor from 'cypress-vite';
 
