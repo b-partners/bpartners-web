@@ -115,7 +115,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           polygonLineSizeProps={{
             imageName: `${filename}.jpg`,
             showLineSize: true,
-            converterApiUrl: `${CONVERTER_BASE_URL}/api/reference`,
+            converterApiUrl: `${CONVERTER_BASE_URL}`,
           }}
           zoom={newZoomLevelAsNumber}
         />
