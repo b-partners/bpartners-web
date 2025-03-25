@@ -16,3 +16,4 @@ export * from './RichTextEditor';
 export * from './SubscriptionModal';
 export * from './SubscriptionSuccessModal';
 export * from './SupportDialog';
+export * from './UpdateBusinessModal';

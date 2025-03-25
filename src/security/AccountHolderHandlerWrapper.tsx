@@ -1,13 +1,17 @@
-import { BPLoader } from '@/common/components';
+import { BPLoader, UpdateBusinessModal } from '@/common/components';
+import { useDialog } from '@/common/store/dialog';
 import { accountHolderProvider, authProvider } from '@/providers';
+import { AccountHolder } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError, isAxiosError } from 'axios';
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 
 const isAuthError = (error: AxiosError) => error?.status === 401 || error?.status === 403;
+const hasBusinessActivities = (accountHolder: AccountHolder) => !!(accountHolder?.businessActivities?.primary || accountHolder?.businessActivities?.secondary);
 export const AccountHolderHandlerWrapper: FC<PropsWithChildren> = ({ children }) => {
+  const { open } = useDialog();
   const isSubscribed = authProvider.isSubscribed();
-  const { isLoading } = useQuery({
+  const { isLoading, data: accountHolder } = useQuery<AccountHolder>({
     retry: 5,
     queryKey: ['accountHolder'],
     queryFn: async () => {
@@ -21,6 +25,16 @@ export const AccountHolderHandlerWrapper: FC<PropsWithChildren> = ({ children })
       }
     },
   });
+
+  /* The hasBusinessActivities guard in the following implies that when accountHolder is not loaded yet,
+   then the Prospects page will not be displayed */
+  const hasBusinessActivity = hasBusinessActivities(accountHolder);
+
+  useEffect(() => {
+    if (!isLoading && !hasBusinessActivity && accountHolder) {
+      open(<UpdateBusinessModal />, undefined, false);
+    }
+  }, [isLoading]);
 
   return isLoading ? <BPLoader message='Chargement des données de votre compte...' /> : children;
 };

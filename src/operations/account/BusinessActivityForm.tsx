@@ -1,8 +1,9 @@
 import { printError } from '@/common/utils';
+import { NOOP_FN } from '@/common/utils/noop_fn';
 import { accountHolderProvider, businessActivitiesProvider } from '@/providers';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { Autocomplete, Box, Button, CircularProgress, SxProps, TextField, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { ACTIVITY_TOOLTIP_TITLE, BusinessActiVitiesValues, businessActivityDefaultValues, shouldSaveButtonDisable } from './utils';
 
@@ -32,7 +33,13 @@ const CustomAutocomplete = <ResourceType extends Record<string, any>, Name exten
   );
 };
 
-const BusinessActivitiesInputs = () => {
+export type BusinessActivitiesInputsProps = {
+  containerStyle?: SxProps;
+  autocompleteStyle?: SxProps;
+  onSuccess?: () => void;
+};
+
+const BusinessActivitiesInputs: FC<BusinessActivitiesInputsProps> = ({ containerStyle = {}, autocompleteStyle = {}, onSuccess = NOOP_FN }) => {
   const notify = useNotify();
   const [jobList, setJobList] = useState(null);
   // tools for the preview
@@ -74,22 +81,30 @@ const BusinessActivitiesInputs = () => {
     };
     setLoading(true);
     fetch()
+      .then(() => onSuccess())
       .catch(() => notify('messages.global.error', { type: 'error' }))
       .finally(() => setLoading(false));
   };
 
   return (
-    <Box sx={{ padding: 2, width: '100%', position: 'relative' }}>
+    <Box sx={{ padding: 2, width: '100%', position: 'relative', ...containerStyle }}>
       <Box>
         <CustomAutocomplete
-          style={{ marginRight: '1rem' }}
+          style={{ marginRight: '1rem', ...autocompleteStyle }}
           options={jobList}
           resource={businessActivities.new}
           label='Activité principale'
           name='primary'
           onChange={handleChange}
         />
-        <CustomAutocomplete options={jobList} resource={businessActivities.new} label='Activité secondaire' name='secondary' onChange={handleChange} />
+        <CustomAutocomplete
+          options={jobList}
+          resource={businessActivities.new}
+          label='Activité secondaire'
+          name='secondary'
+          onChange={handleChange}
+          style={autocompleteStyle}
+        />
       </Box>
       <Button
         variant='contained'
