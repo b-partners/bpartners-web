@@ -5,6 +5,7 @@ describe('Customers', () => {
     cy.e2eLogin();
 
     cy.get('[name="customers"]').click();
+    cy.getByName('customerListSearch').type('Andri');
     cy.contains('Andriamahery IT').click();
 
     const randomFirstName = 'it-' + uuid().substring(0, 7);
