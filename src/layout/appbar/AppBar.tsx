@@ -6,13 +6,12 @@ import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { SidebarToggleButton, useNotify } from 'react-admin';
-import bpLogo from '../../assets/bp-logo-full.webp';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
-    height: '2.7rem',
+    width: '100px',
     marginLeft: 25,
   },
   TOOLBAR: {
@@ -84,7 +83,7 @@ export const AppBar = () => {
   return (
     <>
       <Box className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
-        <img src={bpLogo} alt='bp logo' className={classes.LOGO} />
+        <img src={'/logo.png'} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
           Bonjour <b>{name}</b> !{isVerifiedUser === null && <span style={{ color: 'rgb(168,141,104)' }}> (Chargement du statut du compte...)</span>}

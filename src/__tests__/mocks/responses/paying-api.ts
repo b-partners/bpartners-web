@@ -3,7 +3,7 @@ import { TransactionsSummary, TransactionStatus, TransactionTypeEnum } from '@bp
 export const transactions: Array<any> = [
   {
     id: 'transaction1',
-    label: "Abonnement BPartners - L'essentiel",
+    label: "Abonnement BIRDIA - L'essentiel",
     reference: 'BP22001',
     amount: 5,
     category: [
@@ -39,7 +39,7 @@ export const transactions: Array<any> = [
   },
   {
     id: 'transaction3',
-    label: "Abonnement BPartners - L'essentiel",
+    label: "Abonnement BIRDIA - L'essentiel",
     reference: 'BP22003',
     amount: 5,
     paymentDatetime: new Date('2022-08-18T05:34:20'),
@@ -69,7 +69,7 @@ export const transactions: Array<any> = [
   },
   {
     id: 'transaction5',
-    label: "Abonnement BPartners - L'essentiel",
+    label: "Abonnement BIRDIA - L'essentiel",
     reference: 'BP22005',
     amount: 5,
     paymentDatetime: new Date('2022-06-18T05:34:20'),

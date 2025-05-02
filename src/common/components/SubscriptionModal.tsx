@@ -33,7 +33,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           </Alert>
         )}
         <p>
-          Vous n’avez pas encore d’abonnement actif. Pour continuer à utiliser l’application BPartners, veuillez enregistrer votre carte bancaire via notre
+          Vous n’avez pas encore d’abonnement actif. Pour continuer à utiliser l’application BIRDIA, veuillez enregistrer votre carte bancaire via notre
           partenaire sécurisé Stripe.
         </p>
         <p>💡 Pas d’inquiétude :</p>

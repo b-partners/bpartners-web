@@ -2,13 +2,24 @@ import { defaultTheme } from 'react-admin';
 
 const important = value => `${value} !important`;
 
+export const PALETTE_COLORS = {
+  pine: '#4A644E',
+  peach: '#FFB179',
+  linen: '#BEB4A4',
+  white: '#FFFFFF',
+  black: '#1F1F1F',
+  cream: '#F0ECE1',
+  forest: '#112717',
+  neon_orange: '#FF521B',
+};
+
 export const BP_COLOR = {
-  2: '#ab005650',
-  5: '#ab0056',
-  10: '#7A003D',
-  20: '#660033',
-  30: '#582d37',
-  40: '#F1E4E7',
+  2: `${PALETTE_COLORS.neon_orange}`,
+  5: `${PALETTE_COLORS.neon_orange}`,
+  10: `${PALETTE_COLORS.neon_orange}`,
+  20: `${PALETTE_COLORS.neon_orange}`,
+  30: `${PALETTE_COLORS.neon_orange}`,
+  40: `${PALETTE_COLORS.neon_orange}`,
   solid_grey: 'rgb(0, 0, 0, 0.05)',
 };
 
@@ -36,15 +47,15 @@ export const BP_THEME = {
       default: '#fafafb',
     },
     primary: {
-      light: '#ab0056',
-      main: '#7A003D',
-      dark: '#660033',
+      light: PALETTE_COLORS.neon_orange,
+      main: PALETTE_COLORS.neon_orange,
+      dark: PALETTE_COLORS.neon_orange,
       contrastText: '#fff',
     },
     secondary: {
-      light: '#6ec6ff',
-      main: '#2196f3',
-      dark: '#0069c0',
+      light: PALETTE_COLORS.pine,
+      main: PALETTE_COLORS.pine,
+      dark: PALETTE_COLORS.pine,
       contrastText: '#fff',
     },
   },
