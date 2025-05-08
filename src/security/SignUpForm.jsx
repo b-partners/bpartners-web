@@ -41,7 +41,7 @@ export const SignUpForm = () => {
     <>
       <DialogSuccessSignUp isOpen={isModalOpen} onClose={handleCloseModalWithRedirect} />
       <Box sx={{ ...LOGIN_FORM, alignItems: 'center' }}>
-        <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
+        <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BIRDIA !' />
         <Typography variant='h5' gutterBottom mt={1}>
           Inscription
         </Typography>

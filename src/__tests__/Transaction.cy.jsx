@@ -64,7 +64,7 @@ describe(specTitle('Transactions'), () => {
     cy.get('[name="transactions"]').click();
     cy.wait('@legalFiles');
 
-    cy.contains("Abonnement BPartners - L'essentiel");
+    cy.contains("Abonnement BIRDIA - L'essentiel");
     cy.contains('- 0,05 €');
     cy.contains('+ 0,05 €');
     cy.contains('18/08/2022');

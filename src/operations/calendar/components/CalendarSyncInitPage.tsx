@@ -26,8 +26,8 @@ export const CalendarSyncInitPage = ({ currentCalendarId }: { currentCalendarId:
         <img alt='calendar_icon' src={GOOGLE_CALENDAR_ICON} style={{ width: '90px', margin: 'auto', padding: '10px' }} />
         <Box sx={{ textAlign: 'center', margin: '20px' }}>
           <Typography mb={1}>
-            Il semble que c'est la première fois que vous utilisez BPartners, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité
-            de vos prochains RDV.
+            Il semble que c'est la première fois que vous utilisez BIRDIA, veuillez synchroniser votre agenda pour obtenir de nouveaux prospects à proximité de
+            vos prochains RDV.
           </Typography>
           <CalendarCheckboxCGS checked={checked} handleCheck={handleCheck} />
           <Button
