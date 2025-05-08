@@ -35,7 +35,7 @@ export const BACKDROP_STYLE = {
   left: '0',
   height: '25%',
   width: '100%',
-  background: 'linear-gradient(25deg, #ab0056 40% , #7A003DE0 100% )',
+  background: 'linear-gradient(25deg, #FF521B 50% , #f26230 100% )',
   zIndex: -1,
   borderRadius: '10px 10px 0 0',
 };

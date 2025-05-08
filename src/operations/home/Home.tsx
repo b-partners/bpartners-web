@@ -70,7 +70,7 @@ export const Home = () => {
           maxWidth: getResponsiveValue('700px', '1000px', '1500px'),
         }}
       >
-        Pour demarrer ajoutez une adresse et commencez à <span style={{ color: BP_COLOR['20'] }}>analyser les toitures de vos clients et prospects</span>
+        Pour demarrer ajoutez une adresse et commencez à <span style={{ color: BP_COLOR['5'] }}>analyser les toitures de vos clients et prospects</span>
       </Typography>
       <FlexBox sx={{ gap: getResponsiveValue(3, 5, 6), alignItems: 'start' }}>
         <Box>
@@ -98,7 +98,7 @@ export const Home = () => {
                   color: 'white',
                   textAlign: 'center',
                   fontWeight: 'bold',
-                  bgcolor: BP_COLOR['10'],
+                  bgcolor: BP_COLOR['5'],
                   px: getResponsiveValue(4, 6),
                   py: getResponsiveValue('7px', '10px'),
                   fontSize: getResponsiveValue('.8rem', '1rem', '1.2rem'),

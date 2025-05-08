@@ -14,10 +14,10 @@ export const PALETTE_COLORS = {
 };
 
 export const BP_COLOR = {
-  2: `${PALETTE_COLORS.neon_orange}`,
-  5: `${PALETTE_COLORS.neon_orange}`,
-  10: `${PALETTE_COLORS.neon_orange}`,
-  20: `${PALETTE_COLORS.neon_orange}`,
+  2: `#f7a88d`,
+  5: `#FF521B`,
+  10: `#e8683c`,
+  20: `#f26230`,
   30: `${PALETTE_COLORS.neon_orange}`,
   40: `${PALETTE_COLORS.neon_orange}`,
   solid_grey: 'rgb(0, 0, 0, 0.05)',
@@ -28,7 +28,7 @@ const bp_button = {
   boxShadow: 'unset',
   minWidth: '10rem',
   color: '#fff',
-  backgroundColor: BP_COLOR[10],
+  backgroundColor: PALETTE_COLORS.neon_orange,
   marginBlock: '5px',
   textTransform: 'unset',
   '&:hover, &:active': {
@@ -75,7 +75,7 @@ export const BP_THEME = {
           paddingLeft: '12px',
           borderRadius: '6px',
           '&.RaMenuItemLink-active': {
-            backgroundColor: BP_COLOR[10],
+            backgroundColor: BP_COLOR[5],
             color: '#fff',
             borderLeft: '3px solid #fff',
           },
@@ -128,11 +128,11 @@ export const BP_THEME = {
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          backgroundColor: BP_COLOR[2],
+          backgroundColor: BP_COLOR['2'],
         },
         barColorSecondary: {
-          backgroundColor: BP_COLOR[5],
-          color: BP_COLOR[5],
+          backgroundColor: BP_COLOR['30'],
+          color: BP_COLOR['30'],
         },
       },
     },
@@ -181,7 +181,7 @@ export const BP_THEME = {
         root: {
           '& .RaList-main button': {
             color: '#fff',
-            backgroundColor: BP_COLOR[10],
+            backgroundColor: BP_COLOR[5],
             margin: '5px',
             textTransform: 'unset',
             '&:hover, &:active': {
@@ -213,9 +213,9 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '& .Mui-checked': {
-            color: important(BP_COLOR[10]),
+            color: important(BP_COLOR[5]),
             '& +.MuiSwitch-track': {
-              backgroundColor: important(BP_COLOR[40]),
+              backgroundColor: important(BP_COLOR[5]),
               opacity: 1,
             },
           },

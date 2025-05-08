@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { BPLoader } from '@/common/components';
 import useAuthentication from '@/common/hooks/use-authentication';
 import { authProvider } from '@/providers';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
+import BpBackgroundImage from '../assets/login-bg.webp';
 import { FLEX_CENTER } from './style.js';
 
 const BpLoginPageLayout = ({ children }) => {
@@ -13,7 +13,7 @@ const BpLoginPageLayout = ({ children }) => {
     <BPLoader message="Chargement des informations d'authentification, veuillez patienter..." />
   ) : (
     <Box sx={FLEX_CENTER}>
-      {<img src='/bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BIRDIA !' />}
+      <img src='/logo.png' style={{ position: 'absolute', top: '3%', left: '3%', width: '150px' }} alt='Bienvenue sur BIRDIA !' />
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>{children}</Box>
       <Box
         width={{ md: '60%', sm: '0%', xs: '0%' }}
@@ -34,7 +34,7 @@ const BpLoginPageLayout = ({ children }) => {
             bottom: '6.5rem',
           }}
         >
-          L'assistant intelligent qui accélère la croissance des artisans et indépendants.
+          Valorisez ce que vous voyez depuis le ciel.
         </Typography>
       </Box>
     </Box>
