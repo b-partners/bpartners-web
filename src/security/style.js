@@ -1,4 +1,4 @@
-import { BP_COLOR } from '@/bp-theme';
+import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
 import { grey, pink } from '@mui/material/colors';
 
 export const lightGreyColor = grey[100];
@@ -18,7 +18,7 @@ export const FLEX_CENTER = {
 export const LOGIN_FORM = { display: 'flex', flexDirection: 'column', bgcolor: lightGreyColor, minWidth: '30vh' };
 export const LOGIN_FORM_BUTTON = {
   textTransform: 'none',
-  bgcolor: 'rgba(156, 37, 90, 1)',
+  bgcolor: PALETTE_COLORS.neon_orange,
   color: whiteColor,
   width: '300px',
   '&:hover': {

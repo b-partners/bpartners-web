@@ -6,7 +6,7 @@ import loginRedirectionUrls from './login-redirection-urls';
 
 import { printError } from '@/common/utils';
 import { authProvider } from '@/providers';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
+import BpBackgroundImage from '../assets/login-bg.webp';
 import { FLEX_CENTER, REDIRECTION_MESSAGE } from './style.js';
 
 const LoginSuccessPage = () => {

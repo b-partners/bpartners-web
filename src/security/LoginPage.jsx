@@ -9,7 +9,7 @@ import { handleSubmit } from '@/common/utils';
 import { authProvider } from '@/providers';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import BpBackgroundImage from '../assets/bp-bg-image.png';
+import BpBackgroundImage from '../assets/login-bg.webp';
 import CompletePasswordPage from './CompletePasswordPage';
 import { SignUpForm } from './SignUpForm';
 import { FLEX_CENTER, LOGIN_FORM, LOGIN_FORM_BUTTON } from './style.js';
@@ -24,7 +24,7 @@ const BpLoginPage = () => {
     <BPLoader message="Chargement des informations d'authentification, veuillez patienter..." />
   ) : (
     <Box sx={FLEX_CENTER}>
-      {<img src='/bp-logo-full.webp' style={{ position: 'absolute', top: '3%', left: '3%', width: '180px' }} alt='Bienvenue sur BPartners !' />}
+      <img src='/logo.png' style={{ position: 'absolute', top: '3%', left: '3%', width: '150px' }} alt='Bienvenue sur BIRDIA !' />
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>
         {isLogin ? <PasswordChangeableLogin onSignUp={toggleForm} /> : <SignUpForm onSignIn={toggleForm} />}
       </Box>
@@ -47,7 +47,7 @@ const BpLoginPage = () => {
             bottom: '6.5rem',
           }}
         >
-          L'assistant intelligent qui accélère la croissance des artisans et indépendants.
+          Valorisez ce que vous voyez depuis le ciel
         </Typography>
       </Box>
     </Box>
@@ -67,7 +67,7 @@ const SignInForm = ({ onSignUp }) => {
   return (
     <FormProvider {...formState}>
       <form style={LOGIN_FORM} onSubmit={handleSubmit(login)}>
-        <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BPartners !' />
+        <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BIRDIA !' />
         <Typography variant='h5' gutterBottom mt={1}>
           Bienvenue !
         </Typography>
@@ -75,7 +75,7 @@ const SignInForm = ({ onSignUp }) => {
         <BpPasswordField name='password' label='Mot de passe' />
         <Button
           id='login'
-          endIcon={isLoadings && <CircularProgress size={20} color='inherit' />}
+          endIcon={isLoading && <CircularProgress size={20} color='inherit' />}
           disabled={isLoading}
           style={{ marginTop: '0.5rem' }}
           type='submit'

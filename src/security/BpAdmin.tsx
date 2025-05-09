@@ -57,7 +57,7 @@ export const BpAdmin = () => {
 
   return (
     <Admin
-      title='BPartners'
+      title='BIRDIA'
       dashboard={Home}
       authProvider={authProvider}
       dataProvider={dataProvider as DataProvider}

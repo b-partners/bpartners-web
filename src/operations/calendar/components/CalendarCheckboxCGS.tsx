@@ -15,7 +15,7 @@ const CalendarCheckboxCGS = ({ checked, handleCheck }: Props) => {
         control={<Checkbox />}
         label={
           <Typography style={{ color: '#0009', fontSize: '14px', paddingBottom: '20px' }}>
-            En continuant, vous acceptez que BPartners transmette anonymement vos informations à{' '}
+            En continuant, vous acceptez que BIRDIA transmette anonymement vos informations à{' '}
             <ExternalLinkButton url='https://adresse.data.gouv.fr/base-adresse-nationale#4.4/46.9/1.7'>
               <Typography style={{ fontSize: '13px', textDecoration: 'underline', paddingBottom: '2px' }}> la Base Adresse Nationale</Typography>
             </ExternalLinkButton>{' '}
