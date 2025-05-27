@@ -89,6 +89,7 @@ export interface ShapeAttributes {
 export interface AnnotatorComponentProps {
   allowAnnotation?: boolean;
   allowSelect?: boolean;
+  showAddress?: boolean;
   polygons?: Polygon[];
   width?: number;
   height?: number;
