@@ -18,8 +18,8 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.get('[name="support"]').click();
 
-    cy.contains('contact@bpartners.app');
-    cy.contains('Pour contacter le support, veuillez envoyer un courriel à contact@bpartners.app ou nous appeler directement au:');
+    cy.contains('contact@birdia.fr');
+    cy.contains('Pour contacter le support, veuillez envoyer un courriel à contact@birdia.fr ou nous appeler directement au:');
     cy.contains('01 84 80 31 69');
   });
 });

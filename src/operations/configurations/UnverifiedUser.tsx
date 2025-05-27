@@ -20,7 +20,7 @@ const UnverifiedUser = () => {
         <Typography variant='h5'>Avertissement</Typography>
         <Divider sx={{ my: 1 }} />
         <Typography mb={3} variant='body1'>
-          Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au <Link href='mailto:contact@bpartners.app'>support</Link>.
+          Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au <Link href='mailto:contact@birdia.fr'>support</Link>.
         </Typography>
         <Button variant='contained' onClick={handleClose} id='closeWarning'>
           Fermer
