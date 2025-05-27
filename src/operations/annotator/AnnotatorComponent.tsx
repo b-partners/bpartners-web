@@ -1,8 +1,9 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { getUrlParams } from '@/common/utils';
+import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
@@ -16,6 +17,7 @@ import { getNewPolygonColor } from './utils/annotation-colors';
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   boxWrapperSx = {},
+  showAddress = false,
   showFileSource = true,
   buttonComponent,
   allowAnnotation = true,
@@ -24,6 +26,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   width,
   height,
 }) => {
+  const { address } = useWrappedSearchParams(['address']);
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -121,9 +124,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         />
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
-        <Box sx={{ textAlign: 'center', p: 1, border: '1px solid #ebebeb' }}>
-          <Typography variant='body2' style={{ fontWeight: 'bold' }}>
-            Source de l'image: {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
+        <Box sx={{ color: PALETTE_COLORS.cream, textAlign: 'center', width, p: 2, bgcolor: PALETTE_COLORS.pine, border: '1px solid #ebebeb' }}>
+          {showAddress && (
+            <Typography variant='body2' sx={{ my: 1 }}>
+              <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
+            </Typography>
+          )}
+          <Typography variant='body2'>
+            <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
           </Typography>
         </Box>
       )}

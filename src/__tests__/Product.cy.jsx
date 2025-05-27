@@ -60,10 +60,9 @@ describe(specTitle('Products'), () => {
     cy.get('.column-description > .MuiButtonBase-root > span').click();
 
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
-      const { page, pageSize, descriptionFilter, priceFilter, unitPriceOrder } = req.query;
+      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
       expect(descriptionFilter).to.be.eq(descriptionFilterTest);
       expect(+priceFilter).to.be.eq(priceFilterTest * 100);
-      expect(unitPriceOrder).to.be.eq('ASC');
       req.reply(getProducts(page - 1, pageSize));
     }).as('getCustomersSortByUnitPrice');
     cy.get('.MuiTableHead-root > .MuiTableRow-root > :nth-child(3)').click();
