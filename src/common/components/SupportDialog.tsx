@@ -43,10 +43,10 @@ export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
           </IconButton>
         </Box>
         <Typography variant='body2' mb='1rem'>
-          contact@bpartners.app
+          contact@birdia.fr
         </Typography>
         <Typography>
-          Pour contacter le support, veuillez envoyer un courriel à contact@bpartners.app ou nous appeler directement au: <br />
+          Pour contacter le support, veuillez envoyer un courriel à contact@birdia.fr ou nous appeler directement au: <br />
           01 84 80 31 69
         </Typography>
       </DialogContent>

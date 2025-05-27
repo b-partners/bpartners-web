@@ -46,8 +46,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
             06.68.62.48.36
           </a>{' '}
           ou par mail à{' '}
-          <a rel='noreferrer' href='mailto:contact@bpartners.app' target='_blank'>
-            contact@bpartners.app
+          <a rel='noreferrer' href='mailto:contact@birdia.fr' target='_blank'>
+            contact@birdia.fr
           </a>
         </p>
       </DialogContent>
