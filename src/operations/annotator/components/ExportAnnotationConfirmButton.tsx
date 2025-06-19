@@ -2,7 +2,6 @@ import { BPButton } from '@/common/components';
 import { useLoadingHandler, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { printError, useWrappedSearchParams } from '@/common/utils';
-import { downloadBlobFile } from '@/common/utils/download-blob-file';
 import { areaPictureApi, getCached } from '@/providers';
 import { Download } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
@@ -14,10 +13,6 @@ import { exportAnnotationMapper } from '../utils/export-annotation-mapper';
 
 export type ExportAnnotationConfirmButtonProps = {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
-};
-
-const createExportFileName = (address: string) => {
-  return `Rapport d'Analyse de l'adresse : ${address}`;
 };
 
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState }) => {
@@ -41,7 +36,6 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const doAnnotationExport = async () => {
     startLoading();
-    notify("Exportation du rapport d'analyse en cours...");
     handleCloseConfirm();
     try {
       const exporAreaPictureAnnotation = exportAnnotationMapper({
@@ -50,8 +44,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
         address,
         imageUrl: imgUrl,
       });
-      const response = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exporAreaPictureAnnotation, { responseType: 'blob' });
-      await downloadBlobFile(response.data, createExportFileName(address));
+      await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exporAreaPictureAnnotation, { responseType: 'blob' });
+      notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
     } catch (error) {
       printError(error);
       notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.", { type: 'error' });
@@ -83,6 +77,9 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
         content={
           <Box>
             <Alert severity='warning'>Les mesures de l'annotation doivent être visibles avant de pouvoir exporter l'analyse.</Alert>
+            <Alert sx={{ mt: 1 }} severity='info'>
+              Dès que la soumission est complétée, vous recevrez le rapport par email.
+            </Alert>
           </Box>
         }
       />
