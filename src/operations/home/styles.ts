@@ -32,7 +32,7 @@ export const home_style: SxProps = {
     alignItems: 'center',
     height: 50,
     fontSize: 20,
-    background: BP_COLOR[5],
+    background: PALETTE_COLORS['pine'],
     display: 'flex',
     justifyContent: 'space-around',
     borderRadius: 2,
@@ -68,7 +68,7 @@ export const home_style: SxProps = {
       flexGrow: 1,
       borderRadius: 2,
       minWidth: 500,
-      border: `2px solid ${BP_COLOR[5]}`,
+      border: 'none',
       position: 'relative',
     },
     '& > .MuiPaper-root': {
@@ -81,7 +81,7 @@ export const home_style: SxProps = {
     },
     '& > .MuiPaper-root:nth-child(3)': {
       borderRadius: 2,
-      border: `2px solid ${PALETTE_COLORS.pine}`,
+      border: `2px solid ${PALETTE_COLORS['pine']}`,
     },
     '.MuiCircularProgress-root': {
       color: '#fff',
@@ -94,7 +94,7 @@ export const home_style: SxProps = {
       border: 'none',
     },
     '& > .latest-addresses': {
-      background: BP_COLOR[5],
+      background: PALETTE_COLORS['pine'],
       border: 'none',
     },
   },
@@ -133,10 +133,10 @@ export const buttons_section_style: SxProps = {
     },
   },
   '& > .MuiBox-root:nth-child(1) > .MuiBox-root': {
-    border: `1px solid ${PALETTE_COLORS.pine}`,
+    border: `1px solid ${PALETTE_COLORS['pine']}`,
   },
   '& > .MuiBox-root:nth-child(1) > .MuiBox-root:nth-child(2):hover': {
-    background: PALETTE_COLORS.pine,
+    background: PALETTE_COLORS['pine'],
     color: 'white',
   },
   '& > .MuiBox-root:nth-child(2) > .MuiBox-root': {
@@ -144,13 +144,13 @@ export const buttons_section_style: SxProps = {
     color: BP_COLOR[5],
   },
   '& > .MuiBox-root:nth-child(2) > .MuiBox-root:nth-child(2):hover': {
-    background: BP_COLOR[5],
+    background: PALETTE_COLORS['pine'],
     color: 'white',
   },
   '& > .MuiBox-root:nth-child(3) > .MuiBox-root': {
-    background: BP_COLOR[5],
+    background: PALETTE_COLORS['pine'],
     color: '#f4f4f4',
-    border: `1px solid ${BP_COLOR[5]}`,
+    border: `1px solid ${PALETTE_COLORS['pine']}`,
   },
   '& > .MuiBox-root:nth-child(3) > .MuiBox-root:nth-child(2):hover': {
     background: '#f4f4f4',
@@ -165,7 +165,7 @@ export const prospect_button: SxProps = {
   justifyContent: 'center',
   alignItems: 'center',
   '& .MuiButtonBase-root': {
-    background: PALETTE_COLORS.pine,
+    background: PALETTE_COLORS['pine'],
     color: '#f4f4f4',
     position: 'absolute',
     bottom: 5,
@@ -173,7 +173,7 @@ export const prospect_button: SxProps = {
     transition: 'all 200ms',
   },
   '& .MuiButtonBase-root:hover': {
-    color: PALETTE_COLORS.pine,
+    color: PALETTE_COLORS['pine'],
     background: '#f4f4f4',
     border: `1px solid #090909`,
     transform: 'scale(1.2)',
