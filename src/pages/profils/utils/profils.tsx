@@ -1,8 +1,5 @@
-import { Account } from "../sections/Account";
-
+import { Account } from '../sections/Account';
 
 export const Profils = () => {
-    return (
-        <Account />
-    );
+  return <Account />;
 };
