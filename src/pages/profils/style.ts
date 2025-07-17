@@ -15,7 +15,7 @@ export const AccountStyle: SxProps = {
     boxShadow: '0 2px 10px #4F6350',
     bgcolor: '#fff',
     p: 2,
-    minHeight: '250px',
+    minHeight: '255px',
   },
   '& .card-user': {
     display: 'flex',
@@ -49,7 +49,7 @@ export const AccountStyle: SxProps = {
     fontWeight: 'bold',
     borderRadius: 25,
     py: 1,
-    mb: 3,
+    my: 1,
     mx: 'auto',
     fontSize: '1.3rem',
     width: '400px',

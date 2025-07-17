@@ -1,5 +1,6 @@
 import { BP_THEME } from '@/bp-theme';
 import BPErrorPage from '@/common/components/BPErrorPage';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { BpFrenchMessages } from '@/common/utils';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
@@ -17,13 +18,14 @@ import { HomePage } from '@/pages/home/utils';
 import { NavBar } from '@/pages/navBar/utils';
 import { Account } from '@/pages/profils/utils';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
+import { Box } from '@mui/material';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Outlet, Route, useLocation } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
@@ -56,6 +58,23 @@ export const BpAdmin = () => {
     return <Navigate to='/login' />;
   }
 
+  const PublicLayout = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return (
+      <>
+        <NavBar />
+        <Box pt='70px' bgcolor={PALETTE_COLORS.white}>
+          <Outlet />
+        </Box>
+      </>
+    );
+  };
+
   return (
     <Admin
       title='BIRDIA'
@@ -73,17 +92,18 @@ export const BpAdmin = () => {
       <Resource name='drafts-annotations' />
       <Resource name='calendar' {...calendar} />
       <CustomRoutes>
-        <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
-        <Route path='/calendar-sync' element={<CalendarSync />} />
-        <Route path='/account/:id' element={<account.show />} />
-        <Route path='/configurations' element={<Configuration />} />
-        <Route path='/bank' element={<BankPage />} />
-        <Route path='/partners' element={<PartnersPage />} />
-        <Route path='/annotator' element={<Annotator />} />
-        <Route path='/error' element={<BPErrorPage />} />
-        <Route path='/newprofils' element={<Account />} />
-        <Route path='/homepage' element={<HomePage />} />
-        <Route path='/navbar' element={<NavBar />} />
+        <Route path='/' element={<PublicLayout />}>
+          <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
+          <Route path='/calendar-sync' element={<CalendarSync />} />
+          <Route path='/account/:id' element={<account.show />} />
+          <Route path='/configurations' element={<Configuration />} />
+          <Route path='/bank' element={<BankPage />} />
+          <Route path='/partners' element={<PartnersPage />} />
+          <Route path='/annotator' element={<Annotator />} />
+          <Route path='/error' element={<BPErrorPage />} />
+          <Route path='/newprofils' element={<Account />} />
+          <Route path='/homepage' element={<HomePage />} />
+        </Route>
       </CustomRoutes>
     </Admin>
   );
