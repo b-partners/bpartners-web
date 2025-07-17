@@ -4,7 +4,7 @@ import { Avatar, Box, Card, CardContent, Checkbox, Grid, TextField, Typography }
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
-import { AccountStyle } from './style';
+import { AccountStyle } from '../style';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {

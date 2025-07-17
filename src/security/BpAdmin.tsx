@@ -13,7 +13,6 @@ import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
-import { Profils } from '@/pages/profils/utils';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
@@ -23,6 +22,9 @@ import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
+import { Account } from '@/pages/profils/utils';
+import { HomePage } from '@/pages/home/utils';
+import { NavBar } from '@/pages/navBar/utils';
 
 export const BpAdmin = () => {
   const getTokenExpiration = async () => {
@@ -79,7 +81,9 @@ export const BpAdmin = () => {
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
-        <Route path='/newprofils' element={<Profils />} />
+        <Route path='/newprofils' element={<Account />} />
+        <Route path='/homepage' element={<HomePage />} />
+        <Route path='/navbar' element={<NavBar />} />
       </CustomRoutes>
     </Admin>
   );

@@ -5,7 +5,6 @@ import { CookiesProvider } from 'react-cookie';
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
 import RedirectionMobilePage from './operations/redirectionMobile/RedirectionMobilePage';
-import { Account } from './pages/profils/sections/Account';
 import { BpAdmin } from './security/BpAdmin';
 import BpLoginPageLayout from './security/LoginPageLayout';
 import LoginSuccessPage from './security/LoginSuccessPage';
@@ -44,7 +43,6 @@ const App = () => {
           <Route path='/password/reset/code' element={<PasswordResetConfirmationLayout />} />
           <Route path='/password/reset/success' element={<PasswordResetPassword />} />
           <Route path='/redirection' element={<RedirectionMobilePage />} />
-          <Route path='/newprofil' element={<Account />} />
           <Route
             path='*'
             element={
