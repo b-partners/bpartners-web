@@ -1,7 +1,5 @@
-import { Typography } from "@mui/material";
+import { Typography } from '@mui/material';
 
 export const HomePage = () => {
-    return(
-        <Typography>Bienvenue sur le dashboard de Birdia</Typography>
-    )
+  return <Typography>Bienvenue sur le dashboard de Birdia</Typography>;
 };
