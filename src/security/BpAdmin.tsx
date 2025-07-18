@@ -2,6 +2,7 @@ import { BP_THEME } from '@/bp-theme';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { BpFrenchMessages } from '@/common/utils';
+import { Layout } from '@/layout';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
 import { BankPage } from '@/operations/bank';
@@ -15,7 +16,7 @@ import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
 import { HomePage } from '@/pages/home/utils';
-import { NavBar } from '@/pages/navBar/utils';
+import { NavBar } from '@/pages/navBar/components';
 import { Account } from '@/pages/profils/utils';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
 import { Box } from '@mui/material';
@@ -82,6 +83,7 @@ export const BpAdmin = () => {
       dataProvider={dataProvider as DataProvider}
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
       theme={BP_THEME}
+      layout={Layout}
     >
       <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
@@ -92,7 +94,7 @@ export const BpAdmin = () => {
       <Resource name='drafts-annotations' />
       <Resource name='calendar' {...calendar} />
       <CustomRoutes>
-        <Route path='/' element={<PublicLayout />}>
+        <Route path='/'>
           <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
           <Route path='/calendar-sync' element={<CalendarSync />} />
           <Route path='/account/:id' element={<account.show />} />

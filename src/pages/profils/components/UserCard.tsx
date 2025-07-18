@@ -1,7 +1,10 @@
 import { PALETTE_COLORS } from '@/common/config/theme';
+import { getAccountLogoUrl } from '@/providers';
 import { Avatar, Box, Card, CardContent, Typography } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { TextField, useRecordContext } from 'react-admin';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -36,18 +39,25 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export const UserCard = () => {
+  const { user, postalCode, companyInfo } = useRecordContext();
+  const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const url = getAccountLogoUrl();
+    setLogoUrl(url);
+  }, []);
+
   return (
     <Card className='card card-user'>
       <CardContent>
         <Box className='user-header'>
           <StyledBadge overlap='circular' anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} variant='dot'>
-            <Avatar className='avatar' src='/Account/Photo-birdia-demo.webp' alt='Photo de profil' />
+            <Avatar className='avatar' src={logoUrl || '/Account/Photo-birdia-demo.webp'} alt='Photo de profil' />
           </StyledBadge>
           <Box className='container-typo-user'>
-            <Typography className='typo-user'>Nom prénom</Typography>
-            <Typography className='typo-user'>Adresse postale</Typography>
-            <Typography className='typo-user'>Adresse mail</Typography>
-            <Typography className='typo-user'>Numéro de téléphone</Typography>
+            <Typography className='typo-user'>{user?.lastName}</Typography>
+            <Typography className='typo-user'>{postalCode}</Typography>
+            <Typography className='typo-user'>{companyInfo?.email}</Typography>
+            <Typography className='typo-user'>{user?.phone}</Typography>
           </Box>
         </Box>
       </CardContent>

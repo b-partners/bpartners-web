@@ -1,5 +1,4 @@
 import { PALETTE_COLORS } from '@/common/config/theme';
-import { NavBarStyle } from '../components/style';
 import {
   AccountCircle as AccountCircleIcon,
   CalendarMonth as CalendarMonthIcon,
@@ -14,6 +13,7 @@ import {
 import { Box, IconButton, InputBase } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { NavBarStyle } from '../components/style';
 
 export const NavBar = () => {
   const location = useLocation();
