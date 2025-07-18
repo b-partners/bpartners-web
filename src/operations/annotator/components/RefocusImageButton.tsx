@@ -16,6 +16,7 @@ export const RefocusImageButton: FC<RefocusImageButtonProps> = ({ onAccept, isLo
       type='button'
       onClick={handleOpen}
       data-cy='center-img-btn'
+      colorType='pine'
       label={`bp.action.${!isExtended ? 'refocusImage' : 'resetRefocusImage'}`}
       isLoading={isLoading}
     />
