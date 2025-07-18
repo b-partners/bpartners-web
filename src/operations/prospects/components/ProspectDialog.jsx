@@ -13,7 +13,7 @@ const getDialogTitle = (prospectName, isCreating) => {
     : `Prospect : ${prospectName}`;
 };
 
-export const ProspectDialog = props => {
+export const ProspectFormDialog = props => {
   const { open, close, prospect = {}, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
   const { name, status, comment } = prospect;
 
@@ -118,7 +118,7 @@ export const ProspectDialog = props => {
     </Dialog>
   );
 };
-ProspectDialog.propTypes = {
+ProspectFormDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
   prospect: PropTypes.object,

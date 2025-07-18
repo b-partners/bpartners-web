@@ -8,7 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
-import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
+import { ProspectFormDialog, ProspectFilterInput, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -152,7 +152,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
         <Prospects />
         {isCreating && (
           <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-            <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+            <ProspectFormDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
           </form>
         )}
       </TabPanel>
