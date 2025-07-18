@@ -1,5 +1,6 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 
+import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import PropTypes from 'prop-types';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BpFormField, BpNumberField } from '../../../common/components';
@@ -36,7 +37,7 @@ export const ProspectFormDialog = props => {
       </DialogTitle>
       <DialogContent>
         <Stack spacing={1}>
-          <BpFormField required style={{ width: '100%' }} name='address' label='Adresse' />
+          <BpAutoComplete required style={{ width: '100%' }} name='address' label='Adresse' options={['1', '2']} />
           <BpFormField required style={{ width: '100%' }} name='name' label='Nom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='email' type='email' label='Email' />
