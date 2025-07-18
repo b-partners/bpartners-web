@@ -9,6 +9,7 @@ import {
 } from '@mui/icons-material';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
+import { annotatorActionButtonsStyle } from './style';
 
 type TShiftImage = (shiftNumber: number) => void;
 
@@ -27,7 +28,7 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
   };
 
   return (
-    <Stack direction='row' gap={2}>
+    <Stack sx={annotatorActionButtonsStyle} direction='row' gap={2}>
       <Tooltip onClick={scaleUp} title='Zoom +'>
         <IconButton>
           <ZoomInIcon />

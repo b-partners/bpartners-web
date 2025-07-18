@@ -1,5 +1,5 @@
 import { BPLoader } from '@/common/components';
-import { useLoadingHandler, useWindowResize } from '@/common/hooks';
+import { useLoadingHandler } from '@/common/hooks';
 import { CanvasAnnotationContextProvider } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { stringifyObj } from '@/common/utils/stringify';
@@ -26,7 +26,6 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
   defaultAnnotationInfos = [],
   defaultPolygons = [],
 }) => {
-  const { width, height } = useWindowResize();
   const { isLoading, stopLoading } = useLoadingHandler(true);
   const [defaultAnnotations, setDefaultAnnotations] = useState<{ polygons: Polygon[]; annotationInfos: AnnotationInfo[] }>({
     polygons: defaultPolygons,
@@ -55,7 +54,7 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={8.6} display='flex' justifyContent='center' alignItems='start' mr={'1%'}>
-          <AnnotatorComponent showAddress width={width * 0.5} height={height * 0.7} />
+          <AnnotatorComponent showAddress />
         </Grid>
         <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
           <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>

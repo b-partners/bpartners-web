@@ -91,7 +91,7 @@ export interface AnnotatorComponentProps {
   allowSelect?: boolean;
   showAddress?: boolean;
   polygons?: Polygon[];
-  width?: number;
+  width?: number | string;
   height?: number;
   buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode;
   showFileSource?: boolean;

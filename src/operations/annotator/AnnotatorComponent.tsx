@@ -2,17 +2,19 @@ import { PALETTE_COLORS } from '@/bp-theme';
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
+import { useGetElementSize } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 import { getNewPolygonColor } from './utils/annotation-colors';
+import { annotatorComponentStyle } from './utils/style';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
@@ -32,7 +34,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
-
   const {
     filename,
     isExtended,
@@ -41,6 +42,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     actualLayer: layer,
     otherLayers,
   } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+  const { ref: containerRef, height: containerheight } = useGetElementSize([filename]);
 
   const handleZoomLvl = async (e: any) => {
     mutateAreaPictureDetail({ zoomLevel: e.target.value });
@@ -79,7 +81,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   }
 
   return (
-    <Box width='100%' height='580px' position='relative' sx={boxWrapperSx}>
+    <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       {allowSelect && (
         <Stack direction='row' spacing={1} marginBlock={1}>
           <BpSelect
@@ -104,24 +106,26 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Stack>
       )}
       {filename && (
-        <AnnotatorCanvas
-          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-          allowAnnotation={allowAnnotation}
-          width={width || '100%'}
-          height={height || '500px'}
-          buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
-          image={getUrlParams(window.location.search, 'imgUrl')}
-          setPolygons={setPolygons}
-          polygonList={polygonFromProps || polygons}
-          measurementMapper={measurementMapper}
-          getNewPolygonColor={getNewPolygonColor}
-          polygonLineSizeProps={{
-            imageName: `${filename}.jpg`,
-            showLineSize: true,
-            converterApiUrl: `${CONVERTER_BASE_URL}`,
-          }}
-          zoom={newZoomLevelAsNumber}
-        />
+        <Box className='annotator-canvas-container' ref={containerRef}>
+          <AnnotatorCanvas
+            markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+            allowAnnotation={allowAnnotation}
+            width={width || '100%'}
+            height={height || containerheight}
+            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
+            image={getUrlParams(window.location.search, 'imgUrl')}
+            setPolygons={setPolygons}
+            polygonList={polygonFromProps || polygons}
+            measurementMapper={measurementMapper}
+            getNewPolygonColor={getNewPolygonColor}
+            polygonLineSizeProps={{
+              imageName: `${filename}.jpg`,
+              showLineSize: true,
+              converterApiUrl: `${CONVERTER_BASE_URL}`,
+            }}
+            zoom={newZoomLevelAsNumber}
+          />
+        </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
         <Box sx={{ color: PALETTE_COLORS.cream, textAlign: 'center', width, p: 2, bgcolor: PALETTE_COLORS.pine, border: '1px solid #ebebeb' }}>
