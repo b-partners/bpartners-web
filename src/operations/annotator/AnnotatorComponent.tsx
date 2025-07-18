@@ -83,7 +83,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       {allowSelect && (
-        <Stack direction='row' spacing={1} marginBlock={1}>
+        <Stack className='image-properties-actions' direction='row' spacing={1} marginBlock={1}>
           <BpSelect
             value={newZoomLevel}
             handleChange={handleZoomLvl}

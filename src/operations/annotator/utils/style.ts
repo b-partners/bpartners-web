@@ -13,4 +13,10 @@ export const annotatorComponentStyle: SxProps = {
     m: 0,
     p: 0,
   },
+  '& .image-properties-actions': {
+    width: '100%',
+    '& > *:not(:nth-child(3))': {
+      flexGrow: 1,
+    },
+  },
 };
