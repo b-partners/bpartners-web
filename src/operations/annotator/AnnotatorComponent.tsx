@@ -1,15 +1,14 @@
-import { PALETTE_COLORS } from '@/bp-theme';
-import { BPLoader } from '@/common/components';
+import { BPButton, BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Divider, Stack, SxProps, Typography } from '@mui/material';
 import { FC } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
@@ -76,6 +75,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     };
   };
 
+  const { analyseRoof } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
+
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
@@ -111,7 +113,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
             width={width || '100%'}
-            height={height || containerheight}
+            height={height || containerheight * 0.95}
             buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
             image={getUrlParams(window.location.search, 'imgUrl')}
             setPolygons={setPolygons}
@@ -128,16 +130,22 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
-        <Box sx={{ color: PALETTE_COLORS.cream, textAlign: 'center', width, p: 2, bgcolor: PALETTE_COLORS.pine, border: '1px solid #ebebeb' }}>
-          {showAddress && (
-            <Typography variant='body2' sx={{ my: 1 }}>
-              <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
+        <Stack direction='row' className='bottom-action'>
+          <Stack direction='row'>
+            {showAddress && (
+              <>
+                <Typography variant='body2' sx={{ my: 1 }}>
+                  <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
+                </Typography>
+                <Divider orientation='vertical' variant='middle' flexItem />
+              </>
+            )}
+            <Typography variant='body2'>
+              <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
             </Typography>
-          )}
-          <Typography variant='body2'>
-            <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
-          </Typography>
-        </Box>
+          </Stack>
+          {shouldAnalyseRoof && <BPButton label='Analyser la toiture' />}
+        </Stack>
       )}
     </Box>
   );

@@ -1,4 +1,5 @@
 import { useDialog } from '@/common/store/dialog';
+import { parseUrlParams } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import {
   ArrowLeft as ArrowLeftIcon,
@@ -7,7 +8,7 @@ import {
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
-import { IconButton, Stack, Tooltip } from '@mui/material';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
@@ -27,8 +28,18 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
     );
   };
 
+  const { analyseRoof } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
+
   return (
     <Stack sx={annotatorActionButtonsStyle} direction='row' gap={2}>
+      <Box>
+        {shouldAnalyseRoof && (
+          <Box>
+            <Typography>Veuillez délimiter votre toiture</Typography>
+          </Box>
+        )}
+      </Box>
       <Tooltip onClick={scaleUp} title='Zoom +'>
         <IconButton>
           <ZoomInIcon />

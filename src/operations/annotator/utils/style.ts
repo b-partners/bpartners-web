@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const annotatorComponentStyle: SxProps = {
@@ -17,6 +18,30 @@ export const annotatorComponentStyle: SxProps = {
     width: '100%',
     '& > *:not(:nth-child(3))': {
       flexGrow: 1,
+    },
+  },
+
+  '& .bottom-action': {
+    width: '100%',
+    gap: 1,
+    mt: 1,
+    '& .MuiStack-root': {
+      background: PALETTE_COLORS['pine'],
+      color: PALETTE_COLORS['cream'],
+      flexGrow: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 2,
+      borderRadius: 1,
+      '& .MuiDivider-root': {
+        borderColor: PALETTE_COLORS['cream'],
+      },
+    },
+    '& > :nth-child(2)': {
+      height: '100%',
+      p: 0,
+      m: 0,
     },
   },
 };

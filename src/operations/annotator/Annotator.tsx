@@ -50,17 +50,22 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     return <BPLoader message="Chargement des données d'annotation..." />;
   }
 
+  const { analyseRoof } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
+
   return (
     <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>
       <Grid container height='100%' pl={1}>
-        <Grid item xs={8.6} display='flex' justifyContent='center' alignItems='start' mr={'1%'}>
+        <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' justifyContent='center' alignItems='start' mr={'1%'}>
           <AnnotatorComponent showAddress />
         </Grid>
-        <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
-          <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
-            <SideBar defaultAnnotationInfos={defaultAnnotations.annotationInfos} draftAnnotationId={draftAnnotationId} />
-          </Stack>
-        </Grid>
+        {!shouldAnalyseRoof && (
+          <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
+            <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
+              <SideBar defaultAnnotationInfos={defaultAnnotations.annotationInfos} draftAnnotationId={draftAnnotationId} />
+            </Stack>
+          </Grid>
+        )}
       </Grid>
     </CanvasAnnotationContextProvider>
   );
