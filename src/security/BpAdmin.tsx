@@ -1,6 +1,5 @@
 import { BP_THEME } from '@/bp-theme';
 import BPErrorPage from '@/common/components/BPErrorPage';
-import { PALETTE_COLORS } from '@/common/config/theme';
 import { BpFrenchMessages } from '@/common/utils';
 import { Layout } from '@/layout';
 import account from '@/operations/account';
@@ -16,17 +15,15 @@ import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
 import { HomePage } from '@/pages/home/utils';
-import { NavBar } from '@/pages/navBar/components';
 import { Account } from '@/pages/profils/utils';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
-import { Box } from '@mui/material';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import frenchMessages from 'ra-language-french';
 import { useEffect } from 'react';
 import { CustomRoutes, DataProvider } from 'react-admin';
-import { Navigate, Outlet, Route, useLocation } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import GoogleSheetsConsentSuccess from './googleSheetConsent/GoogleSheetsConsentSuccess';
 
 export const BpAdmin = () => {
