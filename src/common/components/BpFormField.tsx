@@ -49,7 +49,7 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
       {...dateProps}
       {...errorStyle}
       {...others}
-      variant='filled'
+      variant={others.variant || 'filled'}
       {...customRegister}
       data-testid={`${name}-field-input`}
       type={type === 'password' ? passwordType : type}

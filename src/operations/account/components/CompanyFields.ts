@@ -5,6 +5,7 @@ export const getCompanyFields = (record: any) => {
     {
       label: 'Raison sociale',
       value: record?.name,
+      name: 'name',
     },
     {
       label: 'Encaissement annuel à réaliser',
@@ -13,10 +14,12 @@ export const getCompanyFields = (record: any) => {
     {
       label: 'Activité principale',
       value: record?.businessActivities?.primary,
+      name: 'businessActivities.primary',
     },
     {
       label: 'Activité secondaire',
       value: record?.businessActivities?.secondary,
+      name: 'businessActivities.secondary',
     },
     {
       label: 'Code postal',
