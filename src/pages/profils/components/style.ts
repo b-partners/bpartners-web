@@ -32,8 +32,8 @@ export const AccountStyle: SxProps = {
     mb: 1,
   },
   '& .avatar': {
-    width: 170,
-    height: 170,
+    width: 150,
+    height: 150,
   },
   '& .card-trial': {
     textAlign: 'center',
