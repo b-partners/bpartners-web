@@ -1,3 +1,4 @@
+import { CompanyCard } from '@/pages/profils/components/CompanyCard';
 import { AccountStyle } from '@/pages/profils/components/style';
 import { TrialCard } from '@/pages/profils/components/TrialCard';
 import { UserCard } from '@/pages/profils/components/UserCard';
@@ -14,6 +15,9 @@ export const AccountShow = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <TrialCard />
+          </Grid>
+          <Grid item xs={12}>
+            <CompanyCard />
           </Grid>
         </Grid>
       </SimpleShowLayout>

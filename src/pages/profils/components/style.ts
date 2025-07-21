@@ -123,4 +123,18 @@ export const AccountStyle: SxProps = {
     fontSize: '2.8rem',
     ml: 5,
   },
+  '& .not-try':{
+    my: 5.2,
+    fontWeight: 'bold',
+  },
+  '& .trial-desciption':{
+    fontStyle: 'italic', 
+    mb: 1.5,
+  },
+  '& .trial-start':{
+    fontWeight: 'bold'
+  },
+  '& .trial-end':{
+    mt: 2.5, fontWeight: 'bold'
+  },
 };

@@ -4,7 +4,7 @@ import { Avatar, Box, Card, CardContent, Typography } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
-import { TextField, useRecordContext } from 'react-admin';
+import { useRecordContext } from 'react-admin';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
