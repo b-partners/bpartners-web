@@ -59,23 +59,6 @@ export const BpAdmin = () => {
     return <Navigate to='/login' />;
   }
 
-  const PublicLayout = () => {
-    const { pathname } = useLocation();
-
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
-
-    return (
-      <>
-        <NavBar />
-        <Box pt='70px' bgcolor={PALETTE_COLORS.white}>
-          <Outlet />
-        </Box>
-      </>
-    );
-  };
-
   return (
     <Admin
       title='BIRDIA'

@@ -1,7 +1,6 @@
 import { ShortWarning } from '@/common/components/BPBetaTestWarning';
 import BPDialog from '@/common/components/BPDialog';
 import { printError, Redirect } from '@/common/utils';
-import { NavBar } from '@/pages/navBar/components';
 import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
