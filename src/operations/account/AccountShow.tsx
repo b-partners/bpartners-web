@@ -1,8 +1,8 @@
-import { CompanyCard } from '@/pages/profils/components/CompanyCard';
-import { AccountStyle } from '@/pages/profils/components/style';
-import { SubscriptionCard } from '@/pages/profils/components/SubscriptionCard';
-import { TrialCard } from '@/pages/profils/components/TrialCard';
-import { UserCard } from '@/pages/profils/components/UserCard';
+import { CompanyCard } from '@/operations/account/components/CompanyCard';
+import { AccountStyle } from '@/operations/account/components/style';
+import { SubscriptionCard } from '@/operations/account/components/SubscriptionCard';
+import { TrialCard } from '@/operations/account/components/TrialCard';
+import { UserCard } from '@/operations/account/components/UserCard';
 import { Grid } from '@mui/material';
 import { ShowBase, SimpleShowLayout } from 'react-admin';
 

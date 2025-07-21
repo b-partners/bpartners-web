@@ -15,7 +15,6 @@ import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
 import transactions from '@/operations/transactions';
 import { HomePage } from '@/pages/home/utils';
-import { Account } from '@/pages/profils/utils';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
@@ -83,7 +82,6 @@ export const BpAdmin = () => {
           <Route path='/partners' element={<PartnersPage />} />
           <Route path='/annotator' element={<Annotator />} />
           <Route path='/error' element={<BPErrorPage />} />
-          <Route path='/newprofils' element={<Account />} />
           <Route path='/homepage' element={<HomePage />} />
         </Route>
       </CustomRoutes>
