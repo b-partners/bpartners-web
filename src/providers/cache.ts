@@ -16,6 +16,7 @@ const polygonsItem = 'bp_polygons_item';
 const annotationsInfoItem = 'bp_annotations_info_item';
 const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
+const apiKeyItem = 'bp_user_api_key';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -81,6 +82,10 @@ export const cache = {
     const data = { markerPosition, imageSize };
     return cacheObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`, data);
   },
+  apiKey(apiKey: string) {
+    localStorage.setItem(apiKeyItem, apiKey);
+    return apiKey;
+  },
 };
 
 export const getCached = {
@@ -141,6 +146,9 @@ export const getCached = {
   },
   initialMarker(areaPictureId: string) {
     return getCachedObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`);
+  },
+  apiKey() {
+    return localStorage.getItem(apiKeyItem);
   },
 };
 

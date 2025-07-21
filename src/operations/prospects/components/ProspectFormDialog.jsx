@@ -1,9 +1,11 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
+import { annotatorProvider } from '@/providers';
+import { AutoCompletePrediction } from '@bpartners/typescript-client';
 import PropTypes from 'prop-types';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BpFormField, BpNumberField } from '../../../common/components';
+import { BpAutoCompleteBackend, BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
 import ProspectDialogActions from './ProspectDialogActions';
@@ -37,7 +39,15 @@ export const ProspectFormDialog = props => {
       </DialogTitle>
       <DialogContent>
         <Stack spacing={1}>
-          <BpAutoComplete required style={{ width: '100%' }} name='address' label='Adresse' options={['1', '2']} />
+          <BpAutoCompleteBackend
+            required
+            style={{ width: '100%' }}
+            name='address'
+            label='Adresse'
+            fetcher={annotatorProvider.searchAddress}
+            getOptionLabel={e => e.description}
+            textFieldProps={{ variant: 'filled' }}
+          />
           <BpFormField required style={{ width: '100%' }} name='name' label='Nom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='email' type='email' label='Email' />

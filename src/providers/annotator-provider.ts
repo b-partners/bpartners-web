@@ -1,5 +1,5 @@
 import { AreaPictureAnnotation, CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
-import { areaPictureApi } from './api';
+import { addressAutocompletionApi, areaPictureApi } from './api';
 import { getCached } from './cache';
 
 interface GetAllAreaPicturesParams {
@@ -42,6 +42,11 @@ export const annotatorProvider = {
   async getAnnotationsPicture(pictureId: string) {
     const { accountId } = getCached.userInfo();
     const { data } = await areaPictureApi().getAreaPictureAnnotations(accountId, pictureId);
+    return data;
+  },
+  async searchAddress(query: string) {
+    const { accountId } = getCached.userInfo();
+    const { data } = await addressAutocompletionApi().autoCompleteAddress(query, accountId);
     return data;
   },
 };

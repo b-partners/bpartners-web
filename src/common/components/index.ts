@@ -1,5 +1,6 @@
 export * from './ArchiveBulkAction';
 export * from './AutocompleteBackend';
+export * from './BpAutoCompleteBackend';
 export * from './BPButton';
 export * from './BPConstruction';
 export * from './BpFormField';

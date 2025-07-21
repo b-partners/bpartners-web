@@ -78,6 +78,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { analyseRoof } = parseUrlParams();
   const shouldAnalyseRoof = analyseRoof === 'true';
 
+  const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
+
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
@@ -111,7 +113,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         <Box className='annotator-canvas-container' ref={containerRef}>
           <AnnotatorCanvas
             markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-            allowAnnotation={allowAnnotation}
+            allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
             width={width || '100%'}
             height={height || containerheight * 0.95}
             buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
