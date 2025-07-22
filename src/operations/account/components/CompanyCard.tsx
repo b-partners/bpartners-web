@@ -9,6 +9,7 @@ export const CompanyCard = () => {
   const record = useRecordContext();
   const fields = getCompanyFields(record);
   const accountForm = useAccountForm(record as any);
+  console.log('FIELDS:', fields);
 
   return (
     <FormProvider {...accountForm}>
