@@ -3,3 +3,4 @@ export * from './area-picture-fetcher';
 export * from './bank-disconnection-fetcher';
 export * from './polygon-marker-fetcher';
 export * from './prospect-fetcher';
+export * from './roof-analyse-queries';

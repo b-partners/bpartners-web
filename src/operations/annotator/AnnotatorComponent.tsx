@@ -1,4 +1,4 @@
-import { BPButton, BPLoader } from '@/common/components';
+import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
@@ -12,8 +12,7 @@ import { Box, Divider, Stack, SxProps, Typography } from '@mui/material';
 import { FC } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
-import { getNewPolygonColor } from './utils/annotation-colors';
-import { annotatorComponentStyle } from './utils/style';
+import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
@@ -146,7 +145,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
             </Typography>
           </Stack>
-          {shouldAnalyseRoof && <BPButton label='Analyser la toiture' />}
+          {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}
     </Box>

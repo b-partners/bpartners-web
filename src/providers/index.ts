@@ -12,6 +12,7 @@ export * from './calendar-event-provider';
 export * from './calendar-provider';
 export * from './customer-provider';
 export * from './data-provider';
+export * from './roof-analyse-provider';
 export * from './feedback-provider';
 export * from './file-provider';
 export * from './invoice-provider';

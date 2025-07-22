@@ -8,7 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
-import { ProspectFormDialog, ProspectFilterInput, Prospects } from './components';
+import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -72,7 +72,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
             zoomLevel: ZoomLevel.HOUSES_0,
           });
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
           );
           return;
         } catch {

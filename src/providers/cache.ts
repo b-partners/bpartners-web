@@ -17,6 +17,7 @@ const annotationsInfoItem = 'bp_annotations_info_item';
 const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
+const roofAnalyseIdItem = 'bp_roof_analyse_id';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -86,6 +87,10 @@ export const cache = {
     localStorage.setItem(apiKeyItem, apiKey);
     return apiKey;
   },
+  roofAnalyseId(roofAnalyseId: string) {
+    localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
+    return roofAnalyseId;
+  },
 };
 
 export const getCached = {
@@ -149,6 +154,9 @@ export const getCached = {
   },
   apiKey() {
     return localStorage.getItem(apiKeyItem);
+  },
+  roofAnalyseId() {
+    return localStorage.getItem(roofAnalyseIdItem);
   },
 };
 

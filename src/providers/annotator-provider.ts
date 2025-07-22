@@ -49,4 +49,19 @@ export const annotatorProvider = {
     const { data } = await addressAutocompletionApi().autoCompleteAddress(query, accountId);
     return data.map(({ description }) => description);
   },
+  async pointsToGeoPoints(body: any) {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      return await res.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  },
 };
