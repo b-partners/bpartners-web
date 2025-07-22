@@ -26,6 +26,7 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
     register,
     formState: { errors },
     setError,
+    getValues
   } = useFormContext();
   const record = useWatch();
   const [visibility, setVisibility] = useState(false);
@@ -53,7 +54,7 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
       {...customRegister}
       data-testid={`${name}-field-input`}
       type={type === 'password' ? passwordType : type}
-      value={record[name] || ''}
+      value={record[name] || getValues(name) || '' }
       InputProps={{
         endAdornment: type === 'password' && (
           <IconButton aria-label='toggle password visibility' onClick={toggleVisibility}>
