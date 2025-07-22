@@ -1,7 +1,7 @@
 import * as Icons from '@mui/icons-material';
 import { AutocompleteProps, IconButtonProps, SxProps, TextFieldProps } from '@mui/material';
 
-export interface BpAutoCompleteProps extends AutocompleteProps<any, any, any, any> {
+export interface BpAutoCompleteProps extends Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> {
   name: string;
   label: string;
 }

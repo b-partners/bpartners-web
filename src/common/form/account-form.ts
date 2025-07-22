@@ -11,7 +11,7 @@ const schema = z.object({
   }),
   revenueTargets: z.object({
     amountAttempted: requiredNumberRows(),
-  }), 
+  }),
   contactAddress: z.object({
     postalCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.postalCodeNotValid),
     city: requiredString(),
@@ -20,12 +20,12 @@ const schema = z.object({
   }),
   companyInfo: z.object({
     townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
-    tvaNumber: requiredNumberRows(), 
+    tvaNumber: requiredNumberRows(),
     socialCapital: requiredNumberRows(),
-    website: z.string(), 
+    website: z.string(),
   }),
   officialActivityName: requiredString(),
-  siren: requiredNumberRows(), 
+  siren: requiredNumberRows(),
 });
 
 type AccountFormType = z.infer<typeof schema>;

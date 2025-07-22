@@ -1,3 +1,14 @@
+export const businessActivitiesField = [
+  {
+    label: 'Activité principale',
+    name: 'businessActivities.primary',
+  },
+  {
+    label: 'Activité secondaire',
+    name: 'businessActivities.secondary',
+  },
+];
+
 export const getCompanyFields = (record: any) => {
   const latestTarget = record?.revenueTargets?.at(-1);
 
@@ -11,16 +22,6 @@ export const getCompanyFields = (record: any) => {
       label: 'Encaissement annuel à réaliser',
       value: latestTarget?.amountAttempted ? latestTarget.amountAttempted.toLocaleString() + ' €' : 'Objectif non défini',
       name: 'revenueTargets.amountAttempted',
-    },
-    {
-      label: 'Activité principale',
-      value: record?.businessActivities?.primary,
-      name: 'businessActivities.primary',
-    },
-    {
-      label: 'Activité secondaire',
-      value: record?.businessActivities?.secondary,
-      name: 'businessActivities.secondary',
     },
     {
       label: 'Code postal',
