@@ -35,6 +35,7 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
         onBlur={onBlur}
         onChange={handleChange}
         data-testid={`${name}-auto-complete`}
+        freeSolo
         filterOptions={allOptions => allOptions}
         renderInput={params => (
           <TextField
@@ -50,8 +51,9 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
                 params.InputProps.endAdornment
               ),
             }}
-            onBlur={undefined}
-            inputProps={{ ...params.inputProps, onBlur: undefined }}
+            inputProps={{
+              ...params.inputProps,
+            }}
             error={errors && !!errors[name]}
             value={textFieldValue}
             onChange={handleInputChange}

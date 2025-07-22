@@ -47,6 +47,6 @@ export const annotatorProvider = {
   async searchAddress(query: string) {
     const { accountId } = getCached.userInfo();
     const { data } = await addressAutocompletionApi().autoCompleteAddress(query, accountId);
-    return data;
+    return data.map(({ description }) => description);
   },
 };

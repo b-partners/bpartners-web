@@ -19,7 +19,6 @@ const getDialogTitle = (prospectName, isCreating) => {
 export const ProspectFormDialog = props => {
   const { open, close, prospect = {}, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
   const { name, status, comment } = prospect;
-
   const {
     setValue,
     formState: { errors },
@@ -45,7 +44,6 @@ export const ProspectFormDialog = props => {
             name='address'
             label='Adresse'
             fetcher={annotatorProvider.searchAddress}
-            getOptionLabel={e => e.description}
             textFieldProps={{ variant: 'filled' }}
           />
           <BpFormField required style={{ width: '100%' }} name='name' label='Nom du prospect' />
