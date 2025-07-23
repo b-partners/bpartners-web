@@ -18,7 +18,6 @@ export const CompanyCard = () => {
   const handleSubmit = accountForm.handleSubmit(
     formData => {
       updateBusinessJob(formData.businessActivities);
-      console.log(1);
       updateGlobalInformation({
         name: formData.name,
         siren: formData.siren,
@@ -26,7 +25,6 @@ export const CompanyCard = () => {
         officialActivityName: formData.officialActivityName,
         contactAddress: formData.contactAddress,
       });
-      console.log(2);
     },
     name => {
       console.log(name);

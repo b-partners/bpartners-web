@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FieldErrorMessage, requiredNumberRows, requiredString } from '../resolvers';
+import { FieldErrorMessage, requiredNumberRows, requiredString, requiredStringCustom } from '../resolvers';
 
 const schema = z.object({
   name: requiredString(),
@@ -9,9 +9,7 @@ const schema = z.object({
     primary: requiredString(),
     secondary: requiredString(),
   }),
-  revenueTargets: z.object({
-    amountAttempted: requiredNumberRows(),
-  }),
+  revenueTargets: z.custom(() => true),
   contactAddress: z.object({
     postalCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.postalCodeNotValid),
     city: requiredString(),
@@ -20,8 +18,8 @@ const schema = z.object({
   }),
   companyInfo: z.object({
     townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
-    tvaNumber: requiredNumberRows(),
-    socialCapital: requiredString(),
+    tvaNumber: requiredStringCustom(),
+    socialCapital: requiredStringCustom(),
     website: z.string(),
   }),
   officialActivityName: requiredString(),
