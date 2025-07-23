@@ -4,7 +4,7 @@ import { useAccountForm } from '@/common/form';
 import { Card, CardContent, Grid, Typography } from '@mui/material';
 import { useRecordContext } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
-import { useGetBusinessJob, useUpdateBusinessJob } from '../queries';
+import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFieldsCompany } from '../queries';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
 
 export const CompanyCard = () => {
@@ -13,8 +13,25 @@ export const CompanyCard = () => {
   const accountForm = useAccountForm(record as any);
   const { jobList } = useGetBusinessJob();
   const { isUpldateBusinessJobLoading, updateBusinessJob } = useUpdateBusinessJob();
+  const { isUpldateGlobalInformation, updateGlobalInformation } = useUpdateGlobalInformationFieldsCompany();
 
-  const handleSubmit = accountForm.handleSubmit(formData => updateBusinessJob(formData.businessActivities));
+  const handleSubmit = accountForm.handleSubmit(
+    formData => {
+      updateBusinessJob(formData.businessActivities);
+      console.log(1);
+      updateGlobalInformation({
+        name: formData.name,
+        siren: formData.siren,
+        initialCashFlow: formData.initialCashFlow,
+        officialActivityName: formData.officialActivityName,
+        contactAddress: formData.contactAddress,
+      });
+      console.log(2);
+    },
+    name => {
+      console.log(name);
+    }
+  );
 
   return (
     <FormProvider {...accountForm}>
@@ -35,7 +52,7 @@ export const CompanyCard = () => {
               </Grid>
             ))}
             <Grid item xs={12} sm={4}>
-              <BPButton label='Enregister' onClick={handleSubmit} isLoading={isUpldateBusinessJobLoading} />
+              <BPButton label='Enregister' onClick={handleSubmit} isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation} />
             </Grid>
           </Grid>
         </CardContent>

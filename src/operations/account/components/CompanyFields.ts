@@ -73,5 +73,10 @@ export const getCompanyFields = (record: any) => {
       value: record?.siren,
       name: 'siren',
     },
+    {
+      label: 'Trésorerie initial',
+      value: record?.initialCashFlow,
+      name: 'initialCashFlow',
+    },
   ];
 };

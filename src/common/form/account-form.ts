@@ -21,11 +21,12 @@ const schema = z.object({
   companyInfo: z.object({
     townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
     tvaNumber: requiredNumberRows(),
-    socialCapital: requiredNumberRows(),
+    socialCapital: requiredString(),
     website: z.string(),
   }),
   officialActivityName: requiredString(),
-  siren: requiredNumberRows(),
+  siren: requiredString(),
+  initialCashFlow: requiredNumberRows(),
 });
 
 type AccountFormType = z.infer<typeof schema>;
