@@ -21,7 +21,7 @@ export const getCompanyFields = (record: any) => {
     {
       label: 'Encaissement annuel à réaliser',
       value: latestTarget?.amountAttempted ? latestTarget.amountAttempted.toLocaleString() + ' €' : 'Objectif non défini',
-      name: 'revenueTargets.amountAttempted',
+      name: 'revenueTargets.'+(record?.revenueTargets?.length -1)+'.amountAttempted',
     },
     {
       label: 'Code postal',
@@ -77,6 +77,18 @@ export const getCompanyFields = (record: any) => {
       label: 'Trésorerie initial',
       value: record?.initialCashFlow,
       name: 'initialCashFlow',
+    },
+    {
+      label: 'Téléphone',
+      value: record?.companyInfo?.phone,
+      name: 'companyInfo.phone',
+      showOnEdit: true,
+    },
+        {
+      label: 'Email',
+      value: record?.companyInfo?.email,
+      name: 'companyInfo.email',
+      showOnEdit: true,
     },
   ];
 };

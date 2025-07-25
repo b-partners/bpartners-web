@@ -15,6 +15,7 @@ const schema = z.object({
     city: requiredString(),
     country: requiredString(),
     address: requiredString(),
+    prospectingPerimeter:	z.custom(() => true),
   }),
   companyInfo: z.object({
     townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
@@ -25,6 +26,7 @@ const schema = z.object({
   officialActivityName: requiredString(),
   siren: requiredString(),
   initialCashFlow: requiredNumberRows(),
+  
 });
 
 type AccountFormType = z.infer<typeof schema>;
