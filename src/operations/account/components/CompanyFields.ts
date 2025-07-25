@@ -14,19 +14,19 @@ export const getCompanyFields = (record: any) => {
 
   return [
     {
-      label: 'Raison sociale',
-      value: record?.name,
-      name: 'name',
+      label: 'Adresse',
+      value: record?.contactAddress?.address,
+      name: 'contactAddress.address',
     },
     {
       label: 'Encaissement annuel à réaliser',
       value: latestTarget?.amountAttempted ? latestTarget.amountAttempted.toLocaleString() + ' €' : 'Objectif non défini',
-      name: 'revenueTargets.'+(record?.revenueTargets?.length -1)+'.amountAttempted',
+      name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountAttempted',
     },
     {
-      label: 'Code postal',
-      value: record?.contactAddress?.postalCode,
-      name: 'contactAddress.postalCode',
+      label: 'Raison sociale',
+      value: record?.name,
+      name: 'name',
     },
     {
       label: 'Ville',
@@ -34,19 +34,9 @@ export const getCompanyFields = (record: any) => {
       name: 'contactAddress.city',
     },
     {
-      label: 'Pays',
-      value: record?.contactAddress?.country,
-      name: 'contactAddress.country',
-    },
-    {
-      label: 'Adresse',
-      value: record?.contactAddress?.address,
-      name: 'contactAddress.address',
-    },
-    {
-      label: 'Code commune de prospection',
-      value: record?.companyInfo?.townCode,
-      name: 'companyInfo.townCode',
+      label: 'Capital social',
+      value: record?.companyInfo?.socialCapital ? record.companyInfo.socialCapital.toLocaleString() + ' €' : 'Non renseigné',
+      name: 'companyInfo.socialCapital',
     },
     {
       label: 'Activité officielle',
@@ -54,19 +44,9 @@ export const getCompanyFields = (record: any) => {
       name: 'officialActivityName',
     },
     {
-      label: 'Numéro de TVA',
-      value: record?.companyInfo?.tvaNumber,
-      name: 'companyInfo.tvaNumber',
-    },
-    {
-      label: 'Capital social',
-      value: record?.companyInfo?.socialCapital ? record.companyInfo.socialCapital.toLocaleString() + ' €' : 'Non renseigné',
-      name: 'companyInfo.socialCapital',
-    },
-    {
-      label: 'Site web',
-      value: record?.companyInfo?.website,
-      name: 'companyInfo.website',
+      label: 'Code postal',
+      value: record?.contactAddress?.postalCode,
+      name: 'contactAddress.postalCode',
     },
     {
       label: 'SIREN',
@@ -74,9 +54,29 @@ export const getCompanyFields = (record: any) => {
       name: 'siren',
     },
     {
+      label: 'Numéro de TVA',
+      value: record?.companyInfo?.tvaNumber,
+      name: 'companyInfo.tvaNumber',
+    },
+    {
+      label: 'Code postal commune de prospection',
+      value: record?.companyInfo?.townCode,
+      name: 'companyInfo.townCode',
+    }, 
+    {
       label: 'Trésorerie initial',
       value: record?.initialCashFlow,
       name: 'initialCashFlow',
+    },
+    {
+      label: 'Site web',
+      value: record?.companyInfo?.website,
+      name: 'companyInfo.website',
+    },
+    {
+      label: 'Pays',
+      value: record?.contactAddress?.country,
+      name: 'contactAddress.country',
     },
     {
       label: 'Téléphone',
@@ -84,7 +84,7 @@ export const getCompanyFields = (record: any) => {
       name: 'companyInfo.phone',
       showOnEdit: true,
     },
-        {
+    {
       label: 'Email',
       value: record?.companyInfo?.email,
       name: 'companyInfo.email',

@@ -2,7 +2,7 @@ import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
 import { Edit } from '@mui/icons-material';
-import { Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useRecordContext } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
@@ -40,10 +40,12 @@ export const CompanyCard = () => {
     <FormProvider {...accountForm}>
       <Card className='card company-card'>
         <CardContent>
-          <Typography className='section-title-company'>Ma société</Typography>
-          <IconButton onClick={toggleEditMode}>
-            <Edit />
-          </IconButton>
+          <Box className='company-header'>
+            <Typography className='section-title-company'>Ma société</Typography>
+            <IconButton className={`buton-edit ${editMode ? 'active' : ''}`} onClick={toggleEditMode}>
+              <Edit />
+            </IconButton>
+          </Box>
           <Grid container spacing={2}>
             {editMode &&
               fields
@@ -74,15 +76,15 @@ export const CompanyCard = () => {
                 )}
               </Grid>
             ))}
-
-            <Grid item xs={12} sm={4}>
-              <BPButton
-                label='Enregister'
-                onClick={handleSubmit}
-                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider}
-              />
-            </Grid>
           </Grid>
+          <Box className='company-header'>
+                <BPButton
+                  label='Enregister'
+                  onClick={handleSubmit}
+                  isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider}
+                  className='save-information-button'
+                />
+                </Box>
         </CardContent>
       </Card>
     </FormProvider>
