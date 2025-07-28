@@ -9,6 +9,7 @@ import { calendar } from '@/operations/calendar';
 import { CalendarSync } from '@/operations/calendar/components';
 import { Configuration } from '@/operations/configurations';
 import { customers } from '@/operations/customers';
+import { Home } from '@/operations/home/Home';
 import invoice from '@/operations/invoice';
 import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
@@ -58,9 +59,11 @@ export const BpAdmin = () => {
   return (
     <Admin
       title='BIRDIA'
+      dashboard={Home}
       authProvider={authProvider}
       dataProvider={dataProvider as DataProvider}
       i18nProvider={polyglotI18nProvider(() => ({ ...frenchMessages, ...BpFrenchMessages }), 'fr')}
+      loginPage={false}
       theme={BP_THEME}
       layout={Layout}
     >
@@ -73,17 +76,15 @@ export const BpAdmin = () => {
       <Resource name='drafts-annotations' />
       <Resource name='calendar' {...calendar} />
       <CustomRoutes>
-        <Route path='/'>
-          <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
-          <Route path='/calendar-sync' element={<CalendarSync />} />
-          <Route path='/account/:id' element={<account.show />} />
-          <Route path='/configurations' element={<Configuration />} />
-          <Route path='/bank' element={<BankPage />} />
-          <Route path='/partners' element={<PartnersPage />} />
-          <Route path='/annotator' element={<Annotator />} />
-          <Route path='/error' element={<BPErrorPage />} />
-          <Route path='/homepage' element={<HomePage />} />
-        </Route>
+        <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
+        <Route path='/calendar-sync' element={<CalendarSync />} />
+        <Route path='/account/:id' element={<account.show />} />
+        <Route path='/configurations' element={<Configuration />} />
+        <Route path='/bank' element={<BankPage />} />
+        <Route path='/partners' element={<PartnersPage />} />
+        <Route path='/annotator' element={<Annotator />} />
+        <Route path='/error' element={<BPErrorPage />} />
+        <Route path='/homepage' element={<HomePage />} />
       </CustomRoutes>
     </Admin>
   );
