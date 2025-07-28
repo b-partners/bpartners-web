@@ -9,10 +9,12 @@ const schema = z.object({
     primary: requiredString(),
     secondary: requiredString(),
   }),
-  revenueTargets: z.array(z.object({
-    amountTarget: z.custom(() => true) .transform((value) => Number(value)),
-    year: z.custom(() => true),
-  })),
+  revenueTargets: z.array(
+    z.object({
+      amountTarget: z.custom(() => true).transform(value => Number(value)),
+      year: z.custom(() => true),
+    })
+  ),
   contactAddress: z.object({
     postalCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.postalCodeNotValid),
     city: requiredString(),
@@ -33,7 +35,7 @@ const schema = z.object({
   initialCashFlow: requiredNumberRows(),
   feedback: z.object({
     feedbackLink: requiredString(),
-  })
+  }),
 });
 
 type AccountFormType = z.infer<typeof schema>;

@@ -8,9 +8,9 @@ import { useRecordContext } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFieldsCompany } from '../queries';
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
+import { useUpdateFeedbackLink } from '../queries/feedback-query';
 import { useRevenueTargetsProvider } from '../queries/revenue-target-form-query';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
-import { useUpdateFeedbackLink } from '../queries/feedback-query';
 
 export const CompanyCard = () => {
   const record = useRecordContext();
@@ -88,7 +88,9 @@ export const CompanyCard = () => {
               <BPButton
                 label='Enregistrer'
                 onClick={handleSubmit}
-                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider || isUpdateFeedbackLink}
+                isLoading={
+                  isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider || isUpdateFeedbackLink
+                }
                 className='save-information-button'
               />
             </Box>
