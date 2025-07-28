@@ -20,8 +20,8 @@ export const getCompanyFields = (record: any) => {
     },
     {
       label: 'Encaissement annuel à réaliser',
-      value: latestTarget?.amountAttempted ? latestTarget.amountAttempted.toLocaleString() + ' €' : 'Objectif non défini',
-      name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountAttempted',
+      value: latestTarget?.amountTarget ? latestTarget.amountTarget.toLocaleString() + ' €' : 'Objectif non défini',
+      name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountTarget',
     },
     {
       label: 'Raison sociale',
@@ -77,6 +77,11 @@ export const getCompanyFields = (record: any) => {
       label: 'Pays',
       value: record?.contactAddress?.country,
       name: 'contactAddress.country',
+    },
+    {
+      label: 'Lien du feedback',
+      value: record?.feedback?.feedbackLink,
+      name: 'feedback.feedbackLink',
     },
     {
       label: 'Téléphone',

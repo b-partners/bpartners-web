@@ -10,6 +10,7 @@ import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFiel
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
 import { useRevenueTargetsProvider } from '../queries/revenue-target-form-query';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
+import { useUpdateFeedbackLink } from '../queries/feedback-query';
 
 export const CompanyCard = () => {
   const record = useRecordContext();
@@ -21,6 +22,7 @@ export const CompanyCard = () => {
   const { isaccountHolderProvider, accountHolderProvider } = useAccountHolderProviderFieldsCompany();
   const [editMode, setEditMode] = useState(false);
   const { isRevenueTargetsProvider, updateRevenueTargets } = useRevenueTargetsProvider();
+  const { isUpdateFeedbackLink, updateFeedbackLink } = useUpdateFeedbackLink();
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
@@ -35,7 +37,8 @@ export const CompanyCard = () => {
       contactAddress: formData.contactAddress,
     });
     accountHolderProvider([formData.companyInfo]);
-    updateRevenueTargets(formData.revenueTargets);
+    updateRevenueTargets([formData.revenueTargets.at(-1)]);
+    updateFeedbackLink(formData.feedback?.feedbackLink);
   });
   console.log(record);
 
@@ -85,7 +88,7 @@ export const CompanyCard = () => {
               <BPButton
                 label='Enregistrer'
                 onClick={handleSubmit}
-                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider}
+                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider || isUpdateFeedbackLink}
                 className='save-information-button'
               />
             </Box>

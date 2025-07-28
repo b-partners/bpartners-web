@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FieldErrorMessage, requiredNumberRows, requiredString, requiredStringCustom } from '../resolvers';
+import { FieldErrorMessage, phoneValidator, requiredNumberRows, requiredString, requiredStringCustom } from '../resolvers';
 
 const schema = z.object({
   name: requiredString(),
@@ -9,7 +9,10 @@ const schema = z.object({
     primary: requiredString(),
     secondary: requiredString(),
   }),
-  revenueTargets: z.custom(() => true),
+  revenueTargets: z.array(z.object({
+    amountTarget: z.custom(() => true) .transform((value) => Number(value)),
+    year: z.custom(() => true),
+  })),
   contactAddress: z.object({
     postalCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.postalCodeNotValid),
     city: requiredString(),
@@ -22,10 +25,15 @@ const schema = z.object({
     tvaNumber: requiredStringCustom(),
     socialCapital: requiredStringCustom(),
     website: z.string(),
+    phone: requiredString().refine(phoneValidator, FieldErrorMessage.accountPhone),
+    email: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
   }),
   officialActivityName: requiredString(),
   siren: requiredString(),
   initialCashFlow: requiredNumberRows(),
+  feedback: z.object({
+    feedbackLink: requiredString(),
+  })
 });
 
 type AccountFormType = z.infer<typeof schema>;
