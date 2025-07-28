@@ -72,7 +72,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
             zoomLevel: ZoomLevel.HOUSES_0,
           });
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
+            `/roof-analyse?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
           );
           return;
         } catch {

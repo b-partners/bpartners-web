@@ -4,3 +4,4 @@ export * from './geojson-mapper';
 export * from './object-mapper';
 export * from './polygon-mapper';
 export * from './product-mapper';
+export * from './roof-analyse-mapper';

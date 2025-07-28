@@ -60,8 +60,8 @@ const paramIsTemporaryPassword = 't';
 const paramUsername = 'u';
 const paramTemporaryPassword = 'p';
 
-const toBase64 = (param: string) => btoa(param);
-const fromBase64 = (param: string) => atob(param);
+export const toBase64 = (param: string) => btoa(param);
+export const fromBase64 = (param: string) => atob(param);
 
 export const authProvider = {
   // --------------------- ra functions -------------------------------------------

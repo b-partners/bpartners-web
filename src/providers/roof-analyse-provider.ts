@@ -1,4 +1,5 @@
 import { v4 } from 'uuid';
+import { getApiKey } from './auth-provider';
 import { cache, getCached } from './cache';
 
 export interface RooferInformations {
@@ -39,17 +40,9 @@ const getGeoJsonTemlate = (layers: string, zoneName: string, emailReceiver?: str
   };
 };
 
-const getProcessDetectionUrl = (withoutImage = false) => {
+const getProcessDetectionUrl = () => {
   const detectionId = getCached.roofAnalyseId();
-  let base = `${baseUrl}/detections/${detectionId}`;
-
-  if (!withoutImage) {
-    base += '/roofer';
-  } else {
-    base += '/sync';
-  }
-
-  return base;
+  return `${baseUrl}/detections/${detectionId}/sync`;
 };
 
 /**
@@ -70,7 +63,8 @@ export const initializeRoofAnalyse = async (
 ) => {
   const cachedDetectionId = getCached.roofAnalyseId();
   const detectionId = withoutImage !== true ? cachedDetectionId || v4() : v4();
-  const apiKey = getCached.apiKey();
+  const apiKey = await getApiKey();
+  
   cache.roofAnalyseId(detectionId);
 
   const geoJson = getGeoJsonTemlate(
@@ -94,7 +88,7 @@ export const initializeRoofAnalyse = async (
       : []
   );
 
-  const data = await fetch(getProcessDetectionUrl(withoutImage), {
+  const data = await fetch(getProcessDetectionUrl(), {
     headers: { 'x-api-key': apiKey || '', 'content-type': 'application/json' },
     method: 'POST',
     body: JSON.stringify(geoJson),

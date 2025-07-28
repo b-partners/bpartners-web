@@ -1,6 +1,6 @@
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
-import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
@@ -9,7 +9,7 @@ import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Divider, Stack, SxProps, Typography } from '@mui/material';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor } from './utils';
@@ -26,6 +26,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   width,
   height,
 }) => {
+  const { data } = useGeojsonQueryResult();
+
   const { address } = useWrappedSearchParams(['address']);
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
@@ -41,6 +43,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     otherLayers,
   } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
   const { ref: containerRef, height: containerheight } = useGetElementSize([filename]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const handleZoomLvl = async (e: any) => {
     mutateAreaPictureDetail({ zoomLevel: e.target.value });
@@ -145,7 +151,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
             </Typography>
           </Stack>
-          {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsMutated} polygons={polygons} />}
+          {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}
     </Box>
