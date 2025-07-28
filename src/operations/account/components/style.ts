@@ -85,11 +85,11 @@ export const AccountStyle: SxProps = {
   '& .company-card': {
     mt: 3,
   },
-  '& .company-header':{
+  '& .company-header': {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    mb: 4
+    mb: 4,
   },
   '& .section-title-company': {
     backgroundColor: PALETTE_COLORS.pine,
@@ -104,18 +104,18 @@ export const AccountStyle: SxProps = {
     width: '500px',
   },
   '& .buton-edit': {
-  position: 'relative',
-  right: 0,
-  transition: 'background-color 0.3s ease',
-},
-'& .buton-edit.active': {
-  backgroundColor: PALETTE_COLORS.neon_orange, 
-  color: '#fff', 
-},
+    position: 'relative',
+    right: 0,
+    transition: 'background-color 0.3s ease',
+  },
+  '& .buton-edit.active': {
+    backgroundColor: PALETTE_COLORS.neon_orange,
+    color: '#fff',
+  },
   '& .MuiOutlinedInput-root': {
     borderRadius: '12px',
   },
-  '& .save-information-button':{
+  '& .save-information-button': {
     backgroundColor: PALETTE_COLORS.neon_orange,
     color: 'white',
     textAlign: 'center',

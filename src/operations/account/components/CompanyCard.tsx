@@ -63,7 +63,7 @@ export const CompanyCard = () => {
                 .filter(({ name, showOnEdit }) => !!name && !showOnEdit)
                 .map(({ name, label }) => (
                   <Grid item xs={12} sm={4} key={name + label}>
-                    <Typography sx={{fontWeight: 'bold', fontSize: '1,3rem'}}>{label} </Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>{accountForm.getValues(name || ('' as any)) || 'Non renseigné'} </Typography>
                   </Grid>
                 ))}
@@ -73,7 +73,7 @@ export const CompanyCard = () => {
                   <BpAutoComplete fullWidth {...values} options={jobList} />
                 ) : (
                   <>
-                    <Typography sx={{fontWeight: 'bold', fontSize: '1,3rem'}}>{values.label} </Typography>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{values.label} </Typography>
                     <Typography>{accountForm.getValues(values.name || ('' as any))} </Typography>
                   </>
                 )}
