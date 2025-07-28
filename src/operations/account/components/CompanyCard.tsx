@@ -8,6 +8,7 @@ import { useRecordContext } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFieldsCompany } from '../queries';
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
+import { useRevenueTargetsProvider } from '../queries/revenue-target-form-query';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
 
 export const CompanyCard = () => {
@@ -19,6 +20,7 @@ export const CompanyCard = () => {
   const { isUpldateGlobalInformation, updateGlobalInformation } = useUpdateGlobalInformationFieldsCompany();
   const { isaccountHolderProvider, accountHolderProvider } = useAccountHolderProviderFieldsCompany();
   const [editMode, setEditMode] = useState(false);
+  const { isRevenueTargetsProvider, updateRevenueTargets } = useRevenueTargetsProvider();
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
@@ -33,6 +35,7 @@ export const CompanyCard = () => {
       contactAddress: formData.contactAddress,
     });
     accountHolderProvider([formData.companyInfo]);
+    updateRevenueTargets(formData.revenueTargets);
   });
   console.log(record);
 
@@ -60,7 +63,7 @@ export const CompanyCard = () => {
                 .filter(({ name, showOnEdit }) => !!name && !showOnEdit)
                 .map(({ name, label }) => (
                   <Grid item xs={12} sm={4} key={name + label}>
-                    <Typography>{label} </Typography>
+                    <Typography sx={{fontWeight: 'bold', fontSize: '1,3rem'}}>{label} </Typography>
                     <Typography>{accountForm.getValues(name || ('' as any)) || 'Non renseigné'} </Typography>
                   </Grid>
                 ))}
@@ -70,21 +73,23 @@ export const CompanyCard = () => {
                   <BpAutoComplete fullWidth {...values} options={jobList} />
                 ) : (
                   <>
-                    <Typography>{values.label} </Typography>
+                    <Typography sx={{fontWeight: 'bold', fontSize: '1,3rem'}}>{values.label} </Typography>
                     <Typography>{accountForm.getValues(values.name || ('' as any))} </Typography>
                   </>
                 )}
               </Grid>
             ))}
           </Grid>
-          <Box className='company-header'>
-                <BPButton
-                  label='Enregister'
-                  onClick={handleSubmit}
-                  isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider}
-                  className='save-information-button'
-                />
-                </Box>
+          {editMode && (
+            <Box className='company-header'>
+              <BPButton
+                label='Enregistrer'
+                onClick={handleSubmit}
+                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider}
+                className='save-information-button'
+              />
+            </Box>
+          )}
         </CardContent>
       </Card>
     </FormProvider>
