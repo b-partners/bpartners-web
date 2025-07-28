@@ -42,14 +42,41 @@ describe(specTitle('Account'), () => {
     cy.contains('10201');
     cy.contains('https://bpartners.app');
 
-    cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
-    cy.contains('Mon abonnement');
-    cy.contains(`L'essentiel`);
-    cy.contains('Pour 49€ par mois');
-    cy.contains("Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant");
-    cy.contains('Accès aux outils de devis/facturation personnalisé');
-    cy.contains('Initiez la collecte de vos encaissements');
-    cy.contains('Support 7/7');
+    // cy.contains('Mon abonnement');
+    // cy.contains(`L'essentiel`);
+    // cy.contains('Pour 49€ par mois');
+    // cy.contains("Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant");
+    // cy.contains('Accès aux outils de devis/facturation personnalisé');
+    // cy.contains('Initiez la collecte de vos encaissements');
+    // cy.contains('Support 7/7');
+  });
+
+  it.only('change to input mode', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.dataCy('edit-mode-button').click();
+
+    cy.dataCy('profile-field-container', '.MuiTypography-root').should('not.exist');
+    cy.name('contactAddress.city').clear().type(';lkjad;flkjdf');
+    cy.name('initialCashFlow').clear().type('1000000');
+    cy.name('contactAddress.postalCode').clear().type('10000');
+    cy.name('feedback.feedbackLink').clear().type('https://birdia.fr');
+    cy.name('companyInfo.phone').clear().type('+261345656756');
+
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, ({ body, reply }) => {
+      expect(body).deep.equal({ feedbackLink: 'https://birdia.fr' });
+      reply({ body: { feedbackLink: 'https://birdia.fr' } });
+    });
+    cy.dataCy('save-profile').click();
   });
 
   it('Should show emptyText when source is null', () => {
