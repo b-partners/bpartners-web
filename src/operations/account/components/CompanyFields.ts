@@ -22,6 +22,7 @@ export const getCompanyFields = (record: any) => {
       label: 'Encaissement annuel à réaliser',
       value: latestTarget?.amountTarget ? latestTarget.amountTarget.toLocaleString() + ' €' : 'Objectif non défini',
       name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountTarget',
+      isMoney: true,
     },
     {
       label: 'Raison sociale',
@@ -37,6 +38,7 @@ export const getCompanyFields = (record: any) => {
       label: 'Capital social',
       value: record?.companyInfo?.socialCapital ? record.companyInfo.socialCapital.toLocaleString() + ' €' : 'Non renseigné',
       name: 'companyInfo.socialCapital',
+      isMoney: true,
     },
     {
       label: 'Activité officielle',
@@ -67,6 +69,7 @@ export const getCompanyFields = (record: any) => {
       label: 'Trésorerie initial',
       value: record?.initialCashFlow,
       name: 'initialCashFlow',
+      isMoney: true,
     },
     {
       label: 'Site web',

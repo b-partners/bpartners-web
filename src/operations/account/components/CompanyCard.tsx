@@ -1,6 +1,7 @@
 import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
+import { prettyPrintMoney } from '@/common/utils';
 import { Edit } from '@mui/icons-material';
 import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -40,15 +41,14 @@ export const CompanyCard = () => {
     updateRevenueTargets([formData.revenueTargets.at(-1)]);
     updateFeedbackLink(formData.feedback?.feedbackLink);
   });
-  console.log(record);
 
   return (
     <FormProvider {...accountForm}>
       <Card className='card company-card'>
-        <CardContent>
+        <CardContent data-cy='profile-field-container'>
           <Box className='company-header'>
             <Typography className='section-title-company'>Ma société</Typography>
-            <IconButton className={`buton-edit ${editMode ? 'active' : ''}`} onClick={toggleEditMode}>
+            <IconButton data-cy='edit-mode-button' className={`buton-edit ${editMode ? 'active' : ''}`} onClick={toggleEditMode}>
               <Edit />
             </IconButton>
           </Box>
@@ -64,10 +64,13 @@ export const CompanyCard = () => {
             {!editMode &&
               fields
                 .filter(({ name, showOnEdit }) => !!name && !showOnEdit)
-                .map(({ name, label }) => (
+                .map(({ name, label, isMoney }) => (
                   <Grid item xs={12} sm={4} key={name + label}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
-                    <Typography>{accountForm.getValues(name || ('' as any)) || 'Non renseigné'} </Typography>
+                    <Typography>
+                      {isMoney && prettyPrintMoney(Number(accountForm.getValues(name || ('' as any)) || '0'))}
+                      {(!isMoney && accountForm.getValues(name || ('' as any))) || 'Non renseigné'}
+                    </Typography>
                   </Grid>
                 ))}
             {businessActivitiesField.map(values => (
@@ -86,6 +89,7 @@ export const CompanyCard = () => {
           {editMode && (
             <Box className='company-header'>
               <BPButton
+                data-cy='save-profile'
                 label='Enregistrer'
                 onClick={handleSubmit}
                 isLoading={
