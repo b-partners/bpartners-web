@@ -1,40 +1,41 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FieldErrorMessage, phoneValidator, requiredNumberRows, requiredString, requiredStringCustom } from '../resolvers';
+import { FieldErrorMessage, phoneValidator, requiredNumberRows, requiredStringCustom } from '../resolvers';
+import { toMinors } from '../utils';
 
 const schema = z.object({
-  name: requiredString(),
+  name: requiredStringCustom(),
   businessActivities: z.object({
-    primary: requiredString(),
-    secondary: requiredString(),
+    primary: requiredStringCustom(),
+    secondary: requiredStringCustom(),
   }),
   revenueTargets: z.array(
     z.object({
-      amountTarget: z.custom(() => true).transform(value => Number(value)),
+      amountTarget: z.custom(() => true).transform(value => toMinors(Number(value))),
       year: z.custom(() => true),
     })
   ),
   contactAddress: z.object({
-    postalCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.postalCodeNotValid),
-    city: requiredString(),
-    country: requiredString(),
-    address: requiredString(),
+    postalCode: requiredStringCustom().refine(value => value.length === 5, { message: FieldErrorMessage.postalCodeNotValid }),
+    city: requiredStringCustom(),
+    country: requiredStringCustom(),
+    address: requiredStringCustom(),
     prospectingPerimeter: z.custom(() => true),
   }),
   companyInfo: z.object({
-    townCode: requiredString().refine(value => value.length === 5, FieldErrorMessage.townCodeNotValid),
+    townCode: requiredStringCustom().refine(value => value.length === 5, { message: FieldErrorMessage.townCodeNotValid }),
     tvaNumber: requiredStringCustom(),
-    socialCapital: requiredStringCustom(),
+    socialCapital: requiredStringCustom().transform(value => toMinors(Number(value))),
     website: z.string(),
-    phone: requiredString().refine(phoneValidator, FieldErrorMessage.accountPhone),
+    phone: requiredStringCustom().refine(phoneValidator, FieldErrorMessage.accountPhone),
     email: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
   }),
-  officialActivityName: requiredString(),
-  siren: requiredString(),
-  initialCashFlow: requiredNumberRows(),
+  officialActivityName: requiredStringCustom(),
+  siren: requiredStringCustom(),
+  initialCashFlow: requiredNumberRows().transform(value => toMinors(Number(value))),
   feedback: z.object({
-    feedbackLink: requiredString(),
+    feedbackLink: requiredStringCustom(),
   }),
 });
 
