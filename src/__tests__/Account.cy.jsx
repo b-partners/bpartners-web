@@ -52,7 +52,7 @@ describe(specTitle('Account'), () => {
   });
 
   //Block for user card
-  it.only('is displayed on user card', () => {
+  it('is displayed on user card', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
@@ -68,10 +68,12 @@ describe(specTitle('Account'), () => {
     cy.contains('numer@madagascar.com');
     cy.contains('11 11 11');
 
+    cy.dataCy('input-logo').click();
+    cy.intercept('GET',  `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
   });
 
 
-  it('change to input mode', () => {
+  it.only('change to input mode', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');

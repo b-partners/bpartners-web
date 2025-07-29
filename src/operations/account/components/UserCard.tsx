@@ -14,7 +14,7 @@ export const UserCard = () => {
   return (
     <Card className='card card-user'>
       <CardContent>
-        <Box className='user-header'>
+        <Box className='user-header' data-cy='input-logo'>
           <LogoShowLayout></LogoShowLayout>
 
           <Box className='container-typo-user'>
