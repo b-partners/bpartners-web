@@ -1,4 +1,3 @@
-import { BP_COLOR } from '@/bp-theme';
 import { SmallAvatar } from '@/common/components/SmallAvatar';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { getMimeType, printError } from '@/common/utils';
