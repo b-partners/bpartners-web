@@ -1,5 +1,6 @@
 import { BP_COLOR } from '@/bp-theme';
 import { SmallAvatar } from '@/common/components/SmallAvatar';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { getMimeType, printError } from '@/common/utils';
 import { cache, fileProvider, getAccountLogoUrl, getCached } from '@/providers';
 import { FileType } from '@bpartners/typescript-client';
@@ -10,7 +11,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 import { ACCOUNT_HOLDER_STYLE } from '../style';
-import { PALETTE_COLORS } from '@/common/config/theme';
 
 export const LogoShowLayout = () => {
   const notify = useNotify();
