@@ -10,6 +10,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { v4 as uuid } from 'uuid';
 import { ACCOUNT_HOLDER_STYLE } from '../style';
+import { PALETTE_COLORS } from '@/common/config/theme';
 
 export const LogoShowLayout = () => {
   const notify = useNotify();
@@ -68,7 +69,7 @@ export const LogoShowLayout = () => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           badgeContent={
             <SmallAvatar alt='PhotoCamera'>
-              <PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />
+              <PhotoCameraIcon sx={{ color: PALETTE_COLORS.pine }} />
             </SmallAvatar>
           }
         >

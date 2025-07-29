@@ -69,7 +69,7 @@ export const CompanyCard = () => {
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>
                       {isMoney && prettyPrintMoney(Number(accountForm.getValues(name || ('' as any)) || '0'))}
-                      {(!isMoney && accountForm.getValues(name || ('' as any))) || 'Non renseigné'}
+                      {(!isMoney && accountForm.getValues(name || ('Non renseigné' as any)))}
                     </Typography>
                   </Grid>
                 ))}
