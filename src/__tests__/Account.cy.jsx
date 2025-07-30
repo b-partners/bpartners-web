@@ -155,11 +155,11 @@ describe(specTitle('Account'), () => {
       expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
       req.reply(accountHolders1[0]);
     }).as('updateAccountHolder');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
-      const response = { ...accountHolders1[0] };
-      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
-      req.reply({ body: response });
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, req => {
+      const newBusinessActivity = { primary: 'Armurier', secondary: 'Barbier' };
+      expect(req.body).to.deep.eq(newBusinessActivity);
+      newAccountHolder.businessActivities = newBusinessActivity;
+      req.reply(newAccountHolder);
     });
     const newRevenueTargets = [{ amountTarget: (150000), year: 2021 }];
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
