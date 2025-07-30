@@ -5,7 +5,6 @@ import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
-import { date } from 'zod';
 
 const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
 
