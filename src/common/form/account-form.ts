@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FieldErrorMessage, phoneValidator, requiredNumberRows, requiredStringCustom } from '../resolvers';
+import { FieldErrorMessage, phoneValidator, requiredStringCustom } from '../resolvers';
 import { toMinors } from '../utils';
 
 const schema = z.object({
@@ -33,7 +33,7 @@ const schema = z.object({
   }),
   officialActivityName: requiredStringCustom(),
   siren: requiredStringCustom(),
-  initialCashFlow: requiredNumberRows().transform(value => toMinors(Number(value))),
+  initialCashFlow: requiredStringCustom().transform(value => toMinors(Number(value))),
   feedback: z.object({
     feedbackLink: requiredStringCustom(),
   }),

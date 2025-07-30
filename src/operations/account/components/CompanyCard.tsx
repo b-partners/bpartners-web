@@ -76,7 +76,7 @@ export const CompanyCard = () => {
             {businessActivitiesField.map(values => (
               <Grid item xs={12} sm={4} key={JSON.stringify(values)}>
                 {editMode ? (
-                  <BpAutoComplete fullWidth {...values} options={jobList} />
+                  <BpAutoComplete fullWidth data-cy={values['data-cy']} {...values} options={jobList} />
                 ) : (
                   <>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{values.label} </Typography>

@@ -2,10 +2,12 @@ export const businessActivitiesField = [
   {
     label: 'Activité principale',
     name: 'businessActivities.primary',
+    'data-cy': 'primary-activity-select',
   },
   {
     label: 'Activité secondaire',
     name: 'businessActivities.secondary',
+    'data-cy': 'secondary-activity-select',
   },
 ];
 

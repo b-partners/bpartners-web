@@ -5,6 +5,7 @@ import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { date } from 'zod';
 
 const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
 
@@ -73,7 +74,7 @@ describe(specTitle('Account'), () => {
   });
 
 
-  it.only('change to input mode', () => {
+  it('change to input mode', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
@@ -126,7 +127,7 @@ describe(specTitle('Account'), () => {
     cy.contains('VIDE');
   });
 
-  it('Change general informations', () => {
+  it.only('Check info edit mode', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
@@ -136,15 +137,14 @@ describe(specTitle('Account'), () => {
         name: 'Numer_01',
         siren: '1001',
         officialActivityName: 'Activité_officielle',
-        initialCashFlow: 19000000,
+        initialCashFlow: 190000,
         contactAddress: {
           address: '40 Rue de la liberté',
           city: 'Paris',
           country: 'France',
-          postalCode: 12032,
+          postalCode: '12032',
         },
       };
-
       expect(req.body.name).to.deep.eq(newGlobalInfo.name);
       expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
       expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
@@ -155,35 +155,139 @@ describe(specTitle('Account'), () => {
       expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
       req.reply(accountHolders1[0]);
     }).as('updateAccountHolder');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      const response = { ...accountHolders1[0] };
+      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      req.reply({ body: response });
+    });
+    const newRevenueTargets = [{ amountTarget: (150000), year: 2021 }];
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
+      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
+      const response = { ...accountHolders1[0] };
+      response.revenueTargets = newRevenueTargets;
+      req.reply(response);
+    }).as('updateRevenueTargets');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
+      expect(req.body).eql({ feedbackLink: validLink });
+      req.reply(accountHoldersFeedbackLink);
+    }).as('configuration');
 
     cy.mount(<App />);
-
+    cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
 
-    cy.get('[name="account"]').click();
+    cy.contains('Ma société');
 
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Édition de mon compte');
-    cy.contains('Activité');
-    cy.contains('Informations sur la société');
+    cy.dataCy('edit-mode-button').click();
 
-    cy.get('[name="name"]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('[name="name"]').type('Numer_01');
-    cy.get('[name="siren"]').clear().type(1001);
-    cy.get('[name="officialActivityName"]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('[name="officialActivityName"]').type('Activité_officielle');
-    cy.get('[name="initialCashflow"]').clear();
-    cy.get('[name="initialCashflow"]').type(190000);
-    cy.get('[name="address"]').clear().type('40 Rue de la liberté');
-    cy.get('[name="city"]').clear().type('Paris');
-    cy.get('[name="country"]').clear().type('France');
-    cy.get('[name="postalCode"]').clear().type(12032);
+    cy.dataCy('profile-field-container', '.MuiTypography-root').should('not.exist');
 
-    cy.get('form [name="submitGeneralInfo"]').click();
-    cy.wait('@updateAccountHolder');
-    cy.contains('Changement enregistré');
+    //Field Address
+    cy.name('contactAddress.address').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Adresse');
+    cy.name('contactAddress.address').type('40 Rue de la liberté');
+
+    //Field revenue targets
+    cy.name('revenueTargets.1.amountTarget').clear().type('1500');
+    cy.contains('Encaissement annuel à réaliser');
+
+    // Field name
+    cy.name('name').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Raison sociale');
+    cy.name('name').type('Numer_01');
+
+    //Field city
+    cy.name('contactAddress.city').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Ville');
+    cy.name('contactAddress.city').type('Paris');
+
+    //Field social capital
+    cy.name('companyInfo.socialCapital').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Capital social');
+    cy.name('companyInfo.socialCapital').type('100000');
+
+    //Field official activity name
+    cy.name('officialActivityName').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Activité officielle');
+    cy.name('officialActivityName').type('Activité_officielle');
+
+    //Field postal code
+    cy.name('contactAddress.postalCode').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Code postal');
+    cy.name('contactAddress.postalCode').type('12032');
+
+    //Field siren
+    cy.name('siren').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('SIREN');
+    cy.name('siren').type('1001');
+
+    //Field TVA
+    cy.name('companyInfo.tvaNumber').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Numéro de TVA');
+    cy.name('companyInfo.tvaNumber').type('12345678901234');
+
+    //Field town code
+    cy.name('companyInfo.townCode').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Code postal commune de prospection');
+    cy.name('companyInfo.townCode').type('75001');
+
+    //Field initial cash flow
+    cy.name('initialCashFlow').clear().type('1900');
+    cy.contains('Trésorerie initial');
+
+    //Field web site
+    cy.name('companyInfo.website').clear().type('www.example.com');
+    cy.contains('Site web');
+
+    //Field country
+    cy.name('contactAddress.country').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Pays');
+    cy.name('contactAddress.country').type('France');
+
+    //Field feddback link
+    cy.name('feedback.feedbackLink').clear().type('https://birdia.fr');
+    cy.contains('Lien du feedback');
+
+    //Field phone
+    cy.name('companyInfo.phone').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Téléphone');
+    cy.name('companyInfo.phone').type('+261345656756');
+
+    //Field email
+    cy.name('companyInfo.email').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Email');
+    cy.name('companyInfo.email').type('info@birdia.fr');
+
+    //Field primary activity
+    cy.dataCy('primary-activity-select').click();
+    cy.get('[role="option"]').contains('Barbier').click();
+    cy.contains('Activité principale');
+
+    //Field secondary activity
+    cy.dataCy('secondary-activity-select').click();
+    cy.get('[role="option"]').contains('Barbier').click();
+    cy.contains('Activité secondaire');
+
+    //Interception de la requête
+
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, ({ body, reply }) => {
+      expect(body).deep.equal({ feedbackLink: 'https://birdia.fr' });
+      reply({ body: { feedbackLink: 'https://birdia.fr' } });
+    });
+    cy.dataCy('save-profile').click();
   });
 
   it('Change business Activity', () => {
