@@ -1,5 +1,5 @@
 import { accountHolderProvider } from '@/providers';
-import { FormControlLabel, FormControlLabelProps, FormGroup, Switch} from '@mui/material';
+import { FormControlLabel, FormControlLabelProps, FormGroup, Switch } from '@mui/material';
 import { FC, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { SubjectToVatSwitchProps } from './types';
