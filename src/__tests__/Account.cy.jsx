@@ -6,8 +6,6 @@ import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, 
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
 
-const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
-
 describe(specTitle('Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
