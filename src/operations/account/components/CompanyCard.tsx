@@ -81,7 +81,7 @@ export const CompanyCard = () => {
                 ) : (
                   <>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{values.label} </Typography>
-                    <Typography>{accountForm.getValues(values.name || ('' as any))} </Typography>
+                    <Typography>{accountForm.getValues(values.name || ('Non renseigné' as any))} </Typography>
                   </>
                 )}
               </Grid>

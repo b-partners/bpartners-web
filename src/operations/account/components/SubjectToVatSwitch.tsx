@@ -1,5 +1,5 @@
 import { accountHolderProvider } from '@/providers';
-import { FormControlLabel, FormControlLabelProps, FormGroup, Switch } from '@mui/material';
+import { FormControlLabel, FormControlLabelProps, FormGroup, Switch, TextField, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { SubjectToVatSwitchProps } from './types';
@@ -23,6 +23,7 @@ export const SubjectToVatSwitch: FC<SubjectToVatSwitchProps> = ({ data }) => {
   return (
     <FormGroup>
       <FormControlLabel
+        data-cy='companyInfo-subjectToVatSwitch'
         control={<Switch disabled={isLoading} checked={data?.companyInfo?.isSubjectToVat} onChange={handleChange} />}
         label={data?.companyInfo?.isSubjectToVat ? 'Oui' : 'Non'}
       />
