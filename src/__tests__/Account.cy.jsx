@@ -33,13 +33,13 @@ describe(specTitle('Account'), () => {
     cy.wait('@logoUpload');
     cy.contains('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.');
 
-    //Informations 
+    //Informations
     cy.contains('last Name 1');
     cy.contains('numer@madagascar.com');
     cy.contains('11 11 11');
   });
 
-  //OK 
+  //OK
   it('Check info edit mode', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -75,7 +75,7 @@ describe(specTitle('Account'), () => {
       newAccountHolder.businessActivities = newBusinessActivity;
       req.reply(newAccountHolder);
     });
-    const newRevenueTargets = [{ amountTarget: (150000), year: 2021 }];
+    const newRevenueTargets = [{ amountTarget: 150000, year: 2021 }];
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
       expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
       const response = { ...accountHolders1[0] };
@@ -212,69 +212,132 @@ describe(specTitle('Account'), () => {
     cy.dataCy('save-profile').click();
   });
 
-    //OK
-    it('Check full typography', () => {
-      cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-      cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-      cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-      cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-  
-      cy.mount(<App />);
-  
-      cy.get('[name="account"]').click();
-  
-      cy.wait('@getAccountHolder1');
-  
-      cy.contains('Adresse');
-      cy.contains('6 rue Paul Langevin');
-      cy.contains('Ville');
-      cy.contains('Ivandry');
-      cy.contains('Code postal');
-      cy.contains('101');
-      cy.contains('Pays');
-      cy.contains('Madagascar');
-      cy.contains('Activité secondaire');
-      cy.contains('activité secondaire');
-      cy.contains('Encaissement annuel à réaliser');
-      cy.contains('120000,00 €');
-      cy.contains('Capital social');
-      cy.contains('1000,00 €');
-      cy.contains('SIREN');
-      cy.contains('Siren');
-      cy.contains('Trésorerie initial');
-      cy.contains('0,00 €');
-      cy.contains('Lien du feedback');
-      cy.contains('Micro-entreprise exonérée de TVA');
-      cy.contains('Raison sociale');
-      cy.contains('Numer');
-      cy.contains('Activité officielle');
-      cy.contains('Activité officielle');
-      cy.contains('Numéro de TVA');
-      cy.contains('123');
-      cy.contains('Site web');
-      cy.contains('https://bpartners.app');
-      cy.contains('Activité principale');
-      cy.contains('Activité principale');
-    });
+  //OK
+  it('Check full typography', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
 
-    //OK
-    it('Check full typography for Subscription', () => {
-      cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-      cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-      cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-      cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.mount(<App />);
+
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Adresse');
+    cy.contains('6 rue Paul Langevin');
+    cy.contains('Ville');
+    cy.contains('Ivandry');
+    cy.contains('Code postal');
+    cy.contains('101');
+    cy.contains('Pays');
+    cy.contains('Madagascar');
+    cy.contains('Activité secondaire');
+    cy.contains('activité secondaire');
+    cy.contains('Encaissement annuel à réaliser');
+    cy.contains('120000,00 €');
+    cy.contains('Capital social');
+    cy.contains('1000,00 €');
+    cy.contains('SIREN');
+    cy.contains('Siren');
+    cy.contains('Trésorerie initial');
+    cy.contains('0,00 €');
+    cy.contains('Lien du feedback');
+    cy.contains('Micro-entreprise exonérée de TVA');
+    cy.contains('Raison sociale');
+    cy.contains('Numer');
+    cy.contains('Activité officielle');
+    cy.contains('Activité officielle');
+    cy.contains('Numéro de TVA');
+    cy.contains('123');
+    cy.contains('Site web');
+    cy.contains('https://bpartners.app');
+    cy.contains('Activité principale');
+    cy.contains('Activité principale');
+  });
+
+  //OK
+  it('Check full typography for Subscription', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Mon abonnement');
+    cy.contains('Pour 49 € par mois :');
+    cy.contains(
+      'Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire'
+    );
+    cy.contains(
+      'Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.'
+    );
+    cy.contains(
+      'Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement 0,99%'
+    );
+  });
+
+  it('Block Trial card INACTIVE', () => {
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'INACTIVE',
+          start: '2022-01-01',
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
   
-      cy.mount(<App />);
+    cy.mount(<App />);
   
-      cy.get('[name="account"]').click();
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
   
-      cy.wait('@getAccountHolder1');
+    cy.contains('Période d’essai');
+  });
+
+  it('Block Trial card ACTIVE', () => {
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          start: '2022-01-01',
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
   
-      cy.contains('Mon abonnement');
-      cy.contains('Pour 49 € par mois :');
-      cy.contains('Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire');
-      cy.contains('Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.');
-      cy.contains('Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement 0,99%');
-      cy.contains('Support 7/7');
-    });
+    cy.mount(<App />);
+  
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+  
+    cy.contains('Période d’essai');
+  });
 });
