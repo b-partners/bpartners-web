@@ -10,8 +10,7 @@ import {
 } from '@/providers';
 import { AreaPictureDetails, Prospect } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getImageSize } from '../utils';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
   const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
@@ -22,16 +21,17 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
   const navigate = useNavigate();
   const onSuccess = (data: any) => {
     const vggurl = data?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
-    console.log(vggurl);
+    const imageUrl = data?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
 
     const { href } = window.location;
     const url = new URL(href);
     url.searchParams.set('analyseRoof', 'false');
+    url.searchParams.set('imgUrl', `${imageUrl}`);
     navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}`);
   };
 
   const mutationFn = async () => {
-    const imageSize = await getImageSize(imageSrc);
+    const imageSize = 1024;
     const geoJson = polygonMapper.toRefererGeoJson(polygons[0], imageSize, areaPictureDetails);
     const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
@@ -87,10 +87,12 @@ const isThereAnObstacle = (regions: Region[]) => {
   return false;
 };
 
-export const useGeojsonQueryResult = (keys: any[] = [], enabled = true) => {
+export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
   const [searchParams] = useSearchParams();
-
   const geoJsonResultUrl = fromBase64(`${searchParams.get('geoJsonResultUrl')}`);
+  const { pathname } = useLocation();
+
+  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
 
   const queryFnVgg = async () => {
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': '*/*' } });
@@ -107,7 +109,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabled = true) => {
   const query = useQuery({
     queryKey: ['geojson-result', ...keys],
     queryFn: queryFnVgg,
-    enabled: !!geoJsonResultUrl && enabled && searchParams.get('useDraft') !== 'true',
+    enabled,
   });
   return {
     ...query,

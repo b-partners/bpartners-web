@@ -4,10 +4,21 @@ import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, use
 import { NOOP_FN } from '../utils/noop_fn';
 import { stringifyObj } from '../utils/stringify';
 
+export interface RoofAnalyseProperties {
+  obstacle: boolean;
+  usure_rate: number;
+  global_rate_value: number;
+  global_rate_type: string;
+  moisissure_rate: number;
+  humidite_rate: number;
+}
+
 export type AnnotationStore = {
   polygons: Polygon[];
+  roofAnalyseProperties?: RoofAnalyseProperties;
   slopeInfoOpen: boolean;
   setPolygons: Dispatch<SetStateAction<Polygon[]>>;
+  setRoofAnalyseProperties: Dispatch<SetStateAction<RoofAnalyseProperties>>;
   handleSlopeInfoToggle: () => void;
 };
 
@@ -16,6 +27,7 @@ const CanvasAnnotationContext = createContext<AnnotationStore>({
   slopeInfoOpen: false,
   setPolygons: NOOP_FN,
   handleSlopeInfoToggle: NOOP_FN,
+  setRoofAnalyseProperties: NOOP_FN,
 });
 
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
@@ -28,6 +40,7 @@ export type CanvasAnnotationContextProviderProps = {
 export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [] }) => {
   const [polygons, setPolygons] = useState<Polygon[]>(defaultPolygons);
   const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
+  const [roofAnalyseProperties, setRoofAnalyseProperties] = useState<RoofAnalyseProperties>();
 
   const handleSlopeInfoToggle = () => {
     setSlopeInfoOpen(!slopeInfoOpen);
@@ -36,8 +49,8 @@ export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProvider
   const stringifiedPolygons = stringifyObj(polygons);
 
   const contextValues: AnnotationStore = useMemo(
-    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle }),
-    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle]
+    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, setRoofAnalyseProperties, roofAnalyseProperties }),
+    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties, setRoofAnalyseProperties]
   );
 
   useEffect(() => {

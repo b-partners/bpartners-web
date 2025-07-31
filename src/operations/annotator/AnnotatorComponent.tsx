@@ -8,8 +8,9 @@ import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } 
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Divider, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
+import { degradationLevels } from '../prospects/constants';
 import { annotatorButtonsActions, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor } from './utils';
@@ -26,10 +27,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   width,
   height,
 }) => {
-  const { data } = useGeojsonQueryResult();
+  const { data, isPending } = useGeojsonQueryResult();
 
   const { address } = useWrappedSearchParams(['address']);
-  const { polygons, setPolygons } = useCanvasAnnotationContext();
+  const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
@@ -42,11 +43,17 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     actualLayer: layer,
     otherLayers,
   } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
-  const { ref: containerRef, height: containerheight } = useGetElementSize([filename]);
+  const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
+
+  const { analyseRoof } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    const currentPolygons: Polygon[] = [{ fillColor: '', id: 'roof-polygon', points: [], isInvisible: true, strokeColor: '' }, ...(data?.polygons || [])];
+    console.log(currentPolygons);
+    if (polygons.length === 0) setPolygons(data?.polygons || []);
+    setRoofAnalyseProperties(data?.properties);
+  }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
     mutateAreaPictureDetail({ zoomLevel: e.target.value });
@@ -80,9 +87,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     };
   };
 
-  const { analyseRoof } = parseUrlParams();
-  const shouldAnalyseRoof = analyseRoof === 'true';
-
   const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
@@ -115,25 +119,29 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Stack>
       )}
       {filename && (
-        <Box className='annotator-canvas-container' ref={containerRef}>
-          <AnnotatorCanvas
-            markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-            allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
-            width={width || '100%'}
-            height={height || containerheight * 0.95}
-            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
-            image={getUrlParams(window.location.search, 'imgUrl')}
-            setPolygons={setPolygons}
-            polygonList={polygonFromProps || polygons}
-            measurementMapper={measurementMapper}
-            getNewPolygonColor={getNewPolygonColor}
-            polygonLineSizeProps={{
-              imageName: `${filename}.jpg`,
-              showLineSize: true,
-              converterApiUrl: `${CONVERTER_BASE_URL}`,
-            }}
-            zoom={newZoomLevelAsNumber}
-          />
+        <Box className='annotator-canvas-container' ref={containerHeightRef}>
+          {containerWidth > 0 && (
+            <AnnotatorCanvas
+              markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+              allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
+              width={width || containerWidth}
+              height={height || containerheight * 0.95}
+              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
+              image={getUrlParams(window.location.search, 'imgUrl')}
+              setPolygons={setPolygons}
+              polygonList={polygonFromProps || polygons}
+              measurementMapper={!data && measurementMapper}
+              getNewPolygonColor={getNewPolygonColor}
+              polygonLineSizeProps={
+                !data && {
+                  imageName: `${filename}.jpg`,
+                  showLineSize: true,
+                  converterApiUrl: `${CONVERTER_BASE_URL}`,
+                }
+              }
+              zoom={newZoomLevelAsNumber}
+            />
+          )}
         </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
@@ -153,6 +161,24 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
+      )}
+      {data && (
+        <>
+          <Paper sx={{ background: '#BEB4A4 !important', px: '10rem', py: 2, borderRadius: 2, textTransform: 'uppercase', mt: 0.5 }}>
+            <Typography sx={{ textAlign: 'center', width: '100%' }}>
+              Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
+            </Typography>
+          </Paper>
+          <Stack direction='row' justifyContent='center' m={1} gap={1}>
+            {degradationLevels.map(({ color, label }) => (
+              <Chip
+                key={`${color}-${label}`}
+                label={label}
+                sx={{ px: 1, bgcolor: color, border: `5px solid ${data?.properties?.global_rate_type === label ? 'black' : 'transparent'}` }}
+              />
+            ))}
+          </Stack>
+        </>
       )}
     </Box>
   );

@@ -10,7 +10,7 @@ export function useGetElementSize<T extends HTMLElement>(dependecies: any[]) {
       const { height, width } = ref.current.getBoundingClientRect();
       if (size.height === 0 || size.width === 0) setSize({ height, width });
     }
-  }, [ref, dependecies]);
+  }, [ref.current?.getBoundingClientRect(), dependecies]);
 
   return { ref, ...size };
 }
