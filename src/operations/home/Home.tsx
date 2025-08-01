@@ -4,6 +4,7 @@ import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { useGetList, useRecordContext } from 'react-admin';
+import imageAnalyse from '/home/4.png';
 
 import { HomeStyle } from './style';
 
@@ -20,7 +21,7 @@ export const Home = () => {
       <Typography className='title'>Bienvenue sur le dashboard de Birdia</Typography>
       <Box className='main-container'>
         <Box className='image-container'>
-          <img src='/Account/Photo-Home-Page.jpg' alt='Logo' />
+          <img src={imageAnalyse} alt='Logo' />
         </Box>
         <Box className='address-box'>
           <TextField

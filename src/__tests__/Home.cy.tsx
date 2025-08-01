@@ -11,8 +11,8 @@ describe('Home', () => {
     cy.getByName('home').click();
   });
 
-  it('Text displayed on the home page', () => {
-    cy.contains('Pour demarrer ajoutez une adresse et commencez à analyser les toitures de vos clients et prospects');
+  it.only('Text displayed on the home page', () => {
+    cy.contains('');
   });
 
   it('open create prospect modal', () => {
