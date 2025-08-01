@@ -102,7 +102,7 @@ export const Home = () => {
                       }}
                     >
                       <PublicIcon sx={{ mr: 1 }} />
-                      <Box textAlign="left" width={'95%'}>
+                      <Box textAlign='left' width={'95%'}>
                         <Typography fontWeight='bold'>{prospect.name}</Typography>
                         <Typography variant='body2' sx={{ width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {prospect.address}
