@@ -11,7 +11,7 @@ describe('Home', () => {
     cy.getByName('home').click();
   });
 
-  it('can view home page', () => {
+  it('Text displayed on the home page', () => {
     cy.contains('Pour demarrer ajoutez une adresse et commencez à analyser les toitures de vos clients et prospects');
   });
 
