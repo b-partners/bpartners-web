@@ -81,6 +81,12 @@ export const HomeStyle: SxProps = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  '& .prospect-name': {
+    fontWeight: 'bold',
+  },
+  '& .prospect-address': {
+    fontSize: '0.875rem', // correspond à variant='body2'
+  },
   '& .block-box': {
     display: 'flex',
     alignItems: 'center',
@@ -112,5 +118,9 @@ export const HomeStyle: SxProps = {
   '& .divider-white': {
     backgroundColor: PALETTE_COLORS.white,
     margin: '0 12px',
+  },
+  '& .block-title': {
+    fontWeight: 'bold',
+    fontSize: '1.5rem',
   },
 };

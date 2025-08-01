@@ -27,6 +27,8 @@ describe('Home', () => {
   });
 
   it('displays the list of prospects', () => {
+    cy.contains('Bienvenue sur le dashboard de Birdia');
+
     cy.contains('Jean Dupont');
     cy.contains('12 rue du toit');
     cy.contains('Toiture Express');
@@ -39,5 +41,28 @@ describe('Home', () => {
     cy.contains('17 allée de l’étanchéité');
     cy.contains('Couvreur du coin');
     cy.contains('3 impasse du faîtage');
+
+    cy.get('img').should('exist');
+    cy.get('img[alt="Image de la maison"]').should('exist');
+
+    cy.dataCy('add-address').click().type('753 Routes de Saint Lyphard');
+    cy.contains("Passer à l'analyse");
+    cy.dataCy('button-analyze').should('have.attr', 'data-path', '/prospects');
+
+    cy.contains('Prospects');
+    cy.dataCy('title-prospects').should('have.attr', 'data-path', '/prospects');
+    cy.dataCy('add-prospects').should('have.attr', 'data-path', '/prospects');
+    cy.contains('Clients');
+    cy.dataCy('title-customers').should('have.attr', 'data-path', '/customers');
+    cy.dataCy('add-customers').should('have.attr', 'data-path', '/customers/create');
+    cy.contains('Produits');
+    cy.dataCy('title-products').should('have.attr', 'data-path', '/products');
+    cy.dataCy('add-products').should('have.attr', 'data-path', '/products/create');
+    cy.contains('Devis');
+    cy.dataCy('title-invoices-1').should('have.attr', 'data-path', '/invoices');
+    cy.dataCy('add-invoices-1').should('have.attr', 'data-path', '/invoices?showCreateQuote=true');
+    cy.contains('Factures');
+    cy.dataCy('title-invoices-2').should('have.attr', 'data-path', '/invoices');
+    cy.dataCy('add-invoices-2').should('have.attr', 'data-path', '/invoices?showCreateQuote=true');
   });
 });
