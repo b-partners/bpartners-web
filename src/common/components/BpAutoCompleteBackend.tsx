@@ -22,17 +22,24 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     currentAddressQueryValue.length > 0 && deboucendMutateFn(currentAddressQueryValue);
   };
 
-  const handleChange = (_event: SyntheticEvent, value: any) => setValue(name, value);
+  const handleChange = (_event: SyntheticEvent, value: any) => {
+    setValue(name, value);
+  };
   const { onBlur, ref } = register(name);
   const error = errors[name];
 
+  const customOnBlur: typeof onBlur = event => {
+    setValue(name, textFieldValue);
+    return onBlur(event);
+  };
+  
   return (
     <div>
       <Autocomplete
         {...others}
         ref={ref}
         value={value}
-        onBlur={onBlur}
+        onBlur={customOnBlur}
         onChange={handleChange}
         data-testid={`${name}-auto-complete`}
         freeSolo
