@@ -1,8 +1,6 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 
-import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { annotatorProvider } from '@/providers';
-import { AutoCompletePrediction } from '@bpartners/typescript-client';
 import PropTypes from 'prop-types';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { BpAutoCompleteBackend, BpFormField, BpNumberField } from '../../../common/components';
