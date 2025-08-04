@@ -32,7 +32,7 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     setValue(name, textFieldValue);
     return onBlur(event);
   };
-  
+
   return (
     <div>
       <Autocomplete

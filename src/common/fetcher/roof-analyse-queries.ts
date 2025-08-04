@@ -1,11 +1,12 @@
 import {
-  annotatorProvider, DetectionResultInVgg,
+  annotatorProvider,
+  DetectionResultInVgg,
   detectionResultMapper,
   fromBase64,
   initializeRoofAnalyse,
   polygonMapper,
   Region,
-  toBase64
+  toBase64,
 } from '@/providers';
 import { AreaPictureDetails, Prospect } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';

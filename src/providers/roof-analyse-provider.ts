@@ -64,7 +64,7 @@ export const initializeRoofAnalyse = async (
   const cachedDetectionId = getCached.roofAnalyseId();
   const detectionId = withoutImage !== true ? cachedDetectionId || v4() : v4();
   const apiKey = await getApiKey();
-  
+
   cache.roofAnalyseId(detectionId);
 
   const geoJson = getGeoJsonTemlate(
