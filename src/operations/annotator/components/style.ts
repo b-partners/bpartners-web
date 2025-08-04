@@ -23,3 +23,5 @@ export const annotatorActionButtonsStyle: SxProps = {
     color: PALETTE_COLORS['white'],
   },
 };
+
+export const llmResultStyle: SxProps = {};

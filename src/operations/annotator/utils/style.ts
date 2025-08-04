@@ -44,4 +44,10 @@ export const annotatorComponentStyle: SxProps = {
       m: 0,
     },
   },
+  '& .switch-llm-result-button': {
+    position: 'absolute',
+    bottom: 2,
+    left: 2,
+    color: PALETTE_COLORS['neon_orange'],
+  },
 };

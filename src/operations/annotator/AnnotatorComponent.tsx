@@ -1,17 +1,18 @@
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
-import { useGetElementSize } from '@/common/hooks';
+import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
+import { Cached } from '@mui/icons-material';
+import { Box, Chip, Divider, IconButton, Paper, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
-import { annotatorButtonsActions, RefocusImageButton } from './components';
+import { annotatorButtonsActions, LlmResult, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor } from './utils';
 
@@ -46,6 +47,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     otherLayers,
   } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
   const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
+  const { toggleValue: tootleLLMResultView, value: showLLMResult } = useToggle(false);
 
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
@@ -121,7 +123,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
-          {containerWidth > 0 && (
+          {containerWidth > 0 && !showLLMResult && (
             <AnnotatorCanvas
               markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
               allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
@@ -142,6 +144,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               }
               zoom={newZoomLevelAsNumber}
             />
+          )}
+          {data?.properties && showLLMResult && (
+            <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
+          )}
+          {data?.properties && (
+            <IconButton className='switch-llm-result-button' onClick={tootleLLMResultView}>
+              <Cached />
+            </IconButton>
           )}
         </Box>
       )}
