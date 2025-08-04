@@ -20,7 +20,9 @@ export const LlmResult: FC<LlmResultProps> = ({ height, roofAnalyseProperties, w
     }
   }, [htmlResult, ref]);
 
-  return <Box component='div' ref={ref} sx={llmResultStyle} height={height || '100%'} width={width || '100%'}>
-    {isPending && "loading ..."}
-  </Box>;
+  return (
+    <Box component='div' ref={ref} sx={llmResultStyle} height={height || '100%'} width={width || '100%'}>
+      {isPending && 'loading ...'}
+    </Box>
+  );
 };
