@@ -24,4 +24,19 @@ export const annotatorActionButtonsStyle: SxProps = {
   },
 };
 
-export const llmResultStyle: SxProps = {};
+export const llmResultStyle: SxProps = {
+  textAlign: 'justify',
+  padding: 5,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  '& h1': {
+    mb: 5,
+  },
+  '& li': {
+    mb: 2,
+  },
+  '& strong': {
+    display: 'block',
+  },
+};

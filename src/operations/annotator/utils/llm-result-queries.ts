@@ -14,7 +14,7 @@ export const useLlmResultQuery = (roofAnnotatorProperties: Properties) => {
     const htmlResult = await result.text();
 
     const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
-    return htmlResult.match(bodyRegex)[0];
+    return htmlResult.match(bodyRegex)[0].replace(/\:/g, '');
   };
 
   return useQuery({ queryFn, queryKey: [roofAnnotatorProperties] });
