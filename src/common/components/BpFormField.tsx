@@ -22,11 +22,7 @@ const passwordStyle = {
 // work with context, remove form in props
 export const BpFormField: FC<BpFormFieldProps> = props => {
   const { name, label, type, validate, style, shouldValidate, ...others } = props;
-  const {
-    register,
-    formState: { errors },
-    setError,
-  } = useFormContext();
+  const { register, setError, getFieldState, getValues } = useFormContext();
   const record = useWatch();
   const [visibility, setVisibility] = useState(false);
   const toggleVisibility = () => setVisibility(e => !e);
@@ -35,7 +31,8 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
 
   const dateProps = (type || '').includes('date') ? { InputLabelProps: { shrink: true } } : {};
 
-  const errorStyle = errors[name] ? { error: true, helperText: errors[name].message as string } : { error: false };
+  const { error, invalid } = getFieldState(name);
+  const errorStyle = invalid ? { error: true, helperText: error.message as string } : { error: false };
 
   // if there is an specific validation other than required, it will used
   // and if shouldValidate is false, no validation will used
@@ -49,11 +46,11 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
       {...dateProps}
       {...errorStyle}
       {...others}
-      variant='filled'
+      variant={others.variant || 'filled'}
       {...customRegister}
       data-testid={`${name}-field-input`}
       type={type === 'password' ? passwordType : type}
-      value={record[name] || ''}
+      value={record[name] || getValues(name) || ''}
       InputProps={{
         endAdornment: type === 'password' && (
           <IconButton aria-label='toggle password visibility' onClick={toggleVisibility}>

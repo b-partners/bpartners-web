@@ -6,8 +6,6 @@ import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, 
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
 
-const ACCOUNT_EDITION = '[data-testid="EditIcon"]';
-
 describe(specTitle('Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
@@ -15,345 +13,11 @@ describe(specTitle('Account'), () => {
     cy.stub(navigator.clipboard, 'writeText').as('copyToClipboard');
   });
 
-  it('is displayed on login', () => {
+  //OK
+  it('is block user card', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-
-    cy.mount(<App />);
-
-    cy.get('[name="account"]').click();
-
-    cy.wait('@getAccountHolder1');
-
-    cy.contains('First Name 1');
-    cy.contains('last Name 1');
-    cy.contains('11 11 11');
-
-    cy.contains('Ma société');
-    cy.contains('Numer');
-    cy.contains('activité officielle');
-    cy.contains('1000,00 €');
-    cy.contains('Ivandry');
-    cy.contains('Madagascar');
-    cy.contains('6 rue Paul Langevin');
-    cy.contains('101');
-    cy.contains('10201');
-    cy.contains('https://bpartners.app');
-
-    cy.get('.MuiTabs-flexContainer > [tabindex="-1"]').click(); // MON ABONNEMENT
-    cy.contains('Mon abonnement');
-    cy.contains(`L'essentiel`);
-    cy.contains('Pour 49€ par mois');
-    cy.contains("Tous les services essentiels pour gérer votre activité d'artisan ou d'indépendant");
-    cy.contains('Accès aux outils de devis/facturation personnalisé');
-    cy.contains('Initiez la collecte de vos encaissements');
-    cy.contains('Support 7/7');
-  });
-
-  it('Should show emptyText when source is null', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, [
-      {
-        ...accountHolder1,
-        contactAddress: {
-          address: null,
-          city: null,
-          country: null,
-          postalCode: null,
-          prospectingPerimeter: null,
-        },
-      },
-    ]).as('getAccountHolder1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-
-    cy.mount(<App />);
-
-    cy.wait('@getAccountHolder1');
-
-    cy.get('[name="account"]').click();
-
-    cy.contains('VIDE');
-  });
-
-  it('Change general informations', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
-      const newGlobalInfo = {
-        id: accountHolders1[0].id,
-        name: 'Numer_01',
-        siren: '1001',
-        officialActivityName: 'Activité_officielle',
-        initialCashFlow: 19000000,
-        contactAddress: {
-          address: '40 Rue de la liberté',
-          city: 'Paris',
-          country: 'France',
-          postalCode: 12032,
-        },
-      };
-
-      expect(req.body.name).to.deep.eq(newGlobalInfo.name);
-      expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
-      expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
-      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
-      expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
-      expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
-      expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
-      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
-      req.reply(accountHolders1[0]);
-    }).as('updateAccountHolder');
-
-    cy.mount(<App />);
-
-    cy.wait('@getAccountHolder1');
-
-    cy.get('[name="account"]').click();
-
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Édition de mon compte');
-    cy.contains('Activité');
-    cy.contains('Informations sur la société');
-
-    cy.get('[name="name"]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('[name="name"]').type('Numer_01');
-    cy.get('[name="siren"]').clear().type(1001);
-    cy.get('[name="officialActivityName"]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('[name="officialActivityName"]').type('Activité_officielle');
-    cy.get('[name="initialCashflow"]').clear();
-    cy.get('[name="initialCashflow"]').type(190000);
-    cy.get('[name="address"]').clear().type('40 Rue de la liberté');
-    cy.get('[name="city"]').clear().type('Paris');
-    cy.get('[name="country"]').clear().type('France');
-    cy.get('[name="postalCode"]').clear().type(12032);
-
-    cy.get('form [name="submitGeneralInfo"]').click();
-    cy.wait('@updateAccountHolder');
-    cy.contains('Changement enregistré');
-  });
-
-  it('Change business Activity', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw?fileType=LOGO`, images1).as('logoUpload');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-
-    cy.mount(<App />);
-
-    cy.wait('@getAccountHolder1');
-
-    cy.get('[name="account"]').click();
-
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Édition de mon compte');
-    cy.contains('Activité');
-    cy.contains('Informations sur la société');
-
-    // close company edition
-    cy.get('[data-testid="account-Informations sur la société-accordion"]').click();
-
-    cy.dataCy('autocomplete-primary').click();
-    cy.contains('Armurier').click();
-
-    cy.dataCy('autocomplete-secondary').click();
-    cy.contains('Barbier').click();
-
-    const newAccountHolder = { ...accountHolders1[0] };
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, req => {
-      const newBusinessActivity = { primary: 'Armurier', secondary: 'Barbier' };
-      expect(req.body).to.deep.eq(newBusinessActivity);
-      newAccountHolder.businessActivities = newBusinessActivity;
-      req.reply(newAccountHolder);
-    });
-
-    cy.get('.css-1vtm9ti > .MuiButton-root').click();
-
-    cy.get('[data-testid="ClearIcon"]').click();
-  });
-
-  it('change company information', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
-      const response = { ...accountHolders1[0] };
-      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
-      req.reply({ body: response });
-    });
-
-    cy.mount(<App />);
-
-    cy.get('[name="account"]').click();
-    // because the current accountholder's isSubjectToVat is true,
-    // the isSubjectToVat switch button shouldn't be activate
-    cy.contains('Non');
-    cy.contains('Numéro de TVA');
-    cy.contains('123');
-
-    const aHIsSubjectToVat = [{ ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: false } }];
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, aHIsSubjectToVat).as('getAccountHolderSubjectToVat');
-    cy.get('.PrivateSwitchBase-input').click();
-    //now the isSubjectToVat is false
-    cy.contains('Oui');
-
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Édition de mon compte');
-    cy.contains('Activité');
-    cy.contains('Informations sur la société');
-    // close business activity edition
-    cy.get('[data-testid="account-Activité-accordion"]').click();
-
-    cy.get('form [name="socialCapital"]').clear().type('{enter}');
-    cy.contains('Ce champ est requis');
-    cy.get('form [name="socialCapital"]').type(301);
-    cy.get('form [name="phone"]').clear().type('+261 not valid phone number');
-    cy.contains("Veuillez entrer un numéro de téléphone valide, en utilisant uniquement des chiffres, espaces, slashes '/' ou tirets '-'");
-    cy.get('form [name="phone"]').clear().type('+261340465338');
-    cy.get('form [name="email"]').clear();
-    cy.contains('Ce champ est requis');
-    cy.get('form [name="email"]').type('joe.doe@bpartnes.app');
-    cy.get('form [name="website"]').clear().type('https://bpartners.app/home');
-    cy.get('form [name="townCode"]').clear().type(`120{enter}`);
-    cy.contains('Le code de la commune de prospection doit être à 5 chiffres.');
-    cy.get('form [name="townCode"]').clear().type(12312);
-    cy.get('form [name="tvaNumber"]').clear().type(1234);
-
-    const newCompanyInformation = {
-      ...accountHolders1[0].companyInfo,
-      isSubjectToVat: false,
-      phone: '+261340465338',
-      email: 'joe.doe@bpartnes.app',
-      socialCapital: 30100,
-      townCode: 12312,
-      tvaNumber: '1234',
-    };
-    const newAccountHolder = { ...accountHolders1[0] };
-    newAccountHolder.companyInfo = newCompanyInformation;
-
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
-      expect(req.body.phone).to.deep.eq(newCompanyInformation.phone);
-      expect(req.body.email).to.deep.eq(newCompanyInformation.email);
-      expect(+req.body.socialCapital).to.deep.eq(newCompanyInformation.socialCapital);
-      expect(req.body.townCode).to.deep.eq(newCompanyInformation.townCode);
-      expect(req.body.tvaNumber).to.deep.eq(newCompanyInformation.tvaNumber);
-      req.reply({ body: newAccountHolder });
-    }).as('editCompanyInfo');
-
-    cy.get('form [name="submitCompanyInfo"]').click();
-    cy.get('[data-testid="ClearIcon"]').click();
-  });
-
-  it('change revenue targets', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    const newRevenueTargets = [{ year: new Date().getFullYear(), amountTarget: 23000000 }];
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
-      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
-      const response = { ...accountHolders1[0] };
-      response.revenueTargets = newRevenueTargets;
-      req.reply(response);
-    }).as('updateRevenueTargets');
-
-    cy.mount(<App />);
-
-    cy.get('[name="account"]').click();
-    cy.wait('@getAccountHolder1');
-
-    cy.contains('Encaissement annuelle à réaliser');
-    cy.contains('120000,00 €');
-
-    cy.get(ACCOUNT_EDITION).click();
-
-    cy.contains('Encaissement annuelle à réaliser');
-    cy.get('[name="amountTarget"]').clear().type(`{enter}`);
-    cy.contains('Ce champ est requis');
-    cy.get('[name="amountTarget"]').type(230000);
-
-    cy.get('form [name="submitRevenueTargets"]').click();
-
-    cy.wait('@updateRevenueTargets');
-    const newAccountHolder = [{ ...accountHolders1[0], revenueTargets: newRevenueTargets }];
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, newAccountHolder).as('getNewAccountHolder');
-
-    cy.contains('Changement enregistré');
-
-    cy.get('[data-testid="ClearIcon"]').click();
-
-    cy.contains('Encaissement annuelle à réaliser');
-    cy.contains('230000,00 €');
-  });
-
-  it('change feedback link', () => {
-    const validLink = 'example.com';
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
-    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
-      expect(req.body).eql({ feedbackLink: validLink });
-      req.reply(accountHoldersFeedbackLink);
-    }).as('configuration');
-    cy.mount(<App />);
-
-    cy.get('[name="account"]').click();
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Boostez votre référencement');
-    cy.contains('Boostez votre référencement. Renseignez le lien vers votre page avis (google business, trust pilote)');
-    cy.get('[name="feedbackLink"]').type('not valid link{enter}');
-    cy.contains('Lien non valide');
-    cy.get('[name="feedbackLink"]').clear().type(`${validLink}{enter}`);
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHoldersFeedbackLink);
-    cy.get('[data-testid="ClearIcon"]').click();
-    cy.contains(validLink);
-
-    const veryLongLink =
-      'https://www.google.com/search?q=very+long+url&oq=very+long+url&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDQzNDRqMGoxqAIAsAIA&sourceid=chrome&ie=UTF-8';
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
-      expect(req.body).eql({ feedbackLink: veryLongLink });
-      req.reply(accountHoldersFeedbackLink);
-    }).as('configuration');
-    cy.get(ACCOUNT_EDITION).click();
-    cy.contains('Boostez votre référencement');
-    cy.contains('Boostez votre référencement. Renseignez le lien vers votre page avis (google business, trust pilote)');
-    cy.get('[name="feedbackLink"]').type('not valid link{enter}');
-    cy.contains('Lien non valide');
-    cy.get('[name="feedbackLink"]').clear().type(`${veryLongLink}{enter}`);
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, [
-      { ...accountHoldersFeedbackLink[0], feedback: { feedbackLink: veryLongLink } },
-    ]);
-    cy.get('[data-testid="ClearIcon"]').click();
-    cy.contains(veryLongLink.slice(0, 10));
-
-    cy.get('[data-testId="copy-link-button-id"]').click();
-    cy.contains('Le texte a été copié avec succès !');
-    cy.get('@copyToClipboard').should('have.been.calledOnce');
-
-    cy.contains('First Name 1');
-    cy.contains('last Name 1');
-    cy.contains('11 11 11');
-
-    cy.contains('Ma société');
-    cy.contains('Numer');
-    cy.contains('activité officielle');
-    cy.contains('1000,00 €');
-    cy.contains('Ivandry');
-    cy.contains('Madagascar');
-    cy.contains('6 rue Paul Langevin');
-    cy.contains('101');
-    cy.contains('10201');
-  });
-
-  it('upload logo image', () => {
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw?fileType=LOGO`, images1).as('logoUpload');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/files/*/raw?accessToken=accessToken1&fileType=LOGO`, images1).as('fetchLogo');
@@ -364,9 +28,316 @@ describe(specTitle('Account'), () => {
 
     cy.wait('@getAccountHolder1');
 
+    //For logo
     cy.get('#upload-photo-label').should('be.visible').selectFile('public/favicon64.webp', { force: true });
-
     cy.wait('@logoUpload');
     cy.contains('Téléchargement du logo terminé, les modifications seront propagées dans quelques instants.');
+
+    //Informations
+    cy.contains('last Name 1');
+    cy.contains('numer@madagascar.com');
+    cy.contains('11 11 11');
+  });
+
+  //OK
+  it('Check info edit mode', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
+      const newGlobalInfo = {
+        id: accountHolders1[0].id,
+        name: 'Numer_01',
+        siren: '1001',
+        officialActivityName: 'Activité_officielle',
+        initialCashFlow: 190000,
+        contactAddress: {
+          address: '40 Rue de la liberté',
+          city: 'Paris',
+          country: 'France',
+          postalCode: '12032',
+        },
+      };
+      expect(req.body.name).to.deep.eq(newGlobalInfo.name);
+      expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
+      expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
+      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
+      expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
+      expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
+      expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
+      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
+      req.reply(accountHolders1[0]);
+    }).as('updateAccountHolder');
+    const newAccountHolder = { ...accountHolders1[0] };
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, req => {
+      const newBusinessActivity = { primary: 'Barbier', secondary: 'Barbier' };
+      expect(req.body).to.deep.eq(newBusinessActivity);
+      newAccountHolder.businessActivities = newBusinessActivity;
+      req.reply(newAccountHolder);
+    });
+    const newRevenueTargets = [{ amountTarget: 150000, year: 2021 }];
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
+      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
+      const response = { ...accountHolders1[0] };
+      response.revenueTargets = newRevenueTargets;
+      req.reply(response);
+    }).as('updateRevenueTargets');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
+      expect(req.body).eql({ feedbackLink: validLink });
+      req.reply(accountHoldersFeedbackLink);
+    }).as('configuration');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      const response = { ...accountHolders1[0] };
+      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      req.reply({ body: response });
+    });
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Ma société');
+
+    cy.dataCy('edit-mode-button').click();
+
+    cy.dataCy('profile-field-container', '.MuiTypography-root').should('not.exist');
+
+    //Field Address
+    cy.name('contactAddress.address').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Adresse');
+    cy.name('contactAddress.address').type('40 Rue de la liberté');
+
+    //Field revenue targets
+    cy.name('revenueTargets.1.amountTarget').clear().type('1500');
+    cy.contains('Encaissement annuel à réaliser');
+
+    // Field name
+    cy.name('name').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Raison sociale');
+    cy.name('name').type('Numer_01');
+
+    //Field city
+    cy.name('contactAddress.city').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Ville');
+    cy.name('contactAddress.city').type('Paris');
+
+    //Field social capital
+    cy.name('companyInfo.socialCapital').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Capital social');
+    cy.name('companyInfo.socialCapital').type('100000');
+
+    //Field official activity name
+    cy.name('officialActivityName').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Activité officielle');
+    cy.name('officialActivityName').type('Activité_officielle');
+
+    //Field postal code
+    cy.name('contactAddress.postalCode').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Code postal');
+    cy.name('contactAddress.postalCode').type('12032');
+
+    //Field siren
+    cy.name('siren').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('SIREN');
+    cy.name('siren').type('1001');
+
+    //Field TVA
+    cy.name('companyInfo.tvaNumber').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Numéro de TVA');
+    cy.name('companyInfo.tvaNumber').type('12345678901234');
+
+    //Field town code
+    cy.name('companyInfo.townCode').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Code postal commune de prospection');
+    cy.name('companyInfo.townCode').type('75001');
+
+    //Field initial cash flow
+    cy.name('initialCashFlow').clear().type('1900');
+    cy.contains('Trésorerie initial');
+
+    //Field web site
+    cy.name('companyInfo.website').clear().type('www.example.com');
+    cy.contains('Site web');
+
+    //Field country
+    cy.name('contactAddress.country').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Pays');
+    cy.name('contactAddress.country').type('France');
+
+    //Field feddback link
+    cy.name('feedback.feedbackLink').clear().type('https://birdia.fr');
+    cy.contains('Lien du feedback');
+
+    //Field phone
+    cy.name('companyInfo.phone').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Téléphone');
+    cy.name('companyInfo.phone').type('+261345656756');
+
+    //Field email
+    cy.name('companyInfo.email').clear();
+    cy.contains('Ce champ est requis.');
+    cy.contains('Email');
+    cy.name('companyInfo.email').type('info@birdia.fr');
+
+    //Field primary activity
+    cy.dataCy('primary-activity-select').click();
+    cy.get('[role="option"]').contains('Barbier').click();
+    cy.contains('Activité principale');
+
+    //Field secondary activity
+    cy.dataCy('secondary-activity-select').click();
+    cy.get('[role="option"]').contains('Barbier').click();
+    cy.contains('Activité secondaire');
+
+    //Fiel subject to vat switch
+    cy.dataCy('companyInfo-subjectToVatSwitch').click({ force: false });
+    cy.contains('Micro-entreprise exonérée de TVA');
+
+    //Interception de la requête
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, ({ body, reply }) => {
+      expect(body).deep.equal({ feedbackLink: 'https://birdia.fr' });
+      reply({ body: { feedbackLink: 'https://birdia.fr' } });
+    });
+    cy.dataCy('save-profile').click();
+  });
+
+  //OK
+  it('Check full typography', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Adresse');
+    cy.contains('6 rue Paul Langevin');
+    cy.contains('Ville');
+    cy.contains('Ivandry');
+    cy.contains('Code postal');
+    cy.contains('101');
+    cy.contains('Pays');
+    cy.contains('Madagascar');
+    cy.contains('Activité secondaire');
+    cy.contains('activité secondaire');
+    cy.contains('Encaissement annuel à réaliser');
+    cy.contains('120000,00 €');
+    cy.contains('Capital social');
+    cy.contains('1000,00 €');
+    cy.contains('SIREN');
+    cy.contains('Siren');
+    cy.contains('Trésorerie initial');
+    cy.contains('0,00 €');
+    cy.contains('Lien du feedback');
+    cy.contains('Micro-entreprise exonérée de TVA');
+    cy.contains('Raison sociale');
+    cy.contains('Numer');
+    cy.contains('Activité officielle');
+    cy.contains('Activité officielle');
+    cy.contains('Numéro de TVA');
+    cy.contains('123');
+    cy.contains('Site web');
+    cy.contains('https://bpartners.app');
+    cy.contains('Activité principale');
+    cy.contains('Activité principale');
+  });
+
+  //OK
+  it('Check full typography for Subscription', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Mon abonnement');
+    cy.contains('Pour 49 € par mois :');
+    cy.contains(
+      'Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire'
+    );
+    cy.contains(
+      'Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.'
+    );
+    cy.contains(
+      'Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement 0,99%'
+    );
+  });
+
+  it('Block Trial card INACTIVE', () => {
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'INACTIVE',
+          start: '2022-01-01',
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+  
+    cy.mount(<App />);
+  
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+  
+    cy.contains('Période d’essai');
+  });
+
+  it('Block Trial card ACTIVE', () => {
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          start: '2022-01-01',
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+  
+    cy.mount(<App />);
+  
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+  
+    cy.contains('Période d’essai');
   });
 });

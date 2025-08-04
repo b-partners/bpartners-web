@@ -110,3 +110,65 @@ jobs:
           npm install -d prettier prettier-plugin-organize-imports
 
       - run: npx prettier --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"
+
+  build:
+    timeout-minutes: 35
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.3
+        with:
+          version: 2
+          verbose: false
+          arch: amd64
+          rootdir: ''
+          workdir: ''
+
+      - name: Connect to Bpartners Imagery AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh imagery ${{ secrets.BPARTNERS_IMAGERY_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_IMAGERY_AWS_SECRET_ACCESS_KEY }} eu-west-3
+          sh ./initNpmrc.sh imagery annotator-imagery-store npm-bpartners-imagery-app 205205101409
+
+      - name: Connect to HEI AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh hei ${{ secrets.HEI_AWS_ACCESS_KEY_ID }} ${{ secrets.HEI_AWS_SECRET_ACCESS_KEY }} ${{ secrets.HEI_AWS_REGION }}
+          sh ./initNpmrc.sh hei hei-store npm-hei-school 088312068315
+
+      - name: Connect to BPartners AWS CodeArtifact
+        run: |
+          sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
+          sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
+
+      - name: Install deps
+        run: npm install --legacy-peer-deps
+
+      - name: Add env
+        run: |
+          echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
+          echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
+          echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} >> .env
+          echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
+          echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
+          echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
+
+          if ${{ github.ref_name == 'prod' }}; then
+            echo REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} >> .env
+            echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
+            echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
+            echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
+          else
+            echo REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} >> .env
+            echo REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} >> .env
+            echo REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} >> .env
+            echo REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} >> .env
+          fi
+
+      - name: Build app
+        run: npm run build

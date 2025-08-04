@@ -1,5 +1,5 @@
-import { BP_COLOR } from '@/bp-theme';
 import { SmallAvatar } from '@/common/components/SmallAvatar';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { getMimeType, printError } from '@/common/utils';
 import { cache, fileProvider, getAccountLogoUrl, getCached } from '@/providers';
 import { FileType } from '@bpartners/typescript-client';
@@ -68,7 +68,7 @@ export const LogoShowLayout = () => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           badgeContent={
             <SmallAvatar alt='PhotoCamera'>
-              <PhotoCameraIcon sx={{ color: BP_COLOR[10] }} />
+              <PhotoCameraIcon sx={{ color: PALETTE_COLORS.pine }} />
             </SmallAvatar>
           }
         >

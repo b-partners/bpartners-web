@@ -1,39 +1,30 @@
-import { Box } from '@mui/material';
-import { useState } from 'react';
-
-import { ShowBase, useRefresh } from 'react-admin';
-import { AccountEditionLayout } from './AccountEditionLayout';
-import { AdditionalInformation, LogoShowLayout, ProfileShowLayout } from './components';
-import { BACKDROP_STYLE, BOX_CONTENT_STYLE, SHOW_LAYOUT_STYLE } from './style';
-import { ACCOUNT_HOLDER_LAYOUT } from './utils';
+import { CompanyCard } from '@/operations/account/components/CompanyCard';
+import { AccountStyle } from '@/operations/account/components/style';
+import { SubscriptionCard } from '@/operations/account/components/SubscriptionCard';
+import { TrialCard } from '@/operations/account/components/TrialCard';
+import { UserCard } from '@/operations/account/components/UserCard';
+import { Grid } from '@mui/material';
+import { ShowBase, SimpleShowLayout } from 'react-admin';
 
 export const AccountShow = () => {
-  const [layout, setLayout] = useState(ACCOUNT_HOLDER_LAYOUT.VIEW);
-  const refresh = useRefresh();
-
-  const toggleAccountHolderLayout = () => {
-    setLayout(property => (property === ACCOUNT_HOLDER_LAYOUT.VIEW ? ACCOUNT_HOLDER_LAYOUT.CONFIGURATION : ACCOUNT_HOLDER_LAYOUT.VIEW));
-    refresh();
-  };
-
   return (
     <ShowBase id='' resource='accountHolder'>
-      {layout === ACCOUNT_HOLDER_LAYOUT.VIEW ? (
-        <Box sx={SHOW_LAYOUT_STYLE}>
-          <Box sx={BOX_CONTENT_STYLE}>
-            <LogoShowLayout />
-            <ProfileShowLayout />
-          </Box>
-
-          <Box sx={BOX_CONTENT_STYLE}>
-            <AdditionalInformation onEdit={toggleAccountHolderLayout} />
-          </Box>
-
-          <Box sx={BACKDROP_STYLE}></Box>
-        </Box>
-      ) : (
-        <AccountEditionLayout onClose={toggleAccountHolderLayout} />
-      )}
+      <SimpleShowLayout>
+        <Grid sx={AccountStyle} container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <UserCard />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TrialCard />
+          </Grid>
+          <Grid item xs={12}>
+            <CompanyCard />
+          </Grid>
+          <Grid item xs={12}>
+            <SubscriptionCard />
+          </Grid>
+        </Grid>
+      </SimpleShowLayout>
     </ShowBase>
   );
 };
