@@ -20,7 +20,9 @@ describe(specTitle('Login'), () => {
     cy.contains('Inscription');
     cy.contains('Vous avez déjà un compte ? Se connecter');
 
-    cy.get("[name='lastName']").type('{enter}');
+    cy.get("[name='lastName']").type('Numer');
+    cy.get("[type='submit']").click();
+    cy.get("[name='lastName']").clear();
     cy.contains('Ce champ est requis');
     cy.get("[name='phoneNumber']").type('test');
     cy.contains('Le numéro de téléphone ne doit contenir que des chiffres');
@@ -56,9 +58,9 @@ describe(specTitle('Login'), () => {
     cy.mount(<App />);
     cy.contains('Votre email');
     cy.get("[name='username']").type('dummy{enter}');
+    cy.get("[name='username']").clear();
     cy.contains('Ce champ est requis');
     cy.get("[name='password']").type('dummy');
-    cy.get("[name='username']").clear();
     cy.contains('Ce champ est requis');
     cy.get("[name='username']").type('dummy{enter}');
   });
