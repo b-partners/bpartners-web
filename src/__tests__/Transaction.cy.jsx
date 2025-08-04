@@ -319,7 +319,8 @@ describe(specTitle('Transactions'), () => {
     cy.contains('Choisissez votre période de transaction à communiquer à votre comptable').should('not.exist');
     // exécuter la requete pour générer le lien du téléchargement
     cy.contains('Export comptable').click();
-    cy.get('input[name="from"]').type(`${currentDate.getFullYear() + 1}-03-15`);
+    cy.get('input[name="from"]').type(`${currentDate.getFullYear() + 15}-03-26`);
+    cy.get('[type="submit"]').click();
     cy.contains("La date d'émission doit être antérieure ou égale à la date d’aujourd’hui");
     cy.get('input[name="from"]').invoke('removeAttr').type(from);
     cy.get('input[name="to"]').type(to);
