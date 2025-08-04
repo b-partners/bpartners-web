@@ -74,7 +74,7 @@
     "vite-tsconfig-paths": "4.3.2"
   },
   "scripts": {
-    "start": "vite",
+    "start": "rm -rf ./node_modules/.vite && vite",
     "build": "tsc -b && vite build",
     "lint": "npx eslint ./src",
     "preview": "vite preview",

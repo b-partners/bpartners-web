@@ -25,6 +25,7 @@ export interface Properties {
   global_rate_type: string;
   moisissure_rate: number;
   humidite_rate: number;
+  roof_area_in_m2: number;
 }
 
 export interface Region {

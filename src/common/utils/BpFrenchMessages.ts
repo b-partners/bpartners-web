@@ -12,6 +12,7 @@ export const BpFrenchMessages = {
       resetRefocusImage: "Réinitialiser l'image",
       confirm: 'Confirmer',
       validate: 'Valider',
+      process_detection: 'Analyser la toiture',
       prospect: {
         abandon: 'Abandonner ce prospect',
         reserve: 'Réserver ce prospect',

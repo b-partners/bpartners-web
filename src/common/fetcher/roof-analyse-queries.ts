@@ -1,12 +1,11 @@
 import {
-  annotatorProvider,
-  DetectionResultInVgg,
+  annotatorProvider, DetectionResultInVgg,
   detectionResultMapper,
   fromBase64,
   initializeRoofAnalyse,
   polygonMapper,
   Region,
-  toBase64,
+  toBase64
 } from '@/providers';
 import { AreaPictureDetails, Prospect } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -17,11 +16,13 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
   return useMutation({ mutationFn, mutationKey: [address, areaPictureDetails] });
 };
 
-export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, imageSrc: string, prospect: Prospect) => {
+export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, prospect: Prospect, handleSuccess: () => void) => {
   const navigate = useNavigate();
   const onSuccess = (data: any) => {
     const vggurl = data?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = data?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
+
+    handleSuccess();
 
     const { href } = window.location;
     const url = new URL(href);

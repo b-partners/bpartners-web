@@ -32,10 +32,13 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     annotationInfos: defaultAnnotationInfos,
   });
 
+  const { analyseRoof } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
+
   useEffect(() => {
     const cachedDefaultAnnotationInfo = getCached.annotationsInfoList();
     const cachedDefaultPolygons = getCached.polygons() || [];
-    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0) {
+    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof) {
       setDefaultAnnotations({
         polygons: cachedDefaultPolygons,
         annotationInfos: cachedDefaultAnnotationInfo,
@@ -44,14 +47,11 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
       clearPolygons();
     }
     stopLoading();
-  }, []);
+  }, [shouldAnalyseRoof]);
 
   if (isLoading) {
     return <BPLoader message="Chargement des données d'annotation..." />;
   }
-
-  const { analyseRoof } = parseUrlParams();
-  const shouldAnalyseRoof = analyseRoof === 'true';
 
   return (
     <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>

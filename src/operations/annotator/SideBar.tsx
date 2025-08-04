@@ -22,7 +22,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { BaseSyntheticEvent, ChangeEvent, FC, useEffect, useState } from 'react';
+import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
 import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
@@ -43,28 +43,9 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties } = useCanvasAnnotationContext();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const [defaultAnnotationInfosState, setDefaultAnnotationInfosState] = useState([]);
-
-  useEffect(() => {
-    const currentDefaultAnnotationInfos = [...defaultAnnotationInfos];
-    if (roofAnalyseProperties) {
-      const { humidite_rate, moisissure_rate, obstacle } = roofAnalyseProperties || {};
-      const roofAnalysePropertiesInfos: AnnotationInfo = {
-        humidityLevel: humidite_rate,
-        wearLevel: moisissure_rate,
-        obstacle: `${obstacle}`,
-        labelName: 'Toiture',
-        labelType: 'roof',
-        polygonId: 'roof-polygon',
-      };
-
-      currentDefaultAnnotationInfos.unshift(roofAnalysePropertiesInfos);
-    }
-    setDefaultAnnotationInfosState(currentDefaultAnnotationInfos);
-  }, [defaultAnnotationInfos, roofAnalyseProperties]);
 
   const [expanded, setExpanded] = useState<number | null>(0);
-  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfosState);
+  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {

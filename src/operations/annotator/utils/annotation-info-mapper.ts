@@ -22,8 +22,13 @@ export const createDefaultAnnotationInfo = (polygonId: string, index: number): A
   return { ...DEFAULT_ANNOTATION_INFO, polygonId, labelName: `Polygone ${Alphabet[index]}` };
 };
 
-export const getSynchronizedAnnotationInfos = (polygons: Polygon[], annotationInfos: AnnotationInfo[]): AnnotationInfo[] => {
+export const getSynchronizedAnnotationInfos = (
+  polygons: Polygon[],
+  annotationInfos: AnnotationInfo[],
+  roofAnnotationInfo: AnnotationInfo
+): AnnotationInfo[] => {
   return polygons.map((polygon, index) => {
+    if (polygon.id === 'roof-polygon') return roofAnnotationInfo;
     const annotationInfo = annotationInfos.find(annotationInfo => annotationInfo.polygonId === polygon.id);
     return annotationInfo ?? createDefaultAnnotationInfo(polygon.id, index);
   });

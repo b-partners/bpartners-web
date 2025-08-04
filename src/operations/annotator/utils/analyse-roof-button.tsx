@@ -1,5 +1,6 @@
 import { BPButton } from '@/common/components';
 import { useRoofAnalyseQuery } from '@/common/fetcher';
+import { useCanvasAnnotationContext } from '@/common/store';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
@@ -14,10 +15,11 @@ interface AnalyseRoofButtonProps {
 export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPicture }) => {
   const [searchParam] = useSearchParams();
   const { data: prospect } = useGetOne('prospects', { id: searchParam.get('prospectId') });
-  const imageUrl = searchParam.get('imgUrl');
-  const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, imageUrl, prospect);
+  const { setPolygons } = useCanvasAnnotationContext();
+  const handleSuccess = () => setPolygons([]);
+  const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, prospect, handleSuccess);
 
   const handleClick = () => processDetection();
 
-  return <BPButton label='Analyser la toiture' disabled={polygons.length === 0} onClick={handleClick} isLoading={isProcessing} />;
+  return <BPButton label='bp.action.process_detection' disabled={polygons.length === 0} onClick={handleClick} isLoading={isProcessing} />;
 };

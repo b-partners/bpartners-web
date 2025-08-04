@@ -71,6 +71,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
             prospectId,
             zoomLevel: ZoomLevel.HOUSES_0,
           });
+          clearPolygons()
           navigate(
             `/roof-analyse?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
           );

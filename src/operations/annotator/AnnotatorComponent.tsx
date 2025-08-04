@@ -6,6 +6,7 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
+import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
@@ -49,10 +50,19 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const shouldAnalyseRoof = analyseRoof === 'true';
 
   useEffect(() => {
-    const currentPolygons: Polygon[] = [{ fillColor: '', id: 'roof-polygon', points: [], isInvisible: true, strokeColor: '' }, ...(data?.polygons || [])];
-    console.log(currentPolygons);
-    if (polygons.length === 0) setPolygons(data?.polygons || []);
+    if (shouldAnalyseRoof) {
+      clearPolygons();
+      setPolygons([]);
+    }
+  }, [shouldAnalyseRoof]);
+
+  useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
+    const currentPolygons: Polygon[] = [
+      { fillColor: '', id: 'roof-polygon', points: [], isInvisible: false, strokeColor: '', surface: data?.properties?.roof_area_in_m2 },
+      ...(data?.polygons || []),
+    ];
+    if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties) setPolygons(currentPolygons || []);
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
@@ -162,7 +172,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}
-      {data && (
+      {data && !shouldAnalyseRoof && (
         <>
           <Paper sx={{ background: '#BEB4A4 !important', px: '10rem', py: 2, borderRadius: 2, textTransform: 'uppercase', mt: 0.5 }}>
             <Typography sx={{ textAlign: 'center', width: '100%' }}>
