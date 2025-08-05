@@ -1,7 +1,7 @@
 import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
-import { prettyPrintMoney } from '@/common/utils';
+import { prettyPrintMoney, stringCutter } from '@/common/utils';
 import { Edit } from '@mui/icons-material';
 import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -65,12 +65,14 @@ export const CompanyCard = () => {
             {!editMode &&
               fields
                 .filter(({ name, showOnEdit }) => !!name && !showOnEdit)
-                .map(({ name, label, isMoney }) => (
+                .map(({ name, label, isMoney, cutString }) => (
                   <Grid item xs={12} sm={4} key={name + label}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>
-                      {isMoney && prettyPrintMoney(Number(accountForm.getValues(name || ('' as any)) || '0'))}
-                      {!isMoney && accountForm.getValues(name || ('Non renseigné' as any))}
+                      {!accountForm.getValues(name as any) && !isMoney && 'Non renseigné'}
+                      {isMoney && prettyPrintMoney(Number(accountForm.getValues(name as any) || '0'))}
+                      {!isMoney && !cutString && accountForm.getValues(name as any)}
+                      {!isMoney && cutString && stringCutter(accountForm.getValues(name as any), 50)}
                     </Typography>
                   </Grid>
                 ))}
@@ -81,7 +83,7 @@ export const CompanyCard = () => {
                 ) : (
                   <>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{values.label} </Typography>
-                    <Typography>{accountForm.getValues(values.name || ('Non renseigné' as any))} </Typography>
+                    <Typography>{accountForm.getValues(values.name as any) || 'Non renseigné'} </Typography>
                   </>
                 )}
               </Grid>

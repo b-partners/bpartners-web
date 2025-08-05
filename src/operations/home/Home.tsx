@@ -2,7 +2,7 @@ import { BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
-import { Box, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { useGetList, useRecordContext } from 'react-admin';
 import imageAnalyse from '/home/4.png';
 
@@ -12,7 +12,7 @@ import { HomeStyle } from './style';
 
 export const Home = () => {
   const record = useRecordContext();
-  const { data: prospectsList = [] } = useGetList('prospects', {
+  const { data: prospectsList = [], isLoading } = useGetList('prospects', {
     pagination: { page: 1, perPage: 6 },
   });
 
@@ -50,21 +50,23 @@ export const Home = () => {
           <Grid item xs={12} md={6} height={'400px'}>
             <Box className='left-box'>
               <Grid container spacing={3} justifyContent='center'>
-                {prospectsList.map((prospect, index) => (
-                  <Grid item xs={12} sm={6} key={index} minHeight={'76px'}>
-                    <Box className='prospect-item'>
-                      <PublicIcon sx={{ mr: 1 }} />
-                      <Box className='prospect-text'>
-                        <Typography className='prospect-name' fontWeight='bold'>
-                          {prospect.name}
-                        </Typography>
-                        <Typography className='prospect-address' variant='body2'>
-                          {prospect.address}
-                        </Typography>
+                {isLoading && <CircularProgress size={50} />}
+                {!isLoading &&
+                  prospectsList.map((prospect, index) => (
+                    <Grid item xs={12} sm={6} key={index} minHeight={'76px'}>
+                      <Box className='prospect-item'>
+                        <PublicIcon sx={{ mr: 1 }} />
+                        <Box className='prospect-text'>
+                          <Typography className='prospect-name' fontWeight='bold'>
+                            {prospect.name}
+                          </Typography>
+                          <Typography className='prospect-address' variant='body2'>
+                            {prospect.address}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  </Grid>
-                ))}
+                    </Grid>
+                  ))}
               </Grid>
             </Box>
           </Grid>
