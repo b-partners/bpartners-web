@@ -87,6 +87,7 @@ export const getCompanyFields = (record: any) => {
       label: 'Lien du feedback',
       value: record?.feedback?.feedbackLink,
       name: 'feedback.feedbackLink',
+      cutString: true,
     },
     {
       label: 'Téléphone',
