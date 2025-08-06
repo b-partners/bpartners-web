@@ -8,6 +8,7 @@ import imageAnalyse from '/home/4.png';
 
 import { useState } from 'react';
 import { HomeStyle } from './style';
+import { useState } from 'react';
 
 // ... imports identiques
 
