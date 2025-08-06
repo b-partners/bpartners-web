@@ -6,8 +6,8 @@ import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography
 import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/4.png';
 
-import { HomeStyle } from './style';
 import { useState } from 'react';
+import { HomeStyle } from './style';
 
 // ... imports identiques
 
