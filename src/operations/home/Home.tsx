@@ -3,20 +3,19 @@ import { PALETTE_COLORS } from '@/common/config/theme';
 import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
-import { useGetList, useRecordContext } from 'react-admin';
+import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/4.png';
 
 import { HomeStyle } from './style';
+import { useState } from 'react';
 
 // ... imports identiques
 
 export const Home = () => {
-  const record = useRecordContext();
   const { data: prospectsList = [], isLoading } = useGetList('prospects', {
     pagination: { page: 1, perPage: 6 },
   });
-
-  console.log(record);
+  const [address, setAddress] = useState('');
 
   return (
     <Box component='section' sx={HomeStyle}>
@@ -37,10 +36,15 @@ export const Home = () => {
               </>
             }
             className='address-field'
+            value={address}
+            onChange={e => setAddress(e.target.value)}
           />
           <BPButton
             className='btn-analyse'
-            onClick={() => (window.location.pathname = '/prospects')}
+            onClick={() => {
+              sessionStorage.setItem('prospectAddress', address);
+              window.location.pathname = '/prospects';
+            }}
             label="Passer à l'analyse"
             data-cy='button-analyze'
             data-path='/prospects'
