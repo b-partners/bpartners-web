@@ -1,3 +1,4 @@
+import { createImage, fetchImageAsBase64, getCropepedImageAndPolygons } from '@/operations/annotator/utils';
 import {
   annotatorProvider,
   DetectionResultInVgg,
@@ -11,6 +12,7 @@ import {
 import { AreaPictureDetails, Prospect } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { getUrlParams } from '../utils';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
   const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
@@ -99,13 +101,15 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
   const queryFnVgg = async () => {
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': '*/*' } });
     const detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
-
     const regions = getRegions(detectionResultJson);
 
     const polygons = detectionResultMapper.toPolygon(regions);
     const obstacle = isThereAnObstacle(regions);
 
-    return { properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle }, polygons };
+    const imageAsBase64 = await fetchImageAsBase64(getUrlParams(window.location.search, 'imgUrl'));
+    const image = await createImage(imageAsBase64);
+    const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(polygons, image as HTMLImageElement);
+    return { properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle }, polygons: croppedPolygons, image: croppedImage };
   };
 
   const query = useQuery({

@@ -28,7 +28,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   width,
   height,
 }) => {
-  const { analyseRoof } = parseUrlParams();
+  const { analyseRoof, geoJsonResultUrl } = parseUrlParams();
   const shouldAnalyseRoof = analyseRoof === 'true';
   const { data, isPending } = useGeojsonQueryResult([analyseRoof]);
 
@@ -55,7 +55,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       { fillColor: '', id: 'roof-polygon', points: [], isInvisible: false, strokeColor: '', surface: data?.properties?.roof_area_in_m2 },
       ...(data?.polygons || []),
     ];
-    if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
+    if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
@@ -92,7 +92,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
 
-  if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
+  if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
@@ -123,14 +123,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
-          {containerWidth > 0 && !showLLMResult && (
+          {containerWidth > 0 && !showLLMResult && (!geoJsonResultUrl || data?.image) && (
             <AnnotatorCanvas
               markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
               allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
               width={width || containerWidth}
               height={height || containerheight * 0.95}
               buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
-              image={getUrlParams(window.location.search, 'imgUrl')}
+              image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
               setPolygons={setPolygons}
               polygonList={polygonFromProps || polygons}
               measurementMapper={!data && measurementMapper}
