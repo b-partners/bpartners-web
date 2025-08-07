@@ -58,7 +58,7 @@ export const CompanyCard = () => {
               fields
                 .filter(({ name }) => !!name)
                 .map(({ name, label }) => (
-                  <Grid item xs={12} sm={4} key={name + label}>
+                  <Grid item xs={12} sm={6} lg={4} key={name + label}>
                     <BpFormField style={{ width: '100%' }} name={name} label={label} variant='outlined' />
                   </Grid>
                 ))}
@@ -66,7 +66,7 @@ export const CompanyCard = () => {
               fields
                 .filter(({ name, showOnEdit }) => !!name && !showOnEdit)
                 .map(({ name, label, isMoney, cutString }) => (
-                  <Grid item xs={12} sm={4} key={name + label}>
+                  <Grid item xs={12} sm={6} lg={4} key={name + label}>
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>
                       {!accountForm.getValues(name as any) && !isMoney && 'Non renseigné'}
@@ -77,7 +77,7 @@ export const CompanyCard = () => {
                   </Grid>
                 ))}
             {businessActivitiesField.map(values => (
-              <Grid item xs={12} sm={4} key={JSON.stringify(values)}>
+              <Grid item xs={12} sm={6} lg={4} key={JSON.stringify(values)}>
                 {editMode ? (
                   <BpAutoComplete fullWidth data-cy={values['data-cy']} {...values} options={jobList} />
                 ) : (
@@ -88,7 +88,7 @@ export const CompanyCard = () => {
                 )}
               </Grid>
             ))}
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6} lg={4}>
               <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
               <SubjectToVatSwitch data={record as any} />
             </Grid>
