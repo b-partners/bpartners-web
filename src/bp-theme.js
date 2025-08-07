@@ -192,7 +192,13 @@ export const BP_THEME = {
               backgroundColor: BP_COLOR['solid_grey'],
             },
           },
-          '& .RaList-actions .MuiButton-root': bp_button,
+          '& .RaList-actions .MuiButton-root': {
+            ...bp_button,
+            background: PALETTE_COLORS.pine,
+          },
+          '& .RaList-actions .MuiButton-root:hover': {
+            background: PALETTE_COLORS.forest,
+          },
           '& .RaList-actions': {
             padding: '10px 5px 5px 10px',
           },
