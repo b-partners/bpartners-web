@@ -1,12 +1,12 @@
 import { BP_COLOR } from '@/bp-theme';
 import { EmptyList } from '@/common/components/EmptyList';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { useProspectFetcher } from '@/common/fetcher';
 import { ProspectStatus } from '@bpartners/typescript-client';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 import { ProspectItem } from './ProspectItem';
-import { PALETTE_COLORS } from '@/common/config/theme';
 
 interface ProspectColumnProps {
   status: ProspectStatus;
@@ -16,7 +16,7 @@ interface ProspectColumnProps {
 const getColor = (prospectStatus: ProspectStatus) => {
   switch (prospectStatus) {
     case ProspectStatus.TO_CONTACT:
-      return { from: '', to: '0 2px 6px #CECECE' ,text: PALETTE_COLORS.black };
+      return { from: '', to: '0 2px 6px #CECECE', text: PALETTE_COLORS.black };
     case ProspectStatus.CONTACTED:
       return { from: PALETTE_COLORS.neon_orange, to: '0 2px 10px #CECECE', text: PALETTE_COLORS.white };
     case ProspectStatus.CONVERTED:
