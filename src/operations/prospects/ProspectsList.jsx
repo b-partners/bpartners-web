@@ -22,7 +22,6 @@ import { prospectInfoResolver } from '../../common/resolvers/prospect-info-valid
 import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, prospectingProvider } from '../../providers';
 import { Add } from '@mui/icons-material';
-import { BP_COLOR } from '@/bp-theme';
 import { PALETTE_COLORS } from '@/common/config/theme';
 
 const BP_USER_CACHE_NAME = 'bp_user';
