@@ -128,11 +128,11 @@ export const BP_THEME = {
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          backgroundColor: BP_COLOR['2'],
+          backgroundColor: PALETTE_COLORS.white,
         },
         barColorSecondary: {
-          backgroundColor: BP_COLOR['30'],
-          color: BP_COLOR['30'],
+          backgroundColor: PALETTE_COLORS.pine,
+          color: PALETTE_COLORS.pine,
         },
       },
     },
@@ -195,6 +195,9 @@ export const BP_THEME = {
           '& .RaList-actions .MuiButton-root': bp_button,
           '& .RaList-actions': {
             padding: '10px 5px 5px 10px',
+          },
+          '& .RaDatagrid-headerCell': {
+            backgroundColor: PALETTE_COLORS.pine,
           },
         },
       },

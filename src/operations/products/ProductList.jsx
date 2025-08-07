@@ -42,15 +42,7 @@ const Product = () => {
   const isSubjectToVat = !!companyInfo?.isSubjectToVat;
   return (
     !isLoading && (
-      <Datagrid
-        rowClick='edit'
-        empty={<EmptyList />}
-        sx={{
-          '& .RaDatagrid-headerCell': {
-            backgroundColor: PALETTE_COLORS.pine,
-          },
-        }}
-      >
+      <Datagrid rowClick='edit' empty={<EmptyList />}>
         <FunctionField
           source='description'
           label='Description'
