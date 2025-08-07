@@ -50,8 +50,8 @@ export const Home = () => {
             data-path='/prospects'
           />
         </Box>
-        <Grid container spacing={3} maxHeight={'400px'}>
-          <Grid item xs={12} md={6} height={'400px'}>
+        <Grid container spacing={2} maxHeight={'400px'} >
+          <Grid item xs={12} lg={6}>
             <Box className='left-box'>
               <Grid container spacing={3} justifyContent='center'>
                 {isLoading && <CircularProgress size={50} />}
@@ -74,7 +74,7 @@ export const Home = () => {
               </Grid>
             </Box>
           </Grid>
-          <Grid item xs={12} md={6} minHeight={'400px'}>
+          <Grid item xs={12} lg={6} minHeight={'400px'}>
             <Grid item xs={12} minHeight={'100px'}>
               <Box className='block-box block-white' mb={2}>
                 <IconButton

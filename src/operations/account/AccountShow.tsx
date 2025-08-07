@@ -11,16 +11,16 @@ export const AccountShow = () => {
     <ShowBase id='' resource='accountHolder'>
       <SimpleShowLayout>
         <Grid sx={AccountStyle} container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} lg={6}>
             <UserCard />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} lg={6}>
             <TrialCard />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item lg={12}>
             <CompanyCard />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item lg={12}>
             <SubscriptionCard />
           </Grid>
         </Grid>

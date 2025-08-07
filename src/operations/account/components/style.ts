@@ -146,7 +146,7 @@ export const AccountStyle: SxProps = {
     borderRadius: 25,
     color: PALETTE_COLORS.neon_orange,
     py: 1,
-    width: '17%',
+    width: {xs: '200px', sm: '200px', lg: '200px'},
     textAlign: 'center',
     ml: 3,
     mb: 3,
