@@ -40,12 +40,12 @@ const BPListActions: FC<BPListActionsType> = props => {
       {hasCreate && <CreateButton color='error' data-testid='create-button' label='Créer' sx={IMPORT_BUTTON_STYLE} />}
       {importComponent}
       {hasExport && (
-        <Button  variant='contained' startIcon={<FileDownload />} data-testid={`export-button-${fileName}`} sx={IMPORT_BUTTON_STYLE} onClick={exportCSV}>
+        <Button variant='contained' startIcon={<FileDownload />} data-testid={`export-button-${fileName}`} sx={IMPORT_BUTTON_STYLE} onClick={exportCSV}>
           Exporter
         </Button>
       )}
     </Stack>
   );
-}; 
+};
 
 export default BPListActions;
