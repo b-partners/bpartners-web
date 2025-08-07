@@ -203,7 +203,7 @@ export const BP_THEME = {
             padding: '10px 5px 5px 10px',
           },
           '& .RaDatagrid-headerCell': {
-            backgroundColor: PALETTE_COLORS.pine,
+            backgroundColor: important(PALETTE_COLORS.pine),
           },
         },
       },

@@ -1,4 +1,3 @@
-import { PALETTE_COLORS } from '@/bp-theme';
 import { RaMoneyField } from '@/common/components';
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import { BPImport } from '@/common/components/BPImport';

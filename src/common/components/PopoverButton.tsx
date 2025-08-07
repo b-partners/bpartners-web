@@ -1,4 +1,5 @@
-import { IconButton, Popover, SxProps, Tooltip, Typography } from '@mui/material';
+import { PALETTE_COLORS } from '@/bp-theme';
+import { Box, IconButton, Popover, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, MouseEvent, ReactElement, ReactNode, useState } from 'react';
 
 /**
@@ -23,9 +24,19 @@ const PopoverButton: FC<PopoverButtonProps> = props => {
 
   return (
     <>
-      <Tooltip data-testid={props['data-testid'] || 'open-popover'} sx={style} title={icon && label} onClick={handleClick}>
-        <span>{icon ? <IconButton disabled={disabled}>{icon}</IconButton> : <Typography>{label}</Typography>}</span>
-      </Tooltip>
+      <Box sx={style}>
+        <Tooltip data-testid={props['data-testid'] || 'open-popover'} title={icon && label} onClick={handleClick}>
+          <span>
+            {icon ? (
+              <IconButton sx={{ backgroundColor: PALETTE_COLORS.pine }} disabled={disabled}>
+                {icon}
+              </IconButton>
+            ) : (
+              <Typography>{label}</Typography>
+            )}
+          </span>
+        </Tooltip>
+      </Box>
       <Popover
         id={anchorEl && 'simple-popover'}
         open={Boolean(anchorEl)}
