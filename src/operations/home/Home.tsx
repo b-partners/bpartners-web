@@ -6,8 +6,8 @@ import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography
 import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/4.png';
 
-import { HomeStyle } from './style';
 import { useState } from 'react';
+import { HomeStyle } from './style';
 
 // ... imports identiques
 
@@ -50,7 +50,7 @@ export const Home = () => {
             data-path='/prospects'
           />
         </Box>
-        <Grid container spacing={2} maxHeight={'400px'} >
+        <Grid container spacing={2} maxHeight={'400px'}>
           <Grid item xs={12} lg={6}>
             <Box className='left-box'>
               <Grid container spacing={3} justifyContent='center'>
