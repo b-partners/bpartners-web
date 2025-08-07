@@ -23,6 +23,7 @@ import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, prospectingProvider } from '../../providers';
 import { Add } from '@mui/icons-material';
 import { BP_COLOR } from '@/bp-theme';
+import { PALETTE_COLORS } from '@/common/config/theme';
 
 const BP_USER_CACHE_NAME = 'bp_user';
 export const ProspectDialogProvider = ({ ComponentChild }) => {
@@ -132,7 +133,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
             variant='outlined'
             style={{ width: "400px" }}
           />
-          <BPButton sx={{ bgcolor: BP_COLOR["5"] }} style={{ width: 200 }} size='large' icon={<Add />} label='resources.prospects.add' onClick={toggleDialog} />
+          <BPButton sx={{ bgcolor: PALETTE_COLORS.forest }} style={{ width: 200 }} size='large' icon={<Add />} label='resources.prospects.add' onClick={toggleDialog} />
         </FlexBox>
         <Prospects />
         {isCreating && (
