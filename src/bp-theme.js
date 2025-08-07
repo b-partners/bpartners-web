@@ -194,10 +194,10 @@ export const BP_THEME = {
           },
           '& .RaList-actions .MuiButton-root': {
             ...bp_button,
-            background: PALETTE_COLORS.pine,
+            background: PALETTE_COLORS.neon_orange,
           },
           '& .RaList-actions .MuiButton-root:hover': {
-            background: PALETTE_COLORS.forest,
+            background: 	'#FF8A65',
           },
           '& .RaList-actions': {
             padding: '10px 5px 5px 10px',
