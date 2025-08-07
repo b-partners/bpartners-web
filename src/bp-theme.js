@@ -197,7 +197,7 @@ export const BP_THEME = {
             background: PALETTE_COLORS.neon_orange,
           },
           '& .RaList-actions .MuiButton-root:hover': {
-            background: 	'#FF8A65',
+            background: '#FF8A65',
           },
           '& .RaList-actions': {
             padding: '10px 5px 5px 10px',
