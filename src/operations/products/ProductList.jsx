@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { RaMoneyField } from '@/common/components';
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import { BPImport } from '@/common/components/BPImport';
@@ -41,7 +42,15 @@ const Product = () => {
   const isSubjectToVat = !!companyInfo?.isSubjectToVat;
   return (
     !isLoading && (
-      <Datagrid rowClick='edit' empty={<EmptyList />}>
+      <Datagrid
+        rowClick='edit'
+        empty={<EmptyList />}
+        sx={{
+          '& .RaDatagrid-headerCell': {
+            backgroundColor: PALETTE_COLORS.pine,
+          },
+        }}
+      >
         <FunctionField
           source='description'
           label='Description'

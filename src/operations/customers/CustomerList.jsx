@@ -1,4 +1,5 @@
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { Datagrid, List, TextField, TextInput } from 'react-admin';
 import { BPImport } from '../../common/components/BPImport';
 import BPListActions from '../../common/components/BPListActions';
@@ -34,7 +35,15 @@ const CustomerList = props => (
       '& .RaBulkActionsToolbar-toolbar': { display: 'none' },
     }}
   >
-    <Datagrid rowClick='edit' empty={<EmptyList />}>
+    <Datagrid
+      rowClick='edit'
+      empty={<EmptyList />}
+      sx={{
+        '& .RaDatagrid-headerCell': {
+          backgroundColor: PALETTE_COLORS.pine,
+        },
+      }}
+    >
       <TextField source='lastName' label='Nom' />
       <TextField source='firstName' label='Prénom' />
       <TextField source='email' label='Email' />
