@@ -1,6 +1,6 @@
 import { defaultTheme } from 'react-admin';
 
-const important = value => `${value} !important`;
+export const importantCSS = value => `${value} !important`;
 
 export const PALETTE_COLORS = {
   pine: '#4A644E',
@@ -103,7 +103,7 @@ export const BP_THEME = {
             padding: '1%',
           },
           '&. RaLayout-contentWithSidebar': {
-            overflowY: important('scroll'),
+            overflowY: importantCSS('scroll'),
           },
         },
       },
@@ -203,7 +203,7 @@ export const BP_THEME = {
             padding: '10px 5px 5px 10px',
           },
           '& .RaDatagrid-headerCell': {
-            backgroundColor: important(PALETTE_COLORS.pine),
+            backgroundColor: importantCSS(PALETTE_COLORS.pine),
           },
         },
       },
@@ -222,9 +222,9 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '& .Mui-checked': {
-            color: important(BP_COLOR[5]),
+            color: importantCSS(BP_COLOR[5]),
             '& +.MuiSwitch-track': {
-              backgroundColor: important(BP_COLOR[5]),
+              backgroundColor: importantCSS(BP_COLOR[5]),
               opacity: 1,
             },
           },
@@ -238,7 +238,7 @@ export const BP_THEME = {
             backgroundColor: BP_COLOR[5],
           },
           '& .Mui-selected': {
-            color: important(BP_COLOR[10]),
+            color: importantCSS(BP_COLOR[10]),
           },
           borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
         },
@@ -248,7 +248,7 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '&.Mui-checked': {
-            color: important(BP_COLOR[5]),
+            color: importantCSS(BP_COLOR[5]),
           },
         },
       },
