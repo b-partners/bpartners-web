@@ -66,6 +66,7 @@ export const HomeStyle: SxProps = {
     borderRadius: 2,
     bgcolor: PALETTE_COLORS.white,
     mr: -0.5,
+    height: '76%',
   },
   '& .prospect-item': {
     maxWidth: 300,
