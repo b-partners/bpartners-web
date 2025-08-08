@@ -66,7 +66,6 @@ export const BpAdmin = () => {
       theme={BP_THEME}
       layout={Layout}
     >
-      <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
       <Resource name='products' {...products} />
       <Resource name='invoices' {...invoice} />
