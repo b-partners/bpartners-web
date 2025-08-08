@@ -1,4 +1,4 @@
-import { BP_COLOR } from '@/bp-theme';
+import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
 
 export const ERROR_BOX_STYLE = {
   bgcolor: BP_COLOR[40],
@@ -13,6 +13,7 @@ export const ERROR_BOX_STYLE = {
 export const IMPORT_BUTTON_STYLE = {
   width: '10rem',
   paddingBlock: 1,
+  bgcolor: PALETTE_COLORS.pine,
 };
 
 export const IMPORT_MODAL_STYLE = {

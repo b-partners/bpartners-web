@@ -1,5 +1,6 @@
 import { BP_COLOR } from '@/bp-theme';
 import { EmptyList } from '@/common/components/EmptyList';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { useProspectFetcher } from '@/common/fetcher';
 import { ProspectStatus } from '@bpartners/typescript-client';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
@@ -15,11 +16,11 @@ interface ProspectColumnProps {
 const getColor = (prospectStatus: ProspectStatus) => {
   switch (prospectStatus) {
     case ProspectStatus.TO_CONTACT:
-      return { from: '#DDEEFF', to: '#B0D0FF', text: '#4A76B8' };
+      return { from: '', to: '0 2px 6px #CECECE', text: PALETTE_COLORS.black };
     case ProspectStatus.CONTACTED:
-      return { from: '#F0E0FF', to: '#D5B9FF', text: '#7A3FAF' };
+      return { from: PALETTE_COLORS.neon_orange, to: '0 2px 10px #CECECE', text: PALETTE_COLORS.white };
     case ProspectStatus.CONVERTED:
-      return { from: '#DAFAE5', to: '#A8E5C1', text: '#2F7A5F' };
+      return { from: PALETTE_COLORS.pine, to: '0 2px 10px #CECECE', text: PALETTE_COLORS.white };
     default:
       return { from: '#F8F9FA', to: '#D6D8DB', text: '#6C757D' };
   }
@@ -34,7 +35,8 @@ export const ProspectColumn: FC<ProspectColumnProps> = ({ title, status }) => {
         <Box
           sx={{
             p: 2,
-            background: `linear-gradient(to right, ${color.from}, ${color.to})`,
+            background: `${color.from}`,
+            boxShadow: `${color.to}`,
             borderRadius: '8px',
           }}
         >

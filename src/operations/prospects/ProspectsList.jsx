@@ -1,6 +1,6 @@
 import { FileType, ZoomLevel } from '@bpartners/typescript-client';
 import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Link, Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -13,26 +13,32 @@ import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
+import { importantCSS } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
+import { PALETTE_COLORS } from '@/common/config/theme';
 import { useLoadingHandler, useTabManager } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { parseLocalStorage } from '@/common/utils/local-storage';
 import { annotatorProvider } from '@/providers/annotator-provider';
+import { Add } from '@mui/icons-material';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, prospectingProvider } from '../../providers';
-import { Add } from '@mui/icons-material';
-import { BP_COLOR } from '@/bp-theme';
 
 const BP_USER_CACHE_NAME = 'bp_user';
-export const ProspectDialogProvider = ({ ComponentChild }) => {
+export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const notify = useNotify();
   const navigate = useNavigate();
+
   const { isLoading, stopLoading, startLoading, setIsLoading } = useLoadingHandler();
   const bpUser = parseLocalStorage(BP_USER_CACHE_NAME);
 
-  const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT' }, resolver: prospectInfoResolver });
+  const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
+
+  useEffect(() => {
+    form.setValue('address', address);
+  }, [address]);
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
     const doSubmit = form.handleSubmit(async data => {
@@ -127,12 +133,21 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ mt: 1 }}>
-        <FlexBox sx={{ justifyContent: "end", gap: 2, mb: 1 }}>
-          <ProspectFilterInput
-            variant='outlined'
-            style={{ width: "400px" }}
+        <FlexBox sx={{ justifyContent: 'end', gap: 2, mb: 1 }}>
+          <ProspectFilterInput variant='outlined' style={{ width: '400px' }} />
+          <BPButton
+            sx={{
+              bgcolor: PALETTE_COLORS.forest,
+              '&:hover': {
+                bgcolor: importantCSS(PALETTE_COLORS.pine),
+              },
+            }}
+            style={{ width: 200 }}
+            size='large'
+            icon={<Add />}
+            label='resources.prospects.add'
+            onClick={toggleDialog}
           />
-          <BPButton sx={{ bgcolor: BP_COLOR["5"] }} style={{ width: 200 }} size='large' icon={<Add />} label='resources.prospects.add' onClick={toggleDialog} />
         </FlexBox>
         <Prospects />
         {isCreating && (
@@ -159,5 +174,5 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   );
 };
 
-const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />
+const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
 export default ProspectsList;

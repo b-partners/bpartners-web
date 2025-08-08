@@ -15,6 +15,7 @@ import { ExportLinkMailModal, GenerateLinkModal, StatusField, TransactionLinkInv
 import TransactionCategorySelection from './TransactionCategorySelection';
 import TransactionChart from './TransactionChart';
 import TransactionReceiptView from './TransactionReceiptView';
+import { PALETTE_COLORS } from '@/common/config/theme';
 
 const TransactionList = props => {
   const [documentState, setDocumentState] = useState({ document: null, shouldShowDocument: false, type: '' });
@@ -95,7 +96,11 @@ const TransactionList = props => {
             ]}
             component={ListComponent}
           >
-            <Datagrid rowClick={false} bulkActionButtons={false} empty={<EmptyList />}>
+            <Datagrid rowClick={false} bulkActionButtons={false} empty={<EmptyList />} sx={{
+        '& .RaDatagrid-headerCell': {
+          backgroundColor: PALETTE_COLORS.pine
+        }
+      }}  >
               <FunctionField render={record => coloredPrettyPrintMinors(record.amount, record.type)} label='Montant' />
               <TextField source='label' label='Titre' />
               <FunctionField render={transaction => <TransactionCategorySelection transaction={transaction} />} label='Catégorie' />
