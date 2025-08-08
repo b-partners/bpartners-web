@@ -6,7 +6,6 @@ import {
   CalendarMonth,
   Category,
   ContactSupport,
-  Euro,
   Handshake,
   Home as HomeIcon,
   Lock,
