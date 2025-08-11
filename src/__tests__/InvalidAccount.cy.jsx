@@ -4,8 +4,6 @@ import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
 import { whoami1 } from './mocks/responses/security-api';
 
-const date = new Date().toISOString().slice(0, 10);
-
 describe(specTitle('Validate Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();

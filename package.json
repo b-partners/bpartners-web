@@ -74,7 +74,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc -b && vite build",
-    "lint": "npx eslint .",
+    "lint": "npx eslint ./src",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --component ",
     "it": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --config video=true --e2e",
