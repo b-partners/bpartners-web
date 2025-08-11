@@ -14,7 +14,6 @@ import invoice from '@/operations/invoice';
 import { PartnersPage } from '@/operations/partners/PartnersPage';
 import products from '@/operations/products';
 import { prospects } from '@/operations/prospects';
-import transactions from '@/operations/transactions';
 import { authProvider, awsAuth, dataProvider } from '@/providers';
 import { Admin } from '@react-admin/ra-enterprise';
 import { Resource } from '@react-admin/ra-rbac';
@@ -66,7 +65,6 @@ export const BpAdmin = () => {
       theme={BP_THEME}
       layout={Layout}
     >
-      <Resource name='transactions' {...transactions} />
       <Resource name='customers' {...customers} />
       <Resource name='products' {...products} />
       <Resource name='invoices' {...invoice} />

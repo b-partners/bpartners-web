@@ -38,7 +38,7 @@ describe(specTitle('Invoice creation'), () => {
   });
 
   it('should display default values on invoice creation', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.mount(<App />);
@@ -61,7 +61,7 @@ describe(specTitle('Invoice creation'), () => {
   });
 
   it('should create an draft invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.mount(<App />);
@@ -157,7 +157,7 @@ describe(specTitle('Invoice creation'), () => {
   });
 
   it('should create an confirmed invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.mount(<App />);

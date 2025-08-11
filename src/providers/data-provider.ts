@@ -12,7 +12,6 @@ import {
   prospectingProvider,
   RaDataProviderType,
   relaunchProvider,
-  transactionProvider,
 } from '.';
 import { draftAreaPictureAnnotatorProvider } from './draft-area-annotations-provider';
 import { invoiceProvider } from './invoice-provider';
@@ -22,7 +21,6 @@ export const maxPageSize = 10_000;
 const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'profile') return profileProvider;
   if (resourceType === 'account') return accountProvider;
-  if (resourceType === 'transactions') return transactionProvider;
   if (resourceType === 'products') return productProvider;
   if (resourceType === 'customers') return customerProvider;
   if (resourceType === 'prospects') return prospectingProvider;

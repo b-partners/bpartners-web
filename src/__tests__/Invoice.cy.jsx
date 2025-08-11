@@ -3,7 +3,6 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
 
-import transactions from '@/operations/transactions';
 import { invoiceRelaunch1 } from './mocks/responses';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
@@ -14,7 +13,6 @@ describe(specTitle('Invoice'), () => {
   beforeEach(() => {
     cy.clearAllLocalStorage();
     cy.cognitoLogin();
-    cy.intercept('GET', `/accounts/mock-account-id1/transactions?page=1&pageSize=15`, transactions);
     cy.intercept('GET', `/users/*/accounts**`, accounts1.slice()).as('getAccount1');
     cy.intercept('GET', `/users/*/accounts/${accounts1[0].id}/accountHolders**`, accountHolders1).as('getAccountHolder1');
 
@@ -36,7 +34,7 @@ describe(specTitle('Invoice'), () => {
       ]);
     }).as('getInvoices');
 
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
 
@@ -72,7 +70,7 @@ describe(specTitle('Invoice'), () => {
       req.reply({});
     }).as('AskFeedback');
     cy.getByTestId('invoice-conversion-PAID-invoice-ref-0-1').click();
-    cy.getByTestId("invoice-payment-method-select").click();
+    cy.getByTestId('invoice-payment-method-select').click();
     cy.contains('Chèque').click();
     cy.getByTestId('invoice-conversion-PAID-invoice-ref-0').click();
     cy.contains("Envoyer un demande d'avis à firstName-0 lastName-0.");
@@ -100,7 +98,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should show an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.getByName('invoice').click();
@@ -116,7 +114,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should send the request even if there is not comment', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.getByName('invoice').click();
@@ -144,7 +142,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should able to refresh the preview', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 

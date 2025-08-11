@@ -45,7 +45,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it("Should show error message and don't send invoice", () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document).as('getPdf');
     });
     cy.mount(<App />);

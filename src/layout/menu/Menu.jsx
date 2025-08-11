@@ -6,7 +6,6 @@ import {
   CalendarMonth,
   Category,
   ContactSupport,
-  Euro,
   Handshake,
   Home as HomeIcon,
   Lock,
@@ -55,7 +54,6 @@ export const Menu = () => {
     >
       <RaMenu>
         <RaMenu.Item to='/' name='home' primaryText='Accueil' leftIcon={<HomeIcon />} />
-        <RaMenu.Item to='/transactions' name='transactions' primaryText='Mes transactions' leftIcon={<Euro />} />
         <RaMenu.Item to='/invoices' name='invoice' primaryText='Devis / facturation' leftIcon={<Receipt />} />
         <RaMenu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <RaMenu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
