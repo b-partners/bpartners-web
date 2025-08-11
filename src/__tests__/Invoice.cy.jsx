@@ -36,7 +36,7 @@ describe(specTitle('Invoice'), () => {
       ]);
     }).as('getInvoices');
 
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
 
@@ -100,7 +100,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should show an invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.getByName('invoice').click();
@@ -116,7 +116,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should send the request even if there is not comment', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.getByName('invoice').click();
@@ -144,7 +144,7 @@ describe(specTitle('Invoice'), () => {
   });
 
   it('Should able to refresh the preview', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 

@@ -197,7 +197,7 @@ describe(specTitle('Transactions'), () => {
   });
 
   it('Link transaction to invoice', () => {
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
     cy.intercept('GET', '/accounts/mock-account-id1/transactions?page=1&pageSize=15', transactions).as('getTransactions5');

@@ -21,7 +21,7 @@ describe(specTitle('Invoice'), () => {
     cy.intercept('GET', `/accounts/mock-account-id1/products**`, products).as('getProducts');
     cy.intercept('PUT', `/accounts/mock-account-id1/invoices/*`, createInvoices(1)[0]).as('crupdate1');
 
-    cy.readFile('src/operations/transactions/testInvoice.pdf', 'binary').then(document => {
+    cy.fixture('testInvoice.pdf', 'binary').then(document => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/**`, document);
     });
   });
