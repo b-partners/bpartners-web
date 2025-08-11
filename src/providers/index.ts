@@ -25,5 +25,4 @@ export * from './prospecting-provider';
 export * from './ra-data-provider-type';
 export * from './relaunch-provider';
 export * from './sheet-provider';
-export * from './transaction-provider';
 export * from './user-subscription-provider';
