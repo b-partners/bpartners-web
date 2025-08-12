@@ -9,9 +9,9 @@ import imageAnalyse from '/home/4.png';
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
 import { BaseSyntheticEvent, FC, useState } from 'react';
+import { ProspectFormDialog } from '../prospects/components';
 import { ProspectDialogProvider } from '../prospects/ProspectsList';
 import { HomeStyle } from './style';
-import { ProspectFormDialog } from '../prospects/components';
 
 // ... imports identiques
 
