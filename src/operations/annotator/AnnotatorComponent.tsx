@@ -30,7 +30,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 }) => {
   const { analyseRoof, geoJsonResultUrl } = parseUrlParams();
   const shouldAnalyseRoof = analyseRoof === 'true';
-  const { data, isPending } = useGeojsonQueryResult([analyseRoof]);
+  const { data, isPending } = useGeojsonQueryResult([analyseRoof, geoJsonResultUrl, shouldAnalyseRoof], !!geoJsonResultUrl);
 
   const { address } = useWrappedSearchParams(['address']);
   const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
@@ -52,7 +52,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons: Polygon[] = [
-      { fillColor: '', id: 'roof-polygon', points: [], isInvisible: false, strokeColor: '', surface: data?.properties?.roof_area_in_m2 },
+      { fillColor: '', id: 'roof-polygon', points: [], isInvisible: false, strokeColor: '', surface: +(data?.properties?.roof_area_in_m2?.toFixed(2) || '0') },
       ...(data?.polygons || []),
     ];
     if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);

@@ -19,7 +19,7 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     wearLevel: getLevelValue(usure_rate),
     moldRate: getLevelValue(moisissure_rate),
     obstacle: `${obstacle ? 'OUI' : 'NON'}`,
-    labelName: 'Toiture',
+    labelName: "Résultats de l'analyse de la toiture",
     labelType: 'roof',
     polygonId: 'roof-polygon',
   };
