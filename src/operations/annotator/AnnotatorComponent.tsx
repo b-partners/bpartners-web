@@ -4,9 +4,8 @@ import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFe
 import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
-import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Cached } from '@mui/icons-material';
 import { Box, Chip, Divider, IconButton, Paper, Stack, SxProps, Typography } from '@mui/material';
@@ -14,9 +13,10 @@ import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import { annotatorButtonsActions, LlmResult, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
-import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor } from './utils';
+import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor, measurementMapper } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
+
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   boxWrapperSx = {},
   showAddress = false,
@@ -38,14 +38,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
-  const {
-    filename,
-    isExtended,
-    shiftNb,
-    zoom: { level: newZoomLevel, number: newZoomLevelAsNumber },
-    actualLayer: layer,
-    otherLayers,
-  } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+
+  // Get the Area picture details to use
+  const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+  const { filename, isExtended, shiftNb, zoom, actualLayer: layer, otherLayers } = currentAreaPictureDetailsToUse;
+  const { level: newZoomLevel, number: newZoomLevelAsNumber } = zoom;
+  // Get the Area picture details to use
+
   const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
   const { toggleValue: tootleLLMResultView, value: showLLMResult } = useToggle(false);
 
@@ -77,17 +76,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       setPolygons([]);
     }
-  };
-
-  const measurementMapper = (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
-    const firstPolygon = currentPolygons[0];
-    const isInvisible = firstPolygon?.id !== measurement.polygonId;
-    if (!isExtended) return { ...measurement, isInvisible };
-    return {
-      ...measurement,
-      isInvisible,
-      value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH),
-    };
   };
 
   const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
@@ -133,7 +121,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
               setPolygons={setPolygons}
               polygonList={polygonFromProps || polygons}
-              measurementMapper={!data && measurementMapper}
+              measurementMapper={!data && measurementMapper(isExtended)}
               getNewPolygonColor={getNewPolygonColor}
               polygonLineSizeProps={
                 !data && {

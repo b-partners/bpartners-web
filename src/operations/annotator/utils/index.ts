@@ -5,5 +5,6 @@ export * from './annotation-info-translator';
 export * from './annotations-info-form';
 export * from './export-annotation-mapper';
 export * from './llm-result-queries';
+export * from './measurement-mapper';
 export * from './style';
 export * from './use-crop-polygon';
