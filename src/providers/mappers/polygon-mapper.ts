@@ -58,7 +58,7 @@ export const polygonMapper = {
 
     result.regions = {
       '1': {
-        shape_attributes: toGeoShapeAttributes(polygon, { x: 0, y: 0 }),
+        shape_attributes: toGeoShapeAttributes(polygon, !areaPicture.isExtended ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 }),
         region_attributes: {
           label: 'polygon',
           confidence: 0.7055366635322571,
