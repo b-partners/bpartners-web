@@ -20,6 +20,7 @@ export const ANNOTATION_COVERING_TRANSLATION = {
   'fibro-ciment': 'Fibro-ciment',
   'membrane-elastomere': 'Membrane élastomère',
   autres: 'Autres',
+  tuiles: 'Tuiles',
 } as const;
 export type AnnotationCoveringType = typeof ANNOTATION_COVERING_TRANSLATION;
 export const ANNOTATION_COVERING_CHOICES = toRaInputChoices(ANNOTATION_COVERING_TRANSLATION);

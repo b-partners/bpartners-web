@@ -1,4 +1,4 @@
-import { cache } from '@/providers';
+import { AnnotationCoveringFromAnalyse, cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
 import { NOOP_FN } from '../utils/noop_fn';
@@ -11,6 +11,8 @@ export interface RoofAnalyseProperties {
   global_rate_type: string;
   moisissure_rate: number;
   humidite_rate: number;
+  revetement_1: AnnotationCoveringFromAnalyse;
+  revetement_2: AnnotationCoveringFromAnalyse | null;
 }
 
 export type AnnotationStore = {

@@ -1,7 +1,7 @@
 import { RoofAnalyseProperties } from '@/common/store';
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
-import { cache } from '@/providers';
+import { annotationCoveringMapper, cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -12,7 +12,7 @@ const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
 const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties) => {
   if (!roofAnalyseProperties) return undefined;
 
-  const { humidite_rate, moisissure_rate, obstacle, usure_rate } = roofAnalyseProperties || {};
+  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1 } = roofAnalyseProperties || {};
 
   const roofAnalysePropertiesInfos: AnnotationInfo = {
     humidityLevel: getLevelValue(humidite_rate),
@@ -22,6 +22,7 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     labelName: "Résultats de l'analyse de la toiture",
     labelType: 'roof',
     polygonId: 'roof-polygon',
+    covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
   };
   return roofAnalysePropertiesInfos;
 };

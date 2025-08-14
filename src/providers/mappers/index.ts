@@ -1,3 +1,4 @@
+export * from './annotation-covering-mapper';
 export * from './annotator-mapper';
 export * from './calendar-event-mapper';
 export * from './geojson-mapper';

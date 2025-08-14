@@ -1,4 +1,7 @@
-export const ANNOTATION_COVERING = [
+import { AnnotationCoveringType } from '@/constants';
+
+export const ANNOTATION_COVERING: { value: keyof AnnotationCoveringType; label: string }[] = [
+  { value: 'tuiles', label: 'Tuiles' },
   { value: 'tuiles-canal', label: 'Tuiles canal' },
   { value: 'tuiles-plates', label: 'Tuiles plates' },
   { value: 'ardoise', label: 'Ardoise' },

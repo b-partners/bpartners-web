@@ -2,6 +2,7 @@ import { detectionResultColors } from '@/operations/prospects/constants';
 
 import { getColorFromMain, Point, Polygon } from '@bpartners/annotator-component';
 import { v4 } from 'uuid';
+import { AnnotationCoveringFromAnalyse } from './annotation-covering-mapper';
 
 export type ShiftNbDomainType = Point;
 
@@ -26,6 +27,8 @@ export interface Properties {
   moisissure_rate: number;
   humidite_rate: number;
   roof_area_in_m2: number;
+  revetement_1: AnnotationCoveringFromAnalyse;
+  revetement_2: AnnotationCoveringFromAnalyse | null;
 }
 
 export interface Region {
