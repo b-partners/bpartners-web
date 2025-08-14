@@ -11,10 +11,8 @@ export const annotationCoveringMapper = {
         return ANNOTATION_COVERING[6];
       case 'BATI_TUILES':
         return ANNOTATION_COVERING[0];
-      case 'BATI_AUTRES':
-        return ANNOTATION_COVERING[11];
       default:
-        throw new Error('Unknown covering ' + covering);
+        return ANNOTATION_COVERING[11];
     }
   },
 };
