@@ -44,10 +44,13 @@ export const annotatorComponentStyle: SxProps = {
       m: 0,
     },
   },
-  '& .switch-llm-result-button': {
+  '& .switch-llm-result-tooltip': {
     position: 'absolute',
-    bottom: 2,
-    left: 2,
-    color: PALETTE_COLORS['neon_orange'],
+    bottom: 4,
+    left: 4,
+  },
+  '& .switch-llm-result-button': {
+    background: PALETTE_COLORS['neon_orange'],
+    color: PALETTE_COLORS['white'],
   },
 };

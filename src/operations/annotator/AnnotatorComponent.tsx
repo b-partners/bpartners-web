@@ -5,15 +5,15 @@ import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Cached } from '@mui/icons-material';
-import { Box, Chip, Divider, IconButton, Paper, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Chip, Divider, IconButton, Paper, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import { annotatorButtonsActions, LlmResult, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
-import { AnalyseRoofButton, annotatorComponentStyle, getNewPolygonColor, measurementMapper } from './utils';
+import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, measurementMapper } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -50,10 +50,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
-    const currentPolygons: Polygon[] = [
-      { fillColor: '', id: 'roof-polygon', points: [], isInvisible: false, strokeColor: '', surface: +(data?.properties?.roof_area_in_m2?.toFixed(2) || '0') },
-      ...(data?.polygons || []),
-    ];
+    const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
     if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
   }, [JSON.stringify(data), isPending]);
 
@@ -137,9 +134,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
           )}
           {data?.properties && (
-            <IconButton className='switch-llm-result-button' onClick={tootleLLMResultView}>
-              <Cached />
-            </IconButton>
+            <Tooltip className='switch-llm-result-tooltip' title='Voir les conseils générés par notre IA'>
+              <span>
+                <IconButton size='large' className='switch-llm-result-button' onClick={tootleLLMResultView}>
+                  <Cached />
+                </IconButton>
+              </span>
+            </Tooltip>
           )}
         </Box>
       )}

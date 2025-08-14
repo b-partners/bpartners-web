@@ -3,6 +3,7 @@ export * from './annotation-colors';
 export * from './annotation-info-mapper';
 export * from './annotation-info-translator';
 export * from './annotations-info-form';
+export * from './create-roof-polygon';
 export * from './export-annotation-mapper';
 export * from './llm-result-queries';
 export * from './measurement-mapper';

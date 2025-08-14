@@ -30,6 +30,8 @@ export const llmResultStyle: SxProps = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
+  overflowY: 'scroll',
+  overflowX: 'hidden',
   '& h1': {
     mb: 5,
   },
