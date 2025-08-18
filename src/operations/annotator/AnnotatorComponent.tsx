@@ -7,11 +7,10 @@ import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/u
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Cached } from '@mui/icons-material';
-import { Box, Chip, Divider, IconButton, Paper, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
-import { annotatorButtonsActions, LlmResult, RefocusImageButton } from './components';
+import { annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, measurementMapper } from './utils';
 
@@ -133,15 +132,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {data?.properties && showLLMResult && (
             <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
           )}
-          {data?.properties && (
-            <Tooltip className='switch-llm-result-tooltip' title='Voir les conseils générés par notre IA'>
-              <span>
-                <IconButton size='large' className='switch-llm-result-button' onClick={tootleLLMResultView}>
-                  <Cached />
-                </IconButton>
-              </span>
-            </Tooltip>
-          )}
+          <LlmSwitchButton enabled={!!data?.properties} onClick={tootleLLMResultView} />
         </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
