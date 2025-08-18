@@ -64,25 +64,33 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           const fileId = uuidV4();
           const pictureId = uuidV4();
           const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-          await annotatorProvider.getPictureFormAddress(pictureId, {
+          const currentAreaPicture = await annotatorProvider.getPictureFormAddress(pictureId, {
             address: data.address,
             fileId,
             filename: `Layer ${data.address}`,
             prospectId,
             zoomLevel: ZoomLevel.HOUSES_0,
           });
-          clearPolygons()
+
+          if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
+
+          clearPolygons();
           navigate(
             `/roof-analyse?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
           );
           return;
-        } catch {
+        } catch (err) {
+          const isPrecisionError = err.message === 'precisionLevelInCm';
           toggleDialog();
           openDialog(
             <>
-              <DialogTitle>Adresse introuvable</DialogTitle>
+              <DialogTitle>{isPrecisionError ? 'Image à précision de 5 cm indisponible.' : 'Adresse introuvable.'}</DialogTitle>
               <DialogContent>
-                <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
+                <DialogContentText>
+                  L'adresse que vous avez spécifiée n'est pas encore pris en charge.
+                  {isPrecisionError && 'Aucune image avec une précision de 5 cm n’est encore disponible.'}
+                  Veuillez réessayer ultérieurement.
+                </DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button onClick={closeDialog}>Fermer</Button>
