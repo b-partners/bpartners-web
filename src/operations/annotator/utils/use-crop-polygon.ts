@@ -39,7 +39,7 @@ export const getOriginPoint = (boundingBox: ReturnType<typeof getBoundingBox>, s
   const y0 = boundingBox.top - yOffset;
   const y1 = boundingBox.bottom + yOffset;
 
-  let positionZero = {
+  const positionZero = {
     x: x0,
     y: y0,
   };
