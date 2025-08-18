@@ -13,7 +13,7 @@ import { getGeoJsonUrl, handleSubmit } from '../../../common/utils';
 import { prospectingProvider } from '../../../providers';
 import { parseRatingLastEvaluation, parseRatingValue } from '../utils';
 import { CardViewField } from './CardViewField';
-import { ProspectDialog } from './ProspectDialog';
+import { ProspectFormDialog } from './ProspectFormDialog';
 
 export const ProspectItem: FC<{ prospect: Prospect }> = ({ prospect }) => {
   const [isProspectDialogOpen, setIsProspectDialogOpen] = useState(false);
@@ -168,7 +168,7 @@ export const ProspectItem: FC<{ prospect: Prospect }> = ({ prospect }) => {
             />
           </FlexBox>
           {isProspectDialogOpen && (
-            <ProspectDialog
+            <ProspectFormDialog
               open={isProspectDialogOpen}
               close={toggleDialog}
               prospect={prospect}

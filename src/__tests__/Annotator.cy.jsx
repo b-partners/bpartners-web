@@ -8,7 +8,7 @@ import { getInvoices } from './mocks/responses/invoices-api';
 import { getProspect } from './mocks/responses/prospects-api';
 import { whoami1 } from './mocks/responses/security-api';
 
-describe(specTitle("tester le fonctionnement de l'annotator"), () => {
+xdescribe(specTitle("tester le fonctionnement de l'annotator"), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 

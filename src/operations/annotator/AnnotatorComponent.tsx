@@ -1,20 +1,21 @@
-import { PALETTE_COLORS } from '@/bp-theme';
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
-import { useAreaPictureDetailsFetcher, usePolygonMarkerFetcher } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
+import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
-import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
+import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Measurement, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Stack, Typography } from '@mui/material';
-import { FC } from 'react';
-import { annotatorButtonsActions, RefocusImageButton } from './components';
+import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
+import { FC, useEffect } from 'react';
+import { degradationLevels } from '../prospects/constants';
+import { annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
-import { getNewPolygonColor } from './utils/annotation-colors';
+import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, measurementMapper } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
+
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   boxWrapperSx = {},
   showAddress = false,
@@ -26,21 +27,31 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   width,
   height,
 }) => {
+  const { analyseRoof, geoJsonResultUrl } = parseUrlParams();
+  const shouldAnalyseRoof = analyseRoof === 'true';
+  const { data, isPending } = useGeojsonQueryResult([analyseRoof, geoJsonResultUrl, shouldAnalyseRoof], !!geoJsonResultUrl);
+
   const { address } = useWrappedSearchParams(['address']);
-  const { polygons, setPolygons } = useCanvasAnnotationContext();
+  const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
 
-  const {
-    filename,
-    isExtended,
-    shiftNb,
-    zoom: { level: newZoomLevel, number: newZoomLevelAsNumber },
-    actualLayer: layer,
-    otherLayers,
-  } = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+  // Get the Area picture details to use
+  const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+  const { filename, isExtended, shiftNb, zoom, actualLayer: layer, otherLayers } = currentAreaPictureDetailsToUse;
+  const { level: newZoomLevel, number: newZoomLevelAsNumber } = zoom;
+  // Get the Area picture details to use
+
+  const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
+  const { toggleValue: tootleLLMResultView, value: showLLMResult } = useToggle(false);
+
+  useEffect(() => {
+    setRoofAnalyseProperties(data?.properties);
+    const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
+    if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
+  }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
     mutateAreaPictureDetail({ zoomLevel: e.target.value });
@@ -63,25 +74,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     }
   };
 
-  const measurementMapper = (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
-    const firstPolygon = currentPolygons[0];
-    const isInvisible = firstPolygon?.id !== measurement.polygonId;
-    if (!isExtended) return { ...measurement, isInvisible };
-    return {
-      ...measurement,
-      isInvisible,
-      value: measurement.value * (measurement.unity === 'm²' ? MEASUREMENT_MAP_ON_EXTENDED_AREA : MEASUREMENT_MAP_ON_EXTENDED_LENGTH),
-    };
-  };
+  const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
 
-  if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading) {
+  if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
   return (
-    <Box width='100%' height='580px' position='relative' sx={boxWrapperSx}>
+    <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       {allowSelect && (
-        <Stack direction='row' spacing={1} marginBlock={1}>
+        <Stack className='image-properties-actions' direction='row' spacing={1} marginBlock={1}>
           <BpSelect
             value={newZoomLevel}
             handleChange={handleZoomLvl}
@@ -104,36 +106,70 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Stack>
       )}
       {filename && (
-        <AnnotatorCanvas
-          markerPosition={(polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-          allowAnnotation={allowAnnotation}
-          width={width || '100%'}
-          height={height || '500px'}
-          buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
-          image={getUrlParams(window.location.search, 'imgUrl')}
-          setPolygons={setPolygons}
-          polygonList={polygonFromProps || polygons}
-          measurementMapper={measurementMapper}
-          getNewPolygonColor={getNewPolygonColor}
-          polygonLineSizeProps={{
-            imageName: `${filename}.jpg`,
-            showLineSize: true,
-            converterApiUrl: `${CONVERTER_BASE_URL}`,
-          }}
-          zoom={newZoomLevelAsNumber}
-        />
+        <Box className='annotator-canvas-container' ref={containerHeightRef}>
+          {containerWidth > 0 && !showLLMResult && (!geoJsonResultUrl || data?.image) && (
+            <AnnotatorCanvas
+              markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+              allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
+              width={width || containerWidth}
+              height={height || containerheight * 0.95}
+              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
+              image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
+              setPolygons={setPolygons}
+              polygonList={polygonFromProps || polygons}
+              measurementMapper={!data && measurementMapper(isExtended)}
+              getNewPolygonColor={getNewPolygonColor}
+              polygonLineSizeProps={
+                !data && {
+                  imageName: `${filename}.jpg`,
+                  showLineSize: true,
+                  converterApiUrl: `${CONVERTER_BASE_URL}`,
+                }
+              }
+              zoom={newZoomLevelAsNumber}
+            />
+          )}
+          {data?.properties && showLLMResult && (
+            <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
+          )}
+          <LlmSwitchButton enabled={!!data?.properties} onClick={tootleLLMResultView} />
+        </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
-        <Box sx={{ color: PALETTE_COLORS.cream, textAlign: 'center', width, p: 2, bgcolor: PALETTE_COLORS.pine, border: '1px solid #ebebeb' }}>
-          {showAddress && (
-            <Typography variant='body2' sx={{ my: 1 }}>
-              <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
+        <Stack direction='row' className='bottom-action'>
+          <Stack direction='row'>
+            {showAddress && (
+              <>
+                <Typography variant='body2' sx={{ my: 1 }}>
+                  <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
+                </Typography>
+                <Divider orientation='vertical' variant='middle' flexItem />
+              </>
+            )}
+            <Typography variant='body2'>
+              <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
             </Typography>
-          )}
-          <Typography variant='body2'>
-            <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
-          </Typography>
-        </Box>
+          </Stack>
+          {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
+        </Stack>
+      )}
+      {data && !shouldAnalyseRoof && (
+        <>
+          <Paper sx={{ background: '#BEB4A4 !important', px: '10rem', py: 2, borderRadius: 2, textTransform: 'uppercase', mt: 0.5 }}>
+            <Typography sx={{ textAlign: 'center', width: '100%' }}>
+              Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
+            </Typography>
+          </Paper>
+          <Stack direction='row' justifyContent='center' m={1} gap={1}>
+            {degradationLevels.map(({ color, label }) => (
+              <Chip
+                key={`${color}-${label}`}
+                label={label}
+                sx={{ px: 1, bgcolor: color, border: `5px solid ${data?.properties?.global_rate_type === label ? 'black' : 'transparent'}` }}
+              />
+            ))}
+          </Stack>
+        </>
       )}
     </Box>
   );

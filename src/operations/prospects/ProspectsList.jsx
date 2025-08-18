@@ -8,7 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import { ProspectContextProvider } from '@/common/store';
-import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
+import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -64,24 +64,33 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           const fileId = uuidV4();
           const pictureId = uuidV4();
           const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-          await annotatorProvider.getPictureFormAddress(pictureId, {
+          const currentAreaPicture = await annotatorProvider.getPictureFormAddress(pictureId, {
             address: data.address,
             fileId,
             filename: `Layer ${data.address}`,
             prospectId,
             zoomLevel: ZoomLevel.HOUSES_0,
           });
+
+          if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
+
+          clearPolygons();
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
+            `/roof-analyse?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
           );
           return;
-        } catch {
+        } catch (err) {
+          const isPrecisionError = err.message === 'precisionLevelInCm';
           toggleDialog();
           openDialog(
             <>
-              <DialogTitle>Adresse introuvable</DialogTitle>
+              <DialogTitle>{isPrecisionError ? 'Image à précision de 5 cm indisponible.' : 'Adresse introuvable.'}</DialogTitle>
               <DialogContent>
-                <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
+                <DialogContentText>
+                  L'adresse que vous avez spécifiée n'est pas encore pris en charge.
+                  {isPrecisionError && 'Aucune image avec une précision de 5 cm n’est encore disponible.'}
+                  Veuillez réessayer ultérieurement.
+                </DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button onClick={closeDialog}>Fermer</Button>
@@ -152,7 +161,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
         <Prospects />
         {isCreating && (
           <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-            <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+            <ProspectFormDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
           </form>
         )}
       </TabPanel>

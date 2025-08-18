@@ -41,10 +41,11 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle } = useCanvasAnnotationContext();
+  const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties } = useCanvasAnnotationContext();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
+
   const [expanded, setExpanded] = useState<number | null>(0);
-  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos);
+  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {

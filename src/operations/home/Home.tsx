@@ -9,7 +9,7 @@ import imageAnalyse from '/home/4.png';
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
 import { BaseSyntheticEvent, FC, useState } from 'react';
-import { ProspectDialog } from '../prospects/components';
+import { ProspectFormDialog } from '../prospects/components';
 import { ProspectDialogProvider } from '../prospects/ProspectsList';
 import { HomeStyle } from './style';
 
@@ -220,7 +220,7 @@ const CreateProspectDialog: FC<CreateProspectDialogProps> = ({ saveOrUpdateProsp
       <BPButton className='btn-analyse' onClick={toggleCreating} label="Passer à l'analyse" data-cy='button-analyze' data-path='/prospects' />
       {isCreating && (
         <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-          <ProspectDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+          <ProspectFormDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
         </form>
       )}
     </>

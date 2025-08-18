@@ -1,0 +1,23 @@
+import { prodUrlPattern } from '@/constants';
+import { annotationCoveringMapper, Properties } from '@/providers';
+import { useQuery } from '@tanstack/react-query';
+
+const baseUrl = `${process.env.LLM_ANALYSE_RESULT}`;
+const apiKey = `${process.env.LLM_API_KEY}`;
+
+export const useLlmResultQuery = (roofAnnotatorProperties: Properties) => {
+  const isPreprod = !prodUrlPattern.test(window.location.href);
+  const { moisissure_rate, usure_rate, humidite_rate, roof_area_in_m2, revetement_1 } = roofAnnotatorProperties || {};
+  const queryFn = async () => {
+    const result = await fetch(
+      `${baseUrl}?revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value}&humidit%C3%A9=${humidite_rate}&usure=${usure_rate}&moisissure=${moisissure_rate}&surfaceEnM2=${roof_area_in_m2}&x-api-key=${apiKey}`
+    );
+
+    const htmlResult = await result.text();
+
+    const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
+    return htmlResult.match(bodyRegex)[0].replace(/\:/g, '');
+  };
+
+  return useQuery({ queryFn, queryKey: [roofAnnotatorProperties], enabled: isPreprod });
+};

@@ -1,12 +1,33 @@
+import { RoofAnalyseProperties } from '@/common/store';
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
-import { cache } from '@/providers';
+import { annotationCoveringMapper, cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
 
-export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInfos: AnnotationInfo[] = []) => {
+const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
+
+const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties) => {
+  if (!roofAnalyseProperties) return undefined;
+
+  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1 } = roofAnalyseProperties || {};
+
+  const roofAnalysePropertiesInfos: AnnotationInfo = {
+    humidityLevel: getLevelValue(humidite_rate),
+    wearLevel: getLevelValue(usure_rate),
+    moldRate: getLevelValue(moisissure_rate),
+    obstacle: `${obstacle ? 'OUI' : 'NON'}`,
+    labelName: "Résultats de l'analyse de la toiture",
+    labelType: 'roof',
+    polygonId: 'roof-polygon',
+    covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
+  };
+  return roofAnalysePropertiesInfos;
+};
+
+export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInfos: AnnotationInfo[] = [], roofAnalyseProperties: RoofAnalyseProperties) => {
   const formState = useForm<{ annotationInfos: AnnotationInfo[] }>({ defaultValues: { annotationInfos: defaultAnnotationInfos } });
   const fieldArrayState = useFieldArray({
     control: formState.control,
@@ -17,7 +38,11 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
 
   useEffect(() => {
     if (polygons.length !== annotationInfos.length) {
-      const synchronizedAnnotationInfos = getSynchronizedAnnotationInfos(polygons, annotationInfos);
+      const synchronizedAnnotationInfos = getSynchronizedAnnotationInfos(
+        polygons,
+        annotationInfos,
+        createAnnotationInfoFromRoofAnalyseProperties(roofAnalyseProperties)
+      );
       fieldArrayState.replace(synchronizedAnnotationInfos);
     }
   }, [stringifyObj(annotationInfos), polygons.length]);

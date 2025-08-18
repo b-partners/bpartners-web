@@ -3,6 +3,7 @@ import { Configuration, SecurityApi, UserSubscriptionStatus } from '@bpartners/t
 import { Amplify } from 'aws-amplify';
 import { accountHolderProvider } from './account-holder-Provider';
 import { accountProvider } from './account-provider';
+import { securityApi } from './api';
 import { awsAuth, awsConfig } from './aws-config';
 import { cache, clearCache, getCached } from './cache';
 import { profileProvider } from './profile-provider';
@@ -15,6 +16,15 @@ const cacheAccounts = async () => {
   await accountProvider.getOne();
   await accountHolderProvider.getOne();
   await profileProvider.getOne(getCached.whoami().user.id);
+};
+
+export const getApiKey = async () => {
+  let apiKey = getCached.apiKey();
+  if (apiKey) return apiKey;
+  const { data } = await securityApi().findApiKey();
+  apiKey = data?.[0]?.apiKey;
+  cache.apiKey(apiKey);
+  return apiKey;
 };
 
 export const whoami = async (): Promise<any> => {
@@ -50,8 +60,8 @@ const paramIsTemporaryPassword = 't';
 const paramUsername = 'u';
 const paramTemporaryPassword = 'p';
 
-const toBase64 = (param: string) => btoa(param);
-const fromBase64 = (param: string) => atob(param);
+export const toBase64 = (param: string) => btoa(param);
+export const fromBase64 = (param: string) => atob(param);
 
 export const authProvider = {
   // --------------------- ra functions -------------------------------------------

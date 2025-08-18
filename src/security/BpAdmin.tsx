@@ -80,6 +80,7 @@ export const BpAdmin = () => {
         <Route path='/bank' element={<BankPage />} />
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
+        <Route path='/roof-analyse' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
       </CustomRoutes>
     </Admin>
