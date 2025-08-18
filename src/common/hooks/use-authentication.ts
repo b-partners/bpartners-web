@@ -20,7 +20,7 @@ const useAuthentication = () => {
         .checkAuth()
         .then(() => {
           if (/login/.test(pathname)) {
-            navigate('/transactions');
+            navigate('/');
           }
           setIsLoading(false);
         })

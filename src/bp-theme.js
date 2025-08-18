@@ -1,6 +1,6 @@
 import { defaultTheme } from 'react-admin';
 
-const important = value => `${value} !important`;
+export const importantCSS = value => `${value} !important`;
 
 export const PALETTE_COLORS = {
   pine: '#4A644E',
@@ -103,7 +103,7 @@ export const BP_THEME = {
             padding: '1%',
           },
           '&. RaLayout-contentWithSidebar': {
-            overflowY: important('scroll'),
+            overflowY: importantCSS('scroll'),
           },
         },
       },
@@ -128,11 +128,11 @@ export const BP_THEME = {
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          backgroundColor: BP_COLOR['2'],
+          backgroundColor: PALETTE_COLORS.white,
         },
         barColorSecondary: {
-          backgroundColor: BP_COLOR['30'],
-          color: BP_COLOR['30'],
+          backgroundColor: PALETTE_COLORS.pine,
+          color: PALETTE_COLORS.pine,
         },
       },
     },
@@ -192,9 +192,18 @@ export const BP_THEME = {
               backgroundColor: BP_COLOR['solid_grey'],
             },
           },
-          '& .RaList-actions .MuiButton-root': bp_button,
+          '& .RaList-actions .MuiButton-root': {
+            ...bp_button,
+            background: PALETTE_COLORS.neon_orange,
+          },
+          '& .RaList-actions .MuiButton-root:hover': {
+            background: '#FF8A65',
+          },
           '& .RaList-actions': {
             padding: '10px 5px 5px 10px',
+          },
+          '& .RaDatagrid-headerCell': {
+            backgroundColor: importantCSS(PALETTE_COLORS.pine),
           },
         },
       },
@@ -213,9 +222,9 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '& .Mui-checked': {
-            color: important(BP_COLOR[5]),
+            color: importantCSS(BP_COLOR[5]),
             '& +.MuiSwitch-track': {
-              backgroundColor: important(BP_COLOR[5]),
+              backgroundColor: importantCSS(BP_COLOR[5]),
               opacity: 1,
             },
           },
@@ -229,7 +238,7 @@ export const BP_THEME = {
             backgroundColor: BP_COLOR[5],
           },
           '& .Mui-selected': {
-            color: important(BP_COLOR[10]),
+            color: importantCSS(BP_COLOR[10]),
           },
           borderBottom: `1px solid ${BP_COLOR['solid_grey']}`,
         },
@@ -239,7 +248,7 @@ export const BP_THEME = {
       styleOverrides: {
         root: {
           '&.Mui-checked': {
-            color: important(BP_COLOR[5]),
+            color: importantCSS(BP_COLOR[5]),
           },
         },
       },

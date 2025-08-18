@@ -48,9 +48,6 @@ export const BpFrenchMessages = {
     customers: {
       name: 'Client |||| Clients',
     },
-    transactions: {
-      category: { add: 'La catégorie a bien été ajoutée', edit: 'La catégorie a bien été modifiée' },
-    },
     calendar: {
       name: 'Mon agenda',
       values: {

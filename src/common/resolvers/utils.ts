@@ -5,6 +5,7 @@ export const FieldErrorMessage = {
   accountPhone: "Veuillez entrer un numéro de téléphone valide, en utilisant uniquement des chiffres, espaces, slashes '/' ou tirets '-'",
   emailNotValid: 'Email non valide',
   townCodeNotValid: 'Le code de la commune de prospection doit être à 5 chiffres.',
+  postalCodeNotValid: 'Le code de la commune doit être à 5 chiffres.',
   linkNotValid: 'Lien non valide',
   required: 'Ce champ est requis.',
   emptyPassword: 'Le mot de passe ne peut pas être vide.',

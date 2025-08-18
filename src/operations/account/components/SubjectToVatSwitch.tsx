@@ -11,7 +11,7 @@ export const SubjectToVatSwitch: FC<SubjectToVatSwitchProps> = ({ data }) => {
 
   const handleChange: FormControlLabelProps['onChange'] = (_event, checked) => {
     const fetch = async () => {
-      await accountHolderProvider.saveOrUpdate([{ ...data?.companyInfo, isSubjectToVat: !checked }]);
+      await accountHolderProvider.saveOrUpdate([{ ...data?.companyInfo, isSubjectToVat: checked }]);
       refresh();
     };
     setIsLoading(true);
@@ -23,8 +23,9 @@ export const SubjectToVatSwitch: FC<SubjectToVatSwitchProps> = ({ data }) => {
   return (
     <FormGroup>
       <FormControlLabel
-        control={<Switch disabled={isLoading} checked={!data?.companyInfo?.isSubjectToVat} onChange={handleChange} />}
-        label={!data?.companyInfo?.isSubjectToVat ? 'Oui' : 'Non'}
+        data-cy='companyInfo-subjectToVatSwitch'
+        control={<Switch disabled={isLoading} checked={data?.companyInfo?.isSubjectToVat} onChange={handleChange} />}
+        label={data?.companyInfo?.isSubjectToVat ? 'Oui' : 'Non'}
       />
     </FormGroup>
   );

@@ -4,5 +4,3 @@ export * from './invoice-status';
 export * from './payment-regulation-status';
 export * from './payment-type';
 export * from './prospect';
-export * from './subscription';
-export * from './transaction-status';
