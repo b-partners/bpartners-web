@@ -4,7 +4,7 @@ import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { useGetList } from 'react-admin';
-import imageAnalyse from '/home/4.png';
+import imageAnalyse from '/home/home-banner.webp';
 
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
