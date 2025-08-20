@@ -9,7 +9,7 @@ import {
   Region,
   toBase64,
 } from '@/providers';
-import { AreaPictureDetails, Prospect } from '@bpartners/typescript-client';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { getUrlParams } from '../utils';
@@ -19,7 +19,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
   return useMutation({ mutationFn, mutationKey: [address, areaPictureDetails] });
 };
 
-export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, prospect: Prospect, handleSuccess: () => void) => {
+export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const navigate = useNavigate();
   const onSuccess = (data: any) => {
     const vggurl = data?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
@@ -56,13 +56,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
-    return await initializeRoofAnalyse(
-      areaPictureDetails.actualLayer?.name ?? '',
-      `${areaPictureDetails.address}`,
-      [[mappedCoordinates]],
-      prospect.email,
-      true
-    );
+    return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [[mappedCoordinates]], true);
   };
 
   return useMutation({ mutationFn, onSuccess });

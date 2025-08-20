@@ -4,8 +4,6 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { useGetOne } from 'react-admin';
-import { useSearchParams } from 'react-router-dom';
 
 interface AnalyseRoofButtonProps {
   polygons: Polygon[];
@@ -13,11 +11,9 @@ interface AnalyseRoofButtonProps {
 }
 
 export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPicture }) => {
-  const [searchParam] = useSearchParams();
-  const { data: prospect } = useGetOne('prospects', { id: searchParam.get('prospectId') });
   const { setPolygons } = useCanvasAnnotationContext();
   const handleSuccess = () => setPolygons([]);
-  const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, prospect, handleSuccess);
+  const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, handleSuccess);
 
   const handleClick = () => processDetection();
 
