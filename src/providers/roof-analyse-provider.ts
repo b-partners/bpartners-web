@@ -28,10 +28,10 @@ const geoServerProperties = (layers: string) => ({
   },
 });
 
-const getGeoJsonTemlate = (layers: string, zoneName: string, emailReceiver?: string, geoJsonZone?: any) => {
+const getGeoJsonTemlate = (layers: string, zoneName: string, geoJsonZone?: any) => {
   return {
     geoServerProperties: geoServerProperties(layers),
-    emailReceiver,
+    emailReceiver: getCached.accountHolder()?.companyInfo?.email || '',
     detectableObjectModel: {
       modelName: 'BP_TOITURE',
     },
@@ -54,13 +54,7 @@ const getProcessDetectionUrl = () => {
  * @param withoutImage
  * @returns
  */
-export const initializeRoofAnalyse = async (
-  layers: string,
-  address: string,
-  coordinates?: Array<Array<Array<Array<number>>>>,
-  emailReceiver?: string,
-  withoutImage = false
-) => {
+export const initializeRoofAnalyse = async (layers: string, address: string, coordinates?: Array<Array<Array<Array<number>>>>, withoutImage = false) => {
   const cachedDetectionId = getCached.roofAnalyseId();
   const detectionId = withoutImage !== true ? cachedDetectionId || v4() : v4();
   const apiKey = await getApiKey();
@@ -70,7 +64,6 @@ export const initializeRoofAnalyse = async (
   const geoJson = getGeoJsonTemlate(
     layers,
     address,
-    emailReceiver,
     coordinates
       ? [
           {
