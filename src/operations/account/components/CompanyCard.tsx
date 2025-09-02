@@ -1,7 +1,8 @@
 import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
-import { prettyPrintMoney, stringCutter } from '@/common/utils';
+import { stringCutter, toMajors } from '@/common/utils';
+import { AccountHolder } from '@bpartners/typescript-client';
 import { Edit } from '@mui/icons-material';
 import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -14,10 +15,19 @@ import { useRevenueTargetsProvider } from '../queries/revenue-target-form-query'
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
 import { SubjectToVatSwitch } from './SubjectToVatSwitch';
 
+const mapAccountHolder = (accountHolder: AccountHolder) => {
+  return {
+    ...accountHolder,
+    initialCashFlow: toMajors(Number(accountHolder.initialCashflow)),
+    companyInfo: { ...accountHolder.companyInfo, socialCapital: toMajors(Number(accountHolder.companyInfo.socialCapital)) },
+    revenueTargets: accountHolder.revenueTargets.map(revenueTarget => ({ ...revenueTarget, amountTarget: toMajors(Number(revenueTarget.amountTarget)) })),
+  } as AccountHolder;
+};
+
 export const CompanyCard = () => {
   const record = useRecordContext();
   const fields = getCompanyFields(record);
-  const accountForm = useAccountForm(record as any);
+  const accountForm = useAccountForm(mapAccountHolder(record as any) as any);
   const { jobList } = useGetBusinessJob();
   const { isUpldateBusinessJobLoading, updateBusinessJob } = useUpdateBusinessJob();
   const { isUpldateGlobalInformation, updateGlobalInformation } = useUpdateGlobalInformationFieldsCompany();
@@ -70,7 +80,7 @@ export const CompanyCard = () => {
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>
                       {!accountForm.getValues(name as any) && !isMoney && 'Non renseigné'}
-                      {isMoney && prettyPrintMoney(Number(accountForm.getValues(name as any) || '0'))}
+                      {isMoney && (accountForm.getValues(name as any) || '0') + ' €'}
                       {!isMoney && !cutString && accountForm.getValues(name as any)}
                       {!isMoney && cutString && stringCutter(accountForm.getValues(name as any), 50)}
                     </Typography>
@@ -97,7 +107,7 @@ export const CompanyCard = () => {
             <Box className='company-header'>
               <BPButton
                 data-cy='save-profile'
-                label='Enregistrer'
+                label='bp.action.save'
                 onClick={handleSubmit}
                 isLoading={
                   isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider || isUpdateFeedbackLink
