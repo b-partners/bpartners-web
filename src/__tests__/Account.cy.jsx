@@ -51,6 +51,7 @@ describe(specTitle('Account'), () => {
         siren: '1001',
         officialActivityName: 'Activité_officielle',
         initialCashFlow: 190000,
+        initialCashflow: 190000,
         contactAddress: {
           address: '40 Rue de la liberté',
           city: 'Paris',
