@@ -1,7 +1,7 @@
 import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
-import { stringCutter, toMajors } from '@/common/utils';
+import { prettyPrintMoney, stringCutter, toMajors } from '@/common/utils';
 import { AccountHolder } from '@bpartners/typescript-client';
 import { Edit } from '@mui/icons-material';
 import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
@@ -80,7 +80,7 @@ export const CompanyCard = () => {
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>{label} </Typography>
                     <Typography>
                       {!accountForm.getValues(name as any) && !isMoney && 'Non renseigné'}
-                      {isMoney && (accountForm.getValues(name as any) || '0') + ' €'}
+                      {isMoney && prettyPrintMoney(accountForm.getValues(name as any) || '0', false)}
                       {!isMoney && !cutString && accountForm.getValues(name as any)}
                       {!isMoney && cutString && stringCutter(accountForm.getValues(name as any), 50)}
                     </Typography>
