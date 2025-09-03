@@ -59,8 +59,6 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
-    console.log('here');
-
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [[mappedCoordinates]], true);
   };
 
