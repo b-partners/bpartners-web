@@ -1,7 +1,7 @@
 import { DomainPolygonResultType } from '@/providers';
 
 export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
-  const { x: firstX, y: firstY } = polygons[0].points[0];
+  const { x: firstX, y: firstY } = polygons?.[0]?.points?.[0] || { x: 0, y: 0 };
   const boundingBox = {
     left: firstX,
     right: firstX,
@@ -79,10 +79,10 @@ export const createImage = async (url: string) =>
     };
   });
 
-export const getCropepedImageAndPolygons = (polygons: DomainPolygonResultType[], image: HTMLImageElement) => {
+export const getCropepedImageAndPolygons = (polygons: DomainPolygonResultType[], polygonsForBoundingBox: DomainPolygonResultType[], image: HTMLImageElement) => {
   const canvas = document.createElement('canvas');
 
-  const boundingBox = getBoundingBox(polygons);
+  const boundingBox = getBoundingBox(polygonsForBoundingBox);
   const boundingBoxSize = getBoundingBoxSize(boundingBox);
   const originPoint = getOriginPoint(boundingBox, boundingBoxSize, image.width);
 

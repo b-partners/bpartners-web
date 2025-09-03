@@ -11,15 +11,15 @@ export type BPButtonTemplateProps = ButtonProps & {
 
 const BPButtonTemplate = (props: BPButtonTemplateProps) => {
   const translate = useTranslate();
-  const { label, icon, style, isLoading, endIcon, colorType, ...others } = props;
+  const { label, icon, style, isLoading, endIcon, colorType, disabled, ...others } = props;
   const width = style?.width ? style.width : 300;
 
   return (
     <Button
-      disabled={isLoading}
+      {...others}
+      disabled={isLoading || disabled}
       endIcon={isLoading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : endIcon}
       style={{ background: colorType ? PALETTE_COLORS[colorType] : undefined, ...style, width }}
-      {...others}
       color='primary'
       variant='contained'
       startIcon={icon}

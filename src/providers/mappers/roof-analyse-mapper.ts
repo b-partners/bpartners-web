@@ -48,12 +48,12 @@ export interface ShapeAttributes {
 }
 
 export const detectionResultMapper = {
-  toPolygon(regions: Region[]) {
+  toPolygon(regions: Region[], filterByLabel = true) {
     const polygons: DomainPolygonResultType[] = [];
 
     const availableLabels = Object.keys(detectionResultColors);
 
-    const filteredRegions = regions.filter(({ region_attributes: { label } }) => availableLabels.includes(label));
+    const filteredRegions = filterByLabel ? regions.filter(({ region_attributes: { label } }) => availableLabels.includes(label)) : regions;
 
     filteredRegions.forEach(({ shape_attributes: { all_points_x, all_points_y }, region_attributes: { label } }) => {
       const points: DomainPolygonResultType['points'] = all_points_x.map((x, yIndex) => ({ x, y: all_points_y[yIndex] }));
