@@ -79,7 +79,11 @@ export const createImage = async (url: string) =>
     };
   });
 
-export const getCropepedImageAndPolygons = (polygons: DomainPolygonResultType[], polygonsForBoundingBox: DomainPolygonResultType[], image: HTMLImageElement) => {
+export const getCropepedImageAndPolygons = (
+  polygons: DomainPolygonResultType[],
+  polygonsForBoundingBox: DomainPolygonResultType[],
+  image: HTMLImageElement
+) => {
   const canvas = document.createElement('canvas');
 
   const boundingBox = getBoundingBox(polygonsForBoundingBox);
