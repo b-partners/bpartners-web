@@ -17,5 +17,13 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPi
 
   const handleClick = () => processDetection();
 
-  return <BPButton className='analyse-roof-button' label='bp.action.process_detection' disabled={polygons.length === 0} onClick={handleClick} isLoading={isProcessing} />;
+  return (
+    <BPButton
+      className='analyse-roof-button'
+      label='bp.action.process_detection'
+      disabled={polygons.length === 0}
+      onClick={handleClick}
+      isLoading={isProcessing}
+    />
+  );
 };
