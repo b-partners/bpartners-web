@@ -50,7 +50,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
-    if (polygons.length === 0 && currentPolygons.length > 1 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
+    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
