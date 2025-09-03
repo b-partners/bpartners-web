@@ -45,9 +45,11 @@ export const BpFrenchMessages = {
     },
     products: {
       name: 'Produit |||| Produits',
+      add: 'Ajouter un produit',
     },
     customers: {
       name: 'Client |||| Clients',
+      search: 'Rechercher un client',
     },
     calendar: {
       name: 'Mon agenda',

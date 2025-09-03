@@ -1,11 +1,11 @@
+import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants';
+import FormProduct from '@/operations/products/components/FormProduct';
+import { productProvider } from '@/providers';
 import { Add } from '@mui/icons-material';
 import { Box, FormHelperText } from '@mui/material';
 import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useState } from 'react';
 import { SimpleForm, useNotify } from 'react-admin';
-import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants';
-import FormProduct from '@/operations/products/components/FormProduct';
-import { productProvider } from '@/providers';
 import { AutocompleteBackend } from '../../../common/components';
 import { BPButton } from '../../../common/components/BPButton';
 import { includesObject } from '../../../common/utils';
@@ -85,7 +85,7 @@ export const ProductSelection = ({ name, form }) => {
         </Box>
       )}
       <Box sx={{ width: '100%' }}>
-        {!state.status > 0 && <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='Ajouter un produit' icon={<Add />} />}
+        {!state.status > 0 && <BPButton id='invoice-product-selection-button-id' onClick={toggle} label='resources.products.add' icon={<Add />} />}
         {state.status && (
           <AutocompleteBackend
             name='invoice-product'
