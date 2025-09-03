@@ -8,6 +8,7 @@ export * from './BPLoader';
 export * from './BpMultipleTextInput';
 export * from './Buttons';
 export * from './EmptyListTemplate';
+export * from './error-message-dialog';
 export * from './Field';
 export * from './FlexBox';
 export * from './FreeTrialBannerWrapper';

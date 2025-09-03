@@ -8,7 +8,7 @@ export const annotatorComponentStyle: SxProps = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-around',
-  '& > :nth-child(2)': {
+  '& > .annotator-canvas-container': {
     flexGrow: 1,
     position: 'relative',
     m: 0,
@@ -16,15 +16,14 @@ export const annotatorComponentStyle: SxProps = {
   },
   '& .image-properties-actions': {
     width: '100%',
-    '& > *:not(:nth-child(3))': {
+    '& > *:not([data-cy="center-img-btn"])': {
       flexGrow: 1,
     },
   },
-
   '& .bottom-action': {
     width: '100%',
     gap: 1,
-    mt: 1,
+    mb: 1,
     '& .MuiStack-root': {
       background: PALETTE_COLORS['pine'],
       color: PALETTE_COLORS['cream'],
@@ -38,7 +37,7 @@ export const annotatorComponentStyle: SxProps = {
         borderColor: PALETTE_COLORS['cream'],
       },
     },
-    '& > :nth-child(2)': {
+    '& > .analyse-roof-button': {
       height: '100%',
       p: 0,
       m: 0,

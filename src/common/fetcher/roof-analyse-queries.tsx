@@ -12,6 +12,8 @@ import {
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { ErrorMessageDialog } from '../components';
+import { useDialog } from '../store/dialog';
 import { getUrlParams } from '../utils';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
@@ -21,6 +23,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const navigate = useNavigate();
+  const { open: openDialog } = useDialog();
   const onSuccess = (data: any) => {
     const vggurl = data?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = data?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
@@ -59,7 +62,15 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [[mappedCoordinates]], true);
   };
 
-  return useMutation({ mutationFn, onSuccess });
+  return useMutation({
+    mutationFn,
+    onSuccess,
+    onError: (e: any) => {
+      let errorMessage = 'La détection sur cette zone a échoué, veuillez réessayer';
+      if (e.message === 'polygonTooBig') errorMessage = 'La délimitation que vous avez faite est trop grande et ne peut pas encore être prise en charge.';
+      openDialog(<ErrorMessageDialog message={errorMessage} />);
+    },
+  });
 };
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
@@ -96,14 +107,20 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': '*/*' } });
     const detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
     const regions = getRegions(detectionResultJson);
+    const filteredPolygons = detectionResultMapper.toPolygon(regions.slice());
+    const nonFilteredPolygons = detectionResultMapper.toPolygon(regions.slice(), false);
 
-    const polygons = detectionResultMapper.toPolygon(regions);
-    const obstacle = isThereAnObstacle(regions);
+    const obstacle = isThereAnObstacle(regions.slice());
 
     const imageAsBase64 = await fetchImageAsBase64(getUrlParams(window.location.search, 'imgUrl'));
     const image = await createImage(imageAsBase64);
-    const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(polygons, image as HTMLImageElement);
-    return { properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle }, polygons: croppedPolygons, image: croppedImage };
+
+    const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
+    return {
+      properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
+      polygons: croppedPolygons,
+      image: regions.length > 0 ? croppedImage : imageAsBase64,
+    };
   };
 
   const query = useQuery({

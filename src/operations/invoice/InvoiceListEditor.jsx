@@ -13,6 +13,7 @@ import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
 import { useRetrievePolygons } from './utils/use-retrieve-polygons';
 import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, PDF_EDITION_WIDTH, viewScreenState } from './utils/utils';
+import { isRoofPolygon } from '../annotator/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -45,7 +46,7 @@ const AnnotatorComponentShow = () => {
         ))}
       </Box>
       <Box width={PDF_EDITION_WIDTH}>
-        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />
+        <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons.filter(e => !isRoofPolygon(e))} allowSelect={false} />
       </Box>
     </Box>
   );
