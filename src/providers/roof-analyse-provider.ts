@@ -111,7 +111,8 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
   return { result, geoJson };
 };
 
-export const getDetectionResult = async (apiKey: string) => {
+export const getDetectionResult = async () => {
+  const apiKey = await getApiKey();
   const detectionId = getCached.roofAnalyseId() ?? '';
   const data = await fetch(`${baseUrl}/detections/${detectionId}`, {
     headers: { 'x-api-key': apiKey, 'content-type': 'application/json' },
@@ -119,7 +120,7 @@ export const getDetectionResult = async (apiKey: string) => {
   });
   const result = await data.json();
 
-  if (!result.vggUrl && !result.geoJsonUrl) throw new Error('Not done');
+  if (!result?.properties?.vgg_file_url && !result?.roofDelimiter?.roofSlopeInDegree) throw new Error('Not done');
 
   return result;
 };

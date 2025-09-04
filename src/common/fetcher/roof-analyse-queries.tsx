@@ -4,6 +4,7 @@ import {
   DetectionResultInVgg,
   detectionResultMapper,
   fromBase64,
+  getDetectionResult,
   initializeRoofAnalyse,
   polygonMapper,
   Region,
@@ -22,20 +23,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 };
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
-  const navigate = useNavigate();
   const { open: openDialog } = useDialog();
-  const onSuccess = (data: any) => {
-    const vggurl = data?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
-    const imageUrl = data?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
-
-    handleSuccess();
-
-    const { href } = window.location;
-    const url = new URL(href);
-    url.searchParams.set('analyseRoof', 'false');
-    url.searchParams.set('imgUrl', `${imageUrl}`);
-    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}`);
-  };
 
   const mutationFn = async () => {
     const imageSize = 1024;
@@ -62,15 +50,22 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [[mappedCoordinates]], true);
   };
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn,
-    onSuccess,
     onError: (e: any) => {
       let errorMessage = 'La détection sur cette zone a échoué, veuillez réessayer';
       if (e.message === 'polygonTooBig') errorMessage = 'La délimitation que vous avez faite est trop grande et ne peut pas encore être prise en charge.';
       openDialog(<ErrorMessageDialog message={errorMessage} />);
     },
   });
+
+  const { data, isPending } = useQuerySlope(mutation.data, handleSuccess);
+
+  return {
+    ...mutation,
+    isPending: mutation.isPending || isPending,
+    slope: data,
+  };
 };
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
@@ -132,4 +127,50 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     ...query,
     geoJsonResultUrl,
   };
+};
+
+interface RoofDelimiter {
+  roofSlopeInDegree: number;
+  roofHeightInMeter: number;
+  polygon?: any;
+}
+
+const degToRad = (degrees: number) => degrees * (Math.PI / 180);
+
+const getSlopeValue = (roofDelimiter: RoofDelimiter) => {
+  const roofHalfWidth = roofDelimiter.roofHeightInMeter / Math.tan(degToRad(roofDelimiter.roofSlopeInDegree));
+  const result = roofDelimiter.roofHeightInMeter * (12 / roofHalfWidth);
+  return Math.round(result);
+};
+
+export const useQuerySlope = (detectionResult: any, handleSuccess: () => void) => {
+  const navigate = useNavigate();
+  const onSuccess = (slope: number, height: number) => {
+    const vggurl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
+    const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
+
+    handleSuccess();
+
+    const { href } = window.location;
+    const url = new URL(href);
+    url.searchParams.set('analyseRoof', 'false');
+    url.searchParams.set('imgUrl', `${imageUrl}`);
+    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}&slope=${slope}&height=${height}`)}`);
+  };
+
+  const { data, isPending } = useQuery({
+    queryKey: ['detection', 'result'],
+    queryFn: async () => {
+      const data = await getDetectionResult();
+      if (!data?.roofDelimiter?.roofSlopeInDegree) throw new Error('No roof slope');
+      const slope = getSlopeValue(data.roofDelimiter);
+      onSuccess(slope, data?.roofDelimiter?.roofHeightInMeter || 1);
+      return slope;
+    },
+    retryDelay: 5000,
+    retry: Number.MAX_SAFE_INTEGER,
+    enabled: !!detectionResult,
+  });
+
+  return { data, isPending };
 };
