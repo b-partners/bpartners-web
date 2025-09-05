@@ -155,10 +155,10 @@ export const useQuerySlope = (detectionResult: any, handleSuccess: () => void) =
     const url = new URL(href);
     url.searchParams.set('analyseRoof', 'false');
     url.searchParams.set('imgUrl', `${imageUrl}`);
-    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}&slope=${slope}&height=${height}`)}`);
+    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}&slope=${slope}&height=${height}`);
   };
 
-  const { data, isPending } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
     queryFn: async () => {
       const data = await getDetectionResult();
@@ -172,5 +172,5 @@ export const useQuerySlope = (detectionResult: any, handleSuccess: () => void) =
     enabled: !!detectionResult,
   });
 
-  return { data, isPending };
+  return { data, isPending: isLoading };
 };
