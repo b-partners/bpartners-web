@@ -1,29 +1,51 @@
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
+import { useFormContext } from 'react-hook-form';
 import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
+  const { getValues } = useFormContext();
+
+  const height = getValues(`annotationInfos.${index}.height`);
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Typography sx={{ fontSize: '14px' }}>
-        Surface : (
+        Surface :
         <Typography component='span' fontWeight='bold'>
           {surface} m²
         </Typography>
-        )
       </Typography>
+      {height && (
+        <Typography sx={{ fontSize: '14px' }}>
+          Hauteur de la maison :
+          <Typography component='span' fontWeight='bold'>
+            {height} m
+          </Typography>
+        </Typography>
+      )}
+      <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn
         resettable
-        label='Revêtement'
+        label='Revêtement 1'
         choices={ANNOTATION_COVERING_CHOICES}
         name={`annotationInfos.${index}.covering`}
         source={`annotationInfos.${index}.covering`}
       />
+      {getValues(`annotationInfos.${index}.covering2`) && (
+        <SelectInput
+          alwaysOn
+          resettable
+          label='Revêtement 2'
+          choices={ANNOTATION_COVERING_CHOICES}
+          name={`annotationInfos.${index}.covering2`}
+          source={`annotationInfos.${index}.covering2`}
+        />
+      )}
       <SlopeSelect name={`annotationInfos.${index}.slope`} />
       <SelectInput
         sx={{ mt: 3 }}

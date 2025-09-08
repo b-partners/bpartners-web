@@ -12,7 +12,7 @@ import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import { annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { AnnotatorComponentProps } from './types';
-import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, measurementMapper } from './utils';
+import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, isRoofPolygon, measurementMapper } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -116,7 +116,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
               image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
               setPolygons={setPolygons}
-              polygonList={polygonFromProps || polygons}
+              polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
               measurementMapper={!data && measurementMapper(isExtended)}
               getNewPolygonColor={getNewPolygonColor}
               polygonLineSizeProps={

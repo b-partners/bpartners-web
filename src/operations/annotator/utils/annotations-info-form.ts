@@ -1,4 +1,5 @@
 import { RoofAnalyseProperties } from '@/common/store';
+import { parseUrlParams } from '@/common/utils';
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
 import { annotationCoveringMapper, cache } from '@/providers';
@@ -11,6 +12,7 @@ const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
 
 const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties) => {
   if (!roofAnalyseProperties) return undefined;
+  const { slope, height } = parseUrlParams();
 
   const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1 } = roofAnalyseProperties || {};
 
@@ -23,6 +25,9 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     labelType: 'roof',
     polygonId: 'roof-polygon',
     covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
+    covering2: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
+    slope: +slope || 0,
+    height: +height || 0,
   };
   return roofAnalysePropertiesInfos;
 };
