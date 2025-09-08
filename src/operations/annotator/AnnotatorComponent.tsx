@@ -45,7 +45,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   // Get the Area picture details to use
 
   const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
-  const { toggleValue: tootleLLMResultView, value: showLLMResult } = useToggle(false);
+  const { toggleValue: toogleLLMResultView, value: showLLMResult } = useToggle(false);
 
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
@@ -132,12 +132,32 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {data?.properties && showLLMResult && (
             <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
           )}
-          <LlmSwitchButton enabled={!!data?.properties} onClick={tootleLLMResultView} />
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
+            {data && !shouldAnalyseRoof && (
+              <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
+                {degradationLevels.map(({ color, label }) => (
+                  <Box
+                    key={label}
+                    className={`degratation-levels-box ${data?.properties?.global_rate_type === label ? 'degratation-levels-box-selected' : ''}`}
+                    sx={{ bgcolor: color, border: `5px solid ${data?.properties?.global_rate_type === label ? 'black' : 'transparent'}` }}
+                  >
+                    {label}
+                  </Box>
+                ))}
+              </Stack>
+            )}
+            <Box className='global-rage-container'>
+              <Typography sx={{ textAlign: 'center', width: '100%' }}>
+                Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
+              </Typography>
+            </Box>
+          </Stack>
         </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
         <Stack direction='row' className='bottom-action'>
-          <Stack direction='row'>
+          {/* <Stack direction='row'>
             {showAddress && (
               <>
                 <Typography variant='body2' sx={{ my: 1 }}>
@@ -149,27 +169,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             <Typography variant='body2'>
               <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
             </Typography>
-          </Stack>
+          </Stack> */}
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
-      )}
-      {data && !shouldAnalyseRoof && (
-        <>
-          <Paper sx={{ background: '#BEB4A4 !important', px: '10rem', py: 2, borderRadius: 2, textTransform: 'uppercase', mt: 0.5 }}>
-            <Typography sx={{ textAlign: 'center', width: '100%' }}>
-              Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
-            </Typography>
-          </Paper>
-          <Stack direction='row' justifyContent='center' m={1} gap={1}>
-            {degradationLevels.map(({ color, label }) => (
-              <Chip
-                key={`${color}-${label}`}
-                label={label}
-                sx={{ px: 1, bgcolor: color, border: `5px solid ${data?.properties?.global_rate_type === label ? 'black' : 'transparent'}` }}
-              />
-            ))}
-          </Stack>
-        </>
       )}
     </Box>
   );

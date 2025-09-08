@@ -42,3 +42,10 @@ export const llmResultStyle: SxProps = {
     display: 'block',
   },
 };
+
+export const llmButtonStyle: SxProps = {
+  color: 'white',
+  '& svg': {
+    color: 'white',
+  },
+};
