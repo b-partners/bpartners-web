@@ -5,6 +5,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { FC } from 'react';
+import { analyseRoofButtonStyle } from './style';
 
 interface AnalyseRoofButtonProps {
   polygons: Polygon[];
@@ -19,7 +20,7 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPi
   const handleClick = () => processDetection();
 
   return (
-    <Box height={50}>
+    <Box sx={analyseRoofButtonStyle}>
       <BPButton
         className='analyse-roof-button'
         label='bp.action.process_detection'

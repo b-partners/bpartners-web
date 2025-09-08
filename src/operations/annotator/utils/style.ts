@@ -83,3 +83,10 @@ export const annotatorComponentStyle: SxProps = {
     },
   },
 };
+
+export const analyseRoofButtonStyle: SxProps = {
+  height: 50,
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'flex-end',
+};
