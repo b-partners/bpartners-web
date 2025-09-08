@@ -21,7 +21,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
       </Typography>
       {height && (
         <Typography sx={{ fontSize: '14px' }}>
-          Hauteur de la maison :
+          Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
             {height} m
           </Typography>
