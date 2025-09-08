@@ -123,7 +123,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
               width={width || containerWidth}
               height={height || containerheight * 0.95}
-              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
+              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
               image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
               setPolygons={setPolygons}
               polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
@@ -142,9 +142,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {data?.properties && showLLMResult && (
             <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
           )}
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
-            {data && !shouldAnalyseRoof && (
+          {data && !shouldAnalyseRoof && (
+            <Stack direction='row' justifyContent='space-between' alignItems='center'>
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box
@@ -156,30 +156,17 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                   </Box>
                 ))}
               </Stack>
-            )}
-            <Box className='global-rage-container'>
-              <Typography sx={{ textAlign: 'center', width: '100%' }}>
-                Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
-              </Typography>
-            </Box>
-          </Stack>
+              <Box className='global-rage-container'>
+                <Typography sx={{ textAlign: 'center', width: '100%' }}>
+                  Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
+                </Typography>
+              </Box>
+            </Stack>
+          )}
         </Box>
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
         <Stack direction='row' className='bottom-action'>
-          {/* <Stack direction='row'>
-            {showAddress && (
-              <>
-                <Typography variant='body2' sx={{ my: 1 }}>
-                  <span style={{ fontWeight: 'bold' }}>Adresse:</span> {address}
-                </Typography>
-                <Divider orientation='vertical' variant='middle' flexItem />
-              </>
-            )}
-            <Typography variant='body2'>
-              <span style={{ fontWeight: 'bold' }}>Source de l'image:</span> {layer.name}, {layer.precisionLevelInCm}cm, {layer.year}
-            </Typography>
-          </Stack> */}
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}

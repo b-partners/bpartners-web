@@ -3,6 +3,7 @@ import { useRoofAnalyseQuery } from '@/common/fetcher';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { Box } from '@mui/material';
 import { FC } from 'react';
 
 interface AnalyseRoofButtonProps {
@@ -18,12 +19,14 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPi
   const handleClick = () => processDetection();
 
   return (
-    <BPButton
-      className='analyse-roof-button'
-      label='bp.action.process_detection'
-      disabled={polygons.length === 0}
-      onClick={handleClick}
-      isLoading={isProcessing}
-    />
+    <Box height={50}>
+      <BPButton
+        className='analyse-roof-button'
+        label='bp.action.process_detection'
+        disabled={polygons.length === 0}
+        onClick={handleClick}
+        isLoading={isProcessing}
+      />
+    </Box>
   );
 };
