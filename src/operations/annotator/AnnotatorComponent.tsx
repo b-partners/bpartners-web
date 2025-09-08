@@ -7,10 +7,12 @@ import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/u
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Box, Chip, Divider, Paper, Stack, SxProps, Typography } from '@mui/material';
+import { Public } from '@mui/icons-material';
+import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import { annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
+import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, isRoofPolygon, measurementMapper } from './utils';
 
@@ -104,6 +106,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           />
           <RefocusImageButton onAccept={refocusImgClick} isExtended={isExtended} />
         </Stack>
+      )}
+      {showAddress && (
+        <Box sx={addressStyle}>
+          <Stack direction='row' gap={1}>
+            <Public />
+            <Typography>Adresse: {address}</Typography>
+          </Stack>
+        </Box>
       )}
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
