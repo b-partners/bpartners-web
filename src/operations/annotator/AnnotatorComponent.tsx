@@ -118,26 +118,28 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
           {containerWidth > 0 && !showLLMResult && (!geoJsonResultUrl || data?.image) && (
-            <AnnotatorCanvas
-              markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-              allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
-              width={width || containerWidth}
-              height={height || containerheight * 0.95}
-              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
-              image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
-              setPolygons={setPolygons}
-              polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
-              measurementMapper={!data && measurementMapper(isExtended)}
-              getNewPolygonColor={getNewPolygonColor}
-              polygonLineSizeProps={
-                !data && {
-                  imageName: `${filename}.jpg`,
-                  showLineSize: true,
-                  converterApiUrl: `${CONVERTER_BASE_URL}`,
+            <Box height='95%'>
+              <AnnotatorCanvas
+                markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+                allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
+                width={width || containerWidth}
+                height={height || containerheight * 0.95}
+                buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
+                image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
+                setPolygons={setPolygons}
+                polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
+                measurementMapper={!data && measurementMapper(isExtended)}
+                getNewPolygonColor={getNewPolygonColor}
+                polygonLineSizeProps={
+                  !data && {
+                    imageName: `${filename}.jpg`,
+                    showLineSize: true,
+                    converterApiUrl: `${CONVERTER_BASE_URL}`,
+                  }
                 }
-              }
-              zoom={newZoomLevelAsNumber}
-            />
+                zoom={newZoomLevelAsNumber}
+              />
+            </Box>
           )}
           {data?.properties && showLLMResult && (
             <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />

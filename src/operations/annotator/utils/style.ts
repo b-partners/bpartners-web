@@ -8,6 +8,7 @@ export const annotatorComponentStyle: SxProps = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-around',
+  mb: 5,
   '& > .annotator-canvas-container': {
     flexGrow: 1,
     position: 'relative',
