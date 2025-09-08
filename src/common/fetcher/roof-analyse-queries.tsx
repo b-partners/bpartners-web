@@ -14,6 +14,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { ErrorMessageDialog } from '../components';
+import { useToggle } from '../hooks';
 import { useDialog } from '../store/dialog';
 import { getUrlParams } from '../utils';
 
@@ -24,6 +25,20 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
+
+  const navigate = useNavigate();
+  const onSuccess = (detectionResult: any) => {
+    const vggurl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
+    const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
+
+    handleSuccess();
+
+    const { href } = window.location;
+    const url = new URL(href);
+    url.searchParams.set('analyseRoof', 'false');
+    url.searchParams.set('imgUrl', `${imageUrl}`);
+    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}`);
+  };
 
   const mutationFn = async () => {
     const imageSize = 1024;
@@ -57,15 +72,10 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (e.message === 'polygonTooBig') errorMessage = 'La délimitation que vous avez faite est trop grande et ne peut pas encore être prise en charge.';
       openDialog(<ErrorMessageDialog message={errorMessage} />);
     },
+    onSuccess,
   });
 
-  const { data, isPending } = useQuerySlope(mutation.data, handleSuccess);
-
-  return {
-    ...mutation,
-    isPending: mutation.isPending || isPending,
-    slope: data,
-  };
+  return mutation;
 };
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
@@ -129,47 +139,25 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
   };
 };
 
-interface RoofDelimiter {
-  roofSlopeInDegree: number;
-  roofHeightInMeter: number;
-  polygon?: any;
-}
-
-const degToRad = (degrees: number) => degrees * (Math.PI / 180);
-
-const getSlopeValue = (roofDelimiter: RoofDelimiter) => {
-  const roofHalfWidth = roofDelimiter.roofHeightInMeter / Math.tan(degToRad(roofDelimiter.roofSlopeInDegree));
-  const result = roofDelimiter.roofHeightInMeter * (12 / roofHalfWidth);
-  return Math.round(result);
-};
-
-export const useQuerySlope = (detectionResult: any, handleSuccess: () => void) => {
-  const navigate = useNavigate();
-  const onSuccess = (slope: number, height: number) => {
-    const vggurl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
-    const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
-
-    handleSuccess();
-
-    const { href } = window.location;
-    const url = new URL(href);
-    url.searchParams.set('analyseRoof', 'false');
-    url.searchParams.set('imgUrl', `${imageUrl}`);
-    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}&slope=${slope}&height=${height}`);
-  };
+export const useQuerySlopeAndHeight = (onSuccess: (data: { slope: number; height: number }) => void) => {
+  const { handleClose, value: shouldRetry } = useToggle(true);
 
   const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
     queryFn: async () => {
       const data = await getDetectionResult();
       if (!data?.roofDelimiter?.roofSlopeInDegree) throw new Error('No roof slope');
-      const slope = getSlopeValue(data.roofDelimiter);
-      onSuccess(slope, data?.roofDelimiter?.roofHeightInMeter || 1);
-      return slope;
+      const result = {
+        slope: data?.roofDelimiter?.roofSlopeInDegree,
+        height: data?.roofDelimiter?.roofHeightInMeter,
+      };
+      onSuccess(result);
+      handleClose();
+      return result;
     },
     retryDelay: 5000,
     retry: Number.MAX_SAFE_INTEGER,
-    enabled: !!detectionResult,
+    enabled: shouldRetry,
   });
 
   return { data, isPending: isLoading };
