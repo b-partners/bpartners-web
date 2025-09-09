@@ -3,7 +3,6 @@ import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
-import SlopeSelect from './SlopeSelect';
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
@@ -21,12 +20,13 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
       </Typography>
       {height && (
         <Typography sx={{ fontSize: '14px' }}>
-          Hauteur de la maison :
+          Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
             {height} m
           </Typography>
         </Typography>
       )}
+      {height === -1 && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
       <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn
@@ -46,7 +46,11 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           source={`annotationInfos.${index}.covering2`}
         />
       )}
-      <SlopeSelect name={`annotationInfos.${index}.slope`} />
+      {getValues(`annotationInfos.${index}.slope`) !== -1 ? (
+        <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (%)' />
+      ) : (
+        <Typography>Chargement de la pente en cours...</Typography>
+      )}
       <SelectInput
         sx={{ mt: 3 }}
         name={`annotationInfos.${index}.wear`}

@@ -8,6 +8,7 @@ export const annotatorComponentStyle: SxProps = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-around',
+  mb: 5,
   '& > .annotator-canvas-container': {
     flexGrow: 1,
     position: 'relative',
@@ -52,4 +53,41 @@ export const annotatorComponentStyle: SxProps = {
     background: PALETTE_COLORS['neon_orange'],
     color: PALETTE_COLORS['white'],
   },
+  '& .global-rage-container ': {
+    '& .MuiTypography-root': {
+      px: 2,
+      py: 0.7,
+      border: '1px solid black',
+      borderRadius: 4,
+    },
+  },
+
+  '& .degratation-levels': {
+    '& .degratation-levels-box': {
+      width: 40,
+      height: 40,
+      borderRadius: 2,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      transition: 'all 500ms',
+      cursor: 'pointer',
+    },
+    '&:hover': {
+      '& .degratation-levels-box:not(.degratation-levels-box-selected)': {
+        background: '#D9D9D9',
+      },
+      '& .degratation-levels-box-selected': {
+        width: 50,
+        height: 50,
+      },
+    },
+  },
+};
+
+export const analyseRoofButtonStyle: SxProps = {
+  height: 50,
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'flex-end',
 };

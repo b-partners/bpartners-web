@@ -16,11 +16,11 @@ export const ANNOTATION_COVERING: { value: keyof AnnotationCoveringType; label: 
 ];
 
 export const degradationLevels = [
-  { label: 'A', color: '#53b76a' },
-  { label: 'B', color: '#f7ec94' },
-  { label: 'C', color: '#ddc563' },
-  { label: 'D', color: '#ee915c' },
-  { label: 'E', color: '#e8443b' },
+  { label: 'A', color: '#47BE62' },
+  { label: 'B', color: '#F4FBAB' },
+  { label: 'C', color: '#F9DD56' },
+  { label: 'D', color: '#F38F4B' },
+  { label: 'E', color: '#EF2C2D' },
 ];
 
 export const detectionResultColors = {

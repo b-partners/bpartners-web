@@ -1,26 +1,24 @@
 import { NOOP_FN } from '@/common/utils/noop_fn';
 import { prodUrlPattern } from '@/constants';
 import { Cached } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { FC } from 'react';
+import { llmButtonStyle } from './style';
 
 interface Props {
   enabled: boolean;
   onClick: typeof NOOP_FN;
+  showLlmResult: boolean;
 }
 
-export const LlmSwitchButton: FC<Props> = ({ enabled, onClick }) => {
+export const LlmSwitchButton: FC<Props> = ({ enabled, onClick, showLlmResult }) => {
   const isPreprod = !prodUrlPattern.test(window.location.href);
 
-  return enabled && isPreprod ? (
-    <Tooltip className='switch-llm-result-tooltip' title='Voir les conseils générés par notre IA'>
-      <span>
-        <IconButton size='large' className='switch-llm-result-button' onClick={onClick}>
-          <Cached />
-        </IconButton>
-      </span>
-    </Tooltip>
-  ) : (
-    <></>
+  if (!enabled || !isPreprod) return null;
+
+  return (
+    <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={onClick}>
+      {showLlmResult ? "Revenir à l'ecran d'annotation" : 'Voir les conseils générés par notre IA'}
+    </Button>
   );
 };

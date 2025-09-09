@@ -3,24 +3,25 @@ import { SxProps } from '@mui/material';
 
 export const annotatorActionButtonsStyle: SxProps = {
   width: '100%',
-  '& .MuiBox-root:nth-child(1)': {
-    flexGrow: 1,
-    height: '100%',
-  },
-  '& .MuiBox-root:nth-child(1) > .MuiBox-root': {
-    height: '100%',
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: PALETTE_COLORS['pine'],
-    color: PALETTE_COLORS['cream'],
-    borderRadius: 1,
-  },
+  display: 'flex',
+  justifyContent: 'space-between',
   '& .MuiIconButton-root': {
     borderRadius: 2,
     background: PALETTE_COLORS['neon_orange'],
     color: PALETTE_COLORS['white'],
+  },
+  '& .annotator-info': {
+    transform: 'translateY(-30%)',
+    '& .MuiBox-root > .MuiBox-root': {
+      border: '1px solid black',
+      px: 1,
+      borderRadius: 2,
+      mb: 0.2,
+      background: 'transparent !important',
+      color: 'black',
+      fontWeight: 'bold',
+      fontSize: 5,
+    },
   },
 };
 
@@ -40,5 +41,12 @@ export const llmResultStyle: SxProps = {
   },
   '& strong': {
     display: 'block',
+  },
+};
+
+export const llmButtonStyle: SxProps = {
+  color: 'white',
+  '& svg': {
+    color: 'white',
   },
 };
