@@ -41,7 +41,7 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
   useQuerySlopeAndHeight(({ slope, height }) => {
     formState.setValue('annotationInfos.0.slope', slope);
     formState.setValue('annotationInfos.0.height', height);
-  });
+  }, true);
 
   const annotationInfos = formState.watch('annotationInfos');
 

@@ -4,8 +4,8 @@ import {
   DetectionResultInVgg,
   detectionResultMapper,
   fromBase64,
-  getDetectionResult,
   initializeRoofAnalyse,
+  initiateRoofProperties,
   polygonMapper,
   Region,
   toBase64,
@@ -25,6 +25,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
+  const { start } = useQuerySlopeAndHeight(() => {}, false);
 
   const navigate = useNavigate();
   const onSuccess = (detectionResult: any) => {
@@ -62,6 +63,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
+    start();
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
   };
 
@@ -139,13 +141,13 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
   };
 };
 
-export const useQuerySlopeAndHeight = (onSuccess: (data: { slope: number; height: number }) => void) => {
-  const { handleClose, value: shouldRetry } = useToggle(true);
+export const useQuerySlopeAndHeight = (onSuccess: (data: { slope: number; height: number }) => void, enabled = false) => {
+  const { handleClose, value: shouldRetry, handleOpen: start } = useToggle(enabled);
 
   const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
     queryFn: async () => {
-      const data = await getDetectionResult();
+      const data = await initiateRoofProperties();
       if (!data?.roofDelimiter?.roofSlopeInDegree) throw new Error('No roof slope');
       const result = {
         slope: data?.roofDelimiter?.roofSlopeInDegree,
@@ -160,5 +162,5 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: { slope: number; height
     enabled: shouldRetry,
   });
 
-  return { data, isPending: isLoading };
+  return { data, isPending: isLoading, start };
 };
