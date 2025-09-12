@@ -159,9 +159,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 ))}
               </Stack>
               <Box className='global-rage-container'>
-                <Typography sx={{ textAlign: 'center', width: '100%' }}>
-                  Note de dégradation globale : <strong>{data?.properties?.global_rate_value}%</strong>
-                </Typography>
+                <Typography sx={{ textAlign: 'center', width: '100%' }}>Note de dégradation globale : {data?.properties?.global_rate_value}%</Typography>
               </Box>
             </Stack>
           )}

@@ -58,7 +58,10 @@ export const annotatorComponentStyle: SxProps = {
       px: 2,
       py: 0.7,
       border: '1px solid black',
-      borderRadius: 4,
+      background: PALETTE_COLORS.pine,
+      borderRadius: 3,
+      color: '#fff',
+      fontWeight: 'bold',
     },
   },
 
