@@ -22,3 +22,16 @@ export const addressStyle: SxProps = {
     height: 'fit-content',
   },
 };
+
+export const analyseResultButtonsStyle: SxProps = {
+  justifyContent: 'space-between',
+  '& .MuiButton-root': {
+    minWidth: 300,
+  },
+  '& .draft-save-btn': {
+    background: PALETTE_COLORS.pine,
+  },
+  '& .export-analyse-btn': {
+    background: PALETTE_COLORS.forest,
+  },
+};

@@ -59,7 +59,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
     <>
       <BPButton
         type='submit'
-        style={{ width: '100%' }}
+        className='export-analyse-btn'
         onClick={handleSubmitForms}
         isLoading={isLoading}
         disabled={isLoading || polygons.length === 0}

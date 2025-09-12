@@ -57,7 +57,12 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr={'1%'}>
-          <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
+          <AnnotatorComponent
+            defaultAnnotationInfos={defaultAnnotations.annotationInfos}
+            draftAnnotationId={draftAnnotationId}
+            showAddress
+            key={`${analyseRoof}-analyseRoof`}
+          />
         </Grid>
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>

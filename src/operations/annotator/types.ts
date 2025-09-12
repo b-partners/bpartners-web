@@ -98,4 +98,6 @@ export interface AnnotatorComponentProps {
   buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode;
   showFileSource?: boolean;
   boxWrapperSx?: SxProps;
+  draftAnnotationId?: string;
+  defaultAnnotationInfos?: AnnotationInfo[];
 }

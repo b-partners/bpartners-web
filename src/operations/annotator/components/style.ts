@@ -63,6 +63,7 @@ export const llmResultStyle: SxProps = {
 
 export const llmButtonStyle: SxProps = {
   color: 'white',
+  minWidth: 300,
   '& svg': {
     color: 'white',
   },

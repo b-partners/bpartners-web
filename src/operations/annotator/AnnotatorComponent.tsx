@@ -11,7 +11,7 @@ import { Public } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
-import { annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
+import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
 import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, isRoofPolygon, measurementMapper } from './utils';
@@ -28,6 +28,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   allowSelect = true,
   width,
   height,
+  defaultAnnotationInfos,
+  draftAnnotationId,
 }) => {
   const { analyseRoof, geoJsonResultUrl } = parseUrlParams();
   const shouldAnalyseRoof = analyseRoof === 'true';
@@ -159,7 +161,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 ))}
               </Stack>
               <Box className='global-rage-container'>
-                <Typography sx={{ textAlign: 'center', width: '100%' }}>Note de dégradation globale : {data?.properties?.global_rate_value}%</Typography>
+                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value}%</Typography>
               </Box>
             </Stack>
           )}
@@ -170,6 +172,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}
+      <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />
     </Box>
   );
 };

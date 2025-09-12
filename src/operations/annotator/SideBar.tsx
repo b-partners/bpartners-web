@@ -1,5 +1,4 @@
 import { FlexBox } from '@/common/components';
-import { BPButton } from '@/common/components/BPButton';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
@@ -8,26 +7,12 @@ import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Dialog,
-  DialogContent,
-  Divider,
-  IconButton,
-  List,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Dialog, DialogContent, Divider, IconButton, List, Tooltip, Typography } from '@mui/material';
 import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
 import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { ExportAnnotationConfirmButton } from './components';
 import AnnotatorForm from './components/AnnotatorForm';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils/annotations-info-form';
@@ -42,7 +27,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties } = useCanvasAnnotationContext();
-  const { isLoading, startLoading, stopLoading } = useLoadingHandler();
+  const { startLoading, stopLoading } = useLoadingHandler();
 
   const [expanded, setExpanded] = useState<number | null>(0);
   const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
@@ -86,7 +71,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
 
   return (
     <Box>
-      <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
+      <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.9, overflow: 'auto' }}>
         <Box py={2}>
           {fieldArrayState.fields.length > 0 ? (
             <FormProvider {...formState}>
@@ -168,25 +153,6 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           </Dialog>
         )}
       </List>
-      <Stack sx={{ zIndex: 99999, position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
-        <BPButton
-          type='submit'
-          isLoading={isLoading}
-          data-testid='submit-annotator-form'
-          onClick={event => handleSubmitFormsWrapper(event, false)}
-          label='resources.annotator.save'
-          style={{ width: '100%' }}
-        />
-        <BPButton
-          isLoading={isLoading}
-          disabled={isLoading || polygons.length === 0}
-          label='resources.draftsAnnotations.add'
-          data-testid='submit-draft-annotation'
-          onClick={event => handleSubmitFormsWrapper(event, true)}
-          style={{ width: '100%' }}
-        />
-        <ExportAnnotationConfirmButton formState={formState} />
-      </Stack>
     </Box>
   );
 };

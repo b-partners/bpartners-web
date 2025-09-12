@@ -55,6 +55,8 @@ export const annotatorComponentStyle: SxProps = {
   },
   '& .global-rage-container ': {
     '& .MuiTypography-root': {
+      textAlign: 'center',
+      width: '100%',
       px: 2,
       py: 0.7,
       border: '1px solid black',
@@ -66,9 +68,12 @@ export const annotatorComponentStyle: SxProps = {
   },
 
   '& .degratation-levels': {
+    mt: 0,
+    pt: 0,
     '& .degratation-levels-box': {
       width: 40,
       height: 40,
+      mt: 0,
       borderRadius: 2,
       display: 'flex',
       justifyContent: 'center',
@@ -81,8 +86,8 @@ export const annotatorComponentStyle: SxProps = {
         background: '#D9D9D9',
       },
       '& .degratation-levels-box-selected': {
-        width: 50,
-        height: 50,
+        transform: 'scale(120%)',
+        mx: 2,
       },
     },
   },
