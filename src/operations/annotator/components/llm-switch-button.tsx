@@ -18,7 +18,7 @@ export const LlmSwitchButton: FC<Props> = ({ enabled, onClick, showLlmResult }) 
 
   return (
     <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={onClick}>
-      {showLlmResult ? "Revenir à l'ecran d'annotation" : 'Voir les conseils générés par notre IA'}
+      {showLlmResult ? "Revenir à l'ecran d'annotation" : 'Comprendre votre rapport'}
     </Button>
   );
 };
