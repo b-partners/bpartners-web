@@ -30,8 +30,10 @@ export const analyseResultButtonsStyle: SxProps = {
   },
   '& .draft-save-btn': {
     background: PALETTE_COLORS.pine,
+    color: '#fff',
   },
   '& .export-analyse-btn': {
     background: PALETTE_COLORS.forest,
+    color: '#fff',
   },
 };

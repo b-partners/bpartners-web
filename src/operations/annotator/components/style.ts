@@ -40,6 +40,9 @@ export const annotatorActionButtonsStyle: SxProps = {
       color: '#fff',
     },
   },
+  '& .image-info-container': {
+    width: '100%',
+  },
 };
 
 export const llmResultStyle: SxProps = {

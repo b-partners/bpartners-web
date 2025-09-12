@@ -172,7 +172,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
         </Stack>
       )}
-      <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />
+      {!shouldAnalyseRoof && <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />}
     </Box>
   );
 };

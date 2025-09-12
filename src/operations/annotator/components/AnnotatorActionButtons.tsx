@@ -43,7 +43,7 @@ export const annotatorButtonsActions =
             <p ref={yRef}>y: 0</p>
           </Box>
         </Stack>
-        <Box>
+        <Box className='image-info-container' >
           {shouldAnalyseRoof && (
             <Stack className='image-info' direction='row'>
               <Box>
