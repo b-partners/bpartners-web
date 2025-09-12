@@ -5,23 +5,43 @@ export const annotatorActionButtonsStyle: SxProps = {
   width: '100%',
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
+  position: 'relative',
+  '& svg': {
+    color: 'white',
+  },
   '& .MuiIconButton-root': {
     borderRadius: 2,
     background: PALETTE_COLORS['neon_orange'],
     color: PALETTE_COLORS['white'],
   },
   '& .annotator-info': {
-    transform: 'translateY(-30%)',
-    '& .MuiBox-root > .MuiBox-root': {
-      border: '1px solid black',
+    '& .MuiBox-root': {
+      '& p': {
+        m: 0,
+      },
+      color: '#fff',
       px: 1,
+      py: 1,
       borderRadius: 2,
-      mb: 0.2,
-      background: 'transparent !important',
-      color: 'black',
-      fontWeight: 'bold',
-      fontSize: 5,
+      minWidth: 70,
+      fontWeight: 'semi-bold',
+      background: PALETTE_COLORS.neon_orange,
     },
+  },
+  '& .image-info': {
+    background: PALETTE_COLORS.pine,
+    borderRadius: 2,
+    width: '100%',
+    display: 'flex',
+    py: 1,
+    justifyContent: 'center',
+    '& .MuiTypography-root': {
+      color: '#fff',
+    },
+  },
+  '& .image-info-container': {
+    width: '100%',
   },
 };
 
@@ -46,6 +66,7 @@ export const llmResultStyle: SxProps = {
 
 export const llmButtonStyle: SxProps = {
   color: 'white',
+  minWidth: 300,
   '& svg': {
     color: 'white',
   },

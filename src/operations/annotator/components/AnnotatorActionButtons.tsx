@@ -34,32 +34,27 @@ export const annotatorButtonsActions =
     const shouldAnalyseRoof = analyseRoof === 'true';
 
     return (
-      <Stack sx={annotatorActionButtonsStyle} direction='row' gap={2}>
-        <Stack className='annotator-info' direction='row' gap={3}>
+      <Stack sx={annotatorActionButtonsStyle} direction='row' gap={1}>
+        <Stack className='annotator-info' direction='row' gap={1}>
           <Box>
-            <Box>
-              <Typography>
-                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
-              </Typography>
-            </Box>
-            <Box ref={yRef}>
-              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
-            </Box>
+            <p ref={xRef}>x: 0</p>
           </Box>
           <Box>
-            <Box>
-              <Typography ref={xRef}>x: 0</Typography>
-            </Box>
-            <Box>
-              <Typography ref={yRef}>y: 0</Typography>
-            </Box>
+            <p ref={yRef}>y: 0</p>
           </Box>
         </Stack>
-        <Box>
+        <Box className='image-info-container'>
           {shouldAnalyseRoof && (
-            <Box>
-              <Typography>Veuillez délimiter votre toiture</Typography>
-            </Box>
+            <Stack className='image-info' direction='row'>
+              <Box>
+                <Typography>
+                  (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
+                </Typography>
+              </Box>
+              <Box>
+                <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
+              </Box>
+            </Stack>
           )}
         </Box>
         <Stack gap={1} direction='row'>

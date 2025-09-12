@@ -1,3 +1,4 @@
+export * from './analyse-result-button';
 export * from './AnnotationInfoShow';
 export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
