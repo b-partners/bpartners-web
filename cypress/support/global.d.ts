@@ -15,7 +15,6 @@ export declare global {
       realCognitoLogin(): void;
       removeApiDummyUser(): void;
       waitAuthRequestNeeded(): void;
-      skipBankSynchronisation(): void;
     }
   }
 }
