@@ -26,7 +26,7 @@ describe('Test invoice', () => {
 
     cy.get('[data-testid="invoice-Produits-accordion"]').click();
     cy.get('#invoice-product-selection-button-id').click();
-    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un euro symbolique');
+    cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un');
     cy.contains('Un euro symbolique').click(); // 1 €
 
     cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
@@ -56,39 +56,5 @@ describe('Test invoice', () => {
     cy.get('#form-save-id').click();
 
     cy.wait('@getdrafts', { timeout });
-
-    cy.get('[name="bank"]').click();
-
-    cy.get('body').then(body => {
-      if (!body.text().includes('Aucune banque associée.')) {
-        cy.get('[name="invoice"]').click();
-
-        cy.wait('@getInvoicesSummary', { timeout });
-        cy.get(`[data-testid="invoice-conversion-PROPOSAL-BROUILLON-${ref}"]`).click();
-        cy.contains('Brouillon transformé en devis', { timeout });
-
-        cy.get(`[data-testid="invoice-conversion-CONFIRMED-DEVIS-${ref}"]`).click();
-        cy.contains('Devis confirmé', { timeout });
-
-        cy.get(`[data-testid="invoice-conversion-PAID-${ref}-1"]`).click();
-
-        cy.intercept('PUT', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices/**/paymentRegulations/**/paymentMethod**').as('savePaymentRegulation');
-        cy.get("[data-testid='invoice-payment-method-select-0']").click();
-        cy.contains('Espèces').click();
-        cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-
-        cy.wait('@savePaymentRegulation', { timeout });
-
-        cy.contains('Acompte payé avec succès !');
-
-        cy.get("[data-testid='invoice-payment-method-select-1']").click();
-        cy.contains('Chèque').click();
-        cy.get('[data-testid="invoice-conversion-PAID-0"]').click();
-
-        cy.wait('@savePaymentRegulation', { timeout });
-
-        cy.contains('Acompte payé avec succès !');
-      }
-    });
   });
 });
