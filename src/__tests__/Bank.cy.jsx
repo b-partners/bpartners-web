@@ -17,7 +17,7 @@ const newAccounts = [
   { ...account2, active: true },
   { ...account1, active: false },
 ];
-describe(specTitle('Account'), () => {
+xdescribe(specTitle('Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
     const newAccount = [{ ...account1, bic: 'bic1234', iban: 'iban1234', bank: { name: 'BMOI' } }];

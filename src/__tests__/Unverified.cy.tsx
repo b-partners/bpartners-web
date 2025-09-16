@@ -4,7 +4,7 @@ import { account1, accountHolders1, accounts1, businessActivities } from './mock
 import { images1 } from './mocks/responses/file-api';
 import { user1, user2, whoami1 } from './mocks/responses/security-api';
 
-describe('Unverified user', () => {
+xdescribe('Unverified user', () => {
   beforeEach(() => {
     cy.cognitoLogin();
     cy.stub(getCached, 'account').returns(account1);

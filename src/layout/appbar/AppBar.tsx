@@ -1,7 +1,7 @@
 import { ShortWarning } from '@/common/components/BPBetaTestWarning';
 import BPDialog from '@/common/components/BPDialog';
 import { printError, Redirect } from '@/common/utils';
-import { accountProvider, authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
+import { authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
@@ -39,7 +39,6 @@ export const AppBar = () => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
-  const [status, setStatus] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const isBeta = process.env.REACT_APP_BETA !== 'false';
   const cachedUser = getCached.user();
@@ -51,21 +50,11 @@ export const AppBar = () => {
     const fetch = async () => {
       if (userId) {
         const { firstName } = getCached.user() || (await whoami()).user;
-        const { status } = getCached.account() || (await accountProvider.getOne());
-
         setName(firstName);
-        setStatus(status);
       }
     };
     fetch().catch(printError);
   }, [userId]);
-
-  useEffect(() => {
-    const isAccountValidated = () => {
-      setOpenDialog(status === 'VALIDATION_REQUIRED' || status === 'INVALID_CREDENTIALS' || status === 'SCA_REQUIRED');
-    };
-    isAccountValidated();
-  }, [status]);
 
   const accountValidation = async () => {
     try {
