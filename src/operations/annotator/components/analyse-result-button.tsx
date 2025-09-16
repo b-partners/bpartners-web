@@ -51,7 +51,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnot
   };
 
   return (
-    <Stack direction='row' sx={analyseResultButtonsStyle}>
+    <Stack direction='row' sx={analyseResultButtonsStyle} gap={1}>
       <BPButton
         type='submit'
         className='invoice-gen-btn'

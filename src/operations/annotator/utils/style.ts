@@ -25,6 +25,11 @@ export const annotatorComponentStyle: SxProps = {
     width: '100%',
     gap: 1,
     mb: 1,
+    display: 'flex',
+    justifyContent: 'space-between',
+    '& .analyseRoof-button': {
+      alignSelf: 'flex-end',
+    },
     '& .MuiStack-root': {
       background: PALETTE_COLORS['pine'],
       color: PALETTE_COLORS['cream'],
