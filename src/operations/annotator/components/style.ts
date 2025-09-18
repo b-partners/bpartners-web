@@ -48,6 +48,7 @@ export const annotatorActionButtonsStyle: SxProps = {
 export const llmResultStyle: SxProps = {
   textAlign: 'justify',
   padding: 5,
+  marginBottom: 2,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',

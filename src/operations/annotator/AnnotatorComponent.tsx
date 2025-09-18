@@ -2,8 +2,8 @@ import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize, useToggle } from '@/common/hooks';
-import { useCanvasAnnotationContext } from '@/common/store';
-import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
+import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
@@ -31,9 +31,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   defaultAnnotationInfos,
   draftAnnotationId,
 }) => {
-  const { analyseRoof, geoJsonResultUrl } = parseUrlParams();
-  const shouldAnalyseRoof = analyseRoof === 'true';
-  const { data, isPending } = useGeojsonQueryResult([analyseRoof, geoJsonResultUrl, shouldAnalyseRoof], !!geoJsonResultUrl);
+  const { geoJsonResultUrl } = useAnnotatorComponentStore();
+
+  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
   const { address } = useWrappedSearchParams(['address']);
   const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
@@ -54,7 +54,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
-    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image && !shouldAnalyseRoof) setPolygons(currentPolygons || []);
+    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) setPolygons(currentPolygons || []);
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
@@ -77,8 +77,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       setPolygons([]);
     }
   };
-
-  const onRoofAnalyseAllowAnnotation = !shouldAnalyseRoof || polygons.length === 0;
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
@@ -123,7 +121,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             <Box height='95%'>
               <AnnotatorCanvas
                 markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-                allowAnnotation={allowAnnotation && onRoofAnalyseAllowAnnotation}
+                allowAnnotation={allowAnnotation}
                 width={width || containerWidth}
                 height={height || containerheight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
@@ -144,9 +142,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             </Box>
           )}
           {data?.properties && showLLMResult && (
-            <LlmResult width={width || containerWidth} height={height || containerheight * 0.95} roofAnalyseProperties={data?.properties} />
+            <LlmResult width={width || containerWidth} height={height || containerheight} roofAnalyseProperties={data?.properties} />
           )}
-          {data && !shouldAnalyseRoof && (
+          {data && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
               <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
@@ -167,12 +165,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           )}
         </Box>
       )}
-      {showFileSource && Object.keys(layer).length > 0 && (
+      {!data && showFileSource && Object.keys(layer).length > 0 && (
         <Stack direction='row' className='bottom-action'>
           <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
         </Stack>
       )}
-      {!shouldAnalyseRoof && <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />}
+      <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />
     </Box>
   );
 };

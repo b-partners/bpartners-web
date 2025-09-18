@@ -14,6 +14,7 @@ export const annotatorComponentStyle: SxProps = {
     position: 'relative',
     m: 0,
     p: 0,
+    marginBlock: 1,
   },
   '& .image-properties-actions': {
     width: '100%',
