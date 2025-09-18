@@ -27,7 +27,7 @@ export const annotatorComponentStyle: SxProps = {
     mb: 1,
     display: 'flex',
     justifyContent: 'space-between',
-    '& .analyseRoof-button': {
+    '& .analyse-roof-button': {
       alignSelf: 'flex-end',
     },
     '& .MuiStack-root': {
@@ -42,11 +42,6 @@ export const annotatorComponentStyle: SxProps = {
       '& .MuiDivider-root': {
         borderColor: PALETTE_COLORS['cream'],
       },
-    },
-    '& > .analyse-roof-button': {
-      height: '100%',
-      p: 0,
-      m: 0,
     },
   },
   '& .switch-llm-result-tooltip': {

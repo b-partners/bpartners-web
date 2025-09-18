@@ -1,33 +1,31 @@
-import { BPButton } from '@/common/components';
+import { BPButton, BPButtonTemplateProps } from '@/common/components';
 import { useRoofAnalyseQuery } from '@/common/fetcher';
-import { useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { Box } from '@mui/material';
 import { FC } from 'react';
-import { analyseRoofButtonStyle } from './style';
 
-interface AnalyseRoofButtonProps {
+interface AnalyseRoofButtonProps extends Omit<BPButtonTemplateProps, 'label'> {
   polygons: Polygon[];
   areaPicture: AreaPictureDetails;
 }
 
-export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPicture }) => {
+export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPicture, disabled, ...props }) => {
   const { setPolygons } = useCanvasAnnotationContext();
+  const { thereIsRoofPolygon } = useAnnotatorComponentStore();
   const handleSuccess = () => setPolygons([]);
   const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, handleSuccess);
 
   const handleClick = () => processDetection();
 
   return (
-    <Box sx={analyseRoofButtonStyle}>
-      <BPButton
-        className='analyse-roof-button'
-        label='bp.action.process_detection'
-        disabled={polygons.length === 0}
-        onClick={handleClick}
-        isLoading={isProcessing}
-      />
-    </Box>
+    <BPButton
+      {...props}
+      className='analyse-roof-button'
+      label='bp.action.process_detection'
+      disabled={disabled || !thereIsRoofPolygon}
+      onClick={handleClick}
+      isLoading={isProcessing}
+    />
   );
 };

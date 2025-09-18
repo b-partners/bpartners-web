@@ -1,4 +1,4 @@
-import { BPButton, BPLoader } from '@/common/components';
+import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize, useToggle } from '@/common/hooks';
@@ -169,8 +169,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {showFileSource && Object.keys(layer).length > 0 && (
         <Stack direction='row' className='bottom-action'>
-          {shouldAnalyseRoof && <AnalyseRoofButton areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />}
-          <BPButton label='bp.action.process_detection' className='analyseRoof-button' />
+          <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
         </Stack>
       )}
       {!shouldAnalyseRoof && <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />}
