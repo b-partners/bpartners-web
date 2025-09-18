@@ -1,5 +1,7 @@
 export * from './analyse-result-button';
+export * from './annotation-item-label-type-select';
 export * from './AnnotationInfoShow';
+export * from './annotator-form-item';
 export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
 export * from './ExportAnnotationConfirmButton';
