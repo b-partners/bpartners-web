@@ -8,6 +8,7 @@ interface AnalyseInformation {
 interface Action {
   setThereIsRoofPolygon: (value: boolean) => void;
   setAnalyseInformation: (value: AnalyseInformation) => void;
+  reset(): void;
 }
 
 interface State {
@@ -22,4 +23,5 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   imageUrl: null,
   geoJsonResultUrl: null,
   setAnalyseInformation: ({ geoJsonResultUrl, imageUrl }) => set({ geoJsonResultUrl, imageUrl }),
+  reset: () => set({ thereIsRoofPolygon: false, imageUrl: null, geoJsonResultUrl: null }),
 }));
