@@ -176,6 +176,6 @@ export const clearCache = () => {
 export const clearPolygons = () => {
   cache.polygons(null);
   cache.annotationsInfo(null);
-  cache.roofAnalyseId(null);
-  cache.llmResult(null);
+  localStorage.removeItem(roofAnalyseIdItem);
+  localStorage.removeItem(llmResultItem);
 };
