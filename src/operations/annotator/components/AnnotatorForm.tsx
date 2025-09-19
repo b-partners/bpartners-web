@@ -18,7 +18,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           {surface} m²
         </Typography>
       </Typography>
-      {height !== 1 ? (
+      {height !== -1 ? (
         <Typography sx={{ fontSize: '14px' }}>
           Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
