@@ -14,7 +14,15 @@ import { degradationLevels } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
-import { AnalyseRoofButton, annotatorComponentStyle, createRoofPolygon, getNewPolygonColor, isRoofPolygon, measurementMapper } from './utils';
+import {
+  AnalyseRoofButton,
+  annotatorComponentStyle,
+  createRoofPolygon,
+  getNewPolygonColor,
+  isRoofPolygon,
+  measurementMapper,
+  useLlmResultQuery,
+} from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -31,7 +39,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   defaultAnnotationInfos,
   draftAnnotationId,
 }) => {
-  const { geoJsonResultUrl } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, roofSlope } = useAnnotatorComponentStore();
 
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
@@ -77,6 +85,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       setPolygons([]);
     }
   };
+
+  const { data: htmlResult, isPending: isLlmResultPending } = useLlmResultQuery(data?.properties);
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
@@ -142,11 +152,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             </Box>
           )}
           {data?.properties && showLLMResult && (
-            <LlmResult width={width || containerWidth} height={height || containerheight} roofAnalyseProperties={data?.properties} />
+            <LlmResult width={width || containerWidth} height={height || containerheight} htmlResult={htmlResult} isLoading={isLlmResultPending} />
           )}
           {data && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties && !!roofSlope} onClick={toogleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box

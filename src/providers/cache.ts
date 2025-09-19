@@ -18,6 +18,7 @@ const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
 const roofAnalyseIdItem = 'bp_roof_analyse_id';
+const llmResultItem = 'bp_llm_result_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -91,6 +92,10 @@ export const cache = {
     localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
     return roofAnalyseId;
   },
+  llmResult(llmResult: string) {
+    localStorage.setItem(llmResultItem, llmResult);
+    return llmResult;
+  },
 };
 
 export const getCached = {
@@ -158,6 +163,9 @@ export const getCached = {
   roofAnalyseId() {
     return localStorage.getItem(roofAnalyseIdItem);
   },
+  llmResult() {
+    return localStorage.getItem(llmResultItem);
+  },
 };
 
 export const clearCache = () => {
@@ -169,4 +177,5 @@ export const clearPolygons = () => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   cache.roofAnalyseId(null);
+  cache.llmResult(null);
 };

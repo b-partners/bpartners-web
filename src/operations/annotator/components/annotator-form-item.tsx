@@ -1,8 +1,8 @@
 import { FlexBox } from '@/common/components';
-import { useAnnotatorComponentFormItemStore, useCanvasAnnotationContext } from '@/common/store';
+import { useCanvasAnnotationContext } from '@/common/store';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Tooltip } from '@mui/material';
-import { ChangeEvent, FC } from 'react';
+import { FC, useState } from 'react';
 import { TextInput } from 'react-admin';
 import { FieldArrayWithId, useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
@@ -17,13 +17,10 @@ interface Props {
 export const AnnotatorFormItem: FC<Props> = ({ annotationInfo, index }) => {
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
-  const { annotatorSidebarAnnordionItem, setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
+  const [isExpanded, setIsExpanded] = useState(false);
   const formState = useFormContext();
 
-  const handleClickAccordion = (_event: ChangeEvent<unknown>) => {
-    if (annotatorSidebarAnnordionItem === index) setAnnotatorSidebarAnnordionItem(-1);
-    else setAnnotatorSidebarAnnordionItem(index);
-  };
+  const handleClickAccordion = () => setIsExpanded(!isExpanded);
 
   const togglePolygonVisibility = (polygonId: string) => {
     setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
@@ -51,7 +48,7 @@ export const AnnotatorFormItem: FC<Props> = ({ annotationInfo, index }) => {
           </IconButton>
         </Tooltip>
       </FlexBox>
-      <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={annotatorSidebarAnnordionItem === index} onChange={handleClickAccordion}>
+      <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={isExpanded} onChange={handleClickAccordion}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <TextInput
             name={`annotationInfos.${index}.labelName`}
