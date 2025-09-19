@@ -1,17 +1,15 @@
-import { Properties } from '@/providers';
-import { Box } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { FC, useEffect, useRef } from 'react';
-import { useLlmResultQuery } from '../utils';
 import { llmResultStyle } from './style';
 
 interface LlmResultProps {
-  roofAnalyseProperties: Properties;
   width: string | number;
   height: string | number;
+  htmlResult: string;
+  isLoading: boolean;
 }
 
-export const LlmResult: FC<LlmResultProps> = ({ height, roofAnalyseProperties, width }) => {
-  const { data: htmlResult, isPending } = useLlmResultQuery(roofAnalyseProperties);
+export const LlmResult: FC<LlmResultProps> = ({ height, width, htmlResult, isLoading }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,7 +20,14 @@ export const LlmResult: FC<LlmResultProps> = ({ height, roofAnalyseProperties, w
 
   return (
     <Box component='div' ref={ref} sx={llmResultStyle} height={height || '100%'} width={width || '100%'}>
-      {isPending && 'loading ...'}
+      {isLoading && (
+        <Box className='loading-container'>
+          <Stack className='loading-element-container'>
+            <CircularProgress />
+            <Typography>Chargement des explications du rapport...</Typography>
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };

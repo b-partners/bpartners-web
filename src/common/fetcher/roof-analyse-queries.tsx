@@ -3,20 +3,18 @@ import {
   annotatorProvider,
   DetectionResultInVgg,
   detectionResultMapper,
-  fromBase64,
   initializeRoofAnalyse,
   initiateRoofProperties,
   polygonMapper,
   Region,
-  toBase64,
 } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { ErrorMessageDialog } from '../components';
 import { useToggle } from '../hooks';
+import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
-import { getUrlParams } from '../utils';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
   const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
@@ -26,19 +24,13 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
   const { start } = useQuerySlopeAndHeight(() => {}, false);
+  const { setAnalyseInformation } = useAnnotatorComponentStore();
 
-  const navigate = useNavigate();
   const onSuccess = (detectionResult: any) => {
-    const vggurl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
+    const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
-
     handleSuccess();
-
-    const { href } = window.location;
-    const url = new URL(href);
-    url.searchParams.set('analyseRoof', 'false');
-    url.searchParams.set('imgUrl', `${imageUrl}`);
-    navigate(`/annotator${url.search}&geoJsonResultUrl=${toBase64(`${vggurl}`)}`);
+    setAnalyseInformation({ geoJsonResultUrl, imageUrl });
   };
 
   const mutationFn = async () => {
@@ -104,14 +96,14 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
+  const { geoJsonResultUrl, imageUrl } = useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
-  const geoJsonResultUrl = fromBase64(`${searchParams.get('geoJsonResultUrl')}`);
   const { pathname } = useLocation();
 
   const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
 
   const queryFnVgg = async () => {
-    const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': '*/*' } });
+    const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': 'application/json' } });
     const detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
     const regions = getRegions(detectionResultJson);
     const filteredPolygons = detectionResultMapper.toPolygon(regions.slice());
@@ -119,7 +111,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
 
     const obstacle = isThereAnObstacle(regions.slice());
 
-    const imageAsBase64 = await fetchImageAsBase64(getUrlParams(window.location.search, 'imgUrl'));
+    const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
     const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
@@ -135,6 +127,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     queryFn: queryFnVgg,
     enabled,
   });
+
   return {
     ...query,
     geoJsonResultUrl,

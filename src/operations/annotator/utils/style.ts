@@ -14,6 +14,7 @@ export const annotatorComponentStyle: SxProps = {
     position: 'relative',
     m: 0,
     p: 0,
+    marginBlock: 1,
   },
   '& .image-properties-actions': {
     width: '100%',
@@ -25,6 +26,11 @@ export const annotatorComponentStyle: SxProps = {
     width: '100%',
     gap: 1,
     mb: 1,
+    display: 'flex',
+    justifyContent: 'space-between',
+    '& .analyse-roof-button': {
+      alignSelf: 'flex-end',
+    },
     '& .MuiStack-root': {
       background: PALETTE_COLORS['pine'],
       color: PALETTE_COLORS['cream'],
@@ -37,11 +43,6 @@ export const annotatorComponentStyle: SxProps = {
       '& .MuiDivider-root': {
         borderColor: PALETTE_COLORS['cream'],
       },
-    },
-    '& > .analyse-roof-button': {
-      height: '100%',
-      p: 0,
-      m: 0,
     },
   },
   '& .switch-llm-result-tooltip': {

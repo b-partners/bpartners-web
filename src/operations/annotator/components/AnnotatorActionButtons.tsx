@@ -1,5 +1,4 @@
 import { useDialog } from '@/common/store/dialog';
-import { parseUrlParams } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import {
@@ -9,7 +8,7 @@ import {
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
@@ -30,9 +29,6 @@ export const annotatorButtonsActions =
       );
     };
 
-    const { analyseRoof } = parseUrlParams();
-    const shouldAnalyseRoof = analyseRoof === 'true';
-
     return (
       <Stack sx={annotatorActionButtonsStyle} direction='row' gap={1}>
         <Stack className='annotator-info' direction='row' gap={1}>
@@ -44,18 +40,17 @@ export const annotatorButtonsActions =
           </Box>
         </Stack>
         <Box className='image-info-container'>
-          {shouldAnalyseRoof && (
-            <Stack className='image-info' direction='row'>
-              <Box>
-                <Typography>
-                  (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
-                </Typography>
-              </Box>
-              <Box>
-                <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
-              </Box>
-            </Stack>
-          )}
+          <Stack className='image-info' direction='row'>
+            <Box>
+              <Typography>
+                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
+              </Typography>
+            </Box>
+            <Divider />
+            <Box>
+              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
+            </Box>
+          </Stack>
         </Box>
         <Stack gap={1} direction='row'>
           <Tooltip onClick={scaleUp} title='Zoom +'>

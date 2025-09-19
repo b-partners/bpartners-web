@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
-import { ProspectContextProvider } from '@/common/store';
+import { ProspectContextProvider, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '@/common/store';
 import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
@@ -35,6 +35,8 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
+  const annotatorComponentStore = useAnnotatorComponentStore();
+  const { setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
 
   useEffect(() => {
     form.setValue('address', address);
@@ -74,9 +76,11 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
           if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
 
+          annotatorComponentStore.reset();
+          setAnnotatorSidebarAnnordionItem(0);
           clearPolygons();
           navigate(
-            `/roof-analyse?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}&analyseRoof=true`
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
           );
           return;
         } catch (err) {

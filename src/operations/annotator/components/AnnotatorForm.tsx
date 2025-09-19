@@ -18,16 +18,15 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           {surface} m²
         </Typography>
       </Typography>
-      {height !== 1 ? (
+      {height && height !== -1 && (
         <Typography sx={{ fontSize: '14px' }}>
           Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
             {height} m
           </Typography>
         </Typography>
-      ) : (
-        <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>
       )}
+      {height === -1 && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
       <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn

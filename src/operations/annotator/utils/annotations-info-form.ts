@@ -1,5 +1,5 @@
 import { useQuerySlopeAndHeight } from '@/common/fetcher';
-import { RoofAnalyseProperties } from '@/common/store';
+import { RoofAnalyseProperties, useAnnotatorComponentStore } from '@/common/store';
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
 import { annotationCoveringMapper, cache } from '@/providers';
@@ -10,7 +10,7 @@ import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
 
 const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
 
-const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties) => {
+const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
 
   const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1 } = roofAnalyseProperties || {};
@@ -25,8 +25,8 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     polygonId: 'roof-polygon',
     covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
     covering2: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
-    slope: -1,
-    height: -1,
+    slope,
+    height,
   };
   return roofAnalysePropertiesInfos;
 };
@@ -37,11 +37,13 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
     control: formState.control,
     name: 'annotationInfos',
   });
+  const { setRoofSlope } = useAnnotatorComponentStore();
 
-  useQuerySlopeAndHeight(({ slope, height }) => {
+  const { data } = useQuerySlopeAndHeight(({ slope, height }) => {
     formState.setValue('annotationInfos.0.slope', slope);
     formState.setValue('annotationInfos.0.height', height);
-  }, true);
+    setRoofSlope(slope);
+  }, polygons.length === 1);
 
   const annotationInfos = formState.watch('annotationInfos');
 
@@ -50,11 +52,11 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
       const synchronizedAnnotationInfos = getSynchronizedAnnotationInfos(
         polygons,
         annotationInfos,
-        createAnnotationInfoFromRoofAnalyseProperties(roofAnalyseProperties)
+        createAnnotationInfoFromRoofAnalyseProperties(roofAnalyseProperties, data?.height, data?.slope)
       );
       fieldArrayState.replace(synchronizedAnnotationInfos);
     }
-  }, [stringifyObj(annotationInfos), polygons.length]);
+  }, [stringifyObj(annotationInfos), polygons.length, data]);
 
   useEffect(() => {
     const subscription = formState.watch(({ annotationInfos: currentAnnotationInfos = [] }) => {

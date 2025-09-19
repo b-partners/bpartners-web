@@ -48,6 +48,7 @@ export const annotatorActionButtonsStyle: SxProps = {
 export const llmResultStyle: SxProps = {
   textAlign: 'justify',
   padding: 5,
+  marginBottom: 2,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
@@ -61,6 +62,25 @@ export const llmResultStyle: SxProps = {
   },
   '& strong': {
     display: 'block',
+  },
+  '& h1,h2,h3': {
+    textAlign: 'center',
+  },
+  '& section:first-child > h2': {
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& section:nth-child(2) > h2': {
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& .loading-container': {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    '& .loading-element-container': {
+      alignItems: 'center',
+    },
   },
 };
 
