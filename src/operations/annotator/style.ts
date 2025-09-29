@@ -2,11 +2,12 @@ import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const addressStyle: SxProps = {
+  justifyContent: 'space-between',
+  alignItems: 'center',
   '& > .MuiStack-root': {
     border: `2px solid ${PALETTE_COLORS['neon_orange']}`,
     width: 'fit-content',
     height: 'fit-content',
-    marginBottom: 2,
     borderRadius: 3,
     display: 'flex',
     justifyContent: 'space-evenly',

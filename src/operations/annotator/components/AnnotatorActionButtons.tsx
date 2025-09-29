@@ -42,13 +42,13 @@ export const annotatorButtonsActions =
         <Box className='image-info-container'>
           <Stack className='image-info' direction='row'>
             <Box>
+              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
+            </Box>
+            <Divider orientation='vertical' variant='fullWidth' flexItem color='white' />
+            <Box>
               <Typography>
                 (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
               </Typography>
-            </Box>
-            <Divider />
-            <Box>
-              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
             </Box>
           </Stack>
         </Box>

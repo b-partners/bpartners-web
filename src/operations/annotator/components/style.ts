@@ -39,6 +39,9 @@ export const annotatorActionButtonsStyle: SxProps = {
     '& .MuiTypography-root': {
       color: '#fff',
     },
+    '& .MuiDivider-root': {
+      marginX: 2,
+    },
   },
   '& .image-info-container': {
     width: '100%',
