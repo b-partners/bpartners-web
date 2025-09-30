@@ -40,7 +40,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   defaultAnnotationInfos,
   draftAnnotationId,
 }) => {
-  const { geoJsonResultUrl, roofSlope } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl } = useAnnotatorComponentStore();
 
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
@@ -158,7 +158,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           )}
           {data && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties && !!roofSlope} onClick={toogleLLMResultView} />
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box
