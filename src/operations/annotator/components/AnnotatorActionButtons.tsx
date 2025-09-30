@@ -47,7 +47,7 @@ export const annotatorButtonsActions =
             <Divider orientation='vertical' variant='fullWidth' flexItem color='white' />
             <Box>
               <Typography>
-                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.latitude})
+                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.longitude})
               </Typography>
             </Box>
           </Stack>
