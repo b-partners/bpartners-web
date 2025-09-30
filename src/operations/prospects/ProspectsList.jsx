@@ -91,7 +91,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
               <DialogTitle>{isPrecisionError ? 'Image à précision de 5 cm indisponible.' : 'Adresse introuvable.'}</DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  L'adresse que vous avez spécifiée n'est pas encore pris en charge.
+                  Adresse momentanément indisponible.
                   {isPrecisionError && 'Aucune image avec une précision de 5 cm n’est encore disponible.'}
                   Veuillez réessayer ultérieurement.
                 </DialogContentText>

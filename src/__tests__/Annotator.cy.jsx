@@ -79,7 +79,7 @@ xdescribe(specTitle("tester le fonctionnement de l'annotator"), () => {
     cy.intercept('PUT', `/accounts/**/areaPictures/**`, req => req.reply({ statusCode: 500 }));
 
     cy.contains('Générer l’image').click();
-    cy.contains("L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.");
+    cy.contains("Adresse momentanément indisponible. Veuillez réessayer ultérieurement.");
     cy.contains('Fermer').click();
   });
 });
