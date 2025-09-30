@@ -7,7 +7,7 @@ import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
-import { Public } from '@mui/icons-material';
+import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
@@ -17,6 +17,7 @@ import { AnnotatorComponentProps } from './types';
 import {
   AnalyseRoofButton,
   annotatorComponentStyle,
+  AnnotatorHelpButton,
   createRoofPolygon,
   getNewPolygonColor,
   isRoofPolygon,
@@ -39,7 +40,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   defaultAnnotationInfos,
   draftAnnotationId,
 }) => {
-  const { geoJsonResultUrl, roofSlope } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl } = useAnnotatorComponentStore();
 
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
@@ -118,12 +119,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Stack>
       )}
       {showAddress && (
-        <Box sx={addressStyle}>
+        <Stack direction='row' gap={1} sx={addressStyle}>
           <Stack direction='row' gap={1}>
-            <Public />
+            <PublicIcon />
             <Typography>Adresse: {address}</Typography>
           </Stack>
-        </Box>
+          <AnnotatorHelpButton />
+        </Stack>
       )}
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
@@ -156,7 +158,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           )}
           {data && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties && !!roofSlope} onClick={toogleLLMResultView} />
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box

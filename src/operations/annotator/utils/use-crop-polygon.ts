@@ -1,7 +1,8 @@
 import { DomainPolygonResultType } from '@/providers';
+const margin = 10;
 
 export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
-  const { x: firstX, y: firstY } = polygons?.[0]?.points?.[0] || { x: 0, y: 0 };
+  const { x: firstX, y: firstY } = polygons[0].points[0];
   const boundingBox = {
     left: firstX,
     right: firstX,
@@ -21,18 +22,35 @@ export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
   return boundingBox;
 };
 
-export const getBoundingBoxSize = (boundingBox: ReturnType<typeof getBoundingBox>) => {
-  const margin = 10;
+export const getBoundingBoxSize = (boundingBox: ReturnType<typeof getBoundingBox>, imageXSize: number, imageYSize: number) => {
   const xSize = boundingBox.right - boundingBox.left;
   const ySize = boundingBox.bottom - boundingBox.top;
-  if (xSize < 1024 && ySize < 1024) return 1034;
-  if (xSize < ySize) return ySize + margin;
-  return xSize + margin;
+
+  const result = { boundingBoxXSize: 1024, boundingBoxYSize: 1024 };
+
+  if (xSize < 1024 && ySize < 1024) return result;
+  if (xSize < ySize) {
+    result.boundingBoxYSize = ySize;
+    if (imageXSize < ySize) result.boundingBoxXSize = imageXSize;
+    else result.boundingBoxXSize = ySize;
+  } else {
+    result.boundingBoxXSize = xSize;
+    if (imageYSize < xSize) result.boundingBoxYSize = imageYSize;
+    else result.boundingBoxYSize = xSize;
+  }
+
+  const marginOffsetX = imageXSize - result.boundingBoxXSize;
+  const marginOffsetY = imageYSize - result.boundingBoxYSize;
+
+  result.boundingBoxXSize += marginOffsetX >= margin ? margin : marginOffsetX;
+  result.boundingBoxYSize += marginOffsetY >= margin ? margin : marginOffsetY;
+
+  return result;
 };
 
-export const getOriginPoint = (boundingBox: ReturnType<typeof getBoundingBox>, size: number, imageSize: number) => {
-  const xOffset = (size - (boundingBox.right - boundingBox.left)) / 2;
-  const yOffset = (size - (boundingBox.bottom - boundingBox.top)) / 2;
+export const getOriginPoint = (boundingBox: ReturnType<typeof getBoundingBox>, xSize: number, ySize: number, imageXSize: number, imageYSize: number) => {
+  const xOffset = (xSize - (boundingBox.right - boundingBox.left)) / 2;
+  const yOffset = (ySize - (boundingBox.bottom - boundingBox.top)) / 2;
 
   const x0 = boundingBox.left - xOffset;
   const x1 = boundingBox.right + xOffset;
@@ -44,10 +62,10 @@ export const getOriginPoint = (boundingBox: ReturnType<typeof getBoundingBox>, s
     y: y0,
   };
 
-  if (x1 > imageSize) positionZero.x = x0 - (x1 - imageSize);
+  if (x1 > imageXSize) positionZero.x = x0 - (x1 - imageXSize);
   else if (x0 < 0) positionZero.x = 0;
 
-  if (y1 > imageSize) positionZero.y = y0 - (y1 - imageSize);
+  if (y1 > imageYSize) positionZero.y = y0 - (y1 - imageYSize);
   else if (y0 < 0) positionZero.y = 0;
 
   return positionZero;
@@ -70,7 +88,7 @@ export const fetchImageAsBase64 = async (imageUrl: string): Promise<string> => {
   });
 };
 
-export const createImage = async (url: string) =>
+export const createImage = async (url: string): Promise<HTMLImageElement> =>
   new Promise(resolve => {
     const img = new Image();
     img.src = url;
@@ -79,22 +97,19 @@ export const createImage = async (url: string) =>
     };
   });
 
-export const getCropepedImageAndPolygons = (
-  polygons: DomainPolygonResultType[],
-  polygonsForBoundingBox: DomainPolygonResultType[],
-  image: HTMLImageElement
-) => {
+export const getCroppedImageAndPolygons = (polygons: DomainPolygonResultType[], polygonsForBoundingBox: DomainPolygonResultType[], image: HTMLImageElement) => {
   const canvas = document.createElement('canvas');
 
   const boundingBox = getBoundingBox(polygonsForBoundingBox);
-  const boundingBoxSize = getBoundingBoxSize(boundingBox);
-  const originPoint = getOriginPoint(boundingBox, boundingBoxSize, image.width);
+  const boundingBoxSize = getBoundingBoxSize(boundingBox, image.width, image.height);
+  const { boundingBoxXSize, boundingBoxYSize } = boundingBoxSize;
+  const originPoint = getOriginPoint(boundingBox, boundingBoxXSize, boundingBoxYSize, image.width, image.height);
 
-  canvas.height = boundingBoxSize;
-  canvas.width = boundingBoxSize;
+  canvas.height = boundingBoxYSize;
+  canvas.width = boundingBoxXSize;
 
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxSize, boundingBoxSize, 0, 0, boundingBoxSize, boundingBoxSize);
+  ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxXSize, boundingBoxYSize, 0, 0, boundingBoxXSize, boundingBoxYSize);
 
   const newImage = canvas.toDataURL('image/png');
   const newPolygons = polygons.map(p => ({ ...p, points: p.points.map(({ x, y }) => ({ x: x - originPoint.x, y: y - originPoint.y })) }));

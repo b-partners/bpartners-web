@@ -1,4 +1,4 @@
-import { createImage, fetchImageAsBase64, getCropepedImageAndPolygons } from '@/operations/annotator/utils';
+import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
 import {
   annotatorProvider,
   DetectionResultInVgg,
@@ -104,7 +104,8 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
 
   const queryFnVgg = async () => {
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': 'application/json' } });
-    const detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
+    const _detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
+    const detectionResultJson: DetectionResultInVgg = Array.isArray(_detectionResultJson) ? _detectionResultJson[0] : _detectionResultJson;
     const regions = getRegions(detectionResultJson);
     const filteredPolygons = detectionResultMapper.toPolygon(regions.slice());
     const nonFilteredPolygons = detectionResultMapper.toPolygon(regions.slice(), false);
@@ -114,7 +115,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
-    const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
+    const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
       polygons: croppedPolygons,

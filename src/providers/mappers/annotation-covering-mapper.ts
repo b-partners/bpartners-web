@@ -1,18 +1,19 @@
-import { ANNOTATION_COVERING } from '@/operations/prospects/constants';
+import { coveringTypeMap } from '@/constants';
 
-export type AnnotationCoveringFromAnalyse = 'BATI_TUILES' | 'BATI_BETON' | 'BATI_ARDOISE' | 'BATI_AUTRES';
+export type AnnotationCoveringFromAnalyse =
+  | 'ROOF_ARDOISE'
+  | 'ROOF_ASPHALTE_BITUME'
+  | 'ROOF_BAC_ACIER'
+  | 'ROOF_BETON_BRUT'
+  | 'ROOF_FIBRO_CIMENT'
+  | 'ROOF_GRAVIER'
+  | 'ROOF_MEMBRANE_SYNTHETIQUE'
+  | 'ROOF_TOLE_ONDULEE'
+  | 'ROOF_TUILES'
+  | 'ROOF_ZINC';
 
 export const annotationCoveringMapper = {
   fromAnalyseResultToDomain(covering: AnnotationCoveringFromAnalyse) {
-    switch (covering) {
-      case 'BATI_ARDOISE':
-        return ANNOTATION_COVERING[3];
-      case 'BATI_BETON':
-        return ANNOTATION_COVERING[6];
-      case 'BATI_TUILES':
-        return ANNOTATION_COVERING[0];
-      default:
-        return ANNOTATION_COVERING[11];
-    }
+    return coveringTypeMap[covering] || covering || 'Autres';
   },
 };
