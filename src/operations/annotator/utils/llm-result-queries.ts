@@ -15,7 +15,7 @@ export const useLlmResultQuery = (roofAnnotatorProperties: Properties & { obstac
     if (llmResult) return llmResult;
 
     const result = await fetch(
-      `${baseUrl}?surfaceEnM2=${roof_area_in_m2}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1)}&moisissure=${moisissure_rate}&usure=${usure_rate}&obstacles=${JSON.stringify(obstacle)}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${global_rate_value}&humidit%C3%A9=${humidite_rate}&x-api-key=${apiKey}`
+      `${baseUrl}?surfaceEnM2=${roof_area_in_m2}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomainLabel(revetement_1)}&moisissure=${moisissure_rate}&usure=${usure_rate}&obstacles=${JSON.stringify(obstacle)}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${global_rate_value}&humidit%C3%A9=${humidite_rate}&x-api-key=${apiKey}`
     );
 
     const categoryReplacePattern = /<span>[\s\S]*<\/h3>/;

@@ -13,6 +13,9 @@ export type AnnotationCoveringFromAnalyse =
   | 'ROOF_ZINC';
 
 export const annotationCoveringMapper = {
+  fromAnalyseResultToDomainLabel(covering: AnnotationCoveringFromAnalyse) {
+    return coveringTypeMap[covering] || covering || 'Autres';
+  },
   fromAnalyseResultToDomain(covering: AnnotationCoveringFromAnalyse) {
     return coveringTypeMap[covering] || covering || 'Autres';
   },

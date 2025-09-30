@@ -21,3 +21,29 @@ export const detectionResultColors = {
   USURE: '#FFFFFF',
   MOISISSURE: '#32FF7E',
 };
+
+export const coveringTypeMap = {
+  ROOF_ARDOISE: 'Ardoise',
+  ROOF_ASPHALTE_BITUME: 'Asphalte Bitume',
+  ROOF_BAC_ACIER: 'Bac Acier',
+  ROOF_BETON_BRUT: 'Béton brut',
+  ROOF_FIBRO_CIMENT: 'Fibrociment',
+  ROOF_GRAVIER: 'Gravier',
+  ROOF_MEMBRANE_SYNTHETIQUE: 'Membrane synthétique',
+  ROOF_TOLE_ONDULEE: 'Tôle ondulée',
+  ROOF_TUILES: 'Tuiles',
+  ROOF_ZINC: 'Zinc',
+};
+
+export const coveringTypeNameMap = {
+  ROOF_TUILES: 'tuiles',
+  ROOF_TOLE_ONDULEE: 'tole-ondulee',
+  ROOF_ASPHALTE_BITUME: 'asphalte-bitume',
+  ROOF_ARDOISE: 'ardoise',
+  ROOF_GRAVIER: 'gravier',
+  ROOF_BETON_BRUT: 'beton',
+  ROOF_BAC_ACIER: 'bac-acier',
+  ROOF_FIBRO_CIMENT: 'fibro-ciment',
+  ROOF_MEMBRANE_SYNTHETIQUE: 'membrane-elastomere',
+  ROOF_ZINC: 'zinc',
+} as const;
