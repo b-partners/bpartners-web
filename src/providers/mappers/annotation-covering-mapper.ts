@@ -1,4 +1,4 @@
-import { coveringTypeMap, coveringTypeNameMap } from '@/operations/prospects/constants';
+import { coveringTypeMap } from '@/constants';
 
 export type AnnotationCoveringFromAnalyse =
   | 'ROOF_ARDOISE'
@@ -13,10 +13,7 @@ export type AnnotationCoveringFromAnalyse =
   | 'ROOF_ZINC';
 
 export const annotationCoveringMapper = {
-  fromAnalyseResultToDomainLabel(covering: AnnotationCoveringFromAnalyse) {
-    return coveringTypeMap[covering] || covering || 'Autres';
-  },
   fromAnalyseResultToDomain(covering: AnnotationCoveringFromAnalyse) {
-    return coveringTypeNameMap[covering];
+    return coveringTypeMap[covering] || covering || 'Autres';
   },
 };
