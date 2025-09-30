@@ -1,4 +1,4 @@
-import { createImage, fetchImageAsBase64, getCropepedImageAndPolygons } from '@/operations/annotator/utils';
+import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
 import {
   annotatorProvider,
   DetectionResultInVgg,
@@ -114,7 +114,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
-    const { image: croppedImage, polygons: croppedPolygons } = getCropepedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
+    const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
       polygons: croppedPolygons,
