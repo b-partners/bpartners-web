@@ -23,8 +23,8 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     labelName: "Résultats de l'analyse de la toiture",
     labelType: 'roof',
     polygonId: 'roof-polygon',
-    covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
-    covering2: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1).value,
+    covering: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1) as any,
+    covering2: annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1) as any,
     slope,
     height,
   };
