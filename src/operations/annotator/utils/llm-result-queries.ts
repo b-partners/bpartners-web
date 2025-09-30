@@ -11,7 +11,7 @@ export const useLlmResultQuery = (roofAnnotatorProperties: Properties & { obstac
   const { moisissure_rate, usure_rate, humidite_rate, roof_area_in_m2, revetement_1, obstacle, global_rate_value, global_rate_type } =
     roofAnnotatorProperties || {};
   const queryFn = async () => {
-    let llmResult = getCached.llmResult();
+    const llmResult = getCached.llmResult();
     if (llmResult) return llmResult;
 
     const result = await fetch(
