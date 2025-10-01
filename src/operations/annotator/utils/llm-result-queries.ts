@@ -1,5 +1,4 @@
 import { prodUrlPattern } from '@/constants';
-import { degradationLevels } from '@/operations/prospects/constants';
 import { annotationCoveringMapper, cache, getCached, Properties } from '@/providers';
 import { useQuery } from '@tanstack/react-query';
 
@@ -15,20 +14,13 @@ export const useLlmResultQuery = (roofAnnotatorProperties: Properties & { obstac
     if (llmResult) return llmResult;
 
     const result = await fetch(
-      `${baseUrl}?surfaceEnM2=${roof_area_in_m2}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1)}&moisissure=${moisissure_rate}&usure=${usure_rate}&obstacles=${JSON.stringify(obstacle)}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${global_rate_value}&humidit%C3%A9=${humidite_rate}&x-api-key=${apiKey}`
+      `${baseUrl}?surfaceEnM2=${roof_area_in_m2}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(revetement_1)}&moisissure=${moisissure_rate}&usure=${usure_rate}&obstacles=${JSON.stringify(obstacle)}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${global_rate_value}&category=${global_rate_type}&humidit%C3%A9=${humidite_rate}&x-api-key=${apiKey}`
     );
 
-    const categoryReplacePattern = /<span>[\s\S]*<\/h3>/;
-
-    const htmlResult = await result.text();
-    const currentDegradationLevel = degradationLevels.filter(({ label }) => label === global_rate_type)[0];
+    const _htmlResult = await result.text();
+    const htmlResult = _htmlResult.split('</head>')[1];
     cache.llmResult(htmlResult || '');
-    return htmlResult.replace(
-      categoryReplacePattern,
-      `<span class='category-colored-round category-${global_rate_type}'></span>` +
-        `CATÉGORIE ${global_rate_type}: ${currentDegradationLevel.name}`.toUpperCase() +
-        '</h3>'
-    );
+    return htmlResult;
   };
 
   return useQuery({ queryFn, queryKey: [roofAnnotatorProperties], enabled: isPreprod });

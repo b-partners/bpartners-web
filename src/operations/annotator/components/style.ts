@@ -57,6 +57,9 @@ export const llmResultStyle: SxProps = {
   justifyContent: 'flex-start',
   overflowY: 'scroll',
   overflowX: 'hidden',
+  '& *': {
+    fontFamily: "'Kumbh Sans', sans-serif !important",
+  },
   '& h1': {
     mb: 5,
   },
