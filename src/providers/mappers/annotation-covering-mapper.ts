@@ -16,7 +16,4 @@ export const annotationCoveringMapper = {
   fromAnalyseResultToDomain(covering: AnnotationCoveringFromAnalyse) {
     return coveringTypeMap[covering] || covering || 'Autres';
   },
-  fromAnalyseResultToDomain(covering: AnnotationCoveringFromAnalyse) {
-    return coveringTypeMap[covering] || covering || 'Autres';
-  },
 };
