@@ -1,5 +1,5 @@
 import { useLoadingHandler } from '@/common/hooks';
-import { useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
@@ -11,7 +11,7 @@ import { useNotify, useRedirect } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { AnnotatorFormItem } from './components';
+import { AnnotationSlopeHeightAlert, AnnotatorFormItem } from './components';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils/annotations-info-form';
 
@@ -26,6 +26,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
   const { pictureId, imgUrl } = parseUrlParams();
   const { polygons, slopeInfoOpen, handleSlopeInfoToggle, roofAnalyseProperties } = useCanvasAnnotationContext();
   const { startLoading, stopLoading } = useLoadingHandler();
+  const { slopeAndHeightState } = useAnnotatorComponentStore();
 
   const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
 
@@ -58,6 +59,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
     <Box>
       <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.9, overflow: 'auto' }}>
         <Box py={2}>
+          <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />
           {fieldArrayState.fields.length > 0 ? (
             <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
               <FormProvider {...formState}>
