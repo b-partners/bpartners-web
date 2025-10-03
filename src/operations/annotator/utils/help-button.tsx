@@ -8,7 +8,7 @@ const AnnotatorHelpDialog = () => {
     <>
       <DialogTitle>Aide</DialogTitle>
       <DialogContent>
-        <Accordion>
+        <Accordion defaultExpanded={true}>
           <AccordionSummary sx={{ width: '500px' }} expandIcon={<ExpandMore />}>
             Lancé une analyse automatique
           </AccordionSummary>
