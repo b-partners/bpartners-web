@@ -4,7 +4,6 @@ import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
-import { AnnotationSlopeHeightAlert } from './annotation-slope-height-alert';
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
@@ -15,14 +14,15 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />
-      <Typography sx={{ fontSize: '14px' }}>
-        Surface :
-        <Typography component='span' fontWeight='bold'>
-          {surface} m²
+      {surface && (
+        <Typography sx={{ fontSize: '14px' }}>
+          Surface :
+          <Typography component='span' fontWeight='bold'>
+            {surface} m²
+          </Typography>
         </Typography>
-      </Typography>
-      {slopeAndHeightState?.heightStatus === 'AVAILABLE' && (
+      )}
+      {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
         <Typography sx={{ fontSize: '14px' }}>
           Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
