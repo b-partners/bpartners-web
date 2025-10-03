@@ -12,6 +12,8 @@ export type DomainPolygonResultType = Polygon & { label: keyof typeof detectionR
 
 export type DetectionResultInVgg = Record<string, DetectionResult>;
 
+export type SlopeAndHeightStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'EXTRACTION_ERROR';
+
 export interface DetectionResult {
   size: null;
   filename: string;
@@ -29,6 +31,10 @@ export interface Properties {
   roof_area_in_m2: number;
   revetement_1: AnnotationCoveringFromAnalyse;
   revetement_2: AnnotationCoveringFromAnalyse | null;
+  roof_height_data_status: SlopeAndHeightStatus;
+  roof_slope_data_status: SlopeAndHeightStatus;
+  roof_slope_in_degrees: number;
+  roof_height_in_meters: number;
 }
 
 export interface Region {

@@ -57,6 +57,9 @@ export const llmResultStyle: SxProps = {
   justifyContent: 'flex-start',
   overflowY: 'scroll',
   overflowX: 'hidden',
+  '& *': {
+    fontFamily: "'Kumbh Sans', sans-serif !important",
+  },
   '& h1': {
     mb: 5,
   },
@@ -92,5 +95,12 @@ export const llmButtonStyle: SxProps = {
   minWidth: 300,
   '& svg': {
     color: 'white',
+  },
+};
+
+export const annotationSlopeHeightAlertStyle: SxProps = {
+  '& .MuiAlert-action button': {
+    position: 'relative',
+    transform: 'translateX(-20%)',
   },
 };

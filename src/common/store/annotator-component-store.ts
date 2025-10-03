@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { SlopeAndHeightState } from '../fetcher';
 
 interface AnalyseInformation {
   imageUrl: string;
@@ -9,6 +10,7 @@ interface Action {
   setRoofSlope: (value: number) => void;
   setThereIsRoofPolygon: (value: boolean) => void;
   setAnalyseInformation: (value: AnalyseInformation) => void;
+  setSlopeAndHeightState: (value: SlopeAndHeightState) => void;
   reset(): void;
 }
 
@@ -17,15 +19,22 @@ interface State {
   thereIsRoofPolygon: boolean;
   imageUrl: string | null;
   geoJsonResultUrl: string | null;
+  slopeAndHeightState: SlopeAndHeightState | null;
 }
 
-export const useAnnotatorComponentStore = create<Action & State>(set => ({
-  setThereIsRoofPolygon: thereIsRoofPolygon => set({ thereIsRoofPolygon }),
+const defaultState: any = {
   thereIsRoofPolygon: false,
   imageUrl: null,
   geoJsonResultUrl: null,
   roofSlope: null,
+  slopeAndHeightState: null,
+};
+
+export const useAnnotatorComponentStore = create<Action & State>(set => ({
+  ...defaultState,
+  setThereIsRoofPolygon: thereIsRoofPolygon => set({ thereIsRoofPolygon }),
+  setSlopeAndHeightState: value => set({ slopeAndHeightState: value }),
   setAnalyseInformation: ({ geoJsonResultUrl, imageUrl }) => set({ geoJsonResultUrl, imageUrl }),
-  reset: () => set({ thereIsRoofPolygon: false, imageUrl: null, geoJsonResultUrl: null }),
+  reset: () => set(defaultState),
   setRoofSlope: roofSlope => set({ roofSlope }),
 }));

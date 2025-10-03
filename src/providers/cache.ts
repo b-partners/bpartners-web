@@ -19,6 +19,7 @@ const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
 const roofAnalyseIdItem = 'bp_roof_analyse_id';
 const llmResultItem = 'bp_llm_result_item';
+const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -96,6 +97,10 @@ export const cache = {
     localStorage.setItem(llmResultItem, llmResult);
     return llmResult;
   },
+  isRoofPropertiesRequestDone(value: boolean) {
+    localStorage.setItem(isRoofPropertiesRequestDoneItem, JSON.stringify(value));
+    return value;
+  },
 };
 
 export const getCached = {
@@ -166,6 +171,10 @@ export const getCached = {
   llmResult() {
     return localStorage.getItem(llmResultItem);
   },
+  isRoofPropertiesRequestDone() {
+    const value = localStorage.getItem(isRoofPropertiesRequestDoneItem);
+    return JSON.parse(value || 'false');
+  },
 };
 
 export const clearCache = () => {
@@ -176,6 +185,7 @@ export const clearCache = () => {
 export const clearPolygons = () => {
   cache.polygons(null);
   cache.annotationsInfo(null);
-  localStorage.removeItem(roofAnalyseIdItem);
   localStorage.removeItem(llmResultItem);
+  localStorage.removeItem(roofAnalyseIdItem);
+  localStorage.removeItem(isRoofPropertiesRequestDoneItem);
 };

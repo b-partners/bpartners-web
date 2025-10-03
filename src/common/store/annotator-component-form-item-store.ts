@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
 interface Action {
-  setAnnotatorSidebarAnnordionItem(value: number): void;
+  setAnnotatorSidebarAccordionItem(value: number): void;
 }
 
 interface State {
-  annotatorSidebarAnnordionItem: number;
+  annotatorSidebarAccordionItem: number;
 }
 
 export const useAnnotatorComponentFormItemStore = create<Action & State>(set => ({
-  annotatorSidebarAnnordionItem: 0,
-  setAnnotatorSidebarAnnordionItem: value => set({ annotatorSidebarAnnordionItem: value }),
+  annotatorSidebarAccordionItem: 0,
+  setAnnotatorSidebarAccordionItem: value => set({ annotatorSidebarAccordionItem: value }),
 }));

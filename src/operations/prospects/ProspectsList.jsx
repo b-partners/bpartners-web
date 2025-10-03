@@ -36,7 +36,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
   const annotatorComponentStore = useAnnotatorComponentStore();
-  const { setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
+  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
 
   useEffect(() => {
     form.setValue('address', address);

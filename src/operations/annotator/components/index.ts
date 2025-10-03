@@ -1,5 +1,6 @@
 export * from './analyse-result-button';
 export * from './annotation-item-label-type-select';
+export * from './annotation-slope-height-alert';
 export * from './AnnotationInfoShow';
 export * from './annotator-form-item';
 export * from './AnnotatorActionButtons';
