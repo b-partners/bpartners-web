@@ -1,16 +1,18 @@
 import { DetectionResultInVgg, getCached, getDetectionResult, initiateRoofProperties, SlopeAndHeightStatus } from '@/providers';
 import { useQuery } from '@tanstack/react-query';
 import { useToggle } from '../hooks';
+import { useAnnotatorComponentStore } from '../store';
 
-interface OnSuccessParams {
+export interface SlopeAndHeightState {
   slope: number;
   height: number;
   slopeStatus: SlopeAndHeightStatus;
   heightStatus: SlopeAndHeightStatus;
 }
 
-export const useQuerySlopeAndHeight = (onSuccess: (data: OnSuccessParams) => void, enabled = false) => {
+export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) => void, enabled = false) => {
   const { handleClose, value: shouldRetry, handleOpen: start } = useToggle(enabled);
+  const { setSlopeAndHeightState } = useAnnotatorComponentStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
@@ -27,13 +29,13 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: OnSuccessParams) => voi
       const { roof_height_data_status, roof_slope_in_degrees, roof_height_in_meters, roof_slope_data_status } =
         Object.values(detectionResultJson)?.[0]?.properties || {};
       if (!roof_height_data_status || !roof_slope_data_status) throw new Error('Get slope not done');
-
       const result = {
         slope: roof_slope_in_degrees,
         height: roof_height_in_meters,
         slopeStatus: roof_slope_data_status,
         heightStatus: roof_height_data_status,
       };
+      setSlopeAndHeightState(result);
 
       onSuccess(result);
       handleClose();

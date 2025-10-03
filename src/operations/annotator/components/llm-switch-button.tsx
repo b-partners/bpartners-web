@@ -1,5 +1,4 @@
 import { NOOP_FN } from '@/common/utils/noop_fn';
-import { prodUrlPattern } from '@/constants';
 import { Cached } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { FC } from 'react';
@@ -12,13 +11,11 @@ interface Props {
 }
 
 export const LlmSwitchButton: FC<Props> = ({ enabled, onClick, showLlmResult }) => {
-  const isPreprod = !prodUrlPattern.test(window.location.href);
-
-  if (!enabled || !isPreprod) return null;
+  if (!enabled) return null;
 
   return (
     <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={onClick}>
-      {showLlmResult ? "Revenir à l'ecran d'annotation" : 'Comprendre votre rapport'}
+      {showLlmResult ? "Revenir à l’écran d'annotation" : 'Comprendre votre rapport'}
     </Button>
   );
 };

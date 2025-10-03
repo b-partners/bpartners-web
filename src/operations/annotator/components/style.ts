@@ -97,3 +97,10 @@ export const llmButtonStyle: SxProps = {
     color: 'white',
   },
 };
+
+export const annotationSlopeHeightAlertStyle: SxProps = {
+  '& .MuiAlert-action button': {
+    position: 'relative',
+    transform: 'translateX(-20%)',
+  },
+};

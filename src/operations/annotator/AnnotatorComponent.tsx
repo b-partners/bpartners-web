@@ -57,8 +57,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { level: newZoomLevel, number: newZoomLevelAsNumber } = zoom;
   // Get the Area picture details to use
 
-  const { ref: containerHeightRef, height: containerheight, width: containerWidth } = useGetElementSize([filename]);
-  const { toggleValue: toogleLLMResultView, value: showLLMResult } = useToggle(false);
+  const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
+  const { toggleValue: toggleLLMResultView, value: showLLMResult } = useToggle(false);
 
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
@@ -135,7 +135,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
                 allowAnnotation={allowAnnotation}
                 width={width || containerWidth}
-                height={height || containerheight * 0.95}
+                height={height || containerHeight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
                 setPolygons={setPolygons}
@@ -154,11 +154,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             </Box>
           )}
           {data?.properties && showLLMResult && (
-            <LlmResult width={width || containerWidth} height={height || containerheight} htmlResult={htmlResult} isLoading={isLlmResultPending} />
+            <LlmResult width={width || containerWidth} height={height || containerHeight} htmlResult={htmlResult} isLoading={isLlmResultPending} />
           )}
           {data && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toogleLLMResultView} />
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toggleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box
