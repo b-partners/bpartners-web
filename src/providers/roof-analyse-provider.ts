@@ -121,7 +121,7 @@ export const getDetectionResult = async () => {
   });
   const result = await data.json();
 
-  if (!result?.properties?.vgg_file_url && !result?.roofDelimiter?.roofSlopeInDegree) throw new Error('Not done');
+  if (!result.geoJsonZone[0]?.properties?.vgg_file_url) throw new Error('Not done');
 
   return result;
 };
@@ -135,7 +135,9 @@ export const initiateRoofProperties = async () => {
   });
   const data = await result.json();
 
-  if (result.status !== 200 || (!data?.properties?.vgg_file_url && !data?.roofDelimiter?.roofSlopeInDegree)) throw new Error('Not done');
+  if (result.status !== 200) throw new Error('Not done');
+  cache.isRoofPropertiesRequestDone(true);
+
   return data;
 };
 

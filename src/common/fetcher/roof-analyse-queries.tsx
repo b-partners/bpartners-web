@@ -1,20 +1,12 @@
 import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
-import {
-  annotatorProvider,
-  DetectionResultInVgg,
-  detectionResultMapper,
-  initializeRoofAnalyse,
-  initiateRoofProperties,
-  polygonMapper,
-  Region,
-} from '@/providers';
+import { annotatorProvider, DetectionResultInVgg, detectionResultMapper, initializeRoofAnalyse, polygonMapper, Region } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { ErrorMessageDialog } from '../components';
-import { useToggle } from '../hooks';
 import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
+import { useQuerySlopeAndHeight } from './slope-and-height-queries';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
   const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
@@ -23,7 +15,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
-  const { start } = useQuerySlopeAndHeight(() => {}, false);
+  const { start: querySlopeAndHeight } = useQuerySlopeAndHeight(() => {}, false);
   const { setAnalyseInformation } = useAnnotatorComponentStore();
 
   const onSuccess = (detectionResult: any) => {
@@ -55,7 +47,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
-    start();
+    querySlopeAndHeight();
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
   };
 
@@ -133,28 +125,4 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     ...query,
     geoJsonResultUrl,
   };
-};
-
-export const useQuerySlopeAndHeight = (onSuccess: (data: { slope: number; height: number }) => void, enabled = false) => {
-  const { handleClose, value: shouldRetry, handleOpen: start } = useToggle(enabled);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['detection', 'result'],
-    queryFn: async () => {
-      const data = await initiateRoofProperties();
-      if (!data?.roofDelimiter?.roofSlopeInDegree) throw new Error('No roof slope');
-      const result = {
-        slope: data?.roofDelimiter?.roofSlopeInDegree,
-        height: data?.roofDelimiter?.roofHeightInMeter,
-      };
-      onSuccess(result);
-      handleClose();
-      return result;
-    },
-    retryDelay: 5000,
-    retry: Number.MAX_SAFE_INTEGER,
-    enabled: shouldRetry,
-  });
-
-  return { data, isPending: isLoading, start };
 };
