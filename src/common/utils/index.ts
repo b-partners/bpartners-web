@@ -1,6 +1,7 @@
 export * from './BpFrenchMessages';
 export * from './cookies';
 export * from './createRedirectionUrl';
+export * from './data-converter';
 export * from './date';
 export * from './empty-to-null';
 export * from './file';
