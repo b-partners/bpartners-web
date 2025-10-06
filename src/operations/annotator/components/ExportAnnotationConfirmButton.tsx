@@ -10,19 +10,21 @@ import { FC, useState } from 'react';
 import { Confirm, ConfirmProps } from 'react-admin';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
+import { ExportAnnotationMapperArgs } from '../utils';
 
-export type ExportAnnotationConfirmButtonProps = {
+export interface ExportAnnotationConfirmButtonProps extends Pick<ExportAnnotationMapperArgs, 'globalRateType' | 'globalRateValue'> {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
   areaPictureDetails: AreaPictureDetails;
   image: string;
   isCropped: boolean;
-};
+}
 
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState, areaPictureDetails, image, isCropped }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { value: confirmStatus, handleOpen: openConfirm, handleClose: closeConfirm } = useToggle();
   const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
   const { polygons } = useCanvasAnnotationContext();
+  const { roofAnalyseProperties } = useCanvasAnnotationContext();
 
   const exportPdfOnSuccess = () => {
     setAnnotationInfos([]);
@@ -37,6 +39,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       polygons,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
+      globalRateType: roofAnalyseProperties?.global_rate_type || '',
+      globalRateValue: roofAnalyseProperties?.global_rate_value || 0,
     });
   };
 

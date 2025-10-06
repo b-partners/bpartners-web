@@ -1,4 +1,5 @@
 import { emptyToNull } from '@/common/utils';
+import { getCached } from '@/providers';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
 import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationMeasurement } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
@@ -10,12 +11,24 @@ export type ExportAnnotationMapperArgs = {
   address: string;
   polygons: Polygon[];
   annotationInfos: AnnotationInfo[];
+  globalRateType: string;
+  globalRateValue: number;
 };
 
-export const exportAnnotationMapper = ({ annotationInfos, imageUrl, address, polygons }: ExportAnnotationMapperArgs): ExportAreaPictureAnnotation => {
+export const exportAnnotationMapper = ({
+  annotationInfos,
+  imageUrl,
+  address,
+  polygons,
+  globalRateType,
+  globalRateValue,
+}: ExportAnnotationMapperArgs): ExportAreaPictureAnnotation => {
   return {
     imageUrl,
     address,
+    globalRateType,
+    globalRateValue,
+    llm: getCached.llmResult(),
     annotations: polygons.map((polygon, index) => {
       const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon.id, index);
 
@@ -31,10 +44,10 @@ export const exportAnnotationMapper = ({ annotationInfos, imageUrl, address, pol
   };
 };
 
-const exportMeasurementMapper = (measurment: Measurement): ExportAreaPictureAnnotationMeasurement => {
+const exportMeasurementMapper = (measurement: Measurement): ExportAreaPictureAnnotationMeasurement => {
   return {
-    unit: measurment.unity,
-    value: parseFloat(measurment.value.toFixed(2)),
-    isInvisible: measurment.isInvisible,
+    unit: measurement.unity,
+    value: parseFloat(measurement.value.toFixed(2)),
+    isInvisible: measurement.isInvisible,
   };
 };
