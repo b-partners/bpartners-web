@@ -1,28 +1,47 @@
 import { BPButton } from '@/common/components';
+import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler, useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { printError, useWrappedSearchParams } from '@/common/utils';
-import { areaPictureApi, getCached } from '@/providers';
+import { useWrappedSearchParams } from '@/common/utils';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
 import { FC, useState } from 'react';
-import { Confirm, ConfirmProps, useNotify } from 'react-admin';
+import { Confirm, ConfirmProps } from 'react-admin';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
-import { exportAnnotationMapper } from '../utils/export-annotation-mapper';
 
 export type ExportAnnotationConfirmButtonProps = {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
+  areaPictureDetails: AreaPictureDetails;
+  image: string;
+  isCropped: boolean;
 };
 
-export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState }) => {
+export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState, areaPictureDetails, image, isCropped }) => {
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const { address, imgUrl } = useWrappedSearchParams(['imgUrl', 'address']);
-  const { accountId } = getCached.userInfo();
   const { value: confirmStatus, handleOpen: openConfirm, handleClose: closeConfirm } = useToggle();
   const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
   const { polygons } = useCanvasAnnotationContext();
-  const notify = useNotify();
+
+  const exportPdfOnSuccess = () => {
+    stopLoading();
+    handleCloseConfirm();
+  };
+
+  const { mutate: exportAsPdf } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
+
+  const uploadImageOnSuccess = () => {
+    exportAsPdf({
+      annotationInfos,
+      polygons,
+      address,
+      imageUrl: image,
+    });
+  };
+
+  const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery({ onSuccess: uploadImageOnSuccess });
 
   const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
     setAnnotationInfos(annotationInfos);
@@ -32,27 +51,15 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const handleCloseConfirm = () => {
     setAnnotationInfos([]);
     closeConfirm();
+    if (isCropped) {
+      return uploadImage({ file: imgUrl, id: areaPictureDetails.fileId });
+    }
+    uploadImageOnSuccess();
   };
 
   const doAnnotationExport = async () => {
     startLoading();
     handleCloseConfirm();
-    try {
-      const exporAreaPictureAnnotation = exportAnnotationMapper({
-        annotationInfos,
-        polygons,
-        address,
-        imageUrl: imgUrl,
-      });
-      await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exporAreaPictureAnnotation, { responseType: 'blob' });
-      notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
-    } catch (error) {
-      printError(error);
-      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.", { type: 'error' });
-    } finally {
-      stopLoading();
-      handleCloseConfirm();
-    }
   };
 
   return (

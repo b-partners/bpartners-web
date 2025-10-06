@@ -16,4 +16,12 @@ const mutationFn = async (params: MutationParams) => {
     .then(({ data }) => [data]);
 };
 
-export const useAnnotatorImageUploadQuery = () => useMutation({ mutationFn });
+interface Params {
+  onSuccess?: () => void;
+  onError?: () => void;
+}
+
+export const useAnnotatorImageUploadQuery = (params?: Params) => {
+  const { onError, onSuccess } = params || {};
+  return useMutation({ mutationFn, onSuccess, onError });
+};

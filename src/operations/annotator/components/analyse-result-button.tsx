@@ -3,6 +3,7 @@ import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
 import { annotationsAttributeMapper, annotatorMapper, annotatorProvider, clearPolygons } from '@/providers';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack } from '@mui/material';
 import { BaseSyntheticEvent, FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
@@ -15,9 +16,12 @@ import { ExportAnnotationConfirmButton } from './ExportAnnotationConfirmButton';
 export type AnalyseResultButtonProps = {
   draftAnnotationId?: string;
   defaultAnnotationInfos: AnnotationInfo[];
+  areaPictureDetails: AreaPictureDetails;
+  image: string;
+  isCropped: boolean;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnotationInfos, draftAnnotationId }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnotationInfos, draftAnnotationId, areaPictureDetails, image, isCropped }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -68,7 +72,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnot
         data-testid='submit-draft-annotation'
         onClick={event => handleSubmitFormsWrapper(event, true)}
       />
-      <ExportAnnotationConfirmButton formState={formState} />
+      <ExportAnnotationConfirmButton areaPictureDetails={areaPictureDetails} image={image} isCropped={isCropped} formState={formState} />
     </Stack>
   );
 };

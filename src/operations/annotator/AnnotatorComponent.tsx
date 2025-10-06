@@ -182,7 +182,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
         </Stack>
       )}
-      <AnalyseResultButton defaultAnnotationInfos={defaultAnnotationInfos} draftAnnotationId={draftAnnotationId} />
+      <AnalyseResultButton
+        image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
+        isCropped={!!data?.image}
+        areaPictureDetails={currentAreaPictureDetailsToUse}
+        defaultAnnotationInfos={defaultAnnotationInfos}
+        draftAnnotationId={draftAnnotationId}
+      />
     </Box>
   );
 };
