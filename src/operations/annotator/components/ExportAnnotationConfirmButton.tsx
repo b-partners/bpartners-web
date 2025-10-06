@@ -1,8 +1,8 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
-import { useLoadingHandler, useToggle } from '@/common/hooks';
+import { useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { useWrappedSearchParams } from '@/common/utils';
+import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
@@ -19,29 +19,30 @@ export type ExportAnnotationConfirmButtonProps = {
 };
 
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState, areaPictureDetails, image, isCropped }) => {
-  const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const { address, imgUrl } = useWrappedSearchParams(['imgUrl', 'address']);
+  const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { value: confirmStatus, handleOpen: openConfirm, handleClose: closeConfirm } = useToggle();
   const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
   const { polygons } = useCanvasAnnotationContext();
 
   const exportPdfOnSuccess = () => {
-    stopLoading();
-    handleCloseConfirm();
+    setAnnotationInfos([]);
+    closeConfirm();
   };
 
-  const { mutate: exportAsPdf } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
+  const { mutate: exportAsPdf, isPending: exportAsPdfPending } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
 
   const uploadImageOnSuccess = () => {
     exportAsPdf({
       annotationInfos,
       polygons,
       address,
-      imageUrl: image,
+      imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
     });
   };
 
-  const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery({ onSuccess: uploadImageOnSuccess });
+  const { mutateAsync: uploadImage, isPending: uploadIsPending } = useAnnotatorImageUploadQuery({ onSuccess: uploadImageOnSuccess });
+
+  const isLoading = exportAsPdfPending || uploadIsPending;
 
   const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
     setAnnotationInfos(annotationInfos);
@@ -52,13 +53,12 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
     setAnnotationInfos([]);
     closeConfirm();
     if (isCropped) {
-      return uploadImage({ file: imgUrl, id: areaPictureDetails.fileId });
+      return uploadImage({ file: image, id: areaPictureDetails.fileId });
     }
     uploadImageOnSuccess();
   };
 
   const doAnnotationExport = async () => {
-    startLoading();
     handleCloseConfirm();
   };
 

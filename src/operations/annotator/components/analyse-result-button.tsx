@@ -1,7 +1,8 @@
 import { BPButton } from '@/common/components';
+import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { parseUrlParams, printError } from '@/common/utils';
+import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
 import { annotationsAttributeMapper, annotatorMapper, annotatorProvider, clearPolygons } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack } from '@mui/material';
@@ -28,11 +29,13 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnot
   const { polygons, roofAnalyseProperties } = useCanvasAnnotationContext();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const { formState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
+  const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
       try {
         startLoading();
+        isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
         const annotationAttributeMapped = annotationsAttributeMapper(polygons, annotationInfos, pictureId, annotationIdValue);
         const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
@@ -43,7 +46,10 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnot
           redirect('/prospects?tab=drafts');
           return;
         }
-        redirect('list', `invoices?imgUrl=${encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`);
+        redirect(
+          'list',
+          `invoices?imgUrl=${isCropped ? getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE') : encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`
+        );
       } catch (e) {
         printError(e);
         notify('resources.annotations.creation.error', { type: 'error' });

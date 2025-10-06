@@ -12,7 +12,7 @@ export interface SlopeAndHeightState {
 
 export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) => void, enabled = false) => {
   const { handleClose, value: shouldRetry, handleOpen: start } = useToggle(enabled);
-  const { setSlopeAndHeightState } = useAnnotatorComponentStore();
+  const { setSlopeAndHeightState, slopeAndHeightState } = useAnnotatorComponentStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
@@ -43,7 +43,7 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) =>
     },
     retryDelay: 5000,
     retry: Number.MAX_SAFE_INTEGER,
-    enabled: shouldRetry,
+    enabled: shouldRetry || !!slopeAndHeightState?.heightStatus,
   });
 
   return { data, isPending: isLoading, start };

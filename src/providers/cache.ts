@@ -20,6 +20,7 @@ const apiKeyItem = 'bp_user_api_key';
 const roofAnalyseIdItem = 'bp_roof_analyse_id';
 const llmResultItem = 'bp_llm_result_item';
 const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
+const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -101,6 +102,10 @@ export const cache = {
     localStorage.setItem(isRoofPropertiesRequestDoneItem, JSON.stringify(value));
     return value;
   },
+  isAreaPictureImageUpdated(value: boolean) {
+    localStorage.setItem(isAreaPictureImageUpdatedItem, JSON.stringify(value));
+    return value;
+  },
 };
 
 export const getCached = {
@@ -175,6 +180,10 @@ export const getCached = {
     const value = localStorage.getItem(isRoofPropertiesRequestDoneItem);
     return JSON.parse(value || 'false');
   },
+  isAreaPictureImageUpdated() {
+    const value = localStorage.getItem(isAreaPictureImageUpdatedItem);
+    return JSON.parse(value || 'false');
+  },
 };
 
 export const clearCache = () => {
@@ -187,5 +196,6 @@ export const clearPolygons = () => {
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
   localStorage.removeItem(roofAnalyseIdItem);
+  localStorage.removeItem(isAreaPictureImageUpdatedItem);
   localStorage.removeItem(isRoofPropertiesRequestDoneItem);
 };

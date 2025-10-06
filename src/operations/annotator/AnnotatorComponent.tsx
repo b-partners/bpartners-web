@@ -71,7 +71,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   };
 
   const handleLayerChanger = async (e: any) => {
-    const selectedLayer = otherLayers.find(layer => layer.name === e.target.value);
+    const selectedLayer = otherLayers.find((layer: any) => layer.name === e.target.value);
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, layerId: selectedLayer.id });
   };
 
@@ -183,7 +183,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Stack>
       )}
       <AnalyseResultButton
-        image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
+        image={data?.image}
         isCropped={!!data?.image}
         areaPictureDetails={currentAreaPictureDetailsToUse}
         defaultAnnotationInfos={defaultAnnotationInfos}

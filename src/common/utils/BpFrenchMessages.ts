@@ -31,6 +31,9 @@ export const BpFrenchMessages = {
   },
   resources: {
     annotations: {
+      action: {
+        passToAnalyse: "Passer à l'analyse",
+      },
       creation: {
         error: "Une erreur s'est produite lors de la sauvegarde des annotations",
       },
