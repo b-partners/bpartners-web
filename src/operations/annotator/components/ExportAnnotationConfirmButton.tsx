@@ -1,28 +1,51 @@
 import { BPButton } from '@/common/components';
-import { useLoadingHandler, useToggle } from '@/common/hooks';
+import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
+import { useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
-import { printError, useWrappedSearchParams } from '@/common/utils';
-import { areaPictureApi, getCached } from '@/providers';
+import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
 import { FC, useState } from 'react';
-import { Confirm, ConfirmProps, useNotify } from 'react-admin';
+import { Confirm, ConfirmProps } from 'react-admin';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
-import { exportAnnotationMapper } from '../utils/export-annotation-mapper';
 
-export type ExportAnnotationConfirmButtonProps = {
+export interface ExportAnnotationConfirmButtonProps {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
-};
+  areaPictureDetails: AreaPictureDetails;
+  image: string;
+  isCropped: boolean;
+}
 
-export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState }) => {
-  const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const { address, imgUrl } = useWrappedSearchParams(['imgUrl', 'address']);
-  const { accountId } = getCached.userInfo();
+export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState, areaPictureDetails, image, isCropped }) => {
+  const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { value: confirmStatus, handleOpen: openConfirm, handleClose: closeConfirm } = useToggle();
   const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
   const { polygons } = useCanvasAnnotationContext();
-  const notify = useNotify();
+  const { roofAnalyseProperties } = useCanvasAnnotationContext();
+
+  const exportPdfOnSuccess = () => {
+    setAnnotationInfos([]);
+    closeConfirm();
+  };
+
+  const { mutate: exportAsPdf, isPending: exportAsPdfPending } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
+
+  const uploadImageOnSuccess = () => {
+    exportAsPdf({
+      annotationInfos,
+      polygons,
+      address,
+      imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
+      globalRateType: roofAnalyseProperties?.global_rate_type || '',
+      globalRateValue: roofAnalyseProperties?.global_rate_value || 0,
+    });
+  };
+
+  const { mutateAsync: uploadImage, isPending: uploadIsPending } = useAnnotatorImageUploadQuery({ onSuccess: uploadImageOnSuccess });
+
+  const isLoading = exportAsPdfPending || uploadIsPending;
 
   const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
     setAnnotationInfos(annotationInfos);
@@ -32,34 +55,21 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const handleCloseConfirm = () => {
     setAnnotationInfos([]);
     closeConfirm();
+    if (isCropped) {
+      return uploadImage({ file: image, id: areaPictureDetails.fileId });
+    }
+    uploadImageOnSuccess();
   };
 
   const doAnnotationExport = async () => {
-    startLoading();
     handleCloseConfirm();
-    try {
-      const exporAreaPictureAnnotation = exportAnnotationMapper({
-        annotationInfos,
-        polygons,
-        address,
-        imageUrl: imgUrl,
-      });
-      await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exporAreaPictureAnnotation, { responseType: 'blob' });
-      notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
-    } catch (error) {
-      printError(error);
-      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.", { type: 'error' });
-    } finally {
-      stopLoading();
-      handleCloseConfirm();
-    }
   };
 
   return (
     <>
       <BPButton
         type='submit'
-        style={{ width: '100%' }}
+        className='export-analyse-btn'
         onClick={handleSubmitForms}
         isLoading={isLoading}
         disabled={isLoading || polygons.length === 0}

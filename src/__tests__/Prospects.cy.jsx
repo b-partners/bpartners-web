@@ -111,7 +111,7 @@ describe(specTitle('Prospects'), () => {
   });
 
   it('should show empty list', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, []).as('getProspects1');
     cy.mount(<App />);
     cy.wait('@getUser1');
     cy.get('[name="prospects"]').click();

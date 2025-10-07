@@ -1,8 +1,9 @@
 import { Box, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, FormHelperText, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 
+import { annotatorProvider } from '@/providers';
 import PropTypes from 'prop-types';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BpFormField, BpNumberField } from '../../../common/components';
+import { BpAutoCompleteBackend, BpFormField, BpNumberField } from '../../../common/components';
 import { handleSubmit } from '../../../common/utils';
 import { InvoiceSelection } from './InvoiceSelection';
 import ProspectDialogActions from './ProspectDialogActions';
@@ -13,10 +14,9 @@ const getDialogTitle = (prospectName, isCreating) => {
     : `Prospect : ${prospectName}`;
 };
 
-export const ProspectDialog = props => {
+export const ProspectFormDialog = props => {
   const { open, close, prospect = {}, saveOrUpdateProspectSubmit, isEditing, isCreating } = props;
   const { name, status, comment } = prospect;
-
   const {
     setValue,
     formState: { errors },
@@ -36,7 +36,14 @@ export const ProspectDialog = props => {
       </DialogTitle>
       <DialogContent>
         <Stack spacing={1}>
-          <BpFormField required style={{ width: '100%' }} name='address' label='Adresse' />
+          <BpAutoCompleteBackend
+            required
+            style={{ width: '100%' }}
+            name='address'
+            label='Adresse'
+            fetcher={annotatorProvider.searchAddress}
+            textFieldProps={{ variant: 'filled' }}
+          />
           <BpFormField required style={{ width: '100%' }} name='name' label='Nom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='firstName' label='Prénom du prospect' />
           <BpFormField required={false} shouldValidate={false} style={{ width: '100%' }} name='email' type='email' label='Email' />
@@ -118,7 +125,7 @@ export const ProspectDialog = props => {
     </Dialog>
   );
 };
-ProspectDialog.propTypes = {
+ProspectFormDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
   prospect: PropTypes.object,

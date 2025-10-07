@@ -6,6 +6,7 @@ export interface AnnotationInfo {
   polygonId?: string;
   labelType?: keyof AnnotationLabelsType;
   covering?: keyof AnnotationCoveringType;
+  covering2?: keyof AnnotationCoveringType;
   slope?: number;
   wearLevel?: number;
   obstacle?: string;
@@ -16,6 +17,7 @@ export interface AnnotationInfo {
   strokeColor?: string;
   labelName?: string;
   humidityLevel?: number;
+  height?: number;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;
@@ -91,9 +93,12 @@ export interface AnnotatorComponentProps {
   allowSelect?: boolean;
   showAddress?: boolean;
   polygons?: Polygon[];
-  width?: number;
+  width?: number | string;
   height?: number;
   buttonComponent?: (callback: ScaleCallbacks) => React.ReactNode;
   showFileSource?: boolean;
   boxWrapperSx?: SxProps;
+  draftAnnotationId?: string;
+  defaultAnnotationInfos?: AnnotationInfo[];
+  isInvoiceForm?: boolean;
 }

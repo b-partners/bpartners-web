@@ -1,30 +1,59 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
-import SlopeSelect from './SlopeSelect';
+import { useFormContext } from 'react-hook-form';
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
+  const { getValues } = useFormContext();
+  const { slopeAndHeightState, isSlopeAndHeightPending } = useAnnotatorComponentStore();
+
+  const height = getValues(`annotationInfos.${index}.height`);
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <Typography sx={{ fontSize: '14px' }}>
-        Surface : (
-        <Typography component='span' fontWeight='bold'>
-          {surface} m²
+      {surface && (
+        <Typography sx={{ fontSize: '14px' }}>
+          Surface :
+          <Typography component='span' fontWeight='bold'>
+            {surface} m²
+          </Typography>
         </Typography>
-        )
-      </Typography>
+      )}
+      {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
+        <Typography sx={{ fontSize: '14px' }}>
+          Hauteur du bâtiment :
+          <Typography component='span' fontWeight='bold'>
+            {height} m
+          </Typography>
+        </Typography>
+      )}
+      {!slopeAndHeightState?.heightStatus && isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
+      <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn
         resettable
-        label='Revêtement'
+        label='Revêtement 1'
         choices={ANNOTATION_COVERING_CHOICES}
         name={`annotationInfos.${index}.covering`}
         source={`annotationInfos.${index}.covering`}
       />
-      <SlopeSelect name={`annotationInfos.${index}.slope`} />
+      {getValues(`annotationInfos.${index}.covering2`) && (
+        <SelectInput
+          alwaysOn
+          resettable
+          label='Revêtement 2'
+          choices={ANNOTATION_COVERING_CHOICES}
+          name={`annotationInfos.${index}.covering2`}
+          source={`annotationInfos.${index}.covering2`}
+        />
+      )}
+      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
+        <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (%)' />
+      )}
+      {!slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && <Typography>Chargement de la pente en cours...</Typography>}
       <SelectInput
         sx={{ mt: 3 }}
         name={`annotationInfos.${index}.wear`}

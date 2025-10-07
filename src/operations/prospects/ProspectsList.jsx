@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
-import { ProspectContextProvider } from '@/common/store';
-import { ProspectDialog, ProspectFilterInput, Prospects } from './components';
+import { ProspectContextProvider, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '@/common/store';
+import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -35,6 +35,8 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
+  const annotatorComponentStore = useAnnotatorComponentStore();
+  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
 
   useEffect(() => {
     form.setValue('address', address);
@@ -64,24 +66,35 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           const fileId = uuidV4();
           const pictureId = uuidV4();
           const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-          await annotatorProvider.getPictureFormAddress(pictureId, {
+          const currentAreaPicture = await annotatorProvider.getPictureFormAddress(pictureId, {
             address: data.address,
             fileId,
             filename: `Layer ${data.address}`,
             prospectId,
             zoomLevel: ZoomLevel.HOUSES_0,
           });
+
+          if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
+
+          annotatorComponentStore.reset();
+          setAnnotatorSidebarAnnordionItem(0);
+          clearPolygons();
           navigate(
             `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
           );
           return;
-        } catch {
+        } catch (err) {
+          const isPrecisionError = err.message === 'precisionLevelInCm';
           toggleDialog();
           openDialog(
             <>
-              <DialogTitle>Adresse introuvable</DialogTitle>
+              <DialogTitle>{isPrecisionError ? 'Image à précision de 5 cm indisponible.' : 'Adresse introuvable.'}</DialogTitle>
               <DialogContent>
-                <DialogContentText>L'adresse que vous avez spécifiée n'est pas encore pris en charge. Veuillez réessayer ultérieurement.</DialogContentText>
+                <DialogContentText>
+                  Adresse momentanément indisponible.
+                  {isPrecisionError && 'Aucune image avec une précision de 5 cm n’est encore disponible.'}
+                  Veuillez réessayer ultérieurement.
+                </DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button onClick={closeDialog}>Fermer</Button>
@@ -152,7 +165,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
         <Prospects />
         {isCreating && (
           <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-            <ProspectDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+            <ProspectFormDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
           </form>
         )}
       </TabPanel>

@@ -7,7 +7,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
   const { pictureId, prospectId, fileId } = parseUrlParams();
 
   const query = useQuery({
-    queryKey: [pictureId],
+    queryKey: [pictureId, prospectId, fileId],
     queryFn: async () => {
       const areaPictureDetailsResponse = await annotatorProvider.getAreaPictureById(pictureId);
       mutateMarker(areaPictureDetailsResponse);
@@ -32,7 +32,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
       mutateMarker(areaPictureDetailsResponse);
       return areaPictureDetailsResponse;
     },
-    mutationKey: ['crupdateAreaPictureDetails'],
+    mutationKey: ['crupdateAreaPictureDetails', query.data, prospectId, fileId],
   });
 
   return { query, mutation };

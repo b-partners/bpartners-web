@@ -1,4 +1,4 @@
-import { ANNOTATION_COVERING_TRANSLATION, ANNOTATION_LABELS_TRANSLATION, ANNOTATION_WEAR_TRANSLATION } from '@/constants';
+import { ANNOTATION_LABELS_TRANSLATION, ANNOTATION_WEAR_TRANSLATION, coveringTypeMap } from '@/constants';
 import { AnnotationInfo } from '../types';
 
 export const EMPTY_ANNOTATION_INFO_VALUE = 'Non renseigné';
@@ -18,7 +18,7 @@ export const translateAnnotationInfo = (info: AnnotationInfo & { area: number })
   return [
     formatInfo({ label: 'Type', value: info?.labelType, translator: ANNOTATION_LABELS_TRANSLATION }),
     formatInfo({ label: 'Surface', value: info?.area, unit: 'm²' }),
-    formatInfo({ label: 'Revêtement', value: info?.covering, translator: ANNOTATION_COVERING_TRANSLATION }),
+    formatInfo({ label: 'Revêtement', value: info?.covering, translator: coveringTypeMap }),
     formatInfo({ label: 'Pente', value: info?.slope, unit: '/12' }),
     formatInfo({ label: 'Usure', value: info?.wear, translator: ANNOTATION_WEAR_TRANSLATION }),
     formatInfo({ label: "Taux d'usure", value: info?.wearLevel }),

@@ -16,6 +16,11 @@ const polygonsItem = 'bp_polygons_item';
 const annotationsInfoItem = 'bp_annotations_info_item';
 const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
+const apiKeyItem = 'bp_user_api_key';
+const roofAnalyseIdItem = 'bp_roof_analyse_id';
+const llmResultItem = 'bp_llm_result_item';
+const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
+const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -81,6 +86,26 @@ export const cache = {
     const data = { markerPosition, imageSize };
     return cacheObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`, data);
   },
+  apiKey(apiKey: string) {
+    localStorage.setItem(apiKeyItem, apiKey);
+    return apiKey;
+  },
+  roofAnalyseId(roofAnalyseId: string) {
+    localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
+    return roofAnalyseId;
+  },
+  llmResult(llmResult: string) {
+    localStorage.setItem(llmResultItem, llmResult);
+    return llmResult;
+  },
+  isRoofPropertiesRequestDone(value: boolean) {
+    localStorage.setItem(isRoofPropertiesRequestDoneItem, JSON.stringify(value));
+    return value;
+  },
+  isAreaPictureImageUpdated(value: boolean) {
+    localStorage.setItem(isAreaPictureImageUpdatedItem, JSON.stringify(value));
+    return value;
+  },
 };
 
 export const getCached = {
@@ -142,6 +167,23 @@ export const getCached = {
   initialMarker(areaPictureId: string) {
     return getCachedObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`);
   },
+  apiKey() {
+    return localStorage.getItem(apiKeyItem);
+  },
+  roofAnalyseId() {
+    return localStorage.getItem(roofAnalyseIdItem);
+  },
+  llmResult() {
+    return localStorage.getItem(llmResultItem);
+  },
+  isRoofPropertiesRequestDone() {
+    const value = localStorage.getItem(isRoofPropertiesRequestDoneItem);
+    return JSON.parse(value || 'false');
+  },
+  isAreaPictureImageUpdated() {
+    const value = localStorage.getItem(isAreaPictureImageUpdatedItem);
+    return JSON.parse(value || 'false');
+  },
 };
 
 export const clearCache = () => {
@@ -152,4 +194,8 @@ export const clearCache = () => {
 export const clearPolygons = () => {
   cache.polygons(null);
   cache.annotationsInfo(null);
+  localStorage.removeItem(llmResultItem);
+  localStorage.removeItem(roofAnalyseIdItem);
+  localStorage.removeItem(isAreaPictureImageUpdatedItem);
+  localStorage.removeItem(isRoofPropertiesRequestDoneItem);
 };

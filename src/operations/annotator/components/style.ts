@@ -1,0 +1,106 @@
+import { PALETTE_COLORS } from '@/bp-theme';
+import { SxProps } from '@mui/material';
+
+export const annotatorActionButtonsStyle: SxProps = {
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  position: 'relative',
+  '& svg': {
+    color: 'white',
+  },
+  '& .MuiIconButton-root': {
+    borderRadius: 2,
+    background: PALETTE_COLORS['neon_orange'],
+    color: PALETTE_COLORS['white'],
+  },
+  '& .annotator-info': {
+    '& .MuiBox-root': {
+      '& p': {
+        m: 0,
+      },
+      color: '#fff',
+      px: 1,
+      py: 1,
+      borderRadius: 2,
+      minWidth: 70,
+      fontWeight: 'semi-bold',
+      background: PALETTE_COLORS.neon_orange,
+    },
+  },
+  '& .image-info': {
+    background: PALETTE_COLORS.pine,
+    borderRadius: 2,
+    width: '100%',
+    display: 'flex',
+    py: 1,
+    justifyContent: 'center',
+    '& .MuiTypography-root': {
+      color: '#fff',
+    },
+    '& .MuiDivider-root': {
+      marginX: 2,
+    },
+  },
+  '& .image-info-container': {
+    width: '100%',
+  },
+};
+
+export const llmResultStyle: SxProps = {
+  textAlign: 'justify',
+  padding: 5,
+  marginBottom: 2,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  overflowY: 'scroll',
+  overflowX: 'hidden',
+  '& *': {
+    fontFamily: "'Kumbh Sans', sans-serif !important",
+  },
+  '& h1': {
+    mb: 5,
+  },
+  '& li': {
+    mb: 2,
+  },
+  '& strong': {
+    display: 'block',
+  },
+  '& h1,h2,h3': {
+    textAlign: 'center',
+  },
+  '& section:first-child > h2': {
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& section:nth-child(2) > h2': {
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& .loading-container': {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    '& .loading-element-container': {
+      alignItems: 'center',
+    },
+  },
+};
+
+export const llmButtonStyle: SxProps = {
+  color: 'white',
+  minWidth: 300,
+  '& svg': {
+    color: 'white',
+  },
+};
+
+export const annotationSlopeHeightAlertStyle: SxProps = {
+  '& .MuiAlert-action button': {
+    position: 'relative',
+    transform: 'translateX(-20%)',
+  },
+};

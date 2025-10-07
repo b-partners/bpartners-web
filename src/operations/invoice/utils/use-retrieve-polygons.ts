@@ -1,3 +1,4 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
@@ -26,6 +27,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
   });
   const { polygons, annotations } = retrievedPolygon;
   const isAnnotationEmpty = !annotations || Object.keys(annotations || {}).length === 0;
+  const { setSlopeAndHeightState, setGlobalRate, setLlm } = useAnnotatorComponentStore();
 
   useEffect(() => {
     if (!pictureId) {
@@ -36,6 +38,15 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       areaPictureAnnotationFetcher(pictureId).then(areaPictureAnnotations => {
         if (areaPictureAnnotations.length > 0) {
           const areaPictureAnnotation = areaPictureAnnotations[0];
+          const { global_rate_type, global_rate_value, roofHeight, llm } = areaPictureAnnotation?.properties || {};
+          setLlm(llm);
+          setGlobalRate(global_rate_value, global_rate_type);
+          setSlopeAndHeightState({
+            height: roofHeight,
+            heightStatus: roofHeight ? 'AVAILABLE' : 'UNAVAILABLE',
+            slope: annotations?.annotations?.[0]?.metadata?.slope,
+            slopeStatus: 'AVAILABLE',
+          });
           const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
           setRetrievedPolygon({
             polygons,
@@ -50,6 +61,15 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       if (areaPictureAnnotations.length > 0) {
         const areaPictureAnnotation = areaPictureAnnotations[0];
         const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+        const { global_rate_type, global_rate_value, roofHeight, llm } = areaPictureAnnotation?.properties || {};
+        setLlm(llm);
+        setGlobalRate(global_rate_value, global_rate_type);
+        setSlopeAndHeightState({
+          height: roofHeight,
+          heightStatus: roofHeight ? 'AVAILABLE' : 'UNAVAILABLE',
+          slope: annotations?.annotations?.[0]?.metadata?.slope,
+          slopeStatus: 'AVAILABLE',
+        });
         setRetrievedPolygon({
           polygons,
           annotations: areaPictureAnnotation,

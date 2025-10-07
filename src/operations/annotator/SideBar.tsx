@@ -1,50 +1,32 @@
-import { FlexBox } from '@/common/components';
-import { BPButton } from '@/common/components/BPButton';
 import { useLoadingHandler } from '@/common/hooks';
-import { useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
-import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
-import { Delete as DeleteIcon, ExpandMore, Inbox as InboxIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Dialog,
-  DialogContent,
-  Divider,
-  IconButton,
-  List,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { BaseSyntheticEvent, ChangeEvent, FC, useState } from 'react';
-import { SelectInput, TextInput, useNotify, useRedirect } from 'react-admin';
-import { FormProvider } from 'react-hook-form';
+import { Inbox as InboxIcon } from '@mui/icons-material';
+import { Box, Dialog, DialogContent, List, Typography } from '@mui/material';
+import { BaseSyntheticEvent, FC } from 'react';
+import { useNotify, useRedirect } from 'react-admin';
+import { FormProvider, useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { ExportAnnotationConfirmButton } from './components';
-import AnnotatorForm from './components/AnnotatorForm';
+import { AnnotationSlopeHeightAlert, AnnotatorFormItem } from './components';
 import { AnnotationInfo } from './types';
-import { useAnnotationInfosForm } from './utils/annotations-info-form';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
   defaultAnnotationInfos: AnnotationInfo[];
 };
 
-export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotationInfos }) => {
+export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle } = useCanvasAnnotationContext();
-  const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const [expanded, setExpanded] = useState<number | null>(0);
-  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos);
+  const { polygons, slopeInfoOpen, handleSlopeInfoToggle, fieldArrayState } = useCanvasAnnotationContext();
+  const formState = useFormContext();
+  const { startLoading, stopLoading } = useLoadingHandler();
+  const { slopeAndHeightState } = useAnnotatorComponentStore();
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -71,83 +53,19 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
     handleSubmitForms(event);
   };
 
-  const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
-  };
-
-  const handleClickAccordion = (index: number) => (_event: ChangeEvent<unknown>, isExpanded: boolean) => {
-    setExpanded(isExpanded ? index : null);
-  };
-
-  const removeAnnotationByPolygonId = (polygonId: string) => {
-    setPolygons(prev => prev.filter(polygon => polygon.id !== polygonId));
-  };
-
   return (
     <Box>
-      <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.7, overflow: 'auto' }}>
+      <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.9, overflow: 'auto' }}>
         <Box py={2}>
+          <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />
           {fieldArrayState.fields.length > 0 ? (
-            <FormProvider {...formState}>
-              <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
-                {fieldArrayState.fields.map((annotationInfo, i) => {
-                  const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
-
-                  if (!currentPolygon) {
-                    return null;
-                  }
-
-                  return (
-                    <Box data-cy='annotation-info-item' key={annotationInfo.id}>
-                      <FlexBox sx={{ alignItems: 'start', width: '100%', mt: '15px' }}>
-                        <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
-                          <IconButton
-                            edge='end'
-                            aria-label='toggle polygon visibility'
-                            style={{ marginRight: '0' }}
-                            onClick={() => togglePolygonVisibility(currentPolygon.id)}
-                          >
-                            {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                          </IconButton>
-                        </Tooltip>
-                        <SelectInput
-                          alwaysOn
-                          resettable
-                          choices={ANNOTATION_LABELS_CHOICES}
-                          label='Type de label'
-                          sx={{ width: '70%', m: 0 }}
-                          name={`annotationInfos.${i}.labelType`}
-                          source={`annotationInfos.${i}.labelType`}
-                        />
-                        <Tooltip title='supprimer le polygone'>
-                          <IconButton aria-label='delete polygon' edge='end' onClick={() => removeAnnotationByPolygonId(currentPolygon.id)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </FlexBox>
-                      <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={expanded === i} onChange={handleClickAccordion(i)}>
-                        <AccordionSummary expandIcon={<ExpandMore />}>
-                          <TextInput
-                            name={`annotationInfos.${i}.labelName`}
-                            source={`annotationInfos.${i}.labelName`}
-                            inputProps={{
-                              'data-cy': 'label-name-input',
-                            }}
-                            onClick={e => e.stopPropagation()}
-                            label={'Nom du label'}
-                            helperText={false}
-                          />
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <AnnotatorForm index={i} surface={currentPolygon.surface} />
-                        </AccordionDetails>
-                      </Accordion>
-                      <Divider />
-                    </Box>
-                  );
-                })}
-              </form>
-            </FormProvider>
+            <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
+              <FormProvider {...formState}>
+                {fieldArrayState.fields.map((annotationInfo: any, i: number) => (
+                  <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
+                ))}
+              </FormProvider>
+            </form>
           ) : (
             <Box display='flex' color='#00000050' marginTop='2rem' width='100%' alignItems='center' flexDirection='column'>
               <div>
@@ -167,25 +85,6 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           </Dialog>
         )}
       </List>
-      <Stack sx={{ zIndex: 99999, position: 'absolute', bottom: 20, width: '100%', bgcolor: 'white' }} spacing={2}>
-        <BPButton
-          type='submit'
-          isLoading={isLoading}
-          data-testid='submit-annotator-form'
-          onClick={event => handleSubmitFormsWrapper(event, false)}
-          label='resources.annotator.save'
-          style={{ width: '100%' }}
-        />
-        <BPButton
-          isLoading={isLoading}
-          disabled={isLoading || polygons.length === 0}
-          label='resources.draftsAnnotations.add'
-          data-testid='submit-draft-annotation'
-          onClick={event => handleSubmitFormsWrapper(event, true)}
-          style={{ width: '100%' }}
-        />
-        <ExportAnnotationConfirmButton formState={formState} />
-      </Stack>
     </Box>
   );
 };

@@ -4,12 +4,12 @@ import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { useGetList } from 'react-admin';
-import imageAnalyse from '/home/4.png';
+import imageAnalyse from '/home/home-banner.webp';
 
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
 import { BaseSyntheticEvent, FC, useState } from 'react';
-import { ProspectDialog } from '../prospects/components';
+import { ProspectFormDialog } from '../prospects/components';
 import { ProspectDialogProvider } from '../prospects/ProspectsList';
 import { HomeStyle } from './style';
 
@@ -217,10 +217,16 @@ const CreateProspectDialog: FC<CreateProspectDialogProps> = ({ saveOrUpdateProsp
 
   return (
     <>
-      <BPButton className='btn-analyse' onClick={toggleCreating} label="Passer à l'analyse" data-cy='button-analyze' data-path='/prospects' />
+      <BPButton
+        className='btn-analyse'
+        onClick={toggleCreating}
+        label='resources.annotations.action.passToAnalyse'
+        data-cy='button-analyze'
+        data-path='/prospects'
+      />
       {isCreating && (
         <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-          <ProspectDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
+          <ProspectFormDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
         </form>
       )}
     </>

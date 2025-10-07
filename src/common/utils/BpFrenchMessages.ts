@@ -12,6 +12,7 @@ export const BpFrenchMessages = {
       resetRefocusImage: "Réinitialiser l'image",
       confirm: 'Confirmer',
       validate: 'Valider',
+      process_detection: 'Analyser la toiture',
       prospect: {
         abandon: 'Abandonner ce prospect',
         reserve: 'Réserver ce prospect',
@@ -30,6 +31,9 @@ export const BpFrenchMessages = {
   },
   resources: {
     annotations: {
+      action: {
+        passToAnalyse: "Passer à l'analyse",
+      },
       creation: {
         error: "Une erreur s'est produite lors de la sauvegarde des annotations",
       },
@@ -44,9 +48,11 @@ export const BpFrenchMessages = {
     },
     products: {
       name: 'Produit |||| Produits',
+      add: 'Ajouter un produit',
     },
     customers: {
       name: 'Client |||| Clients',
+      search: 'Rechercher un client',
     },
     calendar: {
       name: 'Mon agenda',

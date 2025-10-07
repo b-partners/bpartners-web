@@ -8,21 +8,32 @@ export const ANNOTATION_LABELS_TRANSLATION = {
 export type AnnotationLabelsType = typeof ANNOTATION_LABELS_TRANSLATION;
 export const ANNOTATION_LABELS_CHOICES = toRaInputChoices(ANNOTATION_LABELS_TRANSLATION);
 
-export const ANNOTATION_COVERING_TRANSLATION = {
-  'tuiles-canal': 'Tuiles canal',
-  'tuiles-plates': 'Tuiles plates',
-  ardoise: 'Ardoise',
-  zinc: 'Zinc',
-  shingle: 'Shingle',
-  beton: 'Béton',
-  'bac-acier': 'Bac acier',
-  'bardeaux-bitumineux': 'Bardeaux bitumineux',
-  'fibro-ciment': 'Fibro-ciment',
-  'membrane-elastomere': 'Membrane élastomère',
-  autres: 'Autres',
-} as const;
-export type AnnotationCoveringType = typeof ANNOTATION_COVERING_TRANSLATION;
-export const ANNOTATION_COVERING_CHOICES = toRaInputChoices(ANNOTATION_COVERING_TRANSLATION);
+export const annotationLabelType = [
+  {
+    value: 'roof',
+    label: 'Toit',
+  },
+  {
+    value: 'velux',
+    label: 'Velux',
+  },
+];
+
+export const coveringTypeMap = {
+  ROOF_ARDOISE: 'Ardoise',
+  ROOF_ASPHALTE_BITUME: 'Asphalte Bitume',
+  ROOF_BAC_ACIER: 'Bac Acier',
+  ROOF_BETON_BRUT: 'Béton brut',
+  ROOF_FIBRO_CIMENT: 'Fibrociment',
+  ROOF_GRAVIER: 'Gravier',
+  ROOF_MEMBRANE_SYNTHETIQUE: 'Membrane synthétique',
+  ROOF_TOLE_ONDULEE: 'Tôle ondulée',
+  ROOF_TUILES: 'Tuiles',
+  ROOF_ZINC: 'Zinc',
+};
+
+export type AnnotationCoveringType = typeof coveringTypeMap;
+export const ANNOTATION_COVERING_CHOICES = toRaInputChoices(coveringTypeMap);
 
 export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
   LOW: 'Minime',

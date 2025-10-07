@@ -179,7 +179,7 @@ const InvoiceForm = props => {
               label='Date limite de validité'
               type='date'
             />
-            <ClientSelection name='customer' label='Rechercher un client' />
+            <ClientSelection name='customer' label='resources.customers.search' />
             {isOpenCreateInDialogButton && (
               <div style={{ marginBottom: '8px' }} data-testid='create-new-customer'>
                 <CreateInDialogButton fullWidth title='Créer un nouveau client' label='Créer un nouveau client' resource='customers'>
@@ -247,11 +247,11 @@ const InvoiceForm = props => {
             </InvoiceAccordion>
           )}
           <InvoiceTotalPrice totalPrice={totalPrice} isSubjectToVat={isSubjectToVat} />
-          <BPButton id='form-save-id' onClick={saveAndClose} label='Enregistrer' icon={<Save />} sx={{ marginTop: 10 }} />
+          <BPButton id='form-save-id' onClick={saveAndClose} label='bp.action.save' icon={<Save />} sx={{ marginTop: 10 }} />
         </form>
       </FormProvider>
       <div>
-        {!isAnnotationEmpty && <AnnotatorComponent width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />}
+        {!isAnnotationEmpty && <AnnotatorComponent isInvoiceForm width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />}
         <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
           <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
             <RefreshIcon />
