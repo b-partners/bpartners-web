@@ -8,27 +8,25 @@ import { Inbox as InboxIcon } from '@mui/icons-material';
 import { Box, Dialog, DialogContent, List, Typography } from '@mui/material';
 import { BaseSyntheticEvent, FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
 import { AnnotationSlopeHeightAlert, AnnotatorFormItem } from './components';
 import { AnnotationInfo } from './types';
-import { useAnnotationInfosForm } from './utils/annotations-info-form';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
   defaultAnnotationInfos: AnnotationInfo[];
 };
 
-export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotationInfos }) => {
+export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons, slopeInfoOpen, handleSlopeInfoToggle, roofAnalyseProperties } = useCanvasAnnotationContext();
+  const { polygons, slopeInfoOpen, handleSlopeInfoToggle, fieldArrayState } = useCanvasAnnotationContext();
+  const formState = useFormContext();
   const { startLoading, stopLoading } = useLoadingHandler();
   const { slopeAndHeightState } = useAnnotatorComponentStore();
-
-  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, defaultAnnotationInfos, roofAnalyseProperties);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -63,7 +61,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId, defaultAnnotation
           {fieldArrayState.fields.length > 0 ? (
             <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
               <FormProvider {...formState}>
-                {fieldArrayState.fields.map((annotationInfo, i) => (
+                {fieldArrayState.fields.map((annotationInfo: any, i: number) => (
                   <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
                 ))}
               </FormProvider>

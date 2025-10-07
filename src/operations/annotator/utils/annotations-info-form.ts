@@ -37,35 +37,33 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
     control: formState.control,
     name: 'annotationInfos',
   });
-  const { setRoofSlope } = useAnnotatorComponentStore();
-  const { thereIsRoofPolygon } = useAnnotatorComponentStore();
+  const { setRoofSlope, slopeAndHeightState } = useAnnotatorComponentStore();
 
-  const { data } = useQuerySlopeAndHeight(() => {}, polygons.length === 1 && thereIsRoofPolygon);
-
-  useEffect(() => {
-    const unsubscribe = useAnnotatorComponentStore.subscribe(({ slopeAndHeightState }) => {
-      if (slopeAndHeightState?.slope && slopeAndHeightState?.height) {
-        formState.setValue('annotationInfos.0.slope', slopeAndHeightState?.slope);
-        formState.setValue('annotationInfos.0.height', slopeAndHeightState?.height);
-        setRoofSlope(slopeAndHeightState?.slope);
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+  const { data } = useQuerySlopeAndHeight(({ height, slope }) => {
+    formState.setValue('annotationInfos.0.slope', slope);
+    formState.setValue('annotationInfos.0.height', height);
+    setRoofSlope(slope);
+  }, true);
 
   const annotationInfos = formState.watch('annotationInfos');
 
   useEffect(() => {
     if (polygons.length !== annotationInfos.length) {
+      const currentHeight = formState.getValues('annotationInfos.0.height');
+      const currentSlope = formState.getValues('annotationInfos.0.slope');
+
       const synchronizedAnnotationInfos = getSynchronizedAnnotationInfos(
         polygons,
         annotationInfos,
-        createAnnotationInfoFromRoofAnalyseProperties(roofAnalyseProperties, data?.height, data?.slope)
+        createAnnotationInfoFromRoofAnalyseProperties(
+          roofAnalyseProperties,
+          currentHeight !== -1 ? currentHeight : slopeAndHeightState?.height,
+          currentSlope !== -1 ? currentSlope : slopeAndHeightState?.slope
+        )
       );
       fieldArrayState.replace(synchronizedAnnotationInfos);
     }
-  }, [stringifyObj(annotationInfos), polygons.length, data]);
+  }, [stringifyObj(annotationInfos), polygons.length, data, slopeAndHeightState]);
 
   useEffect(() => {
     const subscription = formState.watch(({ annotationInfos: currentAnnotationInfos = [] }) => {

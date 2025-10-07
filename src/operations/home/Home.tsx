@@ -217,7 +217,13 @@ const CreateProspectDialog: FC<CreateProspectDialogProps> = ({ saveOrUpdateProsp
 
   return (
     <>
-      <BPButton className='btn-analyse' onClick={toggleCreating} label="Passer à l'analyse" data-cy='button-analyze' data-path='/prospects' />
+      <BPButton
+        className='btn-analyse'
+        onClick={toggleCreating}
+        label='resources.annotations.action.passToAnalyse'
+        data-cy='button-analyze'
+        data-path='/prospects'
+      />
       {isCreating && (
         <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
           <ProspectFormDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />

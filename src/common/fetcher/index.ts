@@ -1,3 +1,5 @@
+export * from './annotator-export-pdf';
+export * from './annotator-image-query';
 export * from './area-picture-details-fetcher';
 export * from './area-picture-fetcher';
 export * from './bank-disconnection-fetcher';

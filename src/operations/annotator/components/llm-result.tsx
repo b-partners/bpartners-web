@@ -11,7 +11,6 @@ interface LlmResultProps {
 
 export const LlmResult: FC<LlmResultProps> = ({ height, width, htmlResult, isLoading }) => {
   const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (ref.current && htmlResult) {
       ref.current.innerHTML = htmlResult;

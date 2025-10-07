@@ -1,6 +1,6 @@
 import { getCurrentAccount } from '@/common/utils';
 import loginRedirectionUrls from '@/security/login-redirection-urls';
-import { Account, AccountValidationRedirection, UpdateAccountIdentity } from '@bpartners/typescript-client';
+import { Account, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
@@ -29,9 +29,9 @@ export const accountProvider: BpDataProviderType = {
   },
 };
 
-export const initiateAccountValidation = async (): Promise<AccountValidationRedirection> => {
+export const initiateAccountValidation = async (): Promise<any> => {
   const { userId, accountId } = getCached.userInfo();
-  const { data } = await userAccountsApi().initiateAccountValidation(userId, accountId, loginRedirectionUrls);
+  const { data } = await (userAccountsApi() as any)?.initiateAccountValidation(userId, accountId, loginRedirectionUrls);
   return data;
 };
 

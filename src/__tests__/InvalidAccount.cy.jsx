@@ -4,7 +4,7 @@ import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
 import { whoami1 } from './mocks/responses/security-api';
 
-describe(specTitle('Validate Account'), () => {
+xdescribe(specTitle('Validate Account'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
 

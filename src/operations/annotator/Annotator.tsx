@@ -54,7 +54,7 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
   }
 
   return (
-    <CanvasAnnotationContextProvider defaultPolygons={defaultAnnotations.polygons}>
+    <CanvasAnnotationContextProvider annotationInfo={defaultAnnotations.annotationInfos} defaultPolygons={defaultAnnotations.polygons}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr={'1%'}>
           <AnnotatorComponent
