@@ -1,4 +1,4 @@
-import { Account, AccountHolder, AccountValidationRedirection, BusinessActivity, LegalFile } from '@bpartners/typescript-client';
+import { Account, AccountHolder, BusinessActivity, LegalFile } from '@bpartners/typescript-client';
 
 export const account1: Account = { active: true, availableBalance: 22000, bic: 'BIC', iban: 'IBAN', id: 'mock-account-id1', name: 'Numer', bank: null };
 export const account2: Account = {
@@ -86,7 +86,7 @@ export const accountHolder1: AccountHolder = {
   ],
 };
 
-export const validationRedirectionUrl: AccountValidationRedirection = {
+export const validationRedirectionUrl: any = {
   redirectionStatusUrls: { successUrl: 'dummy', failureUrl: 'dummy' },
   redirectionUrl: 'dummy',
 };

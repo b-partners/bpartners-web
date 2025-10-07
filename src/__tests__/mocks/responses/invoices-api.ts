@@ -14,7 +14,7 @@ const getCustomerNumber = (index: number) => {
 };
 
 export const createInvoices = (n: number, status: InvoiceStatus) => {
-  const invoices: Invoice[] = [];
+  const invoices: any[] = [];
   for (let i = 0; i < n; i++) {
     invoices.push({
       customer: customers1[getCustomerNumber(i)],
@@ -43,7 +43,7 @@ export const createInvoices = (n: number, status: InvoiceStatus) => {
   return invoices;
 };
 
-export const invoiceWithoutCustomer: Invoice = {
+export const invoiceWithoutCustomer: any = {
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
   paymentUrl: 'paymentUrl',
@@ -64,7 +64,7 @@ export const invoiceWithoutCustomer: Invoice = {
   },
 };
 
-export const invoiceWithoutTitle: Invoice = {
+export const invoiceWithoutTitle: any = {
   customer: customers1[1],
   fileId: 'file-incomplete-id',
   id: 'invoice-incomplete-id',
