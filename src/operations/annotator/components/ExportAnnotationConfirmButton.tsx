@@ -10,9 +10,8 @@ import { FC, useState } from 'react';
 import { Confirm, ConfirmProps } from 'react-admin';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
-import { ExportAnnotationMapperArgs } from '../utils';
 
-export interface ExportAnnotationConfirmButtonProps extends Pick<ExportAnnotationMapperArgs, 'globalRateType' | 'globalRateValue'> {
+export interface ExportAnnotationConfirmButtonProps {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
   areaPictureDetails: AreaPictureDetails;
   image: string;

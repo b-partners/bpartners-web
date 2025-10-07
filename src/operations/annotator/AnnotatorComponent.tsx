@@ -39,6 +39,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   height,
   defaultAnnotationInfos,
   draftAnnotationId,
+  isInvoiceForm,
 }) => {
   const { geoJsonResultUrl } = useAnnotatorComponentStore();
 
@@ -182,13 +183,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
         </Stack>
       )}
-      <AnalyseResultButton
-        image={data?.image}
-        isCropped={!!data?.image}
-        areaPictureDetails={currentAreaPictureDetailsToUse}
-        defaultAnnotationInfos={defaultAnnotationInfos}
-        draftAnnotationId={draftAnnotationId}
-      />
+      {!isInvoiceForm && (
+        <AnalyseResultButton
+          image={data?.image}
+          isCropped={!!data?.image}
+          areaPictureDetails={currentAreaPictureDetailsToUse}
+          defaultAnnotationInfos={defaultAnnotationInfos}
+          draftAnnotationId={draftAnnotationId}
+        />
+      )}
     </Box>
   );
 };
