@@ -12,11 +12,12 @@ export interface SlopeAndHeightState {
 
 export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) => void, enabled = false) => {
   const { handleClose, value: shouldRetry, handleOpen: start } = useToggle(enabled);
-  const { setSlopeAndHeightState, setShouldGetHeightState, shouldGetHeightState } = useAnnotatorComponentStore();
+  const { setSlopeAndHeightState, setShouldGetHeightState, shouldGetHeightState, setIsSlopeAndHeightPending } = useAnnotatorComponentStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ['detection', 'result'],
     queryFn: async () => {
+      setIsSlopeAndHeightPending(true);
       const isRoofPropertiesRequestDone = getCached.isRoofPropertiesRequestDone();
 
       if (!isRoofPropertiesRequestDone) await initiateRoofProperties();
@@ -39,6 +40,7 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) =>
 
       onSuccess(result);
       setShouldGetHeightState(false);
+      setIsSlopeAndHeightPending(false);
       handleClose();
       return result;
     },

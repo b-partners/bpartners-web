@@ -9,6 +9,7 @@ interface AnalyseInformation {
 interface Action {
   setRoofSlope: (value: number) => void;
   setThereIsRoofPolygon: (value: boolean) => void;
+  setIsSlopeAndHeightPending: (value: boolean) => void;
   setShouldGetHeightState: (value: boolean) => void;
   setAnalyseInformation: (value: AnalyseInformation) => void;
   setSlopeAndHeightState: (value: SlopeAndHeightState) => void;
@@ -22,6 +23,7 @@ interface State {
   geoJsonResultUrl: string | null;
   slopeAndHeightState: SlopeAndHeightState | null;
   shouldGetHeightState: boolean;
+  isSlopeAndHeightPending: boolean;
 }
 
 const defaultState: any = {
@@ -31,12 +33,14 @@ const defaultState: any = {
   roofSlope: null,
   slopeAndHeightState: null,
   shouldGetHeightState: false,
+  isSlopeAndHeightPending: false,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
   ...defaultState,
   setThereIsRoofPolygon: thereIsRoofPolygon => set({ thereIsRoofPolygon }),
   setSlopeAndHeightState: value => set({ slopeAndHeightState: value }),
+  setIsSlopeAndHeightPending: value => set({ isSlopeAndHeightPending: value }),
   setShouldGetHeightState: value => set({ shouldGetHeightState: value }),
   setAnalyseInformation: ({ geoJsonResultUrl, imageUrl }) => set({ geoJsonResultUrl, imageUrl }),
   reset: () => set(defaultState),

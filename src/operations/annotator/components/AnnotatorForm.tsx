@@ -8,7 +8,7 @@ import { useFormContext } from 'react-hook-form';
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
   const { getValues } = useFormContext();
-  const { slopeAndHeightState } = useAnnotatorComponentStore();
+  const { slopeAndHeightState, isSlopeAndHeightPending } = useAnnotatorComponentStore();
 
   const height = getValues(`annotationInfos.${index}.height`);
 
@@ -30,7 +30,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           </Typography>
         </Typography>
       )}
-      {!slopeAndHeightState?.heightStatus && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
+      {!slopeAndHeightState?.heightStatus && isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
       <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn
@@ -50,11 +50,10 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           source={`annotationInfos.${index}.covering2`}
         />
       )}
-      {slopeAndHeightState?.slopeStatus ? (
+      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
         <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (%)' />
-      ) : (
-        <Typography>Chargement de la pente en cours...</Typography>
       )}
+      {!slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && <Typography>Chargement de la pente en cours...</Typography>}
       <SelectInput
         sx={{ mt: 3 }}
         name={`annotationInfos.${index}.wear`}

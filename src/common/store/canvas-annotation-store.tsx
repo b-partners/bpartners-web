@@ -1,6 +1,9 @@
+import { AnnotationInfo } from '@/operations/annotator';
+import { useAnnotationInfosForm } from '@/operations/annotator/utils';
 import { AnnotationCoveringFromAnalyse, cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
+import { FormProvider } from 'react-hook-form';
 import { NOOP_FN } from '../utils/noop_fn';
 import { stringifyObj } from '../utils/stringify';
 
@@ -19,6 +22,7 @@ export type AnnotationStore = {
   polygons: Polygon[];
   roofAnalyseProperties?: RoofAnalyseProperties;
   slopeInfoOpen: boolean;
+  fieldArrayState: any;
   setPolygons: Dispatch<SetStateAction<Polygon[]>>;
   setRoofAnalyseProperties: Dispatch<SetStateAction<RoofAnalyseProperties>>;
   handleSlopeInfoToggle: () => void;
@@ -30,6 +34,7 @@ const CanvasAnnotationContext = createContext<AnnotationStore>({
   setPolygons: NOOP_FN,
   handleSlopeInfoToggle: NOOP_FN,
   setRoofAnalyseProperties: NOOP_FN,
+  fieldArrayState: null,
 });
 
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
@@ -37,9 +42,10 @@ export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationConte
 export type CanvasAnnotationContextProviderProps = {
   children: ReactNode;
   defaultPolygons?: Polygon[];
+  annotationInfo: AnnotationInfo[];
 };
 
-export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [] }) => {
+export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [], annotationInfo }) => {
   const [polygons, setPolygons] = useState<Polygon[]>(defaultPolygons);
   const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
   const [roofAnalyseProperties, setRoofAnalyseProperties] = useState<RoofAnalyseProperties>();
@@ -50,14 +56,20 @@ export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProvider
 
   const stringifiedPolygons = stringifyObj(polygons);
 
-  const contextValues: AnnotationStore = useMemo(
-    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, setRoofAnalyseProperties, roofAnalyseProperties }),
-    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties, setRoofAnalyseProperties]
-  );
-
   useEffect(() => {
     cache.polygons(polygons);
   }, [stringifiedPolygons]);
 
-  return <CanvasAnnotationContext.Provider value={contextValues}>{children}</CanvasAnnotationContext.Provider>;
+  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, annotationInfo, roofAnalyseProperties);
+
+  const contextValues: AnnotationStore = useMemo(
+    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, setRoofAnalyseProperties, roofAnalyseProperties, fieldArrayState }),
+    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties, setRoofAnalyseProperties, fieldArrayState]
+  );
+
+  return (
+    <CanvasAnnotationContext.Provider value={contextValues}>
+      <FormProvider {...formState}>{children}</FormProvider>
+    </CanvasAnnotationContext.Provider>
+  );
 };
