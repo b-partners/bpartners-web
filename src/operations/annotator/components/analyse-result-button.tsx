@@ -56,8 +56,6 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
 
-  console.log({ watch: formState.watch() });
-
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
       try {

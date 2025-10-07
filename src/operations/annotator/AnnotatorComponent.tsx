@@ -41,7 +41,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   draftAnnotationId,
   isInvoiceForm,
 }) => {
-  const { geoJsonResultUrl } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue } = useAnnotatorComponentStore();
 
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
@@ -154,31 +154,39 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               />
             </Box>
           )}
-          {data?.properties && showLLMResult && (
-            <LlmResult width={width || containerWidth} height={height || containerHeight} htmlResult={htmlResult} isLoading={isLlmResultPending} />
+          {(data?.properties || draftLlmValue) && showLLMResult && (
+            <LlmResult
+              width={width || containerWidth}
+              height={height || containerHeight}
+              htmlResult={htmlResult || draftLlmValue}
+              isLoading={isLlmResultPending}
+            />
           )}
-          {data && (
+          {(data || globalRate) && (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties} onClick={toggleLLMResultView} />
+              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties || !!draftLlmValue} onClick={toggleLLMResultView} />
               <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
                 {degradationLevels.map(({ color, label }) => (
                   <Box
                     key={label}
-                    className={`degratation-levels-box ${data?.properties?.global_rate_type === label ? 'degratation-levels-box-selected' : ''}`}
-                    sx={{ bgcolor: color, border: `5px solid ${data?.properties?.global_rate_type === label ? 'black' : 'transparent'}` }}
+                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'degratation-levels-box-selected' : ''}`}
+                    sx={{
+                      bgcolor: color,
+                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'black' : 'transparent'}`,
+                    }}
                   >
                     {label}
                   </Box>
                 ))}
               </Stack>
               <Box className='global-rage-container'>
-                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value}%</Typography>
+                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate.value}%</Typography>
               </Box>
             </Stack>
           )}
         </Box>
       )}
-      {!data && showFileSource && Object.keys(layer).length > 0 && (
+      {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
           <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
         </Stack>
