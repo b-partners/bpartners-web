@@ -185,6 +185,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {!isInvoiceForm && (
         <AnalyseResultButton
+          analyseProperties={data?.properties}
           image={data?.image}
           isCropped={!!data?.image}
           areaPictureDetails={currentAreaPictureDetailsToUse}

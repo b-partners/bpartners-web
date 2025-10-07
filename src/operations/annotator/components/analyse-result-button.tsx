@@ -3,8 +3,15 @@ import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
-import { annotationsAttributeMapper, annotatorMapper, annotatorProvider, clearPolygons } from '@/providers';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
+import {
+  AnnotationCoveringFromAnalyse,
+  annotationsAttributeMapper,
+  annotatorMapper,
+  annotatorProvider,
+  clearPolygons,
+  SlopeAndHeightStatus,
+} from '@/providers';
+import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack } from '@mui/material';
 import { BaseSyntheticEvent, FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
@@ -14,15 +21,39 @@ import { AnnotationInfo } from '../types';
 import { useAnnotationInfosForm } from '../utils';
 import { ExportAnnotationConfirmButton } from './ExportAnnotationConfirmButton';
 
+export interface AnalyseProperties {
+  obstacle: boolean;
+  usure_rate: number;
+  global_rate_value: number;
+  global_rate_type: string;
+  moisissure_rate: number;
+  humidite_rate: number;
+  roof_area_in_m2: number;
+  revetement_1: AnnotationCoveringFromAnalyse;
+  revetement_2: AnnotationCoveringFromAnalyse | null;
+  roof_height_data_status: SlopeAndHeightStatus;
+  roof_slope_data_status: SlopeAndHeightStatus;
+  roof_slope_in_degrees: number;
+  roof_height_in_meters: number;
+}
+
 export type AnalyseResultButtonProps = {
   draftAnnotationId?: string;
   defaultAnnotationInfos: AnnotationInfo[];
   areaPictureDetails: AreaPictureDetails;
   image: string;
   isCropped: boolean;
+  analyseProperties: AnalyseProperties;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnotationInfos, draftAnnotationId, areaPictureDetails, image, isCropped }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
+  defaultAnnotationInfos,
+  draftAnnotationId,
+  areaPictureDetails,
+  image,
+  isCropped,
+  analyseProperties,
+}) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -38,7 +69,14 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ defaultAnnot
         isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
         const annotationAttributeMapped = annotationsAttributeMapper(polygons, annotationInfos, pictureId, annotationIdValue);
-        const requestBody = annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft);
+        const requestBody: AreaPictureAnnotation = {
+          ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
+          properties: {
+            global_rate_type: analyseProperties.global_rate_type,
+            global_rate_value: analyseProperties.global_rate_value,
+            roofHeight: analyseProperties.roof_height_in_meters,
+          },
+        };
         await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
         clearPolygons();
         if (isDraft) {

@@ -6,7 +6,6 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { ErrorMessageDialog } from '../components';
 import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
-import { useQuerySlopeAndHeight } from './slope-and-height-queries';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
   const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
@@ -15,8 +14,7 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
-  const { start: querySlopeAndHeight } = useQuerySlopeAndHeight(() => {}, false);
-  const { setAnalyseInformation } = useAnnotatorComponentStore();
+  const { setAnalyseInformation, setShouldGetHeightState } = useAnnotatorComponentStore();
 
   const onSuccess = (detectionResult: any) => {
     const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
@@ -47,7 +45,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
-    querySlopeAndHeight();
+    setShouldGetHeightState(true);
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
   };
 

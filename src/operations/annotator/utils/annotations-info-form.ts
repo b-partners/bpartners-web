@@ -38,21 +38,12 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
     name: 'annotationInfos',
   });
   const { setRoofSlope } = useAnnotatorComponentStore();
-  const { thereIsRoofPolygon } = useAnnotatorComponentStore();
 
-  const { data } = useQuerySlopeAndHeight(() => {}, polygons.length === 1 && thereIsRoofPolygon);
-
-  useEffect(() => {
-    const unsubscribe = useAnnotatorComponentStore.subscribe(({ slopeAndHeightState }) => {
-      if (slopeAndHeightState?.slope && slopeAndHeightState?.height) {
-        formState.setValue('annotationInfos.0.slope', slopeAndHeightState?.slope);
-        formState.setValue('annotationInfos.0.height', slopeAndHeightState?.height);
-        setRoofSlope(slopeAndHeightState?.slope);
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+  const { data } = useQuerySlopeAndHeight(({ height, slope }) => {
+    formState.setValue('annotationInfos.0.slope', slope);
+    formState.setValue('annotationInfos.0.height', height);
+    setRoofSlope(slope);
+  }, true);
 
   const annotationInfos = formState.watch('annotationInfos');
 
