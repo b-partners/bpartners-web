@@ -9,8 +9,9 @@ export const invoiceProvider: BpDataProviderType = {
 
     const accountId = await asyncGetAccountId();
     const searchValues = ((invoiceListSearch as string) || '').split(' ');
+    const mappedInvoiceTypes = `${invoiceTypes.join(',')}`;
 
-    return (await payingApi().getInvoices(accountId, page, perPage, undefined, invoiceTypes.join(','), ArchiveStatus.ENABLED, undefined, searchValues)).data;
+    return (await payingApi().getInvoices(accountId, page, perPage, undefined, mappedInvoiceTypes, ArchiveStatus.ENABLED, undefined, searchValues)).data;
   },
   getOne: async function (invoiceId: string): Promise<any> {
     const { accountId } = getCached.userInfo();
