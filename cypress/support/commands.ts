@@ -61,17 +61,6 @@ const getByAriaLabel = <Subject = any>(value: string) => getByAttribute<Subject>
 const getByName = <Subject = any>(value: string) => getByAttribute<Subject>('name', value);
 const getByDataCy = <Subject = any>(value: string) => getByAttribute<Subject>('data-cy', value);
 
-const skipBankSynchronisation = () => {
-  cy.intercept('/users/*/accounts').as('getAccount');
-  cy.wait('@getAccount').then(request => {
-    const accountStatus = request?.response?.body[0].status;
-    if (accountStatus === 'VALIDATION_REQUIRED' || accountStatus === 'INVALID_CREDENTIALS' || accountStatus === 'SCA_REQUIRED') {
-      cy.contains('Mettez à jour votre banque');
-      cy.contains('Plus tard').click();
-    }
-  });
-};
-
 const removeApiDummyUser = async () => {
   try {
     await userAccountsApi().deleteUser();
@@ -85,7 +74,6 @@ const e2eLogin = () => {
   cy.visit(process.env.REACT_APP_PROD_URL);
   cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
   cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
-  skipBankSynchronisation();
 };
 
 Cypress.Commands.add('name', name);
@@ -99,5 +87,4 @@ Cypress.Commands.add('getByDataCy', getByDataCy);
 Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
-Cypress.Commands.add('skipBankSynchronisation', skipBankSynchronisation);
 Cypress.Commands.add('waitAuthRequestNeeded', waitAuthRequestNeeded);

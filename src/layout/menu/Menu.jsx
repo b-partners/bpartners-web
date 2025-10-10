@@ -1,7 +1,6 @@
 import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
 import {
-  AccountBalance,
   AccountCircle,
   CalendarMonth,
   Category,
@@ -15,8 +14,8 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { Menu as RaMenu } from 'react-admin';
 import { useCallback, useState } from 'react';
+import { Menu as RaMenu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { authProvider, getCached } from '../../providers';
 
@@ -65,7 +64,6 @@ export const Menu = () => {
         <SupportDialog onToggle={toggleDialogState} open={dialogState} />
         <RaMenu>
           <RaMenu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
-          <RaMenu.Item to='/bank' primaryText='Ma banque' name='bank' leftIcon={<AccountBalance />} />
           <RaMenu.Item to='/helps' onClick={contactSupport} primaryText='Besoin d’aide ?' name='support' leftIcon={<ContactSupport />} />
           <RaMenu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
