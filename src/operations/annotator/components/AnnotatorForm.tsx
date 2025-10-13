@@ -87,7 +87,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         alwaysOn
         resettable
       />
-      <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle' />
+      <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle/Velux/PV' />
       <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
     </Box>
   );
