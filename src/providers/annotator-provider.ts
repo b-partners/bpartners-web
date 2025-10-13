@@ -15,6 +15,7 @@ export const annotatorProvider = {
     const { data } = await areaPictureApi().crupdateAreaPictureDetails(accountId, pictureId, {
       shiftNb: 0,
       ...crupdateAreaPictureDetails,
+      isOpaque: true,
     } as any);
     return data;
   },
