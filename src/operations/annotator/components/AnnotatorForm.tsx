@@ -65,7 +65,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
       />
       <SelectInput
         name={`annotationInfos.${index}.wearLevel`}
-        source={`annotationInfos.${index}.wearlevel`}
+        source={`annotationInfos.${index}.wearLevel`}
         label="Taux d'usure"
         choices={percentagesLevel}
         alwaysOn
