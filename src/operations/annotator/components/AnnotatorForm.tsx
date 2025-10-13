@@ -1,9 +1,14 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
+import { detectionResultColors } from '@/operations/prospects/constants';
 import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+
+const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
+  <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1 }} />
+);
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
   const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
@@ -53,9 +58,9 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
       {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
         <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (%)' />
       )}
-      {!slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && <Typography>Chargement de la pente en cours...</Typography>}
+      {!slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>}
       <SelectInput
-        sx={{ mt: 3 }}
+        InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         name={`annotationInfos.${index}.wear`}
         source={`annotationInfos.${index}.wear`}
         label='Usure'
@@ -64,6 +69,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         resettable
       />
       <SelectInput
+        InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         name={`annotationInfos.${index}.wearLevel`}
         source={`annotationInfos.${index}.wearLevel`}
         label="Taux d'usure"
@@ -72,6 +78,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         resettable
       />
       <SelectInput
+        InputProps={{ startAdornment: <FormColorBox type='MOISISSURE' /> }}
         name={`annotationInfos.${index}.moldRate`}
         source={`annotationInfos.${index}.moldRate`}
         label='Taux de moisissure'
@@ -80,6 +87,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         resettable
       />
       <SelectInput
+        InputProps={{ startAdornment: <FormColorBox type='HUMIDITE' /> }}
         name={`annotationInfos.${index}.humidityLevel`}
         source={`annotationInfos.${index}.humidityLevel`}
         label="Taux d'humidité"
@@ -87,7 +95,12 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         alwaysOn
         resettable
       />
-      <TextInput name={`annotationInfos.${index}.obstacle`} source={`annotationInfos.${index}.obstacle`} label='Obstacle/Velux/PV' />
+      <TextInput
+        InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}
+        name={`annotationInfos.${index}.obstacle`}
+        source={`annotationInfos.${index}.obstacle`}
+        label='Obstacle/Velux/PV'
+      />
       <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
     </Box>
   );
