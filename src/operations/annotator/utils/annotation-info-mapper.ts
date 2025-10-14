@@ -18,8 +18,14 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
   strokeColor: '',
 };
 
+const getLabelName = (polygon: Polygon, index: number) => {
+  const splittedPolygonId = polygon.id.split('___');
+  const labelName = splittedPolygonId.length === 2 ? `${splittedPolygonId[1]} ${Alphabet[index]}` : `Polygone ${Alphabet[index]}`;
+  return labelName;
+};
+
 export const createDefaultAnnotationInfo = (polygon: Polygon, index: number): AnnotationInfo => {
-  return { ...DEFAULT_ANNOTATION_INFO, polygonId: polygon.id || '', labelName: `Polygone ${Alphabet[index]}`, fillColor: polygon.fillColor || '' };
+  return { ...DEFAULT_ANNOTATION_INFO, polygonId: polygon.id || '', labelName: getLabelName(polygon, index), fillColor: polygon.fillColor || '' };
 };
 
 export const getSynchronizedAnnotationInfos = (
