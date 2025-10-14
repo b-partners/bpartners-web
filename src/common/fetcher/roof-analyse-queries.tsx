@@ -20,6 +20,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
     const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
     handleSuccess();
+    setShouldGetHeightState(false);
     setAnalyseInformation({ geoJsonResultUrl, imageUrl });
   };
 
@@ -52,6 +53,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
   const mutation = useMutation({
     mutationFn,
     onError: (e: any) => {
+      setShouldGetHeightState(false);
       let errorMessage = 'La détection sur cette zone a échoué, veuillez réessayer';
       if (e.message === 'polygonTooBig') errorMessage = 'La délimitation que vous avez faite est trop grande et ne peut pas encore être prise en charge.';
       openDialog(<ErrorMessageDialog message={errorMessage} />);

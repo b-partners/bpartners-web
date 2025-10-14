@@ -1,4 +1,4 @@
-import { detectionResultColors, detectionResultLabelName } from '@/operations/prospects/constants';
+import { detectionResultColors } from '@/operations/prospects/constants';
 
 import { getColorFromMain, Point, Polygon } from '@bpartners/annotator-component';
 import { v4 } from 'uuid';
@@ -65,7 +65,7 @@ export const detectionResultMapper = {
       const points: DomainPolygonResultType['points'] = all_points_x.map((x, yIndex) => ({ x, y: all_points_y[yIndex] }));
 
       const polygon: DomainPolygonResultType = {
-        id: `${v4()}___${detectionResultLabelName[label]}`,
+        id: `${v4()}___${label}`,
         label,
         points,
         ...getColorFromMain(detectionResultColors[label]),

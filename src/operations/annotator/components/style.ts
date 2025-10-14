@@ -104,3 +104,12 @@ export const annotationSlopeHeightAlertStyle: SxProps = {
     transform: 'translateX(-20%)',
   },
 };
+
+export const annotatorFormResultItemStyle: SxProps = {
+  '& .color-box-ref': {
+    width: '30px',
+    height: '30px',
+    borderRadius: '5px',
+    border: '1px solid black',
+  },
+};

@@ -1,7 +1,7 @@
 import { FlexBox } from '@/common/components';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Tooltip } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Tooltip, Typography } from '@mui/material';
 import React, { FC, useState } from 'react';
 import { TextInput } from 'react-admin';
 import { FieldArrayWithId, useFormContext } from 'react-hook-form';
@@ -48,6 +48,11 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index 
           </IconButton>
         </Tooltip>
       </FlexBox>
+      {annotationInfo.area && (
+        <Typography>
+          Surface: <strong>{annotationInfo.area}m²</strong>
+        </Typography>
+      )}
       <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={isExpanded} onChange={handleClickAccordion}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <TextInput

@@ -1,5 +1,6 @@
 import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
+import { detectionResultLabelName } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
@@ -20,12 +21,19 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
 
 const getLabelName = (polygon: Polygon, index: number) => {
   const splittedPolygonId = polygon.id.split('___');
-  const labelName = splittedPolygonId.length === 2 ? `${splittedPolygonId[1]} ${Alphabet[index]}` : `Polygone ${Alphabet[index]}`;
+  const labelName =
+    splittedPolygonId.length === 2 ? `${(detectionResultLabelName as any)[splittedPolygonId[1]]} ${Alphabet[index]}` : `Polygone ${Alphabet[index]}`;
   return labelName;
 };
 
 export const createDefaultAnnotationInfo = (polygon: Polygon, index: number): AnnotationInfo => {
-  return { ...DEFAULT_ANNOTATION_INFO, polygonId: polygon.id || '', labelName: getLabelName(polygon, index), fillColor: polygon.fillColor || '' };
+  return {
+    ...DEFAULT_ANNOTATION_INFO,
+    polygonId: polygon.id || '',
+    labelName: getLabelName(polygon, index),
+    fillColor: polygon.fillColor || '',
+    area: polygon.surface,
+  };
 };
 
 export const getSynchronizedAnnotationInfos = (
