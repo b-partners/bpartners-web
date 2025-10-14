@@ -26,7 +26,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const { polygons, slopeInfoOpen, handleSlopeInfoToggle, fieldArrayState } = useCanvasAnnotationContext();
   const formState = useFormContext();
   const { startLoading, stopLoading } = useLoadingHandler();
-  const { slopeAndHeightState } = useAnnotatorComponentStore();
+  const { slopeAndHeightState, areaPictureDetails } = useAnnotatorComponentStore();
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -63,7 +63,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
               <FormProvider {...formState}>
                 {fieldArrayState.fields.map((annotationInfo: any, i: number) =>
                   annotationInfo.polygonId.includes('___') ? (
-                    <AnnotatorFormResultItem annotationInfo={annotationInfo} />
+                    <AnnotatorFormResultItem index={i} annotationInfo={annotationInfo} areaPictureDetails={areaPictureDetails} />
                   ) : (
                     <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
                   )

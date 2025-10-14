@@ -4,7 +4,6 @@ import { useRecordContext } from 'react-admin';
 export const TrialCard = () => {
   const record = useRecordContext();
   const subscription = record?.user?.subscription;
-  console.log(record);
 
   return (
     <Card className='card card-trial'>
