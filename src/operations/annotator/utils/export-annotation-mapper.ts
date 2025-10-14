@@ -30,7 +30,7 @@ export const exportAnnotationMapper = ({
     globalRateValue,
     llm: getCached.llmResult(),
     annotations: polygons.map((polygon, index) => {
-      const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon.id, index);
+      const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon, index);
 
       return {
         polygon,
