@@ -32,13 +32,18 @@ export const exportAnnotationMapper = ({
     annotations: polygons.map((polygon, index) => {
       const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon, index);
 
+      const annotatorLabelSplitted = polygon.id.split('___');
+
       return {
         polygon,
         labelName: annotationInfo?.labelName,
         fillColor: polygon?.fillColor,
         strokeColor: polygon?.strokeColor,
-        measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper),
-        infos: translateAnnotationInfo({ ...emptyToNull(annotationInfo), area: polygon.surface }),
+        measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
+        infos: [
+          ...translateAnnotationInfo({ ...emptyToNull(annotationInfo), area: polygon.surface }),
+          { label: 'key', value: annotatorLabelSplitted.length === 2 ? annotatorLabelSplitted[1] : annotationInfo.labelName },
+        ],
       };
     }),
   };

@@ -2,11 +2,14 @@ import { exportAnnotationMapper, ExportAnnotationMapperArgs } from '@/operations
 import { areaPictureApi, getCached } from '@/providers';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
+import { downloadPdf } from '../utils';
 
 const mutationFn = async (params: ExportAnnotationMapperArgs) => {
   const { accountId } = getCached.userInfo();
   const exportAreaPictureAnnotation = exportAnnotationMapper(params);
-  await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exportAreaPictureAnnotation, { responseType: 'blob' });
+  const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exportAreaPictureAnnotation);
+  const { value } = data;
+  downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
 };
 
 interface Params {

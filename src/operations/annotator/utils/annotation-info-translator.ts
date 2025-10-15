@@ -15,16 +15,22 @@ const formatInfo = <T extends object = any, K extends keyof T = any>({ label, tr
 };
 
 export const translateAnnotationInfo = (info: AnnotationInfo & { area: number }): { label: string; value: string }[] => {
-  return [
-    formatInfo({ label: 'Type', value: info?.labelType, translator: ANNOTATION_LABELS_TRANSLATION }),
-    formatInfo({ label: 'Surface', value: info?.area, unit: 'm²' }),
-    formatInfo({ label: 'Revêtement', value: info?.covering, translator: coveringTypeMap }),
-    formatInfo({ label: 'Pente', value: info?.slope, unit: '/12' }),
-    formatInfo({ label: 'Usure', value: info?.wear, translator: ANNOTATION_WEAR_TRANSLATION }),
-    formatInfo({ label: "Taux d'usure", value: info?.wearLevel }),
-    formatInfo({ label: 'Taux de moisissure', value: info?.moldRate }),
-    formatInfo({ label: "Taux d'humidité", value: info?.humidityLevel }),
-    formatInfo({ label: 'Obstacle', value: info?.obstacle }),
-    formatInfo({ label: 'Commentaire', value: info?.comment }),
-  ];
+  const isAnalyseResult = info.polygonId.includes('___');
+
+  const result = [formatInfo({ label: 'Surface', value: info?.area, unit: 'm²' })];
+
+  if (!isAnalyseResult) {
+    result.push(
+      formatInfo({ label: 'Type', value: info?.labelType, translator: ANNOTATION_LABELS_TRANSLATION }),
+      formatInfo({ label: 'Revêtement', value: info?.covering, translator: coveringTypeMap }),
+      formatInfo({ label: 'Pente', value: info?.slope, unit: '/12' }),
+      formatInfo({ label: 'Usure', value: info?.wear, translator: ANNOTATION_WEAR_TRANSLATION }),
+      formatInfo({ label: "Taux d'usure", value: info?.wearLevel }),
+      formatInfo({ label: 'Taux de moisissure', value: info?.moldRate }),
+      formatInfo({ label: "Taux d'humidité", value: info?.humidityLevel }),
+      formatInfo({ label: 'Obstacle', value: info?.obstacle }),
+      formatInfo({ label: 'Commentaire', value: info?.comment })
+    );
+  }
+  return result;
 };
