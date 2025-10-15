@@ -22,7 +22,9 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, 
   const { isLoading, data: area } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
-    onSuccess: area => setValue(`annotationInfos.${index}.area`, area),
+    onSuccess: area => {
+      setValue(`annotationInfos.${index}.area`, area);
+    },
   });
 
   const togglePolygonVisibility = (polygonId: string) => {

@@ -4,7 +4,7 @@ import { useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
 
@@ -15,15 +15,13 @@ export interface ExportAnnotationConfirmButtonProps {
   isCropped: boolean;
 }
 
-export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped }) => {
+export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, formState }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
-  const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
   const { polygons } = useCanvasAnnotationContext();
   const { roofAnalyseProperties } = useCanvasAnnotationContext();
 
   const exportPdfOnSuccess = () => {
-    setAnnotationInfos([]);
     closeConfirm();
   };
 
@@ -31,7 +29,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     exportAsPdf({
-      annotationInfos,
+      annotationInfos: formState.getValues('annotationInfos'),
       polygons,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
@@ -45,7 +43,6 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const isLoading = exportAsPdfPending || uploadIsPending;
 
   const handleCloseConfirm = () => {
-    setAnnotationInfos([]);
     closeConfirm();
     if (isCropped) {
       return uploadImage({ file: image, id: areaPictureDetails.fileId });
