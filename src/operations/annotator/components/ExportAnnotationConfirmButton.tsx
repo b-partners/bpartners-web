@@ -4,10 +4,7 @@ import { useToggle } from '@/common/hooks';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { Download } from '@mui/icons-material';
-import { Alert, Box } from '@mui/material';
-import { FC, useState } from 'react';
-import { Confirm, ConfirmProps } from 'react-admin';
+import { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
 
@@ -18,15 +15,13 @@ export interface ExportAnnotationConfirmButtonProps {
   isCropped: boolean;
 }
 
-export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ formState, areaPictureDetails, image, isCropped }) => {
+export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, formState }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
-  const { value: confirmStatus, handleOpen: openConfirm, handleClose: closeConfirm } = useToggle();
-  const [annotationInfos, setAnnotationInfos] = useState<AnnotationInfo[]>([]);
+  const { handleClose: closeConfirm } = useToggle();
   const { polygons } = useCanvasAnnotationContext();
   const { roofAnalyseProperties } = useCanvasAnnotationContext();
 
   const exportPdfOnSuccess = () => {
-    setAnnotationInfos([]);
     closeConfirm();
   };
 
@@ -34,7 +29,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     exportAsPdf({
-      annotationInfos,
+      annotationInfos: formState.getValues('annotationInfos'),
       polygons,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
@@ -47,13 +42,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const isLoading = exportAsPdfPending || uploadIsPending;
 
-  const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
-    setAnnotationInfos(annotationInfos);
-    openConfirm();
-  });
-
   const handleCloseConfirm = () => {
-    setAnnotationInfos([]);
     closeConfirm();
     if (isCropped) {
       return uploadImage({ file: image, id: areaPictureDetails.fileId });
@@ -70,28 +59,11 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       <BPButton
         type='submit'
         className='export-analyse-btn'
-        onClick={handleSubmitForms}
+        onClick={doAnnotationExport}
         isLoading={isLoading}
         disabled={isLoading || polygons.length === 0}
         label='resources.draftsAnnotations.export'
         data-testid='submit-annotation-export'
-      />
-      <Confirm
-        isOpen={confirmStatus}
-        onClose={handleCloseConfirm}
-        onConfirm={doAnnotationExport}
-        confirm='Exporter'
-        confirmColor={'white' as ConfirmProps['confirmColor']}
-        ConfirmIcon={Download}
-        title="Exportation de l'analyse"
-        content={
-          <Box>
-            <Alert severity='warning'>Les mesures de l'annotation doivent être visibles avant de pouvoir exporter l'analyse.</Alert>
-            <Alert sx={{ mt: 1 }} severity='info'>
-              Dès que la soumission est complétée, vous recevrez le rapport par email.
-            </Alert>
-          </Box>
-        }
       />
     </>
   );

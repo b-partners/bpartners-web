@@ -11,7 +11,7 @@ import { useNotify, useRedirect } from 'react-admin';
 import { FormProvider, useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { AnnotationSlopeHeightAlert, AnnotatorFormItem } from './components';
+import { AnnotationSlopeHeightAlert, AnnotatorFormItem, AnnotatorFormResultItem } from './components';
 import { AnnotationInfo } from './types';
 
 export type SideBarProps = {
@@ -26,7 +26,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const { polygons, slopeInfoOpen, handleSlopeInfoToggle, fieldArrayState } = useCanvasAnnotationContext();
   const formState = useFormContext();
   const { startLoading, stopLoading } = useLoadingHandler();
-  const { slopeAndHeightState } = useAnnotatorComponentStore();
+  const { slopeAndHeightState, areaPictureDetails } = useAnnotatorComponentStore();
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -61,9 +61,13 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
           {fieldArrayState.fields.length > 0 ? (
             <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
               <FormProvider {...formState}>
-                {fieldArrayState.fields.map((annotationInfo: any, i: number) => (
-                  <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
-                ))}
+                {fieldArrayState.fields.map((annotationInfo: any, i: number) =>
+                  annotationInfo.polygonId.includes('___') ? (
+                    <AnnotatorFormResultItem index={i} annotationInfo={annotationInfo} areaPictureDetails={areaPictureDetails} key={annotationInfo.id + i} />
+                  ) : (
+                    <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
+                  )
+                )}
               </FormProvider>
             </form>
           ) : (

@@ -18,6 +18,7 @@ export interface AnnotationInfo {
   labelName?: string;
   humidityLevel?: number;
   height?: number;
+  area?: number;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;

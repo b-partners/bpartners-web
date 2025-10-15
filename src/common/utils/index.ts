@@ -3,6 +3,7 @@ export * from './cookies';
 export * from './createRedirectionUrl';
 export * from './data-converter';
 export * from './date';
+export * from './download-pdf';
 export * from './empty-to-null';
 export * from './file';
 export * from './get-current-account';

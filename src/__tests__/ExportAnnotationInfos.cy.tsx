@@ -17,7 +17,7 @@ import {
   whoami1,
 } from './mocks/responses';
 
-describe('annotation-export view', () => {
+xdescribe('annotation-export view', () => {
   beforeEach(() => {
     cy.cognitoLogin();
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');

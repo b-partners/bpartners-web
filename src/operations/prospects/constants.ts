@@ -21,3 +21,19 @@ export const detectionResultColors = {
   CHEMINEE: '#ffffff',
   VELUX: '#ffffff',
 };
+
+export const detectionResultLabelName = {
+  MOISISSURE_COULEUR: 'Moisissure Couleur',
+  MOISISSURE_CLAIR: 'Moisissure Clair',
+  MOISISSURE_NOIRCIE: 'Moisissure Noircie',
+  MOISISSURE: 'Moisissure',
+  HUMIDITE_CLAIR: 'Humidite Clair',
+  HUMIDITE_INTENSE: 'Humidite Intense',
+  HUMIDITE: 'Humidite',
+  USURE_LEGER: 'Usure Leger',
+  USURE_IMPORTANTE: 'Usure Importante',
+  USURE: 'Usure',
+  OBSTACLE: 'Obstacle',
+  CHEMINEE: 'Cheminee',
+  VELUX: 'Velux',
+};

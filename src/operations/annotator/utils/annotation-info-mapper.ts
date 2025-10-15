@@ -1,11 +1,12 @@
 import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
+import { detectionResultLabelName } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
 
 const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
-  labelType: '' as AnnotationInfo['labelType'],
+  labelType: 'roof' as AnnotationInfo['labelType'],
   covering: '' as AnnotationInfo['covering'],
   slope: 0,
   wearLevel: 0,
@@ -18,8 +19,21 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
   strokeColor: '',
 };
 
-export const createDefaultAnnotationInfo = (polygonId: string, index: number): AnnotationInfo => {
-  return { ...DEFAULT_ANNOTATION_INFO, polygonId, labelName: `Polygone ${Alphabet[index]}` };
+const getLabelName = (polygon: Polygon, index: number) => {
+  const splittedPolygonId = polygon.id.split('___');
+  const labelName =
+    splittedPolygonId.length === 2 ? `${(detectionResultLabelName as any)[splittedPolygonId[1]]} ${Alphabet[index]}` : `Polygone ${Alphabet[index]}`;
+  return labelName;
+};
+
+export const createDefaultAnnotationInfo = (polygon: Polygon, index: number): AnnotationInfo => {
+  return {
+    ...DEFAULT_ANNOTATION_INFO,
+    polygonId: polygon.id || '',
+    labelName: getLabelName(polygon, index),
+    fillColor: polygon.fillColor || '',
+    area: polygon.surface,
+  };
 };
 
 export const getSynchronizedAnnotationInfos = (
@@ -30,7 +44,7 @@ export const getSynchronizedAnnotationInfos = (
   return polygons.map((polygon, index) => {
     if (polygon.id === 'roof-polygon') return roofAnnotationInfo;
     const annotationInfo = annotationInfos.find(annotationInfo => annotationInfo.polygonId === polygon.id);
-    return annotationInfo ?? createDefaultAnnotationInfo(polygon.id, index);
+    return annotationInfo ?? createDefaultAnnotationInfo(polygon, index);
   });
 };
 
