@@ -1,6 +1,6 @@
 import { emptyToNull } from '@/common/utils';
 import { getCached } from '@/providers';
-import { Measurement, Polygon } from '@bpartners/annotator-component';
+import { getColorFromMain, Measurement, Polygon } from '@bpartners/annotator-component';
 import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationMeasurement } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
 import { createDefaultAnnotationInfo } from './annotation-info-mapper';
@@ -34,11 +34,13 @@ export const exportAnnotationMapper = ({
 
       const annotatorLabelSplitted = polygon.id.split('___');
 
+      const { fillColor, strokeColor } = getColorFromMain('#00ff00');
+
       return {
         polygon,
         labelName: annotationInfo?.labelName,
-        fillColor: polygon?.fillColor,
-        strokeColor: polygon?.strokeColor,
+        fillColor: polygon?.fillColor?.length !== 0 ? polygon?.fillColor : fillColor,
+        strokeColor: polygon?.strokeColor?.length !== 0 ? polygon?.strokeColor : strokeColor,
         measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
         infos: [
           ...translateAnnotationInfo({ ...emptyToNull(annotationInfo), area: polygon.surface }),
