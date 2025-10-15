@@ -156,6 +156,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                   }
                 }
                 zoom={newZoomLevelAsNumber}
+                closeOnNear
               />
             </Box>
           )}
