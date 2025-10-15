@@ -1,8 +1,8 @@
 import { FlexBox } from '@/common/components';
 import { useCanvasAnnotationContext } from '@/common/store';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Tooltip } from '@mui/material';
-import { FC, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Tooltip, Typography } from '@mui/material';
+import React, { FC, useState } from 'react';
 import { TextInput } from 'react-admin';
 import { FieldArrayWithId, useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
@@ -14,10 +14,10 @@ interface Props {
   index: number;
 }
 
-export const AnnotatorFormItem: FC<Props> = ({ annotationInfo, index }) => {
+export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index }) => {
   const { polygons, setPolygons } = useCanvasAnnotationContext();
   const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(index === 0);
   const formState = useFormContext();
 
   const handleClickAccordion = () => setIsExpanded(!isExpanded);
@@ -48,6 +48,11 @@ export const AnnotatorFormItem: FC<Props> = ({ annotationInfo, index }) => {
           </IconButton>
         </Tooltip>
       </FlexBox>
+      {annotationInfo.area && (
+        <Typography>
+          Surface: <strong>{annotationInfo.area}m²</strong>
+        </Typography>
+      )}
       <Accordion style={{ marginTop: '-15px', marginBottom: '50px' }} expanded={isExpanded} onChange={handleClickAccordion}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <TextInput
@@ -66,4 +71,4 @@ export const AnnotatorFormItem: FC<Props> = ({ annotationInfo, index }) => {
       <Divider />
     </Box>
   );
-};
+});

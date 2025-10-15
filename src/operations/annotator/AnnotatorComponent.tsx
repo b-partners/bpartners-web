@@ -41,7 +41,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   draftAnnotationId,
   isInvoiceForm,
 }) => {
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails } = useAnnotatorComponentStore();
 
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
 
@@ -54,6 +54,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   // Get the Area picture details to use
   const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+
+  useEffect(() => {
+    setAreaPictureDetails(currentAreaPictureDetailsToUse);
+  }, [JSON.stringify(currentAreaPictureDetailsToUse)]);
+
   const { filename, isExtended, shiftNb, zoom, actualLayer: layer, otherLayers } = currentAreaPictureDetailsToUse;
   const { level: newZoomLevel, number: newZoomLevelAsNumber } = zoom;
   // Get the Area picture details to use
@@ -151,6 +156,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                   }
                 }
                 zoom={newZoomLevelAsNumber}
+                closeOnNear
               />
             </Box>
           )}

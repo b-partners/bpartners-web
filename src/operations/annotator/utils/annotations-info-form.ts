@@ -3,7 +3,7 @@ import { RoofAnalyseProperties, useAnnotatorComponentStore } from '@/common/stor
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
 import { cache } from '@/providers';
-import { Polygon } from '@bpartners/annotator-component';
+import { getColorFromMain, Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
@@ -27,6 +27,7 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     covering2: revetement_2,
     slope,
     height,
+    ...getColorFromMain('#00ff00'),
   };
   return roofAnalysePropertiesInfos;
 };
@@ -37,7 +38,7 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
     control: formState.control,
     name: 'annotationInfos',
   });
-  const { setRoofSlope, slopeAndHeightState } = useAnnotatorComponentStore();
+  const { setRoofSlope, slopeAndHeightState, setThereIsRoofPolygon } = useAnnotatorComponentStore();
 
   const { data } = useQuerySlopeAndHeight(({ height, slope }) => {
     formState.setValue('annotationInfos.0.slope', slope);
@@ -62,6 +63,7 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
         )
       );
       fieldArrayState.replace(synchronizedAnnotationInfos);
+      if (synchronizedAnnotationInfos.length === 1 && synchronizedAnnotationInfos?.[0]?.labelType === 'roof') setThereIsRoofPolygon(true);
     }
   }, [stringifyObj(annotationInfos), polygons.length, data, slopeAndHeightState]);
 

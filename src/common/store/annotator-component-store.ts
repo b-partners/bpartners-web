@@ -1,3 +1,4 @@
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { create } from 'zustand';
 import { SlopeAndHeightState } from '../fetcher';
 
@@ -15,6 +16,7 @@ interface Action {
   setSlopeAndHeightState: (value: SlopeAndHeightState) => void;
   setLlm: (value: string) => void;
   setGlobalRate: (value: number, type: string) => void;
+  setAreaPictureDetails: (areaPictureDetails: AreaPictureDetails) => void;
   reset(): void;
 }
 
@@ -26,6 +28,7 @@ interface State {
   slopeAndHeightState: SlopeAndHeightState | null;
   shouldGetHeightState: boolean;
   isSlopeAndHeightPending: boolean;
+  areaPictureDetails: AreaPictureDetails;
   llm: string | null;
   globalRate: {
     type: string;
@@ -38,6 +41,7 @@ const defaultState: any = {
   imageUrl: null,
   geoJsonResultUrl: null,
   roofSlope: null,
+  areaPictureDetails: null,
   slopeAndHeightState: null,
   shouldGetHeightState: false,
   isSlopeAndHeightPending: false,
@@ -56,4 +60,5 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   reset: () => set(defaultState),
   setGlobalRate: (value, type) => set({ globalRate: { type, value } }),
   setRoofSlope: roofSlope => set({ roofSlope }),
+  setAreaPictureDetails: areaPictureDetails => set({ areaPictureDetails }),
 }));

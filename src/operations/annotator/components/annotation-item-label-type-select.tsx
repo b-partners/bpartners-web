@@ -14,7 +14,7 @@ export const AnnotationItemLabelTypeSelect: FC<Props> = ({ index, formState }) =
 
   const onChange: SelectInputProps['onChange'] = event => {
     formState.setValue(`annotationInfos.${index}.labelType`, event.target.value as any);
-    if (formState.watch().annotationInfos.length !== 1) return;
+    if (formState.watch('annotationInfos').length !== 1) return;
     if (event.target.value === 'roof') setThereIsRoofPolygon(true);
     else setThereIsRoofPolygon(false);
   };

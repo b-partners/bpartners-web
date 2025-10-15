@@ -3,6 +3,7 @@ export * from './annotation-item-label-type-select';
 export * from './annotation-slope-height-alert';
 export * from './AnnotationInfoShow';
 export * from './annotator-form-item';
+export * from './annotator-form-result-item';
 export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
 export * from './ExportAnnotationConfirmButton';

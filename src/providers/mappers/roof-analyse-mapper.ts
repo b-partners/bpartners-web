@@ -65,7 +65,7 @@ export const detectionResultMapper = {
       const points: DomainPolygonResultType['points'] = all_points_x.map((x, yIndex) => ({ x, y: all_points_y[yIndex] }));
 
       const polygon: DomainPolygonResultType = {
-        id: v4(),
+        id: `${v4()}___${label}`,
         label,
         points,
         ...getColorFromMain(detectionResultColors[label]),
