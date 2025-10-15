@@ -7,7 +7,7 @@ import { SelectInput, TextInput } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
-  <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1 }} />
+  <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
