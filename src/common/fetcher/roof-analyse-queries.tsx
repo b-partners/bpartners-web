@@ -56,6 +56,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       setShouldGetHeightState(false);
       let errorMessage = 'La détection sur cette zone a échoué, veuillez réessayer';
       if (e.message === 'polygonTooBig') errorMessage = 'La délimitation que vous avez faite est trop grande et ne peut pas encore être prise en charge.';
+      if (e.message === 'detectionLimitExceeded') errorMessage = 'La limite des analyses gratuites a été atteinte.';
       openDialog(<ErrorMessageDialog message={errorMessage} />);
     },
     onSuccess,
