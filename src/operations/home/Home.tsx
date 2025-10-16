@@ -35,7 +35,7 @@ const AddressInput = () => {
         </Box>
       </FormProvider>
       <ProspectDialogProvider
-        address={form.getValues('address')}
+        address={form.watch('address')}
         ComponentChild={({ saveOrUpdateProspectSubmit }: Pick<CreateProspectDialogProps, 'saveOrUpdateProspectSubmit'>) => (
           <CreateProspectDialog saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
         )}
