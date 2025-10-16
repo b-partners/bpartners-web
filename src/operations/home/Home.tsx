@@ -47,6 +47,7 @@ const AddressInput = () => {
 export const Home = () => {
   const { data: prospectsList = [], isLoading } = useGetList('prospects', {
     pagination: { page: 1, perPage: 6 },
+    filter: { status: 'TO_CONTACT' },
   });
 
   return (
