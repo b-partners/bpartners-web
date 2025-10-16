@@ -1,40 +1,41 @@
-import { BPButton } from '@/common/components';
+import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { Add } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
-import { Box, CircularProgress, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { Box, CircularProgress, Divider, Grid, IconButton, Typography } from '@mui/material';
 import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
-import { BaseSyntheticEvent, FC, useState } from 'react';
+import { annotatorProvider } from '@/providers';
+import { BaseSyntheticEvent, FC } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ProspectFormDialog } from '../prospects/components';
 import { ProspectDialogProvider } from '../prospects/ProspectsList';
 import { HomeStyle } from './style';
 
-// ... imports identiques
-
 const AddressInput = () => {
-  const [address, setAddress] = useState('');
+  const form = useForm();
   return (
     <Box className='address-box'>
-      <TextField
-        fullWidth
-        variant='outlined'
-        data-cy='add-address'
-        label={
-          <>
-            <PublicIcon sx={{ verticalAlign: 'middle', mr: 1 }} />
-            adresse :
-          </>
-        }
-        className='address-field'
-        value={address}
-        onChange={e => setAddress(e.target.value)}
-      />
+      <FormProvider {...form}>
+        <Box flexGrow={1}>
+          <BpAutoCompleteBackend
+            name='address'
+            label='Adresse'
+            fetcher={annotatorProvider.searchAddress}
+            textFieldProps={{
+              variant: 'outlined',
+              InputProps: { startAdornment: <PublicIcon /> },
+              ['data-cy' as any]: 'add-address',
+            }}
+            fullWidth
+          />
+        </Box>
+      </FormProvider>
       <ProspectDialogProvider
-        address={address}
+        address={form.getValues('address')}
         ComponentChild={({ saveOrUpdateProspectSubmit }: Pick<CreateProspectDialogProps, 'saveOrUpdateProspectSubmit'>) => (
           <CreateProspectDialog saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
         )}
@@ -46,6 +47,7 @@ const AddressInput = () => {
 export const Home = () => {
   const { data: prospectsList = [], isLoading } = useGetList('prospects', {
     pagination: { page: 1, perPage: 6 },
+    filter: { status: 'TO_CONTACT' },
   });
 
   return (

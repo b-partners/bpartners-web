@@ -36,7 +36,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
   const annotatorComponentStore = useAnnotatorComponentStore();
-  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAnnordionItem } = useAnnotatorComponentFormItemStore();
+  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
 
   useEffect(() => {
     form.setValue('address', address);
@@ -77,24 +77,28 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
 
           annotatorComponentStore.reset();
-          setAnnotatorSidebarAnnordionItem(0);
+          setAnnotatorSidebarAccordionItem(0);
           clearPolygons();
           navigate(
             `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
           );
           return;
         } catch (err) {
-          const isPrecisionError = err.message === 'precisionLevelInCm';
-          toggleDialog();
+          let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
+
+          const notSupportedPattern = /Address or zone [\s\S]* not yet supported/i;
+          const temporarilyUnavailablePattern = /Address or zone [\s\S]* temporarily unavailable/i;
+
+          if (err.message === 'precisionLevelInCm' || temporarilyUnavailablePattern.test(err.message)) errorMessage = 'Adresse momentanément indisponible.';
+          if (notSupportedPattern.test(err.message)) errorMessage = "La zone contenant cette adresse n'est pas encore supporté.";
+          if (err.message.includes('Roof analysis consumption ') && err.message.includes(' limit exceeded for free trial period for User.id='))
+            errorMessage = 'La limite des analyses gratuites a été atteinte.';
+          
           openDialog(
             <>
-              <DialogTitle>{isPrecisionError ? 'Image à précision de 5 cm indisponible.' : 'Adresse introuvable.'}</DialogTitle>
+              <DialogTitle>Erreur</DialogTitle>
               <DialogContent>
-                <DialogContentText>
-                  Adresse momentanément indisponible.
-                  {isPrecisionError && 'Aucune image avec une précision de 5 cm n’est encore disponible.'}
-                  Veuillez réessayer ultérieurement.
-                </DialogContentText>
+                <DialogContentText>{errorMessage}</DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button onClick={closeDialog}>Fermer</Button>
