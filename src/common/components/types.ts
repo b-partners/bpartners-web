@@ -8,7 +8,7 @@ export interface BpAutoCompleteProps extends Omit<AutocompleteProps<any, any, an
 
 export interface BpAutoCompleteBackendProps<T> extends Omit<BpAutoCompleteProps, 'options'> {
   fetcher: (value: string) => Promise<T[]>;
-  textFieldProps?: TextFieldProps['inputProps'];
+  textFieldProps?: TextFieldProps;
 }
 
 export interface BpFormFieldProps extends Omit<TextFieldProps, 'style'> {

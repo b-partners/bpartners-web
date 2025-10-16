@@ -14,12 +14,12 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
   const value = useWatch({ name });
   const [textFieldValue, setTextFieldValue] = useState(value);
 
-  const deboucendMutateFn = useMemo(() => debounce(mutate, 1000), [mutate]);
+  const debouncedMutateFn = useMemo(() => debounce(mutate, 1000), [mutate]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const currentAddressQueryValue = e.target.value;
     setTextFieldValue(currentAddressQueryValue);
-    currentAddressQueryValue.length > 0 && deboucendMutateFn(currentAddressQueryValue);
+    currentAddressQueryValue.length > 0 && debouncedMutateFn(currentAddressQueryValue);
   };
 
   const handleChange = (_event: SyntheticEvent, value: any) => {
@@ -49,7 +49,7 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
             {...({ ...params, ...textFieldProps } as TextFieldProps)}
             label={label}
             InputProps={{
-              ...params.InputProps,
+              ...{ ...params.InputProps, ...textFieldProps.InputProps },
               endAdornment: isPending ? (
                 <IconButton size='small' sx={{ position: 'absolute', right: 2, top: '50%', transform: 'translateY(-50%)' }}>
                   <CircularProgress size={25} />,
@@ -57,9 +57,6 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
               ) : (
                 params.InputProps.endAdornment
               ),
-            }}
-            inputProps={{
-              ...params.inputProps,
             }}
             error={errors && !!errors[name]}
             value={textFieldValue}

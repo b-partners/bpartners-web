@@ -30,7 +30,7 @@ export const HomeStyle: SxProps = {
   },
   '& .address-box': {
     display: 'flex',
-    mt: -0.3,
+    mb: 1.5,
   },
   '& .address-field': {
     mb: 2,
