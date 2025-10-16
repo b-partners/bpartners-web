@@ -1,7 +1,7 @@
 import { Autocomplete, CircularProgress, debounce, FormHelperText, IconButton, TextField, TextFieldProps } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { ChangeEvent, SyntheticEvent, useMemo, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { ChangeEvent, SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { BpAutoCompleteBackendProps } from './types';
 
 export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textFieldProps, ...others }: BpAutoCompleteBackendProps<T>) {
@@ -9,10 +9,16 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     register,
     formState: { errors },
     setValue,
+    watch,
   } = useFormContext();
   const { mutate, data = [], isPending } = useMutation({ mutationFn: fetcher, mutationKey: [name, label] });
-  const value = useWatch({ name });
+  const value = watch(name);
+
   const [textFieldValue, setTextFieldValue] = useState(value);
+
+  useEffect(() => {
+    setTextFieldValue(value);
+  }, [value, setTextFieldValue]);
 
   const debouncedMutateFn = useMemo(() => debounce(mutate, 1000), [mutate]);
 
@@ -22,14 +28,15 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     currentAddressQueryValue.length > 0 && debouncedMutateFn(currentAddressQueryValue);
   };
 
-  const handleChange = (_event: SyntheticEvent, value: any) => {
-    setValue(name, value);
-  };
   const { onBlur, ref } = register(name);
   const error = errors[name];
 
+  const handleChange = (_event: SyntheticEvent, value: any) => {
+    setValue(name, value);
+  };
+
   const customOnBlur: typeof onBlur = event => {
-    setValue(name, textFieldValue);
+    if (textFieldValue !== value) setValue(name, textFieldValue);
     return onBlur(event);
   };
 
@@ -37,9 +44,7 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     <div>
       <Autocomplete
         {...others}
-        ref={ref}
         value={value}
-        onBlur={customOnBlur}
         onChange={handleChange}
         data-testid={`${name}-auto-complete`}
         freeSolo
@@ -61,6 +66,8 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
             error={errors && !!errors[name]}
             value={textFieldValue}
             onChange={handleInputChange}
+            ref={ref}
+            onBlur={customOnBlur}
           />
         )}
         options={isPending ? [] : data}
