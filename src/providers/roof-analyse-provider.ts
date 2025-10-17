@@ -94,7 +94,7 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
     throw error;
   };
 
-  if (data.status !== 200 && data.status !== 400 && data.status !== 501) throwRooferError();
+  if (data.status !== 200 && data.status !== 400 && data.status !== 501 && data.status !== 403) throwRooferError();
 
   const result = await data.json();
 
