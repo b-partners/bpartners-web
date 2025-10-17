@@ -106,6 +106,7 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
     throw new Error('detectionLimitExceeded');
   }
 
+  if (data.status === 403 && result?.message?.includes('Some given feature is not allowed for your community.name')) throw new Error('featureNotAllowed');
   if (result?.message?.includes('Provided geojson polygon is too large to be processed synchronously')) throw new Error('polygonTooBig');
   if (data.status !== 200) throwRooferError();
 
