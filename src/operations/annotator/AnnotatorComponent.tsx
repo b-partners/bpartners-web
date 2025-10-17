@@ -194,7 +194,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
-          <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={areaPictureDetailsQueried || areaPictureDetailsMutated} polygons={polygons} />
+          <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />
         </Stack>
       )}
       {!isInvoiceForm && (
