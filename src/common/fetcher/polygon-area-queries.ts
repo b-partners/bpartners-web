@@ -31,5 +31,5 @@ export const usePolygonAreaQuery = (params: Params) => {
     return area;
   };
 
-  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon.id] });
+  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id] });
 };
