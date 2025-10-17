@@ -33,7 +33,7 @@ const InvoicePdfDocument = ({ selectedInvoice, onClose, url, children = null }) 
         title={selectedInvoice.title}
         subheader={selectedInvoice.ref}
       />
-      <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+      <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', minHeight: '120vh' }}>
         {children}
         <PdfViewer width={PDF_WIDTH} url={url} filename={selectedInvoice.ref} />
       </CardContent>

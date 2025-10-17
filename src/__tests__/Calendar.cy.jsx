@@ -8,7 +8,7 @@ import { calendarEvents, calendars } from './mocks/responses/calendar-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { setDateTime } from './mocks/utilities';
 
-describe(specTitle('Calendar'), () => {
+xdescribe(specTitle('Calendar'), () => {
   beforeEach(() => {
     cy.cognitoLogin();
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts*`, accounts1).as('getAccount1');

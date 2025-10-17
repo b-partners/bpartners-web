@@ -101,7 +101,7 @@ export const authProvider = {
 
     const unapprovedFiles = getCached.unapprovedFiles();
 
-    if (((url as string).includes('calendars') || url.includes('events')) && status === 403) {
+    if (((url as string)?.includes('calendars') || url?.includes('events')) && status === 403) {
       return Promise.resolve();
     }
 

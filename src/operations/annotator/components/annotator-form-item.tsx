@@ -48,7 +48,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index 
           </IconButton>
         </Tooltip>
       </FlexBox>
-      {annotationInfo.area && (
+      {annotationInfo.area && index !== 0 && (
         <Typography>
           Surface: <strong>{annotationInfo.area}m²</strong>
         </Typography>
