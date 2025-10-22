@@ -53,12 +53,11 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             slope: annotations?.annotations?.[0]?.metadata?.slope,
             slopeStatus: 'AVAILABLE',
           });
-          
+
           const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id === roofGlobalId);
           if (roofAnnotation) areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => a.id !== roofGlobalId)];
-          
-          const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
 
+          const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
 
           setRetrievedPolygon({
             polygons,

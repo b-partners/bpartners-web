@@ -68,7 +68,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { useDrafts } = parseUrlParams();
 
   useEffect(() => {
-    useDrafts !== 'true' && setPolygons([]);
+    useDrafts !== 'true' && setPolygons(p => (p.length < 2 ? [] : p));
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
     if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) setPolygons(currentPolygons || []);
