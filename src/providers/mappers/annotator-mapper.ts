@@ -1,7 +1,6 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureAnnotationInstance, Wearness } from '@bpartners/typescript-client';
-import { v4 as uuidV4 } from 'uuid';
 import { getCached } from '../cache';
 
 export const annotatorMapper = (
@@ -40,7 +39,7 @@ export const annotationsAttributeMapper = (
     const wearness = (wear as Wearness | '') === '' ? null : wear;
 
     return {
-      id: uuidV4(),
+      id: polygon.id,
       userId,
       labelName,
       labelType,
