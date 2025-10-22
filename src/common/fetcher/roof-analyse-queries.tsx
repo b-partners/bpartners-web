@@ -8,7 +8,8 @@ import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
-  const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address);
+  const mutationFn = async () =>
+    await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address, undefined, undefined, areaPictureDetails?.zoom?.number);
   return useMutation({ mutationFn, mutationKey: [address, areaPictureDetails] });
 };
 
@@ -47,7 +48,13 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
     });
 
     setShouldGetHeightState(true);
-    return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
+    return await initializeRoofAnalyse(
+      areaPictureDetails.actualLayer?.name ?? '',
+      `${areaPictureDetails.address}`,
+      [mappedCoordinates],
+      true,
+      areaPictureDetails?.zoom?.number
+    );
   };
 
   const mutation = useMutation({
