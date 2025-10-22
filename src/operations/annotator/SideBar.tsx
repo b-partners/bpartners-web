@@ -62,7 +62,7 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
             <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
               <FormProvider {...formState}>
                 {fieldArrayState.fields.map((annotationInfo: any, i: number) =>
-                  annotationInfo.polygonId.includes('___') ? (
+                  annotationInfo?.polygonId?.includes('___') ? (
                     <AnnotatorFormResultItem index={i} annotationInfo={annotationInfo} areaPictureDetails={areaPictureDetails} key={annotationInfo.id + i} />
                   ) : (
                     <AnnotatorFormItem annotationInfo={annotationInfo} index={i} key={annotationInfo.id + i} />
