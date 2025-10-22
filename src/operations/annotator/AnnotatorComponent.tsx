@@ -3,7 +3,7 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
-import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
@@ -65,9 +65,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { toggleValue: toggleLLMResultView, value: showLLMResult } = useToggle(false);
+  const { useDrafts } = parseUrlParams();
 
   useEffect(() => {
-    setPolygons([]);
+    useDrafts !== 'true' && setPolygons([]);
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
     if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) setPolygons(currentPolygons || []);
