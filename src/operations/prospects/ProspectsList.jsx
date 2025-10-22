@@ -93,7 +93,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           if (notSupportedPattern.test(err.message)) errorMessage = "La zone contenant cette adresse n'est pas encore supporté.";
           if (err.message.includes('Roof analysis consumption ') && err.message.includes(' limit exceeded for free trial period for User.id='))
             errorMessage = 'La limite des analyses gratuites a été atteinte.';
-          
+
           openDialog(
             <>
               <DialogTitle>Erreur</DialogTitle>
@@ -191,5 +191,11 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   );
 };
 
-const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
+const ProspectsList = () => {
+  useEffect(() => {
+    clearPolygons();
+  }, []);
+
+  return <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
+};
 export default ProspectsList;

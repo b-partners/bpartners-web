@@ -4,18 +4,24 @@ import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
 
+const roofGlobalId = 'roof-polygon';
 export type RetrievedPolygonsType = {
   annotations: AreaPictureAnnotation;
   polygons: Polygon[];
 };
 
 const getPolygonsFromAreaPictureAnnotation = (areaPictureAnnotation: AreaPictureAnnotation): Polygon[] => {
-  return areaPictureAnnotation.annotations.map(annotation => ({
+  const result = areaPictureAnnotation.annotations.map(annotation => ({
     id: annotation.id,
     fillColor: annotation.metadata?.fillColor || '#00ff0040',
     strokeColor: annotation.metadata?.strokeColor || '#00ff00',
     points: annotation.polygon?.points,
   }));
+
+  const roof = result.find(p => p.id === roofGlobalId);
+  if (roof) return [roof, ...result.filter(p => p.id !== roofGlobalId)];
+
+  return result;
 };
 
 export type AreaPictureAnnotationFetcherType = (pictureId: string) => Promise<AreaPictureAnnotation[]>;
@@ -47,7 +53,12 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             slope: annotations?.annotations?.[0]?.metadata?.slope,
             slopeStatus: 'AVAILABLE',
           });
+
+          const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id === roofGlobalId);
+          if (roofAnnotation) areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => a.id !== roofGlobalId)];
+
           const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+
           setRetrievedPolygon({
             polygons,
             annotations: areaPictureAnnotation,
