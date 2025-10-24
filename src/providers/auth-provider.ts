@@ -97,7 +97,12 @@ export const authProvider = {
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject({ message: false })),
 
   checkError: ({ response }: any): Promise<any> => {
-    const { status, url } = response;
+    const {
+      status,
+      config: { url },
+    } = response;
+
+    console.log({ url });
 
     const unapprovedFiles = getCached.unapprovedFiles();
 
