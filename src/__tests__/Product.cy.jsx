@@ -249,7 +249,7 @@ describe(specTitle('Products'), () => {
     cy.get('[data-testid="archive-products-button"]').click();
 
     cy.contains('Les produits suivants vont être archivés :');
-    cy.contains('edit this product test');
+    cy.contains('description 0');
     cy.contains('description 1');
 
     cy.get('[data-testid="submit-archive-products"]').click();
