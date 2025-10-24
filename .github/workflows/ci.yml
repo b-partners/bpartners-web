@@ -92,6 +92,12 @@ jobs:
           sonar-scanner \
             -Dsonar.projectVersion=${{ steps.read-version.outputs.version }} \
             -Dsonar.branch.name=${GITHUB_REF##*/}
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: cypress/screenshots/
 
   style:
     runs-on: ubuntu-latest
