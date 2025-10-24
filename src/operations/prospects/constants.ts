@@ -37,3 +37,5 @@ export const detectionResultLabelName = {
   CHEMINEE: 'Cheminee',
   VELUX: 'Velux',
 };
+
+export const roofGlobalIdRef = 'roof-polygon';

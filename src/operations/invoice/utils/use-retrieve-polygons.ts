@@ -1,10 +1,10 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
 
-const roofGlobalId = 'roof-polygon';
 export type RetrievedPolygonsType = {
   annotations: AreaPictureAnnotation;
   polygons: Polygon[];
@@ -18,8 +18,8 @@ const getPolygonsFromAreaPictureAnnotation = (areaPictureAnnotation: AreaPicture
     points: annotation.polygon?.points,
   }));
 
-  const roof = result.find(p => p.id === roofGlobalId);
-  if (roof) return [roof, ...result.filter(p => p.id !== roofGlobalId)];
+  const roof = result.find(p => p?.id?.includes(roofGlobalIdRef));
+  if (roof) return [roof, ...result.filter(p => !p.id?.includes(roofGlobalIdRef))];
 
   return result;
 };
@@ -54,8 +54,9 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             slopeStatus: 'AVAILABLE',
           });
 
-          const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id === roofGlobalId);
-          if (roofAnnotation) areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => a.id !== roofGlobalId)];
+          const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id?.includes(roofGlobalIdRef));
+          if (roofAnnotation)
+            areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => !a.id?.includes(roofGlobalIdRef))];
 
           const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
 

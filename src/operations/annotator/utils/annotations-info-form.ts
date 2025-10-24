@@ -2,10 +2,12 @@ import { useQuerySlopeAndHeight } from '@/common/fetcher';
 import { RoofAnalyseProperties, useAnnotatorComponentStore } from '@/common/store';
 import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { cache } from '@/providers';
 import { getColorFromMain, Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { v4 } from 'uuid';
 import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
 
 const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
@@ -22,7 +24,7 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     obstacle: `${obstacle ? 'OUI' : 'NON'}`,
     labelName: "Résultats de l'analyse de la toiture",
     labelType: 'roof',
-    polygonId: 'roof-polygon',
+    polygonId: `${v4()}__${roofGlobalIdRef}`,
     covering: revetement_1,
     covering2: revetement_2,
     slope,

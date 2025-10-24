@@ -1,10 +1,12 @@
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
+import { v4 } from 'uuid';
 
 export const createRoofPolygon = (area = 0, polygons: Polygon[] = []) => {
   return [
     {
       fillColor: '',
-      id: 'roof-polygon',
+      id: `${v4()}__${roofGlobalIdRef}`,
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 1 },
