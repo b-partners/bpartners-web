@@ -1,11 +1,10 @@
 import App from '@/App';
-import { whoami } from '@/providers';
-import specTitle from 'cypress-sonarqube-reporter/specTitle';
+import { User } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
-import { accountHolders1, accounts1, validationRedirectionUrl } from './mocks/responses/account-api';
+import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
 
-const invalidSubscriptionUser = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
+const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
 const expectedSubscriptionInitializationPayload = {
   redirectionStatusUrls: {
     failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
@@ -14,7 +13,7 @@ const expectedSubscriptionInitializationPayload = {
   subscriptionType: 'ESSENTIAL',
 };
 
-describe(specTitle('Test user subscription'), () => {
+describe('Test user subscription', () => {
   it('Invalid subscription', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
