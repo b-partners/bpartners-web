@@ -32,10 +32,13 @@ describe('Test user subscription', () => {
     cy.contains('Si vous avez la moindre question, N’hésitez à nous appeler au 06.68.62.48.36 ou par mail à contact@birdia.fr');
 
     cy.intercept(`/users/${invalidSubscriptionUser.id}/subscriptionInitiation`, { statusCode: 200 }).as('initializeSubscription');
-    cy.dataCy('subscribe-btn').click();
-    cy.wait('@initializeSubscription').then(({ request }) => {
-      expect(request.body).deep.equal(expectedSubscriptionInitializationPayload);
-    });
+    cy.dataCy('subscribe-btn')
+      .click()
+      .then(() => {
+        cy.wait('@initializeSubscription').then(({ request }) => {
+          expect(request.body).deep.equal(expectedSubscriptionInitializationPayload);
+        });
+      });
     cy.get('@toURL').should('have.been.called');
   });
 });
