@@ -58,7 +58,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         />
       )}
       {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
-        <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (%)' />
+        <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (°)' />
       )}
       {shouldGetHeightState && !slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && (
         <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>

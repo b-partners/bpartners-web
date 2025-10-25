@@ -1,6 +1,6 @@
 import { AnnotationCoveringType, AnnotationLabelsType } from '@/constants';
 import { Alphabet } from '@/constants/alphabet';
-import { detectionResultLabelName } from '@/operations/prospects/constants';
+import { detectionResultLabelName, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
 import { AnnotationInfo } from '../types';
@@ -42,7 +42,7 @@ export const getSynchronizedAnnotationInfos = (
   roofAnnotationInfo: AnnotationInfo
 ): AnnotationInfo[] => {
   return polygons.map((polygon, index) => {
-    if (polygon.id === 'roof-polygon') return roofAnnotationInfo;
+    if (polygon.id.includes(roofGlobalIdRef)) return { ...roofAnnotationInfo, polygonId: polygon.id };
     const annotationInfo = annotationInfos.find(annotationInfo => annotationInfo.polygonId === polygon.id);
     return annotationInfo ?? createDefaultAnnotationInfo(polygon, index);
   });
