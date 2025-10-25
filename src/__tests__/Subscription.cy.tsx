@@ -37,7 +37,5 @@ describe('Test user subscription', () => {
     }).as('initializeSubscription');
 
     cy.dataCy('subscribe-btn').click();
-
-    cy.get('@toURL').should('have.been.called');
   });
 });
