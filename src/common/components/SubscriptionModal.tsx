@@ -53,7 +53,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       </DialogContent>
       <DialogActions>
         {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        <BPButton onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
+        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
       </DialogActions>
     </>
   );
