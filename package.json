@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@bpartners/annotator-component": "^0.17.0",
-    "@bpartners/typescript-client": "^0.70.0",
+    "@bpartners/typescript-client": "^0.71.0",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",
     "@mui/material": "5.16.7",
