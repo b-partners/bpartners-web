@@ -65,4 +65,13 @@ export const annotatorProvider = {
       return null;
     }
   },
+  async geoPointsToPoins(geoJson: any) {
+    try {
+      const { accountId } = getCached.userInfo();
+      const { data } = await areaPictureApi().convertAreaPictureAnnotationsToPixel(accountId, geoJson);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };

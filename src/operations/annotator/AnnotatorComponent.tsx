@@ -10,7 +10,7 @@ import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
-import { degradationLevels } from '../prospects/constants';
+import { degradationLevels, roofGlobalIdRef } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
@@ -148,15 +148,20 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
                 setPolygons={setPolygons}
                 polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
-                measurementMapper={!data && measurementMapper(isExtended)}
-                getNewPolygonColor={getNewPolygonColor}
-                polygonLineSizeProps={
-                  !data && {
-                    imageName: `${filename}.jpg`,
-                    showLineSize: true,
-                    converterApiUrl: `${CONVERTER_BASE_URL}`,
-                  }
+                measurementMapper={
+                  !data
+                    ? measurementMapper(isExtended)
+                    : m => {
+                        if (m.polygonId.includes(roofGlobalIdRef)) return { ...m, isInvisible: false };
+                        return { ...m, isInvisible: true };
+                      }
                 }
+                getNewPolygonColor={getNewPolygonColor}
+                polygonLineSizeProps={{
+                  imageName: `${filename}.jpg`,
+                  showLineSize: true,
+                  converterApiUrl: `${CONVERTER_BASE_URL}`,
+                }}
                 zoom={newZoomLevelAsNumber}
                 closeOnNear
               />

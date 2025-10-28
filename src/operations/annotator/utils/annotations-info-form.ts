@@ -4,15 +4,14 @@ import { stringifyObj } from '@/common/utils/stringify';
 import { AnnotationInfo } from '@/operations/annotator';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { cache } from '@/providers';
-import { getColorFromMain, Polygon } from '@bpartners/annotator-component';
+import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { v4 } from 'uuid';
 import { getSynchronizedAnnotationInfos } from './annotation-info-mapper';
 
 const getLevelValue = (n: number) => Math.floor(n / 10) * 10;
 
-const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
+const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
 
   const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2 } = roofAnalyseProperties || {};
@@ -24,12 +23,13 @@ const createAnnotationInfoFromRoofAnalyseProperties = (roofAnalyseProperties: Ro
     obstacle: `${obstacle ? 'OUI' : 'NON'}`,
     labelName: "Résultats de l'analyse de la toiture",
     labelType: 'roof',
-    polygonId: `${v4()}__${roofGlobalIdRef}`,
+    polygonId,
     covering: revetement_1,
     covering2: revetement_2,
     slope,
     height,
-    ...getColorFromMain('#00ff00'),
+    fillColor: '#00ff0000',
+    strokeColor: '#00ff00',
   };
   return roofAnalysePropertiesInfos;
 };
@@ -55,10 +55,14 @@ export const useAnnotationInfosForm = (polygons: Polygon[], defaultAnnotationInf
       const currentHeight = formState.getValues('annotationInfos.0.height');
       const currentSlope = formState.getValues('annotationInfos.0.slope');
 
+      const roofPolygon = polygons.find(p => p.id?.includes(roofGlobalIdRef));
+      const filteredPolygons = polygons.filter(p => !p.id?.includes(roofGlobalIdRef));
+
       const synchronizedAnnotationInfos = getSynchronizedAnnotationInfos(
-        polygons,
+        filteredPolygons,
         annotationInfos,
         createAnnotationInfoFromRoofAnalyseProperties(
+          roofPolygon?.id || '',
           roofAnalyseProperties,
           currentHeight !== -1 ? currentHeight : slopeAndHeightState?.height,
           currentSlope !== -1 ? currentSlope : slopeAndHeightState?.slope
