@@ -2,6 +2,7 @@ import { ConverterPayloadGeoJSON, Geometry } from '@/operations/annotator';
 import { Point, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails, GeoPosition } from '@bpartners/typescript-client';
 import { v4 } from 'uuid';
+import { ShapeAttributes } from './roof-analyse-mapper';
 
 type GeoPolygonToRestMetaData = {
   filename: string;
@@ -22,6 +23,17 @@ const toGeoShapeAttributes = (polygon: Polygon, offsets: Point) => {
     shapeAttributes.all_points_y.push(y + offsets.y);
   });
   return shapeAttributes;
+};
+
+const coordinatesToShapeAttributes = (coordinates: any[][]) => {
+  const res: any = { all_points_x: [], all_points_y: [], name: 'polygon' };
+
+  coordinates[0][0].forEach(([lng, lat]: [number, number]) => {
+    res.all_points_x.push(lng);
+    res.all_points_y.push(lat);
+  });
+
+  return res;
 };
 
 export const polygonMapper = {
@@ -70,4 +82,39 @@ export const polygonMapper = {
       [filename]: result,
     };
   },
+  toPixelGeoJson(feature: any[], x: number, y: number, size: number, zoom: number) {
+    const filename = `${v4().replace(/\-/gi, '')}_${zoom}_${x}_${y}.jpg`;
+    const result: any = {
+      size,
+      filename,
+      zoom: 20,
+      regions: {},
+      base64_img_data: null,
+    };
+
+    feature.forEach(({ geometry: { coordinates }, properties: { label } }, index) => {
+      const region = {
+        shape_attributes: coordinatesToShapeAttributes(coordinates),
+        region_attributes: {
+          label,
+          confidence: 0.7055366635322571,
+        },
+      };
+      result.regions[index] = region;
+    });
+
+    return {
+      [filename]: result,
+    };
+  },
+};
+
+export const geoShapeAttributesToPoints = (shapeAttributes: ShapeAttributes) => {
+  const points: Point[] = [];
+
+  shapeAttributes.all_points_x.forEach((x, index) => {
+    points.push({ x: x, y: shapeAttributes.all_points_y[index] });
+  });
+
+  return points;
 };

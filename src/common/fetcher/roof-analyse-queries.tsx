@@ -1,8 +1,6 @@
-import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
-import { annotatorProvider, DetectionResultInVgg, detectionResultMapper, initializeRoofAnalyse, polygonMapper, Region } from '@/providers';
+import { annotatorProvider, initializeRoofAnalyse, polygonMapper } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import { ErrorMessageDialog } from '../components';
 import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
@@ -15,14 +13,18 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
   const { open: openDialog } = useDialog();
-  const { setAnalyseInformation, setShouldGetHeightState } = useAnnotatorComponentStore();
+  const { setAnalyseInformation, setShouldGetHeightState, setRoofDelimiter, setImageTileInfoOrigin } = useAnnotatorComponentStore();
 
   const onSuccess = (detectionResult: any) => {
     const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
+    const roofDelimiter = detectionResult?.result?.roofDelimiter;
+    const imageTileInfoOrigin = detectionResult?.result?.imageTileInfoOrigin;
     handleSuccess();
     setShouldGetHeightState(false);
     setAnalyseInformation({ geoJsonResultUrl, imageUrl });
+    setRoofDelimiter(roofDelimiter);
+    setImageTileInfoOrigin(imageTileInfoOrigin);
   };
 
   const mutationFn = async () => {
@@ -71,67 +73,4 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
   });
 
   return mutation;
-};
-
-const getRegions = (detectionResult: DetectionResultInVgg) => {
-  const detections = Object.values(detectionResult);
-
-  const regions: Region[] = [];
-
-  detections.forEach(({ regions: currentRegion }) => {
-    const regionsValues = Object.values(currentRegion);
-    regions.push(...regionsValues);
-  });
-
-  return regions;
-};
-
-const isThereAnObstacle = (regions: Region[]) => {
-  for (const region of regions) {
-    if (['OBSTACLE', 'VELUX', 'CHEMINEE'].includes(region.region_attributes.label)) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl } = useAnnotatorComponentStore();
-  const [searchParams] = useSearchParams();
-  const { pathname } = useLocation();
-
-  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
-
-  const queryFnVgg = async () => {
-    const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': 'application/json' } });
-    const _detectionResultJson: DetectionResultInVgg = await detectionResultText.json();
-    const detectionResultJson: DetectionResultInVgg = Array.isArray(_detectionResultJson) ? _detectionResultJson[0] : _detectionResultJson;
-    const regions = getRegions(detectionResultJson);
-    const filteredPolygons = detectionResultMapper.toPolygon(regions.slice());
-    const nonFilteredPolygons = detectionResultMapper.toPolygon(regions.slice(), false);
-
-    const obstacle = isThereAnObstacle(regions.slice());
-
-    const imageAsBase64 = await fetchImageAsBase64(imageUrl);
-    const image = await createImage(imageAsBase64);
-
-    const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(filteredPolygons, nonFilteredPolygons, image as HTMLImageElement);
-    return {
-      properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
-      polygons: croppedPolygons,
-      image: regions.length > 0 ? croppedImage : imageAsBase64,
-    };
-  };
-
-  const query = useQuery({
-    queryKey: ['geojson-result', ...keys],
-    queryFn: queryFnVgg,
-    enabled,
-  });
-
-  return {
-    ...query,
-    geoJsonResultUrl,
-  };
 };

@@ -18,6 +18,8 @@ interface Action {
   setGlobalRate: (value: number, type: string) => void;
   setAreaPictureDetails: (areaPictureDetails: AreaPictureDetails) => void;
   reset(): void;
+  setRoofDelimiter(roofDelimiter: any): void;
+  setImageTileInfoOrigin?: (imageTileInfoOrigin: any) => void;
 }
 
 interface State {
@@ -29,6 +31,10 @@ interface State {
   shouldGetHeightState: boolean;
   isSlopeAndHeightPending: boolean;
   areaPictureDetails: AreaPictureDetails;
+  roofDelimiter?: {
+    polygon: [number, number][];
+  };
+  imageTileInfoOrigin?: any;
   llm: string | null;
   globalRate: {
     type: string;
@@ -61,4 +67,6 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setGlobalRate: (value, type) => set({ globalRate: { type, value } }),
   setRoofSlope: roofSlope => set({ roofSlope }),
   setAreaPictureDetails: areaPictureDetails => set({ areaPictureDetails }),
+  setRoofDelimiter: roofDelimiter => set({ roofDelimiter }),
+  setImageTileInfoOrigin: imageTileInfoOrigin => set({ imageTileInfoOrigin }),
 }));
