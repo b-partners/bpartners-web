@@ -142,6 +142,9 @@ export const BpFrenchMessages = {
       cancelSuccess: "Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au %{endDate}",
     },
   },
+  notify: {
+    searchImagePending: 'En cours de recherche de l’image de la zone',
+  },
   0: '0',
   10: '10',
   20: '20',
