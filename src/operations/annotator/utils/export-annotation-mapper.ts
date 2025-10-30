@@ -18,6 +18,7 @@ export type ExportAnnotationMapperArgs = {
 
 export const exportAnnotationMapper = (props: ExportAnnotationMapperArgs): ExportAreaPictureAnnotation => {
   const { annotationInfos, imageUrl, address, polygons, globalRateType, globalRateValue } = props;
+  console.log(polygons);
 
   const annotations = polygons.map((polygon, index) => {
     const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon, index);
@@ -25,6 +26,7 @@ export const exportAnnotationMapper = (props: ExportAnnotationMapperArgs): Expor
     const annotatorLabelSplitted = polygon.id.split('___');
 
     const { fillColor, strokeColor } = getColorFromMain('#00ff00');
+
 
     return {
       polygon,

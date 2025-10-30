@@ -2,7 +2,7 @@ import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize, useToggle } from '@/common/hooks';
-import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
@@ -10,8 +10,8 @@ import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { degradationLevels, roofGlobalIdRef } from '../prospects/constants';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { degradationLevels } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
@@ -23,7 +23,6 @@ import {
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
-  isRoofPolygon,
   measurementMapper,
   useLlmResultQuery,
 } from './utils';
@@ -40,16 +39,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   allowSelect = true,
   width,
   height,
-  defaultAnnotationInfos,
   draftAnnotationId,
   isInvoiceForm,
 }) => {
   const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
-  const { setRoofAnalyseProperties } = useCanvasAnnotationContext();
-  const polygons = annotatorFormState.watch('polygons') || [];
+  const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [] });
 
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -76,15 +73,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     annotatorFormState.setValue('polygons', params);
   };
 
-  const addPolygon = (polygons: Polygon[]) => {
+  const addPolygon = (currentPolygons: Polygon[]) => {
     const oldPolygons = annotatorFormState.getValues('polygons');
     const setOldPolygonId = new Set(oldPolygons.map(({ id }) => id));
-    const newPolygon = polygons.find(polygon => !setOldPolygonId.has(polygon.id));
+    const newPolygon = currentPolygons.find(currentPolygon => !setOldPolygonId.has(currentPolygon.id));
     if (!newPolygon) return false;
-    const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, polygons.length - 1);
+    const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, currentPolygons.length - 1);
 
-    annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo]);
-    annotatorFormState.setValue('polygons', [...oldPolygons, newPolygon]);
+    annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo], { shouldDirty: true });
+    annotatorFormState.setValue('polygons', currentPolygons, { shouldDirty: true });
   };
 
   useEffect(() => {
@@ -104,8 +101,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
 
-      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons]);
-      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos]);
+      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons], { shouldDirty: true });
+      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos], { shouldDirty: true });
     }
   }, [JSON.stringify(data), isPending]);
 
@@ -121,14 +118,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
     setPolygons([]);
-    annotatorFormState.setValue('annotationInfos', []);
+    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       setPolygons([]);
-      annotatorFormState.setValue('annotationInfos', []);
+      annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
     }
   };
 
@@ -184,15 +181,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
                 setPolygons={addPolygon}
-                polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
-                measurementMapper={
-                  !data
-                    ? measurementMapper(isExtended)
-                    : m => {
-                        if (m.polygonId.includes(roofGlobalIdRef)) return { ...m, isInvisible: false };
-                        return { ...m, isInvisible: true };
-                      }
-                }
+                polygonList={polygonFromProps || polygons}
+                measurementMapper={measurementMapper(isExtended)}
                 getNewPolygonColor={getNewPolygonColor}
                 polygonLineSizeProps={{
                   imageName: `${filename}.jpg`,
@@ -219,10 +209,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 {degradationLevels.map(({ color, label }) => (
                   <Box
                     key={label}
-                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'degratation-levels-box-selected' : ''}`}
+                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'degratation-levels-box-selected' : ''}`}
                     sx={{
                       bgcolor: color,
-                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'black' : 'transparent'}`,
+                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'black' : 'transparent'}`,
                     }}
                   >
                     {label}
@@ -230,7 +220,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 ))}
               </Stack>
               <Box className='global-rage-container'>
-                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate.value}%</Typography>
+                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
               </Box>
             </Stack>
           )}
@@ -247,7 +237,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           image={data?.image}
           isCropped={!!data?.image}
           areaPictureDetails={currentAreaPictureDetailsToUse}
-          defaultAnnotationInfos={defaultAnnotationInfos}
           draftAnnotationId={draftAnnotationId}
         />
       )}

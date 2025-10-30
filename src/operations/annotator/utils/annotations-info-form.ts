@@ -4,7 +4,7 @@ import { AnnotationInfo } from '@/operations/annotator';
 import { cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { useEffect } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
@@ -33,8 +33,7 @@ export type AnnotatorFormState = { annotationInfos: AnnotationInfo[]; polygons: 
 
 export const useAnnotationInfosForm = (defaultPolygons: Polygon[], defaultAnnotationInfos: AnnotationInfo[] = []) => {
   const formState = useForm<AnnotatorFormState>({ defaultValues: { annotationInfos: [], polygons: [] } });
-  const annotationInfosFieldArrayState = useFieldArray({ control: formState.control, name: 'annotationInfos' });
-  const polygonsFieldArrayState = useFieldArray({ control: formState.control, name: 'polygons' });
+  const { setThereIsRoofPolygon, thereIsRoofPolygon } = useAnnotatorComponentStore();
 
   const { setRoofSlope } = useAnnotatorComponentStore();
 
@@ -50,18 +49,19 @@ export const useAnnotationInfosForm = (defaultPolygons: Polygon[], defaultAnnota
   }, true);
 
   useEffect(() => {
-    const subscription = formState.watch(({ annotationInfos: currentAnnotationInfos = [] }) => {
-      cache.annotationsInfo(currentAnnotationInfos);
+    const subscription = formState.watch(({ annotationInfos, polygons }) => {
+      cache.annotationsInfo(annotationInfos);
+      cache.polygons(polygons as Polygon[]);
+      if (annotationInfos.length === 1 && annotationInfos[0].labelType === 'roof' && !thereIsRoofPolygon) setThereIsRoofPolygon(true);
+      else if (thereIsRoofPolygon) setThereIsRoofPolygon(false);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return subscription.unsubscribe;
   }, []);
 
   useEffect(() => {
     cache.annotationsInfo(formState.getValues('annotationInfos'));
   }, []);
 
-  return { formState, annotationInfosFieldArrayState, polygonsFieldArrayState };
+  return formState;
 };

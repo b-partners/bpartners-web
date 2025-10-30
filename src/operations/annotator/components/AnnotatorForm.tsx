@@ -1,4 +1,4 @@
-import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore } from '@/common/store';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Box, Divider, Typography } from '@mui/material';
@@ -12,8 +12,7 @@ const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }
 );
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
-  const { slopeAndHeightState, isSlopeAndHeightPending, shouldGetHeightState } = useAnnotatorComponentStore();
-  const { roofAnalyseProperties } = useCanvasAnnotationContext();
+  const { slopeAndHeightState, isSlopeAndHeightPending, shouldGetHeightState, roofAnalyseProperties } = useAnnotatorComponentStore();
   const { getValues } = useFormContext<AnnotatorFormState>();
 
   const height = getValues(`annotationInfos.${index}.height`);
@@ -25,15 +24,17 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
       return { moisissure: defaultPercentageLevel, humidite: defaultPercentageLevel, usure: defaultPercentageLevel };
     }
 
-    const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties.moisissure_rate)
+    const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties?.moisissure_rate)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties.moisissure_rate, name: roofAnalyseProperties.moisissure_rate }].sort((a, b) => a.name - b.name);
-    const humidite = defaultPercentageLevelName.includes(roofAnalyseProperties.humidite_rate)
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.moisissure_rate, name: roofAnalyseProperties?.moisissure_rate }].sort(
+          (a, b) => a.name - b.name
+        );
+    const humidite = defaultPercentageLevelName.includes(roofAnalyseProperties?.humidite_rate)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties.humidite_rate, name: roofAnalyseProperties.humidite_rate }].sort((a, b) => a.name - b.name);
-    const usure = defaultPercentageLevelName.includes(roofAnalyseProperties.usure_rate)
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.humidite_rate, name: roofAnalyseProperties?.humidite_rate }].sort((a, b) => a.name - b.name);
+    const usure = defaultPercentageLevelName.includes(roofAnalyseProperties?.usure_rate)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties.usure_rate, name: roofAnalyseProperties.usure_rate }].sort((a, b) => a.name - b.name);
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.usure_rate, name: roofAnalyseProperties?.usure_rate }].sort((a, b) => a.name - b.name);
 
     return { moisissure, humidite, usure };
   }, [roofAnalyseProperties, index]);
@@ -65,6 +66,8 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         resettable
         label='Revêtement 1'
         choices={ANNOTATION_COVERING_CHOICES}
+        translateChoice={false}
+        translate='no'
         name={`annotationInfos.${index}.covering`}
         source={`annotationInfos.${index}.covering`}
       />
@@ -74,12 +77,21 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           resettable
           label='Revêtement 2'
           choices={ANNOTATION_COVERING_CHOICES}
+          translateChoice={false}
           name={`annotationInfos.${index}.covering2`}
+          translate='no'
           source={`annotationInfos.${index}.covering2`}
         />
       )}
       {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
-        <TextInput type='number' inputProps={{ min: 0 }} name={`annotationInfos.${index}.slope`} source={`annotationInfos.${index}.slope`} label='Pente (°)' />
+        <TextInput
+          translate='no'
+          type='number'
+          inputProps={{ min: 0 }}
+          name={`annotationInfos.${index}.slope`}
+          source={`annotationInfos.${index}.slope`}
+          label='Pente (°)'
+        />
       )}
       {shouldGetHeightState && !slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && (
         <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>
@@ -88,8 +100,10 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         name={`annotationInfos.${index}.wear`}
         source={`annotationInfos.${index}.wear`}
+        translate='no'
         label='Usure'
         choices={ANNOTATION_WEAR_CHOICES}
+        translateChoice={false}
         alwaysOn
         resettable
       />
@@ -97,8 +111,10 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         name={`annotationInfos.${index}.wearLevel`}
         source={`annotationInfos.${index}.wearLevel`}
+        translate='no'
         label="Taux d'usure"
         choices={percentagesLevel.usure}
+        translateChoice={false}
         alwaysOn
         resettable
       />
@@ -106,8 +122,10 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         InputProps={{ startAdornment: <FormColorBox type='MOISISSURE' /> }}
         name={`annotationInfos.${index}.moldRate`}
         source={`annotationInfos.${index}.moldRate`}
+        translate='no'
         label='Taux de moisissure'
         choices={percentagesLevel.moisissure}
+        translateChoice={false}
         alwaysOn
         resettable
       />
@@ -115,8 +133,10 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         InputProps={{ startAdornment: <FormColorBox type='HUMIDITE' /> }}
         name={`annotationInfos.${index}.humidityLevel`}
         source={`annotationInfos.${index}.humidityLevel`}
+        translate='no'
         label="Taux d'humidité"
         choices={percentagesLevel.humidite}
+        translateChoice={false}
         alwaysOn
         resettable
       />
@@ -124,6 +144,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}
         name={`annotationInfos.${index}.obstacle`}
         source={`annotationInfos.${index}.obstacle`}
+        translate='no'
         label='Obstacle/Velux/PV'
       />
       <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />

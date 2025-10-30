@@ -17,9 +17,9 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPi
   const { thereIsRoofPolygon } = useAnnotatorComponentStore();
   const annotatorFormState = useFormContext<AnnotatorFormState>();
   const handleSuccess = () => {
-    annotatorFormState.setValue('polygons', []);
-    annotatorFormState.setValue('annotationInfos', []);
-    clearPolygons();
+    annotatorFormState.setValue('polygons', [], { shouldDirty: true });
+    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+    clearPolygons(false);
   };
   const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, handleSuccess);
 

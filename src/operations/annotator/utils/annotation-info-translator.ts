@@ -23,7 +23,7 @@ export const translateAnnotationInfo = (info: AnnotationInfo & { area: number })
     result.push(
       formatInfo({ label: 'Type', value: info?.labelType, translator: ANNOTATION_LABELS_TRANSLATION }),
       formatInfo({ label: 'Revêtement', value: info?.covering, translator: coveringTypeMap }),
-      formatInfo({ label: 'Pente', value: info?.slope, unit: '/12' }),
+      formatInfo({ label: 'Pente', value: info?.slope, unit: '°' }),
       formatInfo({ label: 'Usure', value: info?.wear, translator: ANNOTATION_WEAR_TRANSLATION }),
       formatInfo({ label: "Taux d'usure", value: info?.wearLevel }),
       formatInfo({ label: 'Taux de moisissure', value: info?.moldRate }),
