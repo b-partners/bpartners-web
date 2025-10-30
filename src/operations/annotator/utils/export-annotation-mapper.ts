@@ -27,7 +27,6 @@ export const exportAnnotationMapper = (props: ExportAnnotationMapperArgs): Expor
 
     const { fillColor, strokeColor } = getColorFromMain('#00ff00');
 
-
     return {
       polygon,
       labelName: annotationInfo?.labelName,

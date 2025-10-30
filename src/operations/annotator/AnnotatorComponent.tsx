@@ -5,11 +5,11 @@ import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useAnnotatorComponentStore } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { degradationLevels } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
@@ -44,7 +44,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 }) => {
   const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
-  const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [] });
+  const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
+
+  const [localPolygon, setLocalPolygon] = useState(polygonFromProps || []);
 
   const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
@@ -68,24 +70,29 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { toggleValue: toggleLLMResultView, value: showLLMResult } = useToggle(false);
   const { useDrafts } = parseUrlParams();
 
-  const setPolygons: Dispatch<SetStateAction<Polygon[]>> = params => {
-    if (typeof params === 'function') return annotatorFormState.setValue('polygons', params(annotatorFormState.getValues('polygons')));
-    annotatorFormState.setValue('polygons', params);
-  };
-
-  const addPolygon = (currentPolygons: Polygon[]) => {
+  useEffect(() => {
     const oldPolygons = annotatorFormState.getValues('polygons');
     const setOldPolygonId = new Set(oldPolygons.map(({ id }) => id));
-    const newPolygon = currentPolygons.find(currentPolygon => !setOldPolygonId.has(currentPolygon.id));
-    if (!newPolygon) return false;
-    const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, currentPolygons.length - 1);
-
-    annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo], { shouldDirty: true });
-    annotatorFormState.setValue('polygons', currentPolygons, { shouldDirty: true });
-  };
+    const newPolygon = localPolygon.find(currentPolygon => !setOldPolygonId.has(currentPolygon.id));
+    if (newPolygon) {
+      const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, localPolygon.length - 1);
+      annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo], { shouldDirty: true });
+    }
+    if (JSON.stringify(localPolygon) !== JSON.stringify(oldPolygons)) annotatorFormState.setValue('polygons', localPolygon, { shouldDirty: true });
+  }, [localPolygon]);
 
   useEffect(() => {
-    useDrafts !== 'true' && setPolygons(p => (p.length < 2 ? [] : p));
+    const observer = annotatorFormState.watch(({ polygons }) => {
+      if (polygons.length !== localPolygon.length) {
+        setLocalPolygon(polygons as any);
+      }
+    });
+    return observer.unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const currentFormPolygons = annotatorFormState.getValues('polygons');
+    if (useDrafts !== 'true' && currentFormPolygons.length < 2) annotatorFormState.setValue('polygons', [], { shouldDirty: true });
     setRoofAnalyseProperties(data?.properties);
 
     const currentPolygons = data?.polygons?.slice(1) || [];
@@ -101,8 +108,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
 
-      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons], { shouldDirty: true });
-      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos], { shouldDirty: true });
+      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons], { shouldDirty: true, shouldTouch: true });
+      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos], { shouldDirty: true, shouldTouch: true });
     }
   }, [JSON.stringify(data), isPending]);
 
@@ -117,14 +124,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
-    setPolygons([]);
+    annotatorFormState.setValue('polygons', []), { shouldDirty: true };
     annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
-      setPolygons([]);
+      annotatorFormState.setValue('polygons', []), { shouldDirty: true };
       annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
     }
   };
@@ -180,8 +187,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 height={height || containerHeight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
-                setPolygons={addPolygon}
-                polygonList={polygonFromProps || polygons}
+                setPolygons={setLocalPolygon}
+                polygonList={localPolygon}
                 measurementMapper={measurementMapper(isExtended)}
                 getNewPolygonColor={getNewPolygonColor}
                 polygonLineSizeProps={{

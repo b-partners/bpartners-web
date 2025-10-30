@@ -12,7 +12,7 @@ const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }
 );
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
-  const { slopeAndHeightState, isSlopeAndHeightPending, shouldGetHeightState, roofAnalyseProperties } = useAnnotatorComponentStore();
+  const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
   const { getValues } = useFormContext<AnnotatorFormState>();
 
   const height = getValues(`annotationInfos.${index}.height`);
@@ -57,9 +57,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           </Typography>
         </Typography>
       )}
-      {shouldGetHeightState && !slopeAndHeightState?.heightStatus && isSlopeAndHeightPending && (
-        <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>
-      )}
+      {isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
       <Divider sx={{ my: 2 }} />
       <SelectInput
         alwaysOn
@@ -93,9 +91,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
           label='Pente (°)'
         />
       )}
-      {shouldGetHeightState && !slopeAndHeightState?.slopeStatus && isSlopeAndHeightPending && (
-        <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>
-      )}
+      {isSlopeAndHeightPending && <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>}
       <SelectInput
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         name={`annotationInfos.${index}.wear`}
