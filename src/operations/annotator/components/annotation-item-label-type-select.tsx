@@ -2,19 +2,20 @@ import { useAnnotatorComponentStore } from '@/common/store';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { FC } from 'react';
 import { SelectInput, SelectInputProps } from 'react-admin';
-import { useAnnotationInfosForm } from '../utils';
+import { useFormContext } from 'react-hook-form';
+import { AnnotatorFormState } from '../utils';
 
 interface Props {
   index: number;
-  formState: ReturnType<typeof useAnnotationInfosForm>['formState'];
 }
 
-export const AnnotationItemLabelTypeSelect: FC<Props> = ({ index, formState }) => {
+export const AnnotationItemLabelTypeSelect: FC<Props> = ({ index }) => {
   const { setThereIsRoofPolygon } = useAnnotatorComponentStore();
+  const formState = useFormContext<AnnotatorFormState>();
 
   const onChange: SelectInputProps['onChange'] = event => {
     formState.setValue(`annotationInfos.${index}.labelType`, event.target.value as any);
-    if (formState.watch('annotationInfos').length !== 1) return;
+    if (formState.getValues('annotationInfos').length !== 1) return;
     if (event.target.value === 'roof') setThereIsRoofPolygon(true);
     else setThereIsRoofPolygon(false);
   };

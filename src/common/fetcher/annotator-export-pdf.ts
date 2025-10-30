@@ -32,7 +32,7 @@ const mutationFn = async (params: ExportAnnotationMapperArgs) => {
   const exportAreaPictureAnnotation = exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
   const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, exportAreaPictureAnnotation);
   const { value } = data;
-  downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
+  await downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
 };
 
 interface Params {

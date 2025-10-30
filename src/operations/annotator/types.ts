@@ -100,6 +100,5 @@ export interface AnnotatorComponentProps {
   showFileSource?: boolean;
   boxWrapperSx?: SxProps;
   draftAnnotationId?: string;
-  defaultAnnotationInfos?: AnnotationInfo[];
   isInvoiceForm?: boolean;
 }

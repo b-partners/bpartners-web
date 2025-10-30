@@ -1,7 +1,6 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
-import { useCanvasAnnotationContext } from '@/common/store';
 import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
 import {
   AnnotationCoveringFromAnalyse,
@@ -14,12 +13,12 @@ import {
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack } from '@mui/material';
-import { BaseSyntheticEvent, FC } from 'react';
+import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
-import { AnnotationInfo } from '../types';
+import { AnnotatorFormState } from '../utils';
 import { ExportAnnotationConfirmButton } from './ExportAnnotationConfirmButton';
 
 export interface AnalyseProperties {
@@ -40,7 +39,6 @@ export interface AnalyseProperties {
 
 export type AnalyseResultButtonProps = {
   draftAnnotationId?: string;
-  defaultAnnotationInfos: AnnotationInfo[];
   areaPictureDetails: AreaPictureDetails;
   image: string;
   isCropped: boolean;
@@ -51,10 +49,20 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const { polygons } = useCanvasAnnotationContext();
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
+  const [isThereAnyPolygons, setIsThereAnyPolygons] = useState(false);
+
+  useEffect(() => {
+    const observer = annotatorFormState.watch(({ polygons }) => {
+      if (polygons.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
+      else if (polygons.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
+    });
+
+    return observer.unsubscribe;
+  }, []);
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -62,7 +70,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         startLoading();
         isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
-        const annotationAttributeMapped = annotationsAttributeMapper(polygons, annotationInfos, pictureId, annotationIdValue);
+        const annotationAttributeMapped = annotationsAttributeMapper(annotatorFormState.getValues('polygons'), annotationInfos, pictureId, annotationIdValue);
         const requestBody: AreaPictureAnnotation = {
           ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
           properties: {
@@ -106,12 +114,12 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
       <BPButton
         isLoading={isLoading}
         className='draft-save-btn'
-        disabled={isLoading || polygons.length === 0}
+        disabled={isLoading || !isThereAnyPolygons}
         label='resources.draftsAnnotations.add'
         data-testid='submit-draft-annotation'
         onClick={event => handleSubmitFormsWrapper(event, true)}
       />
-      <ExportAnnotationConfirmButton areaPictureDetails={areaPictureDetails} image={image} isCropped={isCropped} formState={formState as any} />
+      <ExportAnnotationConfirmButton areaPictureDetails={areaPictureDetails} image={image} isCropped={isCropped} disabled={!isThereAnyPolygons} />
     </Stack>
   );
 };

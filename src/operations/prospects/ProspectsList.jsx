@@ -47,7 +47,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
       startLoading();
 
       if (isCreating) {
-        notify('En cours de recherche de l’image de la zone');
+        notify('notify.searchImagePending');
       }
 
       const fetch = async () => {
@@ -61,7 +61,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
             invoice: undefined,
           },
         ]);
-        notify(`Prospect créé avec succès !`, { type: 'success' });
+        notify(`resources.prospects.creation.success`, { type: 'success' });
         try {
           const fileId = uuidV4();
           const pictureId = uuidV4();

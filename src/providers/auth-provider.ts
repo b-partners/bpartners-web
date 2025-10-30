@@ -102,8 +102,6 @@ export const authProvider = {
       config: { url },
     } = response;
 
-    console.log({ url });
-
     const unapprovedFiles = getCached.unapprovedFiles();
 
     if (((url as string)?.includes('calendars') || url?.includes('events')) && status === 403) {
