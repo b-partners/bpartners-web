@@ -5,11 +5,12 @@ import { useGetElementSize, useToggle } from '@/common/hooks';
 import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { degradationLevels, roofGlobalIdRef } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
@@ -17,7 +18,10 @@ import { AnnotatorComponentProps } from './types';
 import {
   AnalyseRoofButton,
   annotatorComponentStyle,
+  AnnotatorFormState,
   AnnotatorHelpButton,
+  createAnnotationInfoFromRoofAnalyseProperties,
+  createDefaultAnnotationInfo,
   createRoofPolygon,
   getNewPolygonColor,
   isRoofPolygon,
@@ -41,12 +45,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   draftAnnotationId,
   isInvoiceForm,
 }) => {
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails } = useAnnotatorComponentStore();
-
-  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
-
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
-  const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
+  const { setRoofAnalyseProperties } = useCanvasAnnotationContext();
+  const polygons = annotatorFormState.watch('polygons') || [];
+
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails } = useAnnotatorComponentStore();
+  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
@@ -67,11 +72,39 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { toggleValue: toggleLLMResultView, value: showLLMResult } = useToggle(false);
   const { useDrafts } = parseUrlParams();
 
+  const setPolygons: Dispatch<SetStateAction<Polygon[]>> = params => {
+    if (typeof params === 'function') return annotatorFormState.setValue('polygons', params(annotatorFormState.getValues('polygons')));
+    annotatorFormState.setValue('polygons', params);
+  };
+
+  const addPolygon = (polygons: Polygon[]) => {
+    const oldPolygons = annotatorFormState.getValues('polygons');
+    const setOldPolygonId = new Set(oldPolygons.map(({ id }) => id));
+    const newPolygon = polygons.find(polygon => !setOldPolygonId.has(polygon.id));
+    if (!newPolygon) return false;
+    const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, polygons.length - 1);
+
+    annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo]);
+    annotatorFormState.setValue('polygons', [...oldPolygons, newPolygon]);
+  };
+
   useEffect(() => {
     useDrafts !== 'true' && setPolygons(p => (p.length < 2 ? [] : p));
     setRoofAnalyseProperties(data?.properties);
     const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
-    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) setPolygons(currentPolygons || []);
+    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
+      const roofPolygon = createAnnotationInfoFromRoofAnalyseProperties(
+        currentPolygons[0].id,
+        data?.properties,
+        data?.properties?.roof_height_in_meters,
+        data?.properties?.roof_slope_in_degrees
+      );
+
+      const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
+
+      annotatorFormState.setValue('polygons', currentPolygons || []);
+      annotatorFormState.setValue('annotationInfos', [roofPolygon, ...annotationInfos]);
+    }
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
@@ -86,12 +119,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
     setPolygons([]);
+    annotatorFormState.setValue('annotationInfos', []);
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       setPolygons([]);
+      annotatorFormState.setValue('annotationInfos', []);
     }
   };
 
@@ -146,7 +181,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 height={height || containerHeight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
-                setPolygons={setPolygons}
+                setPolygons={addPolygon}
                 polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
                 measurementMapper={
                   !data

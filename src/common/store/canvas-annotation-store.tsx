@@ -1,11 +1,12 @@
 import { AnnotationInfo } from '@/operations/annotator';
-import { useAnnotationInfosForm } from '@/operations/annotator/utils';
+import { AnnotatorFormState, useAnnotationInfosForm } from '@/operations/annotator/utils';
 import { AnnotationCoveringFromAnalyse, cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from 'react';
-import { FormProvider } from 'react-hook-form';
+import { FormProvider, UseFieldArrayReturn } from 'react-hook-form';
 import { NOOP_FN } from '../utils/noop_fn';
 import { stringifyObj } from '../utils/stringify';
+import { useAnnotatorComponentStore } from './annotator-component-store';
 
 export interface RoofAnalyseProperties {
   obstacle: boolean;
@@ -19,22 +20,20 @@ export interface RoofAnalyseProperties {
 }
 
 export type AnnotationStore = {
-  polygons: Polygon[];
   roofAnalyseProperties?: RoofAnalyseProperties;
   slopeInfoOpen: boolean;
-  fieldArrayState: any;
-  setPolygons: Dispatch<SetStateAction<Polygon[]>>;
+  annotationInfosFieldArrayState: UseFieldArrayReturn<AnnotatorFormState, 'annotationInfos', 'id'>;
+  polygonsFieldArrayState: UseFieldArrayReturn<AnnotatorFormState, 'polygons', 'id'>;
   setRoofAnalyseProperties: Dispatch<SetStateAction<RoofAnalyseProperties>>;
   handleSlopeInfoToggle: () => void;
 };
 
 const CanvasAnnotationContext = createContext<AnnotationStore>({
-  polygons: [],
   slopeInfoOpen: false,
-  setPolygons: NOOP_FN,
   handleSlopeInfoToggle: NOOP_FN,
   setRoofAnalyseProperties: NOOP_FN,
-  fieldArrayState: null,
+  annotationInfosFieldArrayState: null,
+  polygonsFieldArrayState: null,
 });
 
 export const useCanvasAnnotationContext = () => useContext(CanvasAnnotationContext);
@@ -46,29 +45,38 @@ export type CanvasAnnotationContextProviderProps = {
 };
 
 export const CanvasAnnotationContextProvider: FC<CanvasAnnotationContextProviderProps> = ({ children, defaultPolygons = [], annotationInfo }) => {
-  const [polygons, setPolygons] = useState<Polygon[]>(defaultPolygons);
-  const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
   const [roofAnalyseProperties, setRoofAnalyseProperties] = useState<RoofAnalyseProperties>();
 
-  const handleSlopeInfoToggle = () => {
-    setSlopeInfoOpen(!slopeInfoOpen);
-  };
+  const { formState, annotationInfosFieldArrayState, polygonsFieldArrayState } = useAnnotationInfosForm(defaultPolygons, annotationInfo);
+  const { setThereIsRoofPolygon } = useAnnotatorComponentStore();
+  const [slopeInfoOpen, setSlopeInfoOpen] = useState(false);
 
-  const stringifiedPolygons = stringifyObj(polygons);
+  const handleSlopeInfoToggle = () => setSlopeInfoOpen(!slopeInfoOpen);
 
   useEffect(() => {
-    cache.polygons(polygons);
-  }, [stringifiedPolygons]);
+    formState.watch(({ polygons, annotationInfos }) => {
+      if (annotationInfos.length === 1 && annotationInfos[0].labelType === 'roof') {
+        setThereIsRoofPolygon(true);
+      } else {
+        setThereIsRoofPolygon(false);
+      }
+      cache.polygons((polygons || []) as Polygon[]);
+    });
+  }, []);
 
-  const { formState, fieldArrayState } = useAnnotationInfosForm(polygons, annotationInfo, roofAnalyseProperties);
+  const contextValues: AnnotationStore = {
+    slopeInfoOpen,
+    handleSlopeInfoToggle,
+    setRoofAnalyseProperties,
+    roofAnalyseProperties,
+    annotationInfosFieldArrayState,
+    polygonsFieldArrayState,
+  };
 
-  const contextValues: AnnotationStore = useMemo(
-    () => ({ polygons, slopeInfoOpen, setPolygons, handleSlopeInfoToggle, setRoofAnalyseProperties, roofAnalyseProperties, fieldArrayState }),
-    [slopeInfoOpen, stringifiedPolygons, setPolygons, handleSlopeInfoToggle, roofAnalyseProperties, setRoofAnalyseProperties, fieldArrayState]
-  );
+  const memorizedContextValues: AnnotationStore = useMemo(() => contextValues, [stringifyObj(contextValues)]);
 
   return (
-    <CanvasAnnotationContext.Provider value={contextValues}>
+    <CanvasAnnotationContext.Provider value={memorizedContextValues}>
       <FormProvider {...formState}>{children}</FormProvider>
     </CanvasAnnotationContext.Provider>
   );

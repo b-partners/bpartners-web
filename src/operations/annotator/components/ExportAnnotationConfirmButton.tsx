@@ -5,8 +5,9 @@ import { useCanvasAnnotationContext } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useFormContext, UseFormReturn } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
+import { AnnotatorFormState } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
   formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
@@ -18,8 +19,8 @@ export interface ExportAnnotationConfirmButtonProps {
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, formState }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
-  const { polygons } = useCanvasAnnotationContext();
   const { roofAnalyseProperties } = useCanvasAnnotationContext();
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -30,7 +31,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const uploadImageOnSuccess = () => {
     exportAsPdf({
       annotationInfos: formState.getValues('annotationInfos'),
-      polygons,
+      polygons: annotatorFormState.getValues('polygons'),
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: roofAnalyseProperties?.global_rate_type || '',
@@ -61,7 +62,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
         className='export-analyse-btn'
         onClick={doAnnotationExport}
         isLoading={isLoading}
-        disabled={isLoading || polygons.length === 0}
+        disabled={isLoading || (annotatorFormState.watch('polygons') || []).length === 0}
         label='resources.draftsAnnotations.export'
         data-testid='submit-annotation-export'
       />

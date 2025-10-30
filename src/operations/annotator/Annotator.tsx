@@ -15,22 +15,18 @@ import { SideBar } from './SideBar';
 import { AnnotationInfo } from './types';
 import { mapAreaAnnotationInstanceToAnnotationInfo } from './utils/annotation-info-mapper';
 
-export const Annotator = () => {
-  const { useDrafts } = parseUrlParams();
-  return useDrafts === 'true' ? <AnnotatorWithDraftAnnotation /> : <AnnotatorWithDefaultCacheManager />;
-};
-
 type AnnotatorWithDefaultCacheManagerProps = { defaultPolygons?: Polygon[]; defaultAnnotationInfos?: AnnotationInfo[]; draftAnnotationId?: string };
-const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps> = ({
-  draftAnnotationId,
-  defaultAnnotationInfos = [],
-  defaultPolygons = [],
-}) => {
+interface AnnotatorWithDefaultCacheManagerState {
+  polygons: Polygon[];
+  annotationInfos: AnnotationInfo[];
+}
+
+const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps> = props => {
+  const { draftAnnotationId, defaultAnnotationInfos = [], defaultPolygons = [] } = props;
   const { isLoading, stopLoading } = useLoadingHandler(true);
-  const [defaultAnnotations, setDefaultAnnotations] = useState<{ polygons: Polygon[]; annotationInfos: AnnotationInfo[] }>({
-    polygons: defaultPolygons,
-    annotationInfos: defaultAnnotationInfos,
-  });
+
+  const defaultState = { polygons: defaultPolygons, annotationInfos: defaultAnnotationInfos };
+  const [defaultAnnotations, setDefaultAnnotations] = useState<AnnotatorWithDefaultCacheManagerState>(defaultState);
 
   const { analyseRoof } = parseUrlParams();
   const shouldAnalyseRoof = analyseRoof === 'true';
@@ -38,14 +34,11 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
   useEffect(() => {
     const cachedDefaultAnnotationInfo = getCached.annotationsInfoList();
     const cachedDefaultPolygons = getCached.polygons() || [];
-    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof) {
-      setDefaultAnnotations({
-        polygons: cachedDefaultPolygons,
-        annotationInfos: cachedDefaultAnnotationInfo,
-      });
-    } else {
-      clearPolygons();
-    }
+
+    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof)
+      setDefaultAnnotations({ polygons: cachedDefaultPolygons, annotationInfos: cachedDefaultAnnotationInfo });
+    else clearPolygons();
+
     stopLoading();
   }, [shouldAnalyseRoof]);
 
@@ -56,7 +49,7 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
   return (
     <CanvasAnnotationContextProvider annotationInfo={defaultAnnotations.annotationInfos} defaultPolygons={defaultAnnotations.polygons}>
       <Grid container height='100%' pl={1}>
-        <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr={'1%'}>
+        <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr='1%'>
           <AnnotatorComponent
             defaultAnnotationInfos={defaultAnnotations.annotationInfos}
             draftAnnotationId={draftAnnotationId}
@@ -76,17 +69,15 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
   );
 };
 
+const areaPictureFetcher = async (areaPictureId: string) =>
+  draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
+
 const AnnotatorWithDraftAnnotation = () => {
-  const {
-    isAnnotationEmpty,
-    polygons: draftsPolygons,
-    annotations = {},
-  } = useRetrievePolygons(async areaPictureId => {
-    return draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
-  });
+  const { isAnnotationEmpty, polygons: draftsPolygons, annotations = {} } = useRetrievePolygons(areaPictureFetcher);
   const { annotations: annotationInstances = [] } = annotations;
+
   const draftAnnotationInfo = useMemo(
-    () => annotationInstances.map(annotationInstance => mapAreaAnnotationInstanceToAnnotationInfo(annotationInstance)),
+    () => annotationInstances.map(mapAreaAnnotationInstanceToAnnotationInfo),
     [annotations?.id, stringifyObj(draftsPolygons)]
   );
 
@@ -101,6 +92,11 @@ const AnnotatorWithDraftAnnotation = () => {
       defaultAnnotationInfos={draftAnnotationInfo}
     />
   );
+};
+
+export const Annotator = () => {
+  const { useDrafts } = parseUrlParams();
+  return useDrafts === 'true' ? <AnnotatorWithDraftAnnotation /> : <AnnotatorWithDefaultCacheManager />;
 };
 
 export default Annotator;

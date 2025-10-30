@@ -36,16 +36,23 @@ export const createDefaultAnnotationInfo = (polygon: Polygon, index: number): An
   };
 };
 
-export const getSynchronizedAnnotationInfos = (
-  polygons: Polygon[],
-  annotationInfos: AnnotationInfo[],
-  roofAnnotationInfo: AnnotationInfo
-): AnnotationInfo[] => {
-  return polygons.map((polygon, index) => {
-    if (polygon.id.includes(roofGlobalIdRef)) return { ...roofAnnotationInfo, polygonId: polygon.id };
+type TGetSynchronizedAnnotationInfosParams = [Polygon[], AnnotationInfo[], AnnotationInfo];
+
+export const getSynchronizedAnnotationInfos = (...params: TGetSynchronizedAnnotationInfosParams): AnnotationInfo[] => {
+  const [polygons, annotationInfos, roofAnnotationInfo] = params;
+
+  const result: AnnotationInfo[] = [];
+
+  polygons.forEach((polygon, index) => {
+    if (polygon.id.includes(roofGlobalIdRef)) return result.push({ ...roofAnnotationInfo, polygonId: polygon.id });
+
     const annotationInfo = annotationInfos.find(annotationInfo => annotationInfo.polygonId === polygon.id);
-    return annotationInfo ?? createDefaultAnnotationInfo(polygon, index);
+    const currentAnnotation = annotationInfo ?? createDefaultAnnotationInfo(polygon, index);
+
+    if (currentAnnotation) result.push(currentAnnotation);
   });
+
+  return result;
 };
 
 export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: AreaPictureAnnotationInstance): AnnotationInfo => {

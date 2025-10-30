@@ -1,5 +1,4 @@
 import { usePolygonAreaQuery } from '@/common/fetcher';
-import { useCanvasAnnotationContext } from '@/common/store';
 import { detectionResultColors } from '@/operations/prospects/constants';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
@@ -7,6 +6,7 @@ import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/mater
 import React, { FC } from 'react';
 import { FieldArrayWithId, useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
+import { AnnotatorFormState } from '../utils';
 import { annotatorFormResultItemStyle as style } from './style';
 
 interface Props {
@@ -16,7 +16,9 @@ interface Props {
 }
 
 export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, areaPictureDetails, index }) => {
-  const { polygons, setPolygons } = useCanvasAnnotationContext();
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const polygons = annotatorFormState.watch('polygons');
+
   const { setValue } = useFormContext();
   const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
   const { isLoading, data: area } = usePolygonAreaQuery({
@@ -28,11 +30,15 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, 
   });
 
   const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
+    const prev = annotatorFormState.getValues('polygons');
+    const result = prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon));
+    annotatorFormState.setValue('polygons', result);
   };
 
   const removeAnnotationByPolygonId = (polygonId: string) => {
-    setPolygons(prev => prev.filter(polygon => polygon.id !== polygonId));
+    const prev = annotatorFormState.getValues('polygons');
+    const result = prev.filter(polygon => polygon.id !== polygonId);
+    annotatorFormState.setValue('polygons', result);
   };
 
   if (!currentPolygon) {

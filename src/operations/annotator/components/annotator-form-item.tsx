@@ -6,6 +6,7 @@ import React, { FC, useState } from 'react';
 import { TextInput } from 'react-admin';
 import { FieldArrayWithId, useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
+import { AnnotatorFormState } from '../utils';
 import { AnnotationItemLabelTypeSelect } from './annotation-item-label-type-select';
 import AnnotatorForm from './AnnotatorForm';
 
@@ -15,19 +16,27 @@ interface Props {
 }
 
 export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index }) => {
-  const { polygons, setPolygons } = useCanvasAnnotationContext();
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const polygons = annotatorFormState.watch('polygons');
   const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
   const [isExpanded, setIsExpanded] = useState(index === 0);
   const formState = useFormContext();
 
   const handleClickAccordion = () => setIsExpanded(!isExpanded);
 
+  const { polygonsFieldArrayState, annotationInfosFieldArrayState } = useCanvasAnnotationContext();
+
   const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
+    const prev = annotatorFormState.getValues('polygons');
+    const result = prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon));
+    annotatorFormState.setValue('polygons', result);
   };
 
   const removeAnnotationByPolygonId = (polygonId: string) => {
-    setPolygons(prev => prev.filter(polygon => polygon.id !== polygonId));
+    const prev = annotatorFormState.getValues('polygons');
+    const index = prev.findIndex(polygon => polygon.id === polygonId);
+    annotationInfosFieldArrayState.remove(index);
+    polygonsFieldArrayState.remove(index);
   };
 
   if (!currentPolygon) {
