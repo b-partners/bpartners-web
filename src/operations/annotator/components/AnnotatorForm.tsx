@@ -1,21 +1,42 @@
-import { useAnnotatorComponentStore } from '@/common/store';
+import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
-import { detectionResultColors } from '@/operations/prospects/constants';
+import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Box, Divider, Typography } from '@mui/material';
 import { FC, useMemo } from 'react';
 import { SelectInput, TextInput } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+import { AnnotatorFormState } from '../utils';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
 const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
-  const percentagesLevel = useMemo(() => new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 })), []);
-  const { getValues } = useFormContext();
   const { slopeAndHeightState, isSlopeAndHeightPending, shouldGetHeightState } = useAnnotatorComponentStore();
+  const { roofAnalyseProperties } = useCanvasAnnotationContext();
+  const { getValues } = useFormContext<AnnotatorFormState>();
 
   const height = getValues(`annotationInfos.${index}.height`);
+  const percentagesLevel = useMemo(() => {
+    const defaultPercentageLevel = new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 }));
+    const defaultPercentageLevelName = defaultPercentageLevel.map(({ name }) => name);
+
+    if (index !== 0 || !(getValues('polygons.0')?.id || '')?.includes(roofGlobalIdRef)) {
+      return { moisissure: defaultPercentageLevel, humidite: defaultPercentageLevel, usure: defaultPercentageLevel };
+    }
+
+    const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties.moisissure_rate)
+      ? defaultPercentageLevel
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties.moisissure_rate, name: roofAnalyseProperties.moisissure_rate }].sort((a, b) => a.name - b.name);
+    const humidite = defaultPercentageLevelName.includes(roofAnalyseProperties.humidite_rate)
+      ? defaultPercentageLevel
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties.humidite_rate, name: roofAnalyseProperties.humidite_rate }].sort((a, b) => a.name - b.name);
+    const usure = defaultPercentageLevelName.includes(roofAnalyseProperties.usure_rate)
+      ? defaultPercentageLevel
+      : [...defaultPercentageLevel, { id: roofAnalyseProperties.usure_rate, name: roofAnalyseProperties.usure_rate }].sort((a, b) => a.name - b.name);
+
+    return { moisissure, humidite, usure };
+  }, [roofAnalyseProperties, index]);
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -77,7 +98,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         name={`annotationInfos.${index}.wearLevel`}
         source={`annotationInfos.${index}.wearLevel`}
         label="Taux d'usure"
-        choices={percentagesLevel}
+        choices={percentagesLevel.usure}
         alwaysOn
         resettable
       />
@@ -86,7 +107,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         name={`annotationInfos.${index}.moldRate`}
         source={`annotationInfos.${index}.moldRate`}
         label='Taux de moisissure'
-        choices={percentagesLevel}
+        choices={percentagesLevel.moisissure}
         alwaysOn
         resettable
       />
@@ -95,7 +116,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         name={`annotationInfos.${index}.humidityLevel`}
         source={`annotationInfos.${index}.humidityLevel`}
         label="Taux d'humidité"
-        choices={percentagesLevel}
+        choices={percentagesLevel.humidite}
         alwaysOn
         resettable
       />
