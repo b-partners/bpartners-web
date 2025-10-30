@@ -87,16 +87,25 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const regions = getRegions(detectionResultJson);
     const filteredPolygons = detectionResultMapper.toPolygon(regions.slice());
 
+    // sort polygons in the expected order
+    const usurePolygons = filteredPolygons.filter(({ id: polygonId }) => polygonId.includes('USURE')) || [];
+    const moisissurePolygons = filteredPolygons.filter(({ id: polygonId }) => polygonId.includes('MOISISSURE')) || [];
+    const humiditePolygons = filteredPolygons.filter(({ id: polygonId }) => polygonId.includes('HUMIDITE')) || [];
+    const othersPolygons =
+      filteredPolygons.filter(({ id: polygonId }) => !polygonId.includes('HUMIDITE') && !polygonId.includes('MOISISSURE') && !polygonId.includes('USURE')) ||
+      [];
+    // sort polygons in the expected order
     const obstacle = isThereAnObstacle(regions.slice());
 
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
     const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(
-      [roofPolygon, ...filteredPolygons],
+      [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons],
       [roofPolygon],
       image as HTMLImageElement
     );
+
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
       polygons: croppedPolygons,

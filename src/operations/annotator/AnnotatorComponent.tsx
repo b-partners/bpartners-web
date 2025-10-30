@@ -22,7 +22,6 @@ import {
   AnnotatorHelpButton,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
-  createRoofPolygon,
   getNewPolygonColor,
   isRoofPolygon,
   measurementMapper,
@@ -91,20 +90,21 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   useEffect(() => {
     useDrafts !== 'true' && setPolygons(p => (p.length < 2 ? [] : p));
     setRoofAnalyseProperties(data?.properties);
-    const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
+
+    const currentPolygons = data?.polygons?.slice(1) || [];
+    const roofPolygon = data?.polygons?.[0];
+
     if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
       const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
-        currentPolygons[0].id,
+        roofPolygon.id,
         data?.properties,
         data?.properties?.roof_height_in_meters,
         data?.properties?.roof_slope_in_degrees
       );
 
-      console.log(roofAnnotationInfo);
-
       const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
 
-      annotatorFormState.setValue('polygons', currentPolygons || []);
+      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons]);
       annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos]);
     }
   }, [JSON.stringify(data), isPending]);
