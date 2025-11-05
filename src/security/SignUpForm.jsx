@@ -1,5 +1,4 @@
 import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +36,7 @@ export const SignUpForm = () => {
       if (!recaptchaData) throw new Error();
       // captcha check
 
-      // await onboarding([data]);
+      await onboarding([data]);
       handleOpenModal();
     } catch {
       notify('messages.global.error', { type: 'error' });
