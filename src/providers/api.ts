@@ -2,6 +2,7 @@ import {
   AddressAutocompletionApi,
   AreaPictureApi,
   CalendarApi,
+  CaptchaApi,
   CustomersApi,
   FilesApi,
   MailingApi,
@@ -28,3 +29,4 @@ export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf())
 export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());
 export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.getCachedAuthConf());
 export const addressAutocompletionApi = () => new AddressAutocompletionApi(authProvider.getCachedAuthConf());
+export const captchaApi = () => new CaptchaApi(authProvider.getCachedAuthConf());

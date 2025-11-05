@@ -23,6 +23,7 @@ export * from './profile-provider';
 export * from './prospecting-jobs-provider';
 export * from './prospecting-provider';
 export * from './ra-data-provider-type';
+export * from './recaptcha-provider';
 export * from './relaunch-provider';
 export * from './roof-analyse-provider';
 export * from './sheet-provider';

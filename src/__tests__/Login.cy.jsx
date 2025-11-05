@@ -3,11 +3,14 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import App from '@/App';
+import { recaptchaProvider } from '@/providers';
 import { Redirect } from '../common/utils';
 
 describe(specTitle('Login'), () => {
   beforeEach(() => {
     cy.stub(Redirect, 'toURL').as('toURL');
+    cy.stub(recaptchaProvider, 'useGoogleReCaptcha').returns({ executeRecaptcha: () => Promise.resolve('mock-recaptcha-token'), valide: false });
+    cy.intercept('GET', `/captcha/token**`, { body: true }).as('validateCaptcha');
   });
 
   it('Should show signIn and signUp form with validator', () => {
