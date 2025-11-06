@@ -1,24 +1,26 @@
 import { usePolygonAreaQuery } from '@/common/fetcher';
-import { useCanvasAnnotationContext } from '@/common/store';
 import { detectionResultColors } from '@/operations/prospects/constants';
+import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import React, { FC } from 'react';
-import { FieldArrayWithId, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
+import { AnnotatorFormState } from '../utils';
 import { annotatorFormResultItemStyle as style } from './style';
 
 interface Props {
-  annotationInfo: FieldArrayWithId<{ annotationInfos: AnnotationInfo[] }, 'annotationInfos', 'id'>;
+  annotationInfo: AnnotationInfo;
   areaPictureDetails: AreaPictureDetails;
+  polygon: Polygon;
   index: number;
 }
 
-export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, areaPictureDetails, index }) => {
-  const { polygons, setPolygons } = useCanvasAnnotationContext();
+export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, areaPictureDetails, index, polygon: currentPolygon }) => {
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
+
   const { setValue } = useFormContext();
-  const currentPolygon = polygons.find(polygon => polygon.id === annotationInfo.polygonId);
   const { isLoading, data: area } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
@@ -28,11 +30,15 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, 
   });
 
   const togglePolygonVisibility = (polygonId: string) => {
-    setPolygons(prev => prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon)));
+    const prev = annotatorFormState.getValues('polygons');
+    const result = prev.map(polygon => (polygon.id === polygonId ? { ...polygon, isInvisible: !polygon.isInvisible } : polygon));
+    annotatorFormState.setValue('polygons', result, { shouldDirty: true });
   };
 
   const removeAnnotationByPolygonId = (polygonId: string) => {
-    setPolygons(prev => prev.filter(polygon => polygon.id !== polygonId));
+    const prev = annotatorFormState.getValues('polygons');
+    const result = prev.filter(polygon => polygon.id !== polygonId);
+    annotatorFormState.setValue('polygons', result, { shouldDirty: true });
   };
 
   if (!currentPolygon) {
@@ -42,7 +48,7 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ annotationInfo, 
   const background = detectionResultColors[annotationInfo.polygonId.split('___')[1] as keyof typeof detectionResultColors];
 
   return (
-    <Box sx={style} key={annotationInfo.id}>
+    <Box sx={style}>
       <Stack direction='row' px={2} gap={1} alignItems='center'>
         <Box sx={{ background }} className='color-box-ref' />
         <Stack flexGrow={1}>

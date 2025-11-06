@@ -2,14 +2,15 @@ import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize, useToggle } from '@/common/hooks';
-import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { degradationLevels } from '../prospects/constants';
 import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
 import { addressStyle } from './style';
@@ -17,10 +18,11 @@ import { AnnotatorComponentProps } from './types';
 import {
   AnalyseRoofButton,
   annotatorComponentStyle,
+  AnnotatorFormState,
   AnnotatorHelpButton,
-  createRoofPolygon,
+  createAnnotationInfoFromRoofAnalyseProperties,
+  createDefaultAnnotationInfo,
   getNewPolygonColor,
-  isRoofPolygon,
   measurementMapper,
   useLlmResultQuery,
 } from './utils';
@@ -37,16 +39,17 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   allowSelect = true,
   width,
   height,
-  defaultAnnotationInfos,
   draftAnnotationId,
   isInvoiceForm,
 }) => {
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails } = useAnnotatorComponentStore();
-
-  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
-
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
-  const { polygons, setPolygons, setRoofAnalyseProperties } = useCanvasAnnotationContext();
+  const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
+
+  const [localPolygon, setLocalPolygon] = useState(polygonFromProps || []);
+
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
@@ -68,10 +71,46 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { useDrafts } = parseUrlParams();
 
   useEffect(() => {
-    useDrafts !== 'true' && setPolygons(p => (p.length < 2 ? [] : p));
+    const oldPolygons = annotatorFormState.getValues('polygons');
+    const setOldPolygonId = new Set(oldPolygons.map(({ id }) => id));
+    const newPolygon = localPolygon.find(currentPolygon => !setOldPolygonId.has(currentPolygon.id));
+    if (newPolygon) {
+      const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, localPolygon.length - 1);
+      annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo], { shouldDirty: true });
+    }
+    if (JSON.stringify(localPolygon) !== JSON.stringify(oldPolygons)) annotatorFormState.setValue('polygons', localPolygon, { shouldDirty: true });
+  }, [localPolygon]);
+
+  useEffect(() => {
+    const observer = annotatorFormState.watch(({ polygons }) => {
+      if (polygons.length !== localPolygon.length) {
+        setLocalPolygon(polygons as any);
+      }
+    });
+    return observer.unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const currentFormPolygons = annotatorFormState.getValues('polygons');
+    if (useDrafts !== 'true' && currentFormPolygons.length < 2) annotatorFormState.setValue('polygons', [], { shouldDirty: true });
     setRoofAnalyseProperties(data?.properties);
-    const currentPolygons = createRoofPolygon(data?.properties?.roof_area_in_m2, data?.polygons);
-    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) setPolygons(currentPolygons || []);
+
+    const currentPolygons = data?.polygons?.slice(1) || [];
+    const roofPolygon = data?.polygons?.[0];
+
+    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
+      const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
+        roofPolygon.id,
+        data?.properties,
+        data?.properties?.roof_height_in_meters,
+        data?.properties?.roof_slope_in_degrees
+      );
+
+      const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
+
+      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons], { shouldDirty: true, shouldTouch: true });
+      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos], { shouldDirty: true, shouldTouch: true });
+    }
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
@@ -85,13 +124,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
-    setPolygons([]);
+    annotatorFormState.setValue('polygons', []), { shouldDirty: true };
+    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
-      setPolygons([]);
+      annotatorFormState.setValue('polygons', []), { shouldDirty: true };
+      annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
     }
   };
 
@@ -146,17 +187,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 height={height || containerHeight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
                 image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
-                setPolygons={setPolygons}
-                polygonList={(polygonFromProps || polygons).map(p => (isRoofPolygon(p.points) ? { ...p, isInvisible: true } : p))}
-                measurementMapper={!data && measurementMapper(isExtended)}
+                setPolygons={setLocalPolygon}
+                polygonList={localPolygon}
+                measurementMapper={measurementMapper(isExtended)}
                 getNewPolygonColor={getNewPolygonColor}
-                polygonLineSizeProps={
-                  !data && {
-                    imageName: `${filename}.jpg`,
-                    showLineSize: true,
-                    converterApiUrl: `${CONVERTER_BASE_URL}`,
-                  }
-                }
+                polygonLineSizeProps={{
+                  imageName: `${filename}.jpg`,
+                  showLineSize: true,
+                  converterApiUrl: `${CONVERTER_BASE_URL}`,
+                }}
                 zoom={newZoomLevelAsNumber}
                 closeOnNear
               />
@@ -177,10 +216,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 {degradationLevels.map(({ color, label }) => (
                   <Box
                     key={label}
-                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'degratation-levels-box-selected' : ''}`}
+                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'degratation-levels-box-selected' : ''}`}
                     sx={{
                       bgcolor: color,
-                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate.type) === label ? 'black' : 'transparent'}`,
+                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'black' : 'transparent'}`,
                     }}
                   >
                     {label}
@@ -188,7 +227,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 ))}
               </Stack>
               <Box className='global-rage-container'>
-                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate.value}%</Typography>
+                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
               </Box>
             </Stack>
           )}
@@ -205,7 +244,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           image={data?.image}
           isCropped={!!data?.image}
           areaPictureDetails={currentAreaPictureDetailsToUse}
-          defaultAnnotationInfos={defaultAnnotationInfos}
           draftAnnotationId={draftAnnotationId}
         />
       )}

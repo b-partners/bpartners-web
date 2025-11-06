@@ -1,25 +1,26 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
-import { useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { AnnotationInfo } from '../types';
+import { useFormContext } from 'react-hook-form';
+import { AnnotatorFormState } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
-  formState: UseFormReturn<{ annotationInfos: AnnotationInfo[] }, any, undefined>;
   areaPictureDetails: AreaPictureDetails;
   image: string;
   isCropped: boolean;
+  disabled?: boolean;
 }
 
-export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, formState }) => {
+export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, disabled = false }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
-  const { polygons } = useCanvasAnnotationContext();
-  const { roofAnalyseProperties } = useCanvasAnnotationContext();
+  const { roofAnalyseProperties } = useAnnotatorComponentStore();
+
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -29,8 +30,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     exportAsPdf({
-      annotationInfos: formState.getValues('annotationInfos'),
-      polygons,
+      annotationInfos: annotatorFormState.getValues('annotationInfos'),
+      polygons: annotatorFormState.getValues('polygons'),
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: roofAnalyseProperties?.global_rate_type || '',
@@ -61,7 +62,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
         className='export-analyse-btn'
         onClick={doAnnotationExport}
         isLoading={isLoading}
-        disabled={isLoading || polygons.length === 0}
+        disabled={isLoading || disabled}
         label='resources.draftsAnnotations.export'
         data-testid='submit-annotation-export'
       />

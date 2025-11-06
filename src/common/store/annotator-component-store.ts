@@ -1,3 +1,4 @@
+import { AnnotationCoveringFromAnalyse } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { create } from 'zustand';
 import { SlopeAndHeightState } from '../fetcher';
@@ -5,6 +6,17 @@ import { SlopeAndHeightState } from '../fetcher';
 interface AnalyseInformation {
   imageUrl: string;
   geoJsonResultUrl: string;
+}
+
+export interface RoofAnalyseProperties {
+  obstacle: boolean;
+  usure_rate: number;
+  global_rate_value: number;
+  global_rate_type: string;
+  moisissure_rate: number;
+  humidite_rate: number;
+  revetement_1: AnnotationCoveringFromAnalyse;
+  revetement_2: AnnotationCoveringFromAnalyse | null;
 }
 
 interface Action {
@@ -18,6 +30,9 @@ interface Action {
   setGlobalRate: (value: number, type: string) => void;
   setAreaPictureDetails: (areaPictureDetails: AreaPictureDetails) => void;
   reset(): void;
+  setRoofDelimiter(roofDelimiter: any): void;
+  setImageTileInfoOrigin?: (imageTileInfoOrigin: any) => void;
+  setRoofAnalyseProperties: (roofAnalyseProperties: RoofAnalyseProperties) => void;
 }
 
 interface State {
@@ -29,11 +44,16 @@ interface State {
   shouldGetHeightState: boolean;
   isSlopeAndHeightPending: boolean;
   areaPictureDetails: AreaPictureDetails;
+  roofDelimiter?: {
+    polygon: [number, number][];
+  };
+  imageTileInfoOrigin?: any;
   llm: string | null;
   globalRate: {
     type: string;
     value: number;
   } | null;
+  roofAnalyseProperties?: RoofAnalyseProperties;
 }
 
 const defaultState: any = {
@@ -61,4 +81,7 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setGlobalRate: (value, type) => set({ globalRate: { type, value } }),
   setRoofSlope: roofSlope => set({ roofSlope }),
   setAreaPictureDetails: areaPictureDetails => set({ areaPictureDetails }),
+  setRoofDelimiter: roofDelimiter => set({ roofDelimiter }),
+  setImageTileInfoOrigin: imageTileInfoOrigin => set({ imageTileInfoOrigin }),
+  setRoofAnalyseProperties: roofAnalyseProperties => set({ roofAnalyseProperties }),
 }));

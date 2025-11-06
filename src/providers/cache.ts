@@ -191,11 +191,11 @@ export const clearCache = () => {
   sessionStorage.clear();
 };
 
-export const clearPolygons = () => {
+export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
-  localStorage.removeItem(roofAnalyseIdItem);
+  removeRoofAnalyseId && localStorage.removeItem(roofAnalyseIdItem);
   localStorage.removeItem(isAreaPictureImageUpdatedItem);
   localStorage.removeItem(isRoofPropertiesRequestDoneItem);
 };

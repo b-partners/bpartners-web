@@ -1,9 +1,12 @@
 import { BPButton, BPButtonTemplateProps } from '@/common/components';
 import { useRoofAnalyseQuery } from '@/common/fetcher';
-import { useAnnotatorComponentStore, useCanvasAnnotationContext } from '@/common/store';
+import { useAnnotatorComponentStore } from '@/common/store';
+import { clearPolygons } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { AnnotatorFormState } from './annotations-info-form';
 
 interface AnalyseRoofButtonProps extends Omit<BPButtonTemplateProps, 'label'> {
   polygons: Polygon[];
@@ -11,9 +14,13 @@ interface AnalyseRoofButtonProps extends Omit<BPButtonTemplateProps, 'label'> {
 }
 
 export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPicture, disabled, ...props }) => {
-  const { setPolygons } = useCanvasAnnotationContext();
   const { thereIsRoofPolygon } = useAnnotatorComponentStore();
-  const handleSuccess = () => setPolygons([]);
+  const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const handleSuccess = () => {
+    annotatorFormState.setValue('polygons', [], { shouldDirty: true });
+    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+    clearPolygons(false);
+  };
   const { mutate: processDetection, isPending: isProcessing } = useRoofAnalyseQuery(polygons || [], areaPicture, handleSuccess);
 
   const handleClick = () => processDetection();

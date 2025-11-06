@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Button, Typography } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -8,6 +7,7 @@ import { BpFormField } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { handleSubmit } from '@/common/utils';
 import { phoneValidator } from '@/operations/account/utils';
+import { recaptchaProvider } from '@/providers';
 import { onboarding } from '@/providers/account-provider';
 import { BP_COLOR } from '../bp-theme';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp';
@@ -19,6 +19,8 @@ export const SignUpForm = () => {
   const { value: isLoading, handleOpen: startLoading, handleClose: stopLoading } = useToggle();
   const { value: isModalOpen, handleOpen: handleOpenModal, handleClose: handleCloseModal } = useToggle();
   const form = useForm({ mode: 'all' });
+  const { useGoogleReCaptcha, verifyRecaptchaToken } = recaptchaProvider;
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleCloseModalWithRedirect = () => {
     handleCloseModal();
@@ -28,6 +30,12 @@ export const SignUpForm = () => {
   const onSubmit = form.handleSubmit(async data => {
     try {
       startLoading();
+      // captcha check
+      const token = await executeRecaptcha('dashboard_sign_up_submit');
+      const recaptchaData = await verifyRecaptchaToken(token);
+      if (!recaptchaData) throw new Error();
+      // captcha check
+
       await onboarding([data]);
       handleOpenModal();
     } catch {

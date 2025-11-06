@@ -1,4 +1,5 @@
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
 
 /**
@@ -13,7 +14,8 @@ export const measurementMapper =
   (isExtended: boolean) =>
   (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
     const firstPolygon = currentPolygons[0];
-    const isInvisible = firstPolygon?.id !== measurement.polygonId;
+    const isInvisible = firstPolygon?.id !== measurement.polygonId && !measurement.polygonId.includes(roofGlobalIdRef);
+
     if (!isExtended) return { ...measurement, isInvisible };
     return {
       ...measurement,
