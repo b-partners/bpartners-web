@@ -72,6 +72,7 @@ jobs:
           echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
           max_retries=5
           attempt=1
+
           until npm run it
           do
             if [ $attempt -ge $max_retries ]; then
