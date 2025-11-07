@@ -72,6 +72,7 @@ const removeApiDummyUser = async () => {
 const e2eLogin = () => {
   cy.clearAllLocalStorage();
   cy.visit(process.env.REACT_APP_PROD_URL);
+  cy.intercept('GET', `/captcha/token**`, { body: true }).as('validateCaptcha');
   cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
   cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
 };
