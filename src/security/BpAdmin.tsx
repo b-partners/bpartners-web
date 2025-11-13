@@ -4,6 +4,7 @@ import { BpFrenchMessages } from '@/common/utils';
 import { Layout } from '@/layout';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
+import { Annotator3D } from '@/operations/annotator/components';
 import { calendar } from '@/operations/calendar';
 import { CalendarSync } from '@/operations/calendar/components';
 import { Configuration } from '@/operations/configurations';
@@ -77,6 +78,7 @@ export const BpAdmin = () => {
         <Route path='/account/:id' element={<account.show />} />
         <Route path='/configurations' element={<Configuration />} />
         <Route path='/partners' element={<PartnersPage />} />
+        <Route path='/annotator/3d' element={<Annotator3D />} />
         <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
       </CustomRoutes>
