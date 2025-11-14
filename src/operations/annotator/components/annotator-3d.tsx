@@ -1,19 +1,11 @@
-import { OrbitControls, Stats } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-import { AttributeEvaluator, CityJSONLoader, CityJSONParser, CityJSONWorkerParser, CityObjectsMaterial, TextureManager } from 'cityjson-threejs-loader';
+import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 
-function fitCameraToSelection(camera, controls, box, fitOffset = 1.2) {
-  // From https://discourse.threejs.org/t/camera-zoom-to-fit-object/936/24
-
-  // const box.makeEmpty();
-  // for ( const object of selection ) {
-
-  //   box.expandByObject( object );
-
-  // }
+function fitCameraToSelection(camera: any, controls: any, box: any, fitOffset = 1.2) {
   const size = new THREE.Vector3();
   const center = new THREE.Vector3();
 
@@ -55,7 +47,7 @@ const CityScene = () => {
       .then(citymodel => {
         loader.load(citymodel);
 
-        loader.scene.traverse(c => {
+        loader.scene.traverse((c: any) => {
           if (c.material && c.material.isCityObjectsMaterial) {
             c.material.side = THREE.BackSide;
           }
@@ -73,22 +65,8 @@ const CityScene = () => {
 };
 
 export function Annotator3D() {
-  const ref = useRef(null);
-
-  const [{ h, w }, setSize] = useState({ w: 1, h: 1 });
-
-  useEffect(() => {
-    const container = ref.current;
-
-    if (!container) return () => {};
-
-    container.addEventListener('resize', () => {
-      setSize({ w: container.clientWidth, h: container.clientHeight });
-    });
-  }, [ref.current]);
-
   return (
-    <div ref={ref} style={{ width: '100%', height: '100vh' }}>
+    <div style={{ width: '100%', height: '100vh' }}>
       <Canvas camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
         <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
         <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
