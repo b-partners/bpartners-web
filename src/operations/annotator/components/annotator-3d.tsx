@@ -4,7 +4,60 @@ import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { useAnnotator3DStore } from '@/common/store';
+import { ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
+
+const AbsSwitch = () => {
+  const { shouldSelectSurface, setShouldSelectSurface, selectObject, selectedObject, selectedObjectInfo, setSelectedObjectInfo } = useAnnotator3DStore();
+
+  const handleClick = () => {
+    setShouldSelectSurface(!shouldSelectSurface);
+    selectObject(null);
+    setSelectedObjectInfo(null);
+  };
+
+  const cityObject = selectedObject && selectedObjectInfo ? selectedObject.object.citymodel.CityObjects[selectedObjectInfo.objectId] : {};
+
+  const pente = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.slope_in_degrees;
+  const type = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.type;
+  const height = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.height_in_meters;
+
+  return (
+    <Box sx={{ position: 'absolute', top: 10, left: 10 }}>
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMore />}>Options</AccordionSummary>
+        <AccordionDetails sx={{ minWidth: 500 }}>
+          <FormControlLabel onClick={handleClick} control={<Switch checked={shouldSelectSurface} />} label='Sélectionner les surfaces' />
+        </AccordionDetails>
+      </Accordion>
+      {selectedObject && selectedObjectInfo && (
+        <Accordion defaultExpanded>
+          <AccordionSummary expandIcon={<ExpandMore />}>Informations</AccordionSummary>
+          <AccordionDetails>
+            <Typography>{selectedObjectInfo.objectId}</Typography>
+            <Typography>
+              <strong>Type : </strong>
+              {shouldSelectSurface ? type : cityObject?.type}
+            </Typography>
+            {height && (
+              <Typography>
+                <strong>Hauteur globale : </strong>
+                {height}m
+              </Typography>
+            )}
+            {pente && (
+              <Typography>
+                <strong>Pente : </strong>
+                {pente}°
+              </Typography>
+            )}
+          </AccordionDetails>
+        </Accordion>
+      )}
+    </Box>
+  );
+};
 
 const RaycasterHandler: FC<any> = ({ citymodel }) => {
   const { camera, gl, raycaster, scene } = useThree();
@@ -94,7 +147,7 @@ const CityScene = () => {
     const controls = controlsRef.current;
 
     if (!controls) return () => {};
-    fetch('/city-json-mock.json')
+    fetch('/14_2.Archismart.json')
       .then(res => res.json())
       .then(citymodel => {
         setCityModel(citymodel);
@@ -124,7 +177,7 @@ const CityScene = () => {
 
 export function Annotator3D() {
   return (
-    <div style={{ width: '100%', height: '100vh' }}>
+    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
       <Canvas
         camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
         dpr={[1, 1.5]}
@@ -135,6 +188,7 @@ export function Annotator3D() {
         <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
         <CityScene />
       </Canvas>
+      <AbsSwitch />
     </div>
   );
 }
