@@ -1,5 +1,6 @@
 import { BPLoader } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
+import { useAnnotatorScreenSwitch } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { stringifyObj } from '@/common/utils/stringify';
 import { clearPolygons, getCached } from '@/providers';
@@ -11,6 +12,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
+import { AbsSwitch } from './components';
 import { SideBar } from './SideBar';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils';
@@ -45,6 +47,8 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     stopLoading();
   }, [shouldAnalyseRoof]);
 
+  const { screen } = useAnnotatorScreenSwitch();
+
   if (isLoading) {
     return <BPLoader message="Chargement des données d'annotation..." />;
   }
@@ -58,7 +62,8 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
             <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
-              <SideBar draftAnnotationId={draftAnnotationId} />
+              {screen !== '3d-annotator' && <SideBar draftAnnotationId={draftAnnotationId} />}
+              {screen === '3d-annotator' && <AbsSwitch />}
             </Stack>
           </Grid>
         )}

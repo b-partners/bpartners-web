@@ -3,12 +3,13 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+import { useCityJsonFetcher } from '@/common/fetcher';
 import { useAnnotator3DStore } from '@/common/store';
 import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, FormControlLabel, Switch, Typography } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 
-const AbsSwitch = () => {
+export const AbsSwitch = () => {
   const { shouldSelectSurface, setShouldSelectSurface, selectObject, selectedObject, selectedObjectInfo, setSelectedObjectInfo } = useAnnotator3DStore();
 
   const handleClick = () => {
@@ -24,7 +25,7 @@ const AbsSwitch = () => {
   const height = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.height_in_meters;
 
   return (
-    <Box sx={{ position: 'absolute', top: 10, left: 10 }}>
+    <Box>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMore />}>Options</AccordionSummary>
         <AccordionDetails sx={{ minWidth: 500 }}>
@@ -35,18 +36,17 @@ const AbsSwitch = () => {
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMore />}>Informations</AccordionSummary>
           <AccordionDetails>
-            <Typography>{selectedObjectInfo.objectId}</Typography>
             <Typography>
               <strong>Type : </strong>
               {shouldSelectSurface ? type : cityObject?.type}
             </Typography>
-            {height && (
+            {height && shouldSelectSurface && (
               <Typography>
-                <strong>Hauteur globale : </strong>
+                <strong>Hauteur : </strong>
                 {height}m
               </Typography>
             )}
-            {pente && (
+            {pente && shouldSelectSurface && (
               <Typography>
                 <strong>Pente : </strong>
                 {pente}°
@@ -138,7 +138,11 @@ const parser = new CityJSONParser();
 parser.chunkSize = 2000;
 const loader = new CityJSONLoader(parser);
 
-const CityScene = () => {
+interface CitySceneProps {
+  cityJson: any;
+}
+
+const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
   const { scene, camera } = useThree();
   const controlsRef = useRef();
   const [cityModel, setCityModel] = useState(null);
@@ -147,24 +151,21 @@ const CityScene = () => {
     const controls = controlsRef.current;
 
     if (!controls) return () => {};
-    fetch('/14_2.Archismart.json')
-      .then(res => res.json())
-      .then(citymodel => {
-        setCityModel(citymodel);
-        loader.load(citymodel);
 
-        loader.scene.traverse((c: any) => {
-          if (c.material && c.material.isCityObjectsMaterial) {
-            c.material.side = THREE.DoubleSide;
-          }
-        });
+    setCityModel(cityJson);
+    loader.load(cityJson);
 
-        const bbox = loader.boundingBox.clone();
-        bbox.applyMatrix4(loader.matrix);
+    loader.scene.traverse((c: any) => {
+      if (c.material && c.material.isCityObjectsMaterial) {
+        c.material.side = THREE.DoubleSide;
+      }
+    });
 
-        fitCameraToSelection(camera, controls, bbox);
-        scene.add(loader.scene);
-      });
+    const bbox = loader.boundingBox.clone();
+    bbox.applyMatrix4(loader.matrix);
+
+    fitCameraToSelection(camera, controls, bbox);
+    scene.add(loader.scene);
   }, [controlsRef]);
 
   return (
@@ -175,20 +176,29 @@ const CityScene = () => {
   );
 };
 
-export function Annotator3D() {
+interface Annotator3DProps {
+  width: number | string;
+  height: number | string;
+}
+
+export const Annotator3D: FC<Annotator3DProps> = ({ height, width }) => {
+  const { isLoading, data: cityJson } = useCityJsonFetcher();
+
   return (
-    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      <Canvas
-        camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, powerPreference: 'high-performance' }}
-      >
-        <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
-        <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
-        <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
-        <CityScene />
-      </Canvas>
-      <AbsSwitch />
+    <div style={{ width, height, position: 'relative' }}>
+      {!isLoading && (
+        <Canvas
+          camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, powerPreference: 'high-performance' }}
+        >
+          <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
+          <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
+          <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
+          <CityScene cityJson={cityJson} />
+        </Canvas>
+      )}
+      {isLoading && <CircularProgress sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }} />}
     </div>
   );
-}
+};

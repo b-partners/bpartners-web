@@ -24,12 +24,12 @@ const SignInForm = () => {
     setLoading(true);
 
     try {
-      // captcha check
-      const token = await executeRecaptcha('dashboard_sign_in_submit');
-      const data = await verifyRecaptchaToken(token);
+      // // captcha check
+      // const token = await executeRecaptcha('dashboard_sign_in_submit');
+      // const data = await verifyRecaptchaToken(token);
 
-      if (!data) throw new Error();
-      // captcha check
+      // if (!data) throw new Error();
+      // // captcha check
 
       const redirectionUrl = await authProvider.login(loginState);
       Redirect.toURL(redirectionUrl);
