@@ -2,12 +2,14 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { Polygon } from '@bpartners/annotator-component';
 
-import { useCityJsonFetcher } from '@/common/fetcher';
+import { useCitJSONProcessQuery } from '@/common/fetcher';
 import { useAnnotator3DStore } from '@/common/store';
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, FormControlLabel, Switch, Typography } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 
 export const AbsSwitch = () => {
   const { shouldSelectSurface, setShouldSelectSurface, selectObject, selectedObject, selectedObjectInfo, setSelectedObjectInfo } = useAnnotator3DStore();
@@ -179,10 +181,22 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
 interface Annotator3DProps {
   width: number | string;
   height: number | string;
+  active?: boolean;
+  polygons?: Polygon[],
+  areaPicture?: AreaPictureDetails
+
 }
 
-export const Annotator3D: FC<Annotator3DProps> = ({ height, width }) => {
-  const { isLoading, data: cityJson } = useCityJsonFetcher();
+export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
+  const { isLoading, data: cityJson } = useCitJSONProcessQuery(
+    polygons.length === 1 ? polygons[0] : undefined, 
+    areaPicture,
+    active
+  );
+ 
+  if(!active){
+    return null;
+  }
 
   return (
     <div style={{ width, height, position: 'relative' }}>

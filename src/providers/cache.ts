@@ -18,6 +18,7 @@ const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
 const roofAnalyseIdItem = 'bp_roof_analyse_id';
+const cityJSONRequestIdItem = 'bp_city_json_request_id';
 const llmResultItem = 'bp_llm_result_item';
 const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
 const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
@@ -93,6 +94,10 @@ export const cache = {
   roofAnalyseId(roofAnalyseId: string) {
     localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
     return roofAnalyseId;
+  },
+  cityJSONRequestId(cityJSONRequestId: string) {
+    localStorage.setItem(cityJSONRequestIdItem, cityJSONRequestId);
+    return cityJSONRequestId;
   },
   llmResult(llmResult: string) {
     localStorage.setItem(llmResultItem, llmResult);
@@ -173,6 +178,9 @@ export const getCached = {
   roofAnalyseId() {
     return localStorage.getItem(roofAnalyseIdItem);
   },
+  cityJSONRequestId() {
+    return localStorage.getItem(cityJSONRequestIdItem);
+  },
   llmResult() {
     return localStorage.getItem(llmResultItem);
   },
@@ -195,7 +203,12 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
-  removeRoofAnalyseId && localStorage.removeItem(roofAnalyseIdItem);
+
+  if(removeRoofAnalyseId){
+    localStorage.removeItem(roofAnalyseIdItem);
+    localStorage.removeItem(cityJSONRequestIdItem);
+  }
+
   localStorage.removeItem(isAreaPictureImageUpdatedItem);
   localStorage.removeItem(isRoofPropertiesRequestDoneItem);
 };

@@ -208,7 +208,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               />
             </Box>
           )}
-          {screen === '3d-annotator' && <Annotator3D width={width || containerWidth} height={height || containerHeight * 0.95} />}
+          <Annotator3D 
+            polygons={polygons}
+            active={screen === "3d-annotator"} 
+            width={width || containerWidth} 
+            height={height || containerHeight * 0.95} 
+            areaPicture={currentAreaPictureDetailsToUse}
+          />
           {(data?.properties || draftLlmValue) && screen === 'llm' && (
             <LlmResult
               width={width || containerWidth}
@@ -243,14 +249,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
-            <Annotator3DSwitchButton />
           </Stack>
         </Stack>
       )}
 
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
-          <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />
+          {screen !== "3d-annotator" && <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} /> }
+          <Annotator3DSwitchButton 
+            disabled={polygons.length !== 1 && screen !== "3d-annotator"} 
+          />
         </Stack>
       )}
       {!isInvoiceForm && screen !== '3d-annotator' && (

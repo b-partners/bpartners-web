@@ -186,31 +186,3 @@ export const sendRooferInformationsToMail = async (info: RooferInformations) => 
 
   return await result.json();
 };
-
-export const getCityJson = async (roofDelimiter: any) => {
-  const apiKey = getCached.apiKey();
-  const result = await fetch(`${baseUrl}/city-jsons`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      id: v4(),
-      delimitations: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: roofDelimiter,
-          },
-          properties: {
-            additionalProp1: {},
-          },
-        },
-      ],
-    }),
-    headers: {
-      'x-api-key': apiKey,
-      'content-type': 'application/json',
-    },
-  });
-
-  return await result.json();
-};
