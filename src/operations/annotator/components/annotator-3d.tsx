@@ -1,15 +1,16 @@
+import { Polygon } from '@bpartners/annotator-component';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Polygon } from '@bpartners/annotator-component';
 
+import { BPLoader } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
 import { useAnnotator3DStore } from '@/common/store';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, FormControlLabel, Switch, Typography } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
 
 export const AbsSwitch = () => {
   const { shouldSelectSurface, setShouldSelectSurface, selectObject, selectedObject, selectedObjectInfo, setSelectedObjectInfo } = useAnnotator3DStore();
@@ -182,19 +183,14 @@ interface Annotator3DProps {
   width: number | string;
   height: number | string;
   active?: boolean;
-  polygons?: Polygon[],
-  areaPicture?: AreaPictureDetails
-
+  polygons?: Polygon[];
+  areaPicture?: AreaPictureDetails;
 }
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
-  const { isLoading, data: cityJson } = useCitJSONProcessQuery(
-    polygons.length === 1 ? polygons[0] : undefined, 
-    areaPicture,
-    active
-  );
- 
-  if(!active){
+  const { isLoading, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+
+  if (!active) {
     return null;
   }
 
@@ -212,7 +208,17 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <CityScene cityJson={cityJson} />
         </Canvas>
       )}
-      {isLoading && <CircularProgress sx={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }} />}
+      {isLoading && (
+        <BPLoader
+          message='Génération de la version 3D de la maison. Cela peut prendre quelques instants, merci de patienter.'
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      )}
     </div>
   );
 };

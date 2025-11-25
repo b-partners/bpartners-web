@@ -1,6 +1,7 @@
 import { v4 } from 'uuid';
 import { getApiKey } from './auth-provider';
 import { cache, getCached } from './cache';
+import { getCityJSON, processCityJSONRequest } from './city-json-provider';
 
 export interface RooferInformations {
   email?: string;
@@ -58,9 +59,13 @@ const getProcessDetectionUrl = () => {
 export const initializeRoofAnalyse = async (layers: string, address: string, coordinates?: Array<Array<Array<number>>>, withoutImage = false, zoom = 20) => {
   const cachedDetectionId = getCached.roofAnalyseId();
   const detectionId = withoutImage !== true ? cachedDetectionId || v4() : v4();
+  const cachedCityJSONRequestId = getCached.cityJSONRequestId();
+  const cityJSONRequestId = cachedCityJSONRequestId || v4();
+
   const apiKey = await getApiKey();
 
   cache.roofAnalyseId(detectionId);
+  cache.cityJSONRequestId(cityJSONRequestId);
 
   const geoJson = getGeoJsonTemlate(
     layers,
@@ -81,6 +86,10 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
         ]
       : []
   );
+
+  processCityJSONRequest(cityJSONRequestId, coordinates[0] as [number, number][]).catch(() => {
+    console.error('[CityJSONRequest]: Failed to process CityJSON');
+  });
 
   const data = await fetch(getProcessDetectionUrl(), {
     headers: { 'x-api-key': apiKey || '', 'content-type': 'application/json' },

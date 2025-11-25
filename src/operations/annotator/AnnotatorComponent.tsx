@@ -55,7 +55,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
   const [localPolygon, setLocalPolygon] = useState(polygonFromProps || []);
 
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -208,11 +208,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               />
             </Box>
           )}
-          <Annotator3D 
+          <Annotator3D
             polygons={polygons}
-            active={screen === "3d-annotator"} 
-            width={width || containerWidth} 
-            height={height || containerHeight * 0.95} 
+            active={screen === '3d-annotator'}
+            width={width || containerWidth}
+            height={height || containerHeight * 0.95}
             areaPicture={currentAreaPictureDetailsToUse}
           />
           {(data?.properties || draftLlmValue) && screen === 'llm' && (
@@ -249,16 +249,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
+            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length !== 1 && screen !== '3d-annotator'} />
           </Stack>
         </Stack>
       )}
 
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
-          {screen !== "3d-annotator" && <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} /> }
-          <Annotator3DSwitchButton 
-            disabled={polygons.length !== 1 && screen !== "3d-annotator"} 
-          />
+          {screen !== '3d-annotator' && <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />}
+          {screen === '3d-annotator' && <Box />}
+          <Annotator3DSwitchButton disabled={polygons.length !== 1 && screen !== '3d-annotator'} />
         </Stack>
       )}
       {!isInvoiceForm && screen !== '3d-annotator' && (

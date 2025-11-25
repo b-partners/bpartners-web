@@ -1,11 +1,9 @@
-import { v4 as uuid } from 'uuid';
-import { useQuery } from '@tanstack/react-query';
-import { useAnnotatorComponentStore } from '../store';
-import { getCityJSON } from '@/providers/city-json-provider';
-import { stringifyObj } from '../utils/stringify';
-import { Polygon } from '@bpartners/annotator-component';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
+import { getCityJSON } from '@/providers/city-json-provider';
+import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { useQuery } from '@tanstack/react-query';
+import { v4 as uuid } from 'uuid';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
   const imageSize = 1024;
@@ -33,12 +31,10 @@ const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: Are
 };
 
 export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPicture?: AreaPictureDetails, active?: boolean) => {
-  const { roofDelimiter } = useAnnotatorComponentStore();
-  const hasRoofDelimiter = !!roofDelimiter?.polygon;
   const hasPolygonFromAnnotator = !!polygonFromAnnotator;
 
   return useQuery({
-    enabled: active && (hasRoofDelimiter || hasPolygonFromAnnotator),
+    enabled: active && hasPolygonFromAnnotator,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     queryFn: async () => {
@@ -46,17 +42,10 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       const cityJSONRequestId = cachedCityJSONRequestId || uuid();
 
       cache.cityJSONRequestId(cityJSONRequestId);
-     
-      //TODO: maybe handle roof delimiter
+
       const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture);
       return getCityJSON(cityJSONRequestId, mappedCoordinates);
     },
-    queryKey: [
-      'city-json',
-      stringifyObj(roofDelimiter ?? {}),
-      hasRoofDelimiter,
-      hasPolygonFromAnnotator,
-      active
-    ],
+    queryKey: ['city-json', active, hasPolygonFromAnnotator],
   });
 };

@@ -3,7 +3,7 @@ import { Cached } from '@mui/icons-material';
 import { Button, ButtonProps } from '@mui/material';
 import { FC } from 'react';
 
-export const Annotator3DSwitchButton: FC<ButtonProps> = (props) => {
+export const Annotator3DSwitchButton: FC<ButtonProps> = props => {
   const { screen, setScreen } = useAnnotatorScreenSwitch();
   const handleClick = () => setScreen(screen === '3d-annotator' ? 'annotator' : '3d-annotator');
 
