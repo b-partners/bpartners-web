@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { getApiKey } from './auth-provider';
 import { cache, getCached } from './cache';
-import { getCityJSON, processCityJSONRequest } from './city-json-provider';
+import { processCityJSONRequest } from './city-json-provider';
 
 export interface RooferInformations {
   email?: string;
