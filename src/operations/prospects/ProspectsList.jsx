@@ -66,15 +66,13 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           const fileId = uuidV4();
           const pictureId = uuidV4();
           const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-          const currentAreaPicture = await annotatorProvider.getPictureFormAddress(pictureId, {
+          await annotatorProvider.getPictureFormAddress(pictureId, {
             address: data.address,
             fileId,
             filename: `Layer ${data.address}`,
             prospectId,
             zoomLevel: ZoomLevel.HOUSES_0,
           });
-
-          if (currentAreaPicture?.actualLayer?.precisionLevelInCm !== 5) throw new Error('precisionLevelInCm');
 
           annotatorComponentStore.reset();
           setAnnotatorSidebarAccordionItem(0);
