@@ -123,7 +123,7 @@ export const MeasurementIn2D = () => {
       >
         <FormControlLabel onClick={handleClick} control={<Switch checked={showMeasurements} />} label='Afficher les mesures' />
         <Box ref={accordionRef} width='100%'></Box>
-        <Box<'canvas'> ref={canvasRef} component='canvas' display='none' width={520} height={520} />
+        <Box ref={canvasRef} component='canvas' display='none' width={520} height={520} />
         {imageUrl && accordionWidth > 0 && (
           <AnnotatorCanvas
             measurementMapper={(_m, _p, i) => measurements[i]}
