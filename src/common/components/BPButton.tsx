@@ -29,12 +29,16 @@ const BPButtonTemplate = (props: BPButtonTemplateProps) => {
   );
 };
 
+const LinkComponent = (props: any) => {
+  return <Link {...props} />;
+};
+
 export const BPButton = (props: BPButtonTemplateProps) => {
   const { href, ...others } = props;
   return href ? (
-    <Link to={href}>
+    <LinkComponent to={href}>
       <BPButtonTemplate {...others} />
-    </Link>
+    </LinkComponent>
   ) : (
     <BPButtonTemplate {...others} />
   );
