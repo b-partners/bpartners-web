@@ -1,4 +1,4 @@
-import { NOOP_FN } from '@/common/utils/noop_fn';
+import { useAnnotatorScreenSwitch } from '@/common/store';
 import { Cached } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { FC } from 'react';
@@ -6,16 +6,19 @@ import { llmButtonStyle } from './style';
 
 interface Props {
   enabled: boolean;
-  onClick: typeof NOOP_FN;
-  showLlmResult: boolean;
 }
 
-export const LlmSwitchButton: FC<Props> = ({ enabled, onClick, showLlmResult }) => {
-  if (!enabled) return null;
+export const LlmSwitchButton: FC<Props> = ({ enabled }) => {
+  const { setScreen, screen } = useAnnotatorScreenSwitch();
+
+  const handleClick = () => setScreen('llm');
+
+  if (!enabled || screen === '3d-annotator') return null;
 
   return (
-    <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={onClick}>
-      {showLlmResult ? "Revenir à l’écran d'annotation" : 'Comprendre votre rapport'}
+    <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={handleClick}>
+      {screen == 'llm' && "Revenir à l’écran d'annotation"}
+      {screen === 'annotator' && 'Comprendre votre rapport'}
     </Button>
   );
 };
