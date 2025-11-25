@@ -97,8 +97,6 @@ export const MeasurementIn2D = () => {
     },
   ];
 
-  console.log(polygons);
-
   const [polygonList, setPolygonList] = useState([]);
 
   useEffect(() => {
