@@ -7,7 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
-import { ProspectContextProvider, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '@/common/store';
+import {
+  ProspectContextProvider,
+  useAnnotator3DStore,
+  useAnnotatorComponentFormItemStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+} from '@/common/store';
 import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
@@ -37,6 +43,8 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const { open: openDialog, close: closeDialog } = useDialog();
   const annotatorComponentStore = useAnnotatorComponentStore();
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
+  const { setScreen } = useAnnotatorScreenSwitch();
+  const { reset } = useAnnotator3DStore();
 
   useEffect(() => {
     form.setValue('address', address);
@@ -44,6 +52,8 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
     const doSubmit = form.handleSubmit(async data => {
+      setScreen('annotator');
+      reset();
       startLoading();
 
       if (isCreating) {

@@ -80,7 +80,7 @@ export const MeasurementIn2D = () => {
     const measurement: Measurement = {
       position: getCenter(prevScaled, currentScaled),
       unity: 'm',
-      value: +(getDistance(prevNotScaled, currentNotScaled) * 0.01).toFixed(2),
+      value: +(getDistance(prevNotScaled, currentNotScaled) * 0.001).toFixed(2),
       polygonId: currentPolygonId,
     };
 

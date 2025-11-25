@@ -4,6 +4,7 @@ interface Action {
   selectObject: (object: any) => void;
   setSelectedObjectInfo: (object: any) => void;
   setShouldSelectSurface: (value: boolean) => void;
+  reset: () => void;
 }
 interface State {
   selectedObject: any;
@@ -20,4 +21,5 @@ export const useAnnotator3DStore = create<Annotator3DStore>(set => ({
   setSelectedObjectInfo: selectedObjectInfo => set({ selectedObjectInfo }),
   shouldSelectSurface: true,
   setShouldSelectSurface: shouldSelectSurface => set({ shouldSelectSurface }),
+  reset: () => set({ selectedObject: null, selectedObjectInfo: null, shouldSelectSurface: true }),
 }));
