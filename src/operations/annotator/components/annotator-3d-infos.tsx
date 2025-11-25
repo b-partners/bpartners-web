@@ -14,7 +14,8 @@ export const Annotator3DInfos = () => {
 
   const cityObject = selectedObject && selectedObjectInfo ? selectedObject.object.citymodel.CityObjects[selectedObjectInfo.objectId] : {};
 
-  const pente = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.slope_in_degrees;
+  const slope = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.slope_in_degrees;
+  const area = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.area_in_square_meters;
   const type = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.type;
   const height = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.height_in_meters;
 
@@ -34,23 +35,29 @@ export const Annotator3DInfos = () => {
               <strong>Type : </strong>
               {shouldSelectSurface ? type : cityObject?.type}
             </Typography>
+            {area && shouldSelectSurface && (
+              <Typography>
+                <strong>Surface rampant : </strong>
+                {area}m²
+              </Typography>
+            )}
             {height && shouldSelectSurface && (
               <Typography>
                 <strong>Hauteur : </strong>
                 {height}m
               </Typography>
             )}
-            {pente && shouldSelectSurface && (
+            {slope && shouldSelectSurface && (
               <Typography>
                 <strong>Pente : </strong>
-                {pente}°
+                {slope}°
               </Typography>
             )}
           </AccordionDetails>
         </Accordion>
       )}
 
-      {selectedObject && selectedObjectInfo && <MeasurementIn2D />}
+      {selectedObject && selectedObjectInfo && type === 'RoofSurface' && <MeasurementIn2D />}
     </Box>
   );
 };

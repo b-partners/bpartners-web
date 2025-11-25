@@ -1,7 +1,7 @@
 import { useAnnotator3DStore } from '@/common/store';
 import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
 import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import { createBlankImage, getCenter, getDistance } from '../utils';
@@ -21,26 +21,12 @@ const scalePolygonAndCenter = (points: Point[]) => {
 
   const scale = 500 / base;
 
-  const scaled = points.map(p => ({
-    x: p.x * scale + 10,
-    y: p.y * scale + 10,
-  }));
+  // const dcx = (500 - dx * scale) / 2;
+  // const dcy = (500 - dy * scale) / 2;
 
-  const xCoordinatesScaled = points.map(p => p.x);
-  const yCoordinatesScaled = points.map(p => p.y);
-  const xMaxScaled = Math.max(...xCoordinatesScaled);
-  const yMaxScaled = Math.max(...yCoordinatesScaled);
-  const xMinScaled = Math.min(...xCoordinatesScaled);
-  const yMinScaled = Math.min(...yCoordinatesScaled);
-
-  const dxScaled = xMaxScaled - xMinScaled;
-  const dyScaled = yMaxScaled - yMinScaled;
-  const dcxScaled = (500 - dxScaled) / 2;
-  const dcyScaled = (500 - dyScaled) / 2;
-
-  return scaled.map(p => ({
-    x: p.x + (dcxScaled < xMin ? -dcxScaled : +dcxScaled),
-    y: p.y + (dcyScaled < yMin ? -dcyScaled : +dcyScaled),
+  return points.map(p => ({
+    x: p.x * scale - (xMax * scale - 500) + 10,
+    y: p.y * scale - (yMax * scale - 500) + 10,
   }));
 };
 
@@ -50,7 +36,7 @@ export const MeasurementIn2D = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [accordionWidth, setAccordionWidth] = useState(0);
   const accordionRef = useRef<HTMLDivElement>(null);
-
+  const [showMeasurements, setShowMeasurements] = useState(true);
   useEffect(() => {
     const accordion = accordionRef.current;
     if (!accordion) return () => {};
@@ -94,7 +80,7 @@ export const MeasurementIn2D = () => {
     const measurement: Measurement = {
       position: getCenter(prevScaled, currentScaled),
       unity: 'm',
-      value: +getDistance(prevNotScaled, currentNotScaled).toFixed(2),
+      value: +(getDistance(prevNotScaled, currentNotScaled) * 0.01).toFixed(2),
       polygonId: currentPolygonId,
     };
 
@@ -121,10 +107,21 @@ export const MeasurementIn2D = () => {
     }
   }, [polygons]);
 
+  const handleClick = () => {
+    setShowMeasurements(prev => !prev);
+  };
+
   return (
     <Accordion defaultExpanded>
       <AccordionSummary expandIcon={<ExpandMore />}>Mesures</AccordionSummary>
-      <AccordionDetails>
+      <AccordionDetails
+        sx={{
+          '& [data-cy="annotator-canvas-container"] span': {
+            opacity: `${showMeasurements ? 0.5 : 0} !important`,
+          },
+        }}
+      >
+        <FormControlLabel onClick={handleClick} control={<Switch checked={showMeasurements} />} label='Afficher les mesures' />
         <Box ref={accordionRef} width='100%'></Box>
         <Box<'canvas'> ref={canvasRef} component='canvas' display='none' width={520} height={520} />
         {imageUrl && accordionWidth > 0 && (
