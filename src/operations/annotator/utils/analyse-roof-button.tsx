@@ -38,7 +38,7 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ polygons, areaPi
       isLoading={isProcessing}
     />
   ) : (
-    <Tooltip title="L'image actuelle n'est pas de precision de 5cm, impossible de lancer une analyse">
+    <Tooltip title='L’image actuelle n’a pas une précision de 5 cm, donc l’analyse ne peut pas être lancée.'>
       <BPButton
         {...props}
         className='analyse-roof-button'
