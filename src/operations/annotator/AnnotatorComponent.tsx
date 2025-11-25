@@ -1,8 +1,8 @@
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
-import { useGetElementSize, useToggle } from '@/common/hooks';
-import { useAnnotatorComponentStore } from '@/common/store';
+import { useGetElementSize } from '@/common/hooks';
+import { useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
@@ -12,7 +12,15 @@ import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { degradationLevels } from '../prospects/constants';
-import { AnalyseResultButton, annotatorButtonsActions, LlmResult, LlmSwitchButton, RefocusImageButton } from './components';
+import {
+  AnalyseResultButton,
+  Annotator3D,
+  Annotator3DSwitchButton,
+  annotatorButtonsActions,
+  LlmResult,
+  LlmSwitchButton,
+  RefocusImageButton,
+} from './components';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
 import {
@@ -45,10 +53,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
   const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
-
   const [localPolygon, setLocalPolygon] = useState(polygonFromProps || []);
 
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
@@ -67,7 +74,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   // Get the Area picture details to use
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
-  const { toggleValue: toggleLLMResultView, value: showLLMResult } = useToggle(false);
+  const { screen } = useAnnotatorScreenSwitch();
   const { useDrafts } = parseUrlParams();
 
   useEffect(() => {
@@ -178,7 +185,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
-          {containerWidth > 0 && !showLLMResult && (!geoJsonResultUrl || data?.image) && (
+          {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
             <Box height='95%'>
               <AnnotatorCanvas
                 markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
@@ -201,7 +208,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               />
             </Box>
           )}
-          {(data?.properties || draftLlmValue) && showLLMResult && (
+          <Annotator3D
+            polygons={polygons}
+            active={screen === '3d-annotator'}
+            width={width || containerWidth}
+            height={height || containerHeight * 0.95}
+            areaPicture={currentAreaPictureDetailsToUse}
+          />
+          {(data?.properties || draftLlmValue) && screen === 'llm' && (
             <LlmResult
               width={width || containerWidth}
               height={height || containerHeight}
@@ -209,36 +223,45 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               isLoading={isLlmResultPending}
             />
           )}
-          {(data || globalRate) && (
-            <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <LlmSwitchButton showLlmResult={showLLMResult} enabled={!!data?.properties || !!draftLlmValue} onClick={toggleLLMResultView} />
-              <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
-                {degradationLevels.map(({ color, label }) => (
-                  <Box
-                    key={label}
-                    className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'degratation-levels-box-selected' : ''}`}
-                    sx={{
-                      bgcolor: color,
-                      border: `5px solid ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'black' : 'transparent'}`,
-                    }}
-                  >
-                    {label}
-                  </Box>
-                ))}
-              </Stack>
-              <Box className='global-rage-container'>
-                <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
-              </Box>
-            </Stack>
-          )}
         </Box>
       )}
-      {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
-        <Stack direction='row' className='bottom-action'>
-          <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />
+
+      {filename && (data || globalRate) && (
+        <Stack>
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Box className='global-rage-container'>
+              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
+            </Box>
+            <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
+              {degradationLevels.map(({ color, label }) => (
+                <Box
+                  key={label}
+                  className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'degratation-levels-box-selected' : ''}`}
+                  sx={{
+                    bgcolor: color,
+                    border: `5px solid ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'black' : 'transparent'}`,
+                  }}
+                >
+                  {label}
+                </Box>
+              ))}
+            </Stack>
+          </Stack>
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
+            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length !== 1 && screen !== '3d-annotator'} />
+          </Stack>
         </Stack>
       )}
-      {!isInvoiceForm && (
+
+      {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
+        <Stack direction='row' className='bottom-action'>
+          {screen !== '3d-annotator' && <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />}
+          {screen === '3d-annotator' && <Box />}
+          <Annotator3DSwitchButton disabled={polygons.length !== 1 && screen !== '3d-annotator'} />
+        </Stack>
+      )}
+      {!isInvoiceForm && screen !== '3d-annotator' && (
         <AnalyseResultButton
           analyseProperties={data?.properties}
           image={data?.image}
