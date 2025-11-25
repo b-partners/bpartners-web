@@ -12,7 +12,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { AbsSwitch } from './components';
+import { Annotator3DInfos } from './components';
 import { SideBar } from './SideBar';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils';
@@ -63,7 +63,7 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
             <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
               {screen !== '3d-annotator' && <SideBar draftAnnotationId={draftAnnotationId} />}
-              {screen === '3d-annotator' && <AbsSwitch />}
+              {screen === '3d-annotator' && <Annotator3DInfos />}
             </Stack>
           </Grid>
         )}
