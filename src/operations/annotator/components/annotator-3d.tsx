@@ -6,10 +6,7 @@ import * as THREE from 'three';
 
 import { BPLoader } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { useAnnotator3DStore } from '@/common/store';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, FormControlLabel, Switch, Typography } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 
