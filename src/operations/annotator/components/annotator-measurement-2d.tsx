@@ -1,10 +1,11 @@
 import { useAnnotator3DStore } from '@/common/store';
 import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
 import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
+import { FC, useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import { createBlankImage, getCenter, getDistance } from '../utils';
+import faitage from '/faitage.png';
 
 const scalePolygonAndCenter = (points: Point[]) => {
   const xCoordinates = points.map(p => p.x);
@@ -30,7 +31,13 @@ const scalePolygonAndCenter = (points: Point[]) => {
   }));
 };
 
-export const MeasurementIn2D = () => {
+interface MeasurementIn2DProps {
+  isWall: boolean;
+  maxH: number;
+  minH: number;
+}
+
+export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }) => {
   const { selectedObject, selectedObjectInfo } = useAnnotator3DStore();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageUrl, setImageUrl] = useState(null);
@@ -122,7 +129,7 @@ export const MeasurementIn2D = () => {
         <FormControlLabel onClick={handleClick} control={<Switch checked={showMeasurements} />} label='Afficher les mesures' />
         <Box ref={accordionRef} width='100%'></Box>
         <Box ref={canvasRef} component='canvas' display='none' width={520} height={520} />
-        {imageUrl && accordionWidth > 0 && (
+        {imageUrl && accordionWidth > 0 && !isWall && (
           <AnnotatorCanvas
             measurementMapper={(_m, _p, i) => measurements[i]}
             height={accordionWidth}
@@ -138,6 +145,17 @@ export const MeasurementIn2D = () => {
             }}
             zoom={20}
           />
+        )}
+        {isWall && (
+          <Box width={accordionWidth} position='relative'>
+            <Box position='absolute' sx={{ top: '50%', left: 2, transform: 'rotate(-90deg)' }}>
+              <Typography>{maxH}m</Typography>
+            </Box>
+            <Box position='absolute' sx={{ top: '50%', right: 2, transform: 'rotate(-90deg)' }}>
+              <Typography>{minH}m</Typography>
+            </Box>
+            <Box<'img'> component='img' src={faitage} width={accordionWidth} />
+          </Box>
         )}
       </AccordionDetails>
     </Accordion>
