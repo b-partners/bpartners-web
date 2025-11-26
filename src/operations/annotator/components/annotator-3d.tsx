@@ -6,6 +6,7 @@ import * as THREE from 'three';
 
 import { BPLoader } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
+import { useAnnotator3DStore } from '@/common/store';
 import { CityJSONRequestStatus } from '@/providers/city-json-provider';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { WarningOutlined } from '@mui/icons-material';
@@ -114,7 +115,15 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
 };
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
-  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+  const { isLoading, error, isError, data: cityJson, refetch } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+
+  const { cityJsonModel, setCityJsonModel } = useAnnotator3DStore();
+
+  useEffect(() => {
+    if (!cityJsonModel && cityJson) {
+      setCityJsonModel(cityJson);
+    }
+  }, [cityJson]);
 
   if (!active) {
     return null;
@@ -131,7 +140,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
-          <CityScene cityJson={cityJson} />
+          <CityScene cityJson={cityJsonModel} />
         </Canvas>
       )}
       {isLoading && (
