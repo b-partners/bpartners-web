@@ -148,7 +148,7 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
         )}
         {isWall && (
           <Box width={accordionWidth} position='relative'>
-            <Box position='absolute' sx={{ top: '50%', left: 2, transform: 'rotate(-90deg)' }}>
+            <Box position='absolute' sx={{ top: '50%', left: -2, transform: 'rotate(-90deg)' }}>
               <Typography>{maxH}m</Typography>
             </Box>
             <Box position='absolute' sx={{ top: '50%', right: 2, transform: 'rotate(-90deg)' }}>
