@@ -12,7 +12,6 @@ export const retryUntilReady = async <T>({ fetcher, isReady, maxAttemps = 10, sl
 
   const doAttemp = async (): Promise<T> => {
     attemp++;
-    console.log('Attemp={}', attemp);
     const response = await fetcher();
 
     if (!isReady(response)) {

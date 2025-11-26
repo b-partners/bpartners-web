@@ -50,7 +50,7 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to process CityJSON request (HTTP ${response.status})`);
+    throw new Error(`[CityJSONRequest] Status: FAILED — Unable to generate CityJSON.`);
   }
 
   return (await response.json()) as CityJSONRequest;
@@ -58,18 +58,18 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
 
 export const getCityJSON = async (id: string, roofDelimiter: [number, number][]) => {
   const cityJsonRequest = await retryUntilReady({
-    maxAttemps: 15,
+    maxAttemps: 20,
     sleepDelay: 7_000,
     fetcher: () => processCityJSONRequest(id, roofDelimiter),
     isReady: request => request.status !== CityJSONRequestStatus.PROCESSING,
   });
 
-  if (cityJsonRequest.status === CityJSONRequestStatus.FAILED) {
-    throw new Error(`[CityJSONRequest]: Failed to generate CityJSON`);
+  if (cityJsonRequest.status === CityJSONRequestStatus.UNAVAILABLE) {
+    throw new Error(`[CityJSONRequest] Status: UNAVAILABLE — CityJSON is currently unavailable.`);
   }
 
-  if (cityJsonRequest.status === CityJSONRequestStatus.UNAVAILABLE) {
-    throw new Error('[CityJSONRequest]: CityJSON is unavailable');
+  if (cityJsonRequest.status == CityJSONRequestStatus.FAILED) {
+    throw new Error(`[CityJSONRequest] Status: FAILED — Unable to generate CityJSON.`);
   }
 
   const urlResponse = await fetch(cityJsonRequest.cityJsons[0].url, { method: 'GET' });
