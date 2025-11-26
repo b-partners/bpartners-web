@@ -1,12 +1,15 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { BPLoader } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
+import { CityJSONRequestStatus } from '@/providers/city-json-provider';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { WarningOutlined } from '@mui/icons-material';
+import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 
@@ -86,8 +89,32 @@ interface Annotator3DProps {
   areaPicture?: AreaPictureDetails;
 }
 
+const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
+  const { errorMessage, status } = useMemo(() => {
+    let result = {
+      errorMessage: 'Une erreur est survenue lors de la génération de la version 3D de votre maison.',
+      status: CityJSONRequestStatus.FAILED,
+    };
+
+    if (error.message.includes(CityJSONRequestStatus.UNAVAILABLE)) {
+      result = {
+        errorMessage: 'La version 3D de la maison est actuellement indisponible, mais sera disponible prochainement.',
+        status: CityJSONRequestStatus.UNAVAILABLE,
+      };
+    }
+
+    return result;
+  }, [error?.message]);
+
+  return (
+    <Alert sx={{ mt: 2 }} icon={<WarningOutlined />} severity={status === CityJSONRequestStatus.UNAVAILABLE ? 'warning' : 'error'}>
+      {errorMessage}
+    </Alert>
+  );
+};
+
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
-  const { isLoading, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
 
   if (!active) {
     return null;
@@ -95,7 +122,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
 
   return (
     <div style={{ width, height, position: 'relative' }}>
-      {!isLoading && (
+      {!isError && !error && !isLoading && (
         <Canvas
           camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
           dpr={[1, 1.5]}
@@ -118,6 +145,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           }}
         />
       )}
+      {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
 };
