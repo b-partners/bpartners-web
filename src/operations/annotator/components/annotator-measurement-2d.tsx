@@ -151,10 +151,10 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
         {isWall && (
           <Box width={accordionWidth} position='relative'>
             <Box position='absolute' sx={{ top: '50%', left: -2, transform: 'rotate(-90deg)' }}>
-              <Typography>{maxH}m</Typography>
+              <Typography>{minH}m</Typography>
             </Box>
             <Box position='absolute' sx={{ top: '50%', right: 2, transform: 'rotate(-90deg)' }}>
-              <Typography>{minH}m</Typography>
+              <Typography>{maxH}m</Typography>
             </Box>
             <Box<'img'> component={'img' as const} src={faitage} sx={{ width: accordionWidth }} />
           </Box>
