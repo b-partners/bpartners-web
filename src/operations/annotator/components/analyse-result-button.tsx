@@ -18,7 +18,7 @@ import { Stack } from '@mui/material';
 import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
-import { useNavigate, useNavigation } from 'react-router';
+import { useNavigate } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
 import { AnnotatorFormState } from '../utils';
