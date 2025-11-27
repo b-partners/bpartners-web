@@ -79,7 +79,7 @@ export const Annotator3DInfos = () => {
         </Accordion>
       )}
 
-      {selectedObject && selectedObjectInfo && type === 'RoofSurface' && shouldSelectSurface && <MeasurementIn2D />}
+      {selectedObject && selectedObjectInfo && shouldSelectSurface && <MeasurementIn2D isWall={isWall} maxH={maxWallHeight} minH={minWallHeight} />}
     </Box>
   );
 };
