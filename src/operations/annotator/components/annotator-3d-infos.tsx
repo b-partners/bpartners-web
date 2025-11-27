@@ -1,7 +1,6 @@
 import { useAnnotator3DStore } from '@/common/store';
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
-import { getDistance } from '../utils';
 import { MeasurementIn2D } from './annotator-measurement-2d';
 
 export const Annotator3DInfos = () => {
@@ -26,18 +25,25 @@ export const Annotator3DInfos = () => {
   const boundary = cityObject?.geometry?.[0]?.boundaries?.[boundaryIndex]?.[0];
   const verticles = selectedObject?.object?.citymodel?.vertices || [];
   const points3D = boundary?.map((index: number) => verticles[index]);
-  points3D?.push(points3D[0]);
 
-  const measurements = [];
+  let measurements = [0, 0];
+  const pointsMinMax: Record<string, number> = {};
 
-  for (let i = 1; i < points3D?.length || 0; i++) {
-    const prev = points3D[i - 1];
-    const current = points3D[i];
-    measurements.push(+(getDistance(prev, current) * 0.001).toFixed(2));
+  if (isWall) {
+    points3D.forEach(([x, y, z]: number[]) => {
+      const name = `${x}-${y}`;
+      if (pointsMinMax[name]) {
+        pointsMinMax[name] = Math.abs(pointsMinMax[name] - z);
+      } else {
+        pointsMinMax[name] = z;
+      }
+    });
+
+    measurements = Object.values(pointsMinMax);
   }
 
-  const maxWallHeight = Math.max(...measurements);
-  const minWallHeight = Math.min(...measurements);
+  const maxWallHeight = +(Math.max(...measurements) * 0.001).toFixed(2);
+  const minWallHeight = +(Math.min(...measurements) * 0.001).toFixed(2);
 
   return (
     <Box>
