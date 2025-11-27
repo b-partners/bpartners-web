@@ -1,12 +1,14 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
-import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
+import { useAnnotatorComponentStore } from '@/common/store';
+import { getFileUrl, parseUrlParams, printError, UrlParams } from '@/common/utils';
 import {
   AnnotationCoveringFromAnalyse,
   annotationsAttributeMapper,
   annotatorMapper,
   annotatorProvider,
+  cache,
   clearPolygons,
   getCached,
   SlopeAndHeightStatus,
@@ -16,6 +18,7 @@ import { Stack } from '@mui/material';
 import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+import { useNavigate, useNavigation } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
 import { AnnotatorFormState } from '../utils';
@@ -54,6 +57,9 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
   const [isThereAnyPolygons, setIsThereAnyPolygons] = useState(false);
+  const navigate = useNavigate();
+
+  const annotatorComponentStore = useAnnotatorComponentStore();
 
   useEffect(() => {
     const observer = annotatorFormState.watch(({ polygons }) => {
@@ -63,6 +69,29 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
 
     return observer.unsubscribe;
   }, []);
+
+  const handleReturnToBegin = () => {
+    const fileUrl = UrlParams.get('imgUrl');
+    const address = UrlParams.get('address');
+    const zoomLevel = UrlParams.get('zoomLevel');
+    const pictureId = UrlParams.get('pictureId');
+    const prospectId = UrlParams.get('prospectId');
+    const fileId = UrlParams.get('fileId');
+
+    clearPolygons(true);
+    annotatorComponentStore.reset();
+    cache.loadingRedirection(
+      `/annotator?` +
+        `imgUrl=${encodeURIComponent(fileUrl)}` +
+        `&address=${address}` +
+        `&zoomLevel=${zoomLevel}` +
+        `&pictureId=${pictureId}` +
+        `&useDrafts=false` +
+        `&prospectId=${prospectId}` +
+        `&fileId=${fileId}`
+    );
+    navigate(`/loading`);
+  };
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -108,8 +137,8 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         className='invoice-gen-btn'
         isLoading={isLoading}
         data-testid='submit-annotator-form'
-        onClick={event => handleSubmitFormsWrapper(event, false)}
-        label='resources.annotator.save'
+        onClick={handleReturnToBegin}
+        label='resources.annotator.returnToBegin'
       />
       <BPButton
         isLoading={isLoading}
