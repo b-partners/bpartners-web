@@ -137,12 +137,14 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
             image={imageUrl}
             polygonList={polygonList}
             setPolygons={setPolygonList}
-            polygonLineSizeProps={{
-              converterApiUrl: '',
-              imageName: '',
-              showLineSize: true,
-              showOnly: true,
-            }}
+            polygonLineSizeProps={
+              {
+                converterApiUrl: '',
+                imageName: '',
+                showLineSize: true,
+                showOnly: true,
+              } as any
+            }
             zoom={20}
           />
         )}
@@ -154,7 +156,7 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
             <Box position='absolute' sx={{ top: '50%', right: 2, transform: 'rotate(-90deg)' }}>
               <Typography>{minH}m</Typography>
             </Box>
-            <Box<'img'> component='img' src={faitage} width={accordionWidth} />
+            <Box<'img'> component={'img' as const} src={faitage} sx={{ width: accordionWidth }} />
           </Box>
         )}
       </AccordionDetails>
