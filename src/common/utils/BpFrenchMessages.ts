@@ -107,6 +107,7 @@ export const BpFrenchMessages = {
     annotator: {
       name: 'Annotation |||| Annotations',
       save: 'Générer un devis',
+      returnToBegin: 'Recommencer',
     },
   },
   messages: {

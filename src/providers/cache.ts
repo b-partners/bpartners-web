@@ -22,6 +22,7 @@ const cityJSONRequestIdItem = 'bp_city_json_request_id';
 const llmResultItem = 'bp_llm_result_item';
 const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
 const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
+const loadingRedirectionItems = 'bp_loading_params_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -47,6 +48,9 @@ type TInitialMarkerInfo = {
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
+  },
+  loadingRedirection(params: string) {
+    return localStorage.setItem(loadingRedirectionItems, params);
   },
   token(accessToken: string, refreshToken: string) {
     localStorage.setItem(accessTokenItem, accessToken);
@@ -191,6 +195,9 @@ export const getCached = {
   isAreaPictureImageUpdated() {
     const value = localStorage.getItem(isAreaPictureImageUpdatedItem);
     return JSON.parse(value || 'false');
+  },
+  loadingRedirection() {
+    return localStorage.getItem(loadingRedirectionItems);
   },
 };
 
