@@ -26,6 +26,11 @@ export const Annotator3DInfos = () => {
   const verticles = selectedObject?.object?.citymodel?.vertices || [];
   const points3D = boundary?.map((index: number) => verticles[index]);
 
+  const totalArea = cityObject?.geometry?.[0]?.semantics?.surfaces
+    ?.filter((e: any) => e?.type === 'RoofSurface')
+    .map((obj: any) => obj?.area_in_square_meters)
+    .reduce((a: number, b: number) => (a || 0) + (b || 0), 0);
+
   let measurements = [0, 0];
   const pointsMinMax: Record<string, number> = {};
 
@@ -57,6 +62,10 @@ export const Annotator3DInfos = () => {
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMore />}>Informations</AccordionSummary>
           <AccordionDetails>
+            <Typography>
+              <strong>Surface totale : </strong>
+              {totalArea}m²
+            </Typography>
             {area && shouldSelectSurface && isRoof && (
               <Typography>
                 <strong>Surface rampant : </strong>
