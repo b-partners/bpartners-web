@@ -1,4 +1,5 @@
 import { BP_THEME } from '@/bp-theme';
+import { LoadingPage } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { BpFrenchMessages } from '@/common/utils';
 import { Layout } from '@/layout';
@@ -74,6 +75,7 @@ export const BpAdmin = () => {
       <CustomRoutes>
         <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/calendar-sync' element={<CalendarSync />} />
+        <Route path='/loading' element={<LoadingPage />} />
         <Route path='/account/:id' element={<account.show />} />
         <Route path='/configurations' element={<Configuration />} />
         <Route path='/partners' element={<PartnersPage />} />
