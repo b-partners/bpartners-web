@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { useAnnotator3DStore } from '@/common/store';
 import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
 import { ExpandMore } from '@mui/icons-material';
@@ -96,7 +97,7 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
 
   const polygons: Polygon[] = [
     {
-      ...getColorFromMain('#00ff00'),
+      ...getColorFromMain(PALETTE_COLORS.pine),
       points: scaledPoints2D,
       id: currentPolygonId,
       measurements,
