@@ -13,6 +13,7 @@ import { WarningOutlined } from '@mui/icons-material';
 import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 import { RaycasterHandler } from './annotator-3d-raycaster';
+import { Annotator3DSaveImage } from './annotator-3d-save-image';
 
 function fitCameraToSelection(camera: any, controls: any, box: any, fitOffset = 1.2) {
   const size = new THREE.Vector3();
@@ -140,6 +141,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
+          <Annotator3DSaveImage />
           <CityScene cityJson={cityJsonModel} />
         </Canvas>
       )}

@@ -97,7 +97,8 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
 
   const polygons: Polygon[] = [
     {
-      ...getColorFromMain(PALETTE_COLORS.pine),
+      strokeColor: '#000000',
+      fillColor: PALETTE_COLORS.neon_orange,
       points: scaledPoints2D,
       id: currentPolygonId,
       measurements,

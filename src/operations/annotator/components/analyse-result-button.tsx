@@ -68,7 +68,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
     });
 
     return observer.unsubscribe;
-  }, []);
+  }, [annotatorFormState]);
 
   const handleReturnToBegin = () => {
     const fileUrl = UrlParams.get('imgUrl');
