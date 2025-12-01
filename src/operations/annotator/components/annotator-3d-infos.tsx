@@ -64,7 +64,7 @@ export const Annotator3DInfos = () => {
           <AccordionDetails>
             <Typography>
               <strong>Surface totale : </strong>
-              {totalArea}m²
+              {totalArea.toFixed(2)}m²
             </Typography>
             {area && shouldSelectSurface && isRoof && (
               <Typography>
