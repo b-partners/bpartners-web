@@ -1,5 +1,5 @@
 import ExternalLinkButton from '@/common/components/BPExternalLinkButton';
-import { authProvider, recaptchaProvider } from '@/providers';
+import { authProvider } from '@/providers';
 import { Button, CircularProgress, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
@@ -16,21 +16,12 @@ const SignInForm = () => {
   const formState = useForm({ mode: 'all', defaultValues: { username: '', password: '' } });
   const [isLoading, setLoading] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const { useGoogleReCaptcha, verifyRecaptchaToken } = recaptchaProvider;
-  const { executeRecaptcha } = useGoogleReCaptcha();
   const notify = useNotify();
 
   const login = formState.handleSubmit(async loginState => {
     setLoading(true);
 
     try {
-      // captcha check
-      const token = await executeRecaptcha('dashboard_sign_in_submit');
-      const data = await verifyRecaptchaToken(token);
-
-      if (!data) throw new Error();
-      // captcha check
-
       const redirectionUrl = await authProvider.login(loginState);
       Redirect.toURL(redirectionUrl);
     } catch {
