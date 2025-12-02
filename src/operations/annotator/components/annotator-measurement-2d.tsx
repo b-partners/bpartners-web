@@ -6,7 +6,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, S
 import { FC, useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import { createBlankImage, getCenter, getDistance } from '../utils';
-import faitage from '/faitage.png';
+import faitage from '/faitage.webp';
 
 const scalePolygonAndCenter = (points: Point[]) => {
   const xCoordinates = points.map(p => p.x);
@@ -157,7 +157,7 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
             <Box position='absolute' sx={{ top: '50%', right: 2, transform: 'rotate(-90deg)' }}>
               <Typography>{maxH}m</Typography>
             </Box>
-            <Box<'img'> component={'img' as const} src={faitage} sx={{ width: accordionWidth }} />
+            <Box<'img'> component={'img' as const} alt='illustration-hauteur' src={faitage} sx={{ width: accordionWidth }} />
           </Box>
         )}
       </AccordionDetails>
