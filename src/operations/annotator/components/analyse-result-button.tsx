@@ -14,7 +14,7 @@ import {
   SlopeAndHeightStatus,
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
-import { Stack } from '@mui/material';
+import { Stack, SxProps } from '@mui/material';
 import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -46,9 +46,10 @@ export type AnalyseResultButtonProps = {
   image: string;
   isCropped: boolean;
   analyseProperties: AnalyseProperties;
+  width: number | string;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties, width }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -127,8 +128,10 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
     handleSubmitForms(event);
   };
 
+  const style: SxProps = { ...analyseResultButtonsStyle, width };
+
   return (
-    <Stack direction='row' sx={analyseResultButtonsStyle} gap={1}>
+    <Stack direction='row' sx={style} gap={1}>
       <BPButton
         type='submit'
         className='invoice-gen-btn'

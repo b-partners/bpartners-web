@@ -263,6 +263,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       )}
       {!isInvoiceForm && screen !== '3d-annotator' && (
         <AnalyseResultButton
+          width={width || containerWidth}
           analyseProperties={data?.properties}
           image={data?.image}
           isCropped={!!data?.image}

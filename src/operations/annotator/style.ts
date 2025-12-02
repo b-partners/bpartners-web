@@ -26,6 +26,7 @@ export const addressStyle: SxProps = {
 
 export const analyseResultButtonsStyle: SxProps = {
   justifyContent: 'space-between',
+  flexWrap: 'wrap',
   '& .MuiButton-root': {
     minWidth: 300,
   },
