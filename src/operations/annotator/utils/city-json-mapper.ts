@@ -32,7 +32,7 @@ const boundaryMapper = {
 
       const distance = +getDistance(prev3DPoint, current3DPoint).toFixed(2);
 
-      measurements.push({ isInvisible: false, unit: 'm', value: distance });
+      measurements.push({ isInvisible: distance < 1.5, unit: 'm', value: distance });
     }
 
     return {
