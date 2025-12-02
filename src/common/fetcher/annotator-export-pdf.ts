@@ -4,7 +4,7 @@ import { areaPictureApi, getCached } from '@/providers';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { useAnnotator3DStore } from '../store';
-import { downloadPdf } from '../utils';
+import { downloadPdf, jsonToFile } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const labelNames: Record<string, number> = {};
@@ -42,14 +42,13 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const shouldAdd3d = imageUrl && cityJsonModel;
 
-    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : null;
+    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
     const exportAreaPictureAnnotation = exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
-    console.log({ exportAreaPictureAnnotation });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 
-    const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, shouldAdd3d ? imageUrl : null, exportAreaPictureAnnotation);
+    const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, shouldAdd3d ? imageUrl : undefined, jsonToFile(exportAreaPictureAnnotation));
     const { value } = data;
     await downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
   };
