@@ -247,7 +247,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               ))}
             </Stack>
           </Stack>
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+          <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
             <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
             <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length !== 1 && screen !== '3d-annotator'} />
           </Stack>
