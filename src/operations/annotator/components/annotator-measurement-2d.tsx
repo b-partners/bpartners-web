@@ -59,11 +59,11 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
 
   const boundaryIndex = selectedObjectInfo.boundaryIndex;
   const cityObject = selectedObject?.object?.citymodel?.CityObjects[selectedObjectInfo.objectId] || {};
-  const verticles = selectedObject?.object?.citymodel?.vertices || [];
+  const vertices = selectedObject?.object?.citymodel?.vertices || [];
 
   const boundary = cityObject?.geometry?.[0]?.boundaries?.[boundaryIndex]?.[0];
 
-  const points3D = boundary.map((index: number) => verticles[index]);
+  const points3D = boundary.map((index: number) => vertices[index]);
   points3D.push(points3D[0]);
 
   const points2D = points3D.map(([x, y]: number[]) => ({ x: +x, y: +y }));
