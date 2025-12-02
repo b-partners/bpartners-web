@@ -1,7 +1,7 @@
 import faitage from '@/assets/faitage.webp';
 import { PALETTE_COLORS } from '@/bp-theme';
 import { useAnnotator3DStore } from '@/common/store';
-import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement, Point, Polygon } from '@bpartners/annotator-component';
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
 import { FC, useEffect, useRef, useState } from 'react';

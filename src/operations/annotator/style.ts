@@ -1,4 +1,4 @@
-import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
+import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const addressStyle: SxProps = {
