@@ -1,4 +1,4 @@
-import { PALETTE_COLORS } from '@/bp-theme';
+import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const addressStyle: SxProps = {
@@ -29,11 +29,11 @@ export const analyseResultButtonsStyle: SxProps = {
   '& .MuiButton-root': {
     minWidth: 300,
   },
-  '& .draft-save-btn': {
+  '& .draft-save-btn:enabled': {
     background: PALETTE_COLORS.pine,
     color: '#fff',
   },
-  '& .export-analyse-btn': {
+  '& .export-analyse-btn:enabled': {
     background: PALETTE_COLORS.forest,
     color: '#fff',
   },

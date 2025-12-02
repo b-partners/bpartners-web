@@ -48,7 +48,11 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 
-    const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(accountId, shouldAdd3d ? imageUrl : undefined, jsonToFile(exportAreaPictureAnnotation));
+    const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(
+      accountId,
+      shouldAdd3d ? imageUrl : undefined,
+      jsonToFile(exportAreaPictureAnnotation)
+    );
     const { value } = data;
     await downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
   };

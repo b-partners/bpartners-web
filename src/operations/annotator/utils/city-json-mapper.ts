@@ -32,7 +32,7 @@ const boundaryMapper = {
 
       const distance = +getDistance(prev3DPoint, current3DPoint).toFixed(2);
 
-      measurements.push({ isInvisible: distance < 1.5, unit: 'm', value: distance });
+      measurements.push({ isInvisible: false, unit: 'm', value: distance });
     }
 
     return {
@@ -55,7 +55,7 @@ export const cityJsonMapper = {
 
     for (let index = 0; index < surfaces.length; index++) {
       const currentSurface = surfaces[index];
-      if (currentSurface.type === 'RoofSurface') {
+      if (currentSurface.type === 'RoofSurface' && boundaries[index][0].length > 3) {
         roofBoundaries.push({
           boundary: boundaries[index][0],
           area: currentSurface.area_in_square_meters,
