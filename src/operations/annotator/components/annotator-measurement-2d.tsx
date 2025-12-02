@@ -1,3 +1,4 @@
+import faitage from '@/assets/faitage.webp';
 import { PALETTE_COLORS } from '@/bp-theme';
 import { useAnnotator3DStore } from '@/common/store';
 import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
@@ -6,7 +7,6 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, S
 import { FC, useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
 import { createBlankImage, getCenter, getDistance } from '../utils';
-import faitage from '/faitage.webp';
 
 const scalePolygonAndCenter = (points: Point[]) => {
   const xCoordinates = points.map(p => p.x);
