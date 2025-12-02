@@ -17,7 +17,7 @@ import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript
 import { Stack } from '@mui/material';
 import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
@@ -53,6 +53,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const { polygons } = useWatch<AnnotatorFormState>();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
@@ -62,13 +63,9 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const annotatorComponentStore = useAnnotatorComponentStore();
 
   useEffect(() => {
-    const observer = annotatorFormState.watch(({ polygons }) => {
-      if (polygons.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
-      else if (polygons.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
-    });
-
-    return observer.unsubscribe;
-  }, [annotatorFormState]);
+    if (polygons?.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
+    else if (polygons?.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
+  }, [polygons]);
 
   const handleReturnToBegin = () => {
     const fileUrl = UrlParams.get('imgUrl');
