@@ -1,10 +1,11 @@
 import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
-import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
+import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
@@ -145,6 +146,18 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const { data: htmlResult, isPending: isLlmResultPending } = useLlmResultQuery(data?.properties);
 
+  const handleDetectionProcessingSuccess = () => {
+    annotatorFormState.setValue('polygons', [], { shouldDirty: true });
+    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+    clearPolygons(false);
+  };
+
+  const { mutate: processDetection, isPending: isDetectionProcessing } = useRoofAnalyseQuery(
+    polygons || [],
+    currentAreaPictureDetailsToUse,
+    handleDetectionProcessingSuccess
+  );
+
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
@@ -256,7 +269,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
-          {screen !== '3d-annotator' && <AnalyseRoofButton disabled={polygons.length !== 1} areaPicture={currentAreaPictureDetailsToUse} polygons={polygons} />}
+          {screen !== '3d-annotator' && (
+            <AnalyseRoofButton disabled={polygons.length !== 1} isProcessing={isDetectionProcessing} processDetection={processDetection} />
+          )}
           {screen === '3d-annotator' && <Box />}
           <Annotator3DSwitchButton disabled={polygons.length !== 1 && screen !== '3d-annotator'} />
         </Stack>
