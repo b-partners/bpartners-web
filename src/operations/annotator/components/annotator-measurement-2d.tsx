@@ -6,7 +6,7 @@ import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
 import { FC, useEffect, useRef, useState } from 'react';
 import { v4 } from 'uuid';
-import { createBlankImage, getCenter, getDistance } from '../utils';
+import { createBlankImage, getCenter, getDistance2D, getDistance3D } from '../utils';
 
 const scalePolygonAndCenter = (points: Point[]) => {
   const xCoordinates = points.map(p => p.x);
@@ -88,7 +88,7 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
     const measurement: Measurement = {
       position: getCenter(prevScaled, currentScaled),
       unity: 'm',
-      value: +(getDistance(prevNotScaled, currentNotScaled) * 0.001).toFixed(2),
+      value: getDistance3D(getDistance2D(prevNotScaled, currentNotScaled) * 0.001, groundScaleProjection, ),
       polygonId: currentPolygonId,
     };
 
