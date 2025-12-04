@@ -116,12 +116,12 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
 };
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
-  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
 
   const { cityJsonModel, setCityJsonModel } = useAnnotator3DStore();
 
   useEffect(() => {
-    if (!cityJsonModel && cityJson) {
+    if (!cityJsonModel && cityJson && cityJson.transform) {
       setCityJsonModel(cityJson);
     }
   }, [cityJson]);

@@ -1,6 +1,7 @@
 import { ExportAreaPictureAnnotation3D, ExportAreaPictureAnnotation3DPan } from '@bpartners/typescript-client';
+import { degToRad } from 'three/src/math/MathUtils.js';
 import { CityJSON } from '../city-json-type';
-import { getDistance } from './segment-utilities';
+import { getDistance2D } from './segment-utilities';
 
 export const addAlphabet = (name: string, index: number) => {
   const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
@@ -12,7 +13,14 @@ export const addAlphabet = (name: string, index: number) => {
 };
 
 const boundaryMapper = {
-  toPan: (_boundary: number[], vertices: number[][], area: number, slope: number, index: number): ExportAreaPictureAnnotation3DPan => {
+  toPan: (
+    _boundary: number[],
+    vertices: number[][],
+    area: number,
+    slope: number,
+    distance_2d_scale: number,
+    index: number
+  ): ExportAreaPictureAnnotation3DPan => {
     const boundary = _boundary.slice();
     boundary.push(boundary[0]);
 
@@ -30,7 +38,9 @@ const boundaryMapper = {
       const current3DPoint = points3D[index];
       const prev3DPoint = points3D[index - 1];
 
-      const distance = +getDistance(prev3DPoint, current3DPoint).toFixed(2);
+      const angle = prev3DPoint[2] === current3DPoint[2] ? 0 : degToRad(slope);
+
+      const distance = +((getDistance2D(prev3DPoint, current3DPoint) * distance_2d_scale) / Math.cos(angle)).toFixed(2);
 
       measurements.push({ isInvisible: false, unit: 'm', value: distance });
     }
@@ -50,21 +60,29 @@ export const cityJsonMapper = {
     const geometry = cityObject.geometry[0];
     const surfaces = geometry.semantics.surfaces;
     const boundaries = geometry.boundaries;
-    const roofBoundaries: { boundary: number[]; area: number; slope: number }[] = [];
+    const roofBoundaries: { boundary: number[]; area: number; slope: number; distance_2d_scale: number }[] = [];
     const vertices = cityJson.vertices;
+
+    let totalArea = 0;
 
     for (let index = 0; index < surfaces.length; index++) {
       const currentSurface = surfaces[index];
       if (currentSurface.type === 'RoofSurface' && boundaries[index][0].length > 3) {
+        totalArea += currentSurface.area_in_square_meters;
         roofBoundaries.push({
           boundary: boundaries[index][0],
           area: currentSurface.area_in_square_meters,
           slope: currentSurface.slope_in_degrees,
+          distance_2d_scale: currentSurface.distance_2d_scale,
         });
       }
     }
 
-    const pans = roofBoundaries.map(({ boundary, area, slope }, index) => boundaryMapper.toPan(boundary, vertices, area, slope, index));
+    const pans = roofBoundaries.map(({ boundary, area, slope, distance_2d_scale }, index) =>
+      boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index)
+    );
+
+    pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}` }, ...pans[0].infos] };
 
     const result: ExportAreaPictureAnnotation3D = { pans };
 

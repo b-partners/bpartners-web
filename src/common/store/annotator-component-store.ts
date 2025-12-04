@@ -17,6 +17,7 @@ export interface RoofAnalyseProperties {
   humidite_rate: number;
   revetement_1: AnnotationCoveringFromAnalyse;
   revetement_2: AnnotationCoveringFromAnalyse | null;
+  roof_area_in_m2: number;
 }
 
 interface Action {
