@@ -26,14 +26,15 @@ export const addressStyle: SxProps = {
 
 export const analyseResultButtonsStyle: SxProps = {
   justifyContent: 'space-between',
+  flexWrap: 'wrap',
   '& .MuiButton-root': {
     minWidth: 300,
   },
-  '& .draft-save-btn': {
+  '& .draft-save-btn:enabled': {
     background: PALETTE_COLORS.pine,
     color: '#fff',
   },
-  '& .export-analyse-btn': {
+  '& .export-analyse-btn:enabled': {
     background: PALETTE_COLORS.forest,
     color: '#fff',
   },
