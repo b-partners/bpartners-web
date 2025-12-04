@@ -136,7 +136,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
         <Canvas
           camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
           dpr={[1, 1.5]}
-          gl={{ antialias: true, powerPreference: 'high-performance' }}
+          gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true, alpha: true, premultipliedAlpha: false }}
         >
           <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />

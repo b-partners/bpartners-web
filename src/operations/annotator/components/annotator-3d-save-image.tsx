@@ -4,18 +4,21 @@ import { useEffect } from 'react';
 import { v4 } from 'uuid';
 
 export const Annotator3DSaveImage = (): null => {
-  const { gl } = useThree();
+  const { gl, scene } = useThree();
   const { setImageUrl } = useAnnotator3DStore();
 
   useEffect(() => {
-    const dataUrl = gl.domElement.toDataURL('image/png');
-    const [header, base64] = dataUrl.split(',');
-    const mime = header.match(/:(.*?);/)?.[1] || 'image/png';
-    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-    const file = new File([bytes], `${v4()}.png`, { type: mime });
+    if (scene.children.some(c => c.type !== 'Group' && c.type !== 'Scene')) {
+      const dataUrl = gl.domElement.toDataURL('image/png');
+      const [header, base64] = dataUrl.split(',');
 
-    setImageUrl(file);
-  }, []);
+      const mime = header.match(/:(.*?);/)?.[1] || 'image/png';
+      const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      const file = new File([bytes], `${v4()}.png`, { type: mime });
+
+      setImageUrl(file);
+    }
+  }, [scene]);
 
   return null;
 };
