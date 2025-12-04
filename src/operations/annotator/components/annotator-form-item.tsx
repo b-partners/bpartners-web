@@ -42,6 +42,9 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index,
   if (!currentPolygon) {
     return null;
   }
+
+  const surface = annotationInfo?.area || currentPolygon.surface;
+
   return (
     <Box data-cy='annotation-info-item'>
       <FlexBox sx={{ alignItems: 'start', width: '100%', mt: '15px' }}>
@@ -74,7 +77,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index,
           />
         </AccordionSummary>
         <AccordionDetails>
-          <AnnotatorForm index={index} surface={currentPolygon.surface} />
+          <AnnotatorForm index={index} surface={surface} />
         </AccordionDetails>
       </Accordion>
       <Divider />

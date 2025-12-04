@@ -1,4 +1,4 @@
-import { annotatorProvider, initializeRoofAnalyse, polygonMapper } from '@/providers';
+import { annotatorProvider, cache, initializeRoofAnalyse, polygonMapper } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { ErrorMessageDialog } from '../components';
@@ -29,6 +29,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
 
   const mutationFn = async () => {
     const imageSize = 1024;
+    cache.defaultRoofDelimiter(polygons[0]);
     const geoJson = polygonMapper.toRefererGeoJson(polygons[0], imageSize, areaPictureDetails);
     const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 

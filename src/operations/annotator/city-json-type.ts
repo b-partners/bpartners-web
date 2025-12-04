@@ -29,6 +29,7 @@ type SemanticSurface =
       type: 'RoofSurface';
       slope_in_degrees: number;
       area_in_square_meters: number;
+      distance_2d_scale: number;
     }
   | {
       type: 'WallSurface';

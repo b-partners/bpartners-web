@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
 
-  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2 } = roofAnalyseProperties || {};
+  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2, roof_area_in_m2 } = roofAnalyseProperties || {};
 
   const roofAnalysePropertiesInfos: AnnotationInfo = {
     humidityLevel: humidite_rate,
@@ -25,6 +25,7 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string,
     height,
     fillColor: '#00ff0000',
     strokeColor: '#00ff00',
+    area: +(roof_area_in_m2 || 0)?.toFixed(2),
   };
   return roofAnalysePropertiesInfos;
 };

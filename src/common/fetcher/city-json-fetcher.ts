@@ -43,9 +43,9 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
 
-      const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture);
+      const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(getCached.defaultRoofDelimiter() || polygonFromAnnotator, areaPicture);
       return getCityJSON(cityJSONRequestId, mappedCoordinates);
     },
-    queryKey: ['city-json', active, hasPolygonFromAnnotator, areaPicture],
+    queryKey: [JSON.stringify({ name: 'city-json', active, hasPolygonFromAnnotator, areaPicture })],
   });
 };

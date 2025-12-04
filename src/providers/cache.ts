@@ -23,6 +23,7 @@ const llmResultItem = 'bp_llm_result_item';
 const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
 const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 const loadingRedirectionItems = 'bp_loading_params_item';
+const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -48,6 +49,9 @@ type TInitialMarkerInfo = {
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
+  },
+  defaultRoofDelimiter(defaultRoofDelimiter: Polygon) {
+    return cacheObject<Polygon>(defaultRoofDelimiterItem, defaultRoofDelimiter);
   },
   loadingRedirection(params: string) {
     return localStorage.setItem(loadingRedirectionItems, params);
@@ -120,6 +124,9 @@ export const cache = {
 export const getCached = {
   whoami(): Whoami {
     return getCachedObject<Whoami>(whoamiItem);
+  },
+  defaultRoofDelimiter(): Polygon {
+    return getCachedObject<Polygon>(defaultRoofDelimiterItem);
   },
   token() {
     const accessToken = localStorage.getItem(accessTokenItem);
@@ -210,6 +217,7 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
+  localStorage.removeItem(defaultRoofDelimiterItem);
 
   if (removeRoofAnalyseId) {
     localStorage.removeItem(roofAnalyseIdItem);

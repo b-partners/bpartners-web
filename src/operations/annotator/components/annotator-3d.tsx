@@ -12,7 +12,6 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { WarningOutlined } from '@mui/icons-material';
 import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
-import { v4 } from 'uuid';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 
@@ -117,12 +116,12 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
 };
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
-  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons.length === 1 ? polygons[0] : undefined, areaPicture, active);
+  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
 
   const { cityJsonModel, setCityJsonModel } = useAnnotator3DStore();
 
   useEffect(() => {
-    if (!cityJsonModel && cityJson) {
+    if (!cityJsonModel && cityJson && cityJson.transform) {
       setCityJsonModel(cityJson);
     }
   }, [cityJson]);

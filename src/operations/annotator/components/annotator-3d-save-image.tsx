@@ -11,6 +11,7 @@ export const Annotator3DSaveImage = (): null => {
   const counter = useRef<number>(0);
 
   useEffect(() => {
+    if (imageUrl) return () => {};
     intervalId.current = setInterval(() => {
       const dataUrl = gl.domElement.toDataURL('image/png');
 
