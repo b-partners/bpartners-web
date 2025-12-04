@@ -206,7 +206,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 width={width || containerWidth}
                 height={height || containerHeight * 0.95}
                 buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
-                image={data?.image || getUrlParams(window.location.search, 'imgUrl')}
+                image={data?.image || `${getUrlParams(window.location.search, 'imgUrl')}&isExtended=${isExtended}`}
                 setPolygons={setLocalPolygon}
                 polygonList={localPolygon}
                 measurementMapper={measurementMapper(isExtended)}
