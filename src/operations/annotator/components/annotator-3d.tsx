@@ -12,7 +12,6 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { WarningOutlined } from '@mui/icons-material';
 import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
-import { v4 } from 'uuid';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 
