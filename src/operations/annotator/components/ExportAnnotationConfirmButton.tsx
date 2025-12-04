@@ -56,16 +56,14 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   };
 
   return (
-    <>
-      <BPButton
-        type='submit'
-        className='export-analyse-btn'
-        onClick={doAnnotationExport}
-        isLoading={isLoading}
-        disabled={isLoading || disabled}
-        label='resources.draftsAnnotations.export'
-        data-testid='submit-annotation-export'
-      />
-    </>
+    <BPButton
+      type='submit'
+      className='export-analyse-btn'
+      onClick={doAnnotationExport}
+      isLoading={isLoading}
+      disabled={isLoading || disabled}
+      label='resources.draftsAnnotations.export'
+      data-testid='submit-annotation-export'
+    />
   );
 };

@@ -1,12 +1,13 @@
 import faitage from '@/assets/faitage.webp';
 import { PALETTE_COLORS } from '@/bp-theme';
 import { useAnnotator3DStore } from '@/common/store';
-import { AnnotatorCanvas, getColorFromMain, Measurement, Point, Polygon } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Measurement, Point, Polygon } from '@bpartners/annotator-component';
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, FormControlLabel, Switch, Typography } from '@mui/material';
 import { FC, useEffect, useRef, useState } from 'react';
+import { degToRad } from 'three/src/math/MathUtils.js';
 import { v4 } from 'uuid';
-import { createBlankImage, getCenter, getDistance } from '../utils';
+import { createBlankImage, getCenter, getDistance2D } from '../utils';
 
 const scalePolygonAndCenter = (points: Point[]) => {
   const xCoordinates = points.map(p => p.x);
@@ -22,9 +23,6 @@ const scalePolygonAndCenter = (points: Point[]) => {
   const base = Math.max(dx, dy);
 
   const scale = 500 / base;
-
-  // const dcx = (500 - dx * scale) / 2;
-  // const dcy = (500 - dy * scale) / 2;
 
   return points.map(p => ({
     x: p.x * scale - (xMax * scale - 500) + 10,
@@ -59,11 +57,15 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
 
   const boundaryIndex = selectedObjectInfo.boundaryIndex;
   const cityObject = selectedObject?.object?.citymodel?.CityObjects[selectedObjectInfo.objectId] || {};
-  const verticles = selectedObject?.object?.citymodel?.vertices || [];
+  const vertices = selectedObject?.object?.citymodel?.vertices || [];
 
   const boundary = cityObject?.geometry?.[0]?.boundaries?.[boundaryIndex]?.[0];
+  const semantics = cityObject?.geometry?.[0]?.semantics?.surfaces?.[boundaryIndex];
 
-  const points3D = boundary.map((index: number) => verticles[index]);
+  const distance_2d_scale = semantics?.distance_2d_scale || 1;
+  const slope_in_degrees = semantics?.slope_in_degrees || 0;
+
+  const points3D = boundary.map((index: number) => vertices[index]);
   points3D.push(points3D[0]);
 
   const points2D = points3D.map(([x, y]: number[]) => ({ x: +x, y: +y }));
@@ -85,10 +87,18 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
     const prevNotScaled = points3D[i - 1];
     const currentNotScaled = points3D[i];
 
+    const angle = prevNotScaled[2] === currentNotScaled[2] ? 0 : degToRad(slope_in_degrees);
+
     const measurement: Measurement = {
       position: getCenter(prevScaled, currentScaled),
       unity: 'm',
-      value: +(getDistance(prevNotScaled, currentNotScaled) * 0.001).toFixed(2),
+      value:
+        (getDistance2D(
+          prevNotScaled.map((v: number) => v * 0.001),
+          currentNotScaled.map((v: number) => v * 0.001)
+        ) *
+          distance_2d_scale) /
+        Math.cos(angle),
       polygonId: currentPolygonId,
     };
 
@@ -97,7 +107,8 @@ export const MeasurementIn2D: FC<MeasurementIn2DProps> = ({ isWall, maxH, minH }
 
   const polygons: Polygon[] = [
     {
-      ...getColorFromMain(PALETTE_COLORS.pine),
+      strokeColor: '#000000',
+      fillColor: PALETTE_COLORS.neon_orange,
       points: scaledPoints2D,
       id: currentPolygonId,
       measurements,

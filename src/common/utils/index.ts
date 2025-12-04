@@ -14,6 +14,7 @@ export * from './get-mime-type';
 export * from './get-params';
 export * from './includes-object';
 export * from './isBlank';
+export * from './json-to-file';
 export * from './money';
 export * from './pagination-utilities';
 export * from './percent';

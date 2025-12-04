@@ -14,10 +14,10 @@ import {
   SlopeAndHeightStatus,
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
-import { Stack } from '@mui/material';
+import { Stack, SxProps } from '@mui/material';
 import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
@@ -46,13 +46,15 @@ export type AnalyseResultButtonProps = {
   image: string;
   isCropped: boolean;
   analyseProperties: AnalyseProperties;
+  width: number | string;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties, width }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const { polygons } = useWatch<AnnotatorFormState>();
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
   const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
@@ -62,13 +64,9 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const annotatorComponentStore = useAnnotatorComponentStore();
 
   useEffect(() => {
-    const observer = annotatorFormState.watch(({ polygons }) => {
-      if (polygons.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
-      else if (polygons.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
-    });
-
-    return observer.unsubscribe;
-  }, []);
+    if (polygons?.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
+    else if (polygons?.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
+  }, [polygons]);
 
   const handleReturnToBegin = () => {
     const fileUrl = UrlParams.get('imgUrl');
@@ -130,8 +128,10 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
     handleSubmitForms(event);
   };
 
+  const style: SxProps = { ...analyseResultButtonsStyle, width };
+
   return (
-    <Stack direction='row' sx={analyseResultButtonsStyle} gap={1}>
+    <Stack direction='row' sx={style} gap={1}>
       <BPButton
         type='submit'
         className='invoice-gen-btn'
