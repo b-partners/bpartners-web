@@ -1,8 +1,9 @@
 import { Point } from '@bpartners/annotator-component';
 
-export const getDistance2D = (a: [number, number], b: [number, number]) => {
+export const getDistance2D = (a: number[], b: number[]) => {
   const [x1, y1] = a;
   const [x2, y2] = b;
+
   return +Math.hypot(x2 - x1, y2 - y1).toFixed(2);
 };
 

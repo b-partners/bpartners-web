@@ -15,6 +15,7 @@ export const Annotator3DInfos = () => {
   const cityObject = selectedObject && selectedObjectInfo ? selectedObject.object.citymodel.CityObjects[selectedObjectInfo.objectId] : {};
 
   const slope = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.slope_in_degrees;
+  const distance_2d_scale = cityObject?.geometry?.[0]?.semantics?.surfaces?.[0]?.distance_2d_scale;
   const area = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.area_in_square_meters;
   const type = cityObject?.geometry?.[0]?.semantics?.surfaces?.[selectedObjectInfo.boundaryIndex]?.type;
 
@@ -47,8 +48,8 @@ export const Annotator3DInfos = () => {
     measurements = Object.values(pointsMinMax);
   }
 
-  const maxWallHeight = +(Math.max(...measurements) * 0.001).toFixed(2);
-  const minWallHeight = +(Math.min(...measurements) * 0.001).toFixed(2);
+  const maxWallHeight = +(Math.max(...measurements) * 0.001 * distance_2d_scale).toFixed(2);
+  const minWallHeight = +(Math.min(...measurements) * 0.001 * distance_2d_scale).toFixed(2);
 
   return (
     <Box>
