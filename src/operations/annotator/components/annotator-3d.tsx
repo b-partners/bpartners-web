@@ -12,8 +12,8 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { WarningOutlined } from '@mui/icons-material';
 import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
+import { v4 } from 'uuid';
 import { RaycasterHandler } from './annotator-3d-raycaster';
-import { Annotator3DSaveImage } from './annotator-3d-save-image';
 
 function fitCameraToSelection(camera: any, controls: any, box: any, fitOffset = 1.2) {
   const size = new THREE.Vector3();
@@ -50,9 +50,11 @@ interface CitySceneProps {
 }
 
 const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
-  const { scene, camera } = useThree();
+  const { scene, camera, gl } = useThree();
   const controlsRef = useRef();
   const [cityModel, setCityModel] = useState(null);
+  const { setImageUrl } = useAnnotator3DStore();
+  const imageBase64 = useRef<string>('');
 
   useEffect(() => {
     const controls = controlsRef.current;
@@ -73,6 +75,21 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
 
     fitCameraToSelection(camera, controls, bbox);
     scene.add(loader.scene);
+
+    const interval = setInterval(() => {
+      const dataUrl = gl.domElement.toDataURL('image/png');
+
+      if (imageBase64.current.length === 0) imageBase64.current = dataUrl;
+      if (imageBase64.current.length !== dataUrl.length) {
+        const [header, base64] = dataUrl.split(',');
+        const mime = header.match(/:(.*?);/)?.[1] || 'image/png';
+        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        const file = new File([bytes], `${v4()}.png`, { type: mime });
+        setImageUrl(file);
+
+        clearInterval(interval);
+      }
+    }, 200);
   }, [controlsRef]);
 
   return (
@@ -141,7 +158,6 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
-          <Annotator3DSaveImage />
           <CityScene cityJson={cityJsonModel} />
         </Canvas>
       )}

@@ -8,9 +8,17 @@ export const Annotator3DSaveImage = (): null => {
   const { setImageUrl } = useAnnotator3DStore();
 
   useEffect(() => {
-    if (scene.children.some(c => c.type !== 'Group' && c.type !== 'Scene')) {
+    setInterval(() => {
+      console.log(scene.children.length);
+    }, 200);
+  }, []);
+
+  useEffect(() => {
+    if (scene.children.length > 0) {
       const dataUrl = gl.domElement.toDataURL('image/png');
       const [header, base64] = dataUrl.split(',');
+
+      console.log(dataUrl);
 
       const mime = header.match(/:(.*?);/)?.[1] || 'image/png';
       const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
@@ -18,7 +26,7 @@ export const Annotator3DSaveImage = (): null => {
 
       setImageUrl(file);
     }
-  }, [scene]);
+  }, [scene.children.length]);
 
   return null;
 };

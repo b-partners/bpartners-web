@@ -27,7 +27,7 @@ export const useAnnotator3DStore = create<Annotator3DStore>(set => ({
   setShouldSelectSurface: shouldSelectSurface => set({ shouldSelectSurface }),
   cityJsonModel: null,
   setCityJsonModel: cityJsonModel => set({ cityJsonModel }),
-  reset: () => set({ selectedObject: null, selectedObjectInfo: null, shouldSelectSurface: true, cityJsonModel: null }),
+  reset: () => set({ selectedObject: null, selectedObjectInfo: null, shouldSelectSurface: true, cityJsonModel: null, imageUrl: null }),
   imageUrl: null,
   setImageUrl: imageUrl => set({ imageUrl }),
 }));
