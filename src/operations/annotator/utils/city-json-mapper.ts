@@ -82,7 +82,7 @@ export const cityJsonMapper = {
       boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index)
     );
 
-    pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}` }, ...pans[0].infos] };
+    pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}m²` }, ...pans[0].infos] };
 
     const result: ExportAreaPictureAnnotation3D = { pans };
 
