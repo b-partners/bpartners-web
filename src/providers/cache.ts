@@ -217,7 +217,6 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
-  localStorage.removeItem(defaultRoofDelimiterItem);
 
   if (removeRoofAnalyseId) {
     localStorage.removeItem(roofAnalyseIdItem);
@@ -226,4 +225,8 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
 
   localStorage.removeItem(isAreaPictureImageUpdatedItem);
   localStorage.removeItem(isRoofPropertiesRequestDoneItem);
+};
+
+export const clearRoofDelimiter = () => {
+  localStorage.removeItem(defaultRoofDelimiterItem);
 };
