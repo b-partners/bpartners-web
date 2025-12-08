@@ -11,7 +11,7 @@ interface Props {
 export const LlmSwitchButton: FC<Props> = ({ enabled }) => {
   const { setScreen, screen } = useAnnotatorScreenSwitch();
 
-  const handleClick = () => setScreen('llm');
+  const handleClick = () => setScreen(screen == 'llm' ? 'annotator' : 'llm');
 
   if (!enabled || screen === '3d-annotator') return null;
 
