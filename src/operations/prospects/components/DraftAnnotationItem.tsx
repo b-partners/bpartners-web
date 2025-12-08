@@ -35,7 +35,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     const { fileId, id: pictureId } = draftAnnotation.areaPicture;
     const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
     clearPolygons();
-    clearRoofDelimiter()
+    clearRoofDelimiter();
     navigate(
       `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
     );
