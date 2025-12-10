@@ -41,10 +41,6 @@ function fitCameraToSelection(camera: any, controls: any, box: any, fitOffset = 
   controls.update();
 }
 
-const parser = new CityJSONParser();
-parser.chunkSize = 2000;
-const loader = new CityJSONLoader(parser);
-
 interface CitySceneProps {
   cityJson: any;
 }
@@ -58,8 +54,11 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
     const controls = controlsRef.current;
 
     if (!controls) return () => {};
-
+    const parser = new CityJSONParser();
+    parser.chunkSize = 2000;
+    const loader = new CityJSONLoader(parser);
     setCityModel(cityJson);
+
     loader.load(cityJson);
 
     loader.scene.traverse((c: any) => {
