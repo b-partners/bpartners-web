@@ -91,8 +91,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   useEffect(() => {
     const observer = annotatorFormState.watch(({ polygons }) => {
-      console.log(polygons, localPolygon);
-
       if (polygons.length !== localPolygon.length) {
         setLocalPolygon(polygons as any);
       }
