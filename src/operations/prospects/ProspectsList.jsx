@@ -23,7 +23,7 @@ import { annotatorProvider } from '@/providers/annotator-provider';
 import { Add } from '@mui/icons-material';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { getFileUrl, handleSubmit } from '../../common/utils';
-import { clearPolygons, prospectingProvider } from '../../providers';
+import { clearPolygons, getCached, prospectingProvider } from '../../providers';
 
 const BP_USER_CACHE_NAME = 'bp_user';
 export const ProspectDialogProvider = ({ ComponentChild, address }) => {
@@ -43,8 +43,14 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   }, [address]);
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
-    const doSubmit = form.handleSubmit(async data => {
+    const doSubmit = form.handleSubmit(async _data => {
       startLoading();
+
+      const data = { ..._data };
+
+      if (!data.email || data.email.length === 0) {
+        data.email = getCached.accountHolder().companyInfo.email;
+      }
 
       if (isCreating) {
         notify('notify.searchImagePending');
