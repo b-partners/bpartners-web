@@ -199,33 +199,31 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       {filename && (
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
           {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
-            <Box height='95%'>
-              <AnnotatorCanvas
-                markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
-                allowAnnotation={allowAnnotation}
-                width={width || containerWidth}
-                height={height || containerHeight * 0.95}
-                buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
-                image={data?.image || `${getUrlParams(window.location.search, 'imgUrl')}&isExtended=${isExtended}`}
-                setPolygons={setLocalPolygon}
-                polygonList={localPolygon}
-                measurementMapper={measurementMapper(isExtended)}
-                getNewPolygonColor={getNewPolygonColor}
-                polygonLineSizeProps={{
-                  imageName: `${filename}.jpg`,
-                  showLineSize: true,
-                  converterApiUrl: `${CONVERTER_BASE_URL}`,
-                }}
-                zoom={newZoomLevelAsNumber}
-                closeOnNear
-              />
-            </Box>
+            <AnnotatorCanvas
+              markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+              allowAnnotation={allowAnnotation}
+              width={width || containerWidth}
+              height={height || containerHeight + 50}
+              buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
+              image={data?.image || `${getUrlParams(window.location.search, 'imgUrl')}&isExtended=${isExtended}`}
+              setPolygons={setLocalPolygon}
+              polygonList={localPolygon}
+              measurementMapper={measurementMapper(isExtended)}
+              getNewPolygonColor={getNewPolygonColor}
+              polygonLineSizeProps={{
+                imageName: `${filename}.jpg`,
+                showLineSize: true,
+                converterApiUrl: `${CONVERTER_BASE_URL}`,
+              }}
+              zoom={newZoomLevelAsNumber}
+              closeOnNear
+            />
           )}
           <Annotator3D
             polygons={polygons}
             active={screen === '3d-annotator'}
             width={width || containerWidth}
-            height={height || containerHeight * 0.95}
+            height={height || containerHeight}
             areaPicture={currentAreaPictureDetailsToUse}
           />
           {(data?.properties || draftLlmValue) && screen === 'llm' && (
