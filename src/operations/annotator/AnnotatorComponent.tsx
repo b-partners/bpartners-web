@@ -164,6 +164,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
+  const imageSrcFromUrl =
+    `${getUrlParams(window.location.search, 'imgUrl')}` +
+    // Not necessary for the real image URL,
+    // Used to force AnnotatorComponent to refresh
+    `&isExtended=${isExtended}` +
+    `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
+    `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}`;
+
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       {allowSelect && (
@@ -207,7 +215,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               width={width || containerWidth}
               height={height || containerHeight + 50}
               buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
-              image={data?.image || `${getUrlParams(window.location.search, 'imgUrl')}&isExtended=${isExtended}`}
+              image={data?.image || imageSrcFromUrl}
               setPolygons={setLocalPolygon}
               polygonList={localPolygon}
               measurementMapper={measurementMapper(isExtended)}
