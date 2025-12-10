@@ -35,8 +35,8 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index,
     const newPolygons = prevPolygons.filter(polygon => polygon.id !== polygonId);
     const newAnnotationInfo = prevAnnotationInfo.filter(annotationInfo => annotationInfo.polygonId !== polygonId);
 
-    annotatorFormState.setValue('annotationInfos', newAnnotationInfo, { shouldDirty: true });
     annotatorFormState.setValue('polygons', newPolygons, { shouldDirty: true });
+    annotatorFormState.setValue('annotationInfos', newAnnotationInfo, { shouldDirty: true });
   };
 
   if (!currentPolygon) {
