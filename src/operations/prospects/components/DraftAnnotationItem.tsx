@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { BP_COLOR } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
 import { formatDateTime, getFileUrl } from '@/common/utils';
-import { clearPolygons } from '@/providers';
+import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { CheckCircleOutlined, Comment, LocalPhoneOutlined, LocationOnOutlined, MailOutline, Star, Update } from '@mui/icons-material';
 import { Box, Paper, SxProps, Typography } from '@mui/material';
@@ -35,6 +35,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     const { fileId, id: pictureId } = draftAnnotation.areaPicture;
     const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
     clearPolygons();
+    clearRoofDelimiter();
     navigate(
       `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
     );

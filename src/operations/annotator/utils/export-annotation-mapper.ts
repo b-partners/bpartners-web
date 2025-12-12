@@ -33,7 +33,10 @@ export const exportAnnotationMapper = (props: ExportAnnotationMapperArgs): Expor
       strokeColor: polygon?.strokeColor?.length !== 0 ? polygon?.strokeColor : strokeColor,
       measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
       infos: [
-        ...translateAnnotationInfo({ ...emptyToNull(annotationInfo), area: polygon.surface || annotationInfo.area }),
+        ...translateAnnotationInfo({
+          ...emptyToNull(annotationInfo),
+          area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
+        }),
         { label: 'key', value: annotatorLabelSplitted.length === 2 ? annotatorLabelSplitted[1] : annotationInfo.labelName },
       ],
     };

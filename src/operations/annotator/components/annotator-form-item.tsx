@@ -35,13 +35,16 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index,
     const newPolygons = prevPolygons.filter(polygon => polygon.id !== polygonId);
     const newAnnotationInfo = prevAnnotationInfo.filter(annotationInfo => annotationInfo.polygonId !== polygonId);
 
-    annotatorFormState.setValue('annotationInfos', newAnnotationInfo, { shouldDirty: true });
     annotatorFormState.setValue('polygons', newPolygons, { shouldDirty: true });
+    annotatorFormState.setValue('annotationInfos', newAnnotationInfo, { shouldDirty: true });
   };
 
   if (!currentPolygon) {
     return null;
   }
+
+  const surface = annotationInfo?.area || currentPolygon.surface;
+
   return (
     <Box data-cy='annotation-info-item'>
       <FlexBox sx={{ alignItems: 'start', width: '100%', mt: '15px' }}>
@@ -74,7 +77,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ annotationInfo, index,
           />
         </AccordionSummary>
         <AccordionDetails>
-          <AnnotatorForm index={index} surface={currentPolygon.surface} />
+          <AnnotatorForm index={index} surface={surface} />
         </AccordionDetails>
       </Accordion>
       <Divider />

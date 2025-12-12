@@ -86,7 +86,7 @@ export const BPImport: FC<{ source: string }> = props => {
       </Button>
       <Modal open={openModal} onClose={!isLoading && handleClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
         <Box sx={IMPORT_MODAL_STYLE}>
-          <Typography id='modal-modal-title' variant='h6' component='h2'>
+          <Typography id='modal-modal-title' variant='h6'>
             Importer des {subject}
           </Typography>
           <Divider />
@@ -155,7 +155,7 @@ export const BPImport: FC<{ source: string }> = props => {
               Importer
             </Button>
           </Stack>
-          <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={isLoading}>
+          <Backdrop sx={{ color: '#fff', zIndex: (theme: any) => theme.zIndex.drawer + 1 }} open={isLoading}>
             <Box sx={{ textAlign: 'center' }}>
               <CircularProgress color='inherit' />
               <Typography variant='body2'>Importation en cours...</Typography>

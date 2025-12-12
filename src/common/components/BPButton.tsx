@@ -11,7 +11,7 @@ export type BPButtonTemplateProps = ButtonProps & {
 
 const BPButtonTemplate = (props: BPButtonTemplateProps) => {
   const translate = useTranslate();
-  const { label, icon, style, isLoading, endIcon, colorType, disabled, ...others } = props;
+  const { label, icon, style, isLoading, endIcon, colorType, disabled, color = 'primary', ...others } = props;
   const width = style?.width ? style.width : 300;
 
   return (
@@ -20,7 +20,7 @@ const BPButtonTemplate = (props: BPButtonTemplateProps) => {
       disabled={isLoading || disabled}
       endIcon={isLoading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : endIcon}
       style={{ background: colorType ? PALETTE_COLORS[colorType] : undefined, ...style, width }}
-      color='primary'
+      color={color}
       variant='contained'
       startIcon={icon}
     >
@@ -29,12 +29,16 @@ const BPButtonTemplate = (props: BPButtonTemplateProps) => {
   );
 };
 
+const LinkComponent = (props: any) => {
+  return <Link {...props} />;
+};
+
 export const BPButton = (props: BPButtonTemplateProps) => {
   const { href, ...others } = props;
   return href ? (
-    <Link to={href}>
+    <LinkComponent to={href}>
       <BPButtonTemplate {...others} />
-    </Link>
+    </LinkComponent>
   ) : (
     <BPButtonTemplate {...others} />
   );

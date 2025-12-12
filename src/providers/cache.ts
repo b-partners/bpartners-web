@@ -18,9 +18,12 @@ const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
 const roofAnalyseIdItem = 'bp_roof_analyse_id';
+const cityJSONRequestIdItem = 'bp_city_json_request_id';
 const llmResultItem = 'bp_llm_result_item';
 const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
 const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
+const loadingRedirectionItems = 'bp_loading_params_item';
+const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -46,6 +49,12 @@ type TInitialMarkerInfo = {
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
+  },
+  defaultRoofDelimiter(defaultRoofDelimiter: Polygon) {
+    return cacheObject<Polygon>(defaultRoofDelimiterItem, defaultRoofDelimiter);
+  },
+  loadingRedirection(params: string) {
+    return localStorage.setItem(loadingRedirectionItems, params);
   },
   token(accessToken: string, refreshToken: string) {
     localStorage.setItem(accessTokenItem, accessToken);
@@ -94,6 +103,10 @@ export const cache = {
     localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
     return roofAnalyseId;
   },
+  cityJSONRequestId(cityJSONRequestId: string) {
+    localStorage.setItem(cityJSONRequestIdItem, cityJSONRequestId);
+    return cityJSONRequestId;
+  },
   llmResult(llmResult: string) {
     localStorage.setItem(llmResultItem, llmResult);
     return llmResult;
@@ -111,6 +124,9 @@ export const cache = {
 export const getCached = {
   whoami(): Whoami {
     return getCachedObject<Whoami>(whoamiItem);
+  },
+  defaultRoofDelimiter(): Polygon {
+    return getCachedObject<Polygon>(defaultRoofDelimiterItem);
   },
   token() {
     const accessToken = localStorage.getItem(accessTokenItem);
@@ -173,6 +189,9 @@ export const getCached = {
   roofAnalyseId() {
     return localStorage.getItem(roofAnalyseIdItem);
   },
+  cityJSONRequestId() {
+    return localStorage.getItem(cityJSONRequestIdItem);
+  },
   llmResult() {
     return localStorage.getItem(llmResultItem);
   },
@@ -183,6 +202,9 @@ export const getCached = {
   isAreaPictureImageUpdated() {
     const value = localStorage.getItem(isAreaPictureImageUpdatedItem);
     return JSON.parse(value || 'false');
+  },
+  loadingRedirection() {
+    return localStorage.getItem(loadingRedirectionItems);
   },
 };
 
@@ -195,7 +217,16 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
-  removeRoofAnalyseId && localStorage.removeItem(roofAnalyseIdItem);
+
+  if (removeRoofAnalyseId) {
+    localStorage.removeItem(roofAnalyseIdItem);
+    localStorage.removeItem(cityJSONRequestIdItem);
+  }
+
   localStorage.removeItem(isAreaPictureImageUpdatedItem);
   localStorage.removeItem(isRoofPropertiesRequestDoneItem);
+};
+
+export const clearRoofDelimiter = () => {
+  localStorage.removeItem(defaultRoofDelimiterItem);
 };

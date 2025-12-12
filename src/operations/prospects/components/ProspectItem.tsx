@@ -140,7 +140,7 @@ export const ProspectItem: FC<{ prospect: Prospect }> = ({ prospect }) => {
                   <Typography sx={{ paddingBottom: '5px', textAlign: 'center' }}>Ou</Typography>
                   <Divider />
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Button sx={{ m: '10px 0', width: '150px' }} onClick={e => toggleDialog(e, true)} data-testid={`edit-prospect-${prospect.id}`}>
+                    <Button sx={{ m: '10px 0', width: '150px' }} onClick={(e: any) => toggleDialog(e, true)} data-testid={`edit-prospect-${prospect.id}`}>
                       Modifier le prospect
                     </Button>
                   </Box>
