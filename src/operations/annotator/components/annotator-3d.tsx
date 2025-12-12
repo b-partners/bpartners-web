@@ -53,7 +53,7 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
   useEffect(() => {
     const controls = controlsRef.current;
 
-    if (!controls) return () => {};
+    if (!controls || !cityJson) return () => {};
     const parser = new CityJSONParser();
     parser.chunkSize = 2000;
     const loader = new CityJSONLoader(parser);
@@ -72,7 +72,7 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
 
     fitCameraToSelection(camera, controls, bbox);
     scene.add(loader.scene);
-  }, [controlsRef]);
+  }, [controlsRef, cityJson]);
 
   return (
     <>
