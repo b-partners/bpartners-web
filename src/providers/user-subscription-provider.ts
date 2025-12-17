@@ -23,4 +23,9 @@ export const userSubscriptionProvider = {
     const { data } = await userSubscriptionApi().cancelUserSubscription(id);
     return data;
   },
+  async billingPortal() {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().initiateBillingPortal(id);
+    return data;
+  },
 };
