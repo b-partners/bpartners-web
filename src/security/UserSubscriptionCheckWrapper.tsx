@@ -1,4 +1,4 @@
-import { BPLoader, FreeTrialSubscriptionModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
+import { BPLoader, FreeTrialSubscriptionModal, SubscriptionBillingModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
@@ -19,6 +19,10 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
       try {
         const currentWhoami = await whoami();
         switch (currentWhoami?.user?.subscription?.status) {
+          case UserSubscriptionStatus.UNPAID:
+            redirect('/');
+            openDialog(<SubscriptionBillingModal />, undefined, false);
+            break;
           case UserSubscriptionStatus.EMPTY:
             redirect('/');
             openDialog(<SubscriptionModal />, undefined, false);
