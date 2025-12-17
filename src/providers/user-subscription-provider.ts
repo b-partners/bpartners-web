@@ -23,4 +23,10 @@ export const userSubscriptionProvider = {
     const { data } = await userSubscriptionApi().cancelUserSubscription(id);
     return data;
   },
+  async billingPortal() {
+    const { id } = await asyncGetUser();
+    const { failureUrl, successUrl } = await getStripeRedirectionUrl();
+    const { data } = await userSubscriptionApi().initiateBillingPortal(id, { failureUrl, successUrl });
+    return data;
+  },
 };
