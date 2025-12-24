@@ -73,8 +73,6 @@ export const polygonMapper = {
     const offsets =
       !areaPicture.isExtended && areaPicture.actualLayer.name !== 'FLUX_IGN_2023_20CM' ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 };
 
-    console.log({ offsets });
-
     result.regions = {
       '1': {
         shape_attributes: toGeoShapeAttributes(polygon, offsets),
