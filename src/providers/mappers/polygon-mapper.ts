@@ -57,8 +57,10 @@ export const polygonMapper = {
 
     return res;
   },
-  toRefererGeoJson(polygon: Polygon, image_size: number, areaPicture: AreaPictureDetails) {
-    const filename = `${v4().replace(/\-/gi, '')}_20_${(areaPicture.xTile || 0) - 1}_${(areaPicture.yTile || 0) - 1}.jpg`;
+  toRefererGeoJson(polygon: Polygon, _image_size: number, areaPicture: AreaPictureDetails) {
+    const filename = `${v4().replace(/\-/gi, '')}_${areaPicture.zoom.number}_${(areaPicture.xTile || 0) - 1}_${(areaPicture.yTile || 0) - 1}.jpg`;
+
+    const image_size = _image_size > 1024 ? 1024 : _image_size;
 
     const result: any = {
       size: image_size,
@@ -68,9 +70,14 @@ export const polygonMapper = {
       base64_img_data: null,
     };
 
+    const offsets =
+      !areaPicture.isExtended && areaPicture.actualLayer.name !== 'FLUX_IGN_2023_20CM' ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 };
+
+    console.log({ offsets });
+
     result.regions = {
       '1': {
-        shape_attributes: toGeoShapeAttributes(polygon, !areaPicture.isExtended ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 }),
+        shape_attributes: toGeoShapeAttributes(polygon, offsets),
         region_attributes: {
           label: 'polygon',
           confidence: 0.7055366635322571,
