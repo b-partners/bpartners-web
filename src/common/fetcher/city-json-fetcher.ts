@@ -4,9 +4,11 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
+import { getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
-  const imageSize = 1024;
+  const imageUrl = UrlParams.get('imgUrl');
+  const imageSize = await getImageSize(imageUrl);
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
   const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
