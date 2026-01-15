@@ -12,7 +12,7 @@ const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: Are
 
   // do not remove
   // fix for pixel to long lat
-  // polygon size on 20 extended image 
+  // polygon size on 20 extended image
   if (areaPicture.actualLayer.name === 'FLUX_IGN_2023_20CM' && areaPicture.isExtended) {
     imageSize = imageSize / 3;
   }
