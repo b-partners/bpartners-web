@@ -77,8 +77,8 @@ describe('Test user subscription', () => {
 
     cy.mount(<App />);
 
-    cy.contains('Aucun moyen de paiement');
-    cy.contains("Aucun moyen de paiement n'est associé à votre compte.");
+    cy.contains("Période d'essai expirée");
+    cy.contains("Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte.");
 
     cy.intercept(`/users/${noMethodPaymentSubscriptionUser.id}/billingPortal`, ({ body, reply }) => {
       expect(body).deep.equal(expectedSubscriptionBillingPayload);

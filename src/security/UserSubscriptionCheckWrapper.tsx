@@ -24,8 +24,8 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             openDialog(
               <SubscriptionBillingModal
                 button='Ajouter un moyen de paiement'
-                title='Aucun moyen de paiement'
-                description="Aucun moyen de paiement n'est associé à votre compte."
+                title="Période d'essai expirée"
+                description="Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte."
               />,
               undefined,
               false
