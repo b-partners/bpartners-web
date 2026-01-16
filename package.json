@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@bpartners/annotator-component": "^0.18.0",
-    "@bpartners/typescript-client": "^0.75.0",
+    "@bpartners/typescript-client": "^0.77.0",
     "@cityjson/cjseq": "^0.4.1",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",

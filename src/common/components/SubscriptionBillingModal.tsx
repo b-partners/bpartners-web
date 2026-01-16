@@ -14,7 +14,13 @@ const mutationFn = async () => {
   return redirectionUrl;
 };
 
-export const SubscriptionBillingModal: FC = () => {
+type SubscriptionBillingModalProps = {
+  title: string;
+  description: string;
+  button: string;
+};
+
+export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ title, description, button }) => {
   const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
 
   const [searchParams] = useSearchParams();
@@ -23,18 +29,18 @@ export const SubscriptionBillingModal: FC = () => {
 
   return (
     <>
-      <DialogTitle>Factures impayées</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {error && (
           <Alert severity='error' variant='filled'>
             Une erreur s'est produite, veuillez recommencer.
           </Alert>
         )}
-        <p>Il vous reste des factures impayées.</p>
+        <p>{description}</p>
         <p>Pour continuer à utiliser l’application, veuillez régulariser votre situation.</p>
       </DialogContent>
       <DialogActions>
-        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label='Payer mon abonnement' isLoading={isPending} />
+        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label={button} isLoading={isPending} />
       </DialogActions>
     </>
   );
