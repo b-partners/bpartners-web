@@ -23,8 +23,8 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             redirect('/');
             openDialog(
               <SubscriptionBillingModal
-                button='Payer mon abonnement'
-                title='Moyen de paiement'
+                button='Ajouter un moyen de paiement'
+                title='Aucun moyen de paiement'
                 description="Aucun moyen de paiement n'est associé à votre compte."
               />,
               undefined,
@@ -34,7 +34,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
           case UserSubscriptionStatus.UNPAID:
             redirect('/');
             openDialog(
-              <SubscriptionBillingModal button='Ajouter un moyen de paiement' title='Factures impayées' description='Il vous reste des factures impayées.' />,
+              <SubscriptionBillingModal button='Payer mon abonnement' title='Factures impayées' description='Il vous reste des factures impayées.' />,
               undefined,
               false
             );
