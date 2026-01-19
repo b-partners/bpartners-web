@@ -25,7 +25,7 @@ interface AnnotatorWithDefaultCacheManagerState {
 }
 
 const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps> = props => {
-  const { analyseRoof } = parseUrlParams();
+  const { analyseRoof, useDrafts } = parseUrlParams();
 
   const { draftAnnotationId, defaultAnnotationInfos = [], defaultPolygons = [] } = props;
   const { isLoading, stopLoading } = useLoadingHandler(true);
@@ -57,7 +57,12 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     <FormProvider {...annotatorFormState}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr='1%'>
-          <AnnotatorComponent draftAnnotationId={draftAnnotationId} showAddress key={`${analyseRoof}-analyseRoof`} />
+          <AnnotatorComponent
+            polygons={useDrafts === 'true' ? defaultPolygons : null}
+            draftAnnotationId={draftAnnotationId}
+            showAddress
+            key={`${analyseRoof}-analyseRoof`}
+          />
         </Grid>
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
