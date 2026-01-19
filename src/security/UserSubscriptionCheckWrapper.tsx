@@ -19,9 +19,25 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
       try {
         const currentWhoami = await whoami();
         switch (currentWhoami?.user?.subscription?.status) {
+          case UserSubscriptionStatus.PAYMENT_METHOD_REQUIRED:
+            redirect('/');
+            openDialog(
+              <SubscriptionBillingModal
+                button='Ajouter un moyen de paiement'
+                title="Période d'essai expirée"
+                description="Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte."
+              />,
+              undefined,
+              false
+            );
+            break;
           case UserSubscriptionStatus.UNPAID:
             redirect('/');
-            openDialog(<SubscriptionBillingModal />, undefined, false);
+            openDialog(
+              <SubscriptionBillingModal button='Payer mon abonnement' title='Factures impayées' description='Il vous reste des factures impayées.' />,
+              undefined,
+              false
+            );
             break;
           case UserSubscriptionStatus.EMPTY:
             redirect('/');

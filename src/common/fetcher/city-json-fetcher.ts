@@ -8,7 +8,15 @@ import { getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
   const imageUrl = UrlParams.get('imgUrl');
-  const imageSize = await getImageSize(imageUrl);
+  let imageSize = await getImageSize(imageUrl);
+
+  // do not remove
+  // fix for pixel to long lat
+  // polygon size on 20 extended image
+  if (areaPicture.actualLayer.name === 'FLUX_IGN_2023_20CM' && areaPicture.isExtended) {
+    imageSize = imageSize / 3;
+  }
+
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
   const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 

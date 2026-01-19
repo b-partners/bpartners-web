@@ -70,8 +70,7 @@ export const polygonMapper = {
       base64_img_data: null,
     };
 
-    const offsets =
-      !areaPicture.isExtended && areaPicture.actualLayer.name !== 'FLUX_IGN_2023_20CM' ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 };
+    const offsets = !areaPicture.isExtended ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 };
 
     result.regions = {
       '1': {
