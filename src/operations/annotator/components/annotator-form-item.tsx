@@ -1,7 +1,6 @@
 import { annotatorStore } from '@/common/store';
 import { stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
-import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import React, { ChangeEvent, FC, FormEvent, useState } from 'react';
@@ -19,8 +18,9 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
     removeAnnotationInfo,
     updatePolygon,
     updateAnnotationInfo,
+    isFirst,
   } = annotatorStore.useOneAnnotationStore(polygonId);
-  const isThisARoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
+  const [isExpanded, setIsExpanded] = useState(isFirst);
 
   const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -29,8 +29,6 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
     updateAnnotationInfo(tempAnnotationInfos);
   };
 
-  const [isExpanded, setIsExpanded] = useState(isThisARoofPolygon);
-
   const handleClickAccordion = () => setIsExpanded(!isExpanded);
 
   const togglePolygonVisibility = (event: FormEvent) => {
@@ -38,9 +36,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
     updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });
   };
 
-  if (!currentPolygon) {
-    return null;
-  }
+  if (!currentPolygon) return null;
 
   const surface = annotationInfos?.area || currentPolygon.surface;
 
@@ -87,7 +83,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
                 </Tooltip>
               </Stack>
             </Stack>
-            {annotationInfos.area && isThisARoofPolygon && (
+            {annotationInfos.area && isFirst && (
               <Typography>
                 Surface: <strong>{annotationInfos.area}m²</strong>
               </Typography>
