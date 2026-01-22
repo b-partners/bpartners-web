@@ -22,6 +22,7 @@ export const AnnotationItemLabelTypeSelect: FC<Props> = ({ index }) => {
 
   return (
     <SelectInput
+      size='small'
       alwaysOn
       resettable
       choices={ANNOTATION_LABELS_CHOICES}

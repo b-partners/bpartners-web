@@ -2,7 +2,7 @@ import { BPLoader } from '@/common/components';
 import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
-import { useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
@@ -35,6 +35,8 @@ import {
   measurementMapper,
   useLlmResultQuery,
 } from './utils';
+
+const {usePolygonStore} = annotatorStore
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -77,6 +79,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { screen } = useAnnotatorScreenSwitch();
   const { useDrafts } = parseUrlParams();
+
+  const {polygonList, setPolygons: setPolygonList} = usePolygonStore()
 
   useEffect(() => {
     const oldPolygons = annotatorFormState.getValues('polygons');
@@ -169,6 +173,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     `&isExtended=${isExtended}` +
     `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
     `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}`;
+    
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -214,8 +219,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               height={height || containerHeight + 50}
               buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
               image={data?.image || imageSrcFromUrl}
-              setPolygons={setLocalPolygon}
-              polygonList={localPolygon}
+              setPolygons={setPolygonList}
+              polygonList={polygonList}
               measurementMapper={measurementMapper(isExtended)}
               getNewPolygonColor={getNewPolygonColor}
               polygonLineSizeProps={{
@@ -268,7 +273,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
             <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
-            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length !== 1 && screen !== '3d-annotator'} />
+            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length === 0 && screen !== '3d-annotator'} />
           </Stack>
         </Stack>
       )}

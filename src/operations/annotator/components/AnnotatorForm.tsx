@@ -1,21 +1,39 @@
-import { useAnnotatorComponentStore } from '@/common/store';
-import { ANNOTATION_COVERING_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { ANNOTATION_COVERING_CHOICES, ANNOTATION_LABELS_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Box, Divider, Typography } from '@mui/material';
-import { FC, useMemo } from 'react';
-import { SelectInput, TextInput } from 'react-admin';
+import { Box, MenuItem, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
+import { ChangeEvent, FC, FocusEvent, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { AnnotationInfo } from '../types';
 import { AnnotatorFormState } from '../utils';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
-const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface }) => {
+const CustomTextField: FC<TextFieldProps> = props => {
+  const [value, setValue] = useState(props.defaultValue);
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
+  return <TextField {...props} onChange={handleChange} value={value} />;
+};
+
+type HandleChange = (
+  key: keyof AnnotationInfo,
+  transform?: (value: any) => any
+) => (event: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
+
+const AnnotatorForm: FC<{ index: number; surface: number; polygonId: string }> = ({ index, surface, polygonId }) => {
+  const { annotationInfos, updateAnnotationInfo } = annotatorStore.useOneAnnotationStore(polygonId);
   const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
   const { getValues } = useFormContext<AnnotatorFormState>();
 
-  const height = getValues(`annotationInfos.${index}.height`);
+  const handleChange: HandleChange = (key, transform) => event => {
+    const currentAnnotationInfo: AnnotationInfo = { ...annotationInfos };
+    currentAnnotationInfo[key as keyof AnnotationInfo] = (transform ? transform(event.target.value) : event.target.value) as never;
+    updateAnnotationInfo(currentAnnotationInfo);
+  };
+
+  const height = annotationInfos.height;
   const percentagesLevel = useMemo(() => {
     const defaultPercentageLevel = new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 }));
     const defaultPercentageLevelName = defaultPercentageLevel.map(({ name }) => name);
@@ -40,7 +58,7 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
   }, [roofAnalyseProperties, index]);
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <Stack gap={1}>
       {surface && (
         <Typography sx={{ fontSize: '14px' }}>
           Surface :
@@ -58,93 +76,104 @@ const AnnotatorForm: FC<{ index: number; surface: number }> = ({ index, surface 
         </Typography>
       )}
       {isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
-      <Divider sx={{ my: 2 }} />
-      <SelectInput
-        alwaysOn
-        resettable
-        label='Revêtement 1'
-        choices={ANNOTATION_COVERING_CHOICES}
-        translateChoice={false}
-        translate='no'
-        name={`annotationInfos.${index}.covering`}
-        source={`annotationInfos.${index}.covering`}
+
+      <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type' onChange={handleChange('labelType')}>
+        {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
+          <MenuItem key={name} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </TextField>
+      <CustomTextField
+        fullWidth
+        onClick={e => e.stopPropagation()}
+        label='Nom du label'
+        size='small'
+        defaultValue={annotationInfos.labelName}
+        onBlur={handleChange('labelName')}
       />
+      <TextField select label='Revêtement 1' value={annotationInfos.covering} onChange={handleChange('covering')} size='small'>
+        {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
+          <MenuItem value={id}>{name}</MenuItem>
+        ))}
+      </TextField>
       {getValues(`annotationInfos.${index}.covering2`) && (
-        <SelectInput
-          alwaysOn
-          resettable
-          label='Revêtement 2'
-          choices={ANNOTATION_COVERING_CHOICES}
-          translateChoice={false}
-          name={`annotationInfos.${index}.covering2`}
-          translate='no'
-          source={`annotationInfos.${index}.covering2`}
-        />
+        <TextField select label='Revêtement 2' value={annotationInfos.covering2} onChange={handleChange('covering2')} size='small'>
+          {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
+            <MenuItem value={id}>{name}</MenuItem>
+          ))}
+        </TextField>
       )}
+
       {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
-        <TextInput
-          translate='no'
+        <CustomTextField
+          label='Pente (°)'
+          defaultValue={annotationInfos.slope}
           type='number'
           inputProps={{ min: 0 }}
-          name={`annotationInfos.${index}.slope`}
-          source={`annotationInfos.${index}.slope`}
-          label='Pente (°)'
+          onBlur={handleChange('slope', v => +`${v || 0}`)}
         />
       )}
+
       {isSlopeAndHeightPending && <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>}
-      <SelectInput
+
+      <TextField
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
-        name={`annotationInfos.${index}.wear`}
-        source={`annotationInfos.${index}.wear`}
-        translate='no'
+        select
         label='Usure'
-        choices={ANNOTATION_WEAR_CHOICES}
-        translateChoice={false}
-        alwaysOn
-        resettable
-      />
-      <SelectInput
+        value={annotationInfos.wear}
+        onChange={handleChange('wear')}
+        size='small'
+      >
+        {ANNOTATION_WEAR_CHOICES.map(({ name, id }) => (
+          <MenuItem value={id}>{name}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
-        name={`annotationInfos.${index}.wearLevel`}
-        source={`annotationInfos.${index}.wearLevel`}
-        translate='no'
+        select
         label="Taux d'usure"
-        choices={percentagesLevel.usure}
-        translateChoice={false}
-        alwaysOn
-        resettable
-      />
-      <SelectInput
+        value={annotationInfos.wearLevel}
+        onChange={handleChange('wearLevel')}
+        size='small'
+      >
+        {percentagesLevel.usure.map(({ name, id }) => (
+          <MenuItem value={id}>{name}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
         InputProps={{ startAdornment: <FormColorBox type='MOISISSURE' /> }}
-        name={`annotationInfos.${index}.moldRate`}
-        source={`annotationInfos.${index}.moldRate`}
-        translate='no'
+        select
         label='Taux de moisissure'
-        choices={percentagesLevel.moisissure}
-        translateChoice={false}
-        alwaysOn
-        resettable
-      />
-      <SelectInput
+        value={annotationInfos.moldRate}
+        onChange={handleChange('moldRate')}
+        size='small'
+      >
+        {percentagesLevel.moisissure.map(({ name, id }) => (
+          <MenuItem value={id}>{name}</MenuItem>
+        ))}
+      </TextField>
+      <TextField
         InputProps={{ startAdornment: <FormColorBox type='HUMIDITE' /> }}
-        name={`annotationInfos.${index}.humidityLevel`}
-        source={`annotationInfos.${index}.humidityLevel`}
-        translate='no'
+        select
         label="Taux d'humidité"
-        choices={percentagesLevel.humidite}
-        translateChoice={false}
-        alwaysOn
-        resettable
-      />
-      <TextInput
+        value={annotationInfos.humidityLevel}
+        onChange={handleChange('humidityLevel')}
+        size='small'
+      >
+        {percentagesLevel.humidite.map(({ name, id }) => (
+          <MenuItem value={id}>{name}</MenuItem>
+        ))}
+      </TextField>
+
+      <CustomTextField
         InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}
-        name={`annotationInfos.${index}.obstacle`}
-        source={`annotationInfos.${index}.obstacle`}
-        translate='no'
         label='Obstacle/Velux/PV'
+        defaultValue={annotationInfos.obstacle}
+        onBlur={handleChange('obstacle')}
       />
-      <TextInput name={`annotationInfos.${index}.comment`} source={`annotationInfos.${index}.comment`} label='Commentaire' multiline />
-    </Box>
+      <CustomTextField label='Commentaire' defaultValue={annotationInfos.comment} multiline onBlur={handleChange('comment')} />
+    </Stack>
   );
 };
 
