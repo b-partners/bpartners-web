@@ -1,11 +1,10 @@
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { copyObject } from '@/common/utils';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_LABELS_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Box, MenuItem, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
 import { ChangeEvent, FC, FocusEvent, useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { AnnotationInfo } from '../types';
-import { AnnotatorFormState } from '../utils';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
@@ -22,25 +21,24 @@ type HandleChange = (
   transform?: (value: any) => any
 ) => (event: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 
-const AnnotatorForm: FC<{ index: number; surface: number; polygonId: string }> = ({ index, surface, polygonId }) => {
-  const { annotationInfos, updateAnnotationInfo } = annotatorStore.useOneAnnotationStore(polygonId);
+const AnnotatorForm: FC<{ surface: number; polygonId: string }> = ({ surface, polygonId }) => {
+  const { annotationInfos, updateAnnotationInfo, isFirst } = annotatorStore.useOneAnnotationStore(polygonId);
   const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
-  const { getValues } = useFormContext<AnnotatorFormState>();
 
   const handleChange: HandleChange = (key, transform) => event => {
-    const currentAnnotationInfo: AnnotationInfo = { ...annotationInfos };
+    const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
     currentAnnotationInfo[key as keyof AnnotationInfo] = (transform ? transform(event.target.value) : event.target.value) as never;
     updateAnnotationInfo(currentAnnotationInfo);
   };
 
   const height = annotationInfos.height;
+
   const percentagesLevel = useMemo(() => {
     const defaultPercentageLevel = new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 }));
     const defaultPercentageLevelName = defaultPercentageLevel.map(({ name }) => name);
 
-    if (index !== 0 || !(getValues('polygons.0')?.id || '')?.includes(roofGlobalIdRef)) {
+    if (!isFirst || !polygonId.includes(roofGlobalIdRef))
       return { moisissure: defaultPercentageLevel, humidite: defaultPercentageLevel, usure: defaultPercentageLevel };
-    }
 
     const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties?.moisissure_rate)
       ? defaultPercentageLevel
@@ -55,7 +53,7 @@ const AnnotatorForm: FC<{ index: number; surface: number; polygonId: string }> =
       : [...defaultPercentageLevel, { id: roofAnalyseProperties?.usure_rate, name: roofAnalyseProperties?.usure_rate }].sort((a, b) => a.name - b.name);
 
     return { moisissure, humidite, usure };
-  }, [roofAnalyseProperties, index]);
+  }, [roofAnalyseProperties, isFirst]);
 
   return (
     <Stack gap={1}>
@@ -97,7 +95,7 @@ const AnnotatorForm: FC<{ index: number; surface: number; polygonId: string }> =
           <MenuItem value={id}>{name}</MenuItem>
         ))}
       </TextField>
-      {getValues(`annotationInfos.${index}.covering2`) && (
+      {annotationInfos.covering2 && (
         <TextField select label='Revêtement 2' value={annotationInfos.covering2} onChange={handleChange('covering2')} size='small'>
           {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
             <MenuItem value={id}>{name}</MenuItem>
@@ -105,7 +103,7 @@ const AnnotatorForm: FC<{ index: number; surface: number; polygonId: string }> =
         </TextField>
       )}
 
-      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && getValues(`annotationInfos.${index}.slope`) !== -1 && (
+      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && annotationInfos.slope !== -1 && (
         <CustomTextField
           label='Pente (°)'
           defaultValue={annotationInfos.slope}

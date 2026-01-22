@@ -3,8 +3,7 @@ import { addAlphabet } from '@/operations/annotator/utils';
 import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
-
-const copyObject = <T>(object: T) => JSON.parse(JSON.stringify(object)) as typeof object;
+import { copyObject } from '../utils';
 
 interface State {
   annotations: Record<
@@ -51,6 +50,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
           fillColor: polygon.fillColor,
           strokeColor: polygon.strokeColor,
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
+          slope: -1,
         },
       };
 

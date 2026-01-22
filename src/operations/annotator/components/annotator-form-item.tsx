@@ -1,17 +1,17 @@
 import { annotatorStore } from '@/common/store';
-import { stringCutter } from '@/common/utils';
+import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import React, { ChangeEvent, FC, FormEvent, useState } from 'react';
 import AnnotatorForm from './AnnotatorForm';
+import { annotatorFormItem } from './style';
 
 interface Props {
-  index: number;
   polygonId: string;
 }
 
-export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) => {
+export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
   const {
     polygon: currentPolygon,
     annotationInfos,
@@ -24,7 +24,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
 
   const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
-    const tempAnnotationInfos = { ...annotationInfos };
+    const tempAnnotationInfos = copyObject(annotationInfos);
     tempAnnotationInfos.labelType = id as typeof tempAnnotationInfos.labelType;
     updateAnnotationInfo(tempAnnotationInfos);
   };
@@ -41,13 +41,13 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
   const surface = annotationInfos?.area || currentPolygon.surface;
 
   return (
-    <Stack sx={{ overflowX: 'hidden' }} data-cy='annotation-info-item'>
+    <Stack sx={annotatorFormItem} data-cy='annotation-info-item'>
       <Accordion expanded={isExpanded} onChange={handleClickAccordion}>
         <AccordionSummary>
           <Box width='100%'>
             <Stack direction='row' alignItems='center' justifyContent='space-between'>
               <Stack direction='row'>
-                <Box sx={{ width: '3px', height: '25px', background: currentPolygon.strokeColor, mr: 1, borderRadius: '5px' }} />
+                <Box className='polygon-color-line' bgcolor={currentPolygon.strokeColor} />
                 <Typography>{stringCutter(annotationInfos.labelName, 25)}</Typography>
               </Stack>
               <Stack direction='row'>
@@ -67,16 +67,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
                 </Tooltip>
                 <Tooltip title='supprimer le polygone'>
                   <span>
-                    <IconButton
-                      sx={
-                        isExpanded && {
-                          '& svg': {
-                            transform: 'rotate(180deg)',
-                          },
-                        }
-                      }
-                      size='small'
-                    >
+                    <IconButton className={`svg-expanded-${isExpanded}`} size='small'>
                       <ExpandMoreIcon />
                     </IconButton>
                   </span>
@@ -101,7 +92,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, index }) =>
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          <AnnotatorForm polygonId={polygonId} index={index} surface={surface} />
+          <AnnotatorForm polygonId={polygonId} surface={surface} />
         </AccordionDetails>
       </Accordion>
     </Stack>

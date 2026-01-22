@@ -35,7 +35,7 @@ const AnnotatorItemList = () => {
         polygon={polygons[index] as Polygon}
       />
     ) : (
-      <AnnotatorFormItem index={index} polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />
+      <AnnotatorFormItem polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />
     )
   );
 };
