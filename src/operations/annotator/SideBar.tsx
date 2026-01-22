@@ -8,10 +8,9 @@ import { Inbox as InboxIcon } from '@mui/icons-material';
 import { Box, List, Stack, Typography } from '@mui/material';
 import { BaseSyntheticEvent, FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
-import { Polygon } from '@bpartners/annotator-component';
 import { AnnotationSlopeHeightAlert, AnnotatorFormItem, AnnotatorFormResultItem } from './components';
 import { AnnotatorFormState } from './utils';
 
@@ -20,19 +19,16 @@ export type SideBarProps = {
 };
 
 const AnnotatorItemList = () => {
-  const { polygons } = useWatch<AnnotatorFormState>();
   const { areaPictureDetails } = useAnnotatorComponentStore();
 
   const annotationsInfos = annotatorStore.useAnnotatorInfoStore();
 
-  return annotationsInfos.map((annotationInfo, index: number) =>
+  return annotationsInfos.map(annotationInfo =>
     annotationInfo?.polygonId?.includes('___') ? (
       <AnnotatorFormResultItem
-        index={index}
-        annotationInfo={annotationInfo}
         areaPictureDetails={areaPictureDetails}
         key={`${annotationInfo.polygonId}_AnnotatorFormResultItem`}
-        polygon={polygons[index] as Polygon}
+        polygonId={annotationInfo.polygonId}
       />
     ) : (
       <AnnotatorFormItem polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />

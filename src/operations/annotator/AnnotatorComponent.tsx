@@ -3,14 +3,14 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { copyObject, getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { degradationLevels } from '../prospects/constants';
 import {
@@ -36,7 +36,7 @@ import {
   useLlmResultQuery,
 } from './utils';
 
-const {usePolygonStore} = annotatorStore
+const { usePolygonStore } = annotatorStore;
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -56,7 +56,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
   const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
-  const [localPolygon, setLocalPolygon] = useState(polygonFromProps || []);
 
   const { geoJsonResultUrl, globalRate, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
@@ -80,30 +79,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { screen } = useAnnotatorScreenSwitch();
   const { useDrafts } = parseUrlParams();
 
-  const {polygonList, setPolygons: setPolygonList} = usePolygonStore()
+  const { polygonList, setPolygons: setPolygonList } = usePolygonStore();
 
   useEffect(() => {
-    const oldPolygons = annotatorFormState.getValues('polygons');
-    const setOldPolygonId = new Set(oldPolygons.map(({ id }) => id));
-    const newPolygon = localPolygon.find(currentPolygon => !setOldPolygonId.has(currentPolygon.id));
-    if (newPolygon) {
-      const newAnnotatorInfo = createDefaultAnnotationInfo(newPolygon, localPolygon.length - 1);
-      annotatorFormState.setValue('annotationInfos', [...annotatorFormState.getValues('annotationInfos'), newAnnotatorInfo], { shouldDirty: true });
-    }
-    if (JSON.stringify(localPolygon) !== JSON.stringify(oldPolygons)) annotatorFormState.setValue('polygons', localPolygon, { shouldDirty: true });
-  }, [localPolygon]);
-
-  useEffect(() => {
-    const observer = annotatorFormState.watch(({ polygons }) => {
-      if (polygons.length !== localPolygon.length) {
-        setLocalPolygon(polygons as any);
-      }
-    });
-    return observer.unsubscribe;
-  }, [localPolygon]);
-
-  useEffect(() => {
-    const currentFormPolygons = annotatorFormState.getValues('polygons');
+    const currentFormPolygons = copyObject(polygonList)
     if (useDrafts !== 'true' && currentFormPolygons.length < 2) annotatorFormState.setValue('polygons', [], { shouldDirty: true });
     setRoofAnalyseProperties(data?.properties);
 
@@ -173,7 +152,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     `&isExtended=${isExtended}` +
     `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
     `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}`;
-    
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>

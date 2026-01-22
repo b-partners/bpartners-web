@@ -1,14 +1,13 @@
 import { BPLoader } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
-import { useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
-import { stringifyObj } from '@/common/utils/stringify';
-import { clearPolygons, getCached } from '@/providers';
+import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Grid, Stack } from '@mui/material';
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
@@ -16,7 +15,6 @@ import { Annotator3DInfos } from './components';
 import { SideBar } from './SideBar';
 import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils';
-import { mapAreaAnnotationInstanceToAnnotationInfo } from './utils/annotation-info-mapper';
 
 type AnnotatorWithDefaultCacheManagerProps = { defaultPolygons?: Polygon[]; defaultAnnotationInfos?: AnnotationInfo[]; draftAnnotationId?: string };
 interface AnnotatorWithDefaultCacheManagerState {
@@ -25,7 +23,8 @@ interface AnnotatorWithDefaultCacheManagerState {
 }
 
 const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps> = props => {
-  const { analyseRoof, useDrafts } = parseUrlParams();
+  const { analyseRoof } = parseUrlParams();
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
 
   const { draftAnnotationId, defaultAnnotationInfos = [], defaultPolygons = [] } = props;
   const { isLoading, stopLoading } = useLoadingHandler(true);
@@ -40,9 +39,10 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     const cachedDefaultAnnotationInfo = getCached.annotationsInfoList();
     const cachedDefaultPolygons = getCached.polygons() || [];
 
-    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof)
+    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof) {
+      replaceAnnotations(cachedDefaultPolygons, cachedDefaultAnnotationInfo);
       setDefaultAnnotations({ polygons: cachedDefaultPolygons, annotationInfos: cachedDefaultAnnotationInfo });
-    else clearPolygons();
+    } else clearPolygons();
 
     stopLoading();
   }, [shouldAnalyseRoof]);
@@ -57,12 +57,7 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     <FormProvider {...annotatorFormState}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr='1%'>
-          <AnnotatorComponent
-            polygons={useDrafts === 'true' ? defaultPolygons : null}
-            draftAnnotationId={draftAnnotationId}
-            showAddress
-            key={`${analyseRoof}-analyseRoof`}
-          />
+          <AnnotatorComponent polygons={defaultPolygons} draftAnnotationId={draftAnnotationId} showAddress key={`${analyseRoof}-analyseRoof`} />
         </Grid>
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
@@ -81,25 +76,21 @@ const areaPictureFetcher = async (areaPictureId: string) =>
   draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
 
 const AnnotatorWithDraftAnnotation = () => {
-  const { isAnnotationEmpty, polygons: draftsPolygons, annotations = {} } = useRetrievePolygons(areaPictureFetcher);
-  const { annotations: annotationInstances = [] } = annotations;
+  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureFetcher);
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
 
-  const draftAnnotationInfo = useMemo(
-    () => annotationInstances.map(mapAreaAnnotationInstanceToAnnotationInfo),
-    [annotations?.id, stringifyObj(draftsPolygons)]
-  );
+  useEffect(() => {
+    if (areaPictureAnnotation?.annotations) {
+      const { annotationsInfos, polygons } = areaPictureAnnotationToPolygonAndAreaPictureInfo(areaPictureAnnotation);
+      replaceAnnotations(polygons, annotationsInfos);
+    }
+  }, [areaPictureAnnotation]);
 
   if (isAnnotationEmpty) {
     return <BPLoader message="Chargement des brouillons d'annotation..." />;
   }
 
-  return (
-    <AnnotatorWithDefaultCacheManager
-      draftAnnotationId={annotations.id}
-      defaultPolygons={draftsPolygons as Polygon[]}
-      defaultAnnotationInfos={draftAnnotationInfo}
-    />
-  );
+  return <AnnotatorWithDefaultCacheManager />;
 };
 
 export const Annotator = () => {

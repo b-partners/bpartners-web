@@ -22,6 +22,7 @@ interface Actions {
   removeAnnotationInfo: (id: string) => void;
   addPolygon: (polygon: Polygon) => void;
   updatePolygon: (id: string, polygon: Polygon) => void;
+  replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
 }
 
 const useAnnotatorStore = create<State & Actions>(set => ({
@@ -66,6 +67,20 @@ const useAnnotatorStore = create<State & Actions>(set => ({
     set(state => {
       let annotations = copyObject(state.annotations);
       annotations[annotationInfos.polygonId].annotationInfos = annotationInfos;
+      return { annotations };
+    }),
+  replaceAnnotations: (polygons, annotationsInfos) =>
+    set(() => {
+      const annotations: State['annotations'] = {};
+
+      polygons.forEach((polygon, index) => {
+        annotations[polygon.id] = {
+          isFirst: index === 0,
+          annotationInfos: annotationsInfos.find(({ polygonId }) => polygonId === polygon.id),
+          polygon,
+        };
+      });
+
       return { annotations };
     }),
 }));

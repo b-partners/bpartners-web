@@ -31,6 +31,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
     annotations: {},
     polygons: [],
   });
+  const [areaPictureAnnotationState, setAreaPictureAnnotationState] = useState<AreaPictureAnnotation>(null);
   const { polygons, annotations } = retrievedPolygon;
   const isAnnotationEmpty = !annotations || Object.keys(annotations || {}).length === 0;
   const { setSlopeAndHeightState, setGlobalRate, setLlm } = useAnnotatorComponentStore();
@@ -64,6 +65,8 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             polygons,
             annotations: areaPictureAnnotation,
           });
+
+          setAreaPictureAnnotationState(areaPictureAnnotation);
         }
       });
       return;
@@ -86,9 +89,10 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
           polygons,
           annotations: areaPictureAnnotation,
         });
+        setAreaPictureAnnotationState(areaPictureAnnotation);
       }
     });
   }, [pictureId]);
 
-  return { polygons, annotations, isAnnotationEmpty };
+  return { polygons, annotations, isAnnotationEmpty, areaPictureAnnotation: areaPictureAnnotationState };
 };
