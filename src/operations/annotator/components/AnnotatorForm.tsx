@@ -1,19 +1,25 @@
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { SlopeAndHeightState } from '@/common/fetcher';
+import { annotatorStore, RoofAnalyseProperties } from '@/common/store';
 import { copyObject } from '@/common/utils';
 import { ANNOTATION_COVERING_CHOICES, ANNOTATION_LABELS_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Box, MenuItem, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
-import { ChangeEvent, FC, FocusEvent, useMemo, useState } from 'react';
+import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps } from '@mui/material';
+import { ChangeEvent, FC, FocusEvent, useEffect, useMemo, useState } from 'react';
 import { AnnotationInfo } from '../types';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
-const CustomTextField: FC<TextFieldProps> = props => {
+const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = props => {
   const [value, setValue] = useState(props.defaultValue);
+
+  useEffect(() => {
+    setValue(props.defaultValue);
+  }, [props.defaultValue]);
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
-  return <TextField {...props} onChange={handleChange} value={value} />;
+  return <TextField {...props} onChange={handleChange} value={props.isLoading ? '' : value} />;
 };
 
 type HandleChange = (
@@ -21,17 +27,20 @@ type HandleChange = (
   transform?: (value: any) => any
 ) => (event: ChangeEvent<HTMLInputElement> | FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void;
 
-const AnnotatorForm: FC<{ surface: number; polygonId: string }> = ({ surface, polygonId }) => {
+interface AnnotatorFormProps {
+  polygonId: string;
+  slopeAndHeightState: SlopeAndHeightState;
+  isSlopeAndHeightPending: boolean;
+  roofAnalyseProperties: RoofAnalyseProperties;
+}
+const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPending, roofAnalyseProperties, slopeAndHeightState }) => {
   const { annotationInfos, updateAnnotationInfo, isFirst } = annotatorStore.useOneAnnotationStore(polygonId);
-  const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
 
   const handleChange: HandleChange = (key, transform) => event => {
     const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
     currentAnnotationInfo[key as keyof AnnotationInfo] = (transform ? transform(event.target.value) : event.target.value) as never;
     updateAnnotationInfo(currentAnnotationInfo);
   };
-
-  const height = annotationInfos.height;
 
   const percentagesLevel = useMemo(() => {
     const defaultPercentageLevel = new Array(11).fill(1).map((_e, k) => ({ id: k * 10, name: k * 10 }));
@@ -57,24 +66,6 @@ const AnnotatorForm: FC<{ surface: number; polygonId: string }> = ({ surface, po
 
   return (
     <Stack gap={1}>
-      {surface && (
-        <Typography sx={{ fontSize: '14px' }}>
-          Surface :
-          <Typography component='span' fontWeight='bold'>
-            {surface} m²
-          </Typography>
-        </Typography>
-      )}
-      {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
-        <Typography sx={{ fontSize: '14px' }}>
-          Hauteur du bâtiment :
-          <Typography component='span' fontWeight='bold'>
-            {height} m
-          </Typography>
-        </Typography>
-      )}
-      {isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
-
       <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type' onChange={handleChange('labelType')}>
         {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
           <MenuItem key={name} value={id}>
@@ -103,17 +94,22 @@ const AnnotatorForm: FC<{ surface: number; polygonId: string }> = ({ surface, po
         </TextField>
       )}
 
-      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending !== false) && annotationInfos.slope !== -1 && (
+      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending || annotationInfos.slope !== -1) && (
         <CustomTextField
-          label='Pente (°)'
+          label={isSlopeAndHeightPending ? 'Chargement de la pente en cours...' : 'Pente (°)'}
           defaultValue={annotationInfos.slope}
           type='number'
           inputProps={{ min: 0 }}
           onBlur={handleChange('slope', v => +`${v || 0}`)}
+          disabled={isSlopeAndHeightPending}
+          isLoading={isSlopeAndHeightPending}
+          InputProps={
+            isSlopeAndHeightPending && {
+              endAdornment: <CircularProgress size={25} />,
+            }
+          }
         />
       )}
-
-      {isSlopeAndHeightPending && <Typography paddingBottom={3}>Chargement de la pente en cours...</Typography>}
 
       <TextField
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}

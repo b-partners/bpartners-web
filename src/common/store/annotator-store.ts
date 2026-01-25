@@ -5,15 +5,14 @@ import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
 import { copyObject } from '../utils';
 
+interface Annotation {
+  isFirst: boolean;
+  polygon: Polygon;
+  annotationInfos: AnnotationInfo;
+}
+
 interface State {
-  annotations: Record<
-    string,
-    {
-      isFirst: boolean;
-      polygon: Polygon;
-      annotationInfos: AnnotationInfo;
-    }
-  >;
+  annotations: Record<string, Annotation>;
 }
 
 interface Actions {
@@ -23,6 +22,8 @@ interface Actions {
   addPolygon: (polygon: Polygon) => void;
   updatePolygon: (id: string, polygon: Polygon) => void;
   replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
+  resetAnnotations: () => void;
+  updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
 }
 
 const useAnnotatorStore = create<State & Actions>(set => ({
@@ -42,8 +43,9 @@ const useAnnotatorStore = create<State & Actions>(set => ({
     set(state => {
       let annotations = copyObject(state.annotations);
 
-      annotations[polygon.id] = {
-        isFirst: Object.values(annotations).length === 0,
+      const isFirst = Object.values(annotations).length === 0;
+      const annotation: any = {
+        isFirst,
         polygon,
         annotationInfos: {
           polygonId: polygon.id,
@@ -54,6 +56,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
           slope: -1,
         },
       };
+      annotations[polygon.id] = annotation;
 
       return { annotations };
     }),
@@ -72,15 +75,30 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   replaceAnnotations: (polygons, annotationsInfos) =>
     set(() => {
       const annotations: State['annotations'] = {};
-
       polygons.forEach((polygon, index) => {
-        annotations[polygon.id] = {
-          isFirst: index === 0,
+        const isFirst = index === 0;
+        const annotation = {
+          isFirst,
           annotationInfos: annotationsInfos.find(({ polygonId }) => polygonId === polygon.id),
           polygon,
         };
+        annotations[polygon.id] = annotation;
       });
 
+      return { annotations };
+    }),
+  resetAnnotations: () =>
+    set({
+      annotations: {},
+    }),
+  updateRoofAnnotation: annotationOrDispatcher =>
+    set(state => {
+      const annotations = copyObject(state.annotations);
+      const annotationValues = Object.values(annotations);
+      if (annotationValues.length === 0) return state;
+      const annotation = annotationValues.find(a => a.isFirst);
+      const roofPolygonId = annotation.polygon.id;
+      annotations[roofPolygonId] = typeof annotationOrDispatcher === 'function' ? annotationOrDispatcher(annotation) : annotationOrDispatcher;
       return { annotations };
     }),
 }));

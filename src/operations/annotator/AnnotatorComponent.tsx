@@ -3,7 +3,7 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { copyObject, getUrlParams, parseUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
@@ -11,7 +11,6 @@ import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
 import { degradationLevels } from '../prospects/constants';
 import {
   AnalyseResultButton,
@@ -27,16 +26,13 @@ import { AnnotatorComponentProps } from './types';
 import {
   AnalyseRoofButton,
   annotatorComponentStyle,
-  AnnotatorFormState,
   AnnotatorHelpButton,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   measurementMapper,
-  useLlmResultQuery,
+  useLlmResultQuery
 } from './utils';
-
-const { usePolygonStore } = annotatorStore;
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -53,9 +49,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   draftAnnotationId,
   isInvoiceForm,
 }) => {
-  const annotatorFormState = useFormContext<AnnotatorFormState>();
   const { address } = useWrappedSearchParams(['address']);
-  const polygons = useWatch<AnnotatorFormState, 'polygons'>({ name: 'polygons', defaultValue: [], control: annotatorFormState.control });
+  const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
+  const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
 
   const { geoJsonResultUrl, globalRate, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
@@ -77,30 +74,23 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { screen } = useAnnotatorScreenSwitch();
-  const { useDrafts } = parseUrlParams();
 
-  const { polygonList, setPolygons: setPolygonList } = usePolygonStore();
 
   useEffect(() => {
-    const currentFormPolygons = copyObject(polygonList)
-    if (useDrafts !== 'true' && currentFormPolygons.length < 2) annotatorFormState.setValue('polygons', [], { shouldDirty: true });
     setRoofAnalyseProperties(data?.properties);
 
     const currentPolygons = data?.polygons?.slice(1) || [];
     const roofPolygon = data?.polygons?.[0];
 
-    if (polygons.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
+    if (polygonList.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
       const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
         roofPolygon.id,
         data?.properties,
         data?.properties?.roof_height_in_meters,
         data?.properties?.roof_slope_in_degrees
       );
-
       const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
-
-      annotatorFormState.setValue('polygons', [roofPolygon, ...currentPolygons], { shouldDirty: true, shouldTouch: true });
-      annotatorFormState.setValue('annotationInfos', [roofAnnotationInfo, ...annotationInfos], { shouldDirty: true, shouldTouch: true });
+      replaceAnnotations([roofPolygon, ...currentPolygons], [roofAnnotationInfo, ...annotationInfos])
     }
   }, [JSON.stringify(data), isPending]);
 
@@ -115,28 +105,25 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const refocusImgClick = async () => {
     mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
-    annotatorFormState.setValue('polygons', []), { shouldDirty: true };
-    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+    resetAnnotations()
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
       mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
-      annotatorFormState.setValue('polygons', []), { shouldDirty: true };
-      annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+      resetAnnotations()
     }
   };
 
   const { data: htmlResult, isPending: isLlmResultPending } = useLlmResultQuery(data?.properties);
 
   const handleDetectionProcessingSuccess = () => {
-    annotatorFormState.setValue('polygons', [], { shouldDirty: true });
-    annotatorFormState.setValue('annotationInfos', [], { shouldDirty: true });
+    resetAnnotations()
     clearPolygons(false);
   };
 
   const { mutate: processDetection, isPending: isDetectionProcessing } = useRoofAnalyseQuery(
-    polygons || [],
+    polygonList || [],
     currentAreaPictureDetailsToUse,
     handleDetectionProcessingSuccess
   );
@@ -191,7 +178,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
           {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
             <AnnotatorCanvas
-              markerPosition={!data && (polygons || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+              markerPosition={!data && (polygonList || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
               allowAnnotation={allowAnnotation}
               width={width || containerWidth}
               height={height || containerHeight + 50}
@@ -211,7 +198,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             />
           )}
           <Annotator3D
-            polygons={polygons}
+            polygons={polygonList}
             active={screen === '3d-annotator'}
             width={width || containerWidth}
             height={height || containerHeight}
@@ -251,7 +238,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
             <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
-            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygons.length === 0 && screen !== '3d-annotator'} />
+            <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
           </Stack>
         </Stack>
       )}
@@ -259,10 +246,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
           {screen !== '3d-annotator' && (
-            <AnalyseRoofButton disabled={polygons.length !== 1} isProcessing={isDetectionProcessing} processDetection={processDetection} />
+            <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
           )}
           {screen === '3d-annotator' && <Box />}
-          <Annotator3DSwitchButton disabled={polygons.length !== 1 && screen !== '3d-annotator'} />
+          <Annotator3DSwitchButton disabled={polygonList.length !== 1 && screen !== '3d-annotator'} />
         </Stack>
       )}
       {!isInvoiceForm && screen !== '3d-annotator' && (

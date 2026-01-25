@@ -4,34 +4,23 @@ import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
-import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Grid, Stack } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
 import { Annotator3DInfos } from './components';
 import { SideBar } from './SideBar';
-import { AnnotationInfo } from './types';
 import { useAnnotationInfosForm } from './utils';
 
-type AnnotatorWithDefaultCacheManagerProps = { defaultPolygons?: Polygon[]; defaultAnnotationInfos?: AnnotationInfo[]; draftAnnotationId?: string };
-interface AnnotatorWithDefaultCacheManagerState {
-  polygons: Polygon[];
-  annotationInfos: AnnotationInfo[];
-}
-
-const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps> = props => {
+const AnnotatorWithDefaultCacheManager = () => {
   const { analyseRoof } = parseUrlParams();
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
 
-  const { draftAnnotationId, defaultAnnotationInfos = [], defaultPolygons = [] } = props;
   const { isLoading, stopLoading } = useLoadingHandler(true);
-  const defaultState = { polygons: defaultPolygons, annotationInfos: defaultAnnotationInfos };
 
-  const [defaultAnnotations, setDefaultAnnotations] = useState<AnnotatorWithDefaultCacheManagerState>(defaultState);
-  const annotatorFormState = useAnnotationInfosForm(defaultAnnotations.polygons, defaultAnnotations.annotationInfos);
+  const annotatorFormState = useAnnotationInfosForm();
 
   const shouldAnalyseRoof = analyseRoof === 'true';
 
@@ -39,10 +28,9 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     const cachedDefaultAnnotationInfo = getCached.annotationsInfoList();
     const cachedDefaultPolygons = getCached.polygons() || [];
 
-    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof) {
+    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof)
       replaceAnnotations(cachedDefaultPolygons, cachedDefaultAnnotationInfo);
-      setDefaultAnnotations({ polygons: cachedDefaultPolygons, annotationInfos: cachedDefaultAnnotationInfo });
-    } else clearPolygons();
+    else clearPolygons();
 
     stopLoading();
   }, [shouldAnalyseRoof]);
@@ -57,12 +45,12 @@ const AnnotatorWithDefaultCacheManager: FC<AnnotatorWithDefaultCacheManagerProps
     <FormProvider {...annotatorFormState}>
       <Grid container height='100%' pl={1}>
         <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr='1%'>
-          <AnnotatorComponent polygons={defaultPolygons} draftAnnotationId={draftAnnotationId} showAddress key={`${analyseRoof}-analyseRoof`} />
+          <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
         </Grid>
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
             <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
-              {screen !== '3d-annotator' && <SideBar draftAnnotationId={draftAnnotationId} />}
+              {screen !== '3d-annotator' && <SideBar />}
               {screen === '3d-annotator' && <Annotator3DInfos />}
             </Stack>
           </Grid>

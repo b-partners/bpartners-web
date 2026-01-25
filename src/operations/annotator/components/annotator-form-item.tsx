@@ -1,4 +1,4 @@
-import { annotatorStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
@@ -21,6 +21,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
     isFirst,
   } = annotatorStore.useOneAnnotationStore(polygonId);
   const [isExpanded, setIsExpanded] = useState(isFirst);
+  const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
 
   const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -39,6 +40,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
   if (!currentPolygon) return null;
 
   const surface = annotationInfos?.area || currentPolygon.surface;
+  const height = annotationInfos.height;
 
   return (
     <Stack sx={annotatorFormItem} data-cy='annotation-info-item'>
@@ -74,11 +76,25 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
                 </Tooltip>
               </Stack>
             </Stack>
-            {annotationInfos.area && isFirst && (
-              <Typography>
-                Surface: <strong>{annotationInfos.area}m²</strong>
-              </Typography>
-            )}
+            <Stack>
+              {surface && (
+                <Typography sx={{ fontSize: '14px' }}>
+                  Surface :
+                  <Typography component='span' fontWeight='bold'>
+                    {surface} m²
+                  </Typography>
+                </Typography>
+              )}
+              {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
+                <Typography sx={{ fontSize: '14px' }}>
+                  Hauteur du bâtiment :
+                  <Typography component='span' fontWeight='bold'>
+                    {height} m
+                  </Typography>
+                </Typography>
+              )}
+              {isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
+            </Stack>
             <Divider sx={{ marginY: 1 }} />
             {!isExpanded && (
               <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type du label'>
@@ -92,7 +108,12 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          <AnnotatorForm polygonId={polygonId} surface={surface} />
+          <AnnotatorForm
+            polygonId={polygonId}
+            slopeAndHeightState={slopeAndHeightState}
+            isSlopeAndHeightPending={isSlopeAndHeightPending}
+            roofAnalyseProperties={roofAnalyseProperties}
+          />
         </AccordionDetails>
       </Accordion>
     </Stack>

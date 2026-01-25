@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 
 import { BP_COLOR } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
+import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '@/common/store';
 import { formatDateTime, getFileUrl } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
@@ -30,12 +31,18 @@ export type DraftAnnotationItemProps = {
 export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotation }) => {
   const navigate = useNavigate();
   const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
+  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const annotatorComponentStore = useAnnotatorComponentStore();
+  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
 
   const navigateToAnnotation = () => {
     const { fileId, id: pictureId } = draftAnnotation.areaPicture;
     const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
     clearPolygons();
     clearRoofDelimiter();
+    resetAnnotations();
+    annotatorComponentStore.reset();
+    setAnnotatorSidebarAccordionItem(0);
     navigate(
       `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
     );
