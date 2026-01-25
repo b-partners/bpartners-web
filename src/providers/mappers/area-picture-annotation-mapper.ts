@@ -28,7 +28,7 @@ export const areaPictureAnnotationToPolygonAndAreaPictureInfo = (areaPictureAnno
       obstacle: annotation.metadata.obstacle,
       slope: annotation.metadata.slope,
       strokeColor: annotation.metadata.strokeColor,
-      wear: (annotation.metadata as any).wear,
+      wear: (annotation.metadata as any).wearness,
       wearLevel: annotation.metadata.wearLevel,
       polygonId: annotation.id,
     };

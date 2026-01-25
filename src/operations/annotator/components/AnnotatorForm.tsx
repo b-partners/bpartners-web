@@ -64,6 +64,8 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
     return { moisissure, humidite, usure };
   }, [roofAnalyseProperties, isFirst]);
 
+  console.log(annotationInfos.wear, ANNOTATION_WEAR_CHOICES);
+
   return (
     <Stack gap={1}>
       <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type' onChange={handleChange('labelType')}>
