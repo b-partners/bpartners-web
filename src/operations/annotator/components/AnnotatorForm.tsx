@@ -49,17 +49,27 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
     if (!isFirst || !polygonId.includes(roofGlobalIdRef))
       return { moisissure: defaultPercentageLevel, humidite: defaultPercentageLevel, usure: defaultPercentageLevel };
 
-    const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties?.moisissure_rate)
+    const moisissure = defaultPercentageLevelName.includes(roofAnalyseProperties?.moisissure_rate || annotationInfos.moldRate)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.moisissure_rate, name: roofAnalyseProperties?.moisissure_rate }].sort(
-          (a, b) => a.name - b.name
-        );
-    const humidite = defaultPercentageLevelName.includes(roofAnalyseProperties?.humidite_rate)
+      : [
+          ...defaultPercentageLevel,
+          { id: roofAnalyseProperties?.moisissure_rate || annotationInfos.moldRate, name: roofAnalyseProperties?.moisissure_rate || annotationInfos.moldRate },
+        ].sort((a, b) => a.name - b.name);
+    const humidite = defaultPercentageLevelName.includes(roofAnalyseProperties?.humidite_rate || annotationInfos.humidityLevel)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.humidite_rate, name: roofAnalyseProperties?.humidite_rate }].sort((a, b) => a.name - b.name);
-    const usure = defaultPercentageLevelName.includes(roofAnalyseProperties?.usure_rate)
+      : [
+          ...defaultPercentageLevel,
+          {
+            id: roofAnalyseProperties?.humidite_rate || annotationInfos.humidityLevel,
+            name: roofAnalyseProperties?.humidite_rate || annotationInfos.humidityLevel,
+          },
+        ].sort((a, b) => a.name - b.name);
+    const usure = defaultPercentageLevelName.includes(roofAnalyseProperties?.usure_rate || annotationInfos.wearLevel)
       ? defaultPercentageLevel
-      : [...defaultPercentageLevel, { id: roofAnalyseProperties?.usure_rate, name: roofAnalyseProperties?.usure_rate }].sort((a, b) => a.name - b.name);
+      : [
+          ...defaultPercentageLevel,
+          { id: roofAnalyseProperties?.usure_rate || annotationInfos.wearLevel, name: roofAnalyseProperties?.usure_rate || annotationInfos.wearLevel },
+        ].sort((a, b) => a.name - b.name);
 
     return { moisissure, humidite, usure };
   }, [roofAnalyseProperties, isFirst]);
