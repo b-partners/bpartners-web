@@ -85,7 +85,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
                   </Typography>
                 </Typography>
               )}
-              {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
+              {(slopeAndHeightState?.heightStatus === 'AVAILABLE' || height !== -1) && (
                 <Typography sx={{ fontSize: '14px' }}>
                   Hauteur du bâtiment :
                   <Typography component='span' fontWeight='bold'>

@@ -97,9 +97,9 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         const requestBody: AreaPictureAnnotation = {
           ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
           properties: {
-            global_rate_type: analyseProperties.global_rate_type,
-            global_rate_value: analyseProperties.global_rate_value,
-            roofHeight: analyseProperties.roof_height_in_meters,
+            global_rate_type: analyseProperties?.global_rate_type,
+            global_rate_value: analyseProperties?.global_rate_value,
+            roofHeight: analyseProperties?.roof_height_in_meters,
             llm: getCached.llmResult(),
           },
         };
