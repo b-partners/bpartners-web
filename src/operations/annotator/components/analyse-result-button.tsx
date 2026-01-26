@@ -51,6 +51,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
+  const { globalRate, llm } = useAnnotatorComponentStore();
 
   const annotatorsInfos = annotatorStore.useAnnotatorInfoStore();
   const { polygonList } = annotatorStore.usePolygonStore();
@@ -98,10 +99,10 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         const requestBody: AreaPictureAnnotation = {
           ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
           properties: {
-            global_rate_type: analyseProperties?.global_rate_type,
-            global_rate_value: analyseProperties?.global_rate_value,
-            roofHeight: analyseProperties?.roof_height_in_meters,
-            llm: getCached.llmResult(),
+            global_rate_type: analyseProperties?.global_rate_type || globalRate?.type,
+            global_rate_value: analyseProperties?.global_rate_value || globalRate?.value,
+            roofHeight: analyseProperties?.roof_height_in_meters || annotatorsInfos[0].height,
+            llm: getCached.llmResult() || llm,
             roofDelimiter: roofDelimiterLongLat,
           },
         };
