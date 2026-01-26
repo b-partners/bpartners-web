@@ -50,7 +50,7 @@ export const annotationsAttributeMapper = (
       },
       metadata: {
         ...others,
-        area: polygon.surface,
+        area: polygon.surface || annotationInfo.area,
         wearness,
         fillColor: polygon.fillColor,
         strokeColor: polygon.strokeColor,
