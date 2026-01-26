@@ -1,6 +1,7 @@
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import React, { ChangeEvent, FC, FormEvent, useState } from 'react';
@@ -42,6 +43,8 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
   const surface = annotationInfos?.area || currentPolygon.surface;
   const height = annotationInfos.height;
 
+  const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
+
   return (
     <Stack sx={annotatorFormItem} data-cy='annotation-info-item'>
       <Accordion expanded={isExpanded} onChange={handleClickAccordion}>
@@ -62,7 +65,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
                 </Tooltip>
                 <Tooltip title='supprimer le polygone'>
                   <span>
-                    <IconButton size='small' onClick={removeAnnotationInfo}>
+                    <IconButton disabled={isRoofPolygon} size='small' onClick={removeAnnotationInfo}>
                       <DeleteIcon />
                     </IconButton>
                   </span>
