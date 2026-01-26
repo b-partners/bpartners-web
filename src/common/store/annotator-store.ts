@@ -31,7 +31,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   setAnnotations: annotations => set({ annotations }),
   removeAnnotationInfo: id =>
     set(state => {
-      let annotations = copyObject(state.annotations);
+      const annotations = copyObject(state.annotations);
       const isTheCurrentAnnotationTheFirst = annotations[id].isFirst;
       delete annotations[id];
       const restOfIds = Object.keys(annotations);
@@ -41,7 +41,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
     }),
   addPolygon: polygon =>
     set(state => {
-      let annotations = copyObject(state.annotations);
+      const annotations = copyObject(state.annotations);
 
       const isFirst = Object.values(annotations).length === 0;
       const annotation: any = {
@@ -68,7 +68,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
     }),
   updateAnnotationInfo: annotationInfos =>
     set(state => {
-      let annotations = copyObject(state.annotations);
+      const annotations = copyObject(state.annotations);
       annotations[annotationInfos.polygonId].annotationInfos = annotationInfos;
       return { annotations };
     }),
@@ -137,7 +137,7 @@ const usePolygonStore = () => {
   const polygonIdList = polygonList.map(a => a.id);
 
   const setPolygons: Dispatch<SetStateAction<Polygon[]>> = _polygon => {
-    let polygon = typeof _polygon === 'function' ? _polygon(polygonList) : _polygon;
+    const polygon = typeof _polygon === 'function' ? _polygon(polygonList) : _polygon;
     const newPolygon = polygon.find(p => !polygonIdList.includes(p.id));
     if (newPolygon) addPolygon(newPolygon);
   };

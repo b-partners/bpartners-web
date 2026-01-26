@@ -78,7 +78,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
     <Stack gap={1}>
       <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type' onChange={handleChange('labelType')}>
         {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
-          <MenuItem key={name} value={id}>
+          <MenuItem key={`${name}-label-choices`} value={id}>
             {name}
           </MenuItem>
         ))}
@@ -93,13 +93,17 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
       />
       <TextField select label='Revêtement 1' value={annotationInfos.covering} onChange={handleChange('covering')} size='small'>
         {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
-          <MenuItem value={id}>{name}</MenuItem>
+          <MenuItem key={`${name}-covering-choices`} value={id}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
       {annotationInfos.covering2 && (
         <TextField select label='Revêtement 2' value={annotationInfos.covering2} onChange={handleChange('covering2')} size='small'>
           {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
-            <MenuItem value={id}>{name}</MenuItem>
+            <MenuItem key={`${name}-covering-2-choices`} value={id}>
+              {name}
+            </MenuItem>
           ))}
         </TextField>
       )}
@@ -130,7 +134,9 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         size='small'
       >
         {ANNOTATION_WEAR_CHOICES.map(({ name, id }) => (
-          <MenuItem value={id}>{name}</MenuItem>
+          <MenuItem key={`${name}-wear-choices`} value={id}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
       <TextField
@@ -142,7 +148,9 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         size='small'
       >
         {percentagesLevel.usure.map(({ name, id }) => (
-          <MenuItem value={id}>{name}</MenuItem>
+          <MenuItem key={`${name}-wearLevel`} value={id}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
       <TextField
@@ -154,7 +162,9 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         size='small'
       >
         {percentagesLevel.moisissure.map(({ name, id }) => (
-          <MenuItem value={id}>{name}</MenuItem>
+          <MenuItem key={`${name}-moldRate`} value={id}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
       <TextField
@@ -166,7 +176,9 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         size='small'
       >
         {percentagesLevel.humidite.map(({ name, id }) => (
-          <MenuItem value={id}>{name}</MenuItem>
+          <MenuItem key={`${name}-humidity`} value={id}>
+            {name}
+          </MenuItem>
         ))}
       </TextField>
 
