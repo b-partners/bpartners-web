@@ -1,6 +1,7 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
+import { cache } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
@@ -45,7 +46,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       areaPictureAnnotationFetcher(pictureId).then(areaPictureAnnotations => {
         if (areaPictureAnnotations.length > 0) {
           const areaPictureAnnotation = areaPictureAnnotations[0];
-          const { global_rate_type, global_rate_value, roofHeight, llm } = areaPictureAnnotation?.properties || {};
+          const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter } = areaPictureAnnotation?.properties || {};
           setLlm(llm);
           setGlobalRate(global_rate_value, global_rate_type);
           setSlopeAndHeightState({
@@ -54,6 +55,8 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
             slope: annotations?.annotations?.[0]?.metadata?.slope,
             slopeStatus: 'AVAILABLE',
           });
+
+          cache.roofDelimiterLongLatItem(roofDelimiter);
 
           const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id?.includes(roofGlobalIdRef));
           if (roofAnnotation)

@@ -94,6 +94,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
         const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotatorsInfos, pictureId, annotationIdValue);
+        const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
         const requestBody: AreaPictureAnnotation = {
           ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
           properties: {
@@ -101,6 +102,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
             global_rate_value: analyseProperties?.global_rate_value,
             roofHeight: analyseProperties?.roof_height_in_meters,
             llm: getCached.llmResult(),
+            roofDelimiter: roofDelimiterLongLat,
           },
         };
         await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
