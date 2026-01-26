@@ -8,6 +8,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import {
+  annotatorStore,
   ProspectContextProvider,
   useAnnotator3DStore,
   useAnnotatorComponentFormItemStore,
@@ -45,6 +46,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
   const { setScreen } = useAnnotatorScreenSwitch();
   const { reset } = useAnnotator3DStore();
+  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
   useEffect(() => {
     form.setValue('address', address);
@@ -93,6 +95,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
           annotatorComponentStore.reset();
           setAnnotatorSidebarAccordionItem(0);
+          resetAnnotations();
           clearPolygons();
           navigate(
             `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`

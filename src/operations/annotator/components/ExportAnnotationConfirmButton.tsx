@@ -1,12 +1,10 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
-import { useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { AnnotatorFormState } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -19,8 +17,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
   const { roofAnalyseProperties } = useAnnotatorComponentStore();
-
-  const annotatorFormState = useFormContext<AnnotatorFormState>();
+  const annotationInfos = annotatorStore.useAnnotatorInfoStore();
+  const { polygonList } = annotatorStore.usePolygonStore();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -30,8 +28,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     exportAsPdf({
-      annotationInfos: annotatorFormState.getValues('annotationInfos'),
-      polygons: annotatorFormState.getValues('polygons'),
+      annotationInfos,
+      polygons: polygonList,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: roofAnalyseProperties?.global_rate_type || '',

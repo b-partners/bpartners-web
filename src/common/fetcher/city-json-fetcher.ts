@@ -53,7 +53,13 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
 
-      const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(getCached.defaultRoofDelimiter() || polygonFromAnnotator, areaPicture);
+      let mappedCoordinates = getCached.roofDelimiterLongLatItem() as [number, number][];
+
+      if (!mappedCoordinates) {
+        mappedCoordinates = await mapPixelPolygonToLatLonPolygon(getCached.defaultRoofDelimiter() || polygonFromAnnotator, areaPicture);
+        cache.roofDelimiterLongLatItem(mappedCoordinates);
+      }
+
       return getCityJSON(cityJSONRequestId, mappedCoordinates);
     },
     queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator })],

@@ -1,7 +1,7 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
-import { useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl, parseUrlParams, printError, UrlParams } from '@/common/utils';
 import {
   AnnotationCoveringFromAnalyse,
@@ -15,13 +15,11 @@ import {
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack, SxProps } from '@mui/material';
-import { BaseSyntheticEvent, FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { useFormContext, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
-import { AnnotatorFormState } from '../utils';
 import { ExportAnnotationConfirmButton } from './ExportAnnotationConfirmButton';
 
 export interface AnalyseProperties {
@@ -53,20 +51,19 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
-  const annotatorFormState = useFormContext<AnnotatorFormState>();
-  const { polygons } = useWatch<AnnotatorFormState>();
+  const { globalRate, llm } = useAnnotatorComponentStore();
+
+  const annotatorsInfos = annotatorStore.useAnnotatorInfoStore();
+  const { polygonList } = annotatorStore.usePolygonStore();
+
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const formState = useFormContext();
   const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
-  const [isThereAnyPolygons, setIsThereAnyPolygons] = useState(false);
+
+  const isThereAnyPolygons = annotatorsInfos.length > 0;
+
   const navigate = useNavigate();
 
   const annotatorComponentStore = useAnnotatorComponentStore();
-
-  useEffect(() => {
-    if (polygons?.length > 0 && !isThereAnyPolygons) setIsThereAnyPolygons(true);
-    else if (polygons?.length === 0 && isThereAnyPolygons) setIsThereAnyPolygons(false);
-  }, [polygons]);
 
   const handleReturnToBegin = () => {
     const fileUrl = UrlParams.get('imgUrl');
@@ -91,20 +88,22 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
     navigate(`/loading`);
   };
 
-  const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
-    const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
+  const handleSubmitFormsWrapper = (isDraft: boolean) => {
+    const handleSubmitForms = async () => {
       try {
         startLoading();
         isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
-        const annotationAttributeMapped = annotationsAttributeMapper(annotatorFormState.getValues('polygons'), annotationInfos, pictureId, annotationIdValue);
+        const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotatorsInfos, pictureId, annotationIdValue);
+        const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
         const requestBody: AreaPictureAnnotation = {
           ...annotatorMapper(annotationAttributeMapped, pictureId, annotationIdValue, isDraft),
           properties: {
-            global_rate_type: analyseProperties.global_rate_type,
-            global_rate_value: analyseProperties.global_rate_value,
-            roofHeight: analyseProperties.roof_height_in_meters,
-            llm: getCached.llmResult(),
+            global_rate_type: analyseProperties?.global_rate_type || globalRate?.type,
+            global_rate_value: analyseProperties?.global_rate_value || globalRate?.value,
+            roofHeight: analyseProperties?.roof_height_in_meters || annotatorsInfos[0].height,
+            llm: getCached.llmResult() || llm,
+            roofDelimiter: roofDelimiterLongLat,
           },
         };
         await annotatorProvider.annotatePicture(pictureId, annotationIdValue, requestBody);
@@ -124,8 +123,8 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
       } finally {
         stopLoading();
       }
-    });
-    handleSubmitForms(event);
+    };
+    handleSubmitForms();
   };
 
   const style: SxProps = { ...analyseResultButtonsStyle, width };
@@ -146,7 +145,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
         disabled={isLoading || !isThereAnyPolygons}
         label='resources.draftsAnnotations.add'
         data-testid='submit-draft-annotation'
-        onClick={event => handleSubmitFormsWrapper(event, true)}
+        onClick={() => handleSubmitFormsWrapper(true)}
       />
       <ExportAnnotationConfirmButton areaPictureDetails={areaPictureDetails} image={image} isCropped={isCropped} disabled={!isThereAnyPolygons} />
     </Stack>

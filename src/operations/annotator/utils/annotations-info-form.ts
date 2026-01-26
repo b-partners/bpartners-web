@@ -1,10 +1,19 @@
 import { useQuerySlopeAndHeight } from '@/common/fetcher';
-import { RoofAnalyseProperties, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, RoofAnalyseProperties, useAnnotatorComponentStore } from '@/common/store';
+import { copyObject } from '@/common/utils';
 import { AnnotationInfo } from '@/operations/annotator';
 import { cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
+import { Wearness } from '@bpartners/typescript-client';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+
+const getWearness = (wearLevel: number) => {
+  if (wearLevel <= 10) return Wearness.LOW;
+  if (wearLevel <= 50) return Wearness.PARTIAL;
+  if (wearLevel <= 90) return Wearness.ADVANCED;
+  return Wearness.EXTREME;
+};
 
 export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
@@ -14,6 +23,7 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string,
   const roofAnalysePropertiesInfos: AnnotationInfo = {
     humidityLevel: humidite_rate,
     wearLevel: usure_rate,
+    wear: getWearness(usure_rate),
     moldRate: moisissure_rate,
     obstacle: `${obstacle ? 'OUI' : 'NON'}`,
     labelName: "Résultats de l'analyse de la toiture",
@@ -32,36 +42,40 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string,
 
 export type AnnotatorFormState = { annotationInfos: AnnotationInfo[]; polygons: Polygon[] };
 
-export const useAnnotationInfosForm = (defaultPolygons: Polygon[], defaultAnnotationInfos: AnnotationInfo[] = []) => {
+export const useAnnotationInfosForm = () => {
   const formState = useForm<AnnotatorFormState>({ defaultValues: { annotationInfos: [], polygons: [] } });
   const { setThereIsRoofPolygon, thereIsRoofPolygon } = useAnnotatorComponentStore();
-
+  const updateRoofAnnotation = annotatorStore.useAnnotatorStore(params => params.updateRoofAnnotation);
   const { setRoofSlope } = useAnnotatorComponentStore();
 
-  useEffect(() => {
-    formState.setValue('annotationInfos', defaultAnnotationInfos);
-    formState.setValue('polygons', defaultPolygons);
-  }, [JSON.stringify(defaultAnnotationInfos), JSON.stringify(defaultPolygons)]);
-
   useQuerySlopeAndHeight(({ height, slope }) => {
-    formState.setValue('annotationInfos.0.slope', slope, { shouldDirty: false });
-    formState.setValue('annotationInfos.0.height', height, { shouldDirty: false });
+    updateRoofAnnotation(_annotation => {
+      const annotation = copyObject(_annotation);
+      annotation.annotationInfos.slope = slope;
+      annotation.annotationInfos.height = height;
+      return annotation;
+    });
     setRoofSlope(slope);
   }, true);
 
   useEffect(() => {
-    const subscription = formState.watch(({ annotationInfos, polygons }) => {
+    const subscription = annotatorStore.useAnnotatorStore.subscribe(({ annotations }) => {
+      const annotationInfos: AnnotationInfo[] = [];
+      const polygons: AnnotationInfo[] = [];
+
+      Object.values(annotations).forEach(({ annotationInfos: _annotationInfos, polygon: _polygon }) => {
+        annotationInfos.push(_annotationInfos);
+        polygons.push(_polygon);
+      });
+
       cache.annotationsInfo(annotationInfos);
       cache.polygons(polygons as Polygon[]);
+
       if (annotationInfos.length === 1 && annotationInfos[0].labelType === 'roof' && !thereIsRoofPolygon) setThereIsRoofPolygon(true);
       else if (thereIsRoofPolygon) setThereIsRoofPolygon(false);
     });
 
-    return subscription.unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    cache.annotationsInfo(formState.getValues('annotationInfos'));
+    return subscription;
   }, []);
 
   return formState;

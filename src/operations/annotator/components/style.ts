@@ -113,3 +113,18 @@ export const annotatorFormResultItemStyle: SxProps = {
     border: '1px solid black',
   },
 };
+
+export const annotatorFormItem: SxProps = {
+  overflowX: 'hidden',
+  '& .polygon-color-line': {
+    width: '3px',
+    height: '25px',
+    mr: 1,
+    borderRadius: '5px',
+  },
+  '& .svg-expanded-true': {
+    '& svg': {
+      transform: 'rotate(180deg)',
+    },
+  },
+};
