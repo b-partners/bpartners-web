@@ -24,6 +24,7 @@ const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item
 const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 const loadingRedirectionItems = 'bp_loading_params_item';
 const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
+const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -95,6 +96,9 @@ export const cache = {
     const data = { markerPosition, imageSize };
     return cacheObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`, data);
   },
+  roofDelimiterLongLatItem(roofDelimiterLongLat: number[][]) {
+    localStorage.setItem(roofDelimiterLongLatItem, JSON.stringify(roofDelimiterLongLat));
+  },
   apiKey(apiKey: string) {
     localStorage.setItem(apiKeyItem, apiKey);
     return apiKey;
@@ -135,6 +139,9 @@ export const getCached = {
   },
   unapprovedFiles() {
     return +localStorage.getItem(unapprovedFiles);
+  },
+  roofDelimiterLongLatItem() {
+    return JSON.parse(localStorage.getItem(roofDelimiterLongLatItem)) as number[][];
   },
   account() {
     return getCachedObject<Account>(accountItem);
@@ -229,4 +236,5 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
 
 export const clearRoofDelimiter = () => {
   localStorage.removeItem(defaultRoofDelimiterItem);
+  localStorage.removeItem(roofDelimiterLongLatItem);
 };

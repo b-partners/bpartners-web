@@ -1,5 +1,6 @@
 export * from './annotation-covering-mapper';
 export * from './annotator-mapper';
+export * from './area-picture-annotation-mapper';
 export * from './calendar-event-mapper';
 export * from './geojson-mapper';
 export * from './object-mapper';

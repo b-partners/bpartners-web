@@ -50,6 +50,8 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
     });
 
+    cache.roofDelimiterLongLatItem(mappedCoordinates);
+
     setShouldGetHeightState(true);
     return await initializeRoofAnalyse(
       areaPictureDetails.actualLayer?.name ?? '',
