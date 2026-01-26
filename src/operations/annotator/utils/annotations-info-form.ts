@@ -4,8 +4,16 @@ import { copyObject } from '@/common/utils';
 import { AnnotationInfo } from '@/operations/annotator';
 import { cache } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
+import { Wearness } from '@bpartners/typescript-client';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+
+const getWearness = (wearLevel: number) => {
+  if (wearLevel <= 10) return Wearness.LOW;
+  if (wearLevel <= 50) return Wearness.PARTIAL;
+  if (wearLevel <= 90) return Wearness.ADVANCED;
+  return Wearness.EXTREME;
+};
 
 export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
   if (!roofAnalyseProperties) return undefined;
@@ -15,6 +23,7 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string,
   const roofAnalysePropertiesInfos: AnnotationInfo = {
     humidityLevel: humidite_rate,
     wearLevel: usure_rate,
+    wear: getWearness(usure_rate),
     moldRate: moisissure_rate,
     obstacle: `${obstacle ? 'OUI' : 'NON'}`,
     labelName: "Résultats de l'analyse de la toiture",
