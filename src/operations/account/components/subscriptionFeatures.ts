@@ -1,14 +1,14 @@
 export const subscriptionFeatures = [
   {
-    text: 'Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire',
+    text: 'Activez notre intelligence artificielle dédiée à l’analyse de toitures : mesure automatique, détection des matériaux (ardoise, tuile, zinc…), estimation des pentes, identification des dégâts et des réparations. Suivi facilité pour vos clients, 20 diagnostics inclus.',
   },
   {
-    text: 'Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.',
+    text: 'Installer notre outil sur votre site internet et offrez à vos prospects la possibilité d’évaluer en toute autonomie leurs toitures.',
   },
   {
-    text: 'Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement 0,99%',
+    text: 'Intégrez la communauté des couvreurs BIRDIA et recevez des chantiers autour de chez vous.',
   },
   {
-    text: 'Support 7/7',
+    text: 'Support 7 jours sur 7.',
   },
 ];
