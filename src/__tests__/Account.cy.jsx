@@ -274,14 +274,10 @@ describe(specTitle('Account'), () => {
     cy.contains('Mon abonnement');
     cy.contains('Pour 49 € par mois :');
     cy.contains(
-      'Activation de notre intelligence artificielle qui analyse les toitures de vos prospects et organise le suivi des toitures de vos clients existants. 20 toitures incluses puis 2€ par toiture supplémentaire'
+      'Activez notre intelligence artificielle dédiée à l’analyse de toitures : mesure automatique, détection des matériaux (ardoise, tuile, zinc…), estimation des pentes, identification des dégâts et des réparations. Suivi facilité pour vos clients, 20 diagnostics inclus.'
     );
-    cy.contains(
-      'Accès aux outils de devis/facturation personnalisé, gestion des acomptes, relance impayés CRM, gestion des produits, synchronisation bancaire et suivi de trésorerie.'
-    );
-    cy.contains(
-      'Initiez la collecte de vos encaissements instantanément par QR code, Mails ou SMS en 1 clic. Lien de paiement intégré à la facture pour seulement 0,99%'
-    );
+    cy.contains('Installer notre outil sur votre site internet et offrez à vos prospects la possibilité d’évaluer en toute autonomie leurs toitures.');
+    cy.contains('Intégrez la communauté des couvreurs BIRDIA et recevez des chantiers autour de chez vous.');
   });
 
   it('Block Trial card INACTIVE', () => {
@@ -303,13 +299,13 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-  
+
     cy.mount(<App />);
-  
+
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
-  
+
     cy.contains('Période d’essai');
   });
 
@@ -332,13 +328,13 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-  
+
     cy.mount(<App />);
-  
+
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
-  
+
     cy.contains('Période d’essai');
   });
 });
