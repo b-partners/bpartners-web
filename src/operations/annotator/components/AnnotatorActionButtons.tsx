@@ -4,6 +4,8 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import {
   ArrowLeft as ArrowLeftIcon,
   ArrowRight as ArrowRightIcon,
+  Edit as EditIcon,
+  PanTool as PanToolIcon,
   ZoomIn as ZoomInIcon,
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
@@ -16,7 +18,7 @@ type TShiftImage = (shiftNumber: number) => void;
 
 export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, areaPictureDetails: AreaPictureDetails) => (zoomFunctions: ScaleCallbacks) => {
-    const { scaleDown, scaleReste, scaleUp, xRef, yRef } = zoomFunctions;
+    const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
 
     const handleShift = (toLeft: boolean) => {
@@ -69,6 +71,9 @@ export const annotatorButtonsActions =
             <IconButton>
               <ZoomOutIcon />
             </IconButton>
+          </Tooltip>
+          <Tooltip onClick={toggleClickAction} title='Zoom -'>
+            <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
         </Stack>
         {showShiftButtons && (
