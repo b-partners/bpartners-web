@@ -29,7 +29,7 @@ import { parseLocalStorage } from '@/common/utils/local-storage';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { Add } from '@mui/icons-material';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
-import { getFileUrl, handleSubmit } from '../../common/utils';
+import { copyObject, getFileUrl, handleSubmit } from '../../common/utils';
 import { clearPolygons, clearRoofDelimiter, getCached, prospectingProvider } from '../../providers';
 
 const BP_USER_CACHE_NAME = 'bp_user';
@@ -53,44 +53,40 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   }, [address]);
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
-    const doSubmit = form.handleSubmit(async _data => {
+    const doSubmit = form.handleSubmit(async rhfData => {
       setScreen('annotator');
       reset();
       startLoading();
 
-      const data = { ..._data };
+      const prospect = copyObject(rhfData);
 
-      if (!data.email || data.email.length === 0) {
-        data.email = getCached.accountHolder().companyInfo.email;
-      }
+      if (!prospect.email || prospect.email.length === 0) prospect.email = getCached.accountHolder().companyInfo.email;
 
-      if (isCreating) {
-        notify('notify.searchImagePending');
-      }
+      if (isCreating) notify('notify.searchImagePending');
 
       const fetch = async () => {
         clearPolygons();
         clearRoofDelimiter();
-        const prospectId = uuidV4();
-        await prospectingProvider.saveOrUpdate([
-          {
-            ...data,
-            id: prospectId,
-            invoiceID: data?.invoice?.id,
-            invoice: undefined,
-          },
-        ]);
+
+        prospect.id = uuidV4();
+        prospect.invoiceID = prospect?.invoice?.id;
+        prospect.invoice = undefined;
+
+        await prospectingProvider.saveOrUpdate([prospect]);
         notify(`resources.prospects.creation.success`, { type: 'success' });
+
         try {
           const fileId = uuidV4();
           const pictureId = uuidV4();
           const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+
           await annotatorProvider.getPictureFormAddress(pictureId, {
-            address: data.address,
+            address: prospect.address,
             fileId,
-            filename: `Layer ${data.address}`,
-            prospectId,
-            zoomLevel: ZoomLevel.HOUSES_0,
+            filename: `Layer ${prospect.address}`,
+            prospectId: prospect.id,
+            zoomLevel: ZoomLevel.BUILDING,
+            isExtended: true,
           });
 
           annotatorComponentStore.reset();
@@ -98,10 +94,12 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           resetAnnotations();
           clearPolygons();
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${data.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospectId}&fileId=${fileId}`
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
           );
           return;
         } catch (err) {
+          console.log(err);
+
           let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
 
           const notSupportedPattern = /Address or zone [\s\S]* not yet supported/i;
