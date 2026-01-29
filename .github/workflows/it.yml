@@ -36,10 +36,6 @@ jobs:
           arch: amd64
           rootdir: ''
           workdir: ''
-      - name: permission for aws install-aws-cli
-        run: |
-          sudo chown -R "$(whoami)":"$(whoami)" /home/runner/.aws
-          sudo chmod -R u+rw /home/runner/.aws
       - name: Get Time
         id: current-time
         uses: nanzm/get-time-action@v1.1
