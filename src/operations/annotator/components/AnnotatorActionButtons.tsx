@@ -42,7 +42,9 @@ export const annotatorButtonsActions =
         <Box className='image-info-container'>
           <Stack className='image-info' direction='row'>
             <Box>
-              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
+              <Typography>
+                Source : {areaPictureDetails?.actualLayer?.name} {(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}
+              </Typography>
             </Box>
             <Divider orientation='vertical' variant='fullWidth' flexItem color='white' />
             <Box>
