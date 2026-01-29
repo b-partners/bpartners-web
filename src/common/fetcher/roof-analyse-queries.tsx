@@ -6,8 +6,7 @@ import { useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
-  const mutationFn = async () =>
-    await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address, undefined, undefined, areaPictureDetails?.zoom?.number);
+  const mutationFn = async () => await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', address, undefined, undefined);
   return useMutation({ mutationFn, mutationKey: [address, areaPictureDetails] });
 };
 
@@ -53,13 +52,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
     cache.roofDelimiterLongLatItem(mappedCoordinates);
 
     setShouldGetHeightState(true);
-    return await initializeRoofAnalyse(
-      areaPictureDetails.actualLayer?.name ?? '',
-      `${areaPictureDetails.address}`,
-      [mappedCoordinates],
-      true,
-      areaPictureDetails?.zoom?.number
-    );
+    return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
   };
 
   const mutation = useMutation({

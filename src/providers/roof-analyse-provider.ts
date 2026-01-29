@@ -56,7 +56,7 @@ const getProcessDetectionUrl = () => {
  * @param withoutImage
  * @returns
  */
-export const initializeRoofAnalyse = async (layers: string, address: string, coordinates?: Array<Array<Array<number>>>, withoutImage = false, zoom = 20) => {
+export const initializeRoofAnalyse = async (layers: string, address: string, coordinates?: Array<Array<Array<number>>>, withoutImage = false) => {
   const cachedDetectionId = getCached.roofAnalyseId();
   const detectionId = withoutImage !== true ? cachedDetectionId || v4() : v4();
   const cachedCityJSONRequestId = getCached.cityJSONRequestId();
@@ -78,7 +78,7 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
               type: 'Polygon',
             },
             properties: {
-              zoom,
+              zoom: 20,
               id: v4(),
             },
             type: 'Feature',
