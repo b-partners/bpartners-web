@@ -33,10 +33,6 @@ jobs:
           arch: amd64
           rootdir: ''
           workdir: ''
-      - name: permission for aws install-aws-cli
-        run: |
-          sudo chown -R "$(whoami)":"$(whoami)" /home/runner/.aws
-          sudo chmod -R u+rw /home/runner/.aws
       - name: Connect to Bpartners Imagery AWS CodeArtifact
         run: |
           sh ./initAWS.sh imagery ${{ secrets.BPARTNERS_IMAGERY_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_IMAGERY_AWS_SECRET_ACCESS_KEY }} eu-west-3
@@ -140,11 +136,6 @@ jobs:
           arch: amd64
           rootdir: ''
           workdir: ''
-      - name: permission for aws install-aws-cli
-        run: |
-          sudo chown -R "$(whoami)":"$(whoami)" /home/runner/.aws
-          sudo chmod -R u+rw /home/runner/.aws
-
       - name: Connect to Bpartners Imagery AWS CodeArtifact
         run: |
           sh ./initAWS.sh imagery ${{ secrets.BPARTNERS_IMAGERY_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_IMAGERY_AWS_SECRET_ACCESS_KEY }} eu-west-3
