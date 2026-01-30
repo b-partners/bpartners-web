@@ -69,7 +69,7 @@ export const annotatorButtonsActions =
               <ZoomOutIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={toggleClickAction} title='Zoom -'>
+          <Tooltip onClick={toggleClickAction} title={clickActionValue ? 'bouger' : 'délimiter'}>
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
         </Stack>
