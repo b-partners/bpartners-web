@@ -95,22 +95,22 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
-    mutateAreaPictureDetail({ zoomLevel: e.target.value });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: e.target.value });
   };
 
   const handleLayerChanger = async (e: any) => {
     const selectedLayer = otherLayers.find((layer: any) => layer.name === e.target.value);
-    mutateAreaPictureDetail({ zoomLevel: newZoomLevel, layerId: selectedLayer.id });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: newZoomLevel, layerId: selectedLayer.id });
   };
 
   const refocusImgClick = async () => {
-    mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel,isExtended: !isExtended });
     resetAnnotations()
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
-      mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
+      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       resetAnnotations()
     }
   };
