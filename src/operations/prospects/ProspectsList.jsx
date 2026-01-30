@@ -98,8 +98,6 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           );
           return;
         } catch (err) {
-          console.log(err);
-
           let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
 
           const notSupportedPattern = /Address or zone [\s\S]* not yet supported/i;
@@ -109,7 +107,6 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           if (notSupportedPattern.test(err.message)) errorMessage = "La zone contenant cette adresse n'est pas encore supporté.";
           if (err.message.includes('Roof analysis consumption ') && err.message.includes(' limit exceeded for free trial period for User.id='))
             errorMessage = 'La limite des analyses gratuites a été atteinte.';
-          if ((err.message = 'PNEO data is not available yet on this area')) errorMessage = "Cette zone n'est pas disponible à 30cm";
 
           openDialog(
             <>
