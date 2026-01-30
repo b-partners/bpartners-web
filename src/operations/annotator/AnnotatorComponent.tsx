@@ -3,13 +3,13 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
-import { Box, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
@@ -169,7 +169,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         <Stack direction='row' gap={1} sx={addressStyle}>
           <Stack direction='row' gap={1}>
             <PublicIcon />
-            <Typography>Adresse: {address}</Typography>
+            <Tooltip title={`${address} | (GPS ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude}`}>
+              <Typography>Adresse: {stringCutter(address, 25)} (GPS {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude})</Typography>
+            </Tooltip>
           </Stack>
           <AnnotatorHelpButton />
         </Stack>

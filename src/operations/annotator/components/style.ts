@@ -22,11 +22,12 @@ export const annotatorActionButtonsStyle: SxProps = {
       },
       color: '#fff',
       px: 1,
-      py: 1,
+      py: 1.2,
       borderRadius: 2,
       minWidth: 70,
       fontWeight: 'semi-bold',
       background: PALETTE_COLORS.neon_orange,
+      fontSize: 14,
     },
   },
   '& .image-info': {
@@ -34,10 +35,11 @@ export const annotatorActionButtonsStyle: SxProps = {
     borderRadius: 2,
     width: '100%',
     display: 'flex',
-    py: 1,
+    py: 1.2,
     justifyContent: 'center',
     '& .MuiTypography-root': {
       color: '#fff',
+      fontSize: 14,
     },
     '& .MuiDivider-root': {
       marginX: 2,

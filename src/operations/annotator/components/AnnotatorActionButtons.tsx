@@ -1,4 +1,5 @@
 import { useDialog } from '@/common/store/dialog';
+import { stringCutter } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import {
@@ -10,7 +11,7 @@ import {
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
-import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
@@ -44,15 +45,11 @@ export const annotatorButtonsActions =
         <Box className='image-info-container'>
           <Stack className='image-info' direction='row'>
             <Box>
-              <Typography>
-                Source : {areaPictureDetails?.actualLayer?.name} {(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}
-              </Typography>
-            </Box>
-            <Divider orientation='vertical' variant='fullWidth' flexItem color='white' />
-            <Box>
-              <Typography>
-                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.longitude})
-              </Typography>
+              <Tooltip title={`${areaPictureDetails?.actualLayer?.name} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}>
+                <Typography>
+                  {`Source : ${stringCutter(areaPictureDetails?.actualLayer?.name, 25)} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}
+                </Typography>
+              </Tooltip>
             </Box>
           </Stack>
         </Box>
