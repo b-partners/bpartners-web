@@ -9,7 +9,7 @@ import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
-import { Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
@@ -219,6 +219,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       {filename && (data || globalRate) && (
         <Stack>
+          <Stack direction='row' alignItems='center' justifyContent='center' width='100%'>
+            <Alert sx={{width: "100%", mb: 1}} variant='filled' color='warning'>
+              Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
+            </Alert>
+          </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
               <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
