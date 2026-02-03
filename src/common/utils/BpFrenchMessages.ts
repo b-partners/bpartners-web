@@ -142,6 +142,9 @@ export const BpFrenchMessages = {
     subscription: {
       cancelSuccess: "Votre renouvellement automatique a été annulé avec succès ; vous conserverez l'accès jusqu'au %{endDate}",
     },
+    areaPicture: {
+      noAirbusImage: "Cette zone n'est pas disponible à 30cm",
+    },
   },
   notify: {
     searchImagePending: 'En cours de recherche de l’image de la zone',

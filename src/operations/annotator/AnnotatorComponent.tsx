@@ -3,13 +3,13 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getUrlParams, useWrappedSearchParams } from '@/common/utils';
+import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
-import { Box, Stack, SxProps, Typography } from '@mui/material';
+import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
@@ -95,22 +95,22 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
-    mutateAreaPictureDetail({ zoomLevel: e.target.value });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: e.target.value });
   };
 
   const handleLayerChanger = async (e: any) => {
     const selectedLayer = otherLayers.find((layer: any) => layer.name === e.target.value);
-    mutateAreaPictureDetail({ zoomLevel: newZoomLevel, layerId: selectedLayer.id });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: newZoomLevel, layerId: selectedLayer.id });
   };
 
   const refocusImgClick = async () => {
-    mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: !isExtended });
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel,isExtended: !isExtended });
     resetAnnotations()
   };
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
-      mutateAreaPictureDetail({ zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
+      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
       resetAnnotations()
     }
   };
@@ -169,7 +169,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         <Stack direction='row' gap={1} sx={addressStyle}>
           <Stack direction='row' gap={1}>
             <PublicIcon />
-            <Typography>Adresse: {address}</Typography>
+            <Tooltip title={`${address} | (GPS ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude}`}>
+              <Typography>Adresse: {stringCutter(address, 25)} (GPS {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude})</Typography>
+            </Tooltip>
           </Stack>
           <AnnotatorHelpButton />
         </Stack>
@@ -217,6 +219,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       {filename && (data || globalRate) && (
         <Stack>
+          <Stack direction='row' alignItems='center' justifyContent='center' width='100%'>
+            <Alert sx={{width: "100%", mb: 1}} variant='filled' color='warning'>
+              Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
+            </Alert>
+          </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
               <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>

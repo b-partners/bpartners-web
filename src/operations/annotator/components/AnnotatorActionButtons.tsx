@@ -1,14 +1,17 @@
 import { useDialog } from '@/common/store/dialog';
+import { stringCutter } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import {
   ArrowLeft as ArrowLeftIcon,
   ArrowRight as ArrowRightIcon,
+  Edit as EditIcon,
+  PanTool as PanToolIcon,
   ZoomIn as ZoomInIcon,
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
-import { Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
@@ -16,7 +19,7 @@ type TShiftImage = (shiftNumber: number) => void;
 
 export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, areaPictureDetails: AreaPictureDetails) => (zoomFunctions: ScaleCallbacks) => {
-    const { scaleDown, scaleReste, scaleUp, xRef, yRef } = zoomFunctions;
+    const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
 
     const handleShift = (toLeft: boolean) => {
@@ -42,13 +45,11 @@ export const annotatorButtonsActions =
         <Box className='image-info-container'>
           <Stack className='image-info' direction='row'>
             <Box>
-              <Typography>Source : {areaPictureDetails?.actualLayer?.name}</Typography>
-            </Box>
-            <Divider orientation='vertical' variant='fullWidth' flexItem color='white' />
-            <Box>
-              <Typography>
-                (GPS {areaPictureDetails?.geoPositions?.[0]?.latitude}, {areaPictureDetails?.geoPositions?.[0]?.longitude})
-              </Typography>
+              <Tooltip title={`${areaPictureDetails?.actualLayer?.name} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}>
+                <Typography>
+                  {`Source : ${stringCutter(areaPictureDetails?.actualLayer?.name, 25)} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}
+                </Typography>
+              </Tooltip>
             </Box>
           </Stack>
         </Box>
@@ -67,6 +68,9 @@ export const annotatorButtonsActions =
             <IconButton>
               <ZoomOutIcon />
             </IconButton>
+          </Tooltip>
+          <Tooltip onClick={toggleClickAction} title={clickActionValue ? 'bouger' : 'délimiter'}>
+            <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
         </Stack>
         {showShiftButtons && (
