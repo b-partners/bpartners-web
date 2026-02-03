@@ -22,6 +22,11 @@ export const annotatorButtonsActions =
     const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
 
+    const handleZoom = (fn: () => void) => () => {
+      if (!clickActionValue) toggleClickAction();
+      fn();
+    };
+
     const handleShift = (toLeft: boolean) => {
       open(
         <AnnotatorResetStateConfirmationDialog
@@ -54,22 +59,22 @@ export const annotatorButtonsActions =
           </Stack>
         </Box>
         <Stack gap={1} direction='row'>
-          <Tooltip onClick={scaleUp} title='Zoom +'>
+          <Tooltip onClick={handleZoom(scaleUp)} title='Zoom +'>
             <IconButton>
               <ZoomInIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={scaleReste} title='Reset'>
+          <Tooltip onClick={handleZoom(scaleReste)} title='Reset'>
             <IconButton>
               <ZoomInMapIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={scaleDown} title='Zoom -'>
+          <Tooltip onClick={handleZoom(scaleDown)} title='Zoom -'>
             <IconButton>
               <ZoomOutIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={toggleClickAction} title={clickActionValue ? 'bouger' : 'délimiter'}>
+          <Tooltip onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
         </Stack>
