@@ -7,7 +7,7 @@ import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/uti
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureDetails, AreaPictureMapLayer } from '@bpartners/typescript-client';
+import { AreaPictureMapLayer } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
