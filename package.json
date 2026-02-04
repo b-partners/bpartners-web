@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bpartners/annotator-component": "^0.19.1",
+    "@bpartners/annotator-component": "^0.19.2",
     "@bpartners/typescript-client": "^0.77.0",
     "@cityjson/cjseq": "^0.4.1",
     "@hookform/resolvers": "3.9.1",
