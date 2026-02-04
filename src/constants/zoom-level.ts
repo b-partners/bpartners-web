@@ -1,7 +1,7 @@
 export const ZOOM_LEVEL = [
   {
     value: 'BUILDINGS',
-    label: 'Quartiers',
+    label: 'vue élargie',
     lvl: 18,
   },
   {

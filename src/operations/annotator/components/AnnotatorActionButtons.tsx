@@ -1,7 +1,7 @@
 import { useDialog } from '@/common/store/dialog';
 import { stringCutter } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import {
   ArrowLeft as ArrowLeftIcon,
   ArrowRight as ArrowRightIcon,
@@ -15,7 +15,14 @@ import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
-type TShiftImage = (shiftNumber: number) => void;
+type TShiftImage = (shiftNumber: number, shiftDirection: ShiftDirection) => void;
+
+const getLabel = (direction: ShiftDirection, plus: boolean) => {
+  if (direction === 'RIGHT_LEFT_SIDE') {
+    return plus ? ({ label: 'shiftLeft', title: 'la gauche' } as const) : ({ label: 'shiftRight', title: 'la droite' } as const);
+  }
+  return plus ? ({ label: 'shiftBottom', title: 'le bas' } as const) : ({ label: 'shiftTop', title: 'le haut' } as const);
+};
 
 export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, areaPictureDetails: AreaPictureDetails) => (zoomFunctions: ScaleCallbacks) => {
@@ -27,14 +34,9 @@ export const annotatorButtonsActions =
       fn();
     };
 
-    const handleShift = (toLeft: boolean) => {
-      open(
-        <AnnotatorResetStateConfirmationDialog
-          content={toLeft ? 'shiftLeft' : 'shiftRight'}
-          onConfirm={() => shiftImage(toLeft ? 1 : -1)}
-          title={`Décaler vers la ${toLeft ? 'gauche' : 'droite'}`}
-        />
-      );
+    const handleShift = (direction: ShiftDirection, plus: boolean) => {
+      const { label, title } = getLabel(direction, plus);
+      open(<AnnotatorResetStateConfirmationDialog content={label} onConfirm={() => shiftImage(plus ? 1 : -1, direction)} title={`Décaler vers ${title}`} />);
     };
 
     return (
@@ -80,13 +82,23 @@ export const annotatorButtonsActions =
         </Stack>
         {showShiftButtons && (
           <>
-            <Tooltip onClick={() => handleShift(false)} title="Décaler l'image vers la gauche">
+            <Tooltip onClick={() => handleShift('RIGHT_LEFT_SIDE', false)} title="Décaler l'image vers la gauche">
               <IconButton>
                 <ArrowLeftIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip onClick={() => handleShift(true)} title="Décaler l'image vers la droite">
+            <Tooltip onClick={() => handleShift('RIGHT_LEFT_SIDE', true)} title="Décaler l'image vers la droite">
               <IconButton>
+                <ArrowRightIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip onClick={() => handleShift('UP_DOWN_SIDE', false)} title="Décaler l'image vers le haut">
+              <IconButton sx={{ '& svg': { transform: 'rotate(-90deg)' } }}>
+                <ArrowRightIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip onClick={() => handleShift('UP_DOWN_SIDE', true)} title="Décaler l'image vers le bas">
+              <IconButton sx={{ '& svg': { transform: 'rotate(90deg)' } }}>
                 <ArrowRightIcon />
               </IconButton>
             </Tooltip>

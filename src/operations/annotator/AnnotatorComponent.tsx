@@ -6,11 +6,11 @@ import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } 
 import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
-import { AnnotatorCanvas } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer } from '@bpartners/typescript-client';
+import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
+import { AreaPictureDetails, AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
   AnalyseResultButton,
@@ -31,6 +31,7 @@ import {
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   measurementMapper,
+  shiftPolygons,
   useLlmResultQuery
 } from './utils';
 
@@ -109,9 +110,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     resetAnnotations()
   };
 
-  const shiftImage = (shift: number) => {
+  const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
     if (isExtended) {
-      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, shiftNb: (shiftNb || 0) + shift });
+      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, shiftNb: (shiftDirection !== currentAreaPictureDetailsToUse?.shiftDirection ? 0 : (shiftNb || 0)) + shift, shiftDirection });
       resetAnnotations()
     }
   };
@@ -141,6 +142,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
     `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}` + 
     `&shiftNb=${shiftNb}`;
+
+  const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = (polygonsOrFunction) => {
+    setPolygonList((_polygons) => {
+      let polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons): polygonsOrFunction
+      return shiftPolygons(polygons, currentAreaPictureDetailsToUse, false)
+    })
+  }
+  
+  const polygonListShifted = data?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true)
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -188,8 +198,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               height={height || containerHeight + 50}
               buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
               image={data?.image || imageSrcFromUrl}
-              setPolygons={setPolygonList}
-              polygonList={polygonList}
+              setPolygons={setPolygonShifted}
+              polygonList={polygonListShifted}
               measurementMapper={measurementMapper(isExtended)}
               getNewPolygonColor={getNewPolygonColor}
               imagePrecisionLevel={currentAreaPictureDetailsToUse?.actualLayer?.precisionLevelInCm || 5}
