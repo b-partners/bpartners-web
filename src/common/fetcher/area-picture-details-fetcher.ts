@@ -32,7 +32,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
         prospectId,
       });
       mutateMarker(areaPictureDetailsResponse);
-      return areaPictureDetailsResponse;
+      return { ...areaPictureDetailsResponse, shiftDirection: crupdateAreaPictureDetails.shiftDirection };
     },
     mutationKey: ['crupdateAreaPictureDetails', query.data, prospectId, fileId],
     onError: error => {
