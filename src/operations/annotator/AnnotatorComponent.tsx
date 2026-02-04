@@ -7,7 +7,7 @@ import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/uti
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
-import { AreaPictureDetails, AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
+import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
@@ -145,7 +145,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = (polygonsOrFunction) => {
     setPolygonList((_polygons) => {
-      let polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons): polygonsOrFunction
+      const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons): polygonsOrFunction
       return shiftPolygons(polygons, currentAreaPictureDetailsToUse, false)
     })
   }
