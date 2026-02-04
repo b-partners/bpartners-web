@@ -14,7 +14,7 @@ export const AccountStyle: SxProps = {
   // --- UserCard ---
   '& .card': {
     borderRadius: 3,
-    boxShadow: '0 2px 10px #4F6350',
+    boxShadow: '0 2px 10px #4F635020',
     bgcolor: '#fff',
     p: 2,
     minHeight: '255px',
@@ -61,6 +61,7 @@ export const AccountStyle: SxProps = {
     borderRadius: 25,
     py: 1,
     my: 1,
+    mb: 3,
     mx: 'auto',
     fontSize: '1.3rem',
     width: '400px',
