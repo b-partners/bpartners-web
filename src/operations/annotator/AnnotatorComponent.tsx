@@ -95,7 +95,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   }, [JSON.stringify(data), isPending]);
 
   const handleZoomLvl = async (e: any) => {
-    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: e.target.value });
+    const zoomLevel = e.target.value
+    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel, zoom: {level: zoomLevel } });
   };
 
   const handleLayerChanger = async (e: any) => {
@@ -110,7 +111,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const shiftImage = (shift: number) => {
     if (isExtended) {
-      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel, isExtended: true, shiftNb: (shiftNb || 0) + shift });
+      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, shiftNb: (shiftNb || 0) + shift });
       resetAnnotations()
     }
   };
@@ -138,7 +139,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     // Used to force AnnotatorComponent to refresh
     `&isExtended=${isExtended}` +
     `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
-    `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}`;
+    `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}` + 
+    `&shiftNb=${shiftNb}`;
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -190,6 +192,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
               polygonList={polygonList}
               measurementMapper={measurementMapper(isExtended)}
               getNewPolygonColor={getNewPolygonColor}
+              imagePrecisionLevel={currentAreaPictureDetailsToUse?.actualLayer?.precisionLevelInCm || 5}
               polygonLineSizeProps={{
                 imageName: `${filename}.jpg`,
                 showLineSize: true,
