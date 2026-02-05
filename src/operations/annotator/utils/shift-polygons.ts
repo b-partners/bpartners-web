@@ -14,8 +14,6 @@ export const shiftPolygons = (polygons: Polygon[], areaPictureDetails: AreaPictu
   const xShift = direction === 'RIGHT_LEFT_SIDE' ? shift * 1024 : 0;
   const yShift = direction === 'UP_DOWN_SIDE' ? shift * 1024 : 0;
 
-  console.log({ xShift, yShift });
-
   return (polygons || []).map(p => ({
     ...p,
     points: p.points.map(point => ({ x: point.x + (unShift ? -xShift : xShift), y: point.y + (unShift ? -yShift : yShift) })),
