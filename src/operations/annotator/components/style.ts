@@ -7,6 +7,7 @@ export const annotatorActionButtonsStyle: SxProps = {
   justifyContent: 'space-between',
   alignItems: 'center',
   position: 'relative',
+  zIndex: 999,
   '& svg': {
     color: 'white',
   },
