@@ -1,6 +1,6 @@
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Paper, Stack, Tooltip } from '@mui/material';
+import { IconButton, Paper, Stack, Tooltip } from '@mui/material';
 import { FC, useState } from 'react';
 
 interface AnnotationShiftButtonsProps {
