@@ -23,8 +23,10 @@ export const BpFrenchMessages = {
       },
     },
     confirmationMessages: {
-      shiftRight: "Cette action décalé l'image de 256px vers la droite.",
-      shiftLeft: "Cette action décalé l'image de 256px vers la gauche.",
+      shiftRight: "Cette action décalé l'image de 1024px vers la droite.",
+      shiftLeft: "Cette action décalé l'image de 1024px vers la gauche.",
+      shiftTop: "Cette action décalé l'image de 1024px vers le haut.",
+      shiftBottom: "Cette action décalé l'image de 1024px vers le bas.",
       refocusImage: "Cette action va agrandir la zone couverte par l'image.",
       resetRefocusImage: "Cette action va réinitialiser la position de l'image à son état d'origine.",
     },

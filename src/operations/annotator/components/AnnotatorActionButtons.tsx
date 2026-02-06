@@ -1,35 +1,35 @@
 import { useDialog } from '@/common/store/dialog';
 import { stringCutter } from '@/common/utils';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
-import {
-  ArrowLeft as ArrowLeftIcon,
-  ArrowRight as ArrowRightIcon,
-  Edit as EditIcon,
-  PanTool as PanToolIcon,
-  ZoomIn as ZoomInIcon,
-  ZoomInMap as ZoomInMapIcon,
-  ZoomOut as ZoomOutIcon,
-} from '@mui/icons-material';
+import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
+import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle } from './style';
 
-type TShiftImage = (shiftNumber: number) => void;
+type TShiftImage = (shiftNumber: number, shiftDirection: ShiftDirection) => void;
+
+const getLabel = (direction: ShiftDirection, plus: boolean) => {
+  if (direction === 'RIGHT_LEFT_SIDE') {
+    return plus ? ({ label: 'shiftRight', title: 'la droite' } as const) : ({ label: 'shiftLeft', title: 'la gauche' } as const);
+  }
+  return plus ? ({ label: 'shiftBottom', title: 'le bas' } as const) : ({ label: 'shiftTop', title: 'le haut' } as const);
+};
 
 export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, areaPictureDetails: AreaPictureDetails) => (zoomFunctions: ScaleCallbacks) => {
     const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
 
-    const handleShift = (toLeft: boolean) => {
-      open(
-        <AnnotatorResetStateConfirmationDialog
-          content={toLeft ? 'shiftLeft' : 'shiftRight'}
-          onConfirm={() => shiftImage(toLeft ? 1 : -1)}
-          title={`Décaler vers la ${toLeft ? 'gauche' : 'droite'}`}
-        />
-      );
+    const handleZoom = (fn: () => void) => () => {
+      if (!clickActionValue) toggleClickAction();
+      fn();
+    };
+
+    const handleShift = (direction: ShiftDirection, plus: boolean) => {
+      const { label, title } = getLabel(direction, plus);
+      open(<AnnotatorResetStateConfirmationDialog content={label} onConfirm={() => shiftImage(plus ? 1 : -1, direction)} title={`Décaler vers ${title}`} />);
     };
 
     return (
@@ -45,7 +45,7 @@ export const annotatorButtonsActions =
         <Box className='image-info-container'>
           <Stack className='image-info' direction='row'>
             <Box>
-              <Tooltip title={`${areaPictureDetails?.actualLayer?.name} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}>
+              <Tooltip placement='top' title={`${areaPictureDetails?.actualLayer?.name} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}>
                 <Typography>
                   {`Source : ${stringCutter(areaPictureDetails?.actualLayer?.name, 25)} - ${(areaPictureDetails?.actualLayer as any)?.lastUpdatedAt}`}
                 </Typography>
@@ -54,39 +54,26 @@ export const annotatorButtonsActions =
           </Stack>
         </Box>
         <Stack gap={1} direction='row'>
-          <Tooltip onClick={scaleUp} title='Zoom +'>
+          <Tooltip placement='top' onClick={handleZoom(scaleUp)} title='Zoom +'>
             <IconButton>
               <ZoomInIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={scaleReste} title='Reset'>
+          <Tooltip placement='top' onClick={handleZoom(scaleReste)} title='Reset'>
             <IconButton>
               <ZoomInMapIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={scaleDown} title='Zoom -'>
+          <Tooltip placement='top' onClick={handleZoom(scaleDown)} title='Zoom -'>
             <IconButton>
               <ZoomOutIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip onClick={toggleClickAction} title={clickActionValue ? 'bouger' : 'délimiter'}>
+          <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
         </Stack>
-        {showShiftButtons && (
-          <>
-            <Tooltip onClick={() => handleShift(false)} title="Décaler l'image vers la gauche">
-              <IconButton>
-                <ArrowLeftIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip onClick={() => handleShift(true)} title="Décaler l'image vers la droite">
-              <IconButton>
-                <ArrowRightIcon />
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
+        {showShiftButtons && <AnnotationShiftButtons handleShift={handleShift} />}
       </Stack>
     );
   };

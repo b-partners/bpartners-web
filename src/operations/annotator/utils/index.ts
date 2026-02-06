@@ -12,5 +12,6 @@ export * from './is-roof-polygon';
 export * from './llm-result-queries';
 export * from './measurement-mapper';
 export * from './segment-utilities';
+export * from './shift-polygons';
 export * from './style';
 export * from './use-crop-polygon';
