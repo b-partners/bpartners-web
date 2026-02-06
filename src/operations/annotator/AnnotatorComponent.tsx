@@ -146,7 +146,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = (polygonsOrFunction) => {
     setPolygonList((_polygons) => {
       const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons): polygonsOrFunction
-      return shiftPolygons(polygons, currentAreaPictureDetailsToUse, false)
+      return data?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, currentAreaPictureDetailsToUse, false)
     })
   }
   
