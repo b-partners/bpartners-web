@@ -92,7 +92,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
                 <Typography sx={{ fontSize: '14px' }}>
                   Hauteur du bâtiment :
                   <Typography component='span' fontWeight='bold'>
-                    {height} m
+                    {height === -1 ? 0 : height} m
                   </Typography>
                 </Typography>
               )}
