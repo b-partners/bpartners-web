@@ -36,10 +36,10 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) =>
 
       if (!roof_height_data_status || !roof_slope_data_status) throw new Error('Get slope not done');
       const result = {
-        slope: roof_slope_in_degrees,
-        height: roof_height_in_meters,
-        slopeStatus: roof_slope_data_status,
-        heightStatus: roof_height_data_status,
+        slope: roof_slope_in_degrees || 0,
+        height: roof_height_in_meters || 0,
+        slopeStatus: roof_slope_data_status || 'UNAVAILABLE',
+        heightStatus: roof_height_data_status || 'UNAVAILABLE',
       };
 
       setSlopeAndHeightState(result);
@@ -50,7 +50,7 @@ export const useQuerySlopeAndHeight = (onSuccess: (data: SlopeAndHeightState) =>
       return result;
     },
     retryDelay: 5000,
-    retry: Number.MAX_SAFE_INTEGER,
+    retry: 20,
     enabled: shouldRetry && shouldGetHeightState,
   });
 
