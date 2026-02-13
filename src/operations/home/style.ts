@@ -57,16 +57,13 @@ export const HomeStyle: SxProps = {
     mt: -0.1,
   },
   '& .left-box': {
-    boxShadow: '0 2px 6px #949494ff',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     flexDirection: 'column',
-    p: 5,
     borderRadius: 2,
     bgcolor: PALETTE_COLORS.white,
-    mr: -0.5,
-    height: '76%',
+    minHeight: 100,
+    '& .MuiGrid-root': {
+      alignItems: 'start',
+    },
   },
   '& .prospect-item': {
     maxWidth: 300,
@@ -86,6 +83,8 @@ export const HomeStyle: SxProps = {
   },
   '& .prospect-address': {
     fontSize: '0.875rem', // correspond à variant='body2'
+    cursor: 'copy',
+    userSelect: 'none',
   },
   '& .block-box': {
     display: 'flex',

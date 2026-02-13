@@ -150,6 +150,7 @@ export const BpFrenchMessages = {
   },
   notify: {
     searchImagePending: 'En cours de recherche de l’image de la zone',
+    adressCopySuccess: 'Adresse copiée dans le presse-papiers',
   },
   0: '0',
   10: '10',
