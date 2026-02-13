@@ -1,6 +1,6 @@
 import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
-import { Add } from '@mui/icons-material';
+import { Add, Inbox as InboxIcon } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, Typography } from '@mui/material';
 import { useGetList, useNotify } from 'react-admin';
@@ -72,8 +72,31 @@ export const Home = () => {
               <Card className='left-box' elevation={2}>
                 <CardHeader title='Dernières notifications'></CardHeader>
                 <CardContent>
-                  <Grid container spacing={3} justifyContent='center'>
-                    {isLoading && <CircularProgress size={50} />}
+                  <Grid container spacing={3} justifyContent='center' minHeight={200}>
+                    {isLoading && (
+                      <Box
+                        display='flex'
+                        color='#00000050'
+                        marginTop='2rem'
+                        height={200}
+                        width='100%'
+                        alignItems='center'
+                        justifyContent='center'
+                        flexDirection='column'
+                      >
+                        <CircularProgress size={30} />
+                      </Box>
+                    )}
+                    {!isLoading && prospectsList.length === 0 && (
+                      <Box display='flex' color='#00000050' marginTop='2rem' width='100%' height={200} alignItems='center' flexDirection='column'>
+                        <div>
+                          <InboxIcon sx={{ fontSize: '6rem' }} />
+                        </div>
+                        <Typography width={200} textAlign='center'>
+                          Aucune annotation n'a encore été effectuée.
+                        </Typography>
+                      </Box>
+                    )}
                     {!isLoading &&
                       prospectsList.map((prospect, index) => (
                         <Grid item xs={12} sm={6} key={index}>
