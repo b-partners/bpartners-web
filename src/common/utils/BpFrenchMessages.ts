@@ -41,7 +41,7 @@ export const BpFrenchMessages = {
       },
     },
     draftsAnnotations: {
-      export: "Exporter l'analyse",
+      export: "Exporter l'analyse en PDF",
       add: 'Enregistrer en tant que brouillon',
       finish: 'Finaliser le brouillon',
       creation: {
