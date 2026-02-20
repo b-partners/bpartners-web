@@ -104,8 +104,8 @@ export const llmButtonStyle: SxProps = {
 export const annotationSlopeHeightAlertStyle: SxProps = {
   '& .MuiAlert-action button': {
     position: 'relative',
-    transform: 'translateX(-20%)',
   },
+  mb: 1,
 };
 
 export const annotatorFormResultItemStyle: SxProps = {

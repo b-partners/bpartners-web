@@ -108,10 +108,10 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         </TextField>
       )}
 
-      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending || annotationInfos.slope !== -1) && (
+      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending) && (
         <CustomTextField
           label={isSlopeAndHeightPending ? 'Chargement de la pente en cours...' : 'Pente (°)'}
-          defaultValue={annotationInfos.slope !== -1 ? annotationInfos.slope : 0}
+          defaultValue={annotationInfos.slope || 0}
           type='number'
           inputProps={{ min: 0 }}
           onBlur={handleChange('slope', v => +`${v || 0}`)}

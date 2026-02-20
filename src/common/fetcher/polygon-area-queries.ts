@@ -1,8 +1,9 @@
-import { annotatorProvider, polygonMapper } from '@/providers';
+import { annotatorProvider, getCached, polygonMapper } from '@/providers';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import getAreaOfPolygon from 'geolib/es/getAreaOfPolygon';
+import { getImageSize, UrlParams } from '../utils';
 
 interface Params {
   polygon: Polygon;
@@ -12,7 +13,8 @@ interface Params {
 
 export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
-    const imageSize = 1024;
+    const imageUrl = UrlParams.get('imgUrl');
+    const imageSize = getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
     const geoJson = polygonMapper.toRefererGeoJson(params.polygon, imageSize, params.areaPictureDetails);
     const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
@@ -25,11 +27,11 @@ export const usePolygonAreaQuery = (params: Params) => {
       coordinates.push({ latitude, longitude: all_points_y[index] });
     });
 
-    const area = +getAreaOfPolygon(coordinates).toFixed(2);
+    const area = +(getAreaOfPolygon(coordinates) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
     params?.onSuccess(area);
 
     return area;
   };
 
-  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id] });
+  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id, JSON.stringify(params.polygon?.points)] });
 };

@@ -53,7 +53,6 @@ const useAnnotatorStore = create<State & Actions>(set => ({
           fillColor: polygon.fillColor,
           strokeColor: polygon.strokeColor,
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
-          slope: -1,
         },
       };
       annotations[polygon.id] = annotation;

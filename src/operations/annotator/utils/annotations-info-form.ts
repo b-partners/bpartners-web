@@ -15,7 +15,12 @@ const getWearness = (wearLevel: number) => {
   return Wearness.EXTREME;
 };
 
-export const createAnnotationInfoFromRoofAnalyseProperties = (polygonId: string, roofAnalyseProperties: RoofAnalyseProperties, height = -1, slope = -1) => {
+export const createAnnotationInfoFromRoofAnalyseProperties = (
+  polygonId: string,
+  roofAnalyseProperties: RoofAnalyseProperties,
+  height: number,
+  slope: number
+) => {
   if (!roofAnalyseProperties) return undefined;
 
   const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2, roof_area_in_m2 } = roofAnalyseProperties || {};

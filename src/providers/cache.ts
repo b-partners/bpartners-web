@@ -25,6 +25,7 @@ const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 const loadingRedirectionItems = 'bp_loading_params_item';
 const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
+const currentImageSize = 'birdia_image_size';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -123,6 +124,9 @@ export const cache = {
     localStorage.setItem(isAreaPictureImageUpdatedItem, JSON.stringify(value));
     return value;
   },
+  currentImageSize(imageSize: number) {
+    localStorage.setItem(currentImageSize, JSON.stringify(imageSize));
+  },
 };
 
 export const getCached = {
@@ -151,6 +155,11 @@ export const getCached = {
   },
   user() {
     return getCachedObject<User>(userItem);
+  },
+  currentImageSize() {
+    const imageSizeString = localStorage.getItem(currentImageSize);
+    if (!imageSizeString) return null;
+    return +imageSizeString;
   },
   userInfo() {
     const { id: accountId } = this.account() || { id: null };
@@ -237,4 +246,5 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
 export const clearRoofDelimiter = () => {
   localStorage.removeItem(defaultRoofDelimiterItem);
   localStorage.removeItem(roofDelimiterLongLatItem);
+  localStorage.removeItem(currentImageSize);
 };

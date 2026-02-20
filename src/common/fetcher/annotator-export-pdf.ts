@@ -46,6 +46,8 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const exportAreaPictureAnnotation = exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
 
+    console.log(exportAreaPictureAnnotation);
+
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 
     const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(

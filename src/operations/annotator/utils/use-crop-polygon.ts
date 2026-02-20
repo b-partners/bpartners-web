@@ -1,4 +1,4 @@
-import { DomainPolygonResultType } from '@/providers';
+import { cache, DomainPolygonResultType } from '@/providers';
 const margin = 10;
 
 export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
@@ -113,7 +113,7 @@ export const getCroppedImageAndPolygons = (polygons: DomainPolygonResultType[], 
 
   const newImage = canvas.toDataURL('image/png');
   const newPolygons = polygons.map(p => ({ ...p, points: p.points.map(({ x, y }) => ({ x: x - originPoint.x, y: y - originPoint.y })) }));
-
+  cache.currentImageSize(canvas.width);
   return {
     polygons: newPolygons,
     image: newImage,
