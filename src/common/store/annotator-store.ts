@@ -3,6 +3,7 @@ import { addAlphabet } from '@/operations/annotator/utils';
 import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import { copyObject } from '../utils';
 
 interface Annotation {
@@ -26,6 +27,7 @@ interface Actions {
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
 }
 
+// @ts-ignore
 const useAnnotatorStore = create<State & Actions>(set => ({
   annotations: {},
   setAnnotations: annotations => set({ annotations }),
@@ -42,7 +44,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   addPolygon: polygon =>
     set(state => {
       const annotations = copyObject(state.annotations);
-
+      if (annotations[polygon.id]) return { annotations };
       const isFirst = Object.values(annotations).length === 0;
       const annotation: any = {
         isFirst,
@@ -74,6 +76,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   replaceAnnotations: (polygons, annotationsInfos) =>
     set(() => {
       const annotations: State['annotations'] = {};
+
       polygons.forEach((polygon, index) => {
         const isFirst = index === 0;
         const annotation = {
@@ -103,24 +106,27 @@ const useAnnotatorStore = create<State & Actions>(set => ({
 }));
 
 const useOneAnnotatorStore = (polygonId: string) => {
-  const annotationInfos = useAnnotatorStore(param => param.annotations[polygonId].annotationInfos);
+  const annotationInfos = useAnnotatorStore(useShallow(param => param.annotations[polygonId].annotationInfos));
   const removeAnnotationInfo = useAnnotatorStore(param => param.removeAnnotationInfo);
   const updateAnnotationInfo = useAnnotatorStore(param => param.updateAnnotationInfo);
   return { annotationInfos, removeAnnotationInfo: () => removeAnnotationInfo(polygonId), updateAnnotationInfo };
 };
 
 const useAnnotatorInfoStore = () => {
-  const annotationInfos = useAnnotatorStore(param => Object.values(param.annotations).map(a => a.annotationInfos));
+  const annotationInfos = useAnnotatorStore(useShallow(param => Object.values(param.annotations).map(a => a.annotationInfos)));
   return annotationInfos;
 };
 
 const useOneAnnotationStore = (id: string) => {
-  const state = useAnnotatorStore(params => params.annotations[id]);
-  const updatePolygon = useAnnotatorStore(params => params.updatePolygon);
-  const addPolygon = useAnnotatorStore(params => params.addPolygon);
-  const updateAnnotationInfo = useAnnotatorStore(params => params.updateAnnotationInfo);
-  const removeAnnotationInfo = useAnnotatorStore(params => params.removeAnnotationInfo);
-
+  const state = useAnnotatorStore(useShallow(params => params.annotations[id]));
+  const { updatePolygon, addPolygon, removeAnnotationInfo, updateAnnotationInfo } = useAnnotatorStore(
+    useShallow(params => ({
+      updatePolygon: params.updatePolygon,
+      addPolygon: params.addPolygon,
+      updateAnnotationInfo: params.updateAnnotationInfo,
+      removeAnnotationInfo: params.removeAnnotationInfo,
+    }))
+  );
   return {
     ...state,
     updatePolygon: (polygon: Polygon) => updatePolygon(id, polygon),
@@ -131,7 +137,7 @@ const useOneAnnotationStore = (id: string) => {
 };
 
 const usePolygonStore = () => {
-  const polygonList = useAnnotatorStore(params => Object.values(params.annotations).map(a => a.polygon));
+  const polygonList = useAnnotatorStore(useShallow(params => Object.values(params.annotations).map(a => a.polygon)));
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
   const polygonIdList = polygonList.map(a => a.id);
 

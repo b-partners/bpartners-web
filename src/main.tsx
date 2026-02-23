@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/browser';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import App from './App';
@@ -13,9 +12,7 @@ Sentry.init({
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <GoogleReCaptchaProvider reCaptchaKey={process.env.RECAPTCHA_SITE_KEY}>
-      <App />
-    </GoogleReCaptchaProvider>
-  </React.StrictMode>
+  <GoogleReCaptchaProvider reCaptchaKey={process.env.RECAPTCHA_SITE_KEY}>
+    <App />
+  </GoogleReCaptchaProvider>
 );
