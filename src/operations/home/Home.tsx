@@ -1,13 +1,13 @@
 import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
-import { Add } from '@mui/icons-material';
+import { Add, Inbox as InboxIcon } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
-import { Box, CircularProgress, Divider, Grid, IconButton, Typography } from '@mui/material';
-import { useGetList } from 'react-admin';
+import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, Typography } from '@mui/material';
+import { useGetList, useNotify } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
 import { useToggle } from '@/common/hooks';
-import { handleSubmit } from '@/common/utils';
+import { handleSubmit, stringCutter } from '@/common/utils';
 import { annotatorProvider } from '@/providers';
 import { BaseSyntheticEvent, FC } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -50,6 +50,14 @@ export const Home = () => {
     filter: { status: 'TO_CONTACT' },
   });
 
+  const notify = useNotify();
+
+  const copyToClipboard = (text: string) => () => {
+    navigator.clipboard.writeText(text).then(() => {
+      notify('notify.adressCopySuccess', { type: 'info' });
+    });
+  };
+
   return (
     <>
       <Box component='section' sx={HomeStyle}>
@@ -61,27 +69,53 @@ export const Home = () => {
           <AddressInput />
           <Grid container spacing={3} maxHeight={'400px'}>
             <Grid item xs={12} md={6} height={'400px'}>
-              <Box className='left-box'>
-                <Grid container spacing={3} justifyContent='center'>
-                  {isLoading && <CircularProgress size={50} />}
-                  {!isLoading &&
-                    prospectsList.map((prospect, index) => (
-                      <Grid item xs={12} sm={6} key={index} minHeight={'76px'}>
-                        <Box className='prospect-item'>
-                          <PublicIcon sx={{ mr: 1 }} />
-                          <Box className='prospect-text'>
-                            <Typography className='prospect-name' fontWeight='bold'>
-                              {prospect.name}
-                            </Typography>
-                            <Typography className='prospect-address' variant='body2'>
-                              {prospect.address}
-                            </Typography>
+              <Card className='left-box' elevation={2}>
+                <CardHeader title='Dernières notifications'></CardHeader>
+                <CardContent>
+                  <Grid container spacing={3} justifyContent='center' minHeight={200}>
+                    {isLoading && (
+                      <Box
+                        display='flex'
+                        color='#00000050'
+                        marginTop='2rem'
+                        height={200}
+                        width='100%'
+                        alignItems='center'
+                        justifyContent='center'
+                        flexDirection='column'
+                      >
+                        <CircularProgress size={30} />
+                      </Box>
+                    )}
+                    {!isLoading && prospectsList.length === 0 && (
+                      <Box display='flex' color='#00000050' marginTop='2rem' width='100%' height={200} alignItems='center' flexDirection='column'>
+                        <div>
+                          <InboxIcon sx={{ fontSize: '6rem' }} />
+                        </div>
+                        <Typography width={200} textAlign='center'>
+                          Aucune annotation n'a encore été effectuée.
+                        </Typography>
+                      </Box>
+                    )}
+                    {!isLoading &&
+                      prospectsList.map((prospect, index) => (
+                        <Grid item xs={12} sm={6} key={index}>
+                          <Box className='prospect-item'>
+                            <PublicIcon sx={{ mr: 1 }} />
+                            <Box className='prospect-text'>
+                              <Typography className='prospect-name' fontWeight='bold'>
+                                {prospect.name || 'Nom non défini'}
+                              </Typography>
+                              <Typography className='prospect-address' onClick={copyToClipboard(prospect.address)} variant='body2'>
+                                {stringCutter(prospect.address, 40)}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </Grid>
-                    ))}
-                </Grid>
-              </Box>
+                        </Grid>
+                      ))}
+                  </Grid>
+                </CardContent>
+              </Card>
             </Grid>
             <Grid item xs={12} md={6} minHeight={'400px'}>
               <Grid item xs={12} minHeight={'100px'}>

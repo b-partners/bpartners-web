@@ -6,6 +6,7 @@ export * from './bank-disconnection-fetcher';
 export * from './city-json-fetcher';
 export * from './polygon-area-queries';
 export * from './polygon-marker-fetcher';
+export * from './polygon-measurement';
 export * from './prospect-fetcher';
 export * from './retry-until-ready';
 export * from './roof-analyse-queries';

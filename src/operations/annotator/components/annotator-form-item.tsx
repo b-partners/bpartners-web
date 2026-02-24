@@ -1,3 +1,4 @@
+import { usePolygonAreaQuery } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
@@ -22,7 +23,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
     isFirst,
   } = annotatorStore.useOneAnnotationStore(polygonId);
   const [isExpanded, setIsExpanded] = useState(isFirst);
-  const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties } = useAnnotatorComponentStore();
+  const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
 
   const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -40,7 +41,12 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
 
   if (!currentPolygon) return null;
 
-  const surface = annotationInfos?.area || currentPolygon.surface;
+  const { data, isLoading: isSurfaceLoading } = usePolygonAreaQuery({
+    areaPictureDetails,
+    polygon: currentPolygon,
+    onSuccess: ({ area, measurements = [] }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
+  });
+
   const height = annotationInfos.height;
 
   const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
@@ -80,19 +86,20 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
               </Stack>
             </Stack>
             <Stack>
-              {surface && (
+              {data?.area && (
                 <Typography sx={{ fontSize: '14px' }}>
                   Surface :
                   <Typography component='span' fontWeight='bold'>
-                    {surface} m²
+                    {data?.area} m²
                   </Typography>
                 </Typography>
               )}
-              {(slopeAndHeightState?.heightStatus === 'AVAILABLE' || height !== -1) && (
+              {isSurfaceLoading && <Typography>Chargement de la surface sélectionnée...</Typography>}
+              {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
                 <Typography sx={{ fontSize: '14px' }}>
                   Hauteur du bâtiment :
                   <Typography component='span' fontWeight='bold'>
-                    {height === -1 ? 0 : height} m
+                    {height || 0} m
                   </Typography>
                 </Typography>
               )}

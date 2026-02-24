@@ -33,7 +33,7 @@ interface AnnotatorFormProps {
   isSlopeAndHeightPending: boolean;
   roofAnalyseProperties: RoofAnalyseProperties;
 }
-const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPending, roofAnalyseProperties, slopeAndHeightState }) => {
+const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPending, roofAnalyseProperties }) => {
   const { annotationInfos, updateAnnotationInfo, isFirst } = annotatorStore.useOneAnnotationStore(polygonId);
 
   const handleChange: HandleChange = (key, transform) => event => {
@@ -108,10 +108,10 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         </TextField>
       )}
 
-      {(slopeAndHeightState?.slopeStatus || isSlopeAndHeightPending || annotationInfos.slope !== -1) && (
+      {
         <CustomTextField
           label={isSlopeAndHeightPending ? 'Chargement de la pente en cours...' : 'Pente (°)'}
-          defaultValue={annotationInfos.slope !== -1 ? annotationInfos.slope : 0}
+          defaultValue={annotationInfos.slope || 0}
           type='number'
           inputProps={{ min: 0 }}
           onBlur={handleChange('slope', v => +`${v || 0}`)}
@@ -123,7 +123,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
             }
           }
         />
-      )}
+      }
 
       <TextField
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}

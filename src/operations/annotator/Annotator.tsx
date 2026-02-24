@@ -8,6 +8,7 @@ import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Grid, Stack } from '@mui/material';
 import { useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
+import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
 import { Annotator3DInfos } from './components';
@@ -16,7 +17,7 @@ import { useAnnotationInfosForm } from './utils';
 
 const AnnotatorWithDefaultCacheManager = () => {
   const { analyseRoof } = parseUrlParams();
-  const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
   const { isLoading, stopLoading } = useLoadingHandler(true);
 
@@ -65,7 +66,7 @@ const areaPictureFetcher = async (areaPictureId: string) =>
 
 const AnnotatorWithDraftAnnotation = () => {
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureFetcher);
-  const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
   useEffect(() => {
     if (areaPictureAnnotation?.annotations) {

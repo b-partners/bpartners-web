@@ -52,6 +52,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 }) => {
   const { address } = useWrappedSearchParams(['address']);
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
+
+  console.log(polygonList);
+  
+
+
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
 
@@ -207,6 +212,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 imageName: `${filename}.jpg`,
                 showLineSize: true,
                 converterApiUrl: `${CONVERTER_BASE_URL}`,
+                showOnly: true
               }}
               zoom={newZoomLevelAsNumber}
               closeOnNear

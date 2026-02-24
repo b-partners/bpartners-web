@@ -44,7 +44,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
-    const exportAreaPictureAnnotation = exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
+    const exportAreaPictureAnnotation = await exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 

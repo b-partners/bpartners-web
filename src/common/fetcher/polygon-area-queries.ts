@@ -1,18 +1,23 @@
-import { annotatorProvider, polygonMapper } from '@/providers';
-import { Polygon } from '@bpartners/annotator-component';
+import { getCenter } from '@/operations/annotator/utils';
+import { analyseGeneratedIdRef } from '@/operations/prospects/constants';
+import { annotatorProvider, getCached, polygonMapper } from '@/providers';
+import { Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import getAreaOfPolygon from 'geolib/es/getAreaOfPolygon';
+import getDistance from 'geolib/es/getPreciseDistance';
+import { getImageSize, UrlParams } from '../utils';
 
 interface Params {
   polygon: Polygon;
   areaPictureDetails: AreaPictureDetails;
-  onSuccess?: (area: number) => void;
+  onSuccess?: (params: { area: number; measurements: Measurement[] }) => void;
 }
 
 export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
-    const imageSize = 1024;
+    const imageUrl = UrlParams.get('imgUrl');
+    const imageSize = getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
     const geoJson = polygonMapper.toRefererGeoJson(params.polygon, imageSize, params.areaPictureDetails);
     const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
@@ -25,11 +30,28 @@ export const usePolygonAreaQuery = (params: Params) => {
       coordinates.push({ latitude, longitude: all_points_y[index] });
     });
 
-    const area = +getAreaOfPolygon(coordinates).toFixed(2);
-    params?.onSuccess(area);
+    const area = +(getAreaOfPolygon(coordinates) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
 
-    return area;
+    const measurements: Measurement[] = [];
+
+    if (!params.polygon.id.includes(analyseGeneratedIdRef)) {
+      for (let i = 1; i < params.polygon.points.length; i++) {
+        const prev = coordinates[i - 1];
+        const current = coordinates[i];
+        const distance = +getDistance(prev, current, 0.2).toFixed(2);
+        measurements.push({
+          position: getCenter(params.polygon.points[i - 1], params.polygon.points[i]),
+          unity: 'm',
+          value: distance,
+          polygonId: params.polygon.id,
+          isInvisible: true,
+        });
+      }
+    }
+
+    params?.onSuccess({ area, measurements });
+    return { area, measurements };
   };
 
-  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id] });
+  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id, JSON.stringify(params.polygon?.points)] });
 };
