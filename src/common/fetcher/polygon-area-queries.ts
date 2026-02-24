@@ -1,5 +1,5 @@
 import { getCenter } from '@/operations/annotator/utils';
-import { analyseGeneratedIdRef } from '@/operations/prospects/constants';
+import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotatorProvider, getCached, polygonMapper } from '@/providers';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
@@ -34,7 +34,7 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const measurements: Measurement[] = [];
 
-    if (!params.polygon.id.includes(analyseGeneratedIdRef)) {
+    if (params.polygon.id.includes(roofGlobalIdRef) || !params.polygon.id.includes(analyseGeneratedIdRef)) {
       for (let i = 1; i < params.polygon.points.length; i++) {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
