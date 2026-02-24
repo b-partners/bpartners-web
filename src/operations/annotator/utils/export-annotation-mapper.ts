@@ -54,7 +54,7 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
       labelName: annotationInfo?.labelName,
       fillColor: polygon?.fillColor?.length !== 0 ? polygon?.fillColor : fillColor,
       strokeColor: polygon?.strokeColor?.length !== 0 ? polygon?.strokeColor : strokeColor,
-      measurements: polygon.measurements?.slice(1).map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
+      measurements: polygon.measurements.map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
       infos: [
         ...translateAnnotationInfo({
           ...emptyToNull(annotationInfo),

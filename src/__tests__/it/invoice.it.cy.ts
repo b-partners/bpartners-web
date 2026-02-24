@@ -46,6 +46,8 @@ describe('Test invoice', () => {
     cy.contains('Factures').click();
     cy.contains('Brouillons').click();
 
+    cy.wait(10_000);
+
     cy.get('input[type="text"]').type(ref);
     cy.contains(ref, { timeout }).click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
