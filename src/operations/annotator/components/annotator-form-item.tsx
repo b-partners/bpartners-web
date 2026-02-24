@@ -41,10 +41,10 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
 
   if (!currentPolygon) return null;
 
-  const { data: surface, isLoading: isSurfaceLoading } = usePolygonAreaQuery({
+  const { data, isLoading: isSurfaceLoading } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
-    onSuccess: area => updatePolygon({ ...currentPolygon, surface: area }),
+    onSuccess: ({ area, measurements = [] }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
   });
 
   const height = annotationInfos.height;
@@ -86,11 +86,11 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
               </Stack>
             </Stack>
             <Stack>
-              {surface && (
+              {data?.area && (
                 <Typography sx={{ fontSize: '14px' }}>
                   Surface :
                   <Typography component='span' fontWeight='bold'>
-                    {surface} m²
+                    {data?.area} m²
                   </Typography>
                 </Typography>
               )}

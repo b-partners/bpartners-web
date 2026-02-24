@@ -15,10 +15,10 @@ interface Props {
 export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetails, polygonId }) => {
   const { polygon: currentPolygon, annotationInfos, removeAnnotationInfo, updatePolygon } = annotatorStore.useOneAnnotationStore(polygonId);
 
-  const { isLoading, data: area } = usePolygonAreaQuery({
+  const { isLoading, data } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
-    onSuccess: area => updatePolygon({ ...currentPolygon, surface: area }),
+    onSuccess: ({ area, measurements }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
   });
 
   const togglePolygonVisibility = () => updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });
@@ -26,6 +26,8 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetai
   if (!currentPolygon) {
     return null;
   }
+
+  const area = data?.area;
 
   const background = detectionResultColors[annotationInfos.polygonId.split('___')[1] as keyof typeof detectionResultColors];
 

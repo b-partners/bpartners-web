@@ -40,3 +40,4 @@ export const detectionResultLabelName = {
 };
 
 export const roofGlobalIdRef = 'roof-polygon';
+export const analyseGeneratedIdRef = '___';

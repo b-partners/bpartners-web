@@ -137,7 +137,18 @@ const useOneAnnotationStore = (id: string) => {
 };
 
 const usePolygonStore = () => {
-  const polygonList = useAnnotatorStore(useShallow(params => Object.values(params.annotations).map(a => a.polygon)));
+  const polygonList = useAnnotatorStore(
+    useShallow(params => {
+      const currentPolygons = Object.values(params.annotations).map(a => a.polygon);
+      for (let i = 0; i < currentPolygons.length; i++) {
+        if (!currentPolygons[i].isInvisible) {
+          currentPolygons[i].measurements = currentPolygons[i]?.measurements?.map(m => ({ ...m, isInvisible: false }));
+          return currentPolygons;
+        }
+      }
+      return currentPolygons;
+    })
+  );
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
   const polygonIdList = polygonList.map(a => a.id);
 

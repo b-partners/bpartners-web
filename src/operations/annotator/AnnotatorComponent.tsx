@@ -10,7 +10,7 @@ import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
   AnalyseResultButton,
@@ -52,6 +52,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 }) => {
   const { address } = useWrappedSearchParams(['address']);
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
+
+  const [polygonsState, setPolygonsState] = useState<any>([])
+
+  useEffect(() => {
+    setPolygonsState(polygonList)
+  }, [polygonList])
+
+
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
 
@@ -150,7 +158,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     })
   }
   
-  const polygonListShifted = data?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true)
+  const polygonListShifted = data?.properties?.global_rate_type ? polygonsState : shiftPolygons(polygonsState, currentAreaPictureDetailsToUse, true)
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -207,6 +215,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
                 imageName: `${filename}.jpg`,
                 showLineSize: true,
                 converterApiUrl: `${CONVERTER_BASE_URL}`,
+                showOnly: true
               }}
               zoom={newZoomLevelAsNumber}
               closeOnNear
