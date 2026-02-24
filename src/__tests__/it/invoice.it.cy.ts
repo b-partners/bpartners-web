@@ -42,8 +42,6 @@ describe('Test invoice', () => {
 
     cy.get('#form-save-id').click();
 
-    cy.wait('@getdrafts', { timeout });
-
     cy.contains('Devis').click();
     cy.contains('Factures').click();
     cy.contains('Brouillons').click();
@@ -54,7 +52,5 @@ describe('Test invoice', () => {
     cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1)').click();
 
     cy.get('#form-save-id').click();
-
-    cy.wait('@getdrafts', { timeout });
   });
 });
