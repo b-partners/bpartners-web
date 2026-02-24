@@ -6,7 +6,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import getAreaOfPolygon from 'geolib/es/getAreaOfPolygon';
 import getDistance from 'geolib/es/getPreciseDistance';
-import { getImageSize, UrlParams } from '../utils';
+import { copyObject, getImageSize, UrlParams } from '../utils';
 
 interface Params {
   polygon: Polygon;
@@ -18,7 +18,15 @@ export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
     const imageUrl = UrlParams.get('imgUrl');
     const imageSize = getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
-    const geoJson = polygonMapper.toRefererGeoJson(params.polygon, imageSize, params.areaPictureDetails);
+
+    const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
+
+    const divisor = getCached.currentImageSize() ? 4 : 1;
+    const geoJson = polygonMapper.toRefererGeoJson(
+      { ...params.polygon, points: params.polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
+      imageSize,
+      currentAreaPictureDetails
+    );
     const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
     const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
@@ -30,7 +38,7 @@ export const usePolygonAreaQuery = (params: Params) => {
       coordinates.push({ latitude, longitude: all_points_y[index] });
     });
 
-    const area = +(getAreaOfPolygon(coordinates) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
+    const area = +getAreaOfPolygon(coordinates).toFixed(2);
 
     const measurements: Measurement[] = [];
 
@@ -38,7 +46,7 @@ export const usePolygonAreaQuery = (params: Params) => {
       for (let i = 1; i < params.polygon.points.length; i++) {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
-        const distance = +(getDistance(prev, current, 0.2) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
+        const distance = +getDistance(prev, current, 0.2).toFixed(2);
         measurements.push({
           position: getCenter(params.polygon.points[i - 1], params.polygon.points[i]),
           unity: 'm',
