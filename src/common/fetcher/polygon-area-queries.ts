@@ -21,7 +21,7 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
-    const divisor = getCached.currentImageSize() ? 4 : 1;
+    const divisor = getCached.currentImageSize() ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
     const geoJson = polygonMapper.toRefererGeoJson(
       { ...params.polygon, points: params.polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
       imageSize,

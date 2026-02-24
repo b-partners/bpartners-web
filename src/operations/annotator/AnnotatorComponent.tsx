@@ -240,7 +240,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
-              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
+              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value || 100}%</Typography>
             </Box>
             <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
               {degradationLevels.map(({ color, label }) => (
