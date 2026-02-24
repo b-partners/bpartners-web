@@ -1,5 +1,5 @@
 import { emptyToNull, getFileUrl } from '@/common/utils';
-import { roofGlobalIdRef } from '@/operations/prospects/constants';
+import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { getCached, saveOrUpdateLanding } from '@/providers';
 import { getColorFromMain, Measurement, Polygon } from '@bpartners/annotator-component';
 import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationMeasurement } from '@bpartners/typescript-client';
@@ -54,7 +54,8 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
       labelName: annotationInfo?.labelName,
       fillColor: polygon?.fillColor?.length !== 0 ? polygon?.fillColor : fillColor,
       strokeColor: polygon?.strokeColor?.length !== 0 ? polygon?.strokeColor : strokeColor,
-      measurements: polygon.measurements.map(exportMeasurementMapper) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
+      measurements:
+        polygon.measurements.map(exportMeasurementMapper(polygon.id || '')) || polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
       infos: [
         ...translateAnnotationInfo({
           ...emptyToNull(annotationInfo),
@@ -77,10 +78,12 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
   };
 };
 
-const exportMeasurementMapper = (measurement: Measurement): ExportAreaPictureAnnotationMeasurement => {
-  return {
-    unit: measurement.unity,
-    value: parseFloat(measurement.value.toFixed(2)),
-    isInvisible: measurement.isInvisible,
+const exportMeasurementMapper =
+  (polygonId: string) =>
+  (measurement: Measurement): ExportAreaPictureAnnotationMeasurement => {
+    return {
+      unit: measurement.unity,
+      value: parseFloat(measurement.value.toFixed(2)),
+      isInvisible: polygonId.includes(analyseGeneratedIdRef),
+    };
   };
-};
