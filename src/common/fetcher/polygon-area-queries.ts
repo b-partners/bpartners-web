@@ -38,7 +38,7 @@ export const usePolygonAreaQuery = (params: Params) => {
       for (let i = 1; i < params.polygon.points.length; i++) {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
-        const distance = +getDistance(prev, current, 0.2).toFixed(2);
+        const distance = +(getDistance(prev, current, 0.2) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
         measurements.push({
           position: getCenter(params.polygon.points[i - 1], params.polygon.points[i]),
           unity: 'm',
