@@ -32,7 +32,7 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const area = +(getAreaOfPolygon(coordinates) / (getCached.currentImageSize() ? 4 : 1)).toFixed(2);
 
-    let measurements: Measurement[] = [];
+    const measurements: Measurement[] = [];
 
     if (!params.polygon.id.includes(analyseGeneratedIdRef)) {
       for (let i = 1; i < params.polygon.points.length; i++) {
