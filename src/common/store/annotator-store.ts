@@ -1,5 +1,6 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { addAlphabet } from '@/operations/annotator/utils';
+import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
@@ -141,8 +142,9 @@ const usePolygonStore = () => {
     let isSecond = false;
     const currentPolygons = Object.values(params.annotations).map(a => {
       const currentPolygon = a.polygon;
-      if (currentPolygon.isInvisible || isSecond) currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: true }));
-      else {
+      if ((currentPolygon.id.includes(analyseGeneratedIdRef) && !currentPolygon.id.includes(roofGlobalIdRef)) || currentPolygon.isInvisible || isSecond) {
+        currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: true }));
+      } else {
         isSecond = true;
         currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: false }));
       }

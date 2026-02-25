@@ -53,10 +53,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { address } = useWrappedSearchParams(['address']);
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
 
-  console.log(polygonList);
-  
-
-
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
 
@@ -80,7 +76,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { screen } = useAnnotatorScreenSwitch();
-
 
   useEffect(() => {
     setRoofAnalyseProperties(data?.properties);
@@ -245,7 +240,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
-              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value}%</Typography>
+              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value || 100}%</Typography>
             </Box>
             <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
               {degradationLevels.map(({ color, label }) => (
