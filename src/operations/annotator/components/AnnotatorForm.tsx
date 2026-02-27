@@ -188,7 +188,12 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         defaultValue={annotationInfos.obstacle}
         onBlur={handleChange('obstacle')}
       />
-      <CustomTextField label="Commentaire de l'expert" defaultValue={annotationInfos.comment} multiline onBlur={handleChange('comment')} />
+      <CustomTextField
+        label={polygonId.includes(roofGlobalIdRef) ? "Commentaire de l'expert" : 'Commentaire'}
+        defaultValue={annotationInfos.comment}
+        multiline
+        onBlur={handleChange('comment')}
+      />
     </Stack>
   );
 };

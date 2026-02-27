@@ -13,7 +13,7 @@ const AMOUNT_CARD = {
   margin: '10px',
 };
 const InvoiceSumsCards = () => {
-  const [invoicesSummary] = useStore('amounts');
+  const [invoicesSummary = {}] = useStore('amounts') as any;
   const cards = [
     {
       img: devis,
