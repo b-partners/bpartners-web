@@ -22,7 +22,7 @@ export const LlmSwitchButton: FC<Props> = ({ enabled, onClick }) => {
   return (
     <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={handleClick}>
       {screen == 'llm' && "Revenir à l’écran d'annotation"}
-      {screen === 'annotator' && 'Comprendre votre rapport'}
+      {screen === 'annotator' && 'Générer un rapport'}
     </Button>
   );
 };
