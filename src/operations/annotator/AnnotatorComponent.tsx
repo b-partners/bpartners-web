@@ -11,7 +11,7 @@ import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-clien
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { degradationLevels, roofGlobalIdRef } from '../prospects/constants';
+import { degradationLevels } from '../prospects/constants';
 import {
   AnalyseResultButton,
   Annotator3D,
@@ -34,7 +34,6 @@ import {
   measurementMapper,
   shiftPolygons
 } from './utils';
-import { useShallow } from 'zustand/react/shallow';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -56,7 +55,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
-    const roofAnnotationInfo =   annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => a.polygon.id.includes(roofGlobalIdRef)))) || {};
 
   const { geoJsonResultUrl,  llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
@@ -65,7 +63,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
 
-  const globalRate = calculateGlobalRate(roofAnnotationInfo)
+  const globalRate = calculateGlobalRate()
 
   // Get the Area picture details to use
   const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
@@ -233,7 +231,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         </Box>
       )}
 
-      {filename && (data || globalRate) && (
+      {filename && (data || data?.properties?.global_rate_type) && (
         <Stack>
           <Stack direction='row' alignItems='center' justifyContent='center' width='100%'>
             <Alert sx={{width: "100%", mb: 1}} variant='filled' color='warning'>
@@ -242,16 +240,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
-              <Typography>Note de dégradation globale : {data?.properties?.global_rate_value || globalRate?.value || 100}%</Typography>
+              <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
             </Box>
             <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
               {degradationLevels.map(({ color, label }) => (
                 <Box
                   key={label}
-                  className={`degratation-levels-box ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'degratation-levels-box-selected' : ''}`}
+                  className={`degratation-levels-box ${(globalRate.type) === label ? 'degratation-levels-box-selected' : ''}`}
                   sx={{
                     bgcolor: color,
-                    border: `5px solid ${(data?.properties?.global_rate_type || globalRate?.type) === label ? 'black' : 'transparent'}`,
+                    border: `5px solid ${(globalRate.type) === label ? 'black' : 'transparent'}`,
                   }}
                 >
                   {label}

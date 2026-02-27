@@ -1,3 +1,5 @@
+import { annotatorStore } from '@/common/store';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { AnnotationInfo } from '../types';
 
 /**
@@ -12,7 +14,10 @@ import { AnnotationInfo } from '../types';
  * @param annotationInfo - The annotation data containing the rates
  * @returns The calculated global rate
  */
-export const calculateGlobalRate = (annotationInfo: AnnotationInfo): { value: number; type: string } => {
+export const calculateGlobalRate = (): { value: number; type: string } => {
+  const annotationInfo =
+    Object.values(annotatorStore.useAnnotatorStore.getState().annotations).find(a => a.polygon.id.includes(roofGlobalIdRef))?.annotationInfos ||
+    ({} as AnnotationInfo);
   const alpha = 0.4;
   const beta = 0.8;
   const gamma = 1.0;

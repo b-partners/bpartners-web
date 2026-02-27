@@ -15,7 +15,7 @@ export const useLlmResultQuery = () => {
 
   const queryFn = async () => {
     try {
-      const globalRate = calculateGlobalRate(annotationInfos);
+      const globalRate = calculateGlobalRate();
       const result = await fetch(
         `${baseUrl}?surfaceEnM2=${area}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(covering)}&moisissure=${moldRate}&usure=${wearLevel}&obstacles=${JSON.stringify(obstacle)}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${globalRate.value}&category=${globalRate?.type}&humidit%C3%A9=${humidityLevel}&commentaireCouvreur=${comment || 'Pas de commentaire'}&x-api-key=${apiKey}`
       );
