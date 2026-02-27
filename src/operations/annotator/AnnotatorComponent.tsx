@@ -11,7 +11,7 @@ import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-clien
 import { Public as PublicIcon } from '@mui/icons-material';
 import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { degradationLevels } from '../prospects/constants';
+import { degradationLevels, roofGlobalIdRef } from '../prospects/constants';
 import {
   AnalyseResultButton,
   Annotator3D,
@@ -27,13 +27,14 @@ import {
   AnalyseRoofButton,
   annotatorComponentStyle,
   AnnotatorHelpButton,
+  calculateGlobalRate,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   measurementMapper,
-  shiftPolygons,
-  useLlmResultQuery
+  shiftPolygons
 } from './utils';
+import { useShallow } from 'zustand/react/shallow';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
@@ -55,13 +56,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params=> params.resetAnnotations);
+    const roofAnnotationInfo =   annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => a.polygon.id.includes(roofGlobalIdRef)))) || {};
 
-  const { geoJsonResultUrl, globalRate, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl,  llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
+
+  const globalRate = calculateGlobalRate(roofAnnotationInfo)
 
   // Get the Area picture details to use
   const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
@@ -117,7 +121,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     }
   };
 
-  const { data: htmlResult, isPending: isLlmResultPending } = useLlmResultQuery(data?.properties);
+
 
   const handleDetectionProcessingSuccess = () => {
     resetAnnotations()
@@ -224,8 +228,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             <LlmResult
               width={width || containerWidth}
               height={height || containerHeight}
-              htmlResult={htmlResult || draftLlmValue}
-              isLoading={isLlmResultPending}
             />
           )}
         </Box>
@@ -258,7 +260,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             </Stack>
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
-            <LlmSwitchButton enabled={!!data?.properties || !!draftLlmValue} />
+            <LlmSwitchButton  enabled={!!data?.properties || !!draftLlmValue} />
             <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
           </Stack>
         </Stack>
