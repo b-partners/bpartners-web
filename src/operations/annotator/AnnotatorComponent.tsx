@@ -9,7 +9,7 @@ import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
 import { Public as PublicIcon } from '@mui/icons-material';
-import { Alert, Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
@@ -17,6 +17,7 @@ import {
   Annotator3D,
   Annotator3DSwitchButton,
   annotatorButtonsActions,
+  Disclaimer,
   LlmResult,
   LlmSwitchButton,
   RefocusImageButton,
@@ -233,11 +234,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
       {filename && (data || data?.properties?.global_rate_type) && (
         <Stack>
-          <Stack direction='row' alignItems='center' justifyContent='center' width='100%'>
-            <Alert sx={{width: "100%", mb: 1}} variant='filled' color='warning'>
-              Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
-            </Alert>
-          </Stack>
+          <Disclaimer />
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Box className='global-rage-container'>
               <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
