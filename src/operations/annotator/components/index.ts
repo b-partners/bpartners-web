@@ -9,6 +9,7 @@ export * from './annotator-form-item';
 export * from './annotator-form-result-item';
 export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
+export * from './disclaimer';
 export * from './ExportAnnotationConfirmButton';
 export * from './llm-result';
 export * from './llm-switch-button';
