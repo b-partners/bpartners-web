@@ -2,10 +2,11 @@ import { ShortWarning } from '@/common/components/BPBetaTestWarning';
 import BPDialog from '@/common/components/BPDialog';
 import { printError, Redirect } from '@/common/utils';
 import { authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
-import { Box } from '@mui/material';
+import { Menu } from '@mui/icons-material';
+import { Box, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
-import { SidebarToggleButton, useNotify } from 'react-admin';
+import { useNotify, useSidebarState } from 'react-admin';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
@@ -30,8 +31,7 @@ const useStyle = makeStyles(() => ({
     outline: 'none',
   },
   sidebarToggleButton: {
-    height: '2.5rem',
-    width: '2.5rem',
+    cursor: 'pointer',
   },
 }));
 
@@ -69,6 +69,8 @@ export const AppBar = () => {
     setOpenDialog(false);
   };
 
+  const [open, setOpen] = useSidebarState();
+
   return (
     <>
       <Box className={classes.TOOLBAR} sx={{ boxShadow: 1 }}>
@@ -81,7 +83,9 @@ export const AppBar = () => {
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
           {isBeta && <ShortWarning />}
-          <SidebarToggleButton className={classes.sidebarToggleButton} />
+          <Tooltip title='' onClick={() => setOpen(!open)}>
+            <Menu className={classes.sidebarToggleButton} />
+          </Tooltip>
         </Box>
       </Box>
       <BPDialog

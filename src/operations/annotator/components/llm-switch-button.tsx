@@ -6,19 +6,23 @@ import { llmButtonStyle } from './style';
 
 interface Props {
   enabled: boolean;
+  onClick?: () => void;
 }
 
-export const LlmSwitchButton: FC<Props> = ({ enabled }) => {
+export const LlmSwitchButton: FC<Props> = ({ enabled, onClick }) => {
   const { setScreen, screen } = useAnnotatorScreenSwitch();
 
-  const handleClick = () => setScreen(screen == 'llm' ? 'annotator' : 'llm');
+  const handleClick = () => {
+    onClick?.();
+    setScreen(screen == 'llm' ? 'annotator' : 'llm');
+  };
 
   if (!enabled || screen === '3d-annotator') return null;
 
   return (
     <Button sx={llmButtonStyle} startIcon={<Cached />} onClick={handleClick}>
       {screen == 'llm' && "Revenir à l’écran d'annotation"}
-      {screen === 'annotator' && 'Comprendre votre rapport'}
+      {screen === 'annotator' && 'Générer un rapport'}
     </Button>
   );
 };

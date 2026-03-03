@@ -6,6 +6,7 @@ export * from './annotations-info-form';
 export * from './city-json-mapper';
 export * from './create-roof-polygon';
 export * from './export-annotation-mapper';
+export * from './global-rate-calculator';
 export * from './help-button';
 export * from './image-utilities';
 export * from './is-roof-polygon';

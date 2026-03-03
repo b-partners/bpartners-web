@@ -1,15 +1,16 @@
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { FC, useEffect, useRef } from 'react';
+import { useLlmResultQuery } from '../utils';
 import { llmResultStyle } from './style';
 
 interface LlmResultProps {
   width: string | number;
   height: string | number;
-  htmlResult: string;
-  isLoading: boolean;
 }
 
-export const LlmResult: FC<LlmResultProps> = ({ height, width, htmlResult, isLoading }) => {
+export const LlmResult: FC<LlmResultProps> = ({ height, width }) => {
+  const { data: htmlResult, isPending: isLoading } = useLlmResultQuery();
+
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (ref.current && htmlResult) {
