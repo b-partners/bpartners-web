@@ -6,21 +6,27 @@ import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Ic
 import { useGetList, useNotify } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
-import { useToggle } from '@/common/hooks';
-import { handleSubmit, stringCutter } from '@/common/utils';
+import { useDialog } from '@/common/store/dialog';
+import { stringCutter } from '@/common/utils';
 import { annotatorProvider } from '@/providers';
-import { BaseSyntheticEvent, FC } from 'react';
+import { FormEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { ProspectFormDialog } from '../prospects/components';
-import { ProspectDialogProvider } from '../prospects/ProspectsList';
+import { GetImageDialog } from './get-image-dialog';
 import { HomeStyle } from './style';
 
 const AddressInput = () => {
-  const form = useForm();
+  const form = useForm<{ address: string }>();
+  const { open } = useDialog();
+  const handleCreate = () => open(<GetImageDialog address={form.watch('address')} />, {}, false);
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    handleCreate();
+  };
+
   return (
     <Box className='address-box'>
       <FormProvider {...form}>
-        <Box flexGrow={1}>
+        <Box component='form' onSubmit={handleSubmit} flexGrow={1}>
           <BpAutoCompleteBackend
             name='address'
             label='Adresse'
@@ -34,11 +40,12 @@ const AddressInput = () => {
           />
         </Box>
       </FormProvider>
-      <ProspectDialogProvider
-        address={form.getValues('address')}
-        ComponentChild={({ saveOrUpdateProspectSubmit }: Pick<CreateProspectDialogProps, 'saveOrUpdateProspectSubmit'>) => (
-          <CreateProspectDialog saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
-        )}
+      <BPButton
+        className='btn-analyse'
+        onClick={handleCreate}
+        label='resources.annotations.action.passToAnalyse'
+        data-cy='button-analyze'
+        data-path='/prospects'
       />
     </Box>
   );
@@ -239,32 +246,6 @@ export const Home = () => {
           </Grid>
         </Box>
       </Box>
-    </>
-  );
-};
-
-type CreateProspectDialogProps = {
-  saveOrUpdateProspectSubmit: (toggleDialog: () => void, isCreating: boolean, e: BaseSyntheticEvent) => Promise<void>;
-};
-const CreateProspectDialog: FC<CreateProspectDialogProps> = ({ saveOrUpdateProspectSubmit }) => {
-  const { value: isCreating, toggleValue: toggleCreating } = useToggle();
-
-  const saveOrUpdateProspect = (event: BaseSyntheticEvent) => saveOrUpdateProspectSubmit(toggleCreating, isCreating, event);
-
-  return (
-    <>
-      <BPButton
-        className='btn-analyse'
-        onClick={toggleCreating}
-        label='resources.annotations.action.passToAnalyse'
-        data-cy='button-analyze'
-        data-path='/prospects'
-      />
-      {isCreating && (
-        <form onSubmit={handleSubmit(saveOrUpdateProspect)} style={{ display: 'flex', flexDirection: 'column' }}>
-          <ProspectFormDialog open={isCreating} close={toggleCreating} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
-        </form>
-      )}
     </>
   );
 };
