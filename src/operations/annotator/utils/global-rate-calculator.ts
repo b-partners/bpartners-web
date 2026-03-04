@@ -35,5 +35,5 @@ export const calculateGlobalRate = (): { value: number; type: string } => {
   else if (globalRate >= 11 && globalRate < 21) type = 'C';
   else if (globalRate >= 21 && globalRate < 41) type = 'D';
 
-  return { value, type };
+  return { value: value < 0 ? 0 : value > 100 ? 100 : value, type };
 };
