@@ -108,7 +108,7 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
   }, [error?.message]);
 
   return (
-    <Alert sx={{ mt: 2 }} icon={<WarningOutlined />} severity={status === CityJSONRequestStatus.UNAVAILABLE ? 'warning' : 'error'}>
+    <Alert data-testid='3D-error-alert' sx={{ mt: 2 }} icon={<WarningOutlined />} severity={status === CityJSONRequestStatus.UNAVAILABLE ? 'warning' : 'error'}>
       {errorMessage}
     </Alert>
   );
