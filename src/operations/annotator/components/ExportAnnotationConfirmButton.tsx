@@ -1,10 +1,11 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
+import { calculateGlobalRate } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -16,7 +17,6 @@ export interface ExportAnnotationConfirmButtonProps {
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, disabled = false }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
-  const { roofAnalyseProperties } = useAnnotatorComponentStore();
   const annotationInfos = annotatorStore.useAnnotatorInfoStore();
   const { polygonList } = annotatorStore.usePolygonStore();
 
@@ -27,13 +27,14 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const { mutate: exportAsPdf, isPending: exportAsPdfPending } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
 
   const uploadImageOnSuccess = () => {
+    const globalRate = calculateGlobalRate();
     exportAsPdf({
       annotationInfos,
       polygons: polygonList,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
-      globalRateType: roofAnalyseProperties?.global_rate_type || '',
-      globalRateValue: roofAnalyseProperties?.global_rate_value || 0,
+      globalRateType: globalRate.type,
+      globalRateValue: globalRate.value,
     });
   };
 

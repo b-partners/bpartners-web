@@ -31,7 +31,9 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
   let imageUrl = _imageUrl;
   let polygons = _polygons;
 
-  if (!globalRateType) {
+  const isAfterAnalyse = annotationInfos.find(a => a.polygonId.includes(analyseGeneratedIdRef));
+
+  if (!isAfterAnalyse) {
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
     const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(polygons as any, polygons as any, image);
