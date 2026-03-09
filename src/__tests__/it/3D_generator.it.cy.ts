@@ -39,7 +39,7 @@ let prospectId: string;
 describe('Generate 3D', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
-    cy.e2eLogin('http://localhost:3000');
+    cy.e2eLogin();
   });
 
   testCases.forEach(testCase => {
