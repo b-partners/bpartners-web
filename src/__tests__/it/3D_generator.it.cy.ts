@@ -34,10 +34,12 @@ const testCases = [
   },
 ];
 
+let prospectId: string;
+
 describe('Generate 3D', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
-    cy.e2eLogin();
+    cy.e2eLogin('http://localhost:3000');
   });
 
   testCases.forEach(testCase => {
@@ -47,17 +49,21 @@ describe('Generate 3D', () => {
 
       cy.get('[name="prospects"]').click();
       cy.contains('Ajouter un prospect').click();
-
       cy.get('[data-testid="address-auto-complete"]').clear().type(testCase.address);
       cy.get('[data-testid="name-field-input"]').clear().type('Doe');
 
       cy.intercept('PUT', 'accounts/**/areaPictures/**').as('createAreaPicture');
+      cy.intercept('PUT', 'accountHolders/**/prospects**').as('createProspect');
       cy.intercept('GET', 'accounts/**/files/**/raw**').as('getImage');
 
       cy.contains('Générer l’image').should('be.visible').click();
 
       cy.wait('@createAreaPicture', { timeout: 120000 }).then(interception => {
         expect(interception.response.statusCode).to.eq(200);
+      });
+      cy.wait('@createProspect').then(prospect => {
+        prospectId = prospect.response?.body[0].id;
+        cy.log(`PROSPECT ID ${prospectId}`);
       });
       cy.wait('@getImage');
       cy.wait(5000);
@@ -88,13 +94,25 @@ describe('Generate 3D', () => {
     });
   });
 
-  afterEach(function () {
+  afterEach(async function () {
+    // TODO : clean up database
+    // Perform a delete request that gonna delete PROSPECT, AREA_PICTURE
     const test = this.currentTest;
     recordCypressTestResult({
       testName: test?.title ?? 'UNKNOWN',
       status: test?.state === 'passed' ? 'SUCCESS' : 'FAILED',
       error: test?.err?.message ?? undefined,
     });
+    // const res = await fetch(`https://api.prod.bpartners.app/prospect/${prospectId}`, {
+    //           method: 'DELETE',
+    //           headers: {
+    //             "x-api-key": process.env.DASHBOARD_ADMIN_API_KEY
+    //           },
+    //         })
+
+    // if(!res.ok){
+    //   throw new Error("Error has occured during prospect/areaPicture deletion")
+    // }
   });
 
   const RESPONSE_TIME_THRESHOLD = 130000;
@@ -106,8 +124,14 @@ describe('Generate 3D', () => {
       const hasCypressTestFailed = cypressTestResult.some(r => r.status === 'FAILED');
 
       cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`);
-      cy.task('getOpenInstatusIncident').then(incidentId => {
-        cy.log('Incident ID dans le test:', incidentId);
+      cy.log(`CypressTestResults = ${JSON.stringify(cypressTestResult, null, 2)}`);
+
+      cy.task('getOpenInstatusIncident').then((incident: any) => {
+        const incidentId = incident?.id ?? null;
+        const incidentStatus = incident?.status ?? null;
+
+        cy.log('Incident ID dans le test', incidentId);
+        cy.log('Status ID dans le test', incidentStatus);
 
         if (hasCypressTestFailed) {
           const failedTests = cypressTestResult
@@ -118,17 +142,18 @@ describe('Generate 3D', () => {
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
               name: '[Cypress Error] Failed to process 3D convertion',
-              message: `Cypress test failed, error on =${failedTests}`,
-              status: 'INVESTIGATING',
-              componentStatus: 'PARTIALOUTAGE',
+              message: `Cypress test failed, ${failedTests}`,
+              status: 'IDENTIFIED',
+              componentStatus: 'DEGRADEDPERFORMANCE',
+            });
+          } else if (incidentId && incidentStatus != 'IDENTIFIED') {
+            return cy.task('updateInstatusIncident', {
+              incidentId,
+              message: `Cypress test failed, ${failedTests}`,
+              status: 'IDENTIFIED',
+              componentStatus: 'DEGRADEDPERFORMANCE',
             });
           }
-          return cy.task('updateInstatusIncident', {
-            incidentId,
-            message: `Cypress test failed, error on =${failedTests}`,
-            status: 'INVESTIGATING',
-            componentStatus: 'PARTIALOUTAGE',
-          });
         }
         if (hasFailed) {
           const failedTests = testResults
@@ -143,27 +168,28 @@ describe('Generate 3D', () => {
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
             });
+          } else if (incidentId && incidentStatus != 'INVESTIGATING') {
+            return cy.task('updateInstatusIncident', {
+              incidentId,
+              message: `Failed on : ${failedTests}`,
+              status: 'INVESTIGATING',
+              componentStatus: 'MAJOROUTAGE',
+            });
           }
-          return cy.task('updateInstatusIncident', {
-            incidentId,
-            message: `Failed on : ${failedTests}`,
-            status: 'INVESTIGATING',
-            componentStatus: 'MAJOROUTAGE',
-          });
         } else if (isSlow) {
           const slowTests = testResults
             .filter(r => r.responseTime > RESPONSE_TIME_THRESHOLD)
             .map(r => `${r.testName} (${r.responseTime}ms)`)
             .join(', ');
 
-          if (incidentId) {
+          if (incidentId && incidentStatus != 'MONITORING') {
             return cy.task('updateInstatusIncident', {
               incidentId,
               message: `[3D] Convertion took too much time : ${slowTests}`,
               status: 'MONITORING',
               componentStatus: 'PARTIALOUTAGE',
             });
-          } else {
+          } else if (!incidentId) {
             return cy.task('createInstatusIncident', {
               name: '[3D] Convertion took too much time',
               message: `[3D] Convertion took too much time : ${slowTests}`,

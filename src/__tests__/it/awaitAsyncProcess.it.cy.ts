@@ -33,6 +33,7 @@ export const recallAsyncProcess = (address: string, requestStartTime: number): C
         responseTime: apiResponseTime,
         status: 'FAILED',
       });
+      return cy.wrap(apiResponseTime);
     }
 
     cy.log(`Status still ${processStatus}, recalling...`);

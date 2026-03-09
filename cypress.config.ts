@@ -21,7 +21,7 @@ export default defineConfig({
     }
   },
 
-  video: false,
+  video: true,
 
   retries: {
     runMode: 3,
@@ -82,7 +82,7 @@ export default defineConfig({
                 )
                 .sort((a: any, b: any) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
   
-              return openIncident?.id ?? null;
+              return openIncident? {id: openIncident.id, status: openIncident.status} : null;
             } else {
               throw new Error('Data is not an array or is empty');
             }
