@@ -34,15 +34,6 @@ const testCases = [
   },
 ];
 
-const printCanvasPixelOnDeveloperTools = () => {
-  cy.dataCy(canvas_cursor_sel).then(($canvas: any) => {
-    const canvas = $canvas[0];
-    canvas.addEventListener('click', (e: any) => {
-      console.log(e.offsetX, e.offsetY);
-    });
-  });
-};
-
 describe('Generate 3D', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
@@ -97,32 +88,31 @@ describe('Generate 3D', () => {
     });
   });
 
-  afterEach(function() {
-    const test = this.currentTest
+  afterEach(function () {
+    const test = this.currentTest;
     recordCypressTestResult({
       testName: test?.title ?? 'UNKNOWN',
       status: test?.state === 'passed' ? 'SUCCESS' : 'FAILED',
       error: test?.err?.message ?? undefined,
-    })
-  })
+    });
+  });
 
-  let RESPONSE_TIME_THRESHOLD = 130000
+  const RESPONSE_TIME_THRESHOLD = 130000;
 
   after(() => {
     cy.then(() => {
-      const hasFailed = testResults.some((r) => r.status === 'FAILED');
-      const isSlow = testResults.some((r) => r.responseTime > RESPONSE_TIME_THRESHOLD);
-      const hasCypressTestFailed = cypressTestResult.some((r) => r.status === 'FAILED');
-      
-      cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`)
-      cy.task('getOpenInstatusIncident').then((incidentId) => {
+      const hasFailed = testResults.some(r => r.status === 'FAILED');
+      const isSlow = testResults.some(r => r.responseTime > RESPONSE_TIME_THRESHOLD);
+      const hasCypressTestFailed = cypressTestResult.some(r => r.status === 'FAILED');
 
+      cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`);
+      cy.task('getOpenInstatusIncident').then(incidentId => {
         cy.log('Incident ID dans le test:', incidentId);
 
-        if(hasCypressTestFailed){
+        if (hasCypressTestFailed) {
           const failedTests = cypressTestResult
-            .filter((r) => r.status == 'FAILED')
-            .map((r) => `${r.testName} (${r.error})`)
+            .filter(r => r.status == 'FAILED')
+            .map(r => `${r.testName} (${r.error})`)
             .join(', ');
 
           if (!incidentId) {
@@ -131,7 +121,7 @@ describe('Generate 3D', () => {
               message: `Cypress test failed, error on =${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'PARTIALOUTAGE',
-            })
+            });
           }
           return cy.task('updateInstatusIncident', {
             incidentId,
@@ -142,8 +132,8 @@ describe('Generate 3D', () => {
         }
         if (hasFailed) {
           const failedTests = testResults
-            .filter((r) => r.status == 'FAILED')
-            .map((r) => `${r.testName} (${r.responseTime}ms)`)
+            .filter(r => r.status == 'FAILED')
+            .map(r => `${r.testName} (${r.responseTime}ms)`)
             .join(', ');
 
           if (!incidentId) {
@@ -152,18 +142,18 @@ describe('Generate 3D', () => {
               message: `Failed on : ${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
-            })
+            });
           }
           return cy.task('updateInstatusIncident', {
             incidentId,
             message: `Failed on : ${failedTests}`,
             status: 'INVESTIGATING',
-            componentStatus: 'MAJOROUTAGE'
+            componentStatus: 'MAJOROUTAGE',
           });
         } else if (isSlow) {
           const slowTests = testResults
-            .filter((r) => r.responseTime > RESPONSE_TIME_THRESHOLD)
-            .map((r) => `${r.testName} (${r.responseTime}ms)`)
+            .filter(r => r.responseTime > RESPONSE_TIME_THRESHOLD)
+            .map(r => `${r.testName} (${r.responseTime}ms)`)
             .join(', ');
 
           if (incidentId) {
@@ -171,14 +161,14 @@ describe('Generate 3D', () => {
               incidentId,
               message: `[3D] Convertion took too much time : ${slowTests}`,
               status: 'MONITORING',
-              componentStatus: 'PARTIALOUTAGE'
+              componentStatus: 'PARTIALOUTAGE',
             });
           } else {
             return cy.task('createInstatusIncident', {
               name: '[3D] Convertion took too much time',
               message: `[3D] Convertion took too much time : ${slowTests}`,
               status: 'MONITORING',
-              componentStatus: 'PARTIALOUTAGE'
+              componentStatus: 'PARTIALOUTAGE',
             });
           }
         } else {
