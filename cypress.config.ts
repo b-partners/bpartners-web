@@ -1,6 +1,8 @@
 import taskCoverage from '@cypress/code-coverage/task.js';
 import { defineConfig } from 'cypress';
 import vitePreprocessor from 'cypress-vite';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
 const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
@@ -74,11 +76,11 @@ export default defineConfig({
 
             if (data && Array.isArray(data)) {
               const openIncident = data
-                .filter((i: any) =>
+                .filter((i) =>
                   i.status !== 'RESOLVED' &&
-                  i.components?.some((c: any) => c.id === INSTATUS_COMPONENT_ID)
+                  i.components?.some((c) => c.id === INSTATUS_COMPONENT_ID)
                 )
-                .sort((a: any, b: any) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
+                .sort((a, b) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
   
               return openIncident? {id: openIncident.id, status: openIncident.status} : null;
             } else {
