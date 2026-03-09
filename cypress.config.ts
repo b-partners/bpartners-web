@@ -1,8 +1,6 @@
 import taskCoverage from '@cypress/code-coverage/task.js';
 import { defineConfig } from 'cypress';
 import vitePreprocessor from 'cypress-vite';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
 const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
