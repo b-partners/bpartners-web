@@ -178,6 +178,9 @@ export default defineConfig({
         }
       });
     },
+    excludeSpecPattern: process.env.EXCLUDE_3D_SPEC === 'true' 
+    ? ['src/__tests__/it/3D_generator.it.cy.ts'] 
+    : [],
     specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}'
     }
 });

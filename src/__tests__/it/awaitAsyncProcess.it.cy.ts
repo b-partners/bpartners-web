@@ -11,6 +11,10 @@ export const recallAsyncProcess = (address: string, requestStartTime: number): C
         responseTime: apiResponseTime,
         status: 'FINISHED',
       });
+      interception.response.body.cityJsons.forEach((cityJson: any) => {
+        expect(cityJson).to.have.property('url').that.is.not.null.and.not.empty;
+      });
+      cy.get('[data-testid="3d-canvas"]');
       return cy.wrap(apiResponseTime);
     }
 

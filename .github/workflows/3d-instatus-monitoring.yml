@@ -61,6 +61,7 @@ jobs:
           echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
           echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
           echo DASHBOARD_ADMIN_API_KEY=${{secrets.DASHBOARD_ADMIN_API_KEY}} >> .env
+          echo EXCLUDE_3D_SPEC=false >> .env
 
       - name: Monitor 3D Generation
         id: 3d-it
