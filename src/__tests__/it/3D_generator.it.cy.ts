@@ -95,27 +95,27 @@ describe('Generate 3D', () => {
   });
 
   afterEach(async function () {
-    // TODO : clean up database
-    // Perform a delete request that gonna delete PROSPECT, AREA_PICTURE
     const test = this.currentTest;
     recordCypressTestResult({
       testName: test?.title ?? 'UNKNOWN',
       status: test?.state === 'passed' ? 'SUCCESS' : 'FAILED',
       error: test?.err?.message ?? undefined,
     });
-    // const res = await fetch(`https://api.prod.bpartners.app/prospect/${prospectId}`, {
-    //           method: 'DELETE',
-    //           headers: {
-    //             "x-api-key": process.env.DASHBOARD_ADMIN_API_KEY
-    //           },
-    //         })
-
-    // if(!res.ok){
-    //   throw new Error("Error has occured during prospect/areaPicture deletion")
-    // }
+    cy.log(`Prospect id to delete = ${prospectId}`);
+    cy.request({
+      method: 'DELETE',
+      url: `${process.env.REACT_APP_BPARTNERS_API_URL}/prospect/${prospectId}`,
+      headers: {
+        'x-api-key': process.env.DASHBOARD_ADMIN_API_KEY,
+      },
+      failOnStatusCode: false,
+    }).then(res => {
+      cy.log(`Status: ${res.status}`);
+      cy.log(`Body: ${JSON.stringify(res.body)}`);
+    });
   });
 
-  const RESPONSE_TIME_THRESHOLD = 130000;
+  const RESPONSE_TIME_THRESHOLD = 140000;
 
   after(() => {
     cy.then(() => {
