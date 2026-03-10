@@ -19,6 +19,23 @@ const createDijonAnnotation = () => {
   cy.dataCy(canvas_cursor_sel).click(557, 368, { force: true });
 };
 
+const createParthenayAnnotation = () => {
+  cy.dataCy(canvas_cursor_sel).click(661, 234, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(645, 277, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(668, 284, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(691, 284, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(705, 247, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(661, 234, { force: true });
+};
+
+const createCannesAnnotation = () => {
+  cy.dataCy(canvas_cursor_sel).click(571, 227, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(506, 208, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(504, 254, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(555, 268, { force: true });
+  cy.dataCy(canvas_cursor_sel).click(571, 227, { force: true });
+};
+
 const testCases = [
   {
     name: 'Generate 3D on 6 Place de la Libération, 21000 Dijon',
@@ -30,6 +47,18 @@ const testCases = [
     name: 'Generate 3D on 2 Place Bellecour, 69002 Lyon',
     address: '2 Place Bellecour, 69002 Lyon',
     annotation: createLyonAnnotation,
+    imageFixture: 'raw.jpeg',
+  },
+  {
+    name: 'Generate 3D on 1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
+    address: '1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
+    annotation: createParthenayAnnotation,
+    imageFixture: 'raw.jpeg',
+  },
+  {
+    name: 'Generate 3D on 12 Boulevard de la Croisette, 06400 Cannes',
+    address: '12 Boulevard de la Croisette, 06400 Cannes',
+    annotation: createCannesAnnotation,
     imageFixture: 'raw.jpeg',
   },
 ];
@@ -94,7 +123,7 @@ describe('Generate 3D', () => {
     });
   });
 
-  afterEach(async function () {
+  afterEach(function () {
     const test = this.currentTest;
     recordCypressTestResult({
       testName: test?.title ?? 'UNKNOWN',
@@ -109,9 +138,6 @@ describe('Generate 3D', () => {
         'x-api-key': process.env.DASHBOARD_ADMIN_API_KEY,
       },
       failOnStatusCode: false,
-    }).then(res => {
-      cy.log(`Status: ${res.status}`);
-      cy.log(`Body: ${JSON.stringify(res.body)}`);
     });
   });
 
@@ -163,15 +189,15 @@ describe('Generate 3D', () => {
 
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
-              name: '[3D] Failed to process 3D convertion',
-              message: `Failed on : ${failedTests}`,
+              name: '[3D] Failed to process convertion',
+              message: `Failed to generate 3D on : ${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
             });
           } else if (incidentId && incidentStatus != 'INVESTIGATING') {
             return cy.task('updateInstatusIncident', {
               incidentId,
-              message: `Failed on : ${failedTests}`,
+              message: `Failed to generate 3D on : ${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
             });
@@ -185,14 +211,14 @@ describe('Generate 3D', () => {
           if (incidentId && incidentStatus != 'MONITORING') {
             return cy.task('updateInstatusIncident', {
               incidentId,
-              message: `[3D] Convertion took too much time : ${slowTests}`,
+              message: `Convertion took too much time on : ${slowTests}`,
               status: 'MONITORING',
               componentStatus: 'PARTIALOUTAGE',
             });
           } else if (!incidentId) {
             return cy.task('createInstatusIncident', {
-              name: '[3D] Convertion took too much time',
-              message: `[3D] Convertion took too much time : ${slowTests}`,
+              name: '[3D] Slow conversion detected',
+              message: `Convertion took too much time on : ${slowTests}`,
               status: 'MONITORING',
               componentStatus: 'PARTIALOUTAGE',
             });
