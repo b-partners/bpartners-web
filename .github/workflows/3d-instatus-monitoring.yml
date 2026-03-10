@@ -62,10 +62,11 @@ jobs:
           echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
 
       - name: Monitor 3D Generation
+        id: 3d-it
         run: npx cypress run --browser chrome --headless --spec 'src/**/3D_generator.it.cy.ts'
 
       - name: Upload video to S3
-        if: always()
+        if: ${{always() && steps.3d-it.outcome == 'failure'}}
         run: |
           aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-3D-videos/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
         env:
