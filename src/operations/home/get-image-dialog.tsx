@@ -1,15 +1,16 @@
-import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, duration, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
 import { BpAutoCompleteBackend, BpFormField } from '@/common/components';
 import { useMutateProspect } from '@/common/fetcher';
 import { useDialog } from '@/common/store/dialog';
+import { wait } from '@/common/utils';
 import { annotatorProvider, getCached } from '@/providers';
 import { ProspectStatus } from '@bpartners/typescript-client';
-import { Feed, LocationOn } from '@mui/icons-material';
-import { motion, stagger, useAnimate } from 'motion/react';
-import { FC } from 'react';
+import { stagger, useAnimate } from 'motion/react';
+import { FC, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
+import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '../annotator/components/loading';
 import { getImageDialogStyle } from './style';
 
 interface GetImageDialogProps {
@@ -26,11 +27,15 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
   const { close } = useDialog();
   const form = useForm<FormType>({ defaultValues: { address: props.address } });
   const [scope, animate] = useAnimate();
+  const [satellites, setSatellites] = useState({ show: false, end: false, screnShot: false });
 
   const startLoading = async () => {
-    animate('.input-anime', { transform: 'translateX(100%)', opacity: 0, display: 'none' }, { duration: 0.5, delay: stagger(0.2, { from: 'last' }) });
-    animate('.form-container', { height: '300px' }, { delay: 0.5, duration: 1 });
-    animate('.flight-anime', { width: '47px', height: '47px', opacity: 1 }, { delay: 1.2 });
+    await animate('.input-anime', { transform: 'translateX(100%)', opacity: 0, display: 'none' }, { duration: 0.5, delay: stagger(0.2, { from: 'last' }) });
+    setSatellites({ end: false, show: true, screnShot: false });
+    await wait(12000);
+    setSatellites({ end: true, show: true, screnShot: false });
+    await wait(1000);
+    setSatellites({ end: false, show: false, screnShot: true });
   };
 
   const createProspect = form.handleSubmit(data => {
@@ -45,10 +50,14 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
       </DialogTitle>
       <DialogContent>
         <FormProvider {...form}>
+          {Object.values(satellites).includes(true) && <LoadingSteps />}
           <Stack className='form-container' spacing={1}>
-            <Paper className='flight-anime' elevation={1}>
-              <Feed />
-            </Paper>
+            {satellites.screnShot && (
+              <Box sx={{ width: '100%', height: '400px', position: 'relative', overflow: 'hidden' }}>
+                <ScreenShotAnimation />
+              </Box>
+            )}
+            {satellites.show && <EarthSatellites endAnimation={satellites.end} />}
             <BpAutoCompleteBackend
               name='address'
               label='Adresse'

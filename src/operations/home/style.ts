@@ -147,9 +147,23 @@ export const getImageDialogStyle: SxProps = {
     overflow: 'hidden',
     height: '400px',
     backgroundSize: '100% auto',
+    position: 'relative',
   },
   '& .MuiDialogContent-root': {
     position: 'relative',
     overflow: 'hidden',
+  },
+  '& .step-container': {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  '& .step-container > *': {
+    opacity: 0,
+    display: 'none',
+  },
+  '& .step-container .avatar-container': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 };
