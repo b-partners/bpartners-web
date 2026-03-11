@@ -60,7 +60,7 @@ jobs:
             echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
             echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
             echo INSTATUS_API_KEY=${{ secrets.INSTATUS_API_KEY }} >> .env
-            echo INSTATUS_PAGE_ID=${[ secrets.INSTATUS_PAGE_ID ]} >> .env
+            echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
             echo INSTATUS_3D_COMPONENT_ID=${secrets.INSTATUS_3D_COMPONENT_ID} >> .env
           else
             echo REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} >> .env
