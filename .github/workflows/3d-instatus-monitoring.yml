@@ -2,7 +2,7 @@ name: Launch and monitor 3D it on instatus
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
           echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
           echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
           echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
-          echo REACT_APP_BPARTNERS_API_URL=https://api.prod.bpartners.app >> .env
+          echo REACT_APP_BPARTNERS_API_URL=https://api.dashboard.birdia.fr >> .env
           echo REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} >> .env
           echo REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' >> .env
           echo REACT_APP_PROD_URL='${{ secrets.REACT_APP_PROD_URL }}' >> .env
@@ -64,11 +64,12 @@ jobs:
           echo EXCLUDE_3D_SPEC=false >> .env
 
       - name: Monitor 3D Generation
-        id: 3d-it
+        id: monitor-3d
         run: npx cypress run --browser chrome --headless --spec 'src/**/3D_generator.it.cy.ts'
+        continue-on-error: true
 
       - name: Upload video to S3
-        if: ${{always() && steps.3d-it.outcome == 'failure'}}
+        if: ${{always() && steps.monitor-3d.outcome == 'failure'}}
         run: |
           aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-3D-videos/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
         env:

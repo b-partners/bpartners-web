@@ -61,6 +61,7 @@ export default defineConfig({
         
         async getOpenInstatusIncident() {
           try {
+            console.log(`Check if there is an open incident`)
             const res = await fetch(`${BASE_URL}/incidents`, {
               headers: instatusHeaders,
               signal: AbortSignal.timeout(10000), // 10s timeout
@@ -72,7 +73,6 @@ export default defineConfig({
 
             const text = await res.text(); 
             const data = JSON.parse(text);
-            console.log('Parsed data:', data);
 
             if (data && Array.isArray(data)) {
               const openIncident = data
@@ -93,6 +93,7 @@ export default defineConfig({
 
         async createInstatusIncident({ name, message, status, componentStatus }) {
           try {
+            console.log(`Create incident on : ${name}, error message = ${message}`)
             const res = await fetch(`${BASE_URL}/incidents`, {
               method: 'POST',
               headers: instatusHeaders,
@@ -119,6 +120,7 @@ export default defineConfig({
 
         async updateInstatusIncident({ incidentId, message, status, componentStatus }) {
           try {
+            console.log(`Update incident ${incidentId} : ${message}`)
             const res = await fetch(`${BASE_URL}/incidents/${incidentId}/incident-updates`, {
               method: 'POST',
               headers: instatusHeaders,
@@ -149,6 +151,7 @@ export default defineConfig({
 
         async resolveInstatusIncident({ incidentId }) {
           try {
+            console.log(`Resolve incident : ${incidentId}`)
             const res = await fetch(`${BASE_URL}/incidents/${incidentId}/incident-updates`, {
               method: 'POST',
               headers: instatusHeaders,

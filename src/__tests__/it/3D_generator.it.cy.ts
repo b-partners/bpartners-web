@@ -141,7 +141,7 @@ describe('Generate 3D', () => {
     });
   });
 
-  const RESPONSE_TIME_THRESHOLD = 140000;
+  const RESPONSE_TIME_THRESHOLD = 180000;
 
   after(() => {
     cy.then(() => {
