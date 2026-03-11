@@ -108,7 +108,7 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
   }, [error?.message]);
 
   return (
-    <Alert sx={{ mt: 2 }} icon={<WarningOutlined />} severity={status === CityJSONRequestStatus.UNAVAILABLE ? 'warning' : 'error'}>
+    <Alert data-testid='3D-error-alert' sx={{ mt: 2 }} icon={<WarningOutlined />} severity={status === CityJSONRequestStatus.UNAVAILABLE ? 'warning' : 'error'}>
       {errorMessage}
     </Alert>
   );
@@ -133,6 +133,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
     <div style={{ width, height, position: 'relative' }}>
       {!isError && !error && !isLoading && (
         <Canvas
+          data-testid='3d-canvas'
           camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
           dpr={[1, 1.5]}
           gl={{ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true, alpha: true, premultipliedAlpha: false }}
