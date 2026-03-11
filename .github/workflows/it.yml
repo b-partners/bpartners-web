@@ -63,7 +63,7 @@ jobs:
           echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
           echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
           echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
-          echo REACT_APP_BPARTNERS_API_URL=https://api.prod.bpartners.app >> .env
+          echo REACT_APP_BPARTNERS_API_URL=https://api.dashboard.birdia.fr >> .env
           echo REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} >> .env
           echo REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' >> .env
           echo REACT_APP_PROD_URL='${{ secrets.REACT_APP_PROD_URL }}' >> .env
