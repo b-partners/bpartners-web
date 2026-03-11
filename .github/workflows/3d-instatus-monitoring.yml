@@ -64,11 +64,11 @@ jobs:
           echo EXCLUDE_3D_SPEC=false >> .env
 
       - name: Monitor 3D Generation
-        id: 3d-it
+        id: monitor-3d
         run: npx cypress run --browser chrome --headless --spec 'src/**/3D_generator.it.cy.ts'
 
       - name: Upload video to S3
-        if: ${{always() && steps.3d-it.outcome == 'failure'}}
+        if: ${{always() && steps.monitor-3d.outcome == 'failure'}}
         run: |
           aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-3D-videos/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
         env:
