@@ -70,6 +70,11 @@ jobs:
           echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
           echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
           echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
+          echo INSTATUS_API_KEY=${{ secrets.INSTATUS_API_KEY }} >> .env
+          echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
+          echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
+          echo EXCLUDE_3D_SPEC=true >> .env
+
           max_retries=5
           attempt=1
 
