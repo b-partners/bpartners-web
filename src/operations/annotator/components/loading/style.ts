@@ -299,7 +299,7 @@ export const RoofAnalysisDialogStyle: SxProps = {
   },
 
   '& .step-chip--current': {
-    bgcolor: '#4A644E',
+    bgcolor: '#FFC107',
     color: '#ffffff',
   },
 
