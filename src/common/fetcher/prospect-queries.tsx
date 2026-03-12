@@ -70,7 +70,9 @@ export const useMutateProspect = () => {
         `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
       );
       return;
-    } catch (err: any) {}
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   return useMutation({ mutationFn: fetch, onError, onSuccess: useDialog.getState().close });

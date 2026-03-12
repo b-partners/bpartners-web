@@ -257,3 +257,102 @@ export const LoadingStepsStyle: SxProps = {
     whiteSpace: 'nowrap',
   },
 };
+
+export const RoofAnalysisDialogStyle: SxProps = {
+  bgcolor: '#ffffff',
+  borderRadius: 3,
+  overflow: 'hidden',
+  width: 600,
+
+  '& .dialog-steps': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    px: 3,
+    pt: 3,
+    pb: 2,
+    flexWrap: 'nowrap',
+    overflowX: 'auto',
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar': { display: 'none' },
+  },
+
+  '& .chip-wrapper': {
+    flexShrink: 0,
+    overflow: 'hidden',
+  },
+
+  '& .chip-morph': {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+
+  '& .step-chip': {
+    height: 32,
+    bgcolor: '#f1f5f9',
+    color: '#64748b',
+    fontWeight: 600,
+    fontSize: '0.75rem',
+    cursor: 'default',
+    '& .MuiChip-label': { px: 1.5 },
+  },
+
+  '& .step-chip--current': {
+    bgcolor: '#4A644E',
+    color: '#ffffff',
+  },
+
+  '& .step-chip--done': {
+    bgcolor: '#4A644E',
+    color: '#ffffff',
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    '& .MuiChip-label': {
+      px: 0,
+      display: 'flex',
+      justifyContent: 'center',
+    },
+  },
+
+  '& .chip-content': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+
+  '& .chip-index': {
+    fontWeight: 700,
+    fontSize: '0.78rem',
+    lineHeight: 1,
+  },
+
+  '& .chip-label': {
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+  },
+
+  '& .shimmer-overlay': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '40%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+    pointerEvents: 'none',
+  },
+
+  '& .dialog-canvas-wrapper': {
+    position: 'relative',
+    mx: 3,
+    mb: 3,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+
+  '& .dialog-canvas': {
+    display: 'block',
+  },
+};

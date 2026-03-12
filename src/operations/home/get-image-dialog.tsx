@@ -40,7 +40,7 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
 
   const createProspect = form.handleSubmit(data => {
     startLoading();
-    // mutate({ ...data, id: uuidV4(), status: ProspectStatus.TO_CONTACT, email: data.email || getCached.accountHolder()?.companyInfo?.email });
+    mutate({ ...data, id: uuidV4(), status: ProspectStatus.TO_CONTACT, email: data.email || getCached.accountHolder()?.companyInfo?.email });
   });
 
   return (
