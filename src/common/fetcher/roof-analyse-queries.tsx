@@ -11,10 +11,11 @@ export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: Are
 };
 
 export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPictureDetails, handleSuccess: () => void) => {
-  const { open: openDialog } = useDialog();
+  const { open: openDialog, close: closeDialog } = useDialog();
   const { setAnalyseInformation, setShouldGetHeightState, setRoofDelimiter, setImageTileInfoOrigin } = useAnnotatorComponentStore();
 
   const onSuccess = (detectionResult: any) => {
+    closeDialog();
     const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
     const roofDelimiter = detectionResult?.result?.roofDelimiter;

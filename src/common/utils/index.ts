@@ -25,3 +25,4 @@ export * from './reload';
 export * from './string-cutter';
 export * from './to-array-buffer';
 export * from './url-params';
+export * from './wait';
