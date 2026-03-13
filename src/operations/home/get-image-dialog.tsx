@@ -65,7 +65,7 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
               textFieldProps={{ variant: 'filled' }}
               className='input-anime'
             />
-            <BpFormField className='input-anime' required={false} shouldValidate={false} name='name' label='Nom du prospect' />
+            <BpFormField className='input-anime' required={true} name='name' label='Nom du prospect' />
             <BpFormField className='input-anime' required={false} shouldValidate={false} name='firstName' label='Prénom du prospect' />
             <BpFormField className='input-anime' required={false} shouldValidate={false} name='email' type='email' label='Email' />
             <BpFormField className='input-anime' required={false} shouldValidate={false} name='phone' label='Téléphone' />
