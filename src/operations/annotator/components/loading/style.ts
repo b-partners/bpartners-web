@@ -356,3 +356,124 @@ export const RoofAnalysisDialogStyle: SxProps = {
     display: 'block',
   },
 };
+
+export const RoofScanLoaderStyle: SxProps = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  bgcolor: 'transparent',
+  gap: 2,
+
+  '& .canvas-wrapper': {
+    width: 400,
+    height: 400,
+    position: 'relative',
+  },
+
+  '& .label': {
+    color: '#4A644E',
+    fontSize: '0.85rem',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    fontFamily: 'monospace',
+  },
+
+  '& .dots': {
+    display: 'inline-block',
+    minWidth: 24,
+  },
+
+  '& .steps-row': {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 1,
+    flexWrap: 'nowrap',
+  },
+
+  '& .chip-wrapper': {
+    overflow: 'visible',
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+  },
+
+  '& .chip-morph': {
+    position: 'relative',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  '& .step-chip': {
+    height: '32px',
+    whiteSpace: 'nowrap',
+    borderRadius: '0px',
+    border: 'none',
+    '& .MuiChip-label': {
+      px: '10px',
+    },
+  },
+
+  '& .step-chip--current': {
+    bgcolor: '#FFC107',
+    color: 'white',
+    '& .MuiChip-label': {
+      px: '10px',
+    },
+  },
+
+  '& .step-chip--done': {
+    bgcolor: '#4caf50',
+    color: 'white',
+    width: '32px',
+    height: '32px',
+    minWidth: 'unset',
+    padding: 0,
+    borderRadius: '0px',
+    '& .MuiChip-label': {
+      px: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    },
+  },
+
+  '& .shimmer-overlay': {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: '50%',
+    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%)',
+    pointerEvents: 'none',
+    zIndex: 2,
+  },
+
+  '& .chip-content': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    position: 'relative',
+    zIndex: 1,
+  },
+
+  '& .chip-index': {
+    fontWeight: 700,
+    fontSize: '0.85rem',
+    lineHeight: 1,
+    flexShrink: 0,
+  },
+
+  '& .chip-label': {
+    fontSize: '0.8rem',
+    overflow: 'hidden',
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+  },
+};
