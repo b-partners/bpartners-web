@@ -4,7 +4,6 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-import { BPLoader } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
 import { useAnnotator3DStore } from '@/common/store';
 import { CityJSONRequestStatus } from '@/providers/city-json-provider';
@@ -14,6 +13,7 @@ import { Alert } from '@mui/material';
 import { CityJSONLoader, CityJSONParser } from 'cityjson-threejs-loader';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
+import { RoofScanLoader } from './loading';
 
 function fitCameraToSelection(camera: any, controls: any, box: any, fitOffset = 1.2) {
   const size = new THREE.Vector3();
@@ -145,17 +145,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <Annotator3DSaveImage />
         </Canvas>
       )}
-      {isLoading && (
-        <BPLoader
-          message='Génération de la version 3D de la maison. Cela peut prendre quelques instants, merci de patienter.'
-          sx={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      )}
+      {isLoading && <RoofScanLoader polygon={polygons?.[0]} />}
       {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
