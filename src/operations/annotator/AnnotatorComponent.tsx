@@ -3,7 +3,8 @@ import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getUrlParams, stringCutter, useWrappedSearchParams } from '@/common/utils';
+import { useDialog } from '@/common/store/dialog';
+import { getUrlParams, stringCutter, UrlParams, useWrappedSearchParams } from '@/common/utils';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
@@ -22,6 +23,7 @@ import {
   LlmSwitchButton,
   RefocusImageButton,
 } from './components';
+import { RoofAnalysisDialog } from './components/loading';
 import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
 import {
@@ -127,11 +129,18 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     clearPolygons(false);
   };
 
-  const { mutate: processDetection, isPending: isDetectionProcessing } = useRoofAnalyseQuery(
+  const { mutate: _processDetection, isPending: isDetectionProcessing } = useRoofAnalyseQuery(
     polygonList || [],
     currentAreaPictureDetailsToUse,
     handleDetectionProcessingSuccess
   );
+
+  const {open: openDialog} = useDialog()
+  
+  const processDetection = () => {
+    openDialog(<RoofAnalysisDialog imageHeight={1024*3} imageWidth={1024*3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonList?.[0]?.points?.slice()}  />, {maxWidth: "lg"}, false)
+    _processDetection()
+  }
 
   if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
@@ -231,6 +240,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           )}
         </Box>
       )}
+
 
       {filename && (data || data?.properties?.global_rate_type) && (
         <Stack>

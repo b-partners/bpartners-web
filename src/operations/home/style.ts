@@ -123,3 +123,47 @@ export const HomeStyle: SxProps = {
     fontSize: '1.5rem',
   },
 };
+
+export const getImageDialogStyle: SxProps = {
+  '& .flight-anime': {
+    borderRadius: '50%',
+    width: 0,
+    height: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0,
+    position: 'absolute',
+    bottom: '0',
+    left: '23px',
+  },
+  '& .flight-anime svg': {
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& .MuiTextField-root': {
+    width: '100% !important',
+  },
+  '& .form-container': {
+    overflow: 'hidden',
+    height: '400px',
+    backgroundSize: '100% auto',
+    position: 'relative',
+  },
+  '& .MuiDialogContent-root': {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  '& .step-container': {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  '& .step-container > *': {
+    opacity: 0,
+    display: 'none',
+  },
+  '& .step-container .avatar-container': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+};
