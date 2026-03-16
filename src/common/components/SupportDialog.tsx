@@ -47,7 +47,7 @@ export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
         </Typography>
         <Typography>
           Pour contacter le support, veuillez envoyer un courriel à contact@birdia.fr ou nous appeler directement au: <br />
-          01 84 80 31 69
+          06 68 62 48 36
         </Typography>
       </DialogContent>
       <DialogActions>
