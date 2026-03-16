@@ -20,6 +20,6 @@ describe(specTitle('Frequency relaunch'), () => {
 
     cy.contains('contact@birdia.fr');
     cy.contains('Pour contacter le support, veuillez envoyer un courriel à contact@birdia.fr ou nous appeler directement au:');
-    cy.contains('01 84 80 31 69');
+    cy.contains('06 68 62 48 36');
   });
 });
