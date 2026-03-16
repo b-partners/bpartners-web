@@ -92,7 +92,7 @@ export const AppBar = () => {
         title='Mettez à jour votre banque'
         content={[
           'Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.',
-          'En cas de question, contactez le : 01 84 80 31 69',
+          'En cas de question, contactez le : 06 68 62 48 36',
         ]}
         btnLabel='Synchroniser ma banque'
         open={openDialog}
