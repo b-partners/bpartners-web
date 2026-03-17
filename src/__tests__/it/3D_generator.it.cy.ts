@@ -115,7 +115,7 @@ describe('Generate 3D', () => {
         expect(interception.response.statusCode).to.eq(200);
       });
 
-      cy.get('[data-testid="bp-loader-wrapper"]').should('be.visible');
+      cy.get('.steps-row').should('be.visible');
 
       recallAsyncProcess(testCase.address, Date.now()).then(responseTime => {
         cy.log(`Temps total conversion 3D : ${responseTime} ms`);
