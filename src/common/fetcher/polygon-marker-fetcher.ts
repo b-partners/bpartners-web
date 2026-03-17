@@ -1,24 +1,10 @@
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
 import { geojsonMapper, polygonConverterProvider, polygonMapper } from '@/providers';
 import { Point } from '@bpartners/annotator-component';
-import { AreaPictureDetails, FileType, ShiftDirection } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
-import { getFileUrl } from '../utils';
 
 const defaultImageShiftSize = 1024;
-
-const getImageSize = async (fileId: string) =>
-  new Promise<number>((resolve, reject) => {
-    try {
-      const image = new Image();
-      image.src = getFileUrl(fileId, FileType.AREA_PICTURE);
-      image.onload = () => {
-        resolve(image.naturalWidth);
-      };
-    } catch (err) {
-      reject(err as Error);
-    }
-  });
 
 const shouldShift = (areaPictureDetails: AreaPictureDetails, shiftDirection: ShiftDirection) => (areaPictureDetails.shiftDirection === shiftDirection ? 1 : 0);
 
