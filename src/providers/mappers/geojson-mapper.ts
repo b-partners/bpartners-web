@@ -1,4 +1,3 @@
-import { ConverterResultGeoJSON } from '@/operations/annotator';
 import { Point } from '@bpartners/annotator-component';
 
 const getCenter = (coordinates: number[]) => {
@@ -8,9 +7,9 @@ const getCenter = (coordinates: number[]) => {
 };
 
 export const geojsonMapper = {
-  toMarker(geoJson: ConverterResultGeoJSON): Point[] {
-    if (!geoJson) return [];
-    const { regions } = geoJson;
+  toMarker(geoJson: any): Point[] {
+    if (!geoJson || geoJson.length === 0) return [];
+    const regions = geoJson[0]?.regions;
 
     return Object.keys(regions || {}).map(id => {
       const {

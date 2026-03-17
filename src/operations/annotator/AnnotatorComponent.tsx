@@ -46,7 +46,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   showFileSource = true,
   buttonComponent,
   allowAnnotation = true,
-  polygons: polygonFromProps,
   allowSelect = true,
   width,
   height,
@@ -62,7 +61,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { geoJsonResultUrl,  llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(mutateMarker);
+  const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(() => null);
   const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
   const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
 
@@ -70,6 +69,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
 
   // Get the Area picture details to use
   const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+
+  useEffect(() => {
+    mutateMarker(currentAreaPictureDetailsToUse)
+  }, [currentAreaPictureDetailsToUse])
 
   useEffect(() => {
     setAreaPictureDetails(currentAreaPictureDetailsToUse);
@@ -204,7 +207,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
           {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
             <AnnotatorCanvas
-              markerPosition={!data && (polygonList || []).length === 0 && (polygonFromProps || []).length === 0 && markerPosition}
+              markerPosition={!data && (polygonListShifted || []).length === 0 && markerPosition}
               allowAnnotation={allowAnnotation}
               width={width || containerWidth}
               height={height || containerHeight + 50}

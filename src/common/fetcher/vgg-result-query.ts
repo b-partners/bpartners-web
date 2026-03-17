@@ -65,7 +65,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       imageTileInfoOrigin?.coordinates?.x,
       imageTileInfoOrigin?.coordinates?.y,
       imageTileInfoOrigin?.size?.width,
-      imageTileInfoOrigin?.coordinates?.z
+      20
     );
 
     const pixelGeoJsonResult = await annotatorProvider.geoPointsToPoins(pixelGeoJson);

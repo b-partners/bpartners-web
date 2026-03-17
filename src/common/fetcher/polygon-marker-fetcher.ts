@@ -1,10 +1,11 @@
 import { ConverterPayloadGeoJSON } from '@/operations/annotator';
-import { cache, geojsonMapper, getCached, polygonConverterProvider, polygonMapper } from '@/providers';
-import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
+import { geojsonMapper, polygonConverterProvider, polygonMapper } from '@/providers';
+import { Point } from '@bpartners/annotator-component';
+import { AreaPictureDetails, FileType, ShiftDirection } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { getFileUrl } from '../utils';
 
-const defaultImageShiftSize = 256;
+const defaultImageShiftSize = 1024;
 
 const getImageSize = async (fileId: string) =>
   new Promise<number>((resolve, reject) => {
@@ -19,43 +20,53 @@ const getImageSize = async (fileId: string) =>
     }
   });
 
-const setMarkerOffset = (areaPictureDetails: AreaPictureDetails, currentImageSize: number) => {
-  const { imageSize, markerPosition } = getCached.initialMarker(areaPictureDetails.id) || {};
+const shouldShift = (areaPictureDetails: AreaPictureDetails, shiftDirection: ShiftDirection) => (areaPictureDetails.shiftDirection === shiftDirection ? 1 : 0);
+
+const setMarkerOffset = (areaPictureDetails: AreaPictureDetails, markerPosition: Point) => {
   const { x, y } = markerPosition || {};
 
-  const offset = (currentImageSize - imageSize) / 2;
-  const horizontalShift = (areaPictureDetails.shiftNb || 0) * defaultImageShiftSize;
+  const shift = (areaPictureDetails.shiftNb || 0) * defaultImageShiftSize;
+
+  const horizontalShift = shouldShift(areaPictureDetails, 'RIGHT_LEFT_SIDE') * shift;
+  const verticalShift = shouldShift(areaPictureDetails, 'UP_DOWN_SIDE') * shift;
 
   return {
-    x: x + offset - horizontalShift,
-    y: y + offset,
+    x: x - horizontalShift,
+    y: y - verticalShift,
   };
 };
 
 export const usePolygonMarkerFetcher = () => {
   const mutation = useMutation({
     mutationKey: ['usePolygonMarkerFetcher'],
+    onError: console.log,
     mutationFn: async (areaPictureDetails: AreaPictureDetails) => {
       if (!areaPictureDetails) return null;
       const {
         filename,
-        xTile: x_tile,
-        yTile: y_tile,
+        currentTile: { x: xTile, y: yTile },
         zoom: { number: zoom },
       } = areaPictureDetails;
-      const image_size = await getImageSize(areaPictureDetails.fileId);
-      const geoJson: ConverterPayloadGeoJSON = polygonMapper.toRest(areaPictureDetails.geoPositions, { filename, image_size, x_tile, y_tile, zoom });
-      const markerPoint = ((await polygonConverterProvider.coordinatesToPixel(geoJson)) || [null])[0];
+
+      const image_size = 1024; // await getImageSize(areaPictureDetails.fileId);
+      const geoJson: ConverterPayloadGeoJSON = polygonMapper.toRest([areaPictureDetails.currentGeoPosition], {
+        filename,
+        image_size,
+        x_tile: xTile - 1,
+        y_tile: yTile - 1,
+        zoom,
+      });
+      const markerPoint = await polygonConverterProvider.coordinatesToPixel(geoJson);
       const mappedPoint = geojsonMapper.toMarker(markerPoint)[0];
+
       if (!areaPictureDetails.isExtended) {
-        cache.initialMarker(areaPictureDetails.id, mappedPoint, image_size);
         return {
           x: image_size / 2,
           y: image_size / 2,
         };
-      } else {
-        return setMarkerOffset(areaPictureDetails, image_size);
       }
+
+      return setMarkerOffset(areaPictureDetails, { x: mappedPoint.x, y: mappedPoint.y });
     },
   });
 
