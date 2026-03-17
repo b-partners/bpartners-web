@@ -91,7 +91,7 @@ export const polygonMapper = {
     const result: any = {
       size,
       filename,
-      zoom: 20,
+      zoom: zoom || 20,
       regions: {},
       base64_img_data: null,
     };
