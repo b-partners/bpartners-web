@@ -49,6 +49,13 @@ export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
           Pour contacter le support, veuillez envoyer un courriel à contact@birdia.fr ou nous appeler directement au: <br />
           06 68 62 48 36
         </Typography>
+        <Typography>
+          Réserver un créneau pour répondre à vos question{` `}
+          <a href='https://meet.brevo.com/birdia/reunion-de-15-minutes' target='_blank'>
+            ici
+          </a>
+          .
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button id='support_close_button_id' onClick={onToggle}>
