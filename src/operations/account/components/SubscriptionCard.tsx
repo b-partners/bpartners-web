@@ -19,6 +19,9 @@ export const SubscriptionCard = () => {
             </ListItem>
           ))}
         </List>
+        <Typography className='unsubscribe-text'>
+          Pour résilier votre abonnement merci d'écrire à <a href='mailto:contact@birdia.fr'>contact@birdia.fr</a>.
+        </Typography>
       </CardContent>
     </Card>
   );

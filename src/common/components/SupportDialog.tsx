@@ -51,7 +51,7 @@ export const SupportDialog: FC<SupportDialogProps> = ({ onToggle, open }) => {
         </Typography>
         <Typography>
           Réserver un créneau pour répondre à vos question{` `}
-          <a href='https://meet.brevo.com/birdia/reunion-de-15-minutes' target='_blank'>
+          <a href='https://meet.brevo.com/birdia/reunion-de-15-minutes' rel='noreferrer' target='_blank'>
             ici
           </a>
           .
