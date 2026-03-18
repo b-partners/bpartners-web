@@ -4,6 +4,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
+import { useAnnotator3DStore } from '../store';
 import { getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
@@ -42,6 +43,7 @@ const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: Are
 
 export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPicture?: AreaPictureDetails, active?: boolean) => {
   const hasPolygonFromAnnotator = !!polygonFromAnnotator;
+  const { setCityJsonModel } = useAnnotator3DStore();
 
   return useQuery({
     enabled: active && hasPolygonFromAnnotator,
@@ -53,14 +55,11 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
 
-      let mappedCoordinates = getCached.roofDelimiterLongLatItem() as [number, number][];
+      const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture);
 
-      if (!mappedCoordinates) {
-        mappedCoordinates = await mapPixelPolygonToLatLonPolygon(getCached.defaultRoofDelimiter() || polygonFromAnnotator, areaPicture);
-        cache.roofDelimiterLongLatItem(mappedCoordinates);
-      }
-
-      return getCityJSON(cityJSONRequestId, mappedCoordinates);
+      const data = await getCityJSON(cityJSONRequestId, mappedCoordinates);
+      if (data && data.transform) setCityJsonModel(data);
+      return data;
     },
     queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator })],
   });

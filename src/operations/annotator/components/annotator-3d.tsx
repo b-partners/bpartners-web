@@ -5,7 +5,6 @@ import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { useAnnotator3DStore } from '@/common/store';
 import { CityJSONRequestStatus } from '@/providers/city-json-provider';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { WarningOutlined } from '@mui/icons-material';
@@ -50,10 +49,35 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
   const controlsRef = useRef();
   const [cityModel, setCityModel] = useState(null);
 
+  const cityGroupRef = useRef<THREE.Group | null>(null);
+
   useEffect(() => {
     const controls = controlsRef.current;
 
-    if (!controls || !cityJson) return () => {};
+    if (!cityGroupRef.current) {
+      cityGroupRef.current = new THREE.Group();
+      scene.add(cityGroupRef.current);
+    }
+
+    const group = cityGroupRef.current;
+
+    if (!controls || !cityJson || !group) return () => {};
+
+    group.children.forEach((child: any) => {
+      child.traverse((c: any) => {
+        if (c.geometry) c.geometry.dispose();
+
+        if (c.material) {
+          if (Array.isArray(c.material)) {
+            c.material.forEach((m: any) => m.dispose());
+          } else {
+            c.material.dispose();
+          }
+        }
+      });
+      group.remove(child);
+    });
+
     const parser = new CityJSONParser();
     parser.chunkSize = 2000;
     const loader = new CityJSONLoader(parser);
@@ -71,7 +95,7 @@ const CityScene: FC<CitySceneProps> = ({ cityJson }) => {
     bbox.applyMatrix4(loader.matrix);
 
     fitCameraToSelection(camera, controls, bbox);
-    scene.add(loader.scene);
+    group.add(loader.scene);
   }, [controlsRef, cityJson]);
 
   return (
@@ -117,14 +141,6 @@ const Annotator3DErrorUI: FC<{ error: Error }> = ({ error }) => {
 export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, polygons = [], active = false }) => {
   const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
 
-  const { cityJsonModel, setCityJsonModel } = useAnnotator3DStore();
-
-  useEffect(() => {
-    if (!cityJsonModel && cityJson && cityJson.transform) {
-      setCityJsonModel(cityJson);
-    }
-  }, [cityJson]);
-
   if (!active) {
     return null;
   }
@@ -141,7 +157,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, width, areaPicture, 
           <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
           <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
-          <CityScene cityJson={cityJsonModel} />
+          <CityScene cityJson={cityJson} />
           <Annotator3DSaveImage />
         </Canvas>
       )}

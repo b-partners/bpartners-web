@@ -11,6 +11,7 @@ import {
   cache,
   clearPolygons,
   getCached,
+  removeCache,
   SlopeAndHeightStatus,
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
@@ -75,6 +76,9 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
     const fileId = UrlParams.get('fileId');
 
     clearPolygons(true);
+    removeCache.cityJSONRequestId();
+    removeCache.roofDelimitation();
+    annotatorStore.useAnnotatorStore.getState().resetAnnotations();
     annotatorComponentStore.reset();
     cache.loadingRedirection(
       `/annotator?` +
