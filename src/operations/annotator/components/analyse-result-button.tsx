@@ -47,9 +47,18 @@ export type AnalyseResultButtonProps = {
   isCropped: boolean;
   analyseProperties: AnalyseProperties;
   width: number | string;
+  show: boolean;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties, width }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
+  draftAnnotationId,
+  areaPictureDetails,
+  image,
+  isCropped,
+  analyseProperties,
+  width,
+  show,
+}) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -66,6 +75,8 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   const navigate = useNavigate();
 
   const annotatorComponentStore = useAnnotatorComponentStore();
+
+  if (!show) return null;
 
   const handleReturnToBegin = () => {
     const fileUrl = UrlParams.get('imgUrl');

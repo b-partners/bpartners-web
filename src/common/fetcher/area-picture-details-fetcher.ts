@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { parseUrlParams } from '../utils';
 
-export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: AreaPictureDetails) => void) => {
+export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails: AreaPictureDetails) => void) => {
   const { pictureId, prospectId, fileId } = parseUrlParams();
   const notify = useNotify();
 
@@ -12,7 +12,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
     queryKey: [pictureId, prospectId, fileId],
     queryFn: async () => {
       const areaPictureDetailsResponse = await annotatorProvider.getAreaPictureById(pictureId);
-      mutateMarker(areaPictureDetailsResponse);
+      mutateMarker?.(areaPictureDetailsResponse);
       return areaPictureDetailsResponse;
     },
     enabled: !!pictureId,
@@ -31,7 +31,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
         fileId,
         prospectId,
       });
-      mutateMarker(areaPictureDetailsResponse);
+      mutateMarker?.(areaPictureDetailsResponse);
       return { ...areaPictureDetailsResponse, shiftDirection: crupdateAreaPictureDetails.shiftDirection };
     },
     mutationKey: ['crupdateAreaPictureDetails', query.data, prospectId, fileId],
@@ -41,5 +41,11 @@ export const useAreaPictureDetailsFetcher = (mutateMarker: (areaPictureDetails: 
     },
   });
 
-  return { query, mutation };
+  return {
+    query,
+    mutation,
+    mutateAreaPictureDetails: mutation.mutate,
+    isLoading: query.isLoading || mutation.isPending,
+    currentAreaPictureDetailsToUse: mutation.data || query.data || { zoom: {} },
+  };
 };

@@ -1,5 +1,5 @@
 import { BPButton, BPButtonTemplateProps } from '@/common/components';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { Tooltip } from '@mui/material';
 import { FC } from 'react';
 
@@ -11,6 +11,9 @@ interface AnalyseRoofButtonProps extends Omit<BPButtonTemplateProps, 'label'> {
 export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ isProcessing, processDetection, disabled, ...props }) => {
   const { areaPictureDetails } = useAnnotatorComponentStore();
   const annotation = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations));
+  const { screen } = useAnnotatorScreenSwitch();
+
+  if (screen !== 'annotator') return null;
 
   const handleClick = () => processDetection();
 

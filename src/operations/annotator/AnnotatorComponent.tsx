@@ -1,58 +1,57 @@
 import { BPLoader } from '@/common/components';
-import BpSelect from '@/common/components/BpSelect';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
-import { getUrlParams, stringCutter, UrlParams, useWrappedSearchParams } from '@/common/utils';
-import { ZOOM_LEVEL } from '@/constants/zoom-level';
+import { getUrlParams, UrlParams } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
-import { AreaPictureMapLayer, ShiftDirection } from '@bpartners/typescript-client';
-import { Public as PublicIcon } from '@mui/icons-material';
-import { Box, Stack, SxProps, Tooltip, Typography } from '@mui/material';
+import { ShiftDirection } from '@bpartners/typescript-client';
+import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
 import {
+  AddressTopBar,
   AnalyseResultButton,
   Annotator3D,
   Annotator3DSwitchButton,
   annotatorButtonsActions,
   Disclaimer,
+  ImageOptionTopBar,
   LlmResult,
-  LlmSwitchButton,
-  RefocusImageButton,
+  LlmSwitchButton
 } from './components';
 import { RoofAnalysisDialog } from './components/loading';
-import { addressStyle } from './style';
 import { AnnotatorComponentProps } from './types';
 import {
   AnalyseRoofButton,
   annotatorComponentStyle,
-  AnnotatorHelpButton,
   calculateGlobalRate,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   measurementMapper,
+  refreshImageUrl,
   shiftPolygons
 } from './utils';
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
-export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
-  boxWrapperSx = {},
-  showAddress = false,
-  showFileSource = true,
-  buttonComponent,
-  allowAnnotation = true,
-  allowSelect = true,
-  width,
-  height,
-  draftAnnotationId,
-  isInvoiceForm,
-}) => {
-  const { address } = useWrappedSearchParams(['address']);
+export const AnnotatorComponent: FC<AnnotatorComponentProps> = (props) => {
+
+  const {
+    boxWrapperSx = {},
+    showAddress = false,
+    showFileSource = true,
+    buttonComponent,
+    allowAnnotation = true,
+    allowSelect = true,
+    width,
+    height,
+    draftAnnotationId,
+    isInvoiceForm,
+  } = props
+
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
 
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params=> params.replaceAnnotations);
@@ -61,14 +60,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   const { geoJsonResultUrl,  llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { query: areaPictureDetailsQuery, mutation: areaPictureDetailsMutation } = useAreaPictureDetailsFetcher(() => null);
-  const { data: areaPictureDetailsQueried, isLoading: areaPictureDetailsQueryLoading } = areaPictureDetailsQuery;
-  const { data: areaPictureDetailsMutated, mutate: mutateAreaPictureDetail, isPending: areaPictureDetailsMutationLoading } = areaPictureDetailsMutation;
-
-  const globalRate = calculateGlobalRate()
-
-  // Get the Area picture details to use
-  const currentAreaPictureDetailsToUse = areaPictureDetailsMutated || areaPictureDetailsQueried || { zoom: {} };
+  const {  mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading } = useAreaPictureDetailsFetcher();
 
   useEffect(() => {
     mutateMarker(currentAreaPictureDetailsToUse)
@@ -78,9 +70,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     setAreaPictureDetails(currentAreaPictureDetailsToUse);
   }, [JSON.stringify(currentAreaPictureDetailsToUse)]);
 
-  const { filename, isExtended, shiftNb, zoom, actualLayer: layer, otherLayers } = currentAreaPictureDetailsToUse;
-  const { level: newZoomLevel, number: newZoomLevelAsNumber } = zoom;
-  // Get the Area picture details to use
+  const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = currentAreaPictureDetailsToUse;
+  const { number: newZoomLevelAsNumber } = zoom;
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { screen } = useAnnotatorScreenSwitch();
@@ -103,29 +94,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
     }
   }, [JSON.stringify(data), isPending]);
 
-  const handleZoomLvl = async (e: any) => {
-    const zoomLevel = e.target.value
-    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel, zoom: {level: zoomLevel } });
-  };
-
-  const handleLayerChanger = async (e: any) => {
-    const selectedLayer = otherLayers.find((layer: any) => layer.name === e.target.value);
-    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, zoomLevel: newZoomLevel, layerId: selectedLayer.id });
-  };
-
-  const refocusImgClick = async () => {
-    mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse,zoomLevel: newZoomLevel,isExtended: !isExtended });
-    resetAnnotations()
-  };
-
-  const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
-    if (isExtended) {
-      mutateAreaPictureDetail({ ...currentAreaPictureDetailsToUse, shiftNb: (shiftDirection !== currentAreaPictureDetailsToUse?.shiftDirection ? 0 : (shiftNb || 0)) + shift, shiftDirection });
-      resetAnnotations()
-    }
-  };
-
-
 
   const handleDetectionProcessingSuccess = () => {
     resetAnnotations()
@@ -139,24 +107,27 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
   );
 
   const {open: openDialog} = useDialog()
-  
+
+  if (!filename || areaPictureLoading || areaPictureLoading || (geoJsonResultUrl && !data?.image)) {
+    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
+  }
+
+  const globalRate = calculateGlobalRate()
+
+  const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
+    if (isExtended) {
+      mutateAreaPictureDetails({ ...currentAreaPictureDetailsToUse, shiftNb: (shiftDirection !== currentAreaPictureDetailsToUse?.shiftDirection ? 0 : (shiftNb || 0)) + shift, shiftDirection });
+      resetAnnotations()
+    }
+  };
+
+
   const processDetection = () => {
     openDialog(<RoofAnalysisDialog imageHeight={1024*3} imageWidth={1024*3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonList?.[0]?.points?.slice()}  />, {maxWidth: "lg"}, false)
     _processDetection()
   }
 
-  if (!filename || areaPictureDetailsMutationLoading || areaPictureDetailsQueryLoading || (geoJsonResultUrl && !data?.image)) {
-    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
-  }
-
-  const imageSrcFromUrl =
-    `${getUrlParams(window.location.search, 'imgUrl')}` +
-    // Not necessary for the real image URL,
-    // Used to force AnnotatorComponent to refresh
-    `&isExtended=${isExtended}` +
-    `&zoom=${currentAreaPictureDetailsToUse?.zoom?.number}` +
-    `&layer=${currentAreaPictureDetailsToUse?.actualLayer?.id}` + 
-    `&shiftNb=${shiftNb}`;
+  const imageSrcFromUrl = refreshImageUrl(getUrlParams(window.location.search, 'imgUrl'), currentAreaPictureDetailsToUse)
 
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = (polygonsOrFunction) => {
     setPolygonList((_polygons) => {
@@ -164,46 +135,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
       return data?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, currentAreaPictureDetailsToUse, false)
     })
   }
-  
+
   const polygonListShifted = data?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true)
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
-      {allowSelect && (
-        <Stack className='image-properties-actions' direction='row' spacing={1} marginBlock={1}>
-          <BpSelect
-            value={newZoomLevel}
-            handleChange={handleZoomLvl}
-            options={ZOOM_LEVEL}
-            getOptionKey={(option: any) => option.lvl}
-            getOptionValue={(option: any) => option.value}
-            getOptionLabel={(option: any) => option.label}
-            label='Niveau de zoom'
-          />
-          <BpSelect
-            value={layer.name || ''}
-            handleChange={handleLayerChanger}
-            options={otherLayers}
-            getOptionKey={(option: AreaPictureMapLayer) => option.id}
-            getOptionValue={(option: AreaPictureMapLayer) => option.name}
-            getOptionLabel={(option: AreaPictureMapLayer) => `${option.name} ${option.year} ${option.precisionLevelInCm}cm`}
-            label="Source d'image"
-          />
-          <RefocusImageButton onAccept={refocusImgClick} isExtended={isExtended} />
-        </Stack>
-      )}
-      {showAddress && (
-        <Stack direction='row' gap={1} sx={addressStyle}>
-          <Stack direction='row' gap={1}>
-            <PublicIcon />
-            <Tooltip title={`${address} | (GPS ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, ${currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude}`}>
-              <Typography>Adresse: {stringCutter(address, 25)} (GPS {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.latitude}, {currentAreaPictureDetailsToUse?.geoPositions?.[0]?.longitude})</Typography>
-            </Tooltip>
-          </Stack>
-          <AnnotatorHelpButton />
-        </Stack>
-      )}
-      {filename && (
+      <ImageOptionTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={allowSelect} mutateAreaPictureDetail={mutateAreaPictureDetails} />
+      <AddressTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
+      
         <Box className='annotator-canvas-container' ref={containerHeightRef}>
           {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
             <AnnotatorCanvas
@@ -242,10 +181,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             />
           )}
         </Box>
-      )}
+      
 
 
-      {filename && (data || data?.properties?.global_rate_type) && (
+      
         <Stack>
           <Disclaimer />
           <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -268,23 +207,21 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
             </Stack>
           </Stack>
           <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
-            <LlmSwitchButton  enabled={!!data?.properties || !!draftLlmValue} />
+            <LlmSwitchButton  />
             <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
           </Stack>
         </Stack>
-      )}
+      
 
       {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && (
         <Stack direction='row' className='bottom-action'>
-          {screen !== '3d-annotator' && (
-            <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
-          )}
+          <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
           {screen === '3d-annotator' && <Box />}
           <Annotator3DSwitchButton disabled={polygonList.length !== 1 && screen !== '3d-annotator'} />
         </Stack>
       )}
-      {!isInvoiceForm && screen !== '3d-annotator' && (
         <AnalyseResultButton
+          show={!isInvoiceForm && screen !== '3d-annotator'}
           width={width || containerWidth}
           analyseProperties={data?.properties}
           image={data?.image}
@@ -292,7 +229,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = ({
           areaPictureDetails={currentAreaPictureDetailsToUse}
           draftAnnotationId={draftAnnotationId}
         />
-      )}
     </Box>
   );
 };

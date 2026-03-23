@@ -14,6 +14,7 @@ export * from './image-utilities';
 export * from './is-roof-polygon';
 export * from './llm-result-queries';
 export * from './measurement-mapper';
+export * from './refresh-image-url';
 export * from './segment-utilities';
 export * from './shift-polygons';
 export * from './style';
