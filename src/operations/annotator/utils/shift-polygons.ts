@@ -1,6 +1,14 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 
+const shiftForZoom = {
+  20: 256,
+  19: 1024,
+  18: 1024 * 2,
+};
+
+const getShift = (zoom: number) => (zoom in shiftForZoom ? shiftForZoom[zoom as keyof typeof shiftForZoom] : 0);
+
 /**
  * Function to add shift offset to polygons based on the current areaPictureDetails
  * @param polygons
@@ -11,8 +19,8 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 export const shiftPolygons = (polygons: Polygon[], areaPictureDetails: AreaPictureDetails, unShift = false) => {
   const direction = areaPictureDetails?.shiftDirection;
   const shift = areaPictureDetails?.shiftNb || 0;
-  const xShift = direction === 'RIGHT_LEFT_SIDE' ? shift * 1024 : 0;
-  const yShift = direction === 'UP_DOWN_SIDE' ? shift * 1024 : 0;
+  const xShift = direction === 'RIGHT_LEFT_SIDE' ? shift * getShift(areaPictureDetails.zoom.number) : 0;
+  const yShift = direction === 'UP_DOWN_SIDE' ? shift * getShift(areaPictureDetails.zoom.number) : 0;
 
   return (polygons || []).map(p => ({
     ...p,
