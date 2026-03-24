@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '../store';
+import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
 import { useDialog } from '../store/dialog';
 import { getFileUrl } from '../utils';
 
@@ -38,6 +38,7 @@ export const useMutateProspect = () => {
   const navigate = useNavigate();
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const { setScreen } = useAnnotatorScreenSwitch();
 
   const fetch = async (prospect: Prospect) => {
     // reset annotator page state
@@ -47,6 +48,7 @@ export const useMutateProspect = () => {
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();
     clearPolygons();
+    setScreen('annotator');
     // reset annotator page state
 
     await prospectingProvider.saveOrUpdate([prospect]);
