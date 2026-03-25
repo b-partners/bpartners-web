@@ -1,5 +1,6 @@
 import { BPButton, BPButtonTemplateProps } from '@/common/components';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Tooltip } from '@mui/material';
 import { FC } from 'react';
 
@@ -19,6 +20,7 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ isProcessing, pr
 
   const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
   const isThereARoofPolygon = annotation.length === 1 && annotation[0].annotationInfos.labelType === 'roof';
+  const analyseAlreadyDone = annotation.find(a => a.isFirst)?.polygon?.id?.includes(roofGlobalIdRef);
 
   return isPrecisionLevelInCmCorrect ? (
     <BPButton
@@ -35,7 +37,7 @@ export const AnalyseRoofButton: FC<AnalyseRoofButtonProps> = ({ isProcessing, pr
         {...props}
         className='analyse-roof-button'
         label='bp.action.process_detection'
-        disabled={disabled || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect}
+        disabled={analyseAlreadyDone || disabled || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect}
         onClick={handleClick}
         isLoading={isProcessing}
       />

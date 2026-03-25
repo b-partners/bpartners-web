@@ -179,7 +179,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           height={height || containerHeight - 136}
           areaPicture={currentAreaPictureDetailsToUse}
         />
-        {(data?.properties || draftLlmValue) && screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
+        {screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
       </Box>
 
       <Stack>
