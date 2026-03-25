@@ -55,7 +55,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
 
-      const mappedCoordinates = await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture);
+      const mappedCoordinates =
+        (getCached.roofDelimiterLongLatItem() as [number, number][]) || (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture));
 
       const data = await getCityJSON(cityJSONRequestId, mappedCoordinates);
       if (data && data.transform) setCityJsonModel(data);

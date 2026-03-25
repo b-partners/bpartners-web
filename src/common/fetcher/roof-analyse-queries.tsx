@@ -1,4 +1,4 @@
-import { annotatorProvider, cache, initializeRoofAnalyse, polygonMapper } from '@/providers';
+import { annotatorProvider, cache, getCached, initializeRoofAnalyse, polygonMapper } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { ErrorMessageDialog } from '../components';
@@ -30,27 +30,29 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
   const mutationFn = async () => {
     const imageSize = 1024;
     cache.defaultRoofDelimiter(polygons[0]);
-    const geoJson = polygonMapper.toRefererGeoJson(polygons[0], imageSize, areaPictureDetails);
-    const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
+    const mappedCoordinates = (getCached.roofDelimiterLongLatItem() as [number, number][]) || [];
 
-    const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
-    const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
+    if (mappedCoordinates.length === 0) {
+      const geoJson = polygonMapper.toRefererGeoJson(polygons[0], imageSize, areaPictureDetails);
+      const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
-    const coordinates: any[] = [];
+      const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
+      const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
 
-    (all_points_x as any[])?.forEach((latitude, index) => {
-      coordinates.push({ latitude, longitude: all_points_y[index] });
-    });
+      let coordinates: any[] = [];
 
-    if (!refererGeoJson) return null;
+      (all_points_x as any[])?.forEach((latitude, index) => {
+        coordinates.push({ latitude, longitude: all_points_y[index] });
+      });
 
-    const mappedCoordinates: number[][] = [];
+      if (!refererGeoJson) return null;
 
-    (all_points_x as any[])?.forEach((x, index) => {
-      if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
-    });
+      (all_points_x as any[])?.forEach((x, index) => {
+        if (index !== all_points_x.length - 1) mappedCoordinates.push([all_points_y[index], x]);
+      });
 
-    cache.roofDelimiterLongLatItem(mappedCoordinates);
+      cache.roofDelimiterLongLatItem(mappedCoordinates);
+    }
 
     setShouldGetHeightState(true);
     return await initializeRoofAnalyse(areaPictureDetails.actualLayer?.name ?? '', `${areaPictureDetails.address}`, [mappedCoordinates], true);
