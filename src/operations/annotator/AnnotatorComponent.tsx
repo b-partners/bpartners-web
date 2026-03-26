@@ -6,7 +6,7 @@ import { useDialog } from '@/common/store/dialog';
 import { getUrlParams, UrlParams } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
-import { ShiftDirection } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { degradationLevels } from '../prospects/constants';
@@ -62,7 +62,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
 
   useEffect(() => {
-    mutateMarker(currentAreaPictureDetailsToUse);
+    if (currentAreaPictureDetailsToUse && currentAreaPictureDetailsToUse.xTile && currentAreaPictureDetailsToUse.xTile)
+      mutateMarker(currentAreaPictureDetailsToUse);
   }, [currentAreaPictureDetailsToUse]);
 
   useEffect(() => {
