@@ -59,7 +59,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { geoJsonResultUrl, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading } = useAreaPictureDetailsFetcher();
+  const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
 
   useEffect(() => {
     mutateMarker(currentAreaPictureDetailsToUse);
@@ -219,6 +219,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         isCropped={!!data?.image}
         areaPictureDetails={currentAreaPictureDetailsToUse}
         draftAnnotationId={draftAnnotationId}
+        rebeginAreaPictureDetails={rebeginAreaPictureDetails}
       />
     </Box>
   );
