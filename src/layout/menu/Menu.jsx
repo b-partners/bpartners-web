@@ -1,6 +1,6 @@
 import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
-import { AccountCircle, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong, Settings } from '@mui/icons-material';
+import { AccountCircle, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Menu as RaMenu } from 'react-admin';
@@ -52,7 +52,6 @@ export const Menu = () => {
         <RaMenu>
           <RaMenu.Item to='/partners' primaryText='Partenaires' name='partners' leftIcon={<Handshake />} />
           <RaMenu.Item to='/helps' onClick={contactSupport} primaryText='Besoin d’aide ?' name='support' leftIcon={<ContactSupport />} />
-          <RaMenu.Item to='/configurations' name='configurations' primaryText='Configuration' leftIcon={<Settings />} />
           <LogoutButton />
         </RaMenu>
       </Box>

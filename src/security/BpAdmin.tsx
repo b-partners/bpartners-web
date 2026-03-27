@@ -5,7 +5,6 @@ import { BpFrenchMessages } from '@/common/utils';
 import { Layout } from '@/layout';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
-import { Configuration } from '@/operations/configurations';
 import { customers } from '@/operations/customers';
 import { Home } from '@/operations/home/Home';
 import invoice from '@/operations/invoice';
@@ -73,7 +72,6 @@ export const BpAdmin = () => {
         <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/loading' element={<LoadingPage />} />
         <Route path='/account/:id' element={<account.show />} />
-        <Route path='/configurations' element={<Configuration />} />
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage />} />
