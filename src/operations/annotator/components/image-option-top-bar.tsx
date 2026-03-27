@@ -3,13 +3,12 @@ import { annotatorStore } from '@/common/store';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { AreaPictureDetails, AreaPictureMapLayer, CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack } from '@mui/material';
-import { MutateOptions } from '@tanstack/react-query';
 import { FC } from 'react';
 import { RefocusImageButton } from './RefocusImageButton';
 
 interface ImageOptionTopBarProps {
   areaPictureDetails: AreaPictureDetails;
-  mutateAreaPictureDetail: (variables: CrupdateAreaPictureDetails, options?: MutateOptions<any, Error, CrupdateAreaPictureDetails, unknown>) => void;
+  mutateAreaPictureDetail: (variables: CrupdateAreaPictureDetails) => void;
   show: boolean;
 }
 
