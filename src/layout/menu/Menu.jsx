@@ -1,18 +1,6 @@
 import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
-import {
-  AccountCircle,
-  CalendarMonth,
-  Category,
-  ContactSupport,
-  Handshake,
-  Home as HomeIcon,
-  Lock,
-  People,
-  Receipt,
-  ReceiptLong,
-  Settings,
-} from '@mui/icons-material';
+import { AccountCircle, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong, Settings } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Menu as RaMenu } from 'react-admin';
