@@ -39,7 +39,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
       const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
       const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
 
-      let coordinates: any[] = [];
+      const coordinates: any[] = [];
 
       (all_points_x as any[])?.forEach((latitude, index) => {
         coordinates.push({ latitude, longitude: all_points_y[index] });
