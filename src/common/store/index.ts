@@ -4,6 +4,5 @@ export * from './annotator-component-store';
 export * from './annotator-store';
 export * from './annotator-switch-store';
 export * from './bank-disconnection-store';
-export * from './calendar-store';
 export * from './prospect-search-store';
 export * from './prospect-store';
