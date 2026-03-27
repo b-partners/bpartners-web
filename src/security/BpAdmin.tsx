@@ -5,8 +5,6 @@ import { BpFrenchMessages } from '@/common/utils';
 import { Layout } from '@/layout';
 import account from '@/operations/account';
 import { Annotator } from '@/operations/annotator';
-import { calendar } from '@/operations/calendar';
-import { CalendarSync } from '@/operations/calendar/components';
 import { Configuration } from '@/operations/configurations';
 import { customers } from '@/operations/customers';
 import { Home } from '@/operations/home/Home';
@@ -71,10 +69,8 @@ export const BpAdmin = () => {
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
       <Resource name='drafts-annotations' />
-      <Resource name='calendar' {...calendar} />
       <CustomRoutes>
         <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
-        <Route path='/calendar-sync' element={<CalendarSync />} />
         <Route path='/loading' element={<LoadingPage />} />
         <Route path='/account/:id' element={<account.show />} />
         <Route path='/configurations' element={<Configuration />} />

@@ -4,8 +4,6 @@ import {
   accountHolderProvider,
   accountProvider,
   BpDataProviderType,
-  calendarEventProvider,
-  calendarProvider,
   customerProvider,
   productProvider,
   profileProvider,
@@ -28,8 +26,6 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'invoices') return invoiceProvider;
   if (resourceType === 'accountHolder') return accountHolderProvider;
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
-  if (resourceType === 'calendar') return calendarProvider;
-  if (resourceType === 'calendar-event') return calendarEventProvider;
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
   if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);

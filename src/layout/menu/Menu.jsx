@@ -1,18 +1,6 @@
 import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
-import {
-  AccountCircle,
-  CalendarMonth,
-  Category,
-  ContactSupport,
-  Handshake,
-  Home as HomeIcon,
-  Lock,
-  People,
-  Receipt,
-  ReceiptLong,
-  Settings,
-} from '@mui/icons-material';
+import { AccountCircle, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong, Settings } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Menu as RaMenu } from 'react-admin';
@@ -58,7 +46,6 @@ export const Menu = () => {
         <RaMenu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <RaMenu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
         <RaMenu.Item to={`/account/${getCached.account()?.id || ''}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
-        <RaMenu.Item to='/calendar' name='calendar' primaryText='Mon agenda' leftIcon={<CalendarMonth />} />
       </RaMenu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
         <SupportDialog onToggle={toggleDialogState} open={dialogState} />

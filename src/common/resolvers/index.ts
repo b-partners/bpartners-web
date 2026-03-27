@@ -1,4 +1,3 @@
-export * from './calendar-validator';
 export * from './company-info-validator';
 export * from './complete-password-validator';
 export * from './feedback-link-validator';
