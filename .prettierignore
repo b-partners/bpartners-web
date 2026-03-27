@@ -1,3 +1,2 @@
 src/aws-exports.js
 tsconfig.json
-src/operations/annotator/AnnotatorComponent.tsx

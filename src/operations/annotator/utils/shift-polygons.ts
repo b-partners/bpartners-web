@@ -5,9 +5,6 @@ import { getAreaPictureShiftForZoom } from './get-areapicture-shift-for-zoom';
 export const getCurrentShift = (areaPictureDetails: AreaPictureDetails) => {
   const direction = areaPictureDetails?.shiftDirection;
   const shift = areaPictureDetails?.shiftNb || 0;
-
-  console.log({ shift, direction });
-
   const xShift = direction === 'RIGHT_LEFT_SIDE' ? shift * getAreaPictureShiftForZoom(areaPictureDetails.zoom.number) : 0;
   const yShift = direction === 'UP_DOWN_SIDE' ? shift * getAreaPictureShiftForZoom(areaPictureDetails.zoom.number) : 0;
 

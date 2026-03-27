@@ -2,23 +2,20 @@ import { BPButton } from '@/common/components';
 import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
-import { getFileUrl, parseUrlParams, printError, UrlParams } from '@/common/utils';
+import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
 import {
   AnnotationCoveringFromAnalyse,
   annotationsAttributeMapper,
   annotatorMapper,
   annotatorProvider,
-  cache,
   clearPolygons,
   getCached,
-  removeCache,
   SlopeAndHeightStatus,
 } from '@/providers';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Stack, SxProps } from '@mui/material';
 import { FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
-import { useNavigate } from 'react-router';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
 import { calculateGlobalRate } from '../utils';
@@ -47,9 +44,20 @@ export type AnalyseResultButtonProps = {
   isCropped: boolean;
   analyseProperties: AnalyseProperties;
   width: number | string;
+  show: boolean;
+  rebeginAreaPictureDetails: () => void;
 };
 
-export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotationId, areaPictureDetails, image, isCropped, analyseProperties, width }) => {
+export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
+  draftAnnotationId,
+  areaPictureDetails,
+  image,
+  isCropped,
+  analyseProperties,
+  width,
+  show,
+  rebeginAreaPictureDetails,
+}) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -63,35 +71,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
 
   const isThereAnyPolygons = annotatorsInfos.length > 0;
 
-  const navigate = useNavigate();
-
-  const annotatorComponentStore = useAnnotatorComponentStore();
-
-  const handleReturnToBegin = () => {
-    const fileUrl = UrlParams.get('imgUrl');
-    const address = UrlParams.get('address');
-    const zoomLevel = UrlParams.get('zoomLevel');
-    const pictureId = UrlParams.get('pictureId');
-    const prospectId = UrlParams.get('prospectId');
-    const fileId = UrlParams.get('fileId');
-
-    clearPolygons(true);
-    removeCache.cityJSONRequestId();
-    removeCache.roofDelimitation();
-    annotatorStore.useAnnotatorStore.getState().resetAnnotations();
-    annotatorComponentStore.reset();
-    cache.loadingRedirection(
-      `/annotator?` +
-        `imgUrl=${encodeURIComponent(fileUrl)}` +
-        `&address=${address}` +
-        `&zoomLevel=${zoomLevel}` +
-        `&pictureId=${pictureId}` +
-        `&useDrafts=false` +
-        `&prospectId=${prospectId}` +
-        `&fileId=${fileId}`
-    );
-    navigate(`/loading`);
-  };
+  if (!show) return null;
 
   const handleSubmitFormsWrapper = (isDraft: boolean) => {
     const handleSubmitForms = async () => {
@@ -137,11 +117,10 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({ draftAnnotat
   return (
     <Stack direction='row' sx={style} gap={1}>
       <BPButton
-        type='submit'
         className='invoice-gen-btn'
         isLoading={isLoading}
         data-testid='submit-annotator-form'
-        onClick={handleReturnToBegin}
+        onClick={rebeginAreaPictureDetails}
         label='resources.annotator.returnToBegin'
       />
       <BPButton

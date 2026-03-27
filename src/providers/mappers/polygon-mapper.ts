@@ -38,9 +38,9 @@ const coordinatesToShapeAttributes = (coordinates: any[][]) => {
 };
 
 export const polygonMapper = {
-  toRest(geoPositions: GeoPosition[], metadata: GeoPolygonToRestMetaData) {
+  toRest(geoPositions: GeoPosition[] = [], metadata: GeoPolygonToRestMetaData) {
     const geometry: Geometry = {
-      coordinates: [[[...geoPositions.map(({ latitude, longitude }) => [longitude, latitude])]]],
+      coordinates: [[[...geoPositions?.map(({ latitude, longitude } = {}) => [longitude, latitude])]]],
       type: 'MultiPolygon',
     };
 
