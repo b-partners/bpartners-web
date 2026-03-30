@@ -248,3 +248,13 @@ export const clearRoofDelimiter = () => {
   localStorage.removeItem(roofDelimiterLongLatItem);
   localStorage.removeItem(currentImageSize);
 };
+
+export const removeCache = {
+  cityJSONRequestId() {
+    localStorage.removeItem(cityJSONRequestIdItem);
+  },
+  roofDelimitation() {
+    localStorage.removeItem(defaultRoofDelimiterItem);
+    localStorage.removeItem(roofDelimiterLongLatItem);
+  },
+};

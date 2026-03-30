@@ -2,7 +2,6 @@ import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const annotatorComponentStyle: SxProps = {
-  height: '95%',
   width: '100%',
   position: 'relative',
   display: 'flex',
@@ -15,6 +14,7 @@ export const annotatorComponentStyle: SxProps = {
     m: 0,
     p: 0,
     marginBlock: 1,
+    height: '70vh',
   },
   '& .image-properties-actions': {
     width: '100%',

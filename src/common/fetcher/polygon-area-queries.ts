@@ -1,4 +1,4 @@
-import { getCenter } from '@/operations/annotator/utils';
+import { getCenter, shiftPolygons } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotatorProvider, getCached, polygonMapper } from '@/providers';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
@@ -22,8 +22,11 @@ export const usePolygonAreaQuery = (params: Params) => {
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
     const divisor = getCached.currentImageSize() ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
+
+    const [polygon] = shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true);
+
     const geoJson = polygonMapper.toRefererGeoJson(
-      { ...params.polygon, points: params.polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
+      { ...polygon, points: polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
       imageSize,
       currentAreaPictureDetails
     );
@@ -42,16 +45,16 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const measurements: Measurement[] = [];
 
-    if (params.polygon.id.includes(roofGlobalIdRef) || !params.polygon.id.includes(analyseGeneratedIdRef)) {
-      for (let i = 1; i < params.polygon.points.length; i++) {
+    if (polygon.id.includes(roofGlobalIdRef) || !polygon.id.includes(analyseGeneratedIdRef)) {
+      for (let i = 1; i < polygon.points.length; i++) {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
         const distance = +getDistance(prev, current, 0.2).toFixed(2);
         measurements.push({
-          position: getCenter(params.polygon.points[i - 1], params.polygon.points[i]),
+          position: getCenter(polygon.points[i - 1], polygon.points[i]),
           unity: 'm',
           value: distance,
-          polygonId: params.polygon.id,
+          polygonId: polygon.id,
           isInvisible: true,
         });
       }

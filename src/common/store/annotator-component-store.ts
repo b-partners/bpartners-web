@@ -2,6 +2,7 @@ import { AnnotationCoveringFromAnalyse } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { create } from 'zustand';
 import { SlopeAndHeightState } from '../fetcher';
+import { copyObject } from '../utils';
 
 interface AnalyseInformation {
   imageUrl: string;
@@ -71,14 +72,14 @@ const defaultState: any = {
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
-  ...defaultState,
+  ...copyObject(defaultState),
   setThereIsRoofPolygon: thereIsRoofPolygon => set({ thereIsRoofPolygon }),
   setSlopeAndHeightState: value => set({ slopeAndHeightState: value }),
   setLlm: value => set({ llm: value }),
   setIsSlopeAndHeightPending: value => set({ isSlopeAndHeightPending: value }),
   setShouldGetHeightState: value => set({ shouldGetHeightState: value }),
   setAnalyseInformation: ({ geoJsonResultUrl, imageUrl }) => set({ geoJsonResultUrl, imageUrl }),
-  reset: () => set(defaultState),
+  reset: () => set(copyObject(defaultState)),
   setGlobalRate: (value, type) => set({ globalRate: { type, value } }),
   setRoofSlope: roofSlope => set({ roofSlope }),
   setAreaPictureDetails: areaPictureDetails => set({ areaPictureDetails }),

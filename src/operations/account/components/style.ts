@@ -166,4 +166,7 @@ export const AccountStyle: SxProps = {
     fontSize: '2.8rem',
     ml: 5,
   },
+  '& .unsubscribe-text': {
+    textAlign: 'end',
+  },
 };

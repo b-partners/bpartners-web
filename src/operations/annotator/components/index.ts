@@ -1,3 +1,4 @@
+export * from './address-top-bar';
 export * from './analyse-result-button';
 export * from './annotation-item-label-type-select';
 export * from './annotation-slope-height-alert';
@@ -11,6 +12,7 @@ export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
 export * from './disclaimer';
 export * from './ExportAnnotationConfirmButton';
+export * from './image-option-top-bar';
 export * from './llm-result';
 export * from './llm-switch-button';
 export * from './RefocusImageButton';

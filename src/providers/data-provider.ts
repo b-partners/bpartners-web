@@ -4,8 +4,6 @@ import {
   accountHolderProvider,
   accountProvider,
   BpDataProviderType,
-  calendarEventProvider,
-  calendarProvider,
   customerProvider,
   productProvider,
   profileProvider,
@@ -13,6 +11,7 @@ import {
   RaDataProviderType,
   relaunchProvider,
 } from '.';
+import { areaPictureDetailsProvider } from './area-picture-provider';
 import { draftAreaPictureAnnotatorProvider } from './draft-area-annotations-provider';
 import { invoiceProvider } from './invoice-provider';
 
@@ -27,9 +26,8 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'invoices') return invoiceProvider;
   if (resourceType === 'accountHolder') return accountHolderProvider;
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
-  if (resourceType === 'calendar') return calendarProvider;
-  if (resourceType === 'calendar-event') return calendarEventProvider;
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
+  if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
@@ -65,7 +63,7 @@ export const dataProvider: RaDataProviderType = {
     if (getProvider(resourceType).update) {
       result = await getProvider(resourceType).update([{ ...params.data, id: params.id }]);
     } else {
-      result = await getProvider(resourceType).saveOrUpdate([params.data]);
+      result = await getProvider(resourceType).saveOrUpdate([params.data], params);
     }
     return { data: result[0] };
   },

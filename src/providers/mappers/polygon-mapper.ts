@@ -1,4 +1,5 @@
 import { ConverterPayloadGeoJSON, Geometry } from '@/operations/annotator';
+import { getCurrentShift } from '@/operations/annotator/utils';
 import { Point, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails, GeoPosition } from '@bpartners/typescript-client';
 import { v4 } from 'uuid';
@@ -37,9 +38,9 @@ const coordinatesToShapeAttributes = (coordinates: any[][]) => {
 };
 
 export const polygonMapper = {
-  toRest(geoPositions: GeoPosition[], metadata: GeoPolygonToRestMetaData) {
+  toRest(geoPositions: GeoPosition[] = [], metadata: GeoPolygonToRestMetaData) {
     const geometry: Geometry = {
-      coordinates: [[[...geoPositions.map(({ latitude, longitude }) => [longitude, latitude])]]],
+      coordinates: [[[...geoPositions?.map(({ latitude, longitude } = {}) => [longitude, latitude])]]],
       type: 'MultiPolygon',
     };
 
@@ -70,7 +71,13 @@ export const polygonMapper = {
       base64_img_data: null,
     };
 
-    const offsets = !areaPicture.isExtended ? { x: areaPicture.xOffset, y: areaPicture.yOffset } : { x: 0, y: 0 };
+    const { xShift, yShift } = getCurrentShift(areaPicture || {});
+
+    const isNot19 = ![19, 20].includes(areaPicture.zoom.number);
+
+    const offsets = !areaPicture.isExtended
+      ? { x: areaPicture.xOffset, y: areaPicture.yOffset }
+      : { x: isNot19 ? -xShift / 2 : 0, y: isNot19 ? -yShift / 2 : 0 };
 
     result.regions = {
       '1': {

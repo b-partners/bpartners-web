@@ -30,11 +30,13 @@ export const usePolygonMarkerFetcher = () => {
       if (!areaPictureDetails) return null;
       const {
         filename,
-        currentTile: { x: xTile, y: yTile },
+        currentTile,
         zoom: { number: zoom },
       } = areaPictureDetails;
 
-      const image_size = 1024; // await getImageSize(areaPictureDetails.fileId);
+      const { x: xTile, y: yTile } = currentTile || {};
+
+      const image_size = 1024;
       const geoJson: ConverterPayloadGeoJSON = polygonMapper.toRest([areaPictureDetails.currentGeoPosition], {
         filename,
         image_size,

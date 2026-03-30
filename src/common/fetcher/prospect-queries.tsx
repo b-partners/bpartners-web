@@ -1,11 +1,10 @@
-import { annotatorProvider, clearPolygons, clearRoofDelimiter, prospectingProvider } from '@/providers';
+import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useMutation } from '@tanstack/react-query';
-import { useNotify } from 'react-admin';
+import { useCreate, useNotify } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore } from '../store';
+import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
 import { useDialog } from '../store/dialog';
 import { getFileUrl } from '../utils';
 
@@ -38,8 +37,33 @@ export const useMutateProspect = () => {
   const navigate = useNavigate();
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const { setScreen } = useAnnotatorScreenSwitch();
+  const [create, { isPending }] = useCreate();
 
-  const fetch = async (prospect: Prospect) => {
+  const onProspectSuccess = (prospect: Prospect) => {
+    notify(`resources.prospects.creation.success`, { type: 'success' });
+    const fileId = uuidV4();
+    const pictureId = uuidV4();
+    const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+    const areaPictureDetailsToCreate = {
+      id: pictureId,
+      address: prospect.address,
+      fileId,
+      filename: `Layer ${prospect.address}`,
+      prospectId: prospect.id,
+      zoomLevel: ZoomLevel.BUILDING,
+      isExtended: true,
+    };
+    const onAreaPictureDetailsSuccess = () => {
+      navigate(
+        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
+      );
+      useDialog.getState().close();
+    };
+    create('area-picture-details', { data: areaPictureDetailsToCreate }, { onError, onSuccess: onAreaPictureDetailsSuccess });
+  };
+
+  const mutate = (prospect: Prospect) => {
     // reset annotator page state
     clearPolygons();
     clearRoofDelimiter();
@@ -47,33 +71,11 @@ export const useMutateProspect = () => {
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();
     clearPolygons();
+    setScreen('annotator');
     // reset annotator page state
 
-    await prospectingProvider.saveOrUpdate([prospect]);
-    notify(`resources.prospects.creation.success`, { type: 'success' });
-
-    try {
-      const fileId = uuidV4();
-      const pictureId = uuidV4();
-      const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-
-      await annotatorProvider.getPictureFormAddress(pictureId, {
-        address: prospect.address,
-        fileId,
-        filename: `Layer ${prospect.address}`,
-        prospectId: prospect.id,
-        zoomLevel: ZoomLevel.BUILDING,
-        isExtended: true,
-      });
-
-      navigate(
-        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
-      );
-      return;
-    } catch (err: any) {
-      console.log(err);
-    }
+    create('prospects', { data: prospect }, { onError, onSuccess: onProspectSuccess });
   };
 
-  return useMutation({ mutationFn: fetch, onError, onSuccess: useDialog.getState().close });
+  return { mutate, isPending };
 };
