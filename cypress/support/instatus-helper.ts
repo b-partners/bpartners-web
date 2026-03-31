@@ -4,7 +4,7 @@ export type TestResult = {
   responseTime: number;
 };
 
-export type CypressTestResult = { testName: string; status: string; error?: string }
+export type CypressTestResult = { testName: string; status: string; error?: string };
 
 export const cypressTestResult: CypressTestResult[] = [];
 
@@ -21,11 +21,14 @@ export const recordCypressTestResult = (result: CypressTestResult) => {
 const canvas_cursor_sel = 'annotator-canvas-cursor';
 
 export const createLyonAnnotation = () => {
-  cy.dataCy(canvas_cursor_sel).click(467, 294, { force: true });
-  cy.dataCy(canvas_cursor_sel).click(515, 311, { force: true });
-  cy.dataCy(canvas_cursor_sel).click(543, 248, { force: true });
-  cy.dataCy(canvas_cursor_sel).click(495, 228, { force: true });
-  cy.dataCy(canvas_cursor_sel).click(467, 294, { force: true });
+  const converter = (x: number, y: number) => [400 - 38 + x, 200 - 192 + y] as [number, number];
+  cy.dataCy(canvas_cursor_sel).click(...converter(293, 192), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(312, 146), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(329, 144), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(354, 151), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(364, 159), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(346, 212), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(293, 192), { force: true });
 };
 
 export const createDijonAnnotation = () => {

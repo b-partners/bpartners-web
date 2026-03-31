@@ -6,7 +6,7 @@ const testCases = [
     name: 'Generate 3D on 2 Place Bellecour, 69002 Lyon',
     address: '2 Place Bellecour, 69002 Lyon',
     annotation: createLyonAnnotation,
-    surface: 435.57,
+    surface: 294.21,
   },
 ];
 
@@ -69,7 +69,7 @@ describe('Roof detection', () => {
       recallDetectionGetById(testCase.address, requestStartTime).then(({ roofSlopeInDegree, roofHeightInMeter }) => {
         cy.contains(`Surface :${testCase.surface} m²`);
         cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
-        cy.get('[data-testid="pente"]').find('input').should('have.value', `${roofSlopeInDegree}`);
+        cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
       });
     });
   });
