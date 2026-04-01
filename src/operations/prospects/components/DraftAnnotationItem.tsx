@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 
 import { BP_COLOR } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
-import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { formatDateTime, getFileUrl } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
@@ -35,6 +35,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
   const annotatorComponentStore = useAnnotatorComponentStore();
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
   const { setScreen } = useAnnotatorScreenSwitch();
+  const { reset: reset3DStore } = useAnnotator3DStore();
 
   const navigateToAnnotation = () => {
     const { fileId, id: pictureId } = draftAnnotation.areaPicture;
@@ -42,6 +43,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     clearPolygons();
     clearRoofDelimiter();
     resetAnnotations();
+    reset3DStore();
     annotatorComponentStore.reset();
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');

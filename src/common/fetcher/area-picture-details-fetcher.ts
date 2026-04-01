@@ -4,7 +4,7 @@ import { AreaPictureDetails, CrupdateAreaPictureDetails } from '@bpartners/types
 import { useRef, useState } from 'react';
 import { useGetOne, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
-import { annotatorStore, useAnnotatorComponentStore } from '../store';
+import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
 import { parseUrlParams } from '../utils';
 
 export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails: AreaPictureDetails) => void) => {
@@ -12,6 +12,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
   const notify = useNotify();
   const ref = useRef(new Date().getTime());
   const navigate = useNavigate();
+  const { reset: reset3dStore } = useAnnotator3DStore();
 
   const annotatorComponentStore = useAnnotatorComponentStore();
   const query = useGetOne(
@@ -61,6 +62,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
 
   const rebeginAreaPictureDetails = (): void => {
     reset();
+    reset3dStore();
     setIsRebeginLoading(true);
     ref.current = new Date().getTime();
     annotatorStore.useAnnotatorStore.getState().resetAnnotations();

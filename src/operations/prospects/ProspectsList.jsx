@@ -47,7 +47,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   const { setScreen } = useAnnotatorScreenSwitch();
   const { reset } = useAnnotator3DStore();
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
-
+  const { reset: reset3DStore } = useAnnotator3DStore();
   useEffect(() => {
     form.setValue('address', address);
   }, [address]);
@@ -56,6 +56,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
     const doSubmit = form.handleSubmit(async rhfData => {
       setScreen('annotator');
       reset();
+      reset3DStore();
       startLoading();
 
       const prospect = copyObject(rhfData);
