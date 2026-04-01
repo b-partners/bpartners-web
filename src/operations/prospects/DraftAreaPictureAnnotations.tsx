@@ -6,15 +6,15 @@ import { Empty, List, useListContext } from 'react-admin';
 import { DraftAnnotationItem } from './components';
 
 const DRAFT_ANNOTATION_ITEM_WRAPPER_SX: SxProps = {
+  '.draft-annotation-list': {
+    display: 'grid',
+    gridTemplateColumns: { lg: '32% 32% 32%', xs: '45% 45%' },
+    justifyContent: 'center',
+    gap: '10px 10px',
+  },
   width: '100%',
   display: 'flex',
-  alignItems: 'stretch',
-  flexWrap: 'wrap',
-  justifyContent: {
-    sm: 'center',
-    lg: 'start',
-  },
-  gap: 2,
+  justifyContent: 'center',
 };
 
 export const DraftAreaPictureAnnotations = () => {
@@ -38,9 +38,11 @@ const DraftAreaPictureAnnotationContent = () => {
   const { data: draftsAnnotations = [] } = useListContext<Required<DraftAreaPictureAnnotation>>();
   return (
     <Box sx={DRAFT_ANNOTATION_ITEM_WRAPPER_SX}>
-      {draftsAnnotations.map(draftAnnotation => {
-        return <DraftAnnotationItem key={draftAnnotation.id} draftAnnotation={draftAnnotation} />;
-      })}
+      <Box className='draft-annotation-list'>
+        {draftsAnnotations.map(draftAnnotation => {
+          return <DraftAnnotationItem key={draftAnnotation.id} draftAnnotation={draftAnnotation} />;
+        })}
+      </Box>
     </Box>
   );
 };

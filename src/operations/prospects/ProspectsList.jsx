@@ -16,7 +16,6 @@ import {
   useAnnotatorScreenSwitch,
 } from '@/common/store';
 import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
-import { DraftAreaPictureAnnotations } from './DraftAreaPictureAnnotations';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
 
@@ -141,7 +140,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
   );
 };
 
-const PROSPECT_LIST_TABS = ['prospects', 'drafts', 'configuration', 'administration'];
+const PROSPECT_LIST_TABS = ['prospects', 'configuration', 'administration'];
 const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   const [isCreating, setIsCreating] = useState(false);
   const { tabIndex, handleTabChange } = useTabManager({
@@ -159,7 +158,6 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
     <Box sx={{ pb: 2, px: 2, mt: 1 }}>
       <Tabs value={tabIndex} onChange={(_e, newTabIndex) => handleTabChange(newTabIndex)}>
         <Tab label='Mes prospects' component={Link} to='?tab=prospects' data-cy='prospects-tab' />
-        <Tab label='Avec brouillons' component={Link} to='?tab=drafts' data-cy='drafts-tab' />
         <Tab label='Configuration' component={Link} to='?tab=configuration' data-cy='configuration-tab' />
         {bpUser?.roles[0] === 'EVAL_PROSPECT' && <Tab label='Administration' component={Link} to='?tab=administration' data-cy='administration-tab' />}
       </Tabs>
@@ -187,10 +185,6 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
             <ProspectFormDialog open={isCreating} close={toggleDialog} saveOrUpdateProspectSubmit={saveOrUpdateProspect} isCreating={isCreating} />
           </form>
         )}
-      </TabPanel>
-
-      <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
-        <DraftAreaPictureAnnotations />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
