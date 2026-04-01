@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 export default [
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    ignores: ['./coverage/*', './test/*'],
+    ignores: ['./coverage/*', './test/*', './cypress.config.ts'],
   },
   { languageOptions: { globals: globals.browser } },
   ...tseslint.configs.recommended,

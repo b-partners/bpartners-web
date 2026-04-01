@@ -6,19 +6,30 @@ dotenv.config();
 
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
 const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
-const INSTATUS_COMPONENT_ID =process.env.INSTATUS_3D_COMPONENT_ID;
 const BASE_URL = `https://api.instatus.com/v1/${INSTATUS_PAGE_ID}`;
+const INSTATUS_3D_COMPONENT_ID = process.env.INSTATUS_3D_COMPONENT_ID;
+const INSTATUS_DETECTION_COMPONENT_ID = process.env.INSTATUS_DETECTION_COMPONENT_ID;
+const IS_3D_MONITORING = process.env.IS_MONITORING_INSTATUS_3D;
+const IS_DETECTION_MONITORING = process.env.IS_MONITORING_INSTATUS_DETECTION;
 
 const instatusHeaders = {
-  'Authorization': `Bearer ${INSTATUS_API_KEY}`,
+  Authorization: `Bearer ${INSTATUS_API_KEY}`,
   'Content-Type': 'application/json',
 };
+
+let currentComponentId = undefined;
+
+if (IS_3D_MONITORING === 'true') {
+  currentComponentId = INSTATUS_3D_COMPONENT_ID;
+} else if (IS_DETECTION_MONITORING) {
+  currentComponentId = INSTATUS_DETECTION_COMPONENT_ID;
+}
 
 export default defineConfig({
   env: {
     codeCoverage: {
       exclude: ['cypress/**/*', 'src/**/*.cy.*'],
-    }
+    },
   },
 
   video: true,
@@ -57,32 +68,28 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on, _config) {
       on('file:preprocessor', vitePreprocessor());
-       on('task', {
-        
+      on('task', {
         async getOpenInstatusIncident() {
           try {
-            console.log(`Check if there is an open incident`)
+            console.log(`Check if there is an open incident on ${IS_3D_MONITORING === 'true' ? '3D component' : 'Detection Component'}`);
             const res = await fetch(`${BASE_URL}/incidents`, {
               headers: instatusHeaders,
-              signal: AbortSignal.timeout(10000), // 10s timeout
+              signal: AbortSignal.timeout(30000),
             });
-            
+
             if (!res.ok) {
               throw new Error(`Failed to fetch incidents, status code: ${res.status}`);
             }
 
-            const text = await res.text(); 
+            const text = await res.text();
             const data = JSON.parse(text);
 
             if (data && Array.isArray(data)) {
               const openIncident = data
-                .filter((i) =>
-                  i.status !== 'RESOLVED' &&
-                  i.components?.some((c) => c.id === INSTATUS_COMPONENT_ID)
-                )
+                .filter(i => i.status !== 'RESOLVED' && i.components?.some(c => c.id === currentComponentId))
                 .sort((a, b) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
-  
-              return openIncident? {id: openIncident.id, status: openIncident.status} : null;
+
+              return openIncident ? { id: openIncident.id, status: openIncident.status } : null;
             } else {
               throw new Error('Data is not an array or is empty');
             }
@@ -93,17 +100,17 @@ export default defineConfig({
 
         async createInstatusIncident({ name, message, status, componentStatus }) {
           try {
-            console.log(`Create incident on : ${name}, error message = ${message}`)
+            console.log(`Create incident on : ${name}, error message = ${message}`);
             const res = await fetch(`${BASE_URL}/incidents`, {
               method: 'POST',
               headers: instatusHeaders,
               body: JSON.stringify({
                 name: name,
                 message: message,
-                components: [INSTATUS_COMPONENT_ID],
+                components: [currentComponentId],
                 status: status,
                 notify: true,
-                statuses: [{ id: INSTATUS_COMPONENT_ID, status: componentStatus }],
+                statuses: [{ id: currentComponentId, status: componentStatus }],
               }),
             });
 
@@ -120,21 +127,21 @@ export default defineConfig({
 
         async updateInstatusIncident({ incidentId, message, status, componentStatus }) {
           try {
-            console.log(`Update incident ${incidentId} : ${message}`)
+            console.log(`Update incident ${incidentId} : ${message}`);
             const res = await fetch(`${BASE_URL}/incidents/${incidentId}/incident-updates`, {
               method: 'POST',
               headers: instatusHeaders,
               body: JSON.stringify({
                 message: message,
                 started: new Date().toISOString(),
-                components: [INSTATUS_COMPONENT_ID],
+                components: [currentComponentId],
                 status: status,
                 notify: true,
                 statuses: [
                   {
-                    id: INSTATUS_COMPONENT_ID,
-                    status: componentStatus
-                  }
+                    id: currentComponentId,
+                    status: componentStatus,
+                  },
                 ],
               }),
             });
@@ -149,24 +156,24 @@ export default defineConfig({
           }
         },
 
-        async resolveInstatusIncident({ incidentId }) {
+        async resolveInstatusIncident({ incidentId, message }) {
           try {
-            console.log(`Resolve incident : ${incidentId}`)
+            console.log(`Resolve incident : ${incidentId}`);
             const res = await fetch(`${BASE_URL}/incidents/${incidentId}/incident-updates`, {
               method: 'POST',
               headers: instatusHeaders,
               body: JSON.stringify({
-                message: "3D Generation succeeded",
+                message: message,
                 started: new Date().toISOString(),
-                components: [INSTATUS_COMPONENT_ID],
-                status: "RESOLVED",
+                components: [currentComponentId],
+                status: 'RESOLVED',
                 notify: true,
                 statuses: [
                   {
-                    id: INSTATUS_COMPONENT_ID,
-                    status: "OPERATIONAL"
-                  }
-                ]
+                    id: currentComponentId,
+                    status: 'OPERATIONAL',
+                  },
+                ],
               }),
             });
 
@@ -178,12 +185,12 @@ export default defineConfig({
           } catch (error) {
             throw new Error(`Error resolving incident:${error}`);
           }
-        }
+        },
       });
     },
-    excludeSpecPattern: process.env.EXCLUDE_3D_SPEC === 'true' 
-    ? ['src/__tests__/it/3D_generator.it.cy.ts'] 
-    : [],
-    specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}'
-    }
+
+    excludeSpecPattern:
+      process.env.EXCLUDE_INSTATUS_IT_SPEC === 'true' ? ['src/__tests__/it/3D_generator.it.cy.ts', 'src/__tests__/it/detection.it.cy.ts'] : [],
+    specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
+  },
 });
