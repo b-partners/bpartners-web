@@ -17,7 +17,7 @@ const instatusHeaders = {
   'Content-Type': 'application/json',
 };
 
-let currentComponentId: any;
+let currentComponentId = undefined;
 
 if (IS_3D_MONITORING === 'true') {
   currentComponentId = INSTATUS_3D_COMPONENT_ID;
@@ -86,7 +86,7 @@ export default defineConfig({
 
             if (data && Array.isArray(data)) {
               const openIncident = data
-                .filter(i => i.status !== 'RESOLVED' && i.components?.some((c: any) => c.id === currentComponentId))
+                .filter(i => i.status !== 'RESOLVED' && i.components?.some(c => c.id === currentComponentId))
                 .sort((a, b) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
 
               return openIncident ? { id: openIncident.id, status: openIncident.status } : null;
