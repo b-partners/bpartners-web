@@ -47,12 +47,18 @@ export const recallAsyncProcess = (address: string, requestStartTime: number): C
 
 type RoofDetection = { roofSlopeInDegree: number; roofHeightInMeter: number };
 
-export const recallDetectionGetById = (address: string, requestStartTime: number): Cypress.Chainable<RoofDetection> => {
+export const recallDetectionGetById = (address: string): Cypress.Chainable<RoofDetection> => {
   return cy.wait('@getDetectionById', { timeout: 60000 }).then(interception => {
     const { roofSlopeInDegree, roofHeightInMeter } = interception.response?.body?.roofDelimiter ?? {};
 
     if (roofSlopeInDegree == null || roofHeightInMeter == null) {
-      return recallDetectionGetById(address, requestStartTime) as unknown as RoofDetection;
+      return recallDetectionGetById(address) as unknown as RoofDetection;
+    }
+    if (roofSlopeInDegree == 0.0 || roofHeightInMeter == 0.0) {
+      return cy
+        .get('[data-testid="pente-height-unavailable"]')
+        .should('be.visible')
+        .then(() => ({ roofSlopeInDegree, roofHeightInMeter })) as unknown as RoofDetection;
     }
 
     return { roofSlopeInDegree, roofHeightInMeter };

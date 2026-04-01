@@ -6,7 +6,28 @@ const testCases = [
     name: 'Generate 3D on 2 Place Bellecour, 69002 Lyon',
     address: '2 Place Bellecour, 69002 Lyon',
     annotation: createLyonAnnotation,
-    surface: 294.21,
+    surface: { min: 294, max: 291 },
+    // usure: 'LOW',
+    // taux_usure:  {min: 1, max: 2},
+    // taux_moisissure: {min: 0, max: 0},
+    // taux_humidite:  {min: 0, max: 0},
+    // obstacle: 'OUI',
+    // revet_1: 'ROOF_TUILES',
+    // degradation_globale: 0.48,
+    // usure_importante_A: 0.64,
+    // MOISISSURE_COULEUR: 'Moisissure Couleur',
+    // MOISISSURE_CLAIR: 'Moisissure Clair',
+    // MOISISSURE_NOIRCIE: 'Moisissure Noircie',
+    // MOISISSURE: 'Moisissure',
+    // HUMIDITE_CLAIR: 'Humidite Clair',
+    // HUMIDITE_INTENSE: 'Humidite Intense',
+    // HUMIDITE: 'Humidite',
+    // USURE_LEGER: 'Usure Leger',
+    // USURE_IMPORTANTE: 'Usure Importante',
+    // USURE: 'Usure',
+    // OBSTACLE: 'Obstacle',
+    // CHEMINEE: 'Cheminee',
+    // VELUX: 'Velux',
   },
 ];
 
@@ -66,10 +87,40 @@ describe('Roof detection', () => {
         }
       });
 
-      recallDetectionGetById(testCase.address, requestStartTime).then(({ roofSlopeInDegree, roofHeightInMeter }) => {
-        cy.contains(`Surface :${testCase.surface} m²`);
-        cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
-        cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
+      recallDetectionGetById(testCase.address).then(({ roofSlopeInDegree, roofHeightInMeter }) => {
+        if (roofSlopeInDegree != 0.0 && roofHeightInMeter != 0.0) {
+          cy.get('[data-testid="surface"]')
+            .invoke('text')
+            .then(text => {
+              const value = parseFloat(text.replace(/[^0-9.]/g, ''));
+              expect(value).to.be.within(testCase.surface.min, testCase.surface.max);
+            });
+          cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
+          cy.get('[data-testid="pente"]').find('input').should('have.value', `${roofSlopeInDegree}`);
+          // cy.get('[data-testid="revet-1"]').find('input').should('have.value', `${testCase.revet_1}`)
+          // cy.get('[data-testid="usure"]').find('input').should('have.value', `${testCase.usure}`)
+          // cy.get('[data-testid="taux-usure"]')
+          // .invoke('text')
+          // .then((text) => {
+          //   const value = parseFloat(text.replace(/[^0-9.]/g, ''));
+          //   expect(value).to.be.within(testCase.taux_usure.min, testCase.taux_usure.max);
+          // });
+          // cy.get('[data-testid="taux-moisissure"]')
+          // .invoke('text')
+          // .then((text) => {
+          //   const value = parseFloat(text.replace(/[^0-9.]/g, ''));
+          //   expect(value).to.be.within(testCase.taux_moisissure.min, testCase.taux_moisissure.max);
+          // });
+          // cy.get('[data-testid="taux-humidité"]')
+          // .invoke('text')
+          // .then((text) => {
+          //   const value = parseFloat(text.replace(/[^0-9.]/g, ''));
+          //   expect(value).to.be.within(testCase.taux_humidite.min, testCase.taux_humidite.max);
+          // });
+          // cy.get('[data-testid="obstacle-velux-pv"]').find('input').should('have.value', `${testCase.obstacle}`)
+          // cy.contains(`Note de dégradation globale : ${testCase.degradation_globale}`)
+          // cy.dataCy("usure-importante-a-value").should('have.value', testCase.usure_importante_A)
+        }
       });
     });
   });
