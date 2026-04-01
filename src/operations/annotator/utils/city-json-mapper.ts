@@ -29,7 +29,7 @@ const boundaryMapper = {
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = { points: points3D.map(([x, y]) => ({ x, y })) };
     const measurements: ExportAreaPictureAnnotation3DPan['measurements'] = [];
     const infos: ExportAreaPictureAnnotation3DPan['infos'] = [
-      { label: 'Surface rampant', value: `${area}m` },
+      { label: 'Surface rampant', value: `${area}m²` },
       { label: 'Pente', value: `${slope}°` },
     ];
     const name = addAlphabet('Pan', index);
