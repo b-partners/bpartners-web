@@ -187,12 +187,12 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
         )}
       </TabPanel>
 
-      <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
+      <TabPanel value={tabIndex} index={1} sx={{ p: 3 }}>
         <ProspectsConfiguration />
       </TabPanel>
 
       {bpUser?.roles[0] === 'EVAL_PROSPECT' && (
-        <TabPanel value={tabIndex} index={3} sx={{ p: 3 }}>
+        <TabPanel value={tabIndex} index={2} sx={{ p: 3 }}>
           <ProspectsAdministration />
         </TabPanel>
       )}

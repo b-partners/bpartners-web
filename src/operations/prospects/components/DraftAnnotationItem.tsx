@@ -15,7 +15,6 @@ import { CardViewField } from './CardViewField';
 
 const DRAFT_ANNOTATION_ITEM_SX: SxProps = {
   width: '100%',
-  maxWidth: '100%',
   px: 1,
   pb: 1,
   gap: 2,
