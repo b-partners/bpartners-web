@@ -105,14 +105,17 @@ export const getCroppedImageAndPolygons = (polygons: DomainPolygonResultType[], 
   const { boundingBoxXSize, boundingBoxYSize } = boundingBoxSize;
   const originPoint = getOriginPoint(boundingBox, boundingBoxXSize, boundingBoxYSize, image.width, image.height);
 
-  canvas.height = boundingBoxYSize;
-  canvas.width = boundingBoxXSize;
+  canvas.height = boundingBoxYSize > 1024 ? 1024 : boundingBoxYSize;
+  canvas.width = boundingBoxXSize > 1024 ? 1024 : boundingBoxXSize;
+
+  const xScale = canvas.width / boundingBoxXSize;
+  const yScale = canvas.height / boundingBoxXSize;
 
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxXSize, boundingBoxYSize, 0, 0, boundingBoxXSize, boundingBoxYSize);
+  ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxXSize, boundingBoxYSize, 0, 0, canvas.width, canvas.height);
 
   const newImage = canvas.toDataURL('image/png');
-  const newPolygons = polygons.map(p => ({ ...p, points: p.points.map(({ x, y }) => ({ x: x - originPoint.x, y: y - originPoint.y })) }));
+  const newPolygons = polygons.map(p => ({ ...p, points: p.points.map(({ x, y }) => ({ x: (x - originPoint.x) * xScale, y: (y - originPoint.y) * yScale })) }));
   cache.currentImageSize(canvas.width);
   return {
     polygons: newPolygons,
