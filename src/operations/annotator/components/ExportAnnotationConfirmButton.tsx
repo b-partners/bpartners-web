@@ -5,7 +5,7 @@ import { annotatorStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { calculateGlobalRate } from '../utils';
+import { calculateGlobalRate, shiftPolygons } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -28,9 +28,11 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     const globalRate = calculateGlobalRate();
+    const shiftedPolygonList =
+      areaPictureDetails.shiftNb && areaPictureDetails.shiftNb !== 0 ? shiftPolygons(polygonList, areaPictureDetails, true) : polygonList;
     exportAsPdf({
       annotationInfos,
-      polygons: polygonList,
+      polygons: shiftedPolygonList,
       address,
       imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: globalRate.type,
