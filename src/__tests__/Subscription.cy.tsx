@@ -7,6 +7,7 @@ import { user1, whoami1 } from './mocks/responses/security-api';
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
 const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
 const noMethodPaymentSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'PAYMENT_METHOD_REQUIRED' } };
+const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'FREE_TRIAL' } };
 const expectedSubscriptionInitializationPayload = {
   redirectionStatusUrls: {
     failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
@@ -20,6 +21,20 @@ const expectedSubscriptionBillingPayload = {
 };
 
 describe('Test user subscription', () => {
+  it('Free Trial', () => {
+    cy.cognitoLogin({ whoami: { user: freeTrialSubscriptionUser }, user: freeTrialSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.mount(<App />);
+
+    cy.contains('Débloquez immédiatement votre accès en :');
+    cy.contains('👉 renseignant un moyen de paiement (aucun prélèvement pendant l’essai)');
+    cy.contains('👉 réservant une démo avec un expert BIRDIA pour obtenir votre code d’accès personnalisé');
+  });
   it('Invalid subscription', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
@@ -65,7 +80,6 @@ describe('Test user subscription', () => {
 
     cy.dataCy('subscribe-btn').click();
   });
-
   it('Payment method not specified', () => {
     cy.cognitoLogin({ whoami: { user: noMethodPaymentSubscriptionUser }, user: noMethodPaymentSubscriptionUser });
 
