@@ -124,7 +124,7 @@ describe(specTitle('Prospects'), () => {
     const redirectionUrl = {
       redirectionStatusUrls: { failureUrl: 'dummy', successUrl: 'dummy' },
     };
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, []).as('getProspects1');
     cy.intercept('POST', `/users/${whoami1.user.id}/sheets/oauth2/consent`, redirectionUrl).as('consentGoogleSheet');
 
     cy.mount(<App />);
@@ -138,7 +138,7 @@ describe(specTitle('Prospects'), () => {
   });
 
   it('change prospecting perimeter', () => {
-    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects`, []).as('getProspects1');
+    cy.intercept('GET', `/accountHolders/${accountHolders1[0].id}/prospects**`, []).as('getProspects1');
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req => {
       expect(req.body.contactAddress.prospectingPerimeter).to.deep.eq(5);
 

@@ -44,3 +44,17 @@ export const recallAsyncProcess = (address: string, requestStartTime: number): C
     return recallAsyncProcess(address, requestStartTime);
   });
 };
+
+type RoofDetection = { roofSlopeInDegree: number; roofHeightInMeter: number };
+
+export const recallDetectionGetById = (address: string, requestStartTime: number): Cypress.Chainable<RoofDetection> => {
+  return cy.wait('@getDetectionById', { timeout: 60000 }).then(interception => {
+    const { roofSlopeInDegree, roofHeightInMeter } = interception.response?.body?.roofDelimiter ?? {};
+
+    if (roofSlopeInDegree == null || roofHeightInMeter == null) {
+      return recallDetectionGetById(address, requestStartTime) as unknown as RoofDetection;
+    }
+
+    return { roofSlopeInDegree, roofHeightInMeter };
+  });
+};

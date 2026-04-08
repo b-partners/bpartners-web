@@ -4,7 +4,7 @@ import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } 
 import { useCreate, useNotify } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-import { annotatorStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
+import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
 import { useDialog } from '../store/dialog';
 import { getFileUrl } from '../utils';
 
@@ -39,6 +39,7 @@ export const useMutateProspect = () => {
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
   const { setScreen } = useAnnotatorScreenSwitch();
   const [create, { isPending }] = useCreate();
+  const { reset: reset3DStore } = useAnnotator3DStore();
 
   const onProspectSuccess = (prospect: Prospect) => {
     notify(`resources.prospects.creation.success`, { type: 'success' });
@@ -67,6 +68,7 @@ export const useMutateProspect = () => {
     // reset annotator page state
     clearPolygons();
     clearRoofDelimiter();
+    reset3DStore();
     useAnnotatorComponentStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();

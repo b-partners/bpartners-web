@@ -1,54 +1,25 @@
-import {
-  createCannesAnnotation,
-  createDijonAnnotation,
-  createLyonAnnotation,
-  createParthenayAnnotation,
-  cypressTestResult,
-  recordCypressTestResult,
-  testResults,
-} from '../../../cypress/support/instatus-helper';
-import { recallAsyncProcess } from './awaitAsyncProcess.it.cy';
+import { createLyonAnnotation, cypressTestResult, recordCypressTestResult, recordTestResult, testResults } from '../../../cypress/support/instatus-helper';
+import { recallDetectionGetById } from './awaitAsyncProcess.it.cy';
 
 const testCases = [
-  {
-    name: 'Generate 3D on 6 Place de la Libération, 21000 Dijon',
-    address: '6 Place de la Libération, 21000 Dijon',
-    annotation: createDijonAnnotation,
-    imageFixture: 'dijon.jpeg',
-  },
   {
     name: 'Generate 3D on 2 Place Bellecour, 69002 Lyon',
     address: '2 Place Bellecour, 69002 Lyon',
     annotation: createLyonAnnotation,
-    imageFixture: 'raw.jpeg',
-  },
-  {
-    name: 'Generate 3D on 1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
-    address: '1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
-    annotation: createParthenayAnnotation,
-    imageFixture: 'raw.jpeg',
-  },
-  {
-    name: 'Generate 3D on 12 Boulevard de la Croisette, 06400 Cannes',
-    address: '12 Boulevard de la Croisette, 06400 Cannes',
-    annotation: createCannesAnnotation,
-    imageFixture: 'raw.jpeg',
+    surface: 294.21,
   },
 ];
 
-let prospectId: string;
-
-describe('Generate 3D', () => {
+describe('Roof detection', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
     cy.e2eLogin();
   });
 
-  testCases.forEach(testCase => {
-    it(`on ${testCase.name}`, () => {
-      let requestStartTime: any;
-      let requestEndTime;
+  let prospectId: string;
 
+  testCases.forEach(testCase => {
+    it(`on ${testCase.address}`, () => {
       cy.get('[name="prospects"]').click();
       cy.contains('Ajouter un prospect').click();
       cy.get('[data-testid="address-auto-complete"]').clear().type(testCase.address);
@@ -72,26 +43,33 @@ describe('Generate 3D', () => {
 
       testCase.annotation();
 
-      cy.intercept('POST', 'mercator**', () => {
-        requestStartTime = Date.now();
-      }).as('pixelConvertion');
+      cy.intercept('POST', 'detections/**/sync**').as('processDetection');
+      cy.intercept('GET', 'detections/**').as('getDetectionById');
 
-      cy.intercept('PUT', 'city-jsons/**/process**').as('3DConvertion');
+      cy.contains('Analyser la toiture').should('be.visible').click();
 
-      cy.contains('Passer sur la version 3D').should('be.visible').click();
-
-      cy.wait('@pixelConvertion', { timeout: 10000 }).then(interception => {
-        requestEndTime = Date.now();
-        const apiResponseTime = requestEndTime - requestStartTime;
-
-        cy.log(`Conversion pixel : ${apiResponseTime} ms`);
-        expect(interception.response.statusCode).to.eq(200);
+      const requestStartTime = Date.now();
+      cy.wait('@processDetection', { timeout: 60000 }).then(res => {
+        const apiResponseTime = Date.now() - requestStartTime;
+        if (res.response?.body.step.status.progression == 'FINISHED' && res.response?.body.step.status.health == 'SUCCEEDED') {
+          recordTestResult({
+            testName: testCase.address,
+            responseTime: apiResponseTime,
+            status: 'FINISHED',
+          });
+        } else {
+          recordTestResult({
+            testName: testCase.address,
+            responseTime: apiResponseTime,
+            status: 'FAILED',
+          });
+        }
       });
 
-      cy.get('.steps-row').should('be.visible');
-
-      recallAsyncProcess(testCase.address, Date.now()).then(responseTime => {
-        cy.log(`Temps total conversion 3D : ${responseTime} ms`);
+      recallDetectionGetById(testCase.address, requestStartTime).then(({ roofSlopeInDegree, roofHeightInMeter }) => {
+        cy.contains(`Surface :${testCase.surface} m²`);
+        cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
+        cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
       });
     });
   });
@@ -114,7 +92,7 @@ describe('Generate 3D', () => {
     });
   });
 
-  const RESPONSE_TIME_THRESHOLD = 180000;
+  const RESPONSE_TIME_THRESHOLD = 60000;
 
   after(() => {
     cy.then(() => {
@@ -140,7 +118,7 @@ describe('Generate 3D', () => {
 
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
-              name: '[Cypress Error] Failed to process 3D convertion',
+              name: '[Cypress Error] Failed to process roof detection',
               message: `Cypress test failed, ${failedTests}`,
               status: 'IDENTIFIED',
               componentStatus: 'DEGRADEDPERFORMANCE',
@@ -162,15 +140,15 @@ describe('Generate 3D', () => {
 
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
-              name: '[3D] Failed to process convertion',
-              message: `Failed to generate 3D on : ${failedTests}`,
+              name: '[ROOF DETECTION] Failed to process detection',
+              message: `Failed to process roof detection on : ${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
             });
           } else if (incidentId && incidentStatus != 'INVESTIGATING') {
             return cy.task('updateInstatusIncident', {
               incidentId,
-              message: `Failed to generate 3D on : ${failedTests}`,
+              message: `Failed to process roof detection on : ${failedTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
             });
@@ -184,21 +162,21 @@ describe('Generate 3D', () => {
           if (incidentId && incidentStatus != 'MONITORING') {
             return cy.task('updateInstatusIncident', {
               incidentId,
-              message: `Convertion took too much time on : ${slowTests}`,
+              message: `Detection took too much time on : ${slowTests}`,
               status: 'MONITORING',
               componentStatus: 'PARTIALOUTAGE',
             });
           } else if (!incidentId) {
             return cy.task('createInstatusIncident', {
-              name: '[3D] Slow conversion detected',
-              message: `Convertion took too much time on : ${slowTests}`,
+              name: '[ROOF DETECTION] Slow detection',
+              message: `Detection took too much time on : ${slowTests}`,
               status: 'MONITORING',
               componentStatus: 'PARTIALOUTAGE',
             });
           }
         } else {
           if (incidentId) {
-            return cy.task('resolveInstatusIncident', { incidentId, message: '3D Generation succeeded' });
+            return cy.task('resolveInstatusIncident', { incidentId, message: 'Roof detection succeeded' });
           }
         }
       });
