@@ -7,7 +7,7 @@ import { user1, whoami1 } from './mocks/responses/security-api';
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
 const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
 const noMethodPaymentSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'PAYMENT_METHOD_REQUIRED' } };
-const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'FREE_TRIAL' } };
+const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
 const expectedSubscriptionInitializationPayload = {
   redirectionStatusUrls: {
     failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
@@ -30,6 +30,9 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.mount(<App />);
+
+    cy.contains("Début de la période d'essai : 01/01/2026");
+    cy.contains("Fin de la période d'essai : 07/01/2026");
 
     cy.contains('Débloquez immédiatement votre accès en :');
     cy.contains('👉 renseignant un moyen de paiement (aucun prélèvement pendant l’essai)');
