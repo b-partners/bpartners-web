@@ -1,10 +1,11 @@
 import { getPagination } from '@/common/utils/pagination-utilities';
-import { UpdateParams } from 'react-admin';
+import { CreateParams, UpdateParams } from 'react-admin';
 import {
   accountHolderProvider,
   accountProvider,
   BpDataProviderType,
   customerProvider,
+  fileProvider,
   productProvider,
   profileProvider,
   prospectingProvider,
@@ -28,6 +29,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
   if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
+  if (resourceType === 'files') return fileProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 
@@ -67,8 +69,8 @@ export const dataProvider: RaDataProviderType = {
     }
     return { data: result[0] };
   },
-  async create(resourceType: string, params: any) {
-    const result = await getProvider(resourceType).saveOrUpdate([params.data]);
+  async create(resourceType: string, params: CreateParams) {
+    const result = await getProvider(resourceType).saveOrUpdate([params.data], params.meta);
     return { data: result[0] };
   },
   async archive(resourceType, params) {

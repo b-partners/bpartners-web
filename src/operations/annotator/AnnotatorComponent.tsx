@@ -57,7 +57,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
   const { geoJsonResultUrl, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
-  const { data, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
+  const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
 
@@ -77,22 +77,22 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { screen } = useAnnotatorScreenSwitch();
 
   useEffect(() => {
-    setRoofAnalyseProperties(data?.properties);
+    setRoofAnalyseProperties(geojsonResult?.properties);
 
-    const currentPolygons = data?.polygons?.slice(1) || [];
-    const roofPolygon = data?.polygons?.[0];
+    const currentPolygons = geojsonResult?.polygons?.slice(1) || [];
+    const roofPolygon = geojsonResult?.polygons?.[0];
 
-    if (polygonList.length === 0 && currentPolygons.length > 0 && data?.properties && data?.image) {
+    if (polygonList.length === 0 && currentPolygons.length > 0 && geojsonResult?.properties && geojsonResult?.image) {
       const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
         roofPolygon.id,
-        data?.properties,
-        data?.properties?.roof_height_in_meters,
-        data?.properties?.roof_slope_in_degrees
+        geojsonResult?.properties,
+        geojsonResult?.properties?.roof_height_in_meters,
+        geojsonResult?.properties?.roof_slope_in_degrees
       );
-      const annotationInfos = data?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
+      const annotationInfos = geojsonResult?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
       replaceAnnotations([roofPolygon, ...currentPolygons], [roofAnnotationInfo, ...annotationInfos]);
     }
-  }, [JSON.stringify(data), isPending]);
+  }, [JSON.stringify(geojsonResult), isPending]);
 
   const handleDetectionProcessingSuccess = () => {
     resetAnnotations();
@@ -107,7 +107,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const { open: openDialog } = useDialog();
 
-  if (!filename || areaPictureLoading || areaPictureLoading || (geoJsonResultUrl && !data?.image)) {
+  if (!filename || areaPictureLoading || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
@@ -138,11 +138,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
     setPolygonList(_polygons => {
       const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons) : polygonsOrFunction;
-      return data?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, currentAreaPictureDetailsToUse, false);
+      return geojsonResult?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, currentAreaPictureDetailsToUse, false);
     });
   };
 
-  const polygonListShifted = data?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true);
+  const polygonListShifted = geojsonResult?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true);
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -150,14 +150,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
       <AddressTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
 
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
-        {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || data?.image) && (
+        {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
           <AnnotatorCanvas
-            markerPosition={!data && (polygonListShifted || []).length === 0 && markerPosition}
+            markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
             buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
-            image={data?.image || imageSrcFromUrl}
+            image={geojsonResult?.image || imageSrcFromUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
             measurementMapper={measurementMapper(isExtended)}
@@ -211,13 +211,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         </Stack>
       </Stack>
 
-      {!data && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && <Stack direction='row' className='bottom-action'></Stack>}
+      {!geojsonResult && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && <Stack direction='row' className='bottom-action'></Stack>}
       <AnalyseResultButton
         show={!isInvoiceForm && screen !== '3d-annotator'}
         width={width || containerWidth}
-        analyseProperties={data?.properties}
-        image={data?.image}
-        isCropped={!!data?.image}
+        analyseProperties={geojsonResult?.properties}
+        image={geojsonResult?.image}
+        isCropped={!!geojsonResult?.image}
         areaPictureDetails={currentAreaPictureDetailsToUse}
         draftAnnotationId={draftAnnotationId}
         rebeginAreaPictureDetails={rebeginAreaPictureDetails}

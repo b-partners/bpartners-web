@@ -20,7 +20,9 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getOne: () => {
     throw new Error('Not Implemented');
   },
-  saveOrUpdate: () => {
-    throw new Error('Not Implemented');
+  saveOrUpdate: async (annotations: any, options: any) => {
+    const { accountId } = getCached.userInfo();
+    const { data } = await areaPictureApi().annotateAreaPicture(accountId, options.meta.pictureId, options.meta.annotationId, annotations);
+    return data;
   },
 };
