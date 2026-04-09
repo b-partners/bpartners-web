@@ -37,7 +37,6 @@ export const FreeTrialSubscriptionModal = () => {
           <li>
             <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
           </li>
-          <li style={{ fontWeight: 'bold' }}>Aucun prélèvement ne se fera avant la fin de votre période d’essai de 7 jours.</li>
         </ul>
         <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d’essai. Vous pouvez annuler à tout moment, sans engagement.</p>
         <p>
@@ -52,7 +51,7 @@ export const FreeTrialSubscriptionModal = () => {
         </p>
       </DialogContent>
       <DialogActions>
-        <BPButton data-testid='close-dialog' onClick={onGetDemo} label='Bouton Réserver une démo' />
+        <BPButton data-testid='close-dialog' onClick={onGetDemo} label='Réserver une démo' />
         <BPButton data-testid='do-abonnement-btn' label="M'abonner" onClick={handleDoSubscription} />
       </DialogActions>
     </>

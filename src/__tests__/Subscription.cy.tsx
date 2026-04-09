@@ -8,6 +8,7 @@ const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, sta
 const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
 const noMethodPaymentSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'PAYMENT_METHOD_REQUIRED' } };
 const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
+
 const expectedSubscriptionInitializationPayload = {
   redirectionStatusUrls: {
     failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
@@ -103,5 +104,29 @@ describe('Test user subscription', () => {
     }).as('initializeSubscription');
 
     cy.dataCy('subscribe-btn').click();
+  });
+  it('Payment method not specified', () => {
+    cy.cognitoLogin({ whoami: { user: noMethodPaymentSubscriptionUser }, user: noMethodPaymentSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/accounts/${accounts1[0].id}/annotations/drafts?page=1&pageSize=6`, []);
+
+    cy.mount(<App />);
+
+    cy.contains("Période d'essai expirée");
+    cy.contains("Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte.");
+
+    cy.intercept(`/users/${noMethodPaymentSubscriptionUser.id}/billingPortal`, ({ reply }) => {
+      reply({ statusCode: 400, body: { message: 'Stripe error' } });
+    }).as('initializeSubscription');
+
+    cy.dataCy('subscribe-btn').click();
+
+    cy.contains("Une erreur s'est produite.");
+    cy.contains('Stripe error');
   });
 });
