@@ -1,10 +1,19 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs } from '@/operations/annotator/utils';
 import { areaPictureApi, getCached } from '@/providers';
+import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
+import * as Sentry from '@sentry/react';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile } from '../utils';
+
+const reportToSentry = (message: string, data: Record<string, unknown>) => {
+  Sentry.withScope(scope => {
+    scope.setContext('data', data);
+    Sentry.captureException(new Error(message));
+  });
+};
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const labelNames: Record<string, number> = {};
@@ -36,6 +45,7 @@ interface Params {
 export const useAnnotatorExportAsPdf = (params: Params) => {
   const notify = useNotify();
   const { imageUrl, cityJsonModel } = useAnnotator3DStore();
+  let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
@@ -44,7 +54,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
-    const exportAreaPictureAnnotation = await exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
+    exportAreaPictureAnnotation = await exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 
@@ -58,7 +68,13 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   };
 
   const onSuccess = () => notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
-  const onError = () => notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.", { type: 'error' });
+  const onError = (error: any) => {
+    try {
+      reportToSentry(error.response.data.message, { payload: exportAreaPictureAnnotation });
+    } finally {
+      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + error.response.data.message, { type: 'error', multiLine: true });
+    }
+  };
 
   return useMutation({ mutationFn, onSuccess, onError, ...params });
 };
