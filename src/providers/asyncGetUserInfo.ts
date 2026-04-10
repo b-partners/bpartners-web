@@ -10,23 +10,23 @@ export const asyncGetUserInfo = async () => {
     res.cachedWhoami = await whoami();
   }
   if (!userId) {
-    res.userId = res.cachedWhoami.user.id;
+    res.userId = res.cachedWhoami.user?.id;
   }
   if (!accountId) {
-    res.accountId = (await accountProvider.getOne(res.userId)).id;
+    res.accountId = (await accountProvider.getOne(res.userId))?.id;
   }
   if (!accountHolderId) {
-    res.accountHolderId = (await accountHolderProvider.getOne()).id;
+    res.accountHolderId = (await accountHolderProvider.getOne())?.id;
   }
   return res;
 };
 
 export const asyncGetAccountId = async () => {
   const { accountId } = getCached.userInfo();
-  return accountId ? accountId : ((await accountProvider.getOne()).id as string);
+  return accountId ? accountId : ((await accountProvider.getOne())?.id as string);
 };
 
 export const asyncGetUser = async () => {
   const user = getCached.user();
-  return user && user.id ? getCached.user() : await profileProvider.getOne(getCached.whoami().user.id);
+  return user && user?.id ? getCached.user() : await profileProvider.getOne(getCached.whoami().user?.id);
 };
