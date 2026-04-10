@@ -70,6 +70,26 @@ describe('Roof detection', () => {
         cy.contains(`Surface :${testCase.surface} m²`);
         cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
         cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
+
+        cy.contains('Usure Importante').parent('div').contains(/\dm²/);
+        cy.contains('Moisissure Clair').parent('div').contains(/\dm²/);
+        cy.contains('Cheminee').parent('div').contains(/\dm²/);
+        cy.contains(/Velux \w/)
+          .parent('div')
+          .contains(/\dm²/);
+        cy.contains(/Obstacle \w/)
+          .parent('div')
+          .contains(/\dm²/);
+
+        cy.contains(/Note de dégradation globale :/);
+
+        cy.intercept('GET', '/toiture**').as('getLLMRepport');
+
+        cy.contains('Générer un rapport').click();
+        cy.wait('@getLLMRepport');
+        cy.get('canvas').should('not.exist');
+        cy.contains('COMPRENDRE VOTRE RAPPORT', { timeout: 10000 });
+        cy.contains('CONSEILS DE L’ARTISAN COUVREUR', { timeout: 10000 });
       });
     });
   });

@@ -1,29 +1,32 @@
 import App from '@/App';
+import { v4 } from 'uuid';
 import { accountHolders1, accounts1, whoami1 } from './mocks/responses';
 
 describe('Home', () => {
   beforeEach(() => {
     cy.cognitoLogin();
 
+    const prospects = [
+      { id: 1, name: 'Jean Dupont', address: '12 rue du toit' },
+      { id: 2, name: 'Toiture Express', address: '15 avenue Zinc' },
+      { id: 3, name: 'SARL Ardoise', address: '23 chemin des tuiles' },
+      { id: 4, name: 'Le Couvreur Malin', address: '8 rue du zinc' },
+      { id: 5, name: 'TopToiture', address: '17 allée de l’étanchéité' },
+      { id: 6, name: 'Couvreur du coin', address: '3 impasse du faîtage' },
+    ];
+
+    const draftAnnotations = prospects.map(prospect => ({ id: v4(), areaPicture: { address: prospect.address, prospectId: prospect.id } }));
+
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Couvreur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
-
-    cy.intercept('GET', '**/prospects**', {
-      statusCode: 200,
-      body: [
-        { id: 1, name: 'Jean Dupont', address: '12 rue du toit' },
-        { id: 2, name: 'Toiture Express', address: '15 avenue Zinc' },
-        { id: 3, name: 'SARL Ardoise', address: '23 chemin des tuiles' },
-        { id: 4, name: 'Le Couvreur Malin', address: '8 rue du zinc' },
-        { id: 5, name: 'TopToiture', address: '17 allée de l’étanchéité' },
-        { id: 6, name: 'Couvreur du coin', address: '3 impasse du faîtage' },
-      ],
-    }).as('getProspects');
+    cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', draftAnnotations);
+    prospects.forEach(prospect => {
+      cy.intercept('GET', '/accountHolders/**/prospects/' + prospect.id, prospect);
+    });
 
     cy.mount(<App />);
     cy.getByName('home').click();
-    cy.wait('@getProspects');
   });
 
   it('displays the list of prospects', () => {

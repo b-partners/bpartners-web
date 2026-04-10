@@ -92,7 +92,6 @@ export const HomeStyle: SxProps = {
     justifyContent: 'space-between',
     p: 2,
     borderRadius: 2,
-    boxShadow: '0 2px 6px #949494ff',
   },
   '& .block-white': {
     backgroundColor: PALETTE_COLORS.white,

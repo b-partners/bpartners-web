@@ -2,16 +2,16 @@ import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { Add, Inbox as InboxIcon } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
-import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, Typography } from '@mui/material';
-import { useGetList, useNotify } from 'react-admin';
+import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, List, Paper, Typography } from '@mui/material';
+import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
 import { useDialog } from '@/common/store/dialog';
-import { stringCutter } from '@/common/utils';
 import { annotatorProvider } from '@/providers';
 import { FormEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { GetImageDialog } from './get-image-dialog';
+import { ProjectListItem } from './project-list-item';
 import { HomeStyle } from './style';
 
 const AddressInput = () => {
@@ -52,18 +52,10 @@ const AddressInput = () => {
 };
 
 export const Home = () => {
-  const { data: prospectsList = [], isLoading } = useGetList('prospects', {
+  const { data: draftAnnotations = [], isLoading } = useGetList('drafts-annotations', {
     pagination: { page: 1, perPage: 6 },
     filter: { status: 'TO_CONTACT' },
   });
-
-  const notify = useNotify();
-
-  const copyToClipboard = (text: string) => () => {
-    navigator.clipboard.writeText(text).then(() => {
-      notify('notify.adressCopySuccess', { type: 'info' });
-    });
-  };
 
   return (
     <>
@@ -75,12 +67,32 @@ export const Home = () => {
           </Box>
           <AddressInput />
           <Grid container spacing={3} maxHeight={'400px'}>
-            <Grid item xs={12} md={6} height={'400px'}>
-              <Card className='left-box' elevation={2}>
+            <Grid item xs={12} md={8}>
+              <Card className='left-box'>
                 <CardHeader title='Dernières notifications'></CardHeader>
                 <CardContent>
-                  <Grid container spacing={3} justifyContent='center' minHeight={200}>
-                    {isLoading && (
+                  <Grid container spacing={1}>
+                    <Grid item xs={12} md={6}>
+                      <List>{!isLoading && draftAnnotations.slice(0, 3).map(dA => <ProjectListItem draftAnnotation={dA} key={dA.id} />)}</List>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <List>{!isLoading && draftAnnotations.slice(3).map(dA => <ProjectListItem draftAnnotation={dA} key={dA.id} />)}</List>
+                    </Grid>
+                  </Grid>
+                  {!isLoading && draftAnnotations.length === 0 && (
+                    <Grid container spacing={3} justifyContent='center' minHeight={200}>
+                      <Box display='flex' color='#00000050' marginTop='2rem' width='100%' height={200} alignItems='center' flexDirection='column'>
+                        <div>
+                          <InboxIcon sx={{ fontSize: '6rem' }} />
+                        </div>
+                        <Typography width={200} textAlign='center'>
+                          Aucune annotation n'a encore été effectuée.
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                  {isLoading && (
+                    <Grid container spacing={3} justifyContent='center' minHeight={200}>
                       <Box
                         display='flex'
                         color='#00000050'
@@ -93,40 +105,14 @@ export const Home = () => {
                       >
                         <CircularProgress size={30} />
                       </Box>
-                    )}
-                    {!isLoading && prospectsList.length === 0 && (
-                      <Box display='flex' color='#00000050' marginTop='2rem' width='100%' height={200} alignItems='center' flexDirection='column'>
-                        <div>
-                          <InboxIcon sx={{ fontSize: '6rem' }} />
-                        </div>
-                        <Typography width={200} textAlign='center'>
-                          Aucune annotation n'a encore été effectuée.
-                        </Typography>
-                      </Box>
-                    )}
-                    {!isLoading &&
-                      prospectsList.map((prospect, index) => (
-                        <Grid item xs={12} sm={6} key={index}>
-                          <Box className='prospect-item'>
-                            <PublicIcon sx={{ mr: 1 }} />
-                            <Box className='prospect-text'>
-                              <Typography className='prospect-name' fontWeight='bold'>
-                                {prospect.name || 'Nom non défini'}
-                              </Typography>
-                              <Typography className='prospect-address' onClick={copyToClipboard(prospect.address)} variant='body2'>
-                                {stringCutter(prospect.address, 40)}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Grid>
-                      ))}
-                  </Grid>
+                    </Grid>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={6} minHeight={'400px'}>
+            <Grid item xs={12} md={4} minHeight={'400px'}>
               <Grid item xs={12} minHeight={'100px'}>
-                <Box className='block-box block-white' mb={2}>
+                <Paper className='block-box block-white' mb={2}>
                   <IconButton
                     style={{ color: PALETTE_COLORS.black }}
                     onClick={() => (window.location.pathname = '/prospects')}
@@ -146,11 +132,11 @@ export const Home = () => {
                   >
                     <Add />
                   </IconButton>
-                </Box>
+                </Paper>
               </Grid>
               <Grid container spacing={2} minHeight={'100px'}>
                 <Grid item xs={6}>
-                  <Box className='block-box block-orange'>
+                  <Paper className='block-box block-orange'>
                     <IconButton
                       style={{ color: PALETTE_COLORS.white }}
                       onClick={() => (window.location.href = '/customers')}
@@ -170,10 +156,10 @@ export const Home = () => {
                     >
                       <Add />
                     </IconButton>
-                  </Box>
+                  </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                  <Box className='block-box block-pine'>
+                  <Paper className='block-box block-pine'>
                     <IconButton
                       style={{ color: PALETTE_COLORS.white }}
                       onClick={() => (window.location.href = '/products')}
@@ -193,10 +179,10 @@ export const Home = () => {
                     >
                       <Add />
                     </IconButton>
-                  </Box>
+                  </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                  <Box className='block-box block-forest'>
+                  <Paper className='block-box block-forest'>
                     <IconButton
                       style={{ color: PALETTE_COLORS.white }}
                       onClick={() => (window.location.href = '/invoices')}
@@ -216,10 +202,10 @@ export const Home = () => {
                     >
                       <Add />
                     </IconButton>
-                  </Box>
+                  </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                  <Box className='block-box block-white'>
+                  <Paper className='block-box block-white'>
                     <IconButton
                       style={{ color: PALETTE_COLORS.black }}
                       onClick={() => (window.location.href = '/invoices')}
@@ -239,7 +225,7 @@ export const Home = () => {
                     >
                       <Add />
                     </IconButton>
-                  </Box>
+                  </Paper>
                 </Grid>
               </Grid>
             </Grid>

@@ -1,5 +1,5 @@
 import { cache, userSubscriptionProvider } from '@/providers';
-import { Alert, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -21,11 +21,12 @@ type SubscriptionBillingModalProps = {
 };
 
 export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ title, description, button }) => {
-  const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const { isPending, mutate, error: billingPortalError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
 
   const [searchParams] = useSearchParams();
 
-  const error = searchParams.get('stripeStatus') === 'error';
+  const error = searchParams.get('stripeStatus') === 'error' || !!billingPortalError;
+  const errorMessage = (billingPortalError as any)?.response?.data?.message;
 
   return (
     <>
@@ -33,7 +34,8 @@ export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ ti
       <DialogContent>
         {error && (
           <Alert severity='error' variant='filled'>
-            Une erreur s'est produite, veuillez recommencer.
+            <AlertTitle>Une erreur s'est produite.</AlertTitle>
+            {errorMessage}
           </Alert>
         )}
         <p>{description}</p>

@@ -1,0 +1,61 @@
+import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { getFileUrl, stringCutter } from '@/common/utils';
+import { clearPolygons, clearRoofDelimiter } from '@/providers';
+import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
+import { ChevronRight, Public } from '@mui/icons-material';
+import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton } from '@mui/material';
+import { FC } from 'react';
+import { useGetOne } from 'react-admin';
+import { useNavigate } from 'react-router';
+
+interface ProjectListItemProps {
+  draftAnnotation: DraftAreaPictureAnnotation;
+}
+
+export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) => {
+  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
+  const navigate = useNavigate();
+  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const annotatorComponentStore = useAnnotatorComponentStore();
+  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
+  const { setScreen } = useAnnotatorScreenSwitch();
+  const { reset: reset3DStore } = useAnnotator3DStore();
+
+  const navigateToAnnotation = () => {
+    const { fileId, id: pictureId } = draftAnnotation.areaPicture;
+    const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+    clearPolygons();
+    clearRoofDelimiter();
+    resetAnnotations();
+    reset3DStore();
+    annotatorComponentStore.reset();
+    setAnnotatorSidebarAccordionItem(0);
+    setScreen('annotator');
+    navigate(
+      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
+    );
+  };
+
+  return (
+    <ListItem
+      disablePadding
+      secondaryAction={
+        <IconButton>
+          <ChevronRight />
+        </IconButton>
+      }
+    >
+      <ListItemButton onClick={navigateToAnnotation}>
+        <ListItemAvatar>
+          <Avatar>
+            <Public />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={isLoading ? <Skeleton sx={{ width: '50%' }} /> : stringCutter(prospect.name, 35) || 'Nom non défini'}
+          secondary={stringCutter(draftAnnotation.areaPicture.address, 35)}
+        />
+      </ListItemButton>
+    </ListItem>
+  );
+};

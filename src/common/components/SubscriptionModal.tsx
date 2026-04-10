@@ -1,6 +1,6 @@
 import { useDialog } from '@/common/store/dialog';
 import { cache, userSubscriptionProvider } from '@/providers';
-import { Alert, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -16,12 +16,13 @@ const mutationFn = async () => {
 };
 
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
-  const { isPending, mutate } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const { isPending, mutate, error: subscriptionInitError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
   const { close } = useDialog();
 
   const [searchParams] = useSearchParams();
 
-  const error = searchParams.get('stripeStatus') === 'error';
+  const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
+  const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
   return (
     <>
@@ -29,7 +30,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       <DialogContent>
         {error && (
           <Alert severity='error' variant='filled'>
-            Une erreur s'est produite, veuillez recommencer.
+            <AlertTitle>Une erreur s'est produite.</AlertTitle>
+            {errorMessage}
           </Alert>
         )}
         <p>
