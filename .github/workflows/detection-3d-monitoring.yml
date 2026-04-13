@@ -102,7 +102,7 @@ jobs:
       - name: Monitor ${{ matrix.service }}
         id: monitor
         run: npx cypress run --browser chrome --headless --spec '${{ matrix.spec }}'
-        continue-on-error: true,
+        continue-on-error: true
 
       - name: Upload video to S3
         if: ${{ always() && steps.monitor.outcome == 'failure' }}
