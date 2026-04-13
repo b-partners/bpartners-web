@@ -1,3 +1,4 @@
+import { UrlParams } from '@bpartners/annotator-component';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useDialog } from '../store/dialog';
 import { Reload } from '../utils';
@@ -7,6 +8,7 @@ export const SubscriptionSuccessModal = () => {
   const { close } = useDialog();
 
   const handleClose = () => {
+    UrlParams.set('stripeStatus', '');
     Reload.force();
     close();
   };

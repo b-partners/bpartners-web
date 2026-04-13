@@ -1,4 +1,11 @@
-import { createLyonAnnotation, cypressTestResult, recordCypressTestResult, recordTestResult, testResults } from '../../../cypress/support/instatus-helper';
+import {
+  createLyonAnnotation,
+  createParthenayAnnotationDetection,
+  cypressTestResult,
+  recordCypressTestResult,
+  recordTestResult,
+  testResults,
+} from '../../../cypress/support/instatus-helper';
 import { recallDetectionGetById } from './awaitAsyncProcess.it.cy';
 
 const testCases = [
@@ -7,6 +14,14 @@ const testCases = [
     address: '2 Place Bellecour, 69002 Lyon',
     annotation: createLyonAnnotation,
     surface: 294.21,
+    contains: ['Usure Importante', 'Moisissure Clair', 'Cheminee', /Velux \w/, /Obstacle \w/],
+  },
+  {
+    name: 'Generate 3D on 1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
+    address: '1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France',
+    annotation: createParthenayAnnotationDetection,
+    surface: 218.75,
+    contains: ['Usure Importante', 'Moisissure Noircie', 'Moisissure Clair', 'Cheminee', /Velux \w/],
   },
 ];
 
@@ -71,25 +86,31 @@ describe('Roof detection', () => {
         cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
         cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
 
-        cy.contains('Usure Importante').parent('div').contains(/\dm²/);
-        cy.contains('Moisissure Clair').parent('div').contains(/\dm²/);
-        cy.contains('Cheminee').parent('div').contains(/\dm²/);
-        cy.contains(/Velux \w/)
-          .parent('div')
-          .contains(/\dm²/);
-        cy.contains(/Obstacle \w/)
-          .parent('div')
-          .contains(/\dm²/);
+        const checkShowedValues = new Promise(resolve =>
+          testCase.contains.forEach((text, index) => {
+            cy.contains(text).parent('div').contains(/\dm²/);
+            if (index === testCase.contains.length - 1) resolve(undefined);
+          })
+        );
 
-        cy.contains(/Note de dégradation globale :/);
+        checkShowedValues.then(() => {
+          cy.contains(/Note de dégradation globale :/);
 
-        cy.intercept('GET', '/toiture**').as('getLLMRepport');
+          cy.intercept('GET', '/toiture**').as('getLLMRepport');
 
-        cy.contains('Générer un rapport').click();
-        cy.wait('@getLLMRepport');
-        cy.get('canvas').should('not.exist');
-        cy.contains('COMPRENDRE VOTRE RAPPORT', { timeout: 10000 });
-        cy.contains('CONSEILS DE L’ARTISAN COUVREUR', { timeout: 10000 });
+          cy.contains('Générer un rapport').click();
+          cy.wait('@getLLMRepport');
+          cy.get('canvas').should('not.exist');
+          cy.contains('COMPRENDRE VOTRE RAPPORT', { timeout: 10000 });
+          cy.contains('CONSEILS DE L’ARTISAN COUVREUR', { timeout: 10000 });
+        });
+      });
+
+      cy.intercept('POST', '/accounts/**/annotations/exports').as('exportPDF');
+      cy.contains("Exporter l'analyse en PDF").click();
+
+      cy.wait('@exportPDF', { timeout: 60000 }).then(({ response }) => {
+        expect(response.statusCode).to.be.equal(200);
       });
     });
   });
