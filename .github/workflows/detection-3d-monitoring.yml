@@ -1,19 +1,9 @@
-name: Monitor 3D, Detection, PDF Generation on instatus
+name: Monitor 3D, Detection and PDF Generation it on instatus
 
 on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
-    inputs:
-      service:
-        description: 'Monitor (3d, detection and pdf generation or both)'
-        required: false
-        default: 'both'
-        type: choice
-        options:
-          - both
-          - 3d
-          - detection
 
 env:
   AWS_REGION: eu-west-3
@@ -23,25 +13,8 @@ env:
   PROD_REDIRECT_SUCCESS: https://dashboard.bpartners.app/login/success
 
 jobs:
-  monitor:
+  monitor-3D-detection:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - service: 3d
-            spec: 'src/**/3D_generator.it.cy.ts'
-            s3_folder: cypress-3D-videos
-            is_monitoring_3d: 'true'
-          - service: detection
-            spec: 'src/**/detection.it.cy.ts'
-            s3_folder: cypress-detection-videos
-            is_monitoring_3d: 'false'
-
-    if: |
-      github.event_name == 'schedule' ||
-      inputs.service == 'both' ||
-      inputs.service == matrix.service
 
     steps:
       - uses: actions/checkout@v4
@@ -88,26 +61,39 @@ jobs:
           echo REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} >> .env
           echo REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' >> .env
           echo REACT_APP_PROD_URL='${{ secrets.REACT_APP_PROD_URL }}' >> .env
-          echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }} >> .env
-          echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }} >> .env
+          echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
+          echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
           echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
           echo INSTATUS_API_KEY=${{ secrets.INSTATUS_API_KEY }} >> .env
           echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
-          echo INSTATUS_3D_COMPONENT_ID=${{ secrets.INSTATUS_3D_COMPONENT_ID }} >> .env
-          echo DASHBOARD_ADMIN_API_KEY=${{ secrets.DASHBOARD_ADMIN_API_KEY }} >> .env
+          echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
+          echo DASHBOARD_ADMIN_API_KEY=${{secrets.DASHBOARD_ADMIN_API_KEY}} >> .env
           echo EXCLUDE_INSTATUS_IT_SPEC=false >> .env
-          echo INSTATUS_DETECTION_COMPONENT_ID=${{ secrets.INSTATUS_DETECTION_COMPONENT_ID }} >> .env
-          echo INSTATUS_PDF_COMPONENT_ID=${{ secrets.INSTATUS_PDF_COMPONENT_ID }} >> .env
+          echo INSTATUS_DETECTION_COMPONENT_ID=${{secrets.INSTATUS_DETECTION_COMPONENT_ID}} >> .env
 
-      - name: Monitor ${{ matrix.service }}
-        id: monitor
-        run: npx cypress run --browser chrome --headless --spec '${{ matrix.spec }}'
+      - name: Monitor 3D Generation
+        id: monitor-3d
+        run: npx cypress run --browser chrome --headless --spec 'src/**/3D_generator.it.cy.ts'
         continue-on-error: true
 
-      - name: Upload video to S3
-        if: ${{ always() && steps.monitor.outcome == 'failure' }}
+      - name: Monitor Detection
+        id: monitor-detection
+        run: npx cypress run --browser chrome --headless --spec 'src/**/detection.it.cy.ts'
+        continue-on-error: true
+
+      - name: Upload 3D video to S3
+        if: ${{always() && steps.monitor-3d.outcome == 'failure'}}
         run: |
-          aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/${{ matrix.s3_folder }}/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
+          aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-3D-videos/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.BPARTNERS_AWS_REGION }}
+
+      - name: Upload Detection video to S3
+        if: ${{always() && steps.monitor-detection.outcome == 'failure'}}
+        run: |
+          aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-detection/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }}
