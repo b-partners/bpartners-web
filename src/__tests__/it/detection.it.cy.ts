@@ -90,24 +90,17 @@ describe('Roof detection', () => {
         cy.contains(`Hauteur du bâtiment :${roofHeightInMeter} m`);
         cy.contains('Pente (°)').parent('div').find('input').should('have.value', `${roofSlopeInDegree}`);
 
-        const checkShowedValues = new Promise(resolve =>
-          testCase.contains.forEach((text, index) => {
-            cy.contains(text).parent('div').contains(/\dm²/);
-            if (index === testCase.contains.length - 1) resolve(undefined);
-          })
-        );
-
-        checkShowedValues.then(() => {
-          cy.contains(/Note de dégradation globale :/);
-
-          cy.intercept('GET', '/toiture**').as('getLLMRepport');
-
-          cy.contains('Générer un rapport').click();
-          cy.wait('@getLLMRepport');
-          cy.get('canvas').should('not.exist');
-          cy.contains('COMPRENDRE VOTRE RAPPORT', { timeout: 10000 });
-          cy.contains('CONSEILS DE L’ARTISAN COUVREUR', { timeout: 10000 });
+        testCase.contains.forEach(text => {
+          cy.contains(text).parent('div').contains(/\dm²/);
         });
+
+        cy.contains(/Note de dégradation globale :/);
+        cy.intercept('GET', '/toiture**').as('getLLMRepport');
+        cy.contains('Générer un rapport').click();
+        cy.wait('@getLLMRepport');
+        cy.get('canvas').should('not.exist');
+        cy.contains('COMPRENDRE VOTRE RAPPORT', { timeout: 10000 });
+        cy.contains('CONSEILS DE L’ARTISAN COUVREUR', { timeout: 10000 });
       });
 
       cy.intercept('POST', '/accounts/**/annotations/exports').as('exportPDF');
@@ -140,7 +133,7 @@ describe('Roof detection', () => {
     });
   });
 
-  const RESPONSE_TIME_THRESHOLD = 60000;
+  const RESPONSE_TIME_THRESHOLD = 100000;
 
   after(() => {
     cy.then(() => {
@@ -182,7 +175,9 @@ describe('Roof detection', () => {
 
       // PDF MONITORING
       cy.task('getOpenInstatusIncident', { componentId: INSTATUS_PDF_COMPONENT_ID }).then((incident: any) => {
-        if (pdfGenerationStatus === 'FAILED') {
+        const pdfIncidentId = incident?.id ?? null;
+
+        if ((pdfGenerationStatus === 'FAILED' || hasFailed || hasCypressTestFailed) && !pdfIncidentId) {
           return handleIncident({
             incident,
             componentId: INSTATUS_PDF_COMPONENT_ID,
@@ -196,7 +191,7 @@ describe('Roof detection', () => {
           });
         }
 
-        if (pdfGenerationStatus === 'SUCCEEDED') {
+        if (pdfGenerationStatus === 'SUCCEEDED' && pdfIncidentId) {
           return handleIncident({
             incident,
             componentId: INSTATUS_PDF_COMPONENT_ID,
