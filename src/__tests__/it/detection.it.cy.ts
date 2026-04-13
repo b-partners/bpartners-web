@@ -25,6 +25,9 @@ const testCases = [
   },
 ];
 
+const INSTATUS_DETECTION_COMPONENT_ID = process.env.INSTATUS_DETECTION_COMPONENT_ID;
+const INSTATUS_PDF_COMPONENT_ID = process.env.INSTATUS_PDF_COMPONENT_ID;
+
 describe('Roof detection', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
@@ -32,6 +35,7 @@ describe('Roof detection', () => {
   });
 
   let prospectId: string;
+  let pdfGenerationStatus = 'SUCCEEDED ';
 
   testCases.forEach(testCase => {
     it(`on ${testCase.address}`, () => {
@@ -111,6 +115,9 @@ describe('Roof detection', () => {
 
       cy.wait('@exportPDF', { timeout: 60000 }).then(({ response }) => {
         expect(response.statusCode).to.be.equal(200);
+        if (response.statusCode != 200) {
+          pdfGenerationStatus = 'FAILED';
+        }
       });
     });
   });
@@ -141,85 +148,145 @@ describe('Roof detection', () => {
       const isSlow = testResults.some(r => r.responseTime > RESPONSE_TIME_THRESHOLD);
       const hasCypressTestFailed = cypressTestResult.some(r => r.status === 'FAILED');
 
-      cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`);
-      cy.log(`CypressTestResults = ${JSON.stringify(cypressTestResult, null, 2)}`);
+      const logIncident = (incident: any) => {
+        cy.log('Incident ID', incident?.id ?? null);
+        cy.log('Incident Status', incident?.status ?? null);
+      };
 
-      cy.task('getOpenInstatusIncident').then((incident: any) => {
+      const handleIncident = ({ incident, componentId, createPayload, updatePayload, resolveMessage }: any) => {
         const incidentId = incident?.id ?? null;
         const incidentStatus = incident?.status ?? null;
 
-        cy.log('Incident ID dans le test', incidentId);
-        cy.log('Status ID dans le test', incidentStatus);
+        logIncident(incident);
+
+        if (createPayload && !incidentId) {
+          return cy.task('createInstatusIncident', createPayload);
+        }
+
+        if (updatePayload && incidentId && incidentStatus !== updatePayload.status) {
+          return cy.task('updateInstatusIncident', {
+            componentId,
+            incidentId,
+            ...updatePayload,
+          });
+        }
+
+        if (resolveMessage && incidentId) {
+          return cy.task('resolveInstatusIncident', {
+            componentId,
+            incidentId,
+            message: resolveMessage,
+          });
+        }
+      };
+
+      // PDF MONITORING
+      cy.task('getOpenInstatusIncident', { componentId: INSTATUS_PDF_COMPONENT_ID }).then((incident: any) => {
+        if (pdfGenerationStatus === 'FAILED') {
+          return handleIncident({
+            incident,
+            componentId: INSTATUS_PDF_COMPONENT_ID,
+            createPayload: {
+              componentId: INSTATUS_PDF_COMPONENT_ID,
+              name: '[PDF GENERATION] failed to generate PDF',
+              message: 'Failed to generate PDF',
+              status: 'INVESTIGATING',
+              componentStatus: 'MAJOROUTAGE',
+            },
+          });
+        }
+
+        if (pdfGenerationStatus === 'SUCCEEDED') {
+          return handleIncident({
+            incident,
+            componentId: INSTATUS_PDF_COMPONENT_ID,
+            resolveMessage: 'PDF Generation succeeded',
+          });
+        }
+      });
+
+      // DETECTION MONITORING
+      cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`);
+      cy.log(`CypressTestResults = ${JSON.stringify(cypressTestResult, null, 2)}`);
+
+      cy.task('getOpenInstatusIncident', { componentId: INSTATUS_DETECTION_COMPONENT_ID }).then((incident: any) => {
+        const failedApiTests = testResults
+          .filter(r => r.status === 'FAILED')
+          .map(r => `${r.testName} (${r.responseTime}ms)`)
+          .join(', ');
+
+        const failedCypressTests = cypressTestResult
+          .filter(r => r.status === 'FAILED')
+          .map(r => `${r.testName} (${r.error})`)
+          .join(', ');
+
+        const slowTests = testResults
+          .filter(r => r.responseTime > RESPONSE_TIME_THRESHOLD)
+          .map(r => `${r.testName} (${r.responseTime}ms)`)
+          .join(', ');
 
         if (hasCypressTestFailed) {
-          const failedTests = cypressTestResult
-            .filter(r => r.status == 'FAILED')
-            .map(r => `${r.testName} (${r.error})`)
-            .join(', ');
-
-          if (!incidentId) {
-            return cy.task('createInstatusIncident', {
+          return handleIncident({
+            incident,
+            componentId: INSTATUS_DETECTION_COMPONENT_ID,
+            createPayload: {
+              componentId: INSTATUS_DETECTION_COMPONENT_ID,
               name: '[Cypress Error] Failed to process roof detection',
-              message: `Cypress test failed, ${failedTests}`,
+              message: `Cypress test failed: ${failedCypressTests}`,
               status: 'IDENTIFIED',
               componentStatus: 'DEGRADEDPERFORMANCE',
-            });
-          } else if (incidentId && incidentStatus != 'IDENTIFIED') {
-            return cy.task('updateInstatusIncident', {
-              incidentId,
-              message: `Cypress test failed, ${failedTests}`,
+            },
+            updatePayload: {
+              message: `Cypress test failed: ${failedCypressTests}`,
               status: 'IDENTIFIED',
               componentStatus: 'DEGRADEDPERFORMANCE',
-            });
-          }
+            },
+          });
         }
+
         if (hasFailed) {
-          const failedTests = testResults
-            .filter(r => r.status == 'FAILED')
-            .map(r => `${r.testName} (${r.responseTime}ms)`)
-            .join(', ');
-
-          if (!incidentId) {
-            return cy.task('createInstatusIncident', {
+          return handleIncident({
+            incident,
+            componentId: INSTATUS_DETECTION_COMPONENT_ID,
+            createPayload: {
+              componentId: INSTATUS_DETECTION_COMPONENT_ID,
               name: '[ROOF DETECTION] Failed to process detection',
-              message: `Failed to process roof detection on : ${failedTests}`,
+              message: `Failed on: ${failedApiTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
-            });
-          } else if (incidentId && incidentStatus != 'INVESTIGATING') {
-            return cy.task('updateInstatusIncident', {
-              incidentId,
-              message: `Failed to process roof detection on : ${failedTests}`,
+            },
+            updatePayload: {
+              message: `Failed on: ${failedApiTests}`,
               status: 'INVESTIGATING',
               componentStatus: 'MAJOROUTAGE',
-            });
-          }
-        } else if (isSlow) {
-          const slowTests = testResults
-            .filter(r => r.responseTime > RESPONSE_TIME_THRESHOLD)
-            .map(r => `${r.testName} (${r.responseTime}ms)`)
-            .join(', ');
-
-          if (incidentId && incidentStatus != 'MONITORING') {
-            return cy.task('updateInstatusIncident', {
-              incidentId,
-              message: `Detection took too much time on : ${slowTests}`,
-              status: 'MONITORING',
-              componentStatus: 'PARTIALOUTAGE',
-            });
-          } else if (!incidentId) {
-            return cy.task('createInstatusIncident', {
-              name: '[ROOF DETECTION] Slow detection',
-              message: `Detection took too much time on : ${slowTests}`,
-              status: 'MONITORING',
-              componentStatus: 'PARTIALOUTAGE',
-            });
-          }
-        } else {
-          if (incidentId) {
-            return cy.task('resolveInstatusIncident', { incidentId, message: 'Roof detection succeeded' });
-          }
+            },
+          });
         }
+
+        if (isSlow) {
+          return handleIncident({
+            incident,
+            componentId: INSTATUS_DETECTION_COMPONENT_ID,
+            createPayload: {
+              componentId: INSTATUS_DETECTION_COMPONENT_ID,
+              name: '[ROOF DETECTION] Slow detection',
+              message: `Slow on: ${slowTests}`,
+              status: 'MONITORING',
+              componentStatus: 'PARTIALOUTAGE',
+            },
+            updatePayload: {
+              message: `Slow on: ${slowTests}`,
+              status: 'MONITORING',
+              componentStatus: 'PARTIALOUTAGE',
+            },
+          });
+        }
+
+        return handleIncident({
+          incident,
+          componentId: INSTATUS_DETECTION_COMPONENT_ID,
+          resolveMessage: 'Roof detection succeeded',
+        });
       });
     });
   });

@@ -35,7 +35,7 @@ const testCases = [
     imageFixture: 'raw.jpeg',
   },
 ];
-
+const INSTATUS_3D_COMPONENT_ID = process.env.INSTATUS_3D_COMPONENT_ID;
 let prospectId: string;
 
 describe('Generate 3D', () => {
@@ -123,7 +123,7 @@ describe('Generate 3D', () => {
       cy.log(`TestResults = ${JSON.stringify(testResults, null, 2)}`);
       cy.log(`CypressTestResults = ${JSON.stringify(cypressTestResult, null, 2)}`);
 
-      cy.task('getOpenInstatusIncident').then((incident: any) => {
+      cy.task('getOpenInstatusIncident', { componentId: INSTATUS_3D_COMPONENT_ID }).then((incident: any) => {
         const incidentId = incident?.id ?? null;
         const incidentStatus = incident?.status ?? null;
 
@@ -138,6 +138,7 @@ describe('Generate 3D', () => {
 
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               name: '[Cypress Error] Failed to process 3D convertion',
               message: `Cypress test failed, ${failedTests}`,
               status: 'IDENTIFIED',
@@ -145,6 +146,7 @@ describe('Generate 3D', () => {
             });
           } else if (incidentId && incidentStatus != 'IDENTIFIED') {
             return cy.task('updateInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               incidentId,
               message: `Cypress test failed, ${failedTests}`,
               status: 'IDENTIFIED',
@@ -160,6 +162,7 @@ describe('Generate 3D', () => {
 
           if (!incidentId) {
             return cy.task('createInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               name: '[3D] Failed to process convertion',
               message: `Failed to generate 3D on : ${failedTests}`,
               status: 'INVESTIGATING',
@@ -167,6 +170,7 @@ describe('Generate 3D', () => {
             });
           } else if (incidentId && incidentStatus != 'INVESTIGATING') {
             return cy.task('updateInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               incidentId,
               message: `Failed to generate 3D on : ${failedTests}`,
               status: 'INVESTIGATING',
@@ -181,6 +185,7 @@ describe('Generate 3D', () => {
 
           if (incidentId && incidentStatus != 'MONITORING') {
             return cy.task('updateInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               incidentId,
               message: `Convertion took too much time on : ${slowTests}`,
               status: 'MONITORING',
@@ -188,6 +193,7 @@ describe('Generate 3D', () => {
             });
           } else if (!incidentId) {
             return cy.task('createInstatusIncident', {
+              componentId: INSTATUS_3D_COMPONENT_ID,
               name: '[3D] Slow conversion detected',
               message: `Convertion took too much time on : ${slowTests}`,
               status: 'MONITORING',
@@ -196,7 +202,7 @@ describe('Generate 3D', () => {
           }
         } else {
           if (incidentId) {
-            return cy.task('resolveInstatusIncident', { incidentId, message: '3D Generation succeeded' });
+            return cy.task('resolveInstatusIncident', { componentId: INSTATUS_3D_COMPONENT_ID, incidentId, message: '3D Generation succeeded' });
           }
         }
       });
