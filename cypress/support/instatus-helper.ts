@@ -19,9 +19,9 @@ export const recordCypressTestResult = (result: CypressTestResult) => {
 };
 
 const canvas_cursor_sel = 'annotator-canvas-cursor';
+const converter = (x: number, y: number) => [400 - 38 + x, 200 - 192 + y] as [number, number];
 
 export const createLyonAnnotation = () => {
-  const converter = (x: number, y: number) => [400 - 38 + x, 200 - 192 + y] as [number, number];
   cy.dataCy(canvas_cursor_sel).click(...converter(293, 192), { force: true });
   cy.dataCy(canvas_cursor_sel).click(...converter(312, 146), { force: true });
   cy.dataCy(canvas_cursor_sel).click(...converter(329, 144), { force: true });
@@ -39,6 +39,17 @@ export const createDijonAnnotation = () => {
   cy.dataCy(canvas_cursor_sel).click(557, 368, { force: true });
 };
 
+export const createParthenayAnnotationDetection = () => {
+  cy.dataCy(canvas_cursor_sel).click(...converter(302, 257), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(352, 271), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(349, 284), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(342, 298), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(337, 313), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(310, 310), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(291, 307), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(295, 281), { force: true });
+  cy.dataCy(canvas_cursor_sel).click(...converter(302, 257), { force: true });
+};
 export const createParthenayAnnotation = () => {
   cy.dataCy(canvas_cursor_sel).click(661, 234, { force: true });
   cy.dataCy(canvas_cursor_sel).click(645, 277, { force: true });
