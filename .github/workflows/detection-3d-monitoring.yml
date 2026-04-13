@@ -1,4 +1,4 @@
-name: Monitor 3D, Detection on instatus
+name: Monitor 3D, Detection, PDF Generation on instatus
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       service:
-        description: 'Monitor (3d, detection, or both)'
+        description: 'Monitor (3d, detection and pdf generation or both)'
         required: false
         default: 'both'
         type: choice
@@ -97,6 +97,7 @@ jobs:
           echo DASHBOARD_ADMIN_API_KEY=${{ secrets.DASHBOARD_ADMIN_API_KEY }} >> .env
           echo EXCLUDE_INSTATUS_IT_SPEC=false >> .env
           echo INSTATUS_DETECTION_COMPONENT_ID=${{ secrets.INSTATUS_DETECTION_COMPONENT_ID }} >> .env
+          echo INSTATUS_PDF_COMPONENT_ID=${{ secrets.INSTATUS_PDF_COMPONENT_ID }} >> .env
 
       - name: Monitor ${{ matrix.service }}
         id: monitor

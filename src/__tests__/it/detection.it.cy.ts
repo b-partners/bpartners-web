@@ -225,7 +225,6 @@ describe('Roof detection', () => {
           .map(r => `${r.testName} (${r.responseTime}ms)`)
           .join(', ');
 
-        // Priority: Cypress > API fail > Slow > OK
         if (hasCypressTestFailed) {
           return handleIncident({
             incident,
