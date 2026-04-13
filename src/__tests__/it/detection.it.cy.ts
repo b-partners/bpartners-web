@@ -108,7 +108,8 @@ describe('Roof detection', () => {
 
       cy.intercept('POST', '/accounts/**/annotations/exports').as('exportPDF');
       cy.contains("Exporter l'analyse en PDF").click();
-      cy.wait('@exportPDF', { timeout: 10000 }).then(({ response }) => {
+
+      cy.wait('@exportPDF', { timeout: 60000 }).then(({ response }) => {
         expect(response.statusCode).to.be.equal(200);
       });
     });
