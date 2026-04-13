@@ -131,3 +131,15 @@ export const annotatorFormItem: SxProps = {
     },
   },
 };
+
+export const saveAnnotationsButtonStyle: SxProps = {
+  width: {
+    xs: '90%',
+    md: '30%',
+    lg: '20%',
+  },
+  position: 'fixed',
+  bottom: '2%',
+  right: '2%',
+  zIndex: 999,
+};

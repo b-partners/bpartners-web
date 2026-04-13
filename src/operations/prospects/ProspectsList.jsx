@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidV4 } from 'uuid';
+import { v4 as uuidV4, v4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
 import {
@@ -94,7 +94,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           resetAnnotations();
           clearPolygons();
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
+            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}&draftAnnotationId=${v4()}`
           );
           return;
         } catch (err) {

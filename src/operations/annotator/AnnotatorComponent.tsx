@@ -20,6 +20,7 @@ import {
   ImageOptionTopBar,
   LlmResult,
   LlmSwitchButton,
+  SaveAnnotationsButton,
 } from './components';
 import { RoofAnalysisDialog } from './components/loading';
 import { AnnotatorComponentProps } from './types';
@@ -222,6 +223,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         draftAnnotationId={draftAnnotationId}
         rebeginAreaPictureDetails={rebeginAreaPictureDetails}
       />
+      <SaveAnnotationsButton />
     </Box>
   );
 };

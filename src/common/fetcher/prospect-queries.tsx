@@ -3,7 +3,7 @@ import { FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useCreate, useNotify } from 'react-admin';
 import { useNavigate } from 'react-router';
-import { v4 as uuidV4 } from 'uuid';
+import { v4 as uuidV4, v4 } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
 import { useDialog } from '../store/dialog';
 import { getFileUrl } from '../utils';
@@ -57,7 +57,7 @@ export const useMutateProspect = () => {
     };
     const onAreaPictureDetailsSuccess = () => {
       navigate(
-        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}`
+        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}&draftAnnotationId=${v4()}`
       );
       useDialog.getState().close();
     };
