@@ -29,18 +29,20 @@ const getCurrentAlertState = (isLoading: boolean, error: boolean) => {
 };
 
 export const SaveAnnotationsButton: FC<saveAnnotationsParams> = props => {
-  const { isSaveAnnotationsPending, saveAnnotationsError } = useSaveAnnotations(props);
+  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations(props);
   const [shouldShow, setShouldShow] = useState(false);
   const timeoutRef = useRef(null);
 
   useEffect(() => {
     if (isSaveAnnotationsPending) setShouldShow(true);
     else {
-      timeoutRef.current = setTimeout(() => setShouldShow(false), 2000);
-      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setShouldShow(false);
+        clearTimeout(timeoutRef.current);
+      }, 2000);
     }
     return () => clearTimeout(timeoutRef.current);
-  }, [isSaveAnnotationsPending]);
+  }, [isSaveAnnotationsPending, savedAnnotations]);
 
   if (!shouldShow) return null;
 
