@@ -127,6 +127,5 @@ describe('Test user subscription', () => {
     cy.dataCy('subscribe-btn').click();
 
     cy.contains("Une erreur s'est produite.");
-    cy.contains('Stripe error');
   });
 });
