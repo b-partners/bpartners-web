@@ -10,5 +10,5 @@ export const sentryErrorLogger = (message: string, data: any) => {
     companyInfo: { email },
   } = getCached.accountHolder() || { companyInfo: {} };
 
-  Sentry.logger.error(`${email} : ${message}`, { data, user: { id, firstName, lastName } });
+  if (!message.includes('WebGL context')) Sentry.logger.error(`${JSON.stringify(email)} : ${message}`, { data, user: { id, firstName, lastName } });
 };

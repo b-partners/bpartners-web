@@ -97,13 +97,14 @@ export const authProvider = {
 
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject({ message: false })),
 
-  checkError: ({ response }: any): Promise<any> => {
+  checkError: (currentError: any): Promise<any> => {
+    const { response } = currentError || {};
     const {
       status,
       config: { url },
     } = response;
 
-    sentryErrorLogger(response.message, { response });
+    sentryErrorLogger(response.message, { response, currentError });
 
     const unapprovedFiles = getCached.unapprovedFiles();
 
