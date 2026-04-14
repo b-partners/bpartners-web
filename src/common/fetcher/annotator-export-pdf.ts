@@ -2,18 +2,10 @@ import { AnnotationInfo } from '@/operations/annotator';
 import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs } from '@/operations/annotator/utils';
 import { areaPictureApi, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
-import * as Sentry from '@sentry/react';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { useAnnotator3DStore } from '../store';
-import { downloadPdf, jsonToFile } from '../utils';
-
-const reportToSentry = (message: string, data: Record<string, unknown>) => {
-  Sentry.withScope(scope => {
-    scope.setContext('data', data);
-    Sentry.captureException(new Error(message));
-  });
-};
+import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const labelNames: Record<string, number> = {};
@@ -70,7 +62,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const onSuccess = () => notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
   const onError = (error: any) => {
     try {
-      reportToSentry(error.response.data.message, { payload: exportAreaPictureAnnotation });
+      sentryErrorLogger(error.response.data.message, { payload: exportAreaPictureAnnotation });
     } finally {
       notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + error.response.data.message, { type: 'error', multiLine: true });
     }

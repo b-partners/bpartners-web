@@ -22,6 +22,7 @@ export * from './percent';
 export * from './print-error';
 export * from './redirect';
 export * from './reload';
+export * from './sentry-logger';
 export * from './string-cutter';
 export * from './to-array-buffer';
 export * from './url-params';
