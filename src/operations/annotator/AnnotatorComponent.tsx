@@ -9,6 +9,7 @@ import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { degradationLevels } from '../prospects/constants';
 import {
   AddressTopBar,
@@ -108,7 +109,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const { open: openDialog } = useDialog();
 
-  if (!filename || areaPictureLoading || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
+  if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
   }
 
@@ -223,7 +224,10 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         draftAnnotationId={draftAnnotationId}
         rebeginAreaPictureDetails={rebeginAreaPictureDetails}
       />
-      <SaveAnnotationsButton />
+      {createPortal(
+        <SaveAnnotationsButton analyseProperties={geojsonResult?.properties} areaPictureDetails={currentAreaPictureDetailsToUse} />,
+        document.getElementById('root')
+      )}
     </Box>
   );
 };

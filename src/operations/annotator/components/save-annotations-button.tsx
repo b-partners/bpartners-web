@@ -1,22 +1,55 @@
 import { saveAnnotationsParams, useSaveAnnotations } from '@/common/fetcher';
-import { Alert, CircularProgress } from '@mui/material';
-import { FC } from 'react';
-import { createPortal } from 'react-dom';
+import { Check, Error } from '@mui/icons-material';
+import { Alert, AlertColor, CircularProgress } from '@mui/material';
+import { FC, useEffect, useRef, useState } from 'react';
 import { saveAnnotationsButtonStyle as sx } from './style';
 
-export const SaveAnnotationsButton: FC<saveAnnotationsParams> = props => {
-  const { isSaveAnnotationsPending, saveAnnotations, saveAnnotationsError, savedAnnotations } = useSaveAnnotations(props);
+const alertConfig = {
+  success: {
+    color: 'success',
+    icon: <Check />,
+    text: 'Projet sauvegardé!',
+  },
+  error: {
+    color: 'error',
+    icon: <Error />,
+    text: "Une erreur s'est produite.",
+  },
+  loading: {
+    color: 'warning',
+    icon: <CircularProgress size={25} />,
+    text: 'Sauvegarde en cours ...',
+  },
+};
 
-  if (!isSaveAnnotationsPending) return null;
+const getCurrentAlertState = (isLoading: boolean, error: boolean) => {
+  if (error) return 'error';
+  if (isLoading) return 'loading';
+  return 'success';
+};
+
+export const SaveAnnotationsButton: FC<saveAnnotationsParams> = props => {
+  const { isSaveAnnotationsPending, saveAnnotationsError } = useSaveAnnotations(props);
+  const [shouldShow, setShouldShow] = useState(false);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (isSaveAnnotationsPending) setShouldShow(true);
+    else {
+      timeoutRef.current = setTimeout(() => setShouldShow(false), 2000);
+      clearTimeout(timeoutRef.current);
+    }
+    return () => clearTimeout(timeoutRef.current);
+  }, [isSaveAnnotationsPending]);
+
+  if (!shouldShow) return null;
+
+  const currentAlertState = getCurrentAlertState(isSaveAnnotationsPending, !!saveAnnotationsError);
+  const config = alertConfig[currentAlertState];
 
   return (
-    <>
-      {createPortal(
-        <Alert sx={sx} icon={<CircularProgress size={25} />}>
-          Sauvegarde en cours ...
-        </Alert>,
-        document.getElementById('root')
-      )}
-    </>
+    <Alert sx={sx} icon={config.icon} color={config.color as AlertColor} variant='outlined'>
+      {config.text}
+    </Alert>
   );
 };

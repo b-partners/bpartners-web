@@ -1,8 +1,9 @@
 import { AnalyseProperties } from '@/operations/annotator/components';
 import { calculateGlobalRate } from '@/operations/annotator/utils';
-import { annotationsAttributeMapper, annotatorMapper, clearPolygons, getCached } from '@/providers';
+import { annotationsAttributeMapper, annotatorMapper, cache, clearPolygons, getCached } from '@/providers';
 import { UrlParams } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
+import { useEffect, useRef } from 'react';
 import { useUpdate } from 'react-admin';
 import { annotatorStore, useAnnotatorComponentStore } from '../store';
 
@@ -21,6 +22,16 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
   const mutationFn = () => {
     const pictureId = areaPictureDetails.id;
     const annotationId = UrlParams.get('draftAnnotationId');
+
+    const currentData = { polygonList, annotationsInfos };
+
+    console.log(currentData, JSON.parse(getCached.annotationToSave()));
+
+    if (getCached.annotationToSave() === JSON.stringify(currentData)) return;
+    cache.annotationToSave(currentData);
+
+    if (polygonList.length === 0) return;
+
     const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
     const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
     const globalRate = calculateGlobalRate();
@@ -29,14 +40,24 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
       properties: {
         global_rate_type: globalRate?.type,
         global_rate_value: globalRate?.value,
-        roofHeight: analyseProperties?.roof_height_in_meters || annotationsInfos[0].height,
+        roofHeight: analyseProperties?.roof_height_in_meters || annotationsInfos[0]?.height,
         llm: getCached.llmResult() || llm,
         roofDelimiter: roofDelimiterLongLat,
       },
     };
-    saveAnnotations('drafts-annotations', { data: { requestBody }, meta: { pictureId, annotationId: annotationId }, id: requestBody.id });
+
+    saveAnnotations('drafts-annotations', { data: requestBody, meta: { pictureId, annotationId: annotationId }, id: requestBody.id });
     clearPolygons();
   };
+
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      mutationFn();
+    }, 5000);
+    return () => clearInterval(intervalRef.current);
+  }, []);
 
   return {
     saveAnnotations: mutationFn,
@@ -45,25 +66,3 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
     saveAnnotationsError: error,
   };
 };
-
-/**
- * error
- * } catch (e) {
-      printError(e);
-      notify('resources.annotations.creation.error', { type: 'error' });
-    } finally {
-      stopLoading();
-    }
-
-
-    redirect 
-    if (isDraft) {
-      notify('resources.draftsAnnotations.creation.success', { type: 'success' });
-      redirect('/prospects?tab=drafts');
-      return;
-    }
-    redirect(
-      'list',
-      `invoices?imgUrl=${isCropped ? getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE') : encodeURIComponent(imgUrl)}&pictureId=${pictureId}&annotationId=${annotationIdValue}&showCreateQuote=true`
-    );
- */

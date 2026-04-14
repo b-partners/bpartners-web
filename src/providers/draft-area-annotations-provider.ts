@@ -22,7 +22,7 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   },
   saveOrUpdate: async (annotations: any, options: any) => {
     const { accountId } = getCached.userInfo();
-    const { data } = await areaPictureApi().annotateAreaPicture(accountId, options.meta.pictureId, options.meta.annotationId, annotations);
-    return data;
+    const { data } = await areaPictureApi().annotateAreaPicture(accountId, options.meta.pictureId, options.meta.annotationId, annotations[0]);
+    return [data];
   },
 };

@@ -26,6 +26,7 @@ const loadingRedirectionItems = 'bp_loading_params_item';
 const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
+const annotationToSave = 'birdia_annotation_to_save';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -127,6 +128,9 @@ export const cache = {
   currentImageSize(imageSize: number) {
     localStorage.setItem(currentImageSize, JSON.stringify(imageSize));
   },
+  annotationToSave(annotation: any) {
+    localStorage.setItem(annotationToSave, JSON.stringify(annotation || {}));
+  },
 };
 
 export const getCached = {
@@ -221,6 +225,9 @@ export const getCached = {
   },
   loadingRedirection() {
     return localStorage.getItem(loadingRedirectionItems);
+  },
+  annotationToSave() {
+    return localStorage.getItem(annotationToSave);
   },
 };
 
