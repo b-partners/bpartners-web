@@ -1,3 +1,4 @@
+import { sentryErrorLogger } from '@/common/utils';
 import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Configuration, SecurityApi, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Amplify } from 'aws-amplify';
@@ -101,6 +102,8 @@ export const authProvider = {
       status,
       config: { url },
     } = response;
+
+    sentryErrorLogger(response.message, { response });
 
     const unapprovedFiles = getCached.unapprovedFiles();
 
