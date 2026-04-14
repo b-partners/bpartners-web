@@ -2,12 +2,16 @@ import {
   createLyonAnnotation,
   createParthenayAnnotationDetection,
   cypressTestResult,
+  pdfResults,
   recordCypressTestResult,
+  recordPDFResult,
   recordTestResult,
   testResults,
 } from '../../../cypress/support/instatus-helper';
 import { recallDetectionGetById } from './awaitAsyncProcess.it.cy';
 
+const INSTATUS_DETECTION_COMPONENT_ID = process.env.INSTATUS_DETECTION_COMPONENT_ID;
+const INSTATUS_PDF_COMPONENT_ID = process.env.INSTATUS_PDF_COMPONENT_ID;
 const testCases = [
   {
     name: 'Generate 3D on 2 Place Bellecour, 69002 Lyon',
@@ -25,8 +29,37 @@ const testCases = [
   },
 ];
 
-const INSTATUS_DETECTION_COMPONENT_ID = process.env.INSTATUS_DETECTION_COMPONENT_ID;
-const INSTATUS_PDF_COMPONENT_ID = process.env.INSTATUS_PDF_COMPONENT_ID;
+const logIncident = (incident: any) => {
+  cy.log('Incident ID', incident?.id ?? null);
+  cy.log('Incident Status', incident?.status ?? null);
+};
+
+const handleIncident = ({ incident, componentId, createPayload, updatePayload, resolveMessage }: any) => {
+  const incidentId = incident?.id ?? null;
+  const incidentStatus = incident?.status ?? null;
+
+  logIncident(incident);
+
+  if (createPayload && !incidentId) {
+    return cy.task('createInstatusIncident', createPayload);
+  }
+
+  if (updatePayload && incidentId && incidentStatus !== updatePayload.status) {
+    return cy.task('updateInstatusIncident', {
+      componentId,
+      incidentId,
+      ...updatePayload,
+    });
+  }
+
+  if (resolveMessage && incidentId) {
+    return cy.task('resolveInstatusIncident', {
+      componentId,
+      incidentId,
+      message: resolveMessage,
+    });
+  }
+};
 
 describe('Roof detection', () => {
   beforeEach(() => {
@@ -35,7 +68,6 @@ describe('Roof detection', () => {
   });
 
   let prospectId: string;
-  let pdfGenerationStatus = 'SUCCEEDED ';
 
   testCases.forEach(testCase => {
     it(`on ${testCase.address}`, () => {
@@ -107,9 +139,10 @@ describe('Roof detection', () => {
       cy.contains("Exporter l'analyse en PDF").click();
 
       cy.wait('@exportPDF', { timeout: 60000 }).then(({ response }) => {
-        expect(response.statusCode).to.be.equal(200);
-        if (response.statusCode != 200) {
-          pdfGenerationStatus = 'FAILED';
+        if (response.statusCode == 200) {
+          recordPDFResult({ status: 'SUCCEEDED' });
+        } else {
+          recordPDFResult({ status: 'FAILED' });
         }
       });
     });
@@ -140,64 +173,52 @@ describe('Roof detection', () => {
       const hasFailed = testResults.some(r => r.status === 'FAILED');
       const isSlow = testResults.some(r => r.responseTime > RESPONSE_TIME_THRESHOLD);
       const hasCypressTestFailed = cypressTestResult.some(r => r.status === 'FAILED');
+      const hasPDFGenerationFailed = pdfResults.some(r => r.status === 'FAILED');
 
-      const logIncident = (incident: any) => {
-        cy.log('Incident ID', incident?.id ?? null);
-        cy.log('Incident Status', incident?.status ?? null);
-      };
-
-      const handleIncident = ({ incident, componentId, createPayload, updatePayload, resolveMessage }: any) => {
-        const incidentId = incident?.id ?? null;
-        const incidentStatus = incident?.status ?? null;
-
-        logIncident(incident);
-
-        if (createPayload && !incidentId) {
-          return cy.task('createInstatusIncident', createPayload);
-        }
-
-        if (updatePayload && incidentId && incidentStatus !== updatePayload.status) {
-          return cy.task('updateInstatusIncident', {
-            componentId,
-            incidentId,
-            ...updatePayload,
-          });
-        }
-
-        if (resolveMessage && incidentId) {
-          return cy.task('resolveInstatusIncident', {
-            componentId,
-            incidentId,
-            message: resolveMessage,
-          });
-        }
-      };
+      cy.log(`PDF Generation results = ${JSON.stringify(pdfResults, null, 2)}`);
 
       // PDF MONITORING
       cy.task('getOpenInstatusIncident', { componentId: INSTATUS_PDF_COMPONENT_ID }).then((incident: any) => {
         const pdfIncidentId = incident?.id ?? null;
+        cy.log('hasPDFGenerationFailed' + hasPDFGenerationFailed);
+        cy.log('incidentId=' + pdfIncidentId);
 
-        if ((pdfGenerationStatus === 'FAILED' || hasFailed || hasCypressTestFailed) && !pdfIncidentId) {
+        if ((hasPDFGenerationFailed || hasFailed) && !pdfIncidentId) {
+          const message = hasFailed ? 'Error occurred during detection' : 'Error occurred during pdf generation';
+          const componentStatus = hasFailed ? 'PARTIALOUTAGE' : 'MAJOROUTAGE';
+          const status = hasFailed ? 'MONITORING' : 'INVESTIGATING';
           return handleIncident({
             incident,
             componentId: INSTATUS_PDF_COMPONENT_ID,
             createPayload: {
               componentId: INSTATUS_PDF_COMPONENT_ID,
               name: '[PDF GENERATION] failed to generate PDF',
-              message: 'Failed to generate PDF',
-              status: 'INVESTIGATING',
-              componentStatus: 'MAJOROUTAGE',
+              message: message,
+              status: status,
+              componentStatus: componentStatus,
             },
           });
         }
 
-        if (pdfGenerationStatus === 'SUCCEEDED' && pdfIncidentId) {
+        if (hasCypressTestFailed && !pdfIncidentId) {
           return handleIncident({
             incident,
             componentId: INSTATUS_PDF_COMPONENT_ID,
-            resolveMessage: 'PDF Generation succeeded',
+            createPayload: {
+              componentId: INSTATUS_PDF_COMPONENT_ID,
+              name: '[PDF GENERATION] Cypress error',
+              message: 'Cypress error occured',
+              status: 'IDENTIFIED',
+              componentStatus: 'DEGRADEDPERFORMANCE',
+            },
           });
         }
+
+        return handleIncident({
+          incident,
+          componentId: INSTATUS_DETECTION_COMPONENT_ID,
+          resolveMessage: 'Roof detection succeeded',
+        });
       });
 
       // DETECTION MONITORING
