@@ -1,10 +1,9 @@
 import { Box } from '@mui/material';
-import { ComponentType, useEffect } from 'react';
-import { ErrorProps } from 'react-admin';
+import { FC, useEffect } from 'react';
 import { sentryErrorLogger } from '../utils';
 import { EmptyList } from './EmptyList';
 
-const BPErrorPage: ComponentType<ErrorProps> = ({ error }) => {
+const BPErrorPage: FC<any> = ({ error }) => {
   useEffect(() => {
     sentryErrorLogger(error.message, { error });
   }, [error]);
