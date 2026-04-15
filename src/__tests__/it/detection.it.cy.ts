@@ -216,8 +216,8 @@ describe('Roof detection', () => {
 
         return handleIncident({
           incident,
-          componentId: INSTATUS_DETECTION_COMPONENT_ID,
-          resolveMessage: 'Roof detection succeeded',
+          componentId: INSTATUS_PDF_COMPONENT_ID,
+          resolveMessage: 'PDF Generation succeeded',
         });
       });
 
