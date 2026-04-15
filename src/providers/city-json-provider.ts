@@ -1,5 +1,6 @@
 import { retryUntilReady } from '@/common/fetcher';
-import { getApiKey } from './auth-provider';
+import { Redirect } from '@/common/utils';
+import { authProvider, getApiKey } from './auth-provider';
 
 const baseUrl = (process.env.REACT_APP_GEO_DETECTION_API ?? '').replace(/\/$/g, '');
 
@@ -48,6 +49,11 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
       ],
     }),
   });
+
+  if ([403, 401].includes(response.status)) {
+    authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
+    throw new Error();
+  }
 
   if (!response.ok) {
     throw new Error(`[CityJSONRequest] Status: FAILED — Unable to generate CityJSON.`);
