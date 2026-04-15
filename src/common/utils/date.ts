@@ -5,7 +5,17 @@ import { format, formatInTimeZone } from 'date-fns-tz';
 const INPUT_DATE_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 
 export const formatDateTime = (date: Date) => date.toLocaleString('pt-BR');
+export const formatDateTimeWithoutSec = (_date: string): string => {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const date = new Date(_date);
+  const dd = pad(date.getDate());
+  const mm = pad(date.getMonth() + 1);
+  const yyyy = date.getFullYear();
+  const hh = pad(date.getHours());
+  const min = pad(date.getMinutes());
 
+  return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+};
 export const formatDate = (date: Date) => date.toLocaleString('pt-BR').split(' ')[0].replace(/,/g, '');
 export const formatFrenchDate = (date: Date) =>
   date.toLocaleDateString('fr-FR', {

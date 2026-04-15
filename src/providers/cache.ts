@@ -149,7 +149,8 @@ export const getCached = {
     return +localStorage.getItem(unapprovedFiles);
   },
   roofDelimiterLongLatItem() {
-    return JSON.parse(localStorage.getItem(roofDelimiterLongLatItem)) as number[][];
+    const rdLLIAsString = localStorage.getItem(roofDelimiterLongLatItem);
+    return rdLLIAsString !== 'undefined' ? (JSON.parse(rdLLIAsString) as number[][]) : undefined;
   },
   account() {
     return getCachedObject<Account>(accountItem);
