@@ -17,6 +17,7 @@ export * from './includes-object';
 export * from './isBlank';
 export * from './json-to-file';
 export * from './money';
+export * from './object-utilities';
 export * from './pagination-utilities';
 export * from './percent';
 export * from './print-error';

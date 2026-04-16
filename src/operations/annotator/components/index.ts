@@ -16,3 +16,4 @@ export * from './image-option-top-bar';
 export * from './llm-result';
 export * from './llm-switch-button';
 export * from './RefocusImageButton';
+export * from './save-annotations-button';

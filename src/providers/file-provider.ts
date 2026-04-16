@@ -37,6 +37,13 @@ export const fileProvider: BpDataProviderType = {
       .uploadFile(accountId, fileId, binaryFile, fileType, { headers: { 'Content-Type': type } })
       .then(({ data }) => [data]);
   },
+  async update(resources: any): Promise<any> {
+    const { fileId, fileType, fileMimeType, fileAsArrayBuffer } = resources[0];
+    const { accountId } = getCached.userInfo();
+    return FileApi()
+      .uploadFile(accountId, fileId, fileAsArrayBuffer, fileType, { headers: { 'Content-Type': fileMimeType } })
+      .then(({ data }) => ({ data, id: fileId }));
+  },
 };
 
 export const saveOrUpdateLanding = async (fileId: string, file: File, type: string) => {

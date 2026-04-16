@@ -102,7 +102,7 @@ export const authProvider = {
     const {
       status,
       config: { url },
-    } = response;
+    } = response || { status: 200, config: { url: '' } };
 
     sentryErrorLogger(response.message, { response, currentError });
 

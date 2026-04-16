@@ -76,7 +76,7 @@ export const BpAdmin = () => {
         <Route path='/account/:id' element={<account.show />} />
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/annotator' element={<Annotator />} />
-        <Route path='/error' element={<BPErrorPage />} />
+        <Route path='/error' element={<BPErrorPage error={new Error()} />} />
       </CustomRoutes>
     </Admin>
   );
