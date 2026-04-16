@@ -44,8 +44,6 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
 
     if (areaPictureAnnotationFetcher) {
       areaPictureAnnotationFetcher(pictureId).then(areaPictureAnnotations => {
-        console.log({ areaPictureAnnotations });
-
         if (areaPictureAnnotations.length > 0) {
           const areaPictureAnnotation = areaPictureAnnotations[0];
           const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter } = areaPictureAnnotation?.properties || {};

@@ -9,7 +9,6 @@ const apiKey = `${process.env.LLM_API_KEY}`;
 
 export const useLlmResultQuery = () => {
   const { annotationInfos, polygon } = annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => a.isFirst))) || {};
-  console.log({ annotationInfos, polygon });
 
   const { moldRate, wearLevel, humidityLevel, comment, obstacle, area: _area, covering } = annotationInfos || {};
 
