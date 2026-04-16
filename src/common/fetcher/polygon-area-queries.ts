@@ -12,6 +12,7 @@ interface Params {
   polygon: Polygon;
   areaPictureDetails: AreaPictureDetails;
   onSuccess?: (params: { area: number; measurements: Measurement[] }) => void;
+  isAfterAnalyse?: boolean;
 }
 
 export const usePolygonAreaQuery = (params: Params) => {
@@ -23,7 +24,7 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const divisor = getCached.currentImageSize() ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
 
-    const [polygon] = shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true);
+    const [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
 
     const geoJson = polygonMapper.toRefererGeoJson(
       { ...polygon, points: polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
@@ -50,6 +51,7 @@ export const usePolygonAreaQuery = (params: Params) => {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
         const distance = +getDistance(prev, current, 0.2).toFixed(2);
+
         measurements.push({
           position: getCenter(polygon.points[i - 1], polygon.points[i]),
           unity: 'm',

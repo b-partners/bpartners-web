@@ -10,15 +10,17 @@ import { annotatorFormResultItemStyle as style } from './style';
 interface Props {
   areaPictureDetails: AreaPictureDetails;
   polygonId: string;
+  isAfterAnalyse?: boolean;
 }
 
-export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetails, polygonId }) => {
+export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetails, polygonId, isAfterAnalyse }) => {
   const { polygon: currentPolygon, annotationInfos, removeAnnotationInfo, updatePolygon } = annotatorStore.useOneAnnotationStore(polygonId);
 
   const { isLoading, data } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
     onSuccess: ({ area, measurements }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
+    isAfterAnalyse,
   });
 
   const togglePolygonVisibility = () => updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });

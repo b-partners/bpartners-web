@@ -12,7 +12,7 @@ import { useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
 import { AnnotationSlopeHeightAlert, AnnotatorFormItem, AnnotatorFormResultItem } from './components';
-import { AnnotatorFormState } from './utils';
+import { AnnotatorFormState, isAfterAnalyse } from './utils';
 
 export type SideBarProps = {
   draftAnnotationId?: string;
@@ -22,16 +22,20 @@ const AnnotatorItemList = () => {
   const { areaPictureDetails } = useAnnotatorComponentStore();
 
   const annotationsInfos = annotatorStore.useAnnotatorInfoStore();
+  const { polygonList } = annotatorStore.usePolygonStore();
+
+  const isAfterAnalyseValue = isAfterAnalyse(polygonList);
 
   return annotationsInfos.map(annotationInfo =>
     annotationInfo?.polygonId?.includes('___') ? (
       <AnnotatorFormResultItem
+        isAfterAnalyse={isAfterAnalyseValue}
         areaPictureDetails={areaPictureDetails}
         key={`${annotationInfo.polygonId}_AnnotatorFormResultItem`}
         polygonId={annotationInfo.polygonId}
       />
     ) : (
-      <AnnotatorFormItem polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />
+      <AnnotatorFormItem isAfterAnalyse={isAfterAnalyseValue} polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />
     )
   );
 };

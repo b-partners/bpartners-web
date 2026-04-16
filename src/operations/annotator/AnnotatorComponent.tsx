@@ -32,6 +32,7 @@ import {
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
+  isAfterAnalyse,
   measurementMapper,
   refreshImageUrl,
   shiftPolygons,
@@ -126,15 +127,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     }
   };
 
-  const processDetection = () => {
-    openDialog(
-      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonList?.[0]?.points?.slice()} />,
-      { maxWidth: 'lg' },
-      false
-    );
-    _processDetection();
-  };
-
   const imageSrcFromUrl = refreshImageUrl(getUrlParams(window.location.search, 'imgUrl'), currentAreaPictureDetailsToUse);
 
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
@@ -144,7 +136,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   };
 
-  const polygonListShifted = geojsonResult?.properties?.global_rate_type ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true);
+  const polygonListShifted = isAfterAnalyse(polygonList) ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true);
+
+  const processDetection = () => {
+    openDialog(
+      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
+      { maxWidth: 'lg' },
+      false
+    );
+    _processDetection();
+  };
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>

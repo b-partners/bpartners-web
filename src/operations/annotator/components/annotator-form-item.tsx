@@ -11,9 +11,10 @@ import { annotatorFormItem } from './style';
 
 interface Props {
   polygonId: string;
+  isAfterAnalyse?: boolean;
 }
 
-export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
+export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse }) => {
   const {
     polygon: currentPolygon,
     annotationInfos,
@@ -45,6 +46,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
     areaPictureDetails,
     polygon: currentPolygon,
     onSuccess: ({ area, measurements = [] }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
+    isAfterAnalyse,
   });
 
   const height = annotationInfos.height;
