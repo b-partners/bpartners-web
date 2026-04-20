@@ -5,7 +5,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
-import { copyObject } from '../utils';
+import { copyObject, ObjectUtilities } from '../utils';
 
 interface Annotation {
   isFirst: boolean;
@@ -59,9 +59,13 @@ const useAnnotatorStore = create<State & Actions>(set => ({
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
         },
       };
-      annotations[polygon.id] = annotation;
 
-      return { annotations };
+      annotations[polygon.id] = annotation;
+      const annotationsKeyNotAnalyseResult = Object.keys(annotations).filter(key => !key.includes(analyseGeneratedIdRef) || key.includes(roofGlobalIdRef));
+      const annotationsKeyAnalyseResult = Object.keys(annotations).filter(key => key.includes(analyseGeneratedIdRef) && !key.includes(roofGlobalIdRef));
+      const reorderAnnotations = ObjectUtilities.reorder(annotations, [...annotationsKeyNotAnalyseResult, ...annotationsKeyAnalyseResult]);
+
+      return { annotations: copyObject(reorderAnnotations) };
     }),
   replacePolygonById: (id, polygon) =>
     set(state => {
