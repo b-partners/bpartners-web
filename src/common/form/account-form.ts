@@ -11,12 +11,6 @@ const schema = z
       primary: requiredStringCustom(),
       secondary: requiredStringCustom(),
     }),
-    revenueTargets: z.array(
-      z.object({
-        amountTarget: z.custom(() => true),
-        year: z.custom(() => true),
-      })
-    ),
     contactAddress: z.object({
       postalCode: requiredStringCustom().refine(value => value.length === 5, { message: FieldErrorMessage.postalCodeNotValid }),
       city: requiredStringCustom(),
@@ -25,7 +19,6 @@ const schema = z
       prospectingPerimeter: z.custom(() => true),
     }),
     companyInfo: z.object({
-      townCode: requiredStringCustom().refine(value => value.length === 5, { message: FieldErrorMessage.townCodeNotValid }),
       tvaNumber: requiredStringCustom(),
       socialCapital: requiredStringCustom(),
       website: z.string(),
@@ -34,7 +27,6 @@ const schema = z
     }),
     officialActivityName: requiredStringCustom(),
     siren: requiredStringCustom(),
-    initialCashFlow: requiredStringCustom(),
     feedback: z.object({
       feedbackLink: requiredStringCustom(),
     }),
@@ -42,8 +34,6 @@ const schema = z
   .transform(data => ({
     ...data,
     companyInfo: { ...data.companyInfo, socialCapital: toMinors(Number(data.companyInfo.socialCapital)) },
-    revenueTargets: data.revenueTargets.map(revenueTarget => ({ ...revenueTarget, amountTarget: toMinors(Number(revenueTarget.amountTarget)) })),
-    initialCashFlow: toMinors(Number(data.initialCashFlow)),
   }));
 
 type AccountFormType = z.infer<typeof schema>;

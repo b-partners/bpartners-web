@@ -42,13 +42,6 @@ export const phoneValidator = (phoneNumber: string): any => {
   return true;
 };
 
-export const townCodeValidator = (townCode: number): any => {
-  if (townCode && `${townCode}`.length !== 5) {
-    return 'Le code de la commune de prospection doit être à 5 chiffres.';
-  }
-  return true;
-};
-
 /**
  * Check if two companyInfo are the same
  * @param currentCompanyInfo
@@ -60,19 +53,17 @@ export const companyInfoDiff = (currentCompanyInfo = {} as CompanyInfo, newCompa
     currentCompanyInfo.email !== newCompanyInfo.email ||
     currentCompanyInfo.website !== newCompanyInfo.website ||
     currentCompanyInfo.phone !== newCompanyInfo.phone ||
-    currentCompanyInfo.townCode !== newCompanyInfo.townCode ||
     currentCompanyInfo.tvaNumber !== newCompanyInfo.tvaNumber ||
     toMajors(currentCompanyInfo.socialCapital) !== +newCompanyInfo.socialCapital
   );
 };
 
 export const generalInfoDiff = (currentAccountHolder: AccountHolder, newGeneralInfo: any) => {
-  const { name, siren, initialCashflow, officialActivityName, contactAddress } = currentAccountHolder;
+  const { name, siren, officialActivityName, contactAddress } = currentAccountHolder;
   const { address, city, country, postalCode } = contactAddress || {};
   return !(
     newGeneralInfo.name !== name ||
     newGeneralInfo.siren !== siren ||
-    +newGeneralInfo.initialCashflow !== toMajors(initialCashflow) ||
     newGeneralInfo.officialActivityName !== officialActivityName ||
     newGeneralInfo.address !== address ||
     newGeneralInfo.city !== city ||

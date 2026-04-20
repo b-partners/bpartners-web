@@ -62,28 +62,11 @@ export const accountHolder1: AccountHolder = {
     tvaNumber: '123',
     isSubjectToVat: true,
     location: null,
-    townCode: 10201,
   },
   businessActivities: {
     primary: 'activité principale',
     secondary: 'activité secondaire',
   },
-  revenueTargets: [
-    {
-      year: new Date().getFullYear(),
-      amountTarget: 12000000,
-      amountAttempted: 1200000,
-      amountAttemptedPercent: 1000,
-      updatedAt: new Date(),
-    },
-    {
-      year: 2021,
-      amountTarget: 12000000,
-      amountAttempted: 13000000,
-      amountAttemptedPercent: 10833,
-      updatedAt: new Date(),
-    },
-  ],
 };
 
 export const validationRedirectionUrl: any = {

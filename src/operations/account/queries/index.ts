@@ -1,5 +1,3 @@
-export * from '@/operations/account/components/LogoShowLayout'; //
-export * from '@/operations/account/components/SubjectToVatSwitch'; //
-export * from '@/operations/account/components/types';
+export * from '@/operations/account/components/LogoShowLayout';
 export * from './business-activities-query';
 export * from './company-fields-query';

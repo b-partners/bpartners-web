@@ -12,19 +12,11 @@ export const businessActivitiesField = [
 ];
 
 export const getCompanyFields = (record: any) => {
-  const latestTarget = record?.revenueTargets?.at(-1);
-
   return [
     {
       label: 'Adresse',
       value: record?.contactAddress?.address,
       name: 'contactAddress.address',
-    },
-    {
-      label: 'Encaissement annuel à réaliser',
-      value: latestTarget?.amountTarget ? latestTarget.amountTarget.toLocaleString() + ' €' : 'Objectif non défini',
-      name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountTarget',
-      isMoney: true,
     },
     {
       label: 'Raison sociale',
@@ -61,17 +53,6 @@ export const getCompanyFields = (record: any) => {
       label: 'Numéro de TVA',
       value: record?.companyInfo?.tvaNumber,
       name: 'companyInfo.tvaNumber',
-    },
-    {
-      label: 'Code postal commune de prospection',
-      value: record?.companyInfo?.townCode,
-      name: 'companyInfo.townCode',
-    },
-    {
-      label: 'Trésorerie initial',
-      value: record?.initialCashFlow,
-      name: 'initialCashFlow',
-      isMoney: true,
     },
     {
       label: 'Site web',

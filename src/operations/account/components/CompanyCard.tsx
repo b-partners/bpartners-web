@@ -11,16 +11,12 @@ import { FormProvider } from 'react-hook-form';
 import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFieldsCompany } from '../queries';
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
 import { useUpdateFeedbackLink } from '../queries/feedback-query';
-import { useRevenueTargetsProvider } from '../queries/revenue-target-form-query';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
-import { SubjectToVatSwitch } from './SubjectToVatSwitch';
 
 const mapAccountHolder = (accountHolder: AccountHolder) => {
   return {
     ...accountHolder,
-    initialCashFlow: toMajors(Number(accountHolder.initialCashflow)),
     companyInfo: { ...accountHolder.companyInfo, socialCapital: toMajors(Number(accountHolder.companyInfo.socialCapital)) },
-    revenueTargets: accountHolder.revenueTargets.map(revenueTarget => ({ ...revenueTarget, amountTarget: toMajors(Number(revenueTarget.amountTarget)) })),
   } as AccountHolder;
 };
 
@@ -33,7 +29,6 @@ export const CompanyCard = () => {
   const { isUpldateGlobalInformation, updateGlobalInformation } = useUpdateGlobalInformationFieldsCompany();
   const { isaccountHolderProvider, accountHolderProvider } = useAccountHolderProviderFieldsCompany();
   const [editMode, setEditMode] = useState(false);
-  const { isRevenueTargetsProvider, updateRevenueTargets } = useRevenueTargetsProvider();
   const { isUpdateFeedbackLink, updateFeedbackLink } = useUpdateFeedbackLink();
   const toggleEditMode = () => {
     setEditMode(!editMode);
@@ -44,12 +39,10 @@ export const CompanyCard = () => {
     updateGlobalInformation({
       name: formData.name,
       siren: formData.siren,
-      initialCashFlow: formData.initialCashFlow,
       officialActivityName: formData.officialActivityName,
       contactAddress: formData.contactAddress,
     });
     accountHolderProvider([formData.companyInfo]);
-    updateRevenueTargets([formData.revenueTargets.at(-1)]);
     updateFeedbackLink(formData.feedback?.feedbackLink);
   });
 
@@ -98,10 +91,6 @@ export const CompanyCard = () => {
                 )}
               </Grid>
             ))}
-            <Grid item xs={12} sm={4}>
-              <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
-              <SubjectToVatSwitch data={record as any} />
-            </Grid>
           </Grid>
           {editMode && (
             <Box className='company-header'>
@@ -109,9 +98,7 @@ export const CompanyCard = () => {
                 data-cy='save-profile'
                 label='bp.action.save'
                 onClick={handleSubmit}
-                isLoading={
-                  isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isRevenueTargetsProvider || isUpdateFeedbackLink
-                }
+                isLoading={isUpldateBusinessJobLoading || isUpldateGlobalInformation || isaccountHolderProvider || isUpdateFeedbackLink}
                 className='save-information-button'
               />
             </Box>
