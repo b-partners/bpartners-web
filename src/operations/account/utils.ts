@@ -59,12 +59,11 @@ export const companyInfoDiff = (currentCompanyInfo = {} as CompanyInfo, newCompa
 };
 
 export const generalInfoDiff = (currentAccountHolder: AccountHolder, newGeneralInfo: any) => {
-  const { name, siren, initialCashflow, officialActivityName, contactAddress } = currentAccountHolder;
+  const { name, siren, officialActivityName, contactAddress } = currentAccountHolder;
   const { address, city, country, postalCode } = contactAddress || {};
   return !(
     newGeneralInfo.name !== name ||
     newGeneralInfo.siren !== siren ||
-    +newGeneralInfo.initialCashflow !== toMajors(initialCashflow) ||
     newGeneralInfo.officialActivityName !== officialActivityName ||
     newGeneralInfo.address !== address ||
     newGeneralInfo.city !== city ||

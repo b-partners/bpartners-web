@@ -50,8 +50,6 @@ describe(specTitle('Account'), () => {
         name: 'Numer_01',
         siren: '1001',
         officialActivityName: 'Activité_officielle',
-        initialCashFlow: 190000,
-        initialCashflow: 190000,
         contactAddress: {
           address: '40 Rue de la liberté',
           city: 'Paris',
@@ -61,7 +59,6 @@ describe(specTitle('Account'), () => {
       expect(req.body.name).to.deep.eq(newGlobalInfo.name);
       expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
       expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
-      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
       expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
       expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
       expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
@@ -147,10 +144,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Numéro de TVA');
     cy.name('companyInfo.tvaNumber').type('12345678901234');
 
-    //Field initial cash flow
-    cy.name('initialCashFlow').clear().type('1900');
-    cy.contains('Trésorerie initial');
-
     //Field web site
     cy.name('companyInfo.website').clear().type('www.example.com');
     cy.contains('Site web');
@@ -228,8 +221,6 @@ describe(specTitle('Account'), () => {
     cy.contains('1000,00 €');
     cy.contains('SIREN');
     cy.contains('Siren');
-    cy.contains('Trésorerie initial');
-    cy.contains('0,00 €');
     cy.contains('Lien du feedback');
     cy.contains('Micro-entreprise exonérée de TVA');
     cy.contains('Raison sociale');

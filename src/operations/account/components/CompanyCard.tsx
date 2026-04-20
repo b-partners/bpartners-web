@@ -18,7 +18,6 @@ import { SubjectToVatSwitch } from './SubjectToVatSwitch';
 const mapAccountHolder = (accountHolder: AccountHolder) => {
   return {
     ...accountHolder,
-    initialCashFlow: toMajors(Number(accountHolder.initialCashflow)),
     companyInfo: { ...accountHolder.companyInfo, socialCapital: toMajors(Number(accountHolder.companyInfo.socialCapital)) },
     revenueTargets: accountHolder.revenueTargets.map(revenueTarget => ({ ...revenueTarget, amountTarget: toMajors(Number(revenueTarget.amountTarget)) })),
   } as AccountHolder;
@@ -44,7 +43,6 @@ export const CompanyCard = () => {
     updateGlobalInformation({
       name: formData.name,
       siren: formData.siren,
-      initialCashFlow: formData.initialCashFlow,
       officialActivityName: formData.officialActivityName,
       contactAddress: formData.contactAddress,
     });

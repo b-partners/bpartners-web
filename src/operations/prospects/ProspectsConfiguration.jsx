@@ -32,13 +32,12 @@ const ProspectsConfiguration = () => {
 
   const updateProspectingPerimeter = async newPerimeter => {
     try {
-      const { id, name, officialActivityName, initialCashflow, siren, contactAddress } = await accountHolderProvider.getOne();
+      const { id, name, officialActivityName, siren, contactAddress } = await accountHolderProvider.getOne();
       const newGlobalInfo = {
         id: id,
         name: name,
         siren: siren,
         officialActivityName: officialActivityName,
-        initialCashFlow: initialCashflow,
         contactAddress: { ...contactAddress, prospectingPerimeter: newPerimeter },
       };
 

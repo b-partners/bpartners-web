@@ -63,12 +63,6 @@ export const getCompanyFields = (record: any) => {
       name: 'companyInfo.tvaNumber',
     },
     {
-      label: 'Trésorerie initial',
-      value: record?.initialCashFlow,
-      name: 'initialCashFlow',
-      isMoney: true,
-    },
-    {
       label: 'Site web',
       value: record?.companyInfo?.website,
       name: 'companyInfo.website',

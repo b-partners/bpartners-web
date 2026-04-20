@@ -33,7 +33,6 @@ const schema = z
     }),
     officialActivityName: requiredStringCustom(),
     siren: requiredStringCustom(),
-    initialCashFlow: requiredStringCustom(),
     feedback: z.object({
       feedbackLink: requiredStringCustom(),
     }),
@@ -42,7 +41,6 @@ const schema = z
     ...data,
     companyInfo: { ...data.companyInfo, socialCapital: toMinors(Number(data.companyInfo.socialCapital)) },
     revenueTargets: data.revenueTargets.map(revenueTarget => ({ ...revenueTarget, amountTarget: toMinors(Number(revenueTarget.amountTarget)) })),
-    initialCashFlow: toMinors(Number(data.initialCashFlow)),
   }));
 
 type AccountFormType = z.infer<typeof schema>;
