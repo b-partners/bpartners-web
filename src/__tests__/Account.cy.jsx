@@ -169,10 +169,6 @@ describe(specTitle('Account'), () => {
     cy.get('[role="option"]').contains('Barbier').click();
     cy.contains('Activité secondaire');
 
-    //Fiel subject to vat switch
-    cy.dataCy('companyInfo-subjectToVatSwitch').click({ force: false });
-    cy.contains('Micro-entreprise exonérée de TVA');
-
     //Interception de la requête
     cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, ({ body, reply }) => {
       expect(body).deep.equal({ feedbackLink: 'https://birdia.fr' });
@@ -209,7 +205,6 @@ describe(specTitle('Account'), () => {
     cy.contains('SIREN');
     cy.contains('Siren');
     cy.contains('Lien du feedback');
-    cy.contains('Micro-entreprise exonérée de TVA');
     cy.contains('Raison sociale');
     cy.contains('Numer');
     cy.contains('Activité officielle');
@@ -246,14 +241,17 @@ describe(specTitle('Account'), () => {
 
   it('Block Trial card INACTIVE', () => {
     const modifiedAccountHolders = [...accountHolders1];
+    const nextDate = new Date();
+
+    nextDate.setDate(nextDate.getDay() + 7);
     modifiedAccountHolders[0] = {
       ...modifiedAccountHolders[0],
       user: {
         ...modifiedAccountHolders[0].user,
         subscription: {
           status: 'INACTIVE',
-          start: '2022-01-01',
-          end: '2022-01-31',
+          start: new Date(),
+          end: nextDate,
         },
       },
     };
@@ -266,6 +264,8 @@ describe(specTitle('Account'), () => {
 
     cy.mount(<App />);
 
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.contains('Fermer').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
@@ -295,6 +295,8 @@ describe(specTitle('Account'), () => {
 
     cy.mount(<App />);
 
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.contains('Fermer').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');

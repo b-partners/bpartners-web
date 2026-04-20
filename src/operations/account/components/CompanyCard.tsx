@@ -12,7 +12,6 @@ import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFiel
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
 import { useUpdateFeedbackLink } from '../queries/feedback-query';
 import { businessActivitiesField, getCompanyFields } from './CompanyFields';
-import { SubjectToVatSwitch } from './SubjectToVatSwitch';
 
 const mapAccountHolder = (accountHolder: AccountHolder) => {
   return {
@@ -92,10 +91,6 @@ export const CompanyCard = () => {
                 )}
               </Grid>
             ))}
-            <Grid item xs={12} sm={4}>
-              <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
-              <SubjectToVatSwitch data={record as any} />
-            </Grid>
           </Grid>
           {editMode && (
             <Box className='company-header'>
