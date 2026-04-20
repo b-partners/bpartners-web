@@ -6,7 +6,7 @@ import { UrlParams } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { debounce } from '@mui/material';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useUpdate } from 'react-admin';
 import { annotatorStore, useAnnotatorComponentStore } from '../store';
 
@@ -21,7 +21,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
   const { llm } = useAnnotatorComponentStore();
 
   const debouncedSave = useCallback(
-    debounce((...any: Parameters<typeof saveAnnotations>) => saveAnnotations(...any), 5000),
+    debounce((...any: Parameters<typeof saveAnnotations>) => saveAnnotations(...any), 10000),
     []
   );
 
@@ -43,12 +43,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
       const pictureId = areaPictureDetails.id;
       const annotationId = UrlParams.get('draftAnnotationId');
 
-      const currentData = { polygonList, annotationsInfos };
-
-      console.log({
-        test: JSON.parse(getCached.annotationToSave()),
-        currentData,
-      });
+      const currentData = { polygonList: polygonList.map(p => ({ ...p, measurements: [] as any })), annotationsInfos };
 
       if (_.isEqual(JSON.parse(getCached.annotationToSave()), currentData)) return;
       cache.annotationToSave(currentData);
@@ -74,19 +69,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
     });
   }, [analyseProperties]);
 
-  const mutationFn = () => {};
-
-  const intervalRef = useRef(null);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      mutationFn();
-    }, 5000);
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
   return {
-    saveAnnotations: mutationFn,
     savedAnnotations: data,
     isSaveAnnotationsPending: isPending,
     saveAnnotationsError: error,

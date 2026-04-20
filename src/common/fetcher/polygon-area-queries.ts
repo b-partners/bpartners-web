@@ -66,5 +66,5 @@ export const usePolygonAreaQuery = (params: Params) => {
     return { area, measurements };
   };
 
-  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id, JSON.stringify(params.polygon?.points)] });
+  return useQuery({ queryFn, queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points)] });
 };

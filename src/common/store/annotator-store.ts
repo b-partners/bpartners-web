@@ -19,6 +19,7 @@ interface State {
 
 interface Actions {
   setAnnotations: (annotations: State['annotations']) => void;
+  replacePolygonById: (id: string, polygon: Polygon) => void;
   updateAnnotationInfo: (annotation: AnnotationInfo) => void;
   removeAnnotationInfo: (id: string) => void;
   addPolygon: (polygon: Polygon) => void;
@@ -60,6 +61,13 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       };
       annotations[polygon.id] = annotation;
 
+      return { annotations };
+    }),
+  replacePolygonById: (id, polygon) =>
+    set(state => {
+      const annotations = copyObject(state.annotations);
+      if (!annotations[id]) return { annotations };
+      annotations[id].polygon = polygon;
       return { annotations };
     }),
   updatePolygon: (id, polygon) =>
@@ -154,12 +162,19 @@ const usePolygonStore = () => {
     return currentPolygons;
   });
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
+  const replacePolygonById = useAnnotatorStore(params => params.replacePolygonById);
   const polygonIdList = polygonList.map(a => a.id);
 
   const setPolygons: Dispatch<SetStateAction<Polygon[]>> = _polygon => {
     const polygon = typeof _polygon === 'function' ? _polygon(polygonList) : _polygon;
     const newPolygon = polygon.find(p => !polygonIdList.includes(p.id));
-    if (newPolygon) addPolygon(newPolygon);
+    if (newPolygon) return addPolygon(newPolygon);
+
+    const differentPolygon = polygon.find(
+      p => JSON.stringify(p.points) !== JSON.stringify(annotatorStore.useAnnotatorStore.getState().annotations[p.id].polygon.points)
+    );
+
+    if (differentPolygon) return replacePolygonById(differentPolygon.id, differentPolygon);
   };
 
   return { polygonList, setPolygons };
