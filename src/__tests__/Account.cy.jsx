@@ -56,7 +56,6 @@ describe(specTitle('Account'), () => {
           address: '40 Rue de la liberté',
           city: 'Paris',
           country: 'France',
-          postalCode: '12032',
         },
       };
       expect(req.body.name).to.deep.eq(newGlobalInfo.name);
@@ -66,7 +65,6 @@ describe(specTitle('Account'), () => {
       expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
       expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
       expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
-      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
       req.reply(accountHolders1[0]);
     }).as('updateAccountHolder');
     const newAccountHolder = { ...accountHolders1[0] };
@@ -137,12 +135,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Activité officielle');
     cy.name('officialActivityName').type('Activité_officielle');
 
-    //Field postal code
-    cy.name('contactAddress.postalCode').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Code postal');
-    cy.name('contactAddress.postalCode').type('12032');
-
     //Field siren
     cy.name('siren').clear();
     cy.contains('Ce champ est requis.');
@@ -154,12 +146,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis.');
     cy.contains('Numéro de TVA');
     cy.name('companyInfo.tvaNumber').type('12345678901234');
-
-    //Field town code
-    cy.name('companyInfo.townCode').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Code postal commune de prospection');
-    cy.name('companyInfo.townCode').type('75001');
 
     //Field initial cash flow
     cy.name('initialCashFlow').clear().type('1900');

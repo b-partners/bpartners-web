@@ -63,11 +63,6 @@ export const getCompanyFields = (record: any) => {
       name: 'companyInfo.tvaNumber',
     },
     {
-      label: 'Code postal commune de prospection',
-      value: record?.companyInfo?.townCode,
-      name: 'companyInfo.townCode',
-    },
-    {
       label: 'Trésorerie initial',
       value: record?.initialCashFlow,
       name: 'initialCashFlow',

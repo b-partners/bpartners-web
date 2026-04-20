@@ -25,7 +25,6 @@ const schema = z
       prospectingPerimeter: z.custom(() => true),
     }),
     companyInfo: z.object({
-      townCode: requiredStringCustom().refine(value => value.length === 5, { message: FieldErrorMessage.townCodeNotValid }),
       tvaNumber: requiredStringCustom(),
       socialCapital: requiredStringCustom(),
       website: z.string(),
