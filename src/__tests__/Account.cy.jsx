@@ -71,13 +71,6 @@ describe(specTitle('Account'), () => {
       newAccountHolder.businessActivities = newBusinessActivity;
       req.reply(newAccountHolder);
     });
-    const newRevenueTargets = [{ amountTarget: 150000, year: 2021 }];
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
-      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
-      const response = { ...accountHolders1[0] };
-      response.revenueTargets = newRevenueTargets;
-      req.reply(response);
-    }).as('updateRevenueTargets');
     cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
       expect(req.body).eql({ feedbackLink: validLink });
       req.reply(accountHoldersFeedbackLink);
@@ -103,10 +96,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Ce champ est requis.');
     cy.contains('Adresse');
     cy.name('contactAddress.address').type('40 Rue de la liberté');
-
-    //Field revenue targets
-    cy.name('revenueTargets.1.amountTarget').clear().type('1500');
-    cy.contains('Encaissement annuel à réaliser');
 
     // Field name
     cy.name('name').clear();
@@ -215,8 +204,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Madagascar');
     cy.contains('Activité secondaire');
     cy.contains('activité secondaire');
-    cy.contains('Encaissement annuel à réaliser');
-    cy.contains('120000,00 €');
     cy.contains('Capital social');
     cy.contains('1000,00 €');
     cy.contains('SIREN');

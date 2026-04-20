@@ -12,19 +12,11 @@ export const businessActivitiesField = [
 ];
 
 export const getCompanyFields = (record: any) => {
-  const latestTarget = record?.revenueTargets?.at(-1);
-
   return [
     {
       label: 'Adresse',
       value: record?.contactAddress?.address,
       name: 'contactAddress.address',
-    },
-    {
-      label: 'Encaissement annuel à réaliser',
-      value: latestTarget?.amountTarget ? latestTarget.amountTarget.toLocaleString() + ' €' : 'Objectif non défini',
-      name: 'revenueTargets.' + (record?.revenueTargets?.length - 1) + '.amountTarget',
-      isMoney: true,
     },
     {
       label: 'Raison sociale',

@@ -4,7 +4,6 @@ import {
   BusinessActivity,
   CompanyBusinessActivity,
   CompanyInfo,
-  CreateAnnualRevenueTarget,
   UpdateAccountHolder,
 } from '@bpartners/typescript-client';
 import { asyncGetAccountId, asyncGetUser, BpDataProviderType, cache, getCached, userAccountsApi } from '.';
@@ -37,14 +36,6 @@ export const businessActivitiesProvider = {
   },
   getJobList: async (): Promise<BusinessActivity[]> => {
     return (await userAccountsApi().getBusinessActivities(1, 100)).data;
-  },
-};
-
-export const revenueTargetsProvider = {
-  update: async (resources: CreateAnnualRevenueTarget[]): Promise<AccountHolder> => {
-    const { accountHolderId, accountId, userId } = getCached.userInfo();
-    const { data } = await userAccountsApi().updateRevenueTargets(userId, accountId, accountHolderId, resources);
-    return cache.accountHolder(data);
   },
 };
 
