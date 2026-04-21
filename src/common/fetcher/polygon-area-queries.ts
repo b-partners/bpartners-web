@@ -18,7 +18,8 @@ interface Params {
 export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
     const imageUrl = UrlParams.get('imgUrl');
-    const imageSize = getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
+    const imageSize =
+      params.isAfterAnalyse && UrlParams.get('useDrafts') === 'true' ? 2048 : getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
 
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
