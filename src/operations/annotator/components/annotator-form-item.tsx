@@ -47,6 +47,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
     polygon: currentPolygon,
     onSuccess: ({ area, measurements = [] }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
     isAfterAnalyse,
+    annotationInfos,
   });
 
   const height = annotationInfos.height;

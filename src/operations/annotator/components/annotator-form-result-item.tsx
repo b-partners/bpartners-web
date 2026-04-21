@@ -21,6 +21,7 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetai
     polygon: currentPolygon,
     onSuccess: ({ area, measurements }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
     isAfterAnalyse,
+    annotationInfos,
   });
 
   const togglePolygonVisibility = () => updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });

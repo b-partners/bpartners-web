@@ -1,3 +1,4 @@
+import { AnnotationInfo } from '@/operations/annotator';
 import { getCenter, shiftPolygons } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotatorProvider, getCached, polygonMapper } from '@/providers';
@@ -10,6 +11,7 @@ import { copyObject, getImageSize, UrlParams } from '../utils';
 
 interface Params {
   polygon: Polygon;
+  annotationInfos: AnnotationInfo;
   areaPictureDetails: AreaPictureDetails;
   onSuccess?: (params: { area: number; measurements: Measurement[] }) => void;
   isAfterAnalyse?: boolean;
@@ -43,7 +45,7 @@ export const usePolygonAreaQuery = (params: Params) => {
       coordinates.push({ latitude, longitude: all_points_y[index] });
     });
 
-    const area = +getAreaOfPolygon(coordinates).toFixed(2);
+    const area = +(getAreaOfPolygon(coordinates) / (params.annotationInfos.slope ? Math.cos(params.annotationInfos.slope * (Math.PI / 180)) : 1)).toFixed(2);
 
     const measurements: Measurement[] = [];
 
@@ -67,5 +69,5 @@ export const usePolygonAreaQuery = (params: Params) => {
     return { area, measurements };
   };
 
-  return useQuery({ queryFn, queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points)] });
+  return useQuery({ queryFn, queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points), params.annotationInfos.slope] });
 };
