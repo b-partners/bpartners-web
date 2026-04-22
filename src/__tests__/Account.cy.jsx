@@ -127,12 +127,6 @@ describe(specTitle('Account'), () => {
     cy.contains('SIREN');
     cy.name('siren').type('1001');
 
-    //Field TVA
-    cy.name('companyInfo.tvaNumber').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Numéro de TVA');
-    cy.name('companyInfo.tvaNumber').type('12345678901234');
-
     //Field web site
     cy.name('companyInfo.website').clear().type('www.example.com');
     cy.contains('Site web');
@@ -209,8 +203,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Numer');
     cy.contains('Activité officielle');
     cy.contains('Activité officielle');
-    cy.contains('Numéro de TVA');
-    cy.contains('123');
     cy.contains('Site web');
     cy.contains('https://bpartners.app');
     cy.contains('Activité principale');

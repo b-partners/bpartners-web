@@ -50,11 +50,6 @@ export const getCompanyFields = (record: any) => {
       name: 'siren',
     },
     {
-      label: 'Numéro de TVA',
-      value: record?.companyInfo?.tvaNumber,
-      name: 'companyInfo.tvaNumber',
-    },
-    {
       label: 'Site web',
       value: record?.companyInfo?.website,
       name: 'companyInfo.website',
