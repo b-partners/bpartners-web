@@ -4,9 +4,10 @@ import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import React, { ChangeEvent, FC, FormEvent, useState } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import React, { FC, FormEvent, useState } from 'react';
 import AnnotatorForm from './AnnotatorForm';
+import { FreeAutocompleteInput } from './free-autocomplete-input';
 import { annotatorFormItem } from './style';
 
 interface Props {
@@ -26,10 +27,10 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
   const [isExpanded, setIsExpanded] = useState(isFirst);
   const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
 
-  const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeWihoutEvent = (value: string) => {
     event.stopPropagation();
     const tempAnnotationInfos = copyObject(annotationInfos);
-    tempAnnotationInfos.labelType = id as typeof tempAnnotationInfos.labelType;
+    tempAnnotationInfos.labelType = value as any;
     updateAnnotationInfo(tempAnnotationInfos);
   };
 
@@ -110,13 +111,12 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
             </Stack>
             <Divider sx={{ marginY: 1 }} />
             {!isExpanded && (
-              <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type du label'>
-                {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
-                  <MenuItem onClick={handleChangeLabelType(id)} key={name} value={id}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <FreeAutocompleteInput
+                onChange={handleChangeWihoutEvent}
+                options={ANNOTATION_LABELS_CHOICES}
+                label='Type'
+                defaultValue={annotationInfos.labelType}
+              />
             )}
           </Box>
         </AccordionSummary>

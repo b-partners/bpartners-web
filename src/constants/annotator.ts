@@ -8,17 +8,6 @@ export const ANNOTATION_LABELS_TRANSLATION = {
 export type AnnotationLabelsType = typeof ANNOTATION_LABELS_TRANSLATION;
 export const ANNOTATION_LABELS_CHOICES = toRaInputChoices(ANNOTATION_LABELS_TRANSLATION);
 
-export const annotationLabelType = [
-  {
-    value: 'roof',
-    label: 'Toit',
-  },
-  {
-    value: 'velux',
-    label: 'Velux',
-  },
-];
-
 export const coveringTypeMap = {
   ROOF_ARDOISE: 'Ardoise',
   ROOF_ASPHALTE_BITUME: 'Asphalte Bitume',

@@ -1,6 +1,10 @@
 import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
+export const FreeAutocompleteInputStyle: SxProps = {
+  width: '100%',
+};
+
 export const annotatorActionButtonsStyle: SxProps = {
   width: '100%',
   display: 'flex',
