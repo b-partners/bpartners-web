@@ -23,11 +23,11 @@ export const ThreeDSelectDialog = () => {
       </DialogTitle>
       <DialogContent>
         <TextField value={state} sx={{ my: 1 }} label='Mode de génération' fullWidth select>
-          <MenuItem onClick={() => setState('pan')} value='pan'>
-            Pan
-          </MenuItem>
           <MenuItem onClick={() => setState('roof')} value='roof'>
             Emprise
+          </MenuItem>
+          <MenuItem onClick={() => setState('pan')} value='pan'>
+            Pan
           </MenuItem>
         </TextField>
       </DialogContent>

@@ -58,7 +58,8 @@ export const FreeAutocompleteInput: FC<FreeAutocompleteInputProps> = props => {
         freeSolo
         options={props.options}
         getOptionLabel={option => (typeof option === 'string' ? option : option.name)}
-        isOptionEqualToValue={() => true}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        filterOptions={options => options}
         inputValue={inputValue}
         onChange={handleAutocompleteChange}
         onInputChange={handleInputChange}
