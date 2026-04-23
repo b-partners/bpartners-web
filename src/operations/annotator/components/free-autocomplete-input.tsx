@@ -49,7 +49,7 @@ export const FreeAutocompleteInput: FC<FreeAutocompleteInputProps> = props => {
 
   const handleBlur = () => {
     const currentValue = props.options.find(({ name }) => name?.toLowerCase() === inputValue?.toLowerCase());
-    emitChange(currentValue?.id || inputValue);
+    emitChange(currentValue?.id || inputValue || props.defaultValue);
   };
 
   return (
@@ -58,7 +58,7 @@ export const FreeAutocompleteInput: FC<FreeAutocompleteInputProps> = props => {
         freeSolo
         options={props.options}
         getOptionLabel={option => (typeof option === 'string' ? option : option.name)}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
+        isOptionEqualToValue={() => true}
         inputValue={inputValue}
         onChange={handleAutocompleteChange}
         onInputChange={handleInputChange}

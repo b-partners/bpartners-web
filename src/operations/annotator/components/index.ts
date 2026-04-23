@@ -1,3 +1,4 @@
+export * from './3d-select-dialog';
 export * from './address-top-bar';
 export * from './analyse-result-button';
 export * from './annotation-item-label-type-select';

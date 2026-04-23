@@ -4,6 +4,7 @@ import { Wearness } from '@bpartners/typescript-client';
 export const ANNOTATION_LABELS_TRANSLATION = {
   roof: 'Toit',
   velux: 'Velux',
+  pan: 'Pan',
 } as const;
 export type AnnotationLabelsType = typeof ANNOTATION_LABELS_TRANSLATION;
 export const ANNOTATION_LABELS_CHOICES = toRaInputChoices(ANNOTATION_LABELS_TRANSLATION);

@@ -4,7 +4,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
-import { useAnnotator3DStore } from '../store';
+import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
@@ -44,6 +44,7 @@ const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: Are
 export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPicture?: AreaPictureDetails, active?: boolean) => {
   const hasPolygonFromAnnotator = !!polygonFromAnnotator;
   const { setCityJsonModel } = useAnnotator3DStore();
+  const { threeDMode } = useAnnotatorScreenSwitch();
 
   return useQuery({
     enabled: active && hasPolygonFromAnnotator,
@@ -55,10 +56,21 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
 
-      const mappedCoordinates =
-        (getCached.roofDelimiterLongLatItem() as [number, number][]) || (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture));
+      let mappedCoordinates = [];
 
-      const data = await getCityJSON(cityJSONRequestId, mappedCoordinates);
+      if (threeDMode === 'roof') {
+        mappedCoordinates = [
+          (getCached.roofDelimiterLongLatItem() as [number, number][]) || (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture)),
+        ];
+      } else {
+        const pans = Object.values(annotatorStore.useAnnotatorStore.getState().annotations)
+          .filter(annotation => annotation.annotationInfos.labelType === 'pan')
+          .map(annotation => mapPixelPolygonToLatLonPolygon(annotation.polygon, areaPicture));
+
+        mappedCoordinates = (await Promise.all(pans)).map(a => [a]) as any;
+      }
+
+      const data = await getCityJSON(cityJSONRequestId, mappedCoordinates, threeDMode === 'pan');
       if (data && data.transform) setCityJsonModel(data);
       return data;
     },

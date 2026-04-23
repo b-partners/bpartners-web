@@ -26,7 +26,11 @@ export interface CityJSONRequest {
   cityJsons: CityJSONUrl[];
 }
 
-export const processCityJSONRequest: (id: string, roofDelimiter: [number, number][]) => Promise<CityJSONRequest> = async (id, roofDelimiter) => {
+export const processCityJSONRequest: (id: string, roofDelimiter: [number, number][][], usePan?: boolean) => Promise<CityJSONRequest> = async (
+  id,
+  roofDelimiter,
+  usePan = false
+) => {
   const apiKey = await getApiKey();
 
   const response = await fetch(`${baseUrl}/city-jsons/${id}/process`, {
@@ -37,13 +41,14 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
     },
     body: JSON.stringify({
       id,
+      delimitationObjectType: usePan ? 'BUILDING_ROOF_SEGMENT_FACE' : 'BUILDING_ROOF',
       delimitations: [
         {
           type: 'Feature',
           properties: {},
           geometry: {
-            type: 'Polygon',
-            coordinates: [roofDelimiter],
+            type: usePan ? 'MultiPolygon' : 'Polygon',
+            coordinates: roofDelimiter,
           },
         },
       ],
@@ -62,11 +67,11 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
   return (await response.json()) as CityJSONRequest;
 };
 
-export const getCityJSON = async (id: string, roofDelimiter: [number, number][]) => {
+export const getCityJSON = async (id: string, roofDelimiter: [number, number][][], usePan = false) => {
   const cityJsonRequest = await retryUntilReady({
     maxAttemps: 20,
     sleepDelay: 7_000,
-    fetcher: () => processCityJSONRequest(id, roofDelimiter),
+    fetcher: () => processCityJSONRequest(id, roofDelimiter, usePan),
     isReady: request => request.status !== CityJSONRequestStatus.PROCESSING,
   });
 
