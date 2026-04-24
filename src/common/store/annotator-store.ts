@@ -15,6 +15,7 @@ interface Annotation {
 
 interface State {
   annotations: Record<string, Annotation>;
+  polygonToShowMeasurement: string;
 }
 
 interface Actions {
@@ -65,7 +66,11 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       const annotationsKeyAnalyseResult = Object.keys(annotations).filter(key => key.includes(analyseGeneratedIdRef) && !key.includes(roofGlobalIdRef));
       const reorderAnnotations = ObjectUtilities.reorder(annotations, [...annotationsKeyNotAnalyseResult, ...annotationsKeyAnalyseResult]);
 
-      return { annotations: copyObject(reorderAnnotations) };
+      const updatedState: State = { annotations: copyObject(reorderAnnotations), polygonToShowMeasurement: state.polygonToShowMeasurement };
+
+      if (isFirst) updatedState.polygonToShowMeasurement = polygon.id;
+
+      return updatedState;
     }),
   replacePolygonById: (id, polygon) =>
     set(state => {

@@ -1,8 +1,9 @@
+import { SlashIcon } from '@/common/components';
 import { usePolygonAreaQuery } from '@/common/fetcher';
 import { annotatorStore } from '@/common/store';
 import { detectionResultColors } from '@/operations/prospects/constants';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Straighten, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Box, Divider, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import { annotatorFormResultItemStyle as style } from './style';
@@ -44,6 +45,13 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetai
           {(isLoading || !area) && <Typography>Chargement de la surface ...</Typography>}
         </Stack>
         <Stack direction='row'>
+          <Tooltip title={currentPolygon.isInvisible ? 'Afficher les mesures du polygone' : 'Cacher les mesures du polygone'}>
+            <IconButton edge='end' aria-label='toggle polygon visibility' style={{ marginRight: '0' }} onClick={togglePolygonVisibility}>
+              <SlashIcon active={currentPolygon.isInvisible}>
+                <Straighten />
+              </SlashIcon>
+            </IconButton>
+          </Tooltip>
           <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
             <IconButton edge='end' aria-label='toggle polygon visibility' style={{ marginRight: '0' }} onClick={togglePolygonVisibility}>
               {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
