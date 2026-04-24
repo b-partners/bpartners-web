@@ -16,6 +16,7 @@ export * from './FreeTrialSubcriptionModal';
 export * from './loading-page';
 export * from './Pdf';
 export * from './RichTextEditor';
+export * from './slash-icon';
 export * from './SubscriptionBillingModal';
 export * from './SubscriptionModal';
 export * from './SubscriptionSuccessModal';

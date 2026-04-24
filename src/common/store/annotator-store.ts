@@ -15,6 +15,7 @@ interface Annotation {
 
 interface State {
   annotations: Record<string, Annotation>;
+  polygonToShowMeasurement: string;
 }
 
 interface Actions {
@@ -27,6 +28,7 @@ interface Actions {
   replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
   resetAnnotations: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
+  showMeasurement: (polygonId: string) => void;
 }
 
 // @ts-ignore
@@ -65,7 +67,11 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       const annotationsKeyAnalyseResult = Object.keys(annotations).filter(key => key.includes(analyseGeneratedIdRef) && !key.includes(roofGlobalIdRef));
       const reorderAnnotations = ObjectUtilities.reorder(annotations, [...annotationsKeyNotAnalyseResult, ...annotationsKeyAnalyseResult]);
 
-      return { annotations: copyObject(reorderAnnotations) };
+      const updatedState: State = { annotations: copyObject(reorderAnnotations), polygonToShowMeasurement: state.polygonToShowMeasurement };
+
+      if (isFirst) updatedState.polygonToShowMeasurement = polygon.id;
+
+      return updatedState;
     }),
   replacePolygonById: (id, polygon) =>
     set(state => {
@@ -115,6 +121,11 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       const roofPolygonId = annotation.polygon.id;
       annotations[roofPolygonId] = typeof annotationOrDispatcher === 'function' ? annotationOrDispatcher(annotation) : annotationOrDispatcher;
       return { annotations };
+    }),
+  showMeasurement: polygonId =>
+    set(state => {
+      if (polygonId === state.polygonToShowMeasurement) return { polygonToShowMeasurement: '' };
+      return { polygonToShowMeasurement: polygonId };
     }),
 }));
 
