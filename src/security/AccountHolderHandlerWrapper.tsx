@@ -1,5 +1,6 @@
 import { BPLoader, UpdateBusinessModal } from '@/common/components';
 import { useDialog } from '@/common/store/dialog';
+import { Redirect } from '@/common/utils';
 import { accountHolderProvider, authProvider } from '@/providers';
 import { AccountHolder } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
@@ -19,6 +20,10 @@ export const AccountHolderHandlerWrapper: FC<PropsWithChildren> = ({ children })
         return isSubscribed ? await accountHolderProvider.getOne() : null;
       } catch (error) {
         if (isAxiosError(error) && isAuthError(error)) {
+          if ([403, 401].includes(error.status)) {
+            return authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
+          }
+
           return null;
         }
         throw error;
