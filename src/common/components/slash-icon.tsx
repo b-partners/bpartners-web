@@ -1,16 +1,15 @@
-import { Box } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
-import { SlashIconStyle } from './style';
+import { Box, BoxProps } from '@mui/material';
+import { FC } from 'react';
 
-interface SlashIconProps extends PropsWithChildren {
+interface SlashIconProps extends BoxProps {
   active: boolean;
 }
 
 export const SlashIcon: FC<SlashIconProps> = props => {
   return (
-    <Box sx={SlashIconStyle}>
+    <>
       {props.children}
       {!props.active && <Box className='slash-line' />}
-    </Box>
+    </>
   );
 };

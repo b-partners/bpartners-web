@@ -28,6 +28,7 @@ interface Actions {
   replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
   resetAnnotations: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
+  showMeasurement: (polygonId: string) => void;
 }
 
 // @ts-ignore
@@ -120,6 +121,11 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       const roofPolygonId = annotation.polygon.id;
       annotations[roofPolygonId] = typeof annotationOrDispatcher === 'function' ? annotationOrDispatcher(annotation) : annotationOrDispatcher;
       return { annotations };
+    }),
+  showMeasurement: polygonId =>
+    set(state => {
+      if (polygonId === state.polygonToShowMeasurement) return { polygonToShowMeasurement: '' };
+      return { polygonToShowMeasurement: polygonId };
     }),
 }));
 

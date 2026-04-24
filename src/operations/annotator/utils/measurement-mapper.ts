@@ -1,4 +1,3 @@
-import { annotatorStore } from '@/common/store';
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
 import { Measurement } from '@bpartners/annotator-component';
 
@@ -11,9 +10,9 @@ import { Measurement } from '@bpartners/annotator-component';
  * @example <AnnotatorCanvas measurementMapper={measurementMapper(isExtended)} />
  */
 export const measurementMapper =
-  (isExtended: boolean) =>
+  (isExtended: boolean, visiblePolygonMeasurement: string) =>
   (measurement: Measurement): Measurement => {
-    const isInvisible = annotatorStore.useAnnotatorStore.getState().polygonToShowMeasurement === measurement.polygonId;
+    const isInvisible = visiblePolygonMeasurement === measurement.polygonId;
 
     if (!isExtended) return { ...measurement, isInvisible };
     return {

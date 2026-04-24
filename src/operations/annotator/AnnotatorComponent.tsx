@@ -10,6 +10,7 @@ import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useShallow } from 'zustand/react/shallow';
 import { degradationLevels } from '../prospects/constants';
 import {
   AddressTopBar,
@@ -33,7 +34,6 @@ import {
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   isAfterAnalyse,
-  measurementMapper,
   refreshImageUrl,
   shiftPolygons,
 } from './utils';
@@ -109,6 +109,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   );
 
   const { open: openDialog } = useDialog();
+  const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
 
   if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
@@ -136,7 +137,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   };
 
-  const polygonListShifted = isAfterAnalyse(polygonList) ? polygonList : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true);
+  const polygonListShifted = isAfterAnalyse(polygonList)
+    ? polygonList
+    : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true).map(p => ({
+        ...p,
+        measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
+      }));
 
   const processDetection = () => {
     openDialog(
@@ -163,7 +169,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             image={geojsonResult?.image || imageSrcFromUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
-            measurementMapper={measurementMapper(isExtended)}
             getNewPolygonColor={getNewPolygonColor}
             imagePrecisionLevel={currentAreaPictureDetailsToUse?.actualLayer?.precisionLevelInCm || 5}
             polygonLineSizeProps={{
