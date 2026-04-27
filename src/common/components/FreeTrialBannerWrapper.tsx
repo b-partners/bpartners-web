@@ -47,7 +47,7 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
           >
             Débloquer toutes les fonctionnalités IA pour les couvreurs
           </Typography>
-          <BPButton onClick={handleDoSubscription} sx={{ maxWidth: '50px' }} label="M'abonner" />
+          <BPButton onClick={handleDoSubscription} sx={{ maxWidth: '50px' }} label="S'abonner" />
         </FlexBox>
       </FlexBox>
       {children}
