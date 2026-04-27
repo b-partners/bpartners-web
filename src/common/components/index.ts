@@ -12,7 +12,7 @@ export * from './error-message-dialog';
 export * from './Field';
 export * from './FlexBox';
 export * from './FreeTrialBannerWrapper';
-export * from './FreeTrialSubcriptionModal';
+export * from './PaymentMethodRequiredModal.tsx';
 export * from './loading-page';
 export * from './Pdf';
 export * from './RichTextEditor';

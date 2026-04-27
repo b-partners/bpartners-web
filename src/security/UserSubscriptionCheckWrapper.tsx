@@ -1,4 +1,10 @@
-import { BPLoader, FreeTrialSubscriptionModal, SubscriptionBillingModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
+import {
+  BPLoader,
+  PaymentMethodRequiredModal,
+  SubscriptionBillingModal,
+  SubscriptionModal,
+  SubscriptionSuccessModal,
+} from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
@@ -21,30 +27,28 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
         switch (currentWhoami?.user?.subscription?.status) {
           case UserSubscriptionStatus.PAYMENT_METHOD_REQUIRED:
             redirect('/');
-            openDialog(
-              <SubscriptionBillingModal
-                button='Ajouter un moyen de paiement'
-                title="Période d'essai expirée"
-                description="Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte."
-              />,
-              undefined,
-              false
-            );
+            openDialog(<PaymentMethodRequiredModal />, undefined, false);
             break;
           case UserSubscriptionStatus.UNPAID:
             redirect('/');
             openDialog(
-              <SubscriptionBillingModal button='Payer mon abonnement' title='Factures impayées' description='Il vous reste des factures impayées.' />,
+              <SubscriptionBillingModal
+                button="Procéder au paiement"
+                title="Factures impayées"
+                description="Il vous reste des factures impayées."
+                additionalDescription="Pour continuer à utiliser l’application, veuillez régulariser votre situation."
+              />,
               undefined,
-              false
+              false,
             );
             break;
           case UserSubscriptionStatus.EMPTY:
-            redirect('/');
-            openDialog(<SubscriptionModal />, undefined, false);
+            openDialog(
+              <SubscriptionModal />, undefined, false,
+            );
             break;
           case UserSubscriptionStatus.FREE_TRIAL:
-            openDialog(<FreeTrialSubscriptionModal />, undefined, true);
+            openDialog(<SubscriptionModal />, undefined, true);
             break;
           default:
             break;
