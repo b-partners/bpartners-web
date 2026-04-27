@@ -54,7 +54,11 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             break;
         }
         if (searchParams.get('stripeStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal />, {}, false);
+          openDialog(<SubscriptionSuccessModal title="Inscription terminée"
+                                               description="Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée." />, {}, false);
+        } else if (searchParams.get('stripePaymentStatus') === 'done') {
+          openDialog(<SubscriptionSuccessModal title="Moyen de paiement ajouté"
+                                               description="Votre carte a été ajoutée avec succès. Vous avez dorénavant accès aux fonctionnalités de l'application." />, {}, false);
         }
       } catch (error) {
         printError(error);
