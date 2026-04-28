@@ -1,10 +1,4 @@
-import {
-  BPLoader,
-  PaymentMethodRequiredModal,
-  SubscriptionBillingModal,
-  SubscriptionModal,
-  SubscriptionSuccessModal,
-} from '@/common/components';
+import { BPLoader, PaymentMethodRequiredModal, SubscriptionBillingModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
@@ -33,19 +27,17 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             redirect('/');
             openDialog(
               <SubscriptionBillingModal
-                button="Procéder au paiement"
-                title="Factures impayées"
-                description="Il vous reste des factures impayées."
-                additionalDescription="Pour continuer à utiliser l’application, veuillez régulariser votre situation."
+                button='Procéder au paiement'
+                title='Factures impayées'
+                description='Il vous reste des factures impayées.'
+                additionalDescription='Pour continuer à utiliser l’application, veuillez régulariser votre situation.'
               />,
               undefined,
-              false,
+              false
             );
             break;
           case UserSubscriptionStatus.EMPTY:
-            openDialog(
-              <SubscriptionModal />, undefined, false,
-            );
+            openDialog(<SubscriptionModal />, undefined, false);
             break;
           case UserSubscriptionStatus.FREE_TRIAL:
             openDialog(<SubscriptionModal />, undefined, true);
@@ -54,11 +46,23 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             break;
         }
         if (searchParams.get('stripeStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal title="Inscription terminée"
-                                               description="Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée." />, {}, false);
+          openDialog(
+            <SubscriptionSuccessModal
+              title='Inscription terminée'
+              description='Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.'
+            />,
+            {},
+            false
+          );
         } else if (searchParams.get('stripePaymentStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal title="Moyen de paiement ajouté"
-                                               description="Votre carte a été ajoutée avec succès. Vous avez dorénavant accès aux fonctionnalités de l'application." />, {}, false);
+          openDialog(
+            <SubscriptionSuccessModal
+              title='Moyen de paiement ajouté'
+              description="Votre carte a été ajoutée avec succès. Vous avez dorénavant accès aux fonctionnalités de l'application."
+            />,
+            {},
+            false
+          );
         }
       } catch (error) {
         printError(error);

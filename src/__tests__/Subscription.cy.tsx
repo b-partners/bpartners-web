@@ -17,7 +17,7 @@ const expectedSubscriptionInitializationPayload = {
 };
 const expectedSubscriptionBillingPayload = {
   failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
-  successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripeStatus=done',
+  successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripePaymentStatus=done',
 };
 
 describe('Test user subscription', () => {

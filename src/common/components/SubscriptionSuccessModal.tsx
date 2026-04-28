@@ -1,6 +1,6 @@
-import { FC } from 'react';
 import { UrlParams } from '@bpartners/annotator-component';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { FC } from 'react';
 import { useDialog } from '../store/dialog';
 import { Reload } from '../utils';
 import { BPButton } from './BPButton';
@@ -10,7 +10,7 @@ type SubscriptionSuccessModalProps = {
   description: string;
 };
 
-export const SubscriptionSuccessModal : FC<SubscriptionSuccessModalProps> = ({title, description}) => {
+export const SubscriptionSuccessModal: FC<SubscriptionSuccessModalProps> = ({ title, description }) => {
   const { close } = useDialog();
 
   const handleClose = () => {
