@@ -1,9 +1,9 @@
+import { cache, userSubscriptionProvider } from '@/providers';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
-import { Redirect } from '../utils';
-import { BPButton } from './BPButton';
 import { useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { cache, userSubscriptionProvider } from '@/providers';
+import { Redirect } from '../utils';
+import { BPButton } from './BPButton';
 
 const mutationFn = async () => {
   const { redirectionUrl } = await userSubscriptionProvider.billingPortal();
@@ -51,7 +51,7 @@ export const PaymentMethodRequiredModal = () => {
       </DialogContent>
       <DialogActions>
         <BPButton data-testid='close-dialog' onClick={onGetDemo} label='Réserver une démo' />
-        <BPButton data-testid='add-payment-method-btn' label='Ajouter un moyen de paiement' onClick={() => mutate()} isLoading={isPending}/>
+        <BPButton data-testid='add-payment-method-btn' label='Ajouter un moyen de paiement' onClick={() => mutate()} isLoading={isPending} />
       </DialogActions>
     </>
   );

@@ -1,8 +1,8 @@
 import { useDialog } from '@/common/store/dialog';
-import { cache, userSubscriptionProvider, getCached } from '@/providers';
-import dayjs from 'dayjs';
+import { cache, getCached, userSubscriptionProvider } from '@/providers';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { formatDate, getFirstDebitDate, Redirect } from '../utils';
@@ -43,7 +43,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           </Alert>
         )}
         <p>
-          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
+          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
+          <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
         </p>
         <ul>
           <li>

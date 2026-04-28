@@ -26,13 +26,9 @@ export const getFirstDebitDate = (startDate: Date, endDate: Date): Date => {
   const nextMonth = startMonth === 11 ? 0 : startMonth + 1;
   const nextMonthYear = startMonth === 11 ? startYear + 1 : startYear;
 
-  const sameMonth =
-    endYear === startYear && endMonth === startMonth;
+  const sameMonth = endYear === startYear && endMonth === startMonth;
 
-  const endIsBefore5OfNextMonth =
-    endYear === nextMonthYear &&
-    endMonth === nextMonth &&
-    end.getDate() < 5;
+  const endIsBefore5OfNextMonth = endYear === nextMonthYear && endMonth === nextMonth && end.getDate() < 5;
 
   if (sameMonth || endIsBefore5OfNextMonth) {
     return new Date(nextMonthYear, nextMonth, 5);
@@ -41,7 +37,7 @@ export const getFirstDebitDate = (startDate: Date, endDate: Date): Date => {
   const secondNextMonth = nextMonth === 11 ? 0 : nextMonth + 1;
   const secondNextYear = nextMonth === 11 ? nextMonthYear + 1 : nextMonthYear;
   return new Date(secondNextYear, secondNextMonth, 5);
-}
+};
 
 /**
  * Create new date in 8601 format
