@@ -5,7 +5,7 @@ import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@m
 import { useMutation } from '@tanstack/react-query';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { formatDate, Redirect } from '../utils';
+import { formatDate, getFirstDebitDate, Redirect } from '../utils';
 import { BPButton } from './BPButton';
 
 const mutationFn = async () => {
@@ -28,6 +28,9 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const whoami = getCached.whoami();
   const today = dayjs();
   const remainingDays = dayjs(whoami?.user?.subscription?.end).diff(today, 'day');
+  const startDate = new Date(whoami?.user?.subscription?.start);
+  const endDate = new Date(whoami?.user?.subscription?.end);
+  const firstDebitDate = getFirstDebitDate(startDate, endDate);
 
   return (
     <>
@@ -40,14 +43,14 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           </Alert>
         )}
         <p>
-          Activez votre abonnement pour accéder à tout ce que l'application a à vous offrir.
+          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
         </p>
         <ul>
           <li>
-            <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(new Date(whoami?.user?.subscription?.start))}
+            <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
           </li>
           <li>
-            <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(new Date(whoami?.user?.subscription?.end))}
+            <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
           </li>
           <li>
             <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}

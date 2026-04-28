@@ -14,6 +14,35 @@ export const formatFrenchDate = (date: Date) =>
     day: 'numeric',
   });
 
+export const getFirstDebitDate = (startDate: Date, endDate: Date): Date => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const startMonth = start.getMonth();
+  const startYear = start.getFullYear();
+  const endMonth = end.getMonth();
+  const endYear = end.getFullYear();
+
+  const nextMonth = startMonth === 11 ? 0 : startMonth + 1;
+  const nextMonthYear = startMonth === 11 ? startYear + 1 : startYear;
+
+  const sameMonth =
+    endYear === startYear && endMonth === startMonth;
+
+  const endIsBefore5OfNextMonth =
+    endYear === nextMonthYear &&
+    endMonth === nextMonth &&
+    end.getDate() < 5;
+
+  if (sameMonth || endIsBefore5OfNextMonth) {
+    return new Date(nextMonthYear, nextMonth, 5);
+  }
+
+  const secondNextMonth = nextMonth === 11 ? 0 : nextMonth + 1;
+  const secondNextYear = nextMonth === 11 ? nextMonthYear + 1 : nextMonthYear;
+  return new Date(secondNextYear, secondNextMonth, 5);
+}
+
 /**
  * Create new date in 8601 format
  * @param date 'yyyy-mm-dd'
