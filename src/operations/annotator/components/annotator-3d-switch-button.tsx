@@ -21,12 +21,12 @@ export const Annotator3DSwitchButton: FC<ButtonProps> = props => {
   const select3DGenerationMode = () => {
     if (screen === '3d-annotator') return setScreen('annotator');
 
-    if (!isAfterAnalyse(polygonList) && !threeDFromSegmentation && hasPan) setScreen('annotator', 'pan');
-    if (!isAfterAnalyse(polygonList) && !threeDFromSegmentation && !hasPan)
+    if (!isAfterAnalyse(polygonList) && threeDFromSegmentation && hasPan) setScreen('3d-annotator', 'pan');
+    if (!isAfterAnalyse(polygonList) && threeDFromSegmentation && !hasPan)
       notify('Veuillez ajouter au moins un pan pour lancer la modélisation 3D par segmentation.', { type: 'warning' });
 
-    if (threeDFromSegmentation && hasRoof) setScreen('3d-annotator');
-    if (threeDFromSegmentation && !hasRoof) notify('Veuillez délimiter le toit pour lancer la modélisation 3D par emprise.', { type: 'warning' });
+    if (!threeDFromSegmentation && hasRoof) setScreen('3d-annotator');
+    if (!threeDFromSegmentation && !hasRoof) notify('Veuillez délimiter le toit pour lancer la modélisation 3D par emprise.', { type: 'warning' });
   };
   return (
     <Button sx={{ minWidth: 300 }} onClick={select3DGenerationMode} startIcon={<Cached />} {...props}>
