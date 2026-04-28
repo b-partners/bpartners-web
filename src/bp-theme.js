@@ -36,15 +36,12 @@ export const BORDER_RADIUS = {
 };
 
 const bp_button = {
+  ...defaultTheme?.components?.MuiButton,
   paddingInline: '10px',
   boxShadow: 'unset',
-  minWidth: '10rem',
-  color: '#fff',
-  backgroundColor: PALETTE_COLORS.neon_orange,
   marginBlock: '5px',
   textTransform: 'unset',
   '&:hover, &:active': {
-    backgroundColor: BP_COLOR[20],
     cursor: 'pointer',
   },
   '&:disabled': {
@@ -221,8 +218,19 @@ export const BP_THEME = {
       },
     },
     MuiButton: {
+      defaultProps: {
+        variant: 'contained',
+        color: 'primary',
+        size: 'small',
+        disableElevation: true,
+      },
       styleOverrides: {
         root: bp_button,
+      },
+    },
+    MuiIconButton: {
+      defaultProps: {
+        size: 'small',
       },
     },
     MuiTextField: {

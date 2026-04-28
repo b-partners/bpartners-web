@@ -16,6 +16,7 @@ interface Annotation {
 interface State {
   annotations: Record<string, Annotation>;
   polygonToShowMeasurement: string;
+  threeDFromSegmentation?: boolean;
 }
 
 interface Actions {
@@ -29,6 +30,7 @@ interface Actions {
   resetAnnotations: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
   showMeasurement: (polygonId: string) => void;
+  setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
 }
 
 // @ts-ignore
@@ -55,7 +57,7 @@ const useAnnotatorStore = create<State & Actions>(set => ({
         polygon,
         annotationInfos: {
           polygonId: polygon.id,
-          labelType: 'roof',
+          labelType: state.threeDFromSegmentation ? 'pan' : 'roof',
           fillColor: polygon.fillColor,
           strokeColor: polygon.strokeColor,
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
@@ -127,6 +129,9 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       if (polygonId === state.polygonToShowMeasurement) return { polygonToShowMeasurement: '' };
       return { polygonToShowMeasurement: polygonId };
     }),
+  setThreeDFromSegmentation(threeDFromSegmentation) {
+    set({ threeDFromSegmentation });
+  },
 }));
 
 const useOneAnnotatorStore = (polygonId: string) => {

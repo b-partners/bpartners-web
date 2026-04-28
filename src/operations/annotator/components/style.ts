@@ -24,10 +24,11 @@ export const annotatorActionButtonsStyle: SxProps = {
     '& .MuiBox-root': {
       '& p': {
         m: 0,
+        fontSize: 12,
       },
       color: '#fff',
       px: 1,
-      py: 1.2,
+      py: 1,
       borderRadius: 2,
       minWidth: 70,
       fontWeight: 'semi-bold',
@@ -40,11 +41,11 @@ export const annotatorActionButtonsStyle: SxProps = {
     borderRadius: 2,
     width: '100%',
     display: 'flex',
-    py: 1.2,
+    py: 1,
     justifyContent: 'center',
     '& .MuiTypography-root': {
       color: '#fff',
-      fontSize: 14,
+      fontSize: 12,
     },
     '& .MuiDivider-root': {
       marginX: 2,
