@@ -15,6 +15,7 @@ export const SubscriptionSuccessModal : FC<SubscriptionSuccessModalProps> = ({ti
 
   const handleClose = () => {
     UrlParams.set('stripeStatus', '');
+    UrlParams.set('stripePaymentStatus', '');
     Reload.force();
     close();
   };
