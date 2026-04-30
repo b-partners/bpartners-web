@@ -1,12 +1,19 @@
-name: Launch and monitor 3D it on instatus
+name: Monitor Detection and PDF Generation on instatus
 
 on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
 
+env:
+  AWS_REGION: eu-west-3
+  PROD_USERPOOL_ID: eu-west-3_FRKp6Y3Gx
+  PROD_WEBCLIENT_ID: 1rof83p44k83l5lc8gfk6sbtam
+  PROD_OAUTH_DOMAIN: bpartners.auth.eu-west-3.amazoncognito.com
+  PROD_REDIRECT_SUCCESS: https://dashboard.bpartners.app/login/success
+
 jobs:
-  monitor-3D:
+  monitor-detection:
     runs-on: ubuntu-latest
 
     steps:
@@ -63,18 +70,17 @@ jobs:
           echo DASHBOARD_ADMIN_API_KEY=${{secrets.DASHBOARD_ADMIN_API_KEY}} >> .env
           echo EXCLUDE_INSTATUS_IT_SPEC=false >> .env
           echo INSTATUS_DETECTION_COMPONENT_ID=${{secrets.INSTATUS_DETECTION_COMPONENT_ID}} >> .env
-          echo IS_MONITORING_INSTATUS_DETECTION=false >> .env
-          echo IS_MONITORING_INSTATUS_3D=true >> .env
+          echo INSTATUS_PDF_COMPONENT_ID=${{secrets.INSTATUS_PDF_COMPONENT_ID}} >> .env
 
-      - name: Monitor 3D Generation
-        id: monitor-3d
-        run: npx cypress run --browser chrome --headless --spec 'src/**/3D_generator.it.cy.ts'
+      - name: Monitor Detection
+        id: monitor-detection
+        run: npx cypress run --browser chrome --headless --spec 'src/**/detection.it.cy.ts'
         continue-on-error: true
 
-      - name: Upload video to S3
-        if: ${{always() && steps.monitor-3d.outcome == 'failure'}}
+      - name: Upload Detection video to S3
+        if: ${{always() && steps.monitor-detection.outcome == 'failure'}}
         run: |
-          aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-3D-videos/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
+          aws s3 cp cypress/videos/ s3://${{ secrets.CYPRESS_S3_BUCKET }}/cypress-detection/$(date +%Y-%m-%d_%H-%M-%S)/ --recursive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }}

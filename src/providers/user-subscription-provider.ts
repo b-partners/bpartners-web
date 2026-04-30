@@ -1,7 +1,7 @@
 import { userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
 
-const getStripeRedirectionUrl = async () => {
+const getSubscriptionRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
   return {
     failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
@@ -9,11 +9,19 @@ const getStripeRedirectionUrl = async () => {
   };
 };
 
+const getPaymentMethodRedirectionUrls = async () => {
+  const { id } = await asyncGetUser();
+  return {
+    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
+    successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripePaymentStatus=done`).href,
+  };
+};
+
 export const userSubscriptionProvider = {
   async init() {
     const { id } = await asyncGetUser();
     const { data } = await userSubscriptionApi().initiateUserSubscription(id, {
-      redirectionStatusUrls: await getStripeRedirectionUrl(),
+      redirectionStatusUrls: await getSubscriptionRedirectionUrls(),
       subscriptionType: 'ESSENTIAL',
     });
     return data;
@@ -25,7 +33,7 @@ export const userSubscriptionProvider = {
   },
   async billingPortal() {
     const { id } = await asyncGetUser();
-    const { failureUrl, successUrl } = await getStripeRedirectionUrl();
+    const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
     const { data } = await userSubscriptionApi().initiateBillingPortal(id, { failureUrl, successUrl });
     return data;
   },

@@ -18,9 +18,10 @@ type SubscriptionBillingModalProps = {
   title: string;
   description: string;
   button: string;
+  additionalDescription: string;
 };
 
-export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ title, description, button }) => {
+export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ title, description, button, additionalDescription }) => {
   const { isPending, mutate, error: billingPortalError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
 
   const [searchParams] = useSearchParams();
@@ -39,10 +40,10 @@ export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ ti
           </Alert>
         )}
         <p>{description}</p>
-        <p>Pour continuer à utiliser l’application, veuillez régulariser votre situation.</p>
+        <p>{additionalDescription}</p>
       </DialogContent>
       <DialogActions>
-        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label={button} isLoading={isPending} />
+        <BPButton data-cy='subscription-billing-btn' onClick={() => mutate()} label={button} isLoading={isPending} />
       </DialogActions>
     </>
   );

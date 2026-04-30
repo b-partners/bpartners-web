@@ -6,7 +6,6 @@ import { user1, whoami1 } from './mocks/responses/security-api';
 
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
 const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
-const noMethodPaymentSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'PAYMENT_METHOD_REQUIRED' } };
 const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
 
 const expectedSubscriptionInitializationPayload = {
@@ -18,7 +17,7 @@ const expectedSubscriptionInitializationPayload = {
 };
 const expectedSubscriptionBillingPayload = {
   failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
-  successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripeStatus=done',
+  successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripePaymentStatus=done',
 };
 
 describe('Test user subscription', () => {
@@ -32,12 +31,11 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.mount(<App />);
 
+    cy.contains('Finalisez votre inscription en toute sérénité !');
+    cy.contains("Activez votre abonnement aujourd'hui pour 49€ HT, votre carte ne sera débitée qu'à compter du 05/02/2026.");
     cy.contains("Début de la période d'essai : 01/01/2026");
     cy.contains("Fin de la période d'essai : 07/01/2026");
-
-    cy.contains('Débloquez immédiatement votre accès en :');
-    cy.contains('👉 renseignant un moyen de paiement (aucun prélèvement pendant l’essai)');
-    cy.contains('👉 réservant une démo avec un expert BIRDIA pour obtenir votre code d’accès personnalisé');
+    cy.contains('Si vous avez la moindre question, n’hésitez à nous appeler au 06.68.62.48.36 ou par mail à contact@birdia.fr');
   });
   it('Invalid subscription', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
@@ -51,11 +49,6 @@ describe('Test user subscription', () => {
     cy.mount(<App />);
 
     cy.contains('Finalisez votre inscription en toute sérénité !');
-    cy.contains(
-      'Vous n’avez pas encore d’abonnement actif. Pour continuer à utiliser l’application BIRDIA, veuillez enregistrer votre carte bancaire via notre partenaire sécurisé Stripe.'
-    );
-    cy.contains('Si vous avez la moindre question, N’hésitez à nous appeler au 06.68.62.48.36 ou par mail à contact@birdia.fr');
-
     cy.intercept(`/users/${invalidSubscriptionUser.id}/subscriptionInitiation`, ({ body, reply }) => {
       expect(body).deep.equal(expectedSubscriptionInitializationPayload);
       reply({ statusCode: 200 });
@@ -82,50 +75,6 @@ describe('Test user subscription', () => {
       reply({ statusCode: 200 });
     }).as('initializeSubscription');
 
-    cy.dataCy('subscribe-btn').click();
-  });
-  it('Payment method not specified', () => {
-    cy.cognitoLogin({ whoami: { user: noMethodPaymentSubscriptionUser }, user: noMethodPaymentSubscriptionUser });
-
-    cy.stub(Redirect, 'toURL').as('toURL');
-
-    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-
-    cy.mount(<App />);
-
-    cy.contains("Période d'essai expirée");
-    cy.contains("Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte.");
-
-    cy.intercept(`/users/${noMethodPaymentSubscriptionUser.id}/billingPortal`, ({ body, reply }) => {
-      expect(body).deep.equal(expectedSubscriptionBillingPayload);
-      reply({ statusCode: 200 });
-    }).as('initializeSubscription');
-
-    cy.dataCy('subscribe-btn').click();
-  });
-  it('Payment method not specified', () => {
-    cy.cognitoLogin({ whoami: { user: noMethodPaymentSubscriptionUser }, user: noMethodPaymentSubscriptionUser });
-
-    cy.stub(Redirect, 'toURL').as('toURL');
-
-    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/annotations/drafts?page=1&pageSize=6`, []);
-
-    cy.mount(<App />);
-
-    cy.contains("Période d'essai expirée");
-    cy.contains("Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte.");
-
-    cy.intercept(`/users/${noMethodPaymentSubscriptionUser.id}/billingPortal`, ({ reply }) => {
-      reply({ statusCode: 400, body: { message: 'Stripe error' } });
-    }).as('initializeSubscription');
-
-    cy.dataCy('subscribe-btn').click();
-
-    cy.contains("Une erreur s'est produite.");
+    cy.dataCy('subscription-billing-btn').click();
   });
 });

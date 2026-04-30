@@ -1,22 +1,29 @@
 import { UrlParams } from '@bpartners/annotator-component';
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { FC } from 'react';
 import { useDialog } from '../store/dialog';
 import { Reload } from '../utils';
 import { BPButton } from './BPButton';
 
-export const SubscriptionSuccessModal = () => {
+type SubscriptionSuccessModalProps = {
+  title: string;
+  description: string;
+};
+
+export const SubscriptionSuccessModal: FC<SubscriptionSuccessModalProps> = ({ title, description }) => {
   const { close } = useDialog();
 
   const handleClose = () => {
     UrlParams.set('stripeStatus', '');
+    UrlParams.set('stripePaymentStatus', '');
     Reload.force();
     close();
   };
 
   return (
     <>
-      <DialogTitle>Inscription terminée</DialogTitle>
-      <DialogContent>Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.</DialogContent>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>{description}</DialogContent>
       <DialogActions>
         <BPButton onClick={handleClose} label='Fermer' />
       </DialogActions>

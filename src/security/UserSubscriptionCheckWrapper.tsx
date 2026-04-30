@@ -1,4 +1,4 @@
-import { BPLoader, FreeTrialSubscriptionModal, SubscriptionBillingModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
+import { BPLoader, PaymentMethodRequiredModal, SubscriptionBillingModal, SubscriptionModal, SubscriptionSuccessModal } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
@@ -21,36 +21,48 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
         switch (currentWhoami?.user?.subscription?.status) {
           case UserSubscriptionStatus.PAYMENT_METHOD_REQUIRED:
             redirect('/');
+            openDialog(<PaymentMethodRequiredModal />, undefined, false);
+            break;
+          case UserSubscriptionStatus.UNPAID:
+            redirect('/');
             openDialog(
               <SubscriptionBillingModal
-                button='Ajouter un moyen de paiement'
-                title="Période d'essai expirée"
-                description="Votre période d'essai est terminée. Aucun moyen de paiement n'est associé à votre compte."
+                button='Procéder au paiement'
+                title='Factures impayées'
+                description='Il vous reste des factures impayées.'
+                additionalDescription='Pour continuer à utiliser l’application, veuillez régulariser votre situation.'
               />,
               undefined,
               false
             );
             break;
-          case UserSubscriptionStatus.UNPAID:
-            redirect('/');
-            openDialog(
-              <SubscriptionBillingModal button='Payer mon abonnement' title='Factures impayées' description='Il vous reste des factures impayées.' />,
-              undefined,
-              false
-            );
-            break;
           case UserSubscriptionStatus.EMPTY:
-            redirect('/');
             openDialog(<SubscriptionModal />, undefined, false);
             break;
           case UserSubscriptionStatus.FREE_TRIAL:
-            openDialog(<FreeTrialSubscriptionModal />, undefined, true);
+            openDialog(<SubscriptionModal />, undefined, true);
             break;
           default:
             break;
         }
         if (searchParams.get('stripeStatus') === 'done') {
-          openDialog(<SubscriptionSuccessModal />, {}, false);
+          openDialog(
+            <SubscriptionSuccessModal
+              title='Inscription terminée'
+              description='Votre abonnement a été effectué avec succès, et votre inscription est dorénavant terminée.'
+            />,
+            {},
+            false
+          );
+        } else if (searchParams.get('stripePaymentStatus') === 'done') {
+          openDialog(
+            <SubscriptionSuccessModal
+              title='Moyen de paiement ajouté'
+              description="Votre carte a été ajoutée avec succès. Vous avez dorénavant accès aux fonctionnalités de l'application."
+            />,
+            {},
+            false
+          );
         }
       } catch (error) {
         printError(error);

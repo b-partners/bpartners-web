@@ -1,10 +1,11 @@
 import { useDialog } from '@/common/store/dialog';
-import { cache, userSubscriptionProvider } from '@/providers';
+import { cache, getCached, userSubscriptionProvider } from '@/providers';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Redirect } from '../utils';
+import { formatDate, getFirstDebitDate, Redirect } from '../utils';
 import { BPButton } from './BPButton';
 
 const mutationFn = async () => {
@@ -24,6 +25,13 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
+  const whoami = getCached.whoami();
+  const today = dayjs();
+  const remainingDays = dayjs(whoami?.user?.subscription?.end).diff(today, 'day');
+  const startDate = new Date(whoami?.user?.subscription?.start);
+  const endDate = new Date(whoami?.user?.subscription?.end);
+  const firstDebitDate = getFirstDebitDate(startDate, endDate);
+
   return (
     <>
       <DialogTitle>Finalisez votre inscription en toute sérénité !</DialogTitle>
@@ -35,15 +43,23 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           </Alert>
         )}
         <p>
-          Vous n’avez pas encore d’abonnement actif. Pour continuer à utiliser l’application BIRDIA, veuillez enregistrer votre carte bancaire via notre
-          partenaire sécurisé Stripe.
+          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
+          <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
         </p>
-        <p>💡 Pas d’inquiétude :</p>
         <ul>
-          <li>⁠Vous pouvez arrêter votre abonnement à tout moment dans l’application.</li>
+          <li>
+            <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
+          </li>
+          <li>
+            <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
+          </li>
+          <li>
+            <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+          </li>
         </ul>
+        <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d’essai. Vous pouvez annuler à tout moment, sans engagement.</p>
         <p>
-          Si vous avez la moindre question, N’hésitez à nous appeler au{' '}
+          Si vous avez la moindre question, n’hésitez à nous appeler au{' '}
           <a rel='noreferrer' href='tel:0668624836' target='_blank'>
             06.68.62.48.36
           </a>{' '}

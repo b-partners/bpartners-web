@@ -4,11 +4,17 @@ export type TestResult = {
   responseTime: number;
 };
 
+export type PDFResult = {
+  status: 'SUCCEEDED' | 'FAILED';
+}
+
 export type CypressTestResult = { testName: string; status: string; error?: string };
 
 export const cypressTestResult: CypressTestResult[] = [];
 
 export const testResults: TestResult[] = [];
+
+export const pdfResults: PDFResult[] = [];
 
 export const recordTestResult = (result: TestResult) => {
   testResults.push(result);
@@ -16,6 +22,10 @@ export const recordTestResult = (result: TestResult) => {
 
 export const recordCypressTestResult = (result: CypressTestResult) => {
   cypressTestResult.push(result);
+};
+
+export const recordPDFResult = (result: PDFResult) => {
+  pdfResults.push(result);
 };
 
 const canvas_cursor_sel = 'annotator-canvas-cursor';
