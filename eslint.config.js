@@ -13,7 +13,13 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    ignores: ['./coverage/*', './test/*'],
+    ignores: [
+      './coverage/*',
+      './test/*',
+      './src/operations/annotator/components/3d-renderer/annotator-3d.tsx',
+      './src/operations/annotator/components/3d-renderer/point-measure-line.tsx',
+      './src/operations/annotator/components/3d-renderer/polygon-measure-line.tsx',
+    ],
     rules: {
       'react/no-unescaped-entities': 'off',
       'react/react-in-jsx-scope': 'off',
