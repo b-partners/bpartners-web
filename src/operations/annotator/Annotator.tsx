@@ -11,7 +11,6 @@ import { FormProvider } from 'react-hook-form';
 import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { Annotator3DInfos } from './components';
 import { SideBar } from './SideBar';
 import { useAnnotationInfosForm } from './utils';
 
@@ -45,14 +44,21 @@ const AnnotatorWithDefaultCacheManager = () => {
   return (
     <FormProvider {...annotatorFormState}>
       <Grid container height='100%' pl={1}>
-        <Grid item xs={!shouldAnalyseRoof ? 8.6 : 12} display='flex' position='relative' justifyContent='center' alignItems='start' mr='1%'>
+        <Grid
+          item
+          xs={!shouldAnalyseRoof && screen !== '3d-annotator' ? 8.6 : 12}
+          display='flex'
+          position='relative'
+          justifyContent='center'
+          alignItems='start'
+          mr='1%'
+        >
           <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
         </Grid>
         {!shouldAnalyseRoof && (
           <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
             <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
               {screen !== '3d-annotator' && <SideBar />}
-              {screen === '3d-annotator' && <Annotator3DInfos />}
             </Stack>
           </Grid>
         )}

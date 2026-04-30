@@ -185,7 +185,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           polygons={polygonList}
           active={screen === '3d-annotator'}
           width={width || containerWidth}
-          height={height || containerHeight - 136}
+          height={height || containerHeight - 50}
           areaPicture={currentAreaPictureDetailsToUse}
         />
         {screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
