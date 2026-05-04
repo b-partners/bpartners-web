@@ -13,13 +13,7 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    ignores: [
-      './coverage/*',
-      './test/*',
-      './src/operations/annotator/components/3d-renderer/annotator-3d.tsx',
-      './src/operations/annotator/components/3d-renderer/point-measure-line.tsx',
-      './src/operations/annotator/components/3d-renderer/polygon-measure-line.tsx',
-    ],
+    ignores: ['./coverage/*', './test/*'],
     rules: {
       'react/no-unescaped-entities': 'off',
       'react/react-in-jsx-scope': 'off',
@@ -39,5 +33,8 @@ export default [
       '@typescript-eslint/ban-ts-comment': 'off', // TODO
       'react/no-children-prop': 'off', // TODO,
     },
+  },
+  {
+    ignores: ['src/operations/annotator/components/3d-renderer/**'],
   },
 ];

@@ -88,7 +88,7 @@
   "scripts": {
     "start": "rm -rf ./node_modules/.vite && vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint ./src --ignore-pattern src/operations/annotator/components/annotator-3d.tsx",
+    "lint": "eslint ./src",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --component ",
     "it": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --config video=true --e2e",
