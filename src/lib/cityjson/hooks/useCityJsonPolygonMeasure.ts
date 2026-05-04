@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import * as THREE from "three";
+import { useRef, useState } from 'react';
+import * as THREE from 'three';
 
 export interface PolygonEdge {
   pointA: THREE.Vector3;
@@ -17,17 +17,9 @@ export interface PolygonMeasureResult {
 
 const CLOSE_THRESHOLD = 0.5;
 
-const raycast = (
-  e: MouseEvent,
-  camera: THREE.Camera,
-  domElement: HTMLElement,
-  group: THREE.Group,
-): THREE.Vector3 | null => {
+const raycast = (e: MouseEvent, camera: THREE.Camera, domElement: HTMLElement, group: THREE.Group): THREE.Vector3 | null => {
   const rect = domElement.getBoundingClientRect();
-  const mouse = new THREE.Vector2(
-    ((e.clientX - rect.left) / rect.width) * 2 - 1,
-    -((e.clientY - rect.top) / rect.height) * 2 + 1,
-  );
+  const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(group.children, true);
@@ -39,10 +31,7 @@ const computeEdges = (points: THREE.Vector3[]): PolygonEdge[] =>
     const b = points[(i + 1) % points.length];
     const distanceSlope = Math.round(a.distanceTo(b) * 100) / 100;
     const flatX = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
-    const slopeAngle =
-      Math.round(
-        Math.atan2(Math.abs(b.y - a.y), flatX) * (180 / Math.PI) * 100,
-      ) / 100;
+    const slopeAngle = Math.round(Math.atan2(Math.abs(b.y - a.y), flatX) * (180 / Math.PI) * 100) / 100;
     return { pointA: a, pointB: b, distanceSlope, slopeAngle };
   });
 
@@ -57,9 +46,7 @@ const computeArea = (points: THREE.Vector3[]): number => {
 };
 
 const computeCentroid = (points: THREE.Vector3[]): THREE.Vector3 =>
-  points
-    .reduce((acc, v) => acc.add(v.clone()), new THREE.Vector3())
-    .divideScalar(points.length);
+  points.reduce((acc, v) => acc.add(v.clone()), new THREE.Vector3()).divideScalar(points.length);
 
 export const useCityJsonPolygonMeasure = (group: THREE.Group | null) => {
   const [result, setResult] = useState<PolygonMeasureResult | null>(null);
@@ -92,11 +79,7 @@ export const useCityJsonPolygonMeasure = (group: THREE.Group | null) => {
     mouseDownPos.current = { x: e.clientX, y: e.clientY };
   };
 
-  const onMouseUp = (
-    e: MouseEvent,
-    camera: THREE.Camera,
-    domElement: HTMLElement,
-  ) => {
+  const onMouseUp = (e: MouseEvent, camera: THREE.Camera, domElement: HTMLElement) => {
     const dx = Math.abs(e.clientX - mouseDownPos.current.x);
     const dy = Math.abs(e.clientY - mouseDownPos.current.y);
     if (dx > 4 || dy > 4 || !group) return;
@@ -117,11 +100,7 @@ export const useCityJsonPolygonMeasure = (group: THREE.Group | null) => {
     setResult(null);
   };
 
-  const onMouseMove = (
-    e: MouseEvent,
-    camera: THREE.Camera,
-    domElement: HTMLElement,
-  ) => {
+  const onMouseMove = (e: MouseEvent, camera: THREE.Camera, domElement: HTMLElement) => {
     if (!group || pointsRef.current.length === 0) return;
     const point = raycast(e, camera, domElement, group);
     if (point) setPreviewPoint(point);

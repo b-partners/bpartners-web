@@ -35,6 +35,6 @@ export default [
     },
   },
   {
-    ignores: ['src/operations/annotator/components/3d-renderer/**'],
+    ignores: ['src/operations/annotator/components/3d-renderer/**', 'src/lib/**'],
   },
 ];

@@ -1,28 +1,28 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 export type SurfaceType =
-  | "RoofSurface"
-  | "WallSurface"
-  | "GroundSurface"
-  | "ClosureSurface"
-  | "OuterFloorSurface"
-  | "OuterCeilingSurface"
-  | "InteriorWallSurface"
-  | "FloorSurface"
-  | "CeilingSurface"
-  | "Unknown";
+  | 'RoofSurface'
+  | 'WallSurface'
+  | 'GroundSurface'
+  | 'ClosureSurface'
+  | 'OuterFloorSurface'
+  | 'OuterCeilingSurface'
+  | 'InteriorWallSurface'
+  | 'FloorSurface'
+  | 'CeilingSurface'
+  | 'Unknown';
 
 export const DEFAULT_SURFACE_COLORS: Record<SurfaceType, string> = {
-  RoofSurface: "#c0392b",
-  WallSurface: "#bdc3c7",
-  GroundSurface: "#7f8c8d",
-  ClosureSurface: "#95a5a6",
-  OuterFloorSurface: "#d35400",
-  OuterCeilingSurface: "#e67e22",
-  InteriorWallSurface: "#ecf0f1",
-  FloorSurface: "#a0856c",
-  CeilingSurface: "#d5c5b2",
-  Unknown: "#ffffff",
+  RoofSurface: '#c0392b',
+  WallSurface: '#bdc3c7',
+  GroundSurface: '#7f8c8d',
+  ClosureSurface: '#95a5a6',
+  OuterFloorSurface: '#d35400',
+  OuterCeilingSurface: '#e67e22',
+  InteriorWallSurface: '#ecf0f1',
+  FloorSurface: '#a0856c',
+  CeilingSurface: '#d5c5b2',
+  Unknown: '#ffffff',
 };
 
 // ─── Raw CityJSON shape ───────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ export interface CityJsonTexture {
 
 export interface CityJsonAppearance {
   textures?: CityJsonTexture[];
-  "vertices-texture"?: [number, number][];
+  'vertices-texture'?: [number, number][];
   materials?: unknown[];
 }
 
@@ -71,7 +71,7 @@ export interface CityJsonObject {
 }
 
 export interface CityJsonData {
-  type: "CityJSON";
+  type: 'CityJSON';
   version: string;
   vertices: [number, number, number][];
   appearance?: CityJsonAppearance;
