@@ -28,7 +28,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
   }
 
   return (
-    <div style={{ width: '100%', height, position: 'relative' }}>
+    <div style={{ width: '100%', height, position: 'relative', marginTop: 5, paddingTop: 5 }}>
       {!isError && !error && !isLoading && (
         <>
           <Stack direction='row' gap={1} mt={2}>
