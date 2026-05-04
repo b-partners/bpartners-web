@@ -1,5 +1,5 @@
+import { PointMeasureResult } from '@/lib/cityjson';
 import { Html, Line } from '@react-three/drei';
-import { PointMeasureResult } from 'cityjson-react';
 import { FC } from 'react';
 import * as THREE from 'three';
 import { pointMeasureLineStyle as style } from './style';

@@ -1,5 +1,5 @@
+import { PolygonMeasureResult } from '@/lib/cityjson';
 import { Html, Line } from '@react-three/drei';
-import { PolygonMeasureResult } from 'cityjson-react';
 import { FC } from 'react';
 import * as THREE from 'three';
 import { polygonMeasureLineStyle as style } from './style';

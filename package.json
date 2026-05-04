@@ -5,7 +5,6 @@
   "dependencies": {
     "@bpartners/annotator-component": "^0.19.4",
     "@bpartners/typescript-client": "^0.77.0",
-    "@cityjson/cjseq": "^0.4.1",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",
     "@mui/material": "5.16.7",
@@ -25,8 +24,6 @@
     "@types/three": "^0.165.0",
     "aws-amplify": "6.8.0",
     "axios": "1.7.7",
-    "cityjson-react": "file:../cityjson-loader",
-    "cityjson-threejs-loader": "github:cityjson/cityjson-threejs-loader",
     "date-fns-tz": "3.2.0",
     "dayjs": "1.11.13",
     "dotenv": "^17.3.1",

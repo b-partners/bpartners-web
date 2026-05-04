@@ -1,0 +1,140 @@
+import * as THREE from 'three';
+import { CityJsonData, CityJsonRendererOptions, DEFAULT_SURFACE_COLORS, SurfaceType } from '../types';
+
+const triangulatePolygon = (indices: number[]): number[][] => {
+  const triangles: number[][] = [];
+  for (let i = 1; i < indices.length - 1; i++) {
+    triangles.push([indices[0], indices[i], indices[i + 1]]);
+  }
+  return triangles;
+};
+
+const buildGeometry = (faces: number[][], vertices: number[][], faceUVs: Array<Array<[number, number]> | null>): THREE.BufferGeometry => {
+  const positions: number[] = [];
+  const uvs: number[] = [];
+
+  faces.forEach((face, faceIdx) => {
+    const triangles = triangulatePolygon(face);
+    const faceUV = faceUVs[faceIdx];
+
+    triangles.forEach(([a, b, c]) => {
+      [a, b, c].forEach((vIdx, localIdx) => {
+        const [x, y, z] = vertices[vIdx];
+        positions.push(x, y, z);
+
+        if (faceUV) {
+          const uvIndex = face.indexOf([a, b, c][localIdx]);
+          const uv = faceUV[uvIndex] ?? [0, 0];
+          uvs.push(uv[0], uv[1]);
+        } else {
+          uvs.push(0, 0);
+        }
+      });
+    });
+  });
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
+  geometry.computeVertexNormals();
+
+  return geometry;
+};
+
+const applyTransform = (vertices: number[][], transform?: { scale: number[]; translate: number[] }): number[][] => {
+  if (!transform) return vertices;
+  const { scale, translate } = transform;
+  return vertices.map(([x, y, z]) => [x * scale[0] + translate[0], y * scale[1] + translate[1], z * scale[2] + translate[2]]);
+};
+
+const parseCityJson = (cityJson: CityJsonData) => {
+  const textureVertices: Array<[number, number]> = cityJson.appearance?.['vertices-texture'] ?? [];
+  const textureUrl: string = cityJson.appearance?.textures?.[0]?.image ?? '';
+
+  const realVertices = applyTransform(cityJson.vertices as number[][], (cityJson as any).transform);
+
+  const sum = realVertices.reduce((acc, [x, y, z]) => [acc[0] + x, acc[1] + y, acc[2] + z], [0, 0, 0]);
+  const center = sum.map(v => v / realVertices.length);
+
+  const globalVertices = realVertices.map(([x, y, z]) => [x - center[0], z - center[2], -(y - center[1])]);
+
+  const surfaceFaces: Record<string, number[][]> = {};
+  const surfaceUVs: Record<string, Array<Array<[number, number]> | null>> = {};
+
+  Object.values(cityJson.CityObjects).forEach(obj => {
+    obj.geometry?.forEach((geom: any) => {
+      const surfaces: Array<{ type: string }> = geom.semantics?.surfaces ?? [];
+      const semanticValues: number[] = geom.semantics?.values ?? [];
+      const texValues: Array<number[][] | null> = geom.appearance?.texture?.default?.values ?? [];
+
+      geom.boundaries.forEach((boundary: number[][][], bIdx: number) => {
+        const surfaceIdx = semanticValues[bIdx];
+        const surfaceType = surfaces[surfaceIdx]?.type ?? 'Unknown';
+        const face = boundary[0];
+
+        if (!surfaceFaces[surfaceType]) {
+          surfaceFaces[surfaceType] = [];
+          surfaceUVs[surfaceType] = [];
+        }
+
+        const texIndices = texValues[bIdx]?.[0] ?? null;
+        const faceUV = texIndices ? texIndices.map((i: number) => textureVertices[i] as [number, number]) : null;
+
+        surfaceFaces[surfaceType].push(face as any);
+        surfaceUVs[surfaceType].push(faceUV);
+      });
+    });
+  });
+
+  return { globalVertices, surfaceFaces, surfaceUVs, textureUrl };
+};
+
+export const useCityJsonRenderer = (options: CityJsonRendererOptions = {}) => {
+  const buildSceneGroup = (cityJson: CityJsonData): THREE.Group => {
+    if (!cityJson || !cityJson.vertices) return new THREE.Group();
+
+    const { globalVertices, surfaceFaces, surfaceUVs, textureUrl } = parseCityJson(cityJson);
+    const colors = { ...DEFAULT_SURFACE_COLORS, ...options.colors };
+    const enableTexture = options.enableTexture ?? true;
+    const group = new THREE.Group();
+
+    const texture =
+      textureUrl && enableTexture
+        ? (() => {
+            const t = new THREE.TextureLoader().load(textureUrl);
+            t.minFilter = THREE.LinearFilter;
+            t.colorSpace = THREE.SRGBColorSpace;
+            return t;
+          })()
+        : null;
+
+    Object.entries(surfaceFaces).forEach(([surfaceType, faces]) => {
+      faces.forEach((face, i) => {
+        const geometry = buildGeometry([face], globalVertices, [surfaceUVs[surfaceType][i]]);
+
+        const material = new THREE.MeshStandardMaterial({
+          ...(texture && surfaceType === 'RoofSurface'
+            ? { map: texture }
+            : {
+                color: new THREE.Color(colors[surfaceType as SurfaceType] ?? '#ffffff'),
+              }),
+          roughness: 0.8,
+          side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.name = surfaceType;
+        mesh.userData.surfaceType = surfaceType;
+        mesh.userData.faceVertexIndices = face;
+        group.add(mesh);
+      });
+    });
+
+    return group;
+  };
+
+  return { buildSceneGroup };
+};
