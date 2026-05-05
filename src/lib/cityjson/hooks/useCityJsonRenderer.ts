@@ -1,11 +1,38 @@
 import * as THREE from 'three';
+import { Earcut } from 'three/src/extras/Earcut.js';
 import { CityJsonData, CityJsonRendererOptions, DEFAULT_SURFACE_COLORS, SurfaceType } from '../types';
 
-const triangulatePolygon = (indices: number[]): number[][] => {
-  const triangles: number[][] = [];
-  for (let i = 1; i < indices.length - 1; i++) {
-    triangles.push([indices[0], indices[i], indices[i + 1]]);
+const triangulatePolygon = (faceIndices: number[], vertices: number[][]): number[][] => {
+  if (faceIndices.length === 3) {
+    return [[faceIndices[0], faceIndices[1], faceIndices[2]]];
   }
+
+  const pts = faceIndices.map(idx => new THREE.Vector3(...(vertices[idx] as [number, number, number])));
+
+  // compute normal from first 3 vertices
+  const v0 = pts[0];
+  const edge1 = pts[1].clone().sub(v0);
+  const edge2 = pts[2].clone().sub(v0);
+  const normal = edge1.cross(edge2).normalize();
+
+  // build local 2D axes on the polygon plane
+  const axisX = pts[1].clone().sub(pts[0]).normalize();
+  const axisY = normal.clone().cross(axisX).normalize();
+
+  // project all vertices onto local 2D plane
+  const coords: number[] = [];
+  pts.forEach(p => {
+    const local = p.clone().sub(v0);
+    coords.push(local.dot(axisX), local.dot(axisY));
+  });
+
+  const result = Earcut.triangulate(coords, undefined, 2);
+  const triangles: number[][] = [];
+
+  for (let i = 0; i < result.length; i += 3) {
+    triangles.push([faceIndices[result[i]], faceIndices[result[i + 1]], faceIndices[result[i + 2]]]);
+  }
+
   return triangles;
 };
 
@@ -14,7 +41,7 @@ const buildGeometry = (faces: number[][], vertices: number[][], faceUVs: Array<A
   const uvs: number[] = [];
 
   faces.forEach((face, faceIdx) => {
-    const triangles = triangulatePolygon(face);
+    const triangles = triangulatePolygon(face, vertices); // ← pass vertices
     const faceUV = faceUVs[faceIdx];
 
     triangles.forEach(([a, b, c]) => {
@@ -40,7 +67,6 @@ const buildGeometry = (faces: number[][], vertices: number[][], faceUVs: Array<A
 
   return geometry;
 };
-
 const applyTransform = (vertices: number[][], transform?: { scale: number[]; translate: number[] }): number[][] => {
   if (!transform) return vertices;
   const { scale, translate } = transform;
