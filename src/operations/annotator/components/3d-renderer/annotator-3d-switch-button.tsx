@@ -5,7 +5,7 @@ import { Button, ButtonProps } from '@mui/material';
 import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
-import { isAfterAnalyse } from '../utils';
+import { isAfterAnalyse } from '../../utils';
 
 export const Annotator3DSwitchButton: FC<ButtonProps> = props => {
   const { screen, setScreen } = useAnnotatorScreenSwitch();

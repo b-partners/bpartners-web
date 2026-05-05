@@ -14,7 +14,7 @@ export const annotatorComponentStyle: SxProps = {
     m: 0,
     p: 0,
     marginBlock: 1,
-    height: '70vh',
+    height: '80vh',
   },
   '& .image-properties-actions': {
     width: '100%',

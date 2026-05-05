@@ -23,13 +23,30 @@ import { buildParticleSystem } from './3d-particles';
 import { buildScanlineTexture } from './3d-textures';
 import { RoofScanLoaderStyle } from './style';
 
+type PolygonMeshData = {
+  faceMesh: THREE.Mesh;
+  faceMat: THREE.MeshPhongMaterial;
+  outlineMesh: THREE.Line;
+  outlineMat: THREE.LineBasicMaterial;
+  wallMesh: THREE.Mesh;
+  wallMat: THREE.MeshPhongMaterial;
+  wallGeo: THREE.BufferGeometry;
+  botFaceMesh: THREE.Mesh;
+  botFaceMat: THREE.MeshPhongMaterial;
+  edgesMesh: THREE.LineSegments;
+  edgesMat: THREE.LineBasicMaterial;
+  edgesGeo: THREE.BufferGeometry;
+  wallBase: number[];
+  wallFull: number[];
+};
+
 interface RoofScanLoaderProps {
-  polygon: Polygon;
+  polygons: Polygon[];
   label?: string;
 }
 
 export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
-  const { polygon, label = 'Génération du modèle 3D' } = props;
+  const { polygons, label = 'Génération du modèle 3D' } = props;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<number>(0);
@@ -62,7 +79,8 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || polygon.points.length < 3) return;
+    const validPolygons = polygons.filter(p => p.points.length >= 3);
+    if (!canvas || validPolygons.length === 0) return;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(400, 400);
@@ -83,31 +101,60 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
     fill.position.set(-3, 2, 2);
     scene.add(fill);
 
-    const pts = normalizePoints(polygon.points);
+    // Normalize all polygon points together to preserve their relative spatial positions
+    const allRawPoints = validPolygons.flatMap(p => p.points);
+    const allNormalized = normalizePoints(allRawPoints);
 
-    const { geo: faceGeo } = buildShapeGeo(pts, 0);
-    const faceMat = new THREE.MeshPhongMaterial({ color: PALETTE.cream, side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    const faceMesh = new THREE.Mesh(faceGeo, faceMat);
+    let ptOffset = 0;
+    const meshDataArr: PolygonMeshData[] = validPolygons.map(polygon => {
+      const pts = allNormalized.slice(ptOffset, ptOffset + polygon.points.length);
+      ptOffset += polygon.points.length;
 
-    const outlineGeo = buildOutlineGeo(pts, 0.001);
-    const outlineMat = new THREE.LineBasicMaterial({ color: PALETTE.pine, transparent: true, opacity: 0 });
-    const outlineMesh = new THREE.Line(outlineGeo, outlineMat);
+      const { geo: faceGeo } = buildShapeGeo(pts, 0);
+      const faceMat = new THREE.MeshPhongMaterial({ color: PALETTE.cream, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+      const faceMesh = new THREE.Mesh(faceGeo, faceMat);
 
-    const wallGeo = buildWallGeo(pts, 0);
-    const wallMat = new THREE.MeshPhongMaterial({ color: PALETTE.linen, side: THREE.DoubleSide, shininess: 30, transparent: true, opacity: 0 });
-    const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+      const outlineGeo = buildOutlineGeo(pts, 0.001);
+      const outlineMat = new THREE.LineBasicMaterial({ color: PALETTE.pine, transparent: true, opacity: 0 });
+      const outlineMesh = new THREE.Line(outlineGeo, outlineMat);
 
-    const { geo: botFaceGeo } = buildShapeGeo(pts, 0);
-    const botFaceMat = new THREE.MeshPhongMaterial({ color: PALETTE.forest, side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    const botFaceMesh = new THREE.Mesh(botFaceGeo, botFaceMat);
+      const wallGeo = buildWallGeo(pts, 0);
+      const wallMat = new THREE.MeshPhongMaterial({ color: PALETTE.linen, side: THREE.DoubleSide, shininess: 30, transparent: true, opacity: 0 });
+      const wallMesh = new THREE.Mesh(wallGeo, wallMat);
 
-    const edgesGeo = buildBoxEdgesGeo(pts);
-    const edgesMat = new THREE.LineBasicMaterial({ color: PALETTE.pine, transparent: true, opacity: 0 });
-    const edgesMesh = new THREE.LineSegments(edgesGeo, edgesMat);
+      const { geo: botFaceGeo } = buildShapeGeo(pts, 0);
+      const botFaceMat = new THREE.MeshPhongMaterial({ color: PALETTE.forest, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+      const botFaceMesh = new THREE.Mesh(botFaceGeo, botFaceMat);
 
-    const { particleData, partGeo, partMat, points: particlePoints, circleTex } = buildParticleSystem(pts);
+      const edgesGeo = buildBoxEdgesGeo(pts);
+      const edgesMat = new THREE.LineBasicMaterial({ color: PALETTE.pine, transparent: true, opacity: 0 });
+      const edgesMesh = new THREE.LineSegments(edgesGeo, edgesMat);
 
-    const { scanGeo, glowGeo } = buildScannerGeos(pts);
+      const wallBase = Array.from(wallGeo.attributes.position.array as Float32Array);
+      const wallFull = Array.from(buildWallGeo(pts, BASE_DEPTH).attributes.position.array as Float32Array);
+
+      return {
+        faceMesh,
+        faceMat,
+        outlineMesh,
+        outlineMat,
+        wallMesh,
+        wallMat,
+        wallGeo,
+        botFaceMesh,
+        botFaceMat,
+        edgesMesh,
+        edgesMat,
+        edgesGeo,
+        wallBase,
+        wallFull,
+      };
+    });
+
+    // Scanner and particles span all polygons using the combined normalized points
+    const { particleData, partGeo, partMat, points: particlePoints, circleTex } = buildParticleSystem(allNormalized);
+
+    const { scanGeo, glowGeo } = buildScannerGeos(allNormalized);
     const scanlineTex = buildScanlineTexture(8, 1);
 
     const scanMat = new THREE.MeshBasicMaterial({
@@ -137,13 +184,11 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
     glowMesh.renderOrder = 1;
 
     const group = new THREE.Group();
-    group.add(faceMesh, outlineMesh, wallMesh, botFaceMesh, edgesMesh);
-    group.add(scanMesh, glowMesh);
-    group.add(particlePoints);
+    meshDataArr.forEach(({ faceMesh, outlineMesh, wallMesh, botFaceMesh, edgesMesh }) => {
+      group.add(faceMesh, outlineMesh, wallMesh, botFaceMesh, edgesMesh);
+    });
+    group.add(scanMesh, glowMesh, particlePoints);
     scene.add(group);
-
-    const wallBase = Array.from(buildWallGeo(pts, 0).attributes.position.array as Float32Array);
-    const wallFull = Array.from(buildWallGeo(pts, BASE_DEPTH).attributes.position.array as Float32Array);
 
     const clock = new THREE.Clock();
     let phase = 0;
@@ -159,8 +204,10 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
 
       if (phase === 0) {
         const t = Math.min((elapsed - phaseStart) / (PHASE_POLYGON_DURATION / 1000), 1);
-        faceMat.opacity = easeOut(t);
-        outlineMat.opacity = easeOut(t);
+        meshDataArr.forEach(({ faceMat, outlineMat }) => {
+          faceMat.opacity = easeOut(t);
+          outlineMat.opacity = easeOut(t);
+        });
         if (t >= 1) {
           phase = 1;
           phaseStart = elapsed;
@@ -171,31 +218,33 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
         const t = Math.min((elapsed - phaseStart) / (PHASE_EXTRUDE_DURATION / 1000), 1);
         const depth = easeOut(t) * BASE_DEPTH;
 
-        const pos = wallGeo.attributes.position as THREE.BufferAttribute;
-        const arr = pos.array as Float32Array;
-        for (let i = 0; i < wallFull.length; i++) {
-          arr[i] = i % 3 === 2 && wallFull[i] < 0 ? -depth : wallBase[i];
-        }
-        pos.needsUpdate = true;
+        meshDataArr.forEach(({ wallGeo, wallBase, wallFull, wallMat, botFaceMesh, botFaceMat, edgesGeo, edgesMat, faceMat, outlineMat }) => {
+          const pos = wallGeo.attributes.position as THREE.BufferAttribute;
+          const arr = pos.array as Float32Array;
+          for (let i = 0; i < wallFull.length; i++) {
+            arr[i] = i % 3 === 2 && wallFull[i] < 0 ? -depth : wallBase[i];
+          }
+          pos.needsUpdate = true;
 
-        const bpos = botFaceMesh.geometry.attributes.position as THREE.BufferAttribute;
-        const barr = bpos.array as Float32Array;
-        for (let i = 2; i < barr.length; i += 3) barr[i] = -depth;
-        bpos.needsUpdate = true;
+          const bpos = botFaceMesh.geometry.attributes.position as THREE.BufferAttribute;
+          const barr = bpos.array as Float32Array;
+          for (let i = 2; i < barr.length; i += 3) barr[i] = -depth;
+          bpos.needsUpdate = true;
 
-        const epos = edgesGeo.attributes.position as THREE.BufferAttribute;
-        const earr = epos.array as Float32Array;
-        for (let i = 2; i < earr.length; i += 3) {
-          if (earr[i] < 0) earr[i] = -depth;
-        }
-        epos.needsUpdate = true;
+          const epos = edgesGeo.attributes.position as THREE.BufferAttribute;
+          const earr = epos.array as Float32Array;
+          for (let i = 2; i < earr.length; i += 3) {
+            if (earr[i] < 0) earr[i] = -depth;
+          }
+          epos.needsUpdate = true;
 
-        const fade = easeOut(Math.min(t * 2, 1));
-        wallMat.opacity = fade * 0.82;
-        botFaceMat.opacity = fade * 0.82;
-        edgesMat.opacity = fade;
-        faceMat.opacity = 1;
-        outlineMat.opacity = 0;
+          const fade = easeOut(Math.min(t * 2, 1));
+          wallMat.opacity = fade * 0.82;
+          botFaceMat.opacity = fade * 0.82;
+          edgesMat.opacity = fade;
+          faceMat.opacity = 1;
+          outlineMat.opacity = 0;
+        });
 
         const particlePhase = Math.min(t / 0.92, 1);
         (partMat.uniforms.uOpacity as any).value =
@@ -245,7 +294,7 @@ export const RoofScanLoader: FC<RoofScanLoaderProps> = props => {
       circleTex.dispose();
       renderer.dispose();
     };
-  }, [polygon]);
+  }, [polygons]);
 
   return (
     <Box sx={RoofScanLoaderStyle}>

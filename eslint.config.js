@@ -34,4 +34,7 @@ export default [
       'react/no-children-prop': 'off', // TODO,
     },
   },
+  {
+    ignores: ['src/operations/annotator/components/3d-renderer/**', 'src/lib/**'],
+  },
 ];
