@@ -9,15 +9,33 @@ const triangulatePolygon = (faceIndices: number[], vertices: number[][]): number
 
   const pts = faceIndices.map(idx => new THREE.Vector3(...(vertices[idx] as [number, number, number])));
 
-  // compute normal from first 3 vertices
-  const v0 = pts[0];
-  const edge1 = pts[1].clone().sub(v0);
-  const edge2 = pts[2].clone().sub(v0);
-  const normal = edge1.cross(edge2).normalize();
+  // Newell's method: accumulates all edges so collinear first-3-vertices (common on
+  // roof ridge/hip lines) never produce a zero/NaN normal.
+  const normal = new THREE.Vector3(0, 0, 0);
+  for (let i = 0; i < pts.length; i++) {
+    const curr = pts[i];
+    const next = pts[(i + 1) % pts.length];
+    normal.x += (curr.y - next.y) * (curr.z + next.z);
+    normal.y += (curr.z - next.z) * (curr.x + next.x);
+    normal.z += (curr.x - next.x) * (curr.y + next.y);
+  }
+  normal.normalize();
 
-  // build local 2D axes on the polygon plane
-  const axisX = pts[1].clone().sub(pts[0]).normalize();
+  // Degenerate polygon (all points collinear) — nothing to render.
+  if (normal.lengthSq() < 0.5) return [];
+
+  // build local 2D axes on the polygon plane; find the first non-zero edge for axisX
+  // so duplicate adjacent vertices don't break the projection either.
+  let axisX = new THREE.Vector3(1, 0, 0);
+  for (let i = 0; i < pts.length; i++) {
+    const candidate = pts[(i + 1) % pts.length].clone().sub(pts[i]).normalize();
+    if (candidate.lengthSq() > 0.5) {
+      axisX = candidate;
+      break;
+    }
+  }
   const axisY = normal.clone().cross(axisX).normalize();
+  const v0 = pts[0];
 
   // project all vertices onto local 2D plane
   const coords: number[] = [];
