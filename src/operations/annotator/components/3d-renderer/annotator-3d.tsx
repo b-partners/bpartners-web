@@ -60,7 +60,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
           </Canvas>
         </>
       )}
-      {isLoading && <RoofScanLoader polygon={polygons?.[0]} />}
+      {isLoading && <RoofScanLoader polygons={polygons} />}
       {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
