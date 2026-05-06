@@ -4,7 +4,6 @@ import { CookiesProvider } from 'react-cookie';
 
 import { loginSuccessRelUrl } from './security/login-redirection-urls';
 
-import { Annotator3D } from './operations/annotator/components';
 import RedirectionMobilePage from './operations/redirectionMobile/RedirectionMobilePage';
 import { BpAdmin } from './security/BpAdmin';
 import BpLoginPageLayout from './security/LoginPageLayout';
@@ -44,7 +43,6 @@ const App = () => {
           <Route path='/password/reset/code' element={<PasswordResetConfirmationLayout />} />
           <Route path='/password/reset/success' element={<PasswordResetPassword />} />
           <Route path='/redirection' element={<RedirectionMobilePage />} />
-          <Route path='/3d' element={<Annotator3D height='90vh' width='90vw' active={true} />} />
           <Route
             path='*'
             element={

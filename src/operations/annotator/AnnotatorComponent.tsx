@@ -8,7 +8,7 @@ import { clearPolygons } from '@/providers';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps, Typography } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { degradationLevels } from '../prospects/constants';
@@ -23,6 +23,7 @@ import {
   LlmResult,
   LlmSwitchButton,
   SaveAnnotationsButton,
+  ThreeDMeasureMode,
 } from './components';
 import { RoofAnalysisDialog } from './components/loading';
 import { AnnotatorComponentProps } from './types';
@@ -63,6 +64,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
+  const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
   useEffect(() => {
     if (currentAreaPictureDetailsToUse && currentAreaPictureDetailsToUse.xTile && currentAreaPictureDetailsToUse.xTile)
@@ -156,7 +158,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       <ImageOptionTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={allowSelect} mutateAreaPictureDetail={mutateAreaPictureDetails} />
-      <AddressTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
+      <AddressTopBar measureMode={measureMode} setMeasureMode={setMeasureMode} areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
 
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
         {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
@@ -187,6 +189,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           width={width || containerWidth}
           height={height || containerHeight - 50}
           areaPicture={currentAreaPictureDetailsToUse}
+          measureMode={measureMode}
         />
         {screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
       </Box>
