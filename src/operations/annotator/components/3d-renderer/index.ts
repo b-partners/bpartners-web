@@ -6,5 +6,7 @@ export * from './annotator-3d-save-image';
 export * from './annotator-3d-switch-button';
 export * from './city-scene';
 export * from './face-measure-labels';
+export * from './pan-captures-button';
+export * from './pan-captures-dialog';
 export * from './point-measure-line';
 export * from './polygon-measure-line';

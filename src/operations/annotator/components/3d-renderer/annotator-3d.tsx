@@ -8,6 +8,7 @@ import { RoofScanLoader } from '../loading';
 import { Annotator3DErrorUI } from './annotator-3d-error';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
+import { PanCapturesButton } from './pan-captures-button';
 
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
@@ -29,6 +30,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
     <div style={{ width: '100%', height, position: 'relative', marginTop: 5, paddingTop: 5 }}>
       {!isError && !error && !isLoading && (
         <>
+          <PanCapturesButton />
           <Canvas
             data-testid='3d-canvas'
             camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}

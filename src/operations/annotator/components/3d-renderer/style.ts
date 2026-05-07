@@ -1,3 +1,4 @@
+import { SxProps } from '@mui/material';
 import { CSSProperties } from 'react';
 
 export const faceMeasureLabelStyle = {
@@ -34,6 +35,52 @@ export const pointMeasureLineStyle = {
     flexDirection: 'column',
     gap: '2px',
   } as CSSProperties,
+};
+
+export const panCapturesButtonStyle: Record<string, SxProps> = {
+  button: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    boxShadow: 3,
+  },
+};
+
+export const panCapturesDialogStyle: Record<string, SxProps> = {
+  content: {
+    minWidth: { xs: 320, sm: 600, md: 800 },
+    minHeight: 200,
+  },
+  loader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    py: 6,
+  },
+  empty: {
+    textAlign: 'center',
+    py: 6,
+    color: 'text.secondary',
+  },
+  card: {
+    border: '1px solid',
+    borderColor: 'divider',
+    borderRadius: 1,
+    overflow: 'hidden',
+    bgcolor: 'background.paper',
+    '& .pan-image': {
+      width: '100%',
+      display: 'block',
+      backgroundColor: '#1e1e1e',
+    },
+    '& .pan-label': {
+      textAlign: 'center',
+      py: 1,
+      fontWeight: 600,
+    },
+  },
 };
 
 export const polygonMeasureLineStyle = {

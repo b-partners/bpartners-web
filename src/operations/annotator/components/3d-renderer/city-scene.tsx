@@ -3,7 +3,7 @@ import { useThree } from '@react-three/fiber';
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-import { useCityJsonHighlight, useCityJsonPointMeasure, useCityJsonPolygonMeasure, useCityJsonRenderer } from '@/lib/cityjson';
+import { useCityJsonHighlight, useCityJsonPanCapture, useCityJsonPointMeasure, useCityJsonPolygonMeasure, useCityJsonRenderer } from '@/lib/cityjson';
 import { ThreeDMeasureMode } from './annotator-3d';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 import { FaceMeasureLabels } from './face-measure-labels';
@@ -23,6 +23,7 @@ export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode }) => {
   const [selectedMesh, setSelectedMesh] = useState<THREE.Mesh | null>(null);
 
   const { onClick } = useCityJsonHighlight(cityGroupRef.current, setSelectedMesh);
+  useCityJsonPanCapture(cityGroupRef, controlsRef, setSelectedMesh);
   const { result: lineResult, pendingPoint, onMouseDown: lineMD, onMouseUp: lineMU, reset: lineReset } = useCityJsonPointMeasure(cityGroupRef.current);
 
   const {
