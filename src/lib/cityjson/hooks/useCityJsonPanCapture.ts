@@ -52,13 +52,7 @@ const computeMeshNormal = (mesh: THREE.Mesh): THREE.Vector3 => {
   return sum.normalize();
 };
 
-const captureMesh = async (
-  mesh: THREE.Mesh,
-  scene: THREE.Scene,
-  camera: THREE.PerspectiveCamera,
-  gl: THREE.WebGLRenderer,
-  controls: any
-): Promise<string> => {
+const captureMesh = async (mesh: THREE.Mesh, scene: THREE.Scene, camera: THREE.PerspectiveCamera, gl: THREE.WebGLRenderer, controls: any): Promise<string> => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
   const center = sphere.center.clone().applyMatrix4(mesh.matrixWorld);
