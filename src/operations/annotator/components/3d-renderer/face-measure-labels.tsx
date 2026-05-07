@@ -28,10 +28,18 @@ export const FaceMeasureLabels: FC<FaceMeasureLabelsProps> = ({ mesh, cityJson }
 
   if (!edges.length) return null;
 
+  if (mesh?.geometry && !mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
+  const meshRadius = Math.max(mesh?.geometry?.boundingSphere?.radius ?? 1, 0.5);
+  const distanceFontSize = meshRadius * 0.1;
+  const distanceOutline = distanceFontSize * 0.15;
+  const areaFontSize = meshRadius * 0.13;
+  const areaOutline = areaFontSize * 0.12;
+  const outwardOffset = meshRadius * 0.15;
+
   return (
     <>
       {edges.map((edge, i) => {
-        const outward = new THREE.Vector3().subVectors(edge.midpoint, centroid).normalize().multiplyScalar(0.7);
+        const outward = new THREE.Vector3().subVectors(edge.midpoint, centroid).normalize().multiplyScalar(outwardOffset);
         const labelPos = edge.midpoint.clone().add(outward);
         return (
           <group key={i}>
@@ -45,9 +53,9 @@ export const FaceMeasureLabels: FC<FaceMeasureLabelsProps> = ({ mesh, cityJson }
             {captureMode && (
               <Billboard position={[labelPos.x, labelPos.y, labelPos.z]} renderOrder={9999}>
                 <Text
-                  fontSize={0.6}
+                  fontSize={distanceFontSize}
                   color='#ffffff'
-                  outlineWidth={0.09}
+                  outlineWidth={distanceOutline}
                   outlineColor='#000000'
                   anchorX='center'
                   anchorY='middle'
@@ -65,9 +73,9 @@ export const FaceMeasureLabels: FC<FaceMeasureLabelsProps> = ({ mesh, cityJson }
       {captureMode && (
         <Billboard position={[centroid.x, centroid.y, centroid.z]} renderOrder={10000}>
           <Text
-            fontSize={0.85}
+            fontSize={areaFontSize}
             color='#ffe070'
-            outlineWidth={0.1}
+            outlineWidth={areaOutline}
             outlineColor='#000000'
             anchorX='center'
             anchorY='middle'
