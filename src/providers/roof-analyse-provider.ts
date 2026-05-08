@@ -89,7 +89,7 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
 
   (geoJson as any).needsImageOutput = true;
 
-  processCityJSONRequest(cityJSONRequestId, coordinates[0] as any).catch(() => {
+  processCityJSONRequest({ id: cityJSONRequestId, roofDelimiter: coordinates[0] as any }).catch(() => {
     console.error('[CityJSONRequest]: Failed to process CityJSON');
   });
 

@@ -5,7 +5,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
-import { getImageSize, UrlParams } from '../utils';
+import { getFileUrl, getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
   const imageUrl = UrlParams.get('imgUrl');
@@ -70,7 +70,29 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         mappedCoordinates = (await Promise.all(pans)).map(a => [a]) as any;
       }
 
-      const data = await getCityJSON(cityJSONRequestId, mappedCoordinates, threeDMode === 'pan');
+      const mappedOrigin = await mapPixelPolygonToLatLonPolygon(
+        {
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 0 },
+          ],
+          fillColor: '',
+          id: '',
+          strokeColor: '',
+        },
+        areaPicture
+      );
+
+      const data = await getCityJSON({
+        id: cityJSONRequestId,
+        roofDelimiter: mappedCoordinates,
+        usePan: threeDMode === 'pan',
+        resolution: areaPicture.actualLayer.precisionLevelInCm,
+        imageUrl: getFileUrl(areaPicture.fileId, 'AREA_PICTURE'),
+        ltLong: mappedOrigin[0][0],
+        ltLat: mappedOrigin[0][1],
+      });
       if (data && data.transform) setCityJsonModel(data);
       return data;
     },
