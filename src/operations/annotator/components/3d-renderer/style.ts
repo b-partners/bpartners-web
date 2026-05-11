@@ -37,9 +37,11 @@ export const pointMeasureLineStyle = {
 export const polygonMeasureLineStyle = {
   measureSpan: (color: any) => ({
     color,
-    fontSize: '12px',
+    fontSize: '14px',
     fontWeight: 'bold',
-    textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
+    background: 'rgba(0,0,0,0.75)',
+    padding: '3px 8px',
+    borderRadius: '4px',
     whiteSpace: 'nowrap',
   }),
   measuresContainer: {

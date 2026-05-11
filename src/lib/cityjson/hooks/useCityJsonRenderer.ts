@@ -106,14 +106,34 @@ const parseCityJson = (cityJson: CityJsonData) => {
   const surfaceUVs: Record<string, Array<Array<[number, number]> | null>> = {};
 
   Object.values(cityJson.CityObjects).forEach(obj => {
+    if (Array.isArray(obj.children)) return;
+
     obj.geometry?.forEach((geom: any) => {
       const surfaces: Array<{ type: string }> = geom.semantics?.surfaces ?? [];
-      const semanticValues: number[] = geom.semantics?.values ?? [];
       const texValues: Array<number[][] | null> = geom.appearance?.texture?.default?.values ?? [];
 
-      geom.boundaries.forEach((boundary: number[][][], bIdx: number) => {
-        const surfaceIdx = semanticValues[bIdx];
-        const surfaceType = surfaces[surfaceIdx]?.type ?? 'Unknown';
+      let normalizedBoundaries: any[];
+      let normalizedValues: any[];
+
+      if (geom.type === 'Solid') {
+        normalizedBoundaries = [];
+        normalizedValues = [];
+        const shellValues = geom.semantics?.values ?? [];
+        geom.boundaries.forEach((shell: any[], shellIdx: number) => {
+          const sv = shellValues[shellIdx] ?? [];
+          shell.forEach((surface: any, surfIdx: number) => {
+            normalizedBoundaries.push(surface);
+            normalizedValues.push(sv[surfIdx] ?? null);
+          });
+        });
+      } else {
+        normalizedBoundaries = geom.boundaries ?? [];
+        normalizedValues = geom.semantics?.values ?? [];
+      }
+
+      normalizedBoundaries.forEach((boundary: any, bIdx: number) => {
+        const surfaceIdx = normalizedValues[bIdx];
+        const surfaceType = surfaceIdx != null ? surfaces[surfaceIdx]?.type ?? 'Unknown' : 'Unknown';
         const face = boundary[0];
 
         if (!surfaceFaces[surfaceType]) {

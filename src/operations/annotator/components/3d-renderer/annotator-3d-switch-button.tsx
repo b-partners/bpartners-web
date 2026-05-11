@@ -1,5 +1,4 @@
 import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Cached } from '@mui/icons-material';
 import { Button, ButtonProps } from '@mui/material';
 import { FC } from 'react';
@@ -14,7 +13,7 @@ export const Annotator3DSwitchButton: FC<ButtonProps> = props => {
     useShallow(({ threeDFromSegmentation, annotations }) => ({ threeDFromSegmentation, annotations }))
   );
 
-  const hasRoof = polygonList.find(p => p.id.includes(roofGlobalIdRef));
+  const hasRoof = Object.values(annotations).find(a => a.annotationInfos.labelType === 'roof');
   const hasPan = Object.values(annotations).find(a => a.annotationInfos.labelType === 'pan');
   const notify = useNotify();
 

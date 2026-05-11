@@ -39,7 +39,7 @@ export const PolygonMeasureLine: FC<PolygonMeasureLineProps> = ({ result, points
               <Line points={[a, b]} color={color} lineWidth={3} depthTest={false} renderOrder={999} />
               <Html position={[mid.x, mid.y, mid.z]} center zIndexRange={[100, 0]} style={{ pointerEvents: 'none' }}>
                 <div style={style.measuresContainer}>
-                  <span style={style.measureSpan(color)}>{`📐 ${dist} m`}</span>
+                  <span style={style.measureSpan(color)}>{`${dist} m`}</span>
                   <span style={style.measureSpan(color)}>{`${slope}°`}</span>
                 </div>
               </Html>
