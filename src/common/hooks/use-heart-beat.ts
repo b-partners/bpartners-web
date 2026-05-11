@@ -9,8 +9,10 @@ export const useHeartBeat = () => {
         await securityApi().whoami();
       } catch (error: any) {
         if ([403, 401].includes(error.status)) {
-          return authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
+          authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
         }
+      } finally {
+        return '';
       }
     },
     queryKey: ['heart-beat'],
