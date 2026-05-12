@@ -3,26 +3,36 @@ import { useThree } from '@react-three/fiber';
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-import { useCityJsonHighlight, useCityJsonPointMeasure, useCityJsonPolygonMeasure, useCityJsonRenderer } from '@/lib/cityjson';
+import { computeFaceArea, useCityJsonHighlight, useCityJsonPointMeasure, useCityJsonPolygonMeasure, useCityJsonRenderer } from '@/lib/cityjson';
 import { ThreeDMeasureMode } from './annotator-3d';
 import { RaycasterHandler } from './annotator-3d-raycaster';
 import { FaceMeasureLabels } from './face-measure-labels';
 import { PointMeasureLine } from './point-measure-line';
 import { PolygonMeasureLine } from './polygon-measure-line';
+import { RoofSurfaceItem } from './roof-surfaces-list';
 
 interface CitySceneProps {
   cityJson: any;
   measureMode: ThreeDMeasureMode;
+  selectedRoofIndex: number | null;
+  onSelectRoofIndex: (index: number | null) => void;
+  onRoofSurfacesReady: (items: RoofSurfaceItem[]) => void;
 }
 
-export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode }) => {
+export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode, selectedRoofIndex, onSelectRoofIndex, onRoofSurfacesReady }) => {
   const { scene, camera, gl } = useThree();
   const controlsRef = useRef<any>();
   const { buildSceneGroup } = useCityJsonRenderer({ enableTexture: true });
   const cityGroupRef = useRef<THREE.Group | null>(null);
   const [selectedMesh, setSelectedMesh] = useState<THREE.Mesh | null>(null);
 
-  const { onClick } = useCityJsonHighlight(cityGroupRef.current, setSelectedMesh);
+  const handleSelectedMesh = (mesh: THREE.Mesh | null) => {
+    setSelectedMesh(mesh);
+    const roofIndex = mesh?.userData?.roofIndex;
+    onSelectRoofIndex(typeof roofIndex === 'number' ? roofIndex : null);
+  };
+
+  const { onClick, highlightMesh, clearHighlight } = useCityJsonHighlight(cityGroupRef.current, handleSelectedMesh);
   const { result: lineResult, pendingPoint, onMouseDown: lineMD, onMouseUp: lineMU, reset: lineReset } = useCityJsonPointMeasure(cityGroupRef.current);
 
   const {
@@ -58,6 +68,19 @@ export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode }) => {
     scene.add(group);
     cityGroupRef.current = group;
 
+    const roofItems: RoofSurfaceItem[] = [];
+    let roofIdx = 0;
+    group.traverse((child: any) => {
+      if (child instanceof THREE.Mesh && child.userData.surfaceType === 'RoofSurface') {
+        child.userData.roofIndex = roofIdx;
+        const face = child.userData.faceVertexIndices as number[] | undefined;
+        const area = face ? computeFaceArea(face, cityJson) : 0;
+        roofItems.push({ index: roofIdx, area });
+        roofIdx += 1;
+      }
+    });
+    onRoofSurfacesReady(roofItems);
+
     const box = new THREE.Box3().setFromObject(group);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -76,6 +99,20 @@ export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode }) => {
       if (cityGroupRef.current) scene.remove(cityGroupRef.current);
     };
   }, [cityJson]);
+
+  useEffect(() => {
+    if (!cityGroupRef.current) return;
+    if (selectedRoofIndex === null) {
+      clearHighlight();
+      return;
+    }
+    let target: THREE.Mesh | null = null;
+    cityGroupRef.current.traverse((child: any) => {
+      if (target) return;
+      if (child instanceof THREE.Mesh && child.userData.roofIndex === selectedRoofIndex) target = child;
+    });
+    if (target && target !== selectedMesh) highlightMesh(target);
+  }, [selectedRoofIndex]);
 
   useEffect(() => {
     const dom = gl.domElement;

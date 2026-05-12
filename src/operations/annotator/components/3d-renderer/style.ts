@@ -1,3 +1,4 @@
+import { SxProps } from '@mui/material';
 import { CSSProperties } from 'react';
 
 export const faceMeasureLabelStyle = {
@@ -34,6 +35,63 @@ export const pointMeasureLineStyle = {
     flexDirection: 'column',
     gap: '2px',
   } as CSSProperties,
+};
+
+export const roofSurfacesListStyle: SxProps = {
+  position: 'absolute',
+  top: 16,
+  right: 16,
+  zIndex: 5,
+  width: 240,
+  maxHeight: 'calc(100% - 32px)',
+  display: 'flex',
+  flexDirection: 'column',
+  bgcolor: 'rgba(255, 255, 255, 0.95)',
+  borderRadius: 1.5,
+  boxShadow: 3,
+  overflow: 'hidden',
+  '& .roof-list-header': {
+    p: 1.5,
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
+    bgcolor: 'rgba(0,0,0,0.03)',
+  },
+  '& .roof-list-title': {
+    fontSize: 14,
+    fontWeight: 600,
+    color: 'text.primary',
+  },
+  '& .roof-list-total': {
+    fontSize: 12,
+    color: 'text.secondary',
+    mt: 0.25,
+  },
+  '& .roof-list-items': {
+    overflowY: 'auto',
+    py: 0.5,
+  },
+  '& .roof-list-item': {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    px: 1.5,
+    py: 1,
+    cursor: 'pointer',
+    transition: 'background 0.15s ease',
+    '&:hover': { bgcolor: 'rgba(250, 187, 86, 0.15)' },
+  },
+  '& .roof-list-item-selected': {
+    bgcolor: 'rgba(250, 187, 86, 0.3)',
+    '&:hover': { bgcolor: 'rgba(250, 187, 86, 0.35)' },
+  },
+  '& .roof-list-item-label': {
+    fontSize: 13,
+    fontWeight: 500,
+  },
+  '& .roof-list-item-area': {
+    fontSize: 12,
+    color: 'text.secondary',
+    fontVariantNumeric: 'tabular-nums',
+  },
 };
 
 export const polygonMeasureLineStyle = {

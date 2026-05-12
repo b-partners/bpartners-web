@@ -59,5 +59,5 @@ export const useCityJsonHighlight = (group: THREE.Group | null, setSelectedMesh:
     return () => clearHighlight();
   }, [group]);
 
-  return { onClick, clearHighlight };
+  return { onClick, clearHighlight, highlightMesh };
 };

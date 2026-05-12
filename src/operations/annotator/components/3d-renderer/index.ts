@@ -8,3 +8,4 @@ export * from './city-scene';
 export * from './face-measure-labels';
 export * from './point-measure-line';
 export * from './polygon-measure-line';
+export * from './roof-surfaces-list';

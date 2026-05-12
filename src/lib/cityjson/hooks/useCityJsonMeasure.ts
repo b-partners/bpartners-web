@@ -37,6 +37,25 @@ const computeArea = (indices: number[], vertices3D: THREE.Vector3[]): number => 
   return Math.round(area * 100) / 100;
 };
 
+export const computeFaceArea = (faceVertexIndices: number[], cityJson: CityJsonData): number => {
+  const rawVertices = cityJson.vertices as number[][];
+  const transform = (cityJson as any).transform;
+  const realVertices = rawVertices.map(v => applyTransform(v, transform));
+
+  const indices =
+    faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
+
+  const points = indices.map(i => {
+    const v = realVertices[i];
+    return new THREE.Vector3(v[0], v[1], v[2]);
+  });
+
+  return computeArea(
+    points.map((_, i) => i),
+    points
+  );
+};
+
 export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
   if (!mesh || !cityJson) return { edges: [], area: 0, centroid: new THREE.Vector3() };
 
