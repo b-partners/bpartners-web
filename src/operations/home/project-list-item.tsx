@@ -1,9 +1,9 @@
 import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getFileUrl, stringCutter } from '@/common/utils';
+import { formatDateTimeWithoutSec, getFileUrl, stringCutter } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
-import { ChevronRight, Public } from '@mui/icons-material';
-import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton } from '@mui/material';
+import { Public } from '@mui/icons-material';
+import { Avatar, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from '@mui/material';
 import { FC } from 'react';
 import { useGetOne } from 'react-admin';
 import { useNavigate } from 'react-router';
@@ -32,19 +32,12 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
     navigate(
-      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true`
+      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
     );
   };
 
   return (
-    <ListItem
-      disablePadding
-      secondaryAction={
-        <IconButton>
-          <ChevronRight />
-        </IconButton>
-      }
-    >
+    <ListItem disablePadding>
       <ListItemButton onClick={navigateToAnnotation}>
         <ListItemAvatar>
           <Avatar>
@@ -53,7 +46,15 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
         </ListItemAvatar>
         <ListItemText
           primary={isLoading ? <Skeleton sx={{ width: '50%' }} /> : stringCutter(prospect.name, 35) || 'Nom non défini'}
-          secondary={stringCutter(draftAnnotation.areaPicture.address, 35)}
+          secondary={
+            <>
+              <Typography component='span' variant='body2' sx={{ color: 'text.primary', display: 'inline' }}>
+                {stringCutter(draftAnnotation.areaPicture.address, 35)}
+              </Typography>
+              <br />
+              {draftAnnotation?.areaPicture?.createdAt && formatDateTimeWithoutSec(draftAnnotation.areaPicture.createdAt as any)}
+            </>
+          }
         />
       </ListItemButton>
     </ListItem>

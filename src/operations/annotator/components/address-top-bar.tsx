@@ -1,20 +1,28 @@
+import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { stringCutter } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Public } from '@mui/icons-material';
-import { Stack, Tooltip, Typography } from '@mui/material';
+import { Button, Stack, Tooltip, Typography } from '@mui/material';
 import { FC } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { addressStyle } from '../style';
 import { AnnotatorHelpButton } from '../utils';
+import { ThreeDMeasureMode } from './3d-renderer';
 
 interface AddressTopBarProps {
   areaPictureDetails: AreaPictureDetails;
   show: boolean;
+  measureMode: ThreeDMeasureMode;
+  setMeasureMode: (mode: ThreeDMeasureMode) => void;
 }
 
-export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show }) => {
-  if (!show) return null;
-
+export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show, measureMode, setMeasureMode }) => {
   const { address } = areaPictureDetails;
+  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
+    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
+  );
+  const { screen } = useAnnotatorScreenSwitch();
+  if (!show) return null;
 
   return (
     <Stack direction='row' gap={1} sx={addressStyle}>
@@ -26,7 +34,24 @@ export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show
           </Typography>
         </Tooltip>
       </Stack>
-      <AnnotatorHelpButton />
+      <Stack direction='row' gap={1}>
+        {screen === '3d-annotator' && (
+          <>
+            <Button color={measureMode === 'line' ? 'primary' : 'secondary'} onClick={() => setMeasureMode(measureMode === 'line' ? 'none' : 'line')}>
+              Mesurer une ligne
+            </Button>
+            <Button color={measureMode === 'polygon' ? 'primary' : 'secondary'} onClick={() => setMeasureMode(measureMode === 'polygon' ? 'none' : 'polygon')}>
+              Mesurer un polygon
+            </Button>
+          </>
+        )}
+        {screen === 'annotator' && (
+          <Button color={threeDFromSegmentation ? 'primary' : 'secondary'} onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
+            {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
+          </Button>
+        )}
+        <AnnotatorHelpButton />
+      </Stack>
     </Stack>
   );
 };

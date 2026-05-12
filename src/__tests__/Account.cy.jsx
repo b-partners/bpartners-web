@@ -50,23 +50,18 @@ describe(specTitle('Account'), () => {
         name: 'Numer_01',
         siren: '1001',
         officialActivityName: 'Activité_officielle',
-        initialCashFlow: 190000,
-        initialCashflow: 190000,
         contactAddress: {
           address: '40 Rue de la liberté',
           city: 'Paris',
           country: 'France',
-          postalCode: '12032',
         },
       };
       expect(req.body.name).to.deep.eq(newGlobalInfo.name);
       expect(req.body.siren).to.deep.eq(newGlobalInfo.siren);
       expect(req.body.officialActivityName).to.deep.eq(newGlobalInfo.officialActivityName);
-      expect(req.body.initialCashFlow).to.deep.eq(newGlobalInfo.initialCashFlow);
       expect(req.body.contactAddress.address).to.deep.eq(newGlobalInfo.contactAddress.address);
       expect(req.body.contactAddress.city).to.deep.eq(newGlobalInfo.contactAddress.city);
       expect(req.body.contactAddress.country).to.deep.eq(newGlobalInfo.contactAddress.country);
-      expect(req.body.contactAddress.postalCode).to.deep.eq(newGlobalInfo.contactAddress.postalCode);
       req.reply(accountHolders1[0]);
     }).as('updateAccountHolder');
     const newAccountHolder = { ...accountHolders1[0] };
@@ -76,13 +71,6 @@ describe(specTitle('Account'), () => {
       newAccountHolder.businessActivities = newBusinessActivity;
       req.reply(newAccountHolder);
     });
-    const newRevenueTargets = [{ amountTarget: 150000, year: 2021 }];
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/revenueTargets`, req => {
-      expect(req.body[0]).to.deep.eq(newRevenueTargets[0]);
-      const response = { ...accountHolders1[0] };
-      response.revenueTargets = newRevenueTargets;
-      req.reply(response);
-    }).as('updateRevenueTargets');
     cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
       expect(req.body).eql({ feedbackLink: validLink });
       req.reply(accountHoldersFeedbackLink);
@@ -109,10 +97,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Adresse');
     cy.name('contactAddress.address').type('40 Rue de la liberté');
 
-    //Field revenue targets
-    cy.name('revenueTargets.1.amountTarget').clear().type('1500');
-    cy.contains('Encaissement annuel à réaliser');
-
     // Field name
     cy.name('name').clear();
     cy.contains('Ce champ est requis.');
@@ -137,33 +121,11 @@ describe(specTitle('Account'), () => {
     cy.contains('Activité officielle');
     cy.name('officialActivityName').type('Activité_officielle');
 
-    //Field postal code
-    cy.name('contactAddress.postalCode').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Code postal');
-    cy.name('contactAddress.postalCode').type('12032');
-
     //Field siren
     cy.name('siren').clear();
     cy.contains('Ce champ est requis.');
     cy.contains('SIREN');
     cy.name('siren').type('1001');
-
-    //Field TVA
-    cy.name('companyInfo.tvaNumber').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Numéro de TVA');
-    cy.name('companyInfo.tvaNumber').type('12345678901234');
-
-    //Field town code
-    cy.name('companyInfo.townCode').clear();
-    cy.contains('Ce champ est requis.');
-    cy.contains('Code postal commune de prospection');
-    cy.name('companyInfo.townCode').type('75001');
-
-    //Field initial cash flow
-    cy.name('initialCashFlow').clear().type('1900');
-    cy.contains('Trésorerie initial');
 
     //Field web site
     cy.name('companyInfo.website').clear().type('www.example.com');
@@ -201,10 +163,6 @@ describe(specTitle('Account'), () => {
     cy.get('[role="option"]').contains('Barbier').click();
     cy.contains('Activité secondaire');
 
-    //Fiel subject to vat switch
-    cy.dataCy('companyInfo-subjectToVatSwitch').click({ force: false });
-    cy.contains('Micro-entreprise exonérée de TVA');
-
     //Interception de la requête
     cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, ({ body, reply }) => {
       expect(body).deep.equal({ feedbackLink: 'https://birdia.fr' });
@@ -236,22 +194,15 @@ describe(specTitle('Account'), () => {
     cy.contains('Madagascar');
     cy.contains('Activité secondaire');
     cy.contains('activité secondaire');
-    cy.contains('Encaissement annuel à réaliser');
-    cy.contains('120000,00 €');
     cy.contains('Capital social');
     cy.contains('1000,00 €');
     cy.contains('SIREN');
     cy.contains('Siren');
-    cy.contains('Trésorerie initial');
-    cy.contains('0,00 €');
     cy.contains('Lien du feedback');
-    cy.contains('Micro-entreprise exonérée de TVA');
     cy.contains('Raison sociale');
     cy.contains('Numer');
     cy.contains('Activité officielle');
     cy.contains('Activité officielle');
-    cy.contains('Numéro de TVA');
-    cy.contains('123');
     cy.contains('Site web');
     cy.contains('https://bpartners.app');
     cy.contains('Activité principale');
@@ -282,14 +233,17 @@ describe(specTitle('Account'), () => {
 
   it('Block Trial card INACTIVE', () => {
     const modifiedAccountHolders = [...accountHolders1];
+    const nextDate = new Date();
+
+    nextDate.setDate(nextDate.getDay() + 7);
     modifiedAccountHolders[0] = {
       ...modifiedAccountHolders[0],
       user: {
         ...modifiedAccountHolders[0].user,
         subscription: {
           status: 'INACTIVE',
-          start: '2022-01-01',
-          end: '2022-01-31',
+          start: new Date(),
+          end: nextDate,
         },
       },
     };
@@ -302,6 +256,8 @@ describe(specTitle('Account'), () => {
 
     cy.mount(<App />);
 
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.contains('Fermer').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
@@ -331,6 +287,8 @@ describe(specTitle('Account'), () => {
 
     cy.mount(<App />);
 
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.contains('Fermer').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');

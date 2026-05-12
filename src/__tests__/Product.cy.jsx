@@ -184,7 +184,7 @@ describe(specTitle('Products'), () => {
     cy.get('[name="description"]').clear().type(editionDescription);
     cy.get('[name="unitPrice"]').clear().type(1);
     cy.get('[name="vatPercent"]').clear().type(1);
-    cy.get('.MuiToolbar-root > .MuiButton-contained').click();
+    cy.contains('Enregistrer').click();
 
     cy.contains('edit this product test');
   });

@@ -11,5 +11,6 @@ export * from './prospect-fetcher';
 export * from './prospect-queries';
 export * from './retry-until-ready';
 export * from './roof-analyse-queries';
+export * from './save-annotations';
 export * from './slope-and-height-queries';
 export * from './vgg-result-query';

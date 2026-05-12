@@ -6,6 +6,7 @@ import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/c
 import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps } from '@mui/material';
 import { ChangeEvent, FC, FocusEvent, useEffect, useMemo, useState } from 'react';
 import { AnnotationInfo } from '../types';
+import { FreeAutocompleteInput } from './free-autocomplete-input';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
@@ -39,6 +40,12 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
   const handleChange: HandleChange = (key, transform) => event => {
     const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
     currentAnnotationInfo[key as keyof AnnotationInfo] = (transform ? transform(event.target.value) : event.target.value) as never;
+    updateAnnotationInfo(currentAnnotationInfo);
+  };
+
+  const handleChangeWihoutEvent = (key: keyof AnnotationInfo, value: any) => {
+    const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
+    currentAnnotationInfo[key] = value as never;
     updateAnnotationInfo(currentAnnotationInfo);
   };
 
@@ -76,13 +83,12 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
 
   return (
     <Stack gap={1}>
-      <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type' onChange={handleChange('labelType')}>
-        {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
-          <MenuItem key={`${name}-label-choices`} value={id}>
-            {name}
-          </MenuItem>
-        ))}
-      </TextField>
+      <FreeAutocompleteInput
+        onChange={(value: string) => handleChangeWihoutEvent('labelType', value)}
+        options={ANNOTATION_LABELS_CHOICES}
+        label='Type'
+        defaultValue={annotationInfos.labelType}
+      />
       <CustomTextField
         fullWidth
         onClick={e => e.stopPropagation()}
@@ -91,23 +97,18 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         defaultValue={annotationInfos.labelName}
         onBlur={handleChange('labelName')}
       />
-      <TextField select label='Revêtement 1' value={annotationInfos.covering} onChange={handleChange('covering')} size='small'>
-        {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
-          <MenuItem key={`${name}-covering-choices`} value={id}>
-            {name}
-          </MenuItem>
-        ))}
-      </TextField>
-      {annotationInfos.covering2 && (
-        <TextField select label='Revêtement 2' value={annotationInfos.covering2} onChange={handleChange('covering2')} size='small'>
-          {ANNOTATION_COVERING_CHOICES.map(({ name, id }) => (
-            <MenuItem key={`${name}-covering-2-choices`} value={id}>
-              {name}
-            </MenuItem>
-          ))}
-        </TextField>
-      )}
-
+      <FreeAutocompleteInput
+        onChange={(value: string) => handleChangeWihoutEvent('covering', value)}
+        options={ANNOTATION_COVERING_CHOICES}
+        label='Revêtement 1'
+        defaultValue={annotationInfos.covering}
+      />
+      <FreeAutocompleteInput
+        onChange={(value: string) => handleChangeWihoutEvent('covering2', value)}
+        options={ANNOTATION_COVERING_CHOICES}
+        label='Revêtement 2'
+        defaultValue={annotationInfos.covering2}
+      />
       {
         <CustomTextField
           label={isSlopeAndHeightPending ? 'Chargement de la pente en cours...' : 'Pente (°)'}

@@ -1,6 +1,5 @@
 import { MEASUREMENT_MAP_ON_EXTENDED_AREA, MEASUREMENT_MAP_ON_EXTENDED_LENGTH } from '@/constants';
-import { roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Measurement, Polygon } from '@bpartners/annotator-component';
+import { Measurement } from '@bpartners/annotator-component';
 
 /**
  * Function that returns another function to map all measurement values
@@ -11,10 +10,9 @@ import { Measurement, Polygon } from '@bpartners/annotator-component';
  * @example <AnnotatorCanvas measurementMapper={measurementMapper(isExtended)} />
  */
 export const measurementMapper =
-  (isExtended: boolean) =>
-  (measurement: Measurement, currentPolygons: Polygon[] = []): Measurement => {
-    const firstPolygon = currentPolygons[0];
-    const isInvisible = firstPolygon?.id !== measurement.polygonId && !measurement.polygonId.includes(roofGlobalIdRef);
+  (isExtended: boolean, visiblePolygonMeasurement: string) =>
+  (measurement: Measurement): Measurement => {
+    const isInvisible = visiblePolygonMeasurement === measurement.polygonId;
 
     if (!isExtended) return { ...measurement, isInvisible };
     return {

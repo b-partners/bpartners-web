@@ -3,17 +3,26 @@ import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Delete as DeleteIcon, ExpandMore as ExpandMoreIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import React, { ChangeEvent, FC, FormEvent, useState } from 'react';
+import {
+  Delete as DeleteIcon,
+  ExpandMore as ExpandMoreIcon,
+  Straighten,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+} from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import React, { FC, FormEvent, SyntheticEvent, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import AnnotatorForm from './AnnotatorForm';
+import { FreeAutocompleteInput } from './free-autocomplete-input';
 import { annotatorFormItem } from './style';
 
 interface Props {
   polygonId: string;
+  isAfterAnalyse?: boolean;
 }
 
-export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
+export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse }) => {
   const {
     polygon: currentPolygon,
     annotationInfos,
@@ -25,10 +34,10 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
   const [isExpanded, setIsExpanded] = useState(isFirst);
   const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
 
-  const handleChangeLabelType = (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeWihoutEvent = (value: string) => {
     event.stopPropagation();
     const tempAnnotationInfos = copyObject(annotationInfos);
-    tempAnnotationInfos.labelType = id as typeof tempAnnotationInfos.labelType;
+    tempAnnotationInfos.labelType = value as any;
     updateAnnotationInfo(tempAnnotationInfos);
   };
 
@@ -39,18 +48,26 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
     updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });
   };
 
+  const isMeasurementVisible = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement === polygonId));
+
   if (!currentPolygon) return null;
 
   const { data, isLoading: isSurfaceLoading } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
     onSuccess: ({ area, measurements = [] }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
+    isAfterAnalyse,
+    annotationInfos,
   });
 
   const height = annotationInfos.height;
 
   const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
 
+  const toggleMeasurementVisibility = (event: SyntheticEvent) => {
+    event?.stopPropagation();
+    annotatorStore.useAnnotatorStore.getState().showMeasurement(polygonId);
+  };
   return (
     <Stack sx={annotatorFormItem} data-cy='annotation-info-item'>
       <Accordion expanded={isExpanded} onChange={handleClickAccordion}>
@@ -62,6 +79,18 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
                 <Typography>{stringCutter(annotationInfos.labelName, 25)}</Typography>
               </Stack>
               <Stack direction='row'>
+                <Tooltip title={!isMeasurementVisible ? 'Afficher les mesures du polygone' : 'Cacher les mesures du polygone'}>
+                  <span>
+                    <IconButton
+                      edge='end'
+                      style={{ marginRight: '0' }}
+                      color={isMeasurementVisible ? 'primary' : 'default'}
+                      onClick={toggleMeasurementVisibility}
+                    >
+                      <Straighten />
+                    </IconButton>
+                  </span>
+                </Tooltip>
                 <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
                   <span>
                     <IconButton size='small' onClick={togglePolygonVisibility}>
@@ -107,13 +136,12 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId }) => {
             </Stack>
             <Divider sx={{ marginY: 1 }} />
             {!isExpanded && (
-              <TextField fullWidth value={annotationInfos.labelType} select size='small' label='Type du label'>
-                {ANNOTATION_LABELS_CHOICES.map(({ id, name }) => (
-                  <MenuItem onClick={handleChangeLabelType(id)} key={name} value={id}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <FreeAutocompleteInput
+                onChange={handleChangeWihoutEvent}
+                options={ANNOTATION_LABELS_CHOICES}
+                label='Type'
+                defaultValue={annotationInfos.labelType}
+              />
             )}
           </Box>
         </AccordionSummary>

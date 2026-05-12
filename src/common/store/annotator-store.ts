@@ -5,7 +5,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
-import { copyObject } from '../utils';
+import { copyObject, ObjectUtilities } from '../utils';
 
 interface Annotation {
   isFirst: boolean;
@@ -15,10 +15,13 @@ interface Annotation {
 
 interface State {
   annotations: Record<string, Annotation>;
+  polygonToShowMeasurement: string;
+  threeDFromSegmentation?: boolean;
 }
 
 interface Actions {
   setAnnotations: (annotations: State['annotations']) => void;
+  replacePolygonById: (id: string, polygon: Polygon) => void;
   updateAnnotationInfo: (annotation: AnnotationInfo) => void;
   removeAnnotationInfo: (id: string) => void;
   addPolygon: (polygon: Polygon) => void;
@@ -26,6 +29,8 @@ interface Actions {
   replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
   resetAnnotations: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
+  showMeasurement: (polygonId: string) => void;
+  setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
 }
 
 // @ts-ignore
@@ -52,14 +57,29 @@ const useAnnotatorStore = create<State & Actions>(set => ({
         polygon,
         annotationInfos: {
           polygonId: polygon.id,
-          labelType: 'roof',
+          labelType: state.threeDFromSegmentation ? 'pan' : 'roof',
           fillColor: polygon.fillColor,
           strokeColor: polygon.strokeColor,
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
         },
       };
-      annotations[polygon.id] = annotation;
 
+      annotations[polygon.id] = annotation;
+      const annotationsKeyNotAnalyseResult = Object.keys(annotations).filter(key => !key.includes(analyseGeneratedIdRef) || key.includes(roofGlobalIdRef));
+      const annotationsKeyAnalyseResult = Object.keys(annotations).filter(key => key.includes(analyseGeneratedIdRef) && !key.includes(roofGlobalIdRef));
+      const reorderAnnotations = ObjectUtilities.reorder(annotations, [...annotationsKeyNotAnalyseResult, ...annotationsKeyAnalyseResult]);
+
+      const updatedState: State = { annotations: copyObject(reorderAnnotations), polygonToShowMeasurement: state.polygonToShowMeasurement };
+
+      if (isFirst) updatedState.polygonToShowMeasurement = polygon.id;
+
+      return updatedState;
+    }),
+  replacePolygonById: (id, polygon) =>
+    set(state => {
+      const annotations = copyObject(state.annotations);
+      if (!annotations[id]) return { annotations };
+      annotations[id].polygon = polygon;
       return { annotations };
     }),
   updatePolygon: (id, polygon) =>
@@ -104,6 +124,14 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       annotations[roofPolygonId] = typeof annotationOrDispatcher === 'function' ? annotationOrDispatcher(annotation) : annotationOrDispatcher;
       return { annotations };
     }),
+  showMeasurement: polygonId =>
+    set(state => {
+      if (polygonId === state.polygonToShowMeasurement) return { polygonToShowMeasurement: '' };
+      return { polygonToShowMeasurement: polygonId };
+    }),
+  setThreeDFromSegmentation(threeDFromSegmentation) {
+    set({ threeDFromSegmentation });
+  },
 }));
 
 const useOneAnnotatorStore = (polygonId: string) => {
@@ -154,12 +182,19 @@ const usePolygonStore = () => {
     return currentPolygons;
   });
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
+  const replacePolygonById = useAnnotatorStore(params => params.replacePolygonById);
   const polygonIdList = polygonList.map(a => a.id);
 
   const setPolygons: Dispatch<SetStateAction<Polygon[]>> = _polygon => {
     const polygon = typeof _polygon === 'function' ? _polygon(polygonList) : _polygon;
     const newPolygon = polygon.find(p => !polygonIdList.includes(p.id));
-    if (newPolygon) addPolygon(newPolygon);
+    if (newPolygon) return addPolygon(newPolygon);
+
+    const differentPolygon = polygon.find(
+      p => JSON.stringify(p.points) !== JSON.stringify(annotatorStore.useAnnotatorStore.getState().annotations[p.id].polygon.points)
+    );
+
+    if (differentPolygon) return replacePolygonById(differentPolygon.id, differentPolygon);
   };
 
   return { polygonList, setPolygons };

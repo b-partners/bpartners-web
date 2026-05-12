@@ -2,6 +2,7 @@ export * from './use-autocomplete';
 export * from './use-change-invoice-status';
 export * from './use-check-auth';
 export * from './use-get-element-size';
+export * from './use-heart-beat';
 export * from './use-loading-handler';
 export * from './use-tab-manager';
 export * from './use-toggle';

@@ -6,7 +6,6 @@ const generalInfoValidator = zod.object({
   name: requiredString(),
   siren: requiredString(),
   officialActivityName: requiredString(),
-  initialCashflow: requiredString(),
   address: requiredString(),
   city: requiredString(),
   country: requiredString(),

@@ -1,6 +1,10 @@
 import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
+export const FreeAutocompleteInputStyle: SxProps = {
+  width: '100%',
+};
+
 export const annotatorActionButtonsStyle: SxProps = {
   width: '100%',
   display: 'flex',
@@ -20,10 +24,11 @@ export const annotatorActionButtonsStyle: SxProps = {
     '& .MuiBox-root': {
       '& p': {
         m: 0,
+        fontSize: 12,
       },
       color: '#fff',
       px: 1,
-      py: 1.2,
+      py: 1,
       borderRadius: 2,
       minWidth: 70,
       fontWeight: 'semi-bold',
@@ -36,11 +41,11 @@ export const annotatorActionButtonsStyle: SxProps = {
     borderRadius: 2,
     width: '100%',
     display: 'flex',
-    py: 1.2,
+    py: 1,
     justifyContent: 'center',
     '& .MuiTypography-root': {
       color: '#fff',
-      fontSize: 14,
+      fontSize: 12,
     },
     '& .MuiDivider-root': {
       marginX: 2,
@@ -130,4 +135,16 @@ export const annotatorFormItem: SxProps = {
       transform: 'rotate(180deg)',
     },
   },
+};
+
+export const saveAnnotationsButtonStyle: SxProps = {
+  width: {
+    xs: '90%',
+    md: '30%',
+    lg: '20%',
+  },
+  position: 'fixed',
+  bottom: '2%',
+  right: '2%',
+  zIndex: 999,
 };

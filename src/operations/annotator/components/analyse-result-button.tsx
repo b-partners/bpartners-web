@@ -1,5 +1,4 @@
 import { BPButton } from '@/common/components';
-import { useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl, parseUrlParams, printError } from '@/common/utils';
@@ -67,7 +66,6 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
   const { polygonList } = annotatorStore.usePolygonStore();
 
   const { isLoading, startLoading, stopLoading } = useLoadingHandler();
-  const { mutateAsync: uploadImage } = useAnnotatorImageUploadQuery();
 
   const isThereAnyPolygons = annotatorsInfos.length > 0;
 
@@ -77,7 +75,6 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
     const handleSubmitForms = async () => {
       try {
         startLoading();
-        isCropped && (await uploadImage({ file: image, id: areaPictureDetails.fileId }));
         const annotationIdValue = draftAnnotationId || v4();
         const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotatorsInfos, pictureId, annotationIdValue);
         const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();

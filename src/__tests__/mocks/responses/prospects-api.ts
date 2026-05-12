@@ -9,7 +9,6 @@ export const prospects: Prospect[] = [
     status: ProspectStatus.TO_CONTACT,
     firstName: '',
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 21547,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
@@ -29,7 +28,6 @@ export const prospects: Prospect[] = [
     email: 'janeDoe@gmail.com',
     status: ProspectStatus.CONTACTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 21547,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     rating: {
       lastEvaluation: new Date('2023-05-10'),
@@ -44,7 +42,6 @@ export const prospects: Prospect[] = [
     email: 'markusAdams@gmail.com',
     status: ProspectStatus.TO_CONTACT,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 21547,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
@@ -55,7 +52,6 @@ export const prospects: Prospect[] = [
     email: 'alyssaHain@gmail.com',
     status: ProspectStatus.CONTACTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: null,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
@@ -66,7 +62,6 @@ export const prospects: Prospect[] = [
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONTACTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 12345,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
@@ -82,7 +77,6 @@ export const prospects: Prospect[] = [
     email: 'micheleKlaffs@gmail.com',
     status: ProspectStatus.CONVERTED,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 12345,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   {
@@ -107,7 +101,6 @@ export const prospects: Prospect[] = [
     email: null,
     status: ProspectStatus.TO_CONTACT,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: null,
     comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     location: {
       type: 'Point',
@@ -126,7 +119,6 @@ export const updatedProspects: Prospect[] = [
     email: 'doejhonson@gmail.com',
     status: ProspectStatus.TO_CONTACT,
     address: '30 Rue de la Montagne Sainte-Genevieve',
-    townCode: 21547,
     comment: 'Update comment',
     location: {
       type: 'Point',
@@ -163,7 +155,6 @@ export const createProspect = (number: number, status?: ProspectStatus) => {
       email: 'johnDoe@gmail.com',
       status: status || ProspectStatus.TO_CONTACT,
       address: '30 Rue de la Montagne Sainte-Genevieve',
-      townCode: 21547,
       rating: { value: a % 2 === 0 ? 10 : 6, lastEvaluation: new Date('2024-07-07') },
       comment: 'Commentaire: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       location: {

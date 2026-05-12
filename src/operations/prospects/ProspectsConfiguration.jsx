@@ -1,8 +1,8 @@
+import { printError } from '@/common/utils';
+import { getCached } from '@/providers/cache';
 import { Box, Divider, Slider, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNotify } from 'react-admin';
-import { printError } from '@/common/utils';
-import { getCached } from '@/providers/cache';
 import { accountHolderProvider, updateGlobalInformation } from '../../providers';
 
 const ProspectsConfiguration = () => {
@@ -11,7 +11,7 @@ const ProspectsConfiguration = () => {
     contactAddress: { prospectingPerimeter },
   } = getCached.accountHolder();
 
-  const maxProspectingPerimeter = 10;
+  const maxProspectingPerimeter = 1000;
   const [newProspectingPerimeter, setNewProspectingPerimeter] = useState(prospectingPerimeter);
   const handleChange = e => {
     const { value } = e.target;
@@ -32,13 +32,12 @@ const ProspectsConfiguration = () => {
 
   const updateProspectingPerimeter = async newPerimeter => {
     try {
-      const { id, name, officialActivityName, initialCashflow, siren, contactAddress } = await accountHolderProvider.getOne();
+      const { id, name, officialActivityName, siren, contactAddress } = await accountHolderProvider.getOne();
       const newGlobalInfo = {
         id: id,
         name: name,
         siren: siren,
         officialActivityName: officialActivityName,
-        initialCashFlow: initialCashflow,
         contactAddress: { ...contactAddress, prospectingPerimeter: newPerimeter },
       };
 

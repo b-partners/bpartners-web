@@ -1,7 +1,7 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
-import { roofGlobalIdRef } from '@/operations/prospects/constants';
-import { cache } from '@/providers';
+import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
+import { cache, SlopeAndHeightStatus } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
@@ -47,11 +47,17 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
         if (areaPictureAnnotations.length > 0) {
           const areaPictureAnnotation = areaPictureAnnotations[0];
           const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter } = areaPictureAnnotation?.properties || {};
+          let heightStatus: SlopeAndHeightStatus = null;
+
+          if (roofHeight) heightStatus = 'AVAILABLE';
+          else if (areaPictureAnnotation?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
+            heightStatus = 'UNAVAILABLE';
+          }
           setLlm(llm);
           setGlobalRate(global_rate_value, global_rate_type);
           setSlopeAndHeightState({
             height: roofHeight,
-            heightStatus: roofHeight ? 'AVAILABLE' : 'UNAVAILABLE',
+            heightStatus,
             slope: annotations?.annotations?.[0]?.metadata?.slope,
             slopeStatus: 'AVAILABLE',
           });

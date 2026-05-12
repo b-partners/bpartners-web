@@ -1,3 +1,4 @@
+import { AnnotationInfo } from '@/operations/annotator';
 import { getCenter, shiftPolygons } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotatorProvider, getCached, polygonMapper } from '@/providers';
@@ -10,20 +11,23 @@ import { copyObject, getImageSize, UrlParams } from '../utils';
 
 interface Params {
   polygon: Polygon;
+  annotationInfos: AnnotationInfo;
   areaPictureDetails: AreaPictureDetails;
   onSuccess?: (params: { area: number; measurements: Measurement[] }) => void;
+  isAfterAnalyse?: boolean;
 }
 
 export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
     const imageUrl = UrlParams.get('imgUrl');
-    const imageSize = getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
+    const imageSize =
+      params.isAfterAnalyse && UrlParams.get('useDrafts') === 'true' ? 2048 : getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
 
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
     const divisor = getCached.currentImageSize() ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
 
-    const [polygon] = shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true);
+    const [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
 
     const geoJson = polygonMapper.toRefererGeoJson(
       { ...polygon, points: polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
@@ -41,7 +45,7 @@ export const usePolygonAreaQuery = (params: Params) => {
       coordinates.push({ latitude, longitude: all_points_y[index] });
     });
 
-    const area = +getAreaOfPolygon(coordinates).toFixed(2);
+    const area = +(getAreaOfPolygon(coordinates) / (params.annotationInfos.slope ? Math.cos(params.annotationInfos.slope * (Math.PI / 180)) : 1)).toFixed(2);
 
     const measurements: Measurement[] = [];
 
@@ -50,6 +54,7 @@ export const usePolygonAreaQuery = (params: Params) => {
         const prev = coordinates[i - 1];
         const current = coordinates[i];
         const distance = +getDistance(prev, current, 0.2).toFixed(2);
+
         measurements.push({
           position: getCenter(polygon.points[i - 1], polygon.points[i]),
           unity: 'm',
@@ -64,5 +69,5 @@ export const usePolygonAreaQuery = (params: Params) => {
     return { area, measurements };
   };
 
-  return useQuery({ queryFn, queryKey: ['polygonArea', params.polygon?.id, JSON.stringify(params.polygon?.points)] });
+  return useQuery({ queryFn, queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points), params.annotationInfos.slope] });
 };

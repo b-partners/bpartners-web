@@ -2,23 +2,27 @@ import { usePolygonAreaQuery } from '@/common/fetcher';
 import { annotatorStore } from '@/common/store';
 import { detectionResultColors } from '@/operations/prospects/constants';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Straighten, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Box, Divider, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import React, { FC } from 'react';
+import React, { FC, SyntheticEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { annotatorFormResultItemStyle as style } from './style';
 
 interface Props {
   areaPictureDetails: AreaPictureDetails;
   polygonId: string;
+  isAfterAnalyse?: boolean;
 }
 
-export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetails, polygonId }) => {
+export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetails, polygonId, isAfterAnalyse }) => {
   const { polygon: currentPolygon, annotationInfos, removeAnnotationInfo, updatePolygon } = annotatorStore.useOneAnnotationStore(polygonId);
 
   const { isLoading, data } = usePolygonAreaQuery({
     areaPictureDetails,
     polygon: currentPolygon,
     onSuccess: ({ area, measurements }) => updatePolygon({ ...currentPolygon, surface: area, measurements }),
+    isAfterAnalyse,
+    annotationInfos,
   });
 
   const togglePolygonVisibility = () => updatePolygon({ ...currentPolygon, isInvisible: !currentPolygon.isInvisible });
@@ -30,6 +34,12 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetai
   const area = data?.area;
 
   const background = detectionResultColors[annotationInfos.polygonId.split('___')[1] as keyof typeof detectionResultColors];
+  const toggleMeasurementVisibility = (event: SyntheticEvent) => {
+    event?.stopPropagation();
+    annotatorStore.useAnnotatorStore.getState().showMeasurement(polygonId);
+  };
+
+  const isMeasurementVisible = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement === polygonId));
 
   return (
     <Paper sx={style}>
@@ -41,8 +51,13 @@ export const AnnotatorFormResultItem: FC<Props> = React.memo(({ areaPictureDetai
           {(isLoading || !area) && <Typography>Chargement de la surface ...</Typography>}
         </Stack>
         <Stack direction='row'>
+          <Tooltip title={isMeasurementVisible ? 'Afficher les mesures du polygone' : 'Cacher les mesures du polygone'} onClick={toggleMeasurementVisibility}>
+            <IconButton size='small' edge='end' color={isMeasurementVisible ? 'primary' : 'default'} style={{ marginRight: '0' }}>
+              <Straighten />
+            </IconButton>
+          </Tooltip>
           <Tooltip title={currentPolygon.isInvisible ? 'Afficher le polygone' : 'Cacher le polygone'}>
-            <IconButton edge='end' aria-label='toggle polygon visibility' style={{ marginRight: '0' }} onClick={togglePolygonVisibility}>
+            <IconButton edge='end' style={{ marginRight: '0' }} onClick={togglePolygonVisibility}>
               {currentPolygon.isInvisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
           </Tooltip>

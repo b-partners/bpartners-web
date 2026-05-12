@@ -61,7 +61,7 @@ export const polygonMapper = {
   toRefererGeoJson(polygon: Polygon, _image_size: number, areaPicture: AreaPictureDetails) {
     const filename = `${v4().replace(/\-/gi, '')}_${areaPicture.zoom.number}_${(areaPicture.xTile || 0) - 1}_${(areaPicture.yTile || 0) - 1}.jpg`;
 
-    const image_size = _image_size > 1024 ? 1024 : _image_size;
+    const image_size = _image_size > 2048 ? 1024 : _image_size;
 
     const result: any = {
       size: image_size,

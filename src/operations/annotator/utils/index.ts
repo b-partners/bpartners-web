@@ -11,6 +11,7 @@ export * from './get-areapicture-shift-for-zoom';
 export * from './global-rate-calculator';
 export * from './help-button';
 export * from './image-utilities';
+export * from './is-after-analyse';
 export * from './is-roof-polygon';
 export * from './llm-result-queries';
 export * from './measurement-mapper';

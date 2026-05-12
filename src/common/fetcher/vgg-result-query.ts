@@ -9,10 +9,14 @@ import {
   polygonMapper,
   Region,
 } from '@/providers';
+import { UrlParams } from '@bpartners/annotator-component';
+import { FileType } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
+import { useUpdate } from 'react-admin';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
+import { base64ToFile } from '../utils';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
   const detections = Object.values(detectionResult);
@@ -41,6 +45,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
   const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin } = useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
+  const [uploadFile] = useUpdate('files');
 
   const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
 
@@ -106,10 +111,21 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       image as HTMLImageElement
     );
 
+    // save new image from roof analyse as the current area picture details default image
+    const fileId = UrlParams.get('fileId');
+    const base64Image = regions.length > 0 ? croppedImage : imageAsBase64;
+
+    if (fileId && base64Image && base64Image.length > 0) {
+      const fileType = FileType.AREA_PICTURE;
+      const fileMimeType = 'image/png';
+      const fileAsArrayBuffer = base64ToFile(base64Image, fileId + '.png');
+      uploadFile('files', { data: { id: fileId, fileAsArrayBuffer, fileId, fileType, fileMimeType }, id: fileId });
+    }
+
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
       polygons: croppedPolygons,
-      image: regions.length > 0 ? croppedImage : imageAsBase64,
+      image: base64Image,
     };
   };
 
