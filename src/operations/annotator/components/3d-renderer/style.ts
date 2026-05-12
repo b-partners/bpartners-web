@@ -3,17 +3,19 @@ import { CSSProperties } from 'react';
 export const faceMeasureLabelStyle = {
   distanceMeterSpan: (edge: any) => ({
     color: edge.color,
-    fontSize: '13px',
+    fontSize: '16px',
     fontWeight: 'bold',
-    textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
+    background: 'rgba(0,0,0,0.75)',
+    padding: '4px 10px',
+    borderRadius: '6px',
     whiteSpace: 'nowrap',
   }),
   areaSpan: {
     background: 'rgba(0,0,0,0.75)',
     color: '#fff',
-    padding: '3px 8px',
+    padding: '4px 10px',
     borderRadius: '6px',
-    fontSize: '13px',
+    fontSize: '16px',
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
   },
