@@ -70,7 +70,7 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
 export const getCityJSON = async (id: string, roofDelimiter: [number, number][][], usePan = false) => {
   const cityJsonRequest = await retryUntilReady({
     maxAttemps: 20,
-    sleepDelay: 7_000,
+    sleepDelay: 10_000,
     fetcher: () => processCityJSONRequest(id, roofDelimiter, usePan),
     isReady: request => request.status !== CityJSONRequestStatus.PROCESSING,
   });

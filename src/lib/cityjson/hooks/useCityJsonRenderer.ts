@@ -134,7 +134,9 @@ const parseCityJson = (cityJson: CityJsonData) => {
       normalizedBoundaries.forEach((boundary: any, bIdx: number) => {
         const surfaceIdx = normalizedValues[bIdx];
         const surfaceType = surfaceIdx != null ? surfaces[surfaceIdx]?.type ?? 'Unknown' : 'Unknown';
-        const face = boundary[0];
+        const face = Array.isArray(boundary) && Array.isArray(boundary[0]) ? boundary[0] : boundary;
+
+        if (!Array.isArray(face) || face.length < 3 || !face.every((v: any) => typeof v === 'number')) return;
 
         if (!surfaceFaces[surfaceType]) {
           surfaceFaces[surfaceType] = [];

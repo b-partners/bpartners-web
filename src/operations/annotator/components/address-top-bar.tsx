@@ -45,9 +45,11 @@ export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show
             </Button>
           </>
         )}
-        <Button color={threeDFromSegmentation ? 'primary' : 'secondary'} onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
-          {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
-        </Button>
+        {screen === 'annotator' && (
+          <Button color={threeDFromSegmentation ? 'primary' : 'secondary'} onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
+            {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
+          </Button>
+        )}
         <AnnotatorHelpButton />
       </Stack>
     </Stack>
