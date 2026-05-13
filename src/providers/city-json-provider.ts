@@ -30,25 +30,28 @@ interface ProcessCityJSONRequestParams {
   id: string;
   roofDelimiter: [number, number][][];
   usePan?: boolean;
-  ltLong?: number;
-  ltLat?: number;
   imageUrl?: string;
-  resolution?: number;
+  tileX?: number;
+  tileY?: number;
+  tileImageSizePx?: number;
+  imageWidth?: number;
+  imageHeight?: number;
+  zoom?: number;
 }
 
 export const processCityJSONRequest = async (params: ProcessCityJSONRequestParams) => {
-  const { id, imageUrl, ltLat, ltLong, roofDelimiter, usePan, resolution } = params;
+  const { id, imageUrl, roofDelimiter, usePan, imageHeight, imageWidth, zoom, tileX, tileY, tileImageSizePx } = params;
   const apiKey = await getApiKey();
 
-  const threeDTextureInfo = usePan
-    ? {
-        imageDataUri: imageUrl,
-        topLeftLon: ltLong,
-        topLeftLat: ltLat,
-        pixelWidth: resolution,
-        pixelHeight: resolution,
-      }
-    : undefined;
+  const threeDTextureInfo = {
+    tileX,
+    tileY,
+    tileImageSizePx,
+    imageWidth,
+    imageHeight,
+    zoom,
+    imageUri: imageUrl,
+  };
 
   const response = await fetch(`${baseUrl}/city-jsons/${id}/process`, {
     method: 'PUT',
