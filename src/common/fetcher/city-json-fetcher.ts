@@ -5,19 +5,9 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
-import { getImageSize, UrlParams } from '../utils';
+import { copyObject, getFileUrl, getImageSize, UrlParams } from '../utils';
 
-const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails) => {
-  const imageUrl = UrlParams.get('imgUrl');
-  let imageSize = await getImageSize(imageUrl);
-
-  // do not remove
-  // fix for pixel to long lat
-  // polygon size on 20 extended image
-  if (areaPicture.actualLayer.name === 'FLUX_IGN_2023_20CM' && areaPicture.isExtended) {
-    imageSize = imageSize / 3;
-  }
-
+const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
   const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
@@ -55,24 +45,60 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       const cityJSONRequestId = cachedCityJSONRequestId || uuid();
 
       cache.cityJSONRequestId(cityJSONRequestId);
-
+      const imageUrl = UrlParams.get('imgUrl');
+      const _imageSize = await getImageSize(imageUrl);
+      let imageSize = +_imageSize.toString();
+      // do not remove
+      // fix for pixel to long lat
+      // polygon size on 20 extended image
+      if (areaPicture.actualLayer.name === 'FLUX_IGN_2023_20CM' && areaPicture.isExtended) {
+        imageSize = imageSize / 3;
+      }
       let mappedCoordinates = [];
 
       if (threeDMode === 'roof') {
         mappedCoordinates = [
-          (getCached.roofDelimiterLongLatItem() as [number, number][]) || (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture)),
+          (getCached.roofDelimiterLongLatItem() as [number, number][]) || (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)),
         ];
       } else {
         const pans = Object.values(annotations)
           .filter(annotation => annotation.annotationInfos.labelType === 'pan')
-          .map(annotation => mapPixelPolygonToLatLonPolygon(annotation.polygon, areaPicture));
+          .map(annotation => mapPixelPolygonToLatLonPolygon(annotation.polygon, areaPicture, imageSize));
 
         mappedCoordinates = (await Promise.all(pans)).map(a => [a]) as any;
       }
 
-      const data = await getCityJSON(cityJSONRequestId, mappedCoordinates, threeDMode === 'pan');
-      if (data && data.transform) setCityJsonModel(data);
-      return data;
+      const tileOffset = areaPicture.isExtended ? 1 : 0;
+
+      const imageUri = getFileUrl(areaPicture.fileId, 'AREA_PICTURE');
+
+      const data = await getCityJSON({
+        id: cityJSONRequestId,
+        roofDelimiter: mappedCoordinates,
+        usePan: threeDMode === 'pan',
+        imageUrl: imageUri,
+        imageHeight: _imageSize,
+        imageWidth: _imageSize,
+        tileX: areaPicture.xTile - tileOffset,
+        tileY: areaPicture.yTile - tileOffset,
+        zoom: areaPicture.zoom.number,
+        tileImageSizePx: imageSize > 2048 ? 1024 : imageSize,
+      });
+
+      const imageAsBase64 = await fetch(imageUri).then(async response => {
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      });
+      const result = copyObject(data);
+
+      if (result && result.transform) setCityJsonModel(result);
+      result.appearance.textures[0].image = imageAsBase64;
+      return result;
     },
     queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, annotations })],
   });

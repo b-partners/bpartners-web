@@ -26,12 +26,32 @@ export interface CityJSONRequest {
   cityJsons: CityJSONUrl[];
 }
 
-export const processCityJSONRequest: (id: string, roofDelimiter: [number, number][][], usePan?: boolean) => Promise<CityJSONRequest> = async (
-  id,
-  roofDelimiter,
-  usePan = false
-) => {
+interface ProcessCityJSONRequestParams {
+  id: string;
+  roofDelimiter: [number, number][][];
+  usePan?: boolean;
+  imageUrl?: string;
+  tileX?: number;
+  tileY?: number;
+  tileImageSizePx?: number;
+  imageWidth?: number;
+  imageHeight?: number;
+  zoom?: number;
+}
+
+export const processCityJSONRequest = async (params: ProcessCityJSONRequestParams) => {
+  const { id, imageUrl, roofDelimiter, usePan, imageHeight, imageWidth, zoom, tileX, tileY, tileImageSizePx } = params;
   const apiKey = await getApiKey();
+
+  const threeDTextureInfo = {
+    tileX,
+    tileY,
+    tileImageSizePx,
+    imageWidth,
+    imageHeight,
+    zoom,
+    imageUri: imageUrl,
+  };
 
   const response = await fetch(`${baseUrl}/city-jsons/${id}/process`, {
     method: 'PUT',
@@ -52,6 +72,7 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
           },
         },
       ],
+      threeDTextureInfo,
     }),
   });
 
@@ -67,11 +88,11 @@ export const processCityJSONRequest: (id: string, roofDelimiter: [number, number
   return (await response.json()) as CityJSONRequest;
 };
 
-export const getCityJSON = async (id: string, roofDelimiter: [number, number][][], usePan = false) => {
+export const getCityJSON = async (params: ProcessCityJSONRequestParams) => {
   const cityJsonRequest = await retryUntilReady({
     maxAttemps: 20,
-    sleepDelay: 10_000,
-    fetcher: () => processCityJSONRequest(id, roofDelimiter, usePan),
+    sleepDelay: 7_000,
+    fetcher: () => processCityJSONRequest(params),
     isReady: request => request.status !== CityJSONRequestStatus.PROCESSING,
   });
 
