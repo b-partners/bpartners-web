@@ -46,7 +46,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       cache.cityJSONRequestId(cityJSONRequestId);
       const imageUrl = UrlParams.get('imgUrl');
-      let imageSize = await getImageSize(imageUrl);
+      const _imageSize = await getImageSize(imageUrl);
+      let imageSize = +_imageSize.toString();
       // do not remove
       // fix for pixel to long lat
       // polygon size on 20 extended image
@@ -70,6 +71,20 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       const tileOffset = areaPicture.isExtended ? 1 : 0;
 
       const imageUri = getFileUrl(areaPicture.fileId, 'AREA_PICTURE');
+
+      const data = await getCityJSON({
+        id: cityJSONRequestId,
+        roofDelimiter: mappedCoordinates,
+        usePan: threeDMode === 'pan',
+        imageUrl: imageUri,
+        imageHeight: _imageSize,
+        imageWidth: _imageSize,
+        tileX: areaPicture.xTile - tileOffset,
+        tileY: areaPicture.yTile - tileOffset,
+        zoom: areaPicture.zoom.number,
+        tileImageSizePx: imageSize > 2048 ? 1024 : imageSize,
+      });
+
       const imageAsBase64 = await fetch(imageUri).then(async response => {
         const blob = await response.blob();
         return new Promise<string>((resolve, reject) => {
@@ -79,22 +94,9 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           reader.readAsDataURL(blob);
         });
       });
-
-      const data = await getCityJSON({
-        id: cityJSONRequestId,
-        roofDelimiter: mappedCoordinates,
-        usePan: threeDMode === 'pan',
-        imageUrl: imageUri,
-        imageHeight: imageSize,
-        imageWidth: imageSize,
-        tileX: areaPicture.xTile - tileOffset,
-        tileY: areaPicture.yTile - tileOffset,
-        zoom: areaPicture.zoom.number,
-        tileImageSizePx: imageSize > 2048 ? 1024 : imageSize,
-      });
-      if (data && data.transform) setCityJsonModel(data);
-
       const result = copyObject(data);
+
+      if (result && result.transform) setCityJsonModel(result);
       result.appearance.textures[0].image = imageAsBase64;
       return result;
     },
