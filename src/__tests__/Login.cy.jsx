@@ -65,7 +65,11 @@ describe(specTitle('Login'), () => {
     cy.contains('Ce champ est requis');
     cy.get("[name='password']").type('dummy');
     cy.contains('Ce champ est requis');
+    cy.intercept('https://cognito-idp.eu-west-3.amazonaws.com/', res => {
+      res.reply({ statusCode: 400, body: { __type: 'NotAuthorizedException', message: 'Incorrect username or password.' } });
+    });
     cy.get("[name='username']").type('dummy{enter}');
+    cy.contains('Les identifiants sont incorrects.');
   });
 
   it('Should show the CGU in a new tab', () => {
