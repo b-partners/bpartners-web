@@ -22,8 +22,13 @@ const SignInForm = () => {
     setLoading(true);
 
     try {
-      const redirectionUrl = await authProvider.login(loginState);
-      Redirect.toURL(redirectionUrl);
+      const loginResult = await authProvider.login(loginState);
+      if (loginResult === 'wrongPassword') {
+        formState.setError('password', { message: 'Les identifiants sont incorrects.' });
+        formState.setError('username');
+      } else {
+        Redirect.toURL(loginResult);
+      }
     } catch {
       notify('messages.global.error', { type: 'error' });
     } finally {
