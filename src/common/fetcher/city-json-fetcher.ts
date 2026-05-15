@@ -5,7 +5,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
-import { getFileUrl, getImageSize, UrlParams } from '../utils';
+import { copyObject, getFileUrl, getImageSize, UrlParams } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
@@ -67,20 +67,36 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         mappedCoordinates = (await Promise.all(pans)).map(a => [a]) as any;
       }
 
+      const tileOffset = areaPicture.isExtended ? 1 : 0;
+
+      const imageUri = getFileUrl(areaPicture.fileId, 'AREA_PICTURE');
+      const imageAsBase64 = await fetch(imageUri).then(async response => {
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      });
+
       const data = await getCityJSON({
         id: cityJSONRequestId,
         roofDelimiter: mappedCoordinates,
         usePan: threeDMode === 'pan',
-        imageUrl: getFileUrl(areaPicture.fileId, 'AREA_PICTURE'),
+        imageUrl: imageUri,
         imageHeight: imageSize,
         imageWidth: imageSize,
-        tileX: areaPicture.xTile,
-        tileY: areaPicture.yTile,
+        tileX: areaPicture.xTile - tileOffset,
+        tileY: areaPicture.yTile - tileOffset,
         zoom: areaPicture.zoom.number,
         tileImageSizePx: imageSize > 2048 ? 1024 : imageSize,
       });
       if (data && data.transform) setCityJsonModel(data);
-      return data;
+
+      const result = copyObject(data);
+      result.appearance.textures[0].image = imageAsBase64;
+      return result;
     },
     queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, annotations })],
   });
