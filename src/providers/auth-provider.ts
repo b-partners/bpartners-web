@@ -86,12 +86,9 @@ export const authProvider = {
       await whoami();
       return loginRedirectionUrls.successUrl;
     } catch (err: any) {
-      console.log({ theError: 'error', err: err?.message });
-
       if (err?.message === 'Incorrect username or password.') {
-        return loginRedirectionUrls.failureUrl + '?error=wrongPassword';
+        return 'wrongPassword';
       }
-
       return loginRedirectionUrls.failureUrl;
     }
   },
