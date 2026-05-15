@@ -1,6 +1,5 @@
 import { FreeTrialBannerWrapper } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
-import { useHeartBeat } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { AccountHolderHandlerWrapper } from '@/security/AccountHolderHandlerWrapper';
 import { Dialog } from '@mui/material';
@@ -12,7 +11,6 @@ import { Menu } from './menu';
 
 export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
   const { isOpen: isDialogOpen, content: dialogContent, close: closeDialog, dialogProps = {}, backdropClose } = useDialog();
-  useHeartBeat();
 
   return (
     <AppLocationContext>
