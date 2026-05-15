@@ -114,7 +114,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
 
   if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
-    return <BPLoader sx={{ width: width || undefined }} message="Chargement des données d'annotation..." />;
+    return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
 
   const globalRate = calculateGlobalRate();
