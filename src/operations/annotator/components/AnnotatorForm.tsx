@@ -20,7 +20,7 @@ const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = ({ default
   }, [defaultValue]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
-  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : value} />;
+  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : (value ?? '')} />;
 };
 
 type HandleChange = (
@@ -131,7 +131,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         select
         label='Usure'
-        value={annotationInfos.wear}
+        value={annotationInfos.wear ?? ''}
         onChange={handleChange('wear')}
         size='small'
       >
@@ -145,7 +145,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         select
         label="Taux d'usure"
-        value={annotationInfos.wearLevel}
+        value={annotationInfos.wearLevel ?? ''}
         onChange={handleChange('wearLevel')}
         size='small'
       >
@@ -159,7 +159,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='MOISISSURE' /> }}
         select
         label='Taux de moisissure'
-        value={annotationInfos.moldRate}
+        value={annotationInfos.moldRate ?? ''}
         onChange={handleChange('moldRate')}
         size='small'
       >
@@ -173,7 +173,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='HUMIDITE' /> }}
         select
         label="Taux d'humidité"
-        value={annotationInfos.humidityLevel}
+        value={annotationInfos.humidityLevel ?? ''}
         onChange={handleChange('humidityLevel')}
         size='small'
       >
