@@ -17,6 +17,7 @@ import {
   AnalyseResultButton,
   Annotator3D,
   Annotator3DRegenerateButton,
+  Annotator3DSaveButton,
   Annotator3DSwitchButton,
   annotatorButtonsActions,
   Disclaimer,
@@ -67,7 +68,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
-  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations({
+  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations, triggerManualSave } = useSaveAnnotations({
     analyseProperties: geojsonResult?.properties,
     areaPictureDetails: currentAreaPictureDetailsToUse,
   });
@@ -231,6 +232,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           <LlmSwitchButton />
           <Annotator3DRegenerateButton />
           <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
+          <Annotator3DSaveButton onSave={triggerManualSave} isSaving={isSaveAnnotationsPending} />
         </Stack>
       </Stack>
 
