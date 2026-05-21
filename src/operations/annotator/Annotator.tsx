@@ -38,7 +38,7 @@ const AnnotatorWithDefaultCacheManager = () => {
   const { screen } = useAnnotatorScreenSwitch();
 
   if (isLoading) {
-    return <BPLoader message="Chargement des données d'annotation..." />;
+    return <BPLoader message='Chargement des données...' />;
   }
 
   return (
