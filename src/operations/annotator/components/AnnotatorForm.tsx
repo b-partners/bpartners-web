@@ -120,9 +120,9 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
           disabled={isSlopeAndHeightPending}
           isLoading={isSlopeAndHeightPending}
           InputProps={
-            isSlopeAndHeightPending && {
+            isSlopeAndHeightPending ? {
               endAdornment: <CircularProgress size={25} />,
-            }
+            } : undefined
           }
         />
       }
