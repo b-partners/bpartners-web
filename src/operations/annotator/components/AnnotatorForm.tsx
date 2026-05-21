@@ -12,15 +12,15 @@ const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
-const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = props => {
-  const [value, setValue] = useState(props.defaultValue);
+const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = ({ defaultValue, isLoading, ...rest }) => {
+  const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
-    setValue(props.defaultValue);
-  }, [props.defaultValue]);
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
-  return <TextField {...props} onChange={handleChange} value={props.isLoading ? '' : value} />;
+  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : value} />;
 };
 
 type HandleChange = (
