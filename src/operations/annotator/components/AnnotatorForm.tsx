@@ -20,7 +20,7 @@ const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = ({ default
   }, [defaultValue]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
-  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : (value ?? '')} />;
+  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : value ?? ''} />;
 };
 
 type HandleChange = (
@@ -120,9 +120,11 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
           disabled={isSlopeAndHeightPending}
           isLoading={isSlopeAndHeightPending}
           InputProps={
-            isSlopeAndHeightPending ? {
-              endAdornment: <CircularProgress size={25} />,
-            } : undefined
+            isSlopeAndHeightPending
+              ? {
+                  endAdornment: <CircularProgress size={25} />,
+                }
+              : undefined
           }
         />
       }
