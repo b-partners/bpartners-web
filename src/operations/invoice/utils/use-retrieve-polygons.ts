@@ -1,4 +1,4 @@
-import { useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, roof3DStore, useAnnotatorComponentStore } from '@/common/store';
 import { parseUrlParams } from '@/common/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { cache, SlopeAndHeightStatus } from '@/providers';
@@ -25,6 +25,21 @@ const getPolygonsFromAreaPictureAnnotation = (areaPictureAnnotation: AreaPicture
   return result;
 };
 
+const restoreThreeDMapping = (properties: Record<string, any> | undefined) => {
+  const raw = properties?.threeDMapping;
+  if (!raw) return;
+  try {
+    const mapping = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const { setPanNames, setEdgeTypes, setSavedPolygons, setSavedLines } = roof3DStore.useRoof3DStore.getState();
+    if (mapping.panNames) setPanNames(mapping.panNames);
+    if (mapping.edgeTypes) setEdgeTypes(mapping.edgeTypes);
+    if (mapping.savedPolygons) setSavedPolygons(mapping.savedPolygons);
+    if (mapping.savedLines) setSavedLines(mapping.savedLines);
+  } catch {
+    // ignore malformed data
+  }
+};
+
 export type AreaPictureAnnotationFetcherType = (pictureId: string) => Promise<AreaPictureAnnotation[]>;
 export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAnnotationFetcherType) => {
   const { pictureId } = parseUrlParams();
@@ -46,7 +61,8 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       areaPictureAnnotationFetcher(pictureId).then(areaPictureAnnotations => {
         if (areaPictureAnnotations.length > 0) {
           const areaPictureAnnotation = areaPictureAnnotations[0];
-          const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter } = areaPictureAnnotation?.properties || {};
+          const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
+            areaPictureAnnotation?.properties || {};
           let heightStatus: SlopeAndHeightStatus = null;
 
           if (roofHeight) heightStatus = 'AVAILABLE';
@@ -76,6 +92,10 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
           });
 
           setAreaPictureAnnotationState(areaPictureAnnotation);
+
+          annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
+          annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+          restoreThreeDMapping(areaPictureAnnotation?.properties);
         }
       });
       return;
@@ -85,7 +105,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       if (areaPictureAnnotations.length > 0) {
         const areaPictureAnnotation = areaPictureAnnotations[0];
         const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
-        const { global_rate_type, global_rate_value, roofHeight, llm } = areaPictureAnnotation?.properties || {};
+        const { global_rate_type, global_rate_value, roofHeight, llm, threeDGenerationMode, threeDGenerationId } = areaPictureAnnotation?.properties || {};
         setLlm(llm);
         setGlobalRate(global_rate_value, global_rate_type);
         setSlopeAndHeightState({
@@ -99,6 +119,10 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
           annotations: areaPictureAnnotation,
         });
         setAreaPictureAnnotationState(areaPictureAnnotation);
+
+        annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
+        if (threeDGenerationId) annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+        restoreThreeDMapping(areaPictureAnnotation?.properties);
       }
     });
   }, [pictureId]);

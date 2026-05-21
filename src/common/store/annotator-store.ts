@@ -17,6 +17,7 @@ interface State {
   annotations: Record<string, Annotation>;
   polygonToShowMeasurement: string;
   threeDFromSegmentation?: boolean;
+  threeDGenerationId?: string;
 }
 
 interface Actions {
@@ -31,6 +32,7 @@ interface Actions {
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
   showMeasurement: (polygonId: string) => void;
   setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
+  setThreeDGenerationId: (threeDGenerationId: string | undefined) => void;
 }
 
 // @ts-ignore
@@ -132,6 +134,8 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   setThreeDFromSegmentation(threeDFromSegmentation) {
     set({ threeDFromSegmentation });
   },
+  threeDGenerationId: undefined,
+  setThreeDGenerationId: threeDGenerationId => set({ threeDGenerationId }),
 }));
 
 const useOneAnnotatorStore = (polygonId: string) => {
