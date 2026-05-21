@@ -1,5 +1,5 @@
 import { BPLoader } from '@/common/components';
-import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery, useSaveAnnotations } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
@@ -16,6 +16,7 @@ import {
   AddressTopBar,
   AnalyseResultButton,
   Annotator3D,
+  Annotator3DRegenerateButton,
   Annotator3DSwitchButton,
   annotatorButtonsActions,
   Disclaimer,
@@ -65,6 +66,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
+
+  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations({
+    analyseProperties: geojsonResult?.properties,
+    areaPictureDetails: currentAreaPictureDetailsToUse,
+  });
 
   useEffect(() => {
     if (currentAreaPictureDetailsToUse && currentAreaPictureDetailsToUse.xTile && currentAreaPictureDetailsToUse.xTile)
@@ -157,7 +163,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
-      <ImageOptionTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={allowSelect} mutateAreaPictureDetail={mutateAreaPictureDetails} />
+      {screen === 'annotator' && (
+        <ImageOptionTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={allowSelect} mutateAreaPictureDetail={mutateAreaPictureDetails} />
+      )}
       <AddressTopBar measureMode={measureMode} setMeasureMode={setMeasureMode} areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
 
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
@@ -190,34 +198,38 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           height={height || containerHeight - 50}
           areaPicture={currentAreaPictureDetailsToUse}
           measureMode={measureMode}
+          setMeasureMode={setMeasureMode}
         />
         {screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
       </Box>
 
       <Stack>
         <Disclaimer />
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
-          <Box className='global-rage-container'>
-            <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
-          </Box>
-          <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
-            {degradationLevels.map(({ color, label }) => (
-              <Box
-                key={label}
-                className={`degratation-levels-box ${globalRate.type === label ? 'degratation-levels-box-selected' : ''}`}
-                sx={{
-                  bgcolor: color,
-                  border: `5px solid ${globalRate.type === label ? 'black' : 'transparent'}`,
-                }}
-              >
-                {label}
-              </Box>
-            ))}
+        {screen !== '3d-annotator' && (
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Box className='global-rage-container'>
+              <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
+            </Box>
+            <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
+              {degradationLevels.map(({ color, label }) => (
+                <Box
+                  key={label}
+                  className={`degratation-levels-box ${globalRate.type === label ? 'degratation-levels-box-selected' : ''}`}
+                  sx={{
+                    bgcolor: color,
+                    border: `5px solid ${globalRate.type === label ? 'black' : 'transparent'}`,
+                  }}
+                >
+                  {label}
+                </Box>
+              ))}
+            </Stack>
           </Stack>
-        </Stack>
+        )}
         <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
           <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
           <LlmSwitchButton />
+          <Annotator3DRegenerateButton />
           <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
         </Stack>
       </Stack>
@@ -234,7 +246,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         rebeginAreaPictureDetails={rebeginAreaPictureDetails}
       />
       {createPortal(
-        <SaveAnnotationsButton analyseProperties={geojsonResult?.properties} areaPictureDetails={currentAreaPictureDetailsToUse} />,
+        <SaveAnnotationsButton
+          isSaveAnnotationsPending={isSaveAnnotationsPending}
+          saveAnnotationsError={saveAnnotationsError}
+          savedAnnotations={savedAnnotations}
+        />,
         document.getElementById('root')
       )}
     </Box>
