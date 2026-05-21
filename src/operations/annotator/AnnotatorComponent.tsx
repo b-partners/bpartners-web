@@ -23,7 +23,7 @@ import {
   ImageOptionTopBar,
   LlmResult,
   LlmSwitchButton,
-  SaveAnnotationsButton,
+  SaveAnnotationsNotification,
   ThreeDMeasureMode,
 } from './components';
 import { RoofAnalysisDialog } from './components/loading';
@@ -246,7 +246,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         rebeginAreaPictureDetails={rebeginAreaPictureDetails}
       />
       {createPortal(
-        <SaveAnnotationsButton
+        <SaveAnnotationsNotification
           isSaveAnnotationsPending={isSaveAnnotationsPending}
           saveAnnotationsError={saveAnnotationsError}
           savedAnnotations={savedAnnotations}
