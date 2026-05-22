@@ -33,7 +33,7 @@ const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: Are
 
 export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPicture?: AreaPictureDetails, active?: boolean) => {
   const hasPolygonFromAnnotator = !!polygonFromAnnotator;
-  const { setCityJsonModel } = useAnnotator3DStore();
+  const { setCityJsonModel, regenerateVersion } = useAnnotator3DStore();
   const { threeDMode } = useAnnotatorScreenSwitch();
   const annotations = annotatorStore.useAnnotatorStore.getState().annotations;
   return useQuery({
@@ -111,6 +111,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       result.appearance.textures[0].image = imageAsBase64;
       return result;
     },
-    queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, annotations })],
+    queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, annotations, regenerateVersion })],
   });
 };

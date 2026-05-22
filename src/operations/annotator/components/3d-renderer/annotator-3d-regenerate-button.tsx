@@ -17,6 +17,7 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
     removeCache.cityJSONRequestId();
     roof3DStore.useRoof3DStore.getState().reset();
     useAnnotator3DStore.getState().reset();
+    useAnnotator3DStore.getState().incrementRegenerateVersion();
     queryClient.removeQueries();
     setScreen('annotator');
     setTimeout(() => setScreen('3d-annotator', threeDMode), 100);
