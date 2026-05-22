@@ -3,7 +3,7 @@ import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
-import { v4 as uuid, v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { copyObject, getFileUrl, getImageSize, UrlParams } from '../utils';
 
@@ -81,7 +81,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
         data = await getCityJSON(
           {
-            id: cityJSONRequestId || v4(),
+            id: cityJSONRequestId,
             roofDelimiter: mappedCoordinates,
             usePan: threeDMode === 'pan',
             imageUrl: imageUri,

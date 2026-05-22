@@ -253,6 +253,7 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
 };
 
 export const clearRoofDelimiter = () => {
+  localStorage.removeItem(cityJSONRequestIdItem);
   localStorage.removeItem(defaultRoofDelimiterItem);
   localStorage.removeItem(roofDelimiterLongLatItem);
   localStorage.removeItem(currentImageSize);
@@ -264,6 +265,7 @@ export const removeCache = {
   },
   roofDelimitation() {
     localStorage.removeItem(defaultRoofDelimiterItem);
+    localStorage.removeItem(cityJSONRequestIdItem);
     localStorage.removeItem(roofDelimiterLongLatItem);
   },
 };
