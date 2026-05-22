@@ -41,6 +41,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     resetAnnotations();
     reset3DStore();
     annotatorComponentStore.reset();
+    annotatorStore.useAnnotatorStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
     navigate(

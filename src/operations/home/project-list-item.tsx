@@ -29,6 +29,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
     resetAnnotations();
     reset3DStore();
     annotatorComponentStore.reset();
+    annotatorStore.useAnnotatorStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
     navigate(
