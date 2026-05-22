@@ -27,15 +27,9 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const whoami = getCached.whoami();
   const today = dayjs();
-  const remainingDays = whoami?.user?.subscription?.end ?
-    dayjs(whoami?.user?.subscription?.end).diff(today, 'day')
-    : null;
-  const startDate = whoami?.user?.subscription?.start
-    ? new Date(whoami.user.subscription.start)
-    : null;
-  const endDate = whoami?.user?.subscription?.end
-    ? new Date(whoami.user.subscription.end)
-    : null;
+  const remainingDays = whoami?.user?.subscription?.end ? dayjs(whoami?.user?.subscription?.end).diff(today, 'day') : null;
+  const startDate = whoami?.user?.subscription?.start ? new Date(whoami.user.subscription.start) : null;
+  const endDate = whoami?.user?.subscription?.end ? new Date(whoami.user.subscription.end) : null;
   const firstDebitDate = getFirstDebitDate(startDate, endDate);
 
   return (
@@ -52,7 +46,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
           <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
         </p>
-        {startDate && endDate&& remainingDays && (
+        {startDate && endDate && remainingDays && (
           <>
             <ul>
               <li>

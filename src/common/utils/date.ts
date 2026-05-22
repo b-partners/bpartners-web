@@ -44,8 +44,7 @@ export const getFirstDebitDate = (startDate: Date | null, endDate: Date | null):
   const endYear = end.getFullYear();
 
   const sameMonth = endYear === startYear && endMonth === startMonth;
-  const endIsBefore5OfTargetMonth =
-    endYear === targetYear && endMonth === targetMonth && end.getDate() < 5;
+  const endIsBefore5OfTargetMonth = endYear === targetYear && endMonth === targetMonth && end.getDate() < 5;
 
   if (sameMonth || endIsBefore5OfTargetMonth) {
     const fallbackMonth = targetMonth === 11 ? 0 : targetMonth + 1;
