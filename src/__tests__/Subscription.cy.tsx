@@ -31,7 +31,7 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.mount(<App />);
 
-    cy.contains('Finalisez votre inscription en toute sérénité !');
+    cy.contains('Effectuez votre abonnement en toute sérénité !');
     cy.contains("Activez votre abonnement aujourd'hui pour 49€ HT, votre carte ne sera débitée qu'à compter du 05/02/2026.");
     cy.contains("Début de la période d'essai : 01/01/2026");
     cy.contains("Fin de la période d'essai : 07/01/2026");
@@ -48,7 +48,7 @@ describe('Test user subscription', () => {
 
     cy.mount(<App />);
 
-    cy.contains('Finalisez votre inscription en toute sérénité !');
+    cy.contains('Effectuez votre abonnement en toute sérénité !');
     cy.intercept(`/users/${invalidSubscriptionUser.id}/subscriptionInitiation`, ({ body, reply }) => {
       expect(body).deep.equal(expectedSubscriptionInitializationPayload);
       reply({ statusCode: 200 });

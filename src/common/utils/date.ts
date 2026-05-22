@@ -24,29 +24,36 @@ export const formatFrenchDate = (date: Date) =>
     day: 'numeric',
   });
 
-export const getFirstDebitDate = (startDate: Date, endDate: Date): Date => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+export const getFirstDebitDate = (startDate: Date | null, endDate: Date | null): Date => {
+  const start = startDate ? new Date(startDate) : new Date();
 
+  const startDay = start.getDate();
   const startMonth = start.getMonth();
   const startYear = start.getFullYear();
+
+  const goToNextMonth = startDay >= 5;
+  const targetMonth = goToNextMonth ? (startMonth === 11 ? 0 : startMonth + 1) : startMonth;
+  const targetYear = goToNextMonth ? (startMonth === 11 ? startYear + 1 : startYear) : startYear;
+
+  if (!endDate) {
+    return new Date(targetYear, targetMonth, 5);
+  }
+
+  const end = new Date(endDate);
   const endMonth = end.getMonth();
   const endYear = end.getFullYear();
 
-  const nextMonth = startMonth === 11 ? 0 : startMonth + 1;
-  const nextMonthYear = startMonth === 11 ? startYear + 1 : startYear;
-
   const sameMonth = endYear === startYear && endMonth === startMonth;
+  const endIsBefore5OfTargetMonth =
+    endYear === targetYear && endMonth === targetMonth && end.getDate() < 5;
 
-  const endIsBefore5OfNextMonth = endYear === nextMonthYear && endMonth === nextMonth && end.getDate() < 5;
-
-  if (sameMonth || endIsBefore5OfNextMonth) {
-    return new Date(nextMonthYear, nextMonth, 5);
+  if (sameMonth || endIsBefore5OfTargetMonth) {
+    const fallbackMonth = targetMonth === 11 ? 0 : targetMonth + 1;
+    const fallbackYear = targetMonth === 11 ? targetYear + 1 : targetYear;
+    return new Date(fallbackYear, fallbackMonth, 5);
   }
 
-  const secondNextMonth = nextMonth === 11 ? 0 : nextMonth + 1;
-  const secondNextYear = nextMonth === 11 ? nextMonthYear + 1 : nextMonthYear;
-  return new Date(secondNextYear, secondNextMonth, 5);
+  return new Date(targetYear, targetMonth, 5);
 };
 
 /**
