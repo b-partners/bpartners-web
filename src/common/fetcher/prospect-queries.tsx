@@ -4,7 +4,14 @@ import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } 
 import { useCreate, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
+import {
+  annotatorStore,
+  roof3DStore,
+  useAnnotator3DStore,
+  useAnnotatorComponentFormItemStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+} from '../store';
 import { useDialog } from '../store/dialog';
 import { getFileUrl } from '../utils';
 
@@ -100,6 +107,7 @@ export const useMutateProspect = () => {
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();
     annotatorStore.useAnnotatorStore.getState().reset();
+    roof3DStore.useRoof3DStore.getState().reset();
     clearPolygons();
     setScreen('annotator');
     // reset annotator page state

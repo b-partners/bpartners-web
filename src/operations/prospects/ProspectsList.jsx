@@ -10,6 +10,7 @@ import TabPanel from '@/common/components/TabPanel';
 import {
   annotatorStore,
   ProspectContextProvider,
+  roof3DStore,
   useAnnotator3DStore,
   useAnnotatorComponentFormItemStore,
   useAnnotatorComponentStore,
@@ -94,6 +95,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           resetAnnotations();
           clearPolygons();
           annotatorStore.useAnnotatorStore.getState().reset();
+          roof3DStore.useRoof3DStore.getState().reset();
           navigate(
             `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}&draftAnnotationId=${v4()}`
           );

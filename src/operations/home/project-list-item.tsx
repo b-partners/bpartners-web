@@ -1,4 +1,11 @@
-import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import {
+  annotatorStore,
+  roof3DStore,
+  useAnnotator3DStore,
+  useAnnotatorComponentFormItemStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+} from '@/common/store';
 import { formatDateTimeWithoutSec, getFileUrl, stringCutter } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
@@ -32,6 +39,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
     annotatorStore.useAnnotatorStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
+    roof3DStore.useRoof3DStore.getState().reset();
     navigate(
       `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
     );

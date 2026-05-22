@@ -4,7 +4,14 @@ import { useNavigate } from 'react-router';
 
 import { BP_COLOR } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
-import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import {
+  annotatorStore,
+  roof3DStore,
+  useAnnotator3DStore,
+  useAnnotatorComponentFormItemStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+} from '@/common/store';
 import { formatDateTime, getFileUrl } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
@@ -42,6 +49,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     reset3DStore();
     annotatorComponentStore.reset();
     annotatorStore.useAnnotatorStore.getState().reset();
+    roof3DStore.useRoof3DStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
     navigate(
