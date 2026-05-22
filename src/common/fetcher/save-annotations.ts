@@ -6,7 +6,7 @@ import { UrlParams } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { debounce } from '@mui/material';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useUpdate } from 'react-admin';
 import { annotatorStore, roof3DStore, useAnnotatorComponentStore } from '../store';
 
@@ -143,9 +143,21 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
     roof3DStore.useRoof3DStore.getState().savedPolygons,
   ]);
 
+  const triggerManualSave = useMemo(
+    () => () => {
+      const pictureId = areaPictureDetails?.id;
+      if (!pictureId) return;
+      const requestBody = buildRequestBody(pictureId, analyseProperties, llm);
+      if (!requestBody) return;
+      saveDraftAnnotation(requestBody, saveAnnotations);
+    },
+    [areaPictureDetails?.id, analyseProperties, llm, saveAnnotations]
+  );
+
   return {
     savedAnnotations: data,
     isSaveAnnotationsPending: isPending,
     saveAnnotationsError: error,
+    triggerManualSave,
   };
 };

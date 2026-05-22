@@ -3,6 +3,7 @@ export * from './annotator-3d';
 export * from './annotator-3d-infos';
 export * from './annotator-3d-raycaster';
 export * from './annotator-3d-regenerate-button';
+export * from './annotator-3d-save-button';
 export * from './annotator-3d-save-image';
 export * from './annotator-3d-switch-button';
 export * from './city-scene';

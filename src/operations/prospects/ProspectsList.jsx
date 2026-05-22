@@ -93,6 +93,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           setAnnotatorSidebarAccordionItem(0);
           resetAnnotations();
           clearPolygons();
+          annotatorStore.useAnnotatorStore.getState().reset();
           navigate(
             `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}&draftAnnotationId=${v4()}`
           );

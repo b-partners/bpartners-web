@@ -16,7 +16,10 @@ export const ScreenShotAnimation: FC<ScreenShotAnimationProps> = ({ roofImageSrc
   const targetControls = useAnimation();
 
   useEffect(() => {
+    let cancelled = false;
     const run = async () => {
+      await new Promise(r => requestAnimationFrame(r));
+      if (cancelled) return;
       await cityControls.start({
         opacity: 1,
         transition: { duration: 0.6, ease: 'easeOut' },
@@ -66,6 +69,9 @@ export const ScreenShotAnimation: FC<ScreenShotAnimationProps> = ({ roofImageSrc
     };
 
     run();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

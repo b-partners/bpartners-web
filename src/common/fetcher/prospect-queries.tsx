@@ -99,6 +99,7 @@ export const useMutateProspect = () => {
     useAnnotatorComponentStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();
+    annotatorStore.useAnnotatorStore.getState().reset();
     clearPolygons();
     setScreen('annotator');
     // reset annotator page state

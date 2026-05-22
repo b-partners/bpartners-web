@@ -33,7 +33,7 @@ interface SaveAnnotationsButtonProps {
   savedAnnotations: unknown;
 }
 
-export const SaveAnnotationsButton: FC<SaveAnnotationsButtonProps> = ({ isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations }) => {
+export const SaveAnnotationsNotification: FC<SaveAnnotationsButtonProps> = ({ isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations }) => {
   const [shouldShow, setShouldShow] = useState(false);
   const timeoutRef = useRef(null);
 
