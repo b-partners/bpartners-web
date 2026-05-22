@@ -241,6 +241,7 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
+  localStorage.removeItem(cityJSONRequestIdItem);
 
   if (removeRoofAnalyseId) {
     localStorage.removeItem(roofAnalyseIdItem);
