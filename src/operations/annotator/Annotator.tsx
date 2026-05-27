@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
@@ -8,15 +9,33 @@ import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCac
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download, MoreVert, Save } from '@mui/icons-material';
-import { AppBar, Button, Divider, Grid, IconButton, ListItemIcon, ListItemText, MenuItem, Popover, Skeleton, Stack, TextField, Toolbar } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Popover,
+  Skeleton,
+  Stack,
+  TextField,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
+import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
 import { ScreenSwitchTabs } from './components';
 import { SideBar } from './SideBar';
-import { useAnnotationInfosForm } from './utils';
+import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
 const AnnotatorWithDefaultCacheManager = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
@@ -45,6 +64,9 @@ const AnnotatorWithDefaultCacheManager = () => {
   }, [shouldAnalyseRoof]);
 
   const { screen } = useAnnotatorScreenSwitch();
+  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
+    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
+  );
 
   if (isLoading || isAreaPictureDetailsLoading) {
     return <BPLoader message='Chargement des données...' />;
@@ -60,6 +82,8 @@ const AnnotatorWithDefaultCacheManager = () => {
   const handleChangeZoomLevel = (zoomLevel: any) => () => mutateAreaPictureDetails({ ...areaPicture, zoomLevel, zoom: { level: zoomLevel } });
 
   const handleChangeLayer = (layer: any) => () => mutateAreaPictureDetails({ ...areaPicture, zoomLevel, layerId: layer.id });
+
+  const globalRate = calculateGlobalRate();
 
   return (
     <FormProvider {...annotatorFormState}>
@@ -87,7 +111,18 @@ const AnnotatorWithDefaultCacheManager = () => {
             </TextField>
             <Button color={isExtended ? 'secondary' : 'inherit'}>{isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}</Button>
           </Stack>
-          <ScreenSwitchTabs />
+          <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
+            <Button
+              size='small'
+              variant='outlined'
+              color='secondary'
+              onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
+              sx={{ textTransform: 'none', fontSize: 11, px: 1.5, py: 0.25, mx: 0.5, whiteSpace: 'nowrap' }}
+            >
+              3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
+            </Button>
+          </Tooltip>
+          <ScreenSwitchTabs areaPicture={areaPicture} />
           <Stack direction='row' gap={1} alignItems='center'>
             <Divider orientation='vertical' flexItem />
             <IconButton onClick={(e: MouseEvent<HTMLElement>) => setMenuAnchorEl(e.currentTarget)}>
@@ -140,6 +175,69 @@ const AnnotatorWithDefaultCacheManager = () => {
           </Grid>
         )}
       </Grid>
+      <Toolbar
+        sx={{
+          '& .global-rage-container ': {
+            '& .MuiTypography-root': {
+              textAlign: 'center',
+              width: '100%',
+              px: 2,
+              py: 0.7,
+              border: '1px solid black',
+              background: PALETTE_COLORS.pine,
+              borderRadius: 3,
+              color: '#fff',
+              fontWeight: 'bold',
+            },
+          },
+
+          '& .degratation-levels': {
+            mt: 0,
+            pt: 0,
+            '& .degratation-levels-box': {
+              width: 40,
+              height: 40,
+              mt: 0,
+              borderRadius: 2,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              transition: 'all 500ms',
+              cursor: 'pointer',
+            },
+            '&:hover': {
+              '& .degratation-levels-box:not(.degratation-levels-box-selected)': {
+                background: '#D9D9D9',
+              },
+              '& .degratation-levels-box-selected': {
+                transform: 'scale(120%)',
+                mx: 2,
+              },
+            },
+          },
+        }}
+      >
+        <Box className='global-rage-container'>
+          <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
+        </Box>
+        <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
+          {degradationLevels.map(({ color, label }) => (
+            <Box
+              key={label}
+              className={`degratation-levels-box ${globalRate.type === label ? 'degratation-levels-box-selected' : ''}`}
+              sx={{
+                bgcolor: color,
+                border: `5px solid ${globalRate.type === label ? 'black' : 'transparent'}`,
+              }}
+            >
+              {label}
+            </Box>
+          ))}
+        </Stack>
+      </Toolbar>
+      <Typography sx={{ textAlign: 'center', width: '100%', fontSize: 12, fontStyle: 'italic', color: 'text.secondary', mt: 1 }}>
+        Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
+      </Typography>
     </FormProvider>
   );
 };

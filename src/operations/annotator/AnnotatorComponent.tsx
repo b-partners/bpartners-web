@@ -1,17 +1,14 @@
 import { BPLoader } from '@/common/components';
-import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useRoofAnalyseQuery, useSaveAnnotations } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useSaveAnnotations } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { useDialog } from '@/common/store/dialog';
-import { getUrlParams, UrlParams } from '@/common/utils';
-import { clearPolygons } from '@/providers';
+import { getUrlParams } from '@/common/utils';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
-import { Box, Stack, SxProps, Typography } from '@mui/material';
+import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { degradationLevels } from '../prospects/constants';
 import {
   Annotator3D,
   Annotator3DRegenerateButton,
@@ -22,12 +19,9 @@ import {
   SaveAnnotationsNotification,
   ThreeDMeasureMode,
 } from './components';
-import { RoofAnalysisDialog } from './components/loading';
 import { AnnotatorComponentProps } from './types';
 import {
-  AnalyseRoofButton,
   annotatorComponentStyle,
-  calculateGlobalRate,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
   getNewPolygonColor,
@@ -90,25 +84,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     }
   }, [JSON.stringify(geojsonResult), isPending]);
 
-  const handleDetectionProcessingSuccess = () => {
-    resetAnnotations();
-    clearPolygons(false);
-  };
-
-  const { mutate: _processDetection, isPending: isDetectionProcessing } = useRoofAnalyseQuery(
-    polygonList || [],
-    currentAreaPictureDetailsToUse,
-    handleDetectionProcessingSuccess
-  );
-
-  const { open: openDialog } = useDialog();
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
 
   if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
-
-  const globalRate = calculateGlobalRate();
 
   const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
     if (isExtended) {
@@ -136,15 +116,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         ...p,
         measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
       }));
-
-  const processDetection = () => {
-    openDialog(
-      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
-      { maxWidth: 'lg' },
-      false
-    );
-    _processDetection();
-  };
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -185,29 +156,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
       <Stack>
         <Disclaimer />
-        {screen !== '3d-annotator' && (
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Box className='global-rage-container'>
-              <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
-            </Box>
-            <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
-              {degradationLevels.map(({ color, label }) => (
-                <Box
-                  key={label}
-                  className={`degratation-levels-box ${globalRate.type === label ? 'degratation-levels-box-selected' : ''}`}
-                  sx={{
-                    bgcolor: color,
-                    border: `5px solid ${globalRate.type === label ? 'black' : 'transparent'}`,
-                  }}
-                >
-                  {label}
-                </Box>
-              ))}
-            </Stack>
-          </Stack>
-        )}
         <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
-          <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
           <Annotator3DRegenerateButton />
           <Annotator3DSaveButton onSave={triggerManualSave} isSaving={isSaveAnnotationsPending} />
         </Stack>
