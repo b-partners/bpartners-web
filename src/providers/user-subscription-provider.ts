@@ -37,4 +37,10 @@ export const userSubscriptionProvider = {
     const { data } = await userSubscriptionApi().initiateBillingPortal(id, { failureUrl, successUrl });
     return data;
   },
+  async checkoutSetup() {
+    const { id } = await asyncGetUser();
+    const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
+    const { data } = await userSubscriptionApi().initiatePaymentMethodInsertion(id, { failureUrl, successUrl });
+    return data;
+  },
 };
