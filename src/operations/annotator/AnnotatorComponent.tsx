@@ -13,17 +13,12 @@ import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { degradationLevels } from '../prospects/constants';
 import {
-  AddressTopBar,
-  AnalyseResultButton,
   Annotator3D,
   Annotator3DRegenerateButton,
   Annotator3DSaveButton,
-  Annotator3DSwitchButton,
   annotatorButtonsActions,
   Disclaimer,
-  ImageOptionTopBar,
   LlmResult,
-  LlmSwitchButton,
   SaveAnnotationsNotification,
   ThreeDMeasureMode,
 } from './components';
@@ -44,28 +39,17 @@ import {
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
-  const {
-    boxWrapperSx = {},
-    showAddress = false,
-    showFileSource = true,
-    buttonComponent,
-    allowAnnotation = true,
-    allowSelect = true,
-    width,
-    height,
-    draftAnnotationId,
-    isInvoiceForm,
-  } = props;
+  const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
 
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
 
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
-  const { geoJsonResultUrl, llm: draftLlmValue, roofDelimiter, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading, rebeginAreaPictureDetails } = useAreaPictureDetailsFetcher();
+  const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
   const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations, triggerManualSave } = useSaveAnnotations({
@@ -164,11 +148,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
-      {screen === 'annotator' && (
-        <ImageOptionTopBar areaPictureDetails={currentAreaPictureDetailsToUse} show={allowSelect} mutateAreaPictureDetail={mutateAreaPictureDetails} />
-      )}
-      <AddressTopBar measureMode={measureMode} setMeasureMode={setMeasureMode} areaPictureDetails={currentAreaPictureDetailsToUse} show={showAddress} />
-
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
         {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
           <AnnotatorCanvas
@@ -229,24 +208,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         )}
         <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
           <AnalyseRoofButton isProcessing={isDetectionProcessing} processDetection={processDetection} />
-          <LlmSwitchButton />
           <Annotator3DRegenerateButton />
-          <Annotator3DSwitchButton disabled={!roofDelimiter?.polygon && polygonList.length === 0 && screen !== '3d-annotator'} />
           <Annotator3DSaveButton onSave={triggerManualSave} isSaving={isSaveAnnotationsPending} />
         </Stack>
       </Stack>
 
       {!geojsonResult && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && <Stack direction='row' className='bottom-action'></Stack>}
-      <AnalyseResultButton
-        show={!isInvoiceForm && screen !== '3d-annotator'}
-        width={width || containerWidth}
-        analyseProperties={geojsonResult?.properties}
-        image={geojsonResult?.image}
-        isCropped={!!geojsonResult?.image}
-        areaPictureDetails={currentAreaPictureDetailsToUse}
-        draftAnnotationId={draftAnnotationId}
-        rebeginAreaPictureDetails={rebeginAreaPictureDetails}
-      />
       {createPortal(
         <SaveAnnotationsNotification
           isSaveAnnotationsPending={isSaveAnnotationsPending}

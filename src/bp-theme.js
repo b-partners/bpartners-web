@@ -37,12 +37,21 @@ export const BORDER_RADIUS = {
 
 const bp_button = {
   ...defaultTheme?.components?.MuiButton,
-  paddingInline: '10px',
-  boxShadow: 'unset',
-  marginBlock: '5px',
+  borderRadius: '5px',
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  padding: '4px 10px',
+  minHeight: '28px',
+  lineHeight: 1.4,
   textTransform: 'unset',
+  boxShadow: 'unset',
+  transition: 'all 0.15s ease',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
   '&:hover, &:active': {
     cursor: 'pointer',
+    boxShadow: 'unset',
   },
   '&:disabled': {
     backgroundColor: BP_COLOR['solid_grey'],
@@ -51,6 +60,16 @@ const bp_button = {
 
 export const BP_THEME = {
   ...defaultTheme,
+  typography: {
+    fontSize: 12,
+    fontFamily: defaultTheme.typography?.fontFamily,
+    body1: { fontSize: '0.8125rem' },
+    body2: { fontSize: '0.75rem' },
+    subtitle1: { fontSize: '0.8125rem' },
+    subtitle2: { fontSize: '0.75rem' },
+    caption: { fontSize: '0.6875rem' },
+    button: { fontSize: '0.75rem', fontWeight: 600, textTransform: 'none' },
+  },
   palette: {
     background: {
       default: '#fafafb',
@@ -79,10 +98,11 @@ export const BP_THEME = {
     RaMenuItemLink: {
       styleOverrides: {
         root: {
-          height: 40,
+          height: 34,
           marginLeft: 3,
-          paddingLeft: '12px',
-          borderRadius: '6px',
+          paddingLeft: '10px',
+          borderRadius: '5px',
+          fontSize: '0.8125rem',
           '&.RaMenuItemLink-active': {
             backgroundColor: BP_COLOR[5],
             color: '#fff',
@@ -95,7 +115,7 @@ export const BP_THEME = {
             margin: 0,
             padding: 0,
             minWidth: 0,
-            marginRight: 20,
+            marginRight: 14,
           },
         },
       },
@@ -148,7 +168,7 @@ export const BP_THEME = {
     MuiTableRow: {
       styleOverrides: {
         root: {
-          height: 50,
+          height: 40,
         },
       },
     },
@@ -164,9 +184,13 @@ export const BP_THEME = {
     MuiTableCell: {
       styleOverrides: {
         root: {
+          fontSize: '0.75rem',
+          padding: '6px 12px',
           '&.MuiTableCell-head': {
             backgroundColor: BP_COLOR[10],
             color: 'white',
+            fontSize: '0.75rem',
+            padding: '6px 12px',
             '.MuiCheckbox-root': {
               color: '#fff',
             },
@@ -191,7 +215,9 @@ export const BP_THEME = {
           '& .RaList-main button': {
             color: '#fff',
             backgroundColor: BP_COLOR[5],
-            margin: '5px',
+            margin: '3px',
+            fontSize: '0.75rem',
+            padding: '4px 10px',
             textTransform: 'unset',
             '&:hover, &:active': {
               backgroundColor: BP_COLOR['20'],
@@ -226,16 +252,104 @@ export const BP_THEME = {
       },
       styleOverrides: {
         root: bp_button,
+        containedPrimary: {
+          backgroundColor: PALETTE_COLORS.neon_orange,
+          color: '#fff',
+          '&:hover': {
+            backgroundColor: '#e8431a',
+          },
+        },
+        colorInherit: {
+          backgroundColor: '#fff',
+          color: '#1F1F1F',
+          border: '1px solid #ebebeb',
+          '&:hover': {
+            borderColor: PALETTE_COLORS.neon_orange,
+            color: PALETTE_COLORS.neon_orange,
+            backgroundColor: '#fff',
+          },
+        },
+        textInherit: {
+          backgroundColor: 'transparent',
+          color: '#1F1F1F',
+          border: 'none',
+          '&:hover': {
+            backgroundColor: '#f0f0f0',
+          },
+        },
       },
     },
     MuiIconButton: {
       defaultProps: {
         size: 'small',
       },
+      styleOverrides: {
+        root: {
+          padding: '4px',
+        },
+        sizeSmall: {
+          padding: '3px',
+        },
+      },
     },
     MuiTextField: {
       defaultProps: {
         size: 'small',
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.8125rem',
+        },
+        inputSizeSmall: {
+          padding: '6px 10px',
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.8125rem',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          fontSize: '0.8125rem',
+          padding: '6px 10px',
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.8125rem',
+          minHeight: '32px',
+          padding: '4px 12px',
+        },
+      },
+    },
+    MuiChip: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          fontSize: '0.6875rem',
+          height: '22px',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          minHeight: '42px',
+        },
+        dense: {
+          minHeight: '36px',
+        },
       },
     },
     MuiSwitch: {
@@ -254,6 +368,7 @@ export const BP_THEME = {
     MuiTabs: {
       styleOverrides: {
         root: {
+          minHeight: '34px',
           '& 	.MuiTabs-indicator': {
             backgroundColor: BP_COLOR[5],
           },
@@ -264,6 +379,17 @@ export const BP_THEME = {
         },
       },
     },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          minHeight: '34px',
+          padding: '6px 12px',
+          textTransform: 'none',
+        },
+      },
+    },
     MuiCheckbox: {
       styleOverrides: {
         root: {
@@ -271,6 +397,11 @@ export const BP_THEME = {
             color: importantCSS(BP_COLOR[5]),
           },
         },
+      },
+    },
+    MuiPopover: {
+      defaultProps: {
+        disableScrollLock: true,
       },
     },
   },
