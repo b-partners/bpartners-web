@@ -180,11 +180,11 @@ const AnnotatorWithDefaultCacheManager = () => {
               )}
             </Stack>
           </Box>
-          <Typography sx={annotatorDisclaimerStyle}>
-            Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
-          </Typography>
         </Stack>
       </Toolbar>
+      <Typography sx={annotatorDisclaimerStyle}>
+        Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
+      </Typography>
     </FormProvider>
   );
 };

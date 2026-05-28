@@ -216,11 +216,15 @@ export const annotatorBottomToolbarStyle: SxProps = {
 };
 
 export const annotatorDisclaimerStyle: SxProps = {
-  zIndex: (theme: any) => theme.zIndex.drawer + 1,
-  textAlign: 'center',
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
   width: '100%',
+  zIndex: (theme: any) => theme.zIndex.drawer + 2,
+  textAlign: 'center',
   fontSize: 12,
   fontStyle: 'italic',
   color: 'text.secondary',
   background: 'white',
+  py: 0.5,
 };
