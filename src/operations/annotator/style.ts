@@ -194,7 +194,6 @@ export const annotatorBottomToolbarStyle: SxProps = {
       px: 2,
       py: 0.75,
       borderRadius: 50,
-      color: '#fff',
       fontWeight: 600,
       boxShadow: '0 3px 12px rgba(0,0,0,.15)',
     },

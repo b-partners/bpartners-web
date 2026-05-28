@@ -162,11 +162,13 @@ const AnnotatorWithDefaultCacheManager = () => {
       <Toolbar sx={annotatorBottomToolbarStyle}>
         <Stack direction='row'>
           <Box className='degradation-fieldset'>
-            <Typography component='legend' className='degradation-legend'>Note de dégradation globale</Typography>
+            <Typography component='legend' className='degradation-legend'>
+              Note de dégradation globale
+            </Typography>
             <Stack className='degradation-levels' direction='row' alignItems='center' gap={0.5}>
-              {degradationLevels.map(({ color, label }) =>
+              {degradationLevels.map(({ color, label, textColor }) =>
                 globalRate.type === label ? (
-                  <Box key={label} className='degradation-pill-active' sx={{ bgcolor: color }}>
+                  <Box key={label} className='degradation-pill-active' sx={{ bgcolor: color, color: textColor }}>
                     <Box className='degradation-pill-letter'>{label}</Box>
                     <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
                   </Box>

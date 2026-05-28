@@ -1,9 +1,9 @@
 export const degradationLevels = [
-  { label: 'A', color: '#47BE62', name: 'Bon état' },
-  { label: 'B', color: '#F4FBAB', name: 'Entretien à prévoir' },
-  { label: 'C', color: '#F9DD56', name: 'Entretien nécessaire' },
-  { label: 'D', color: '#F38F4B', name: 'Réparation nécessaire' },
-  { label: 'E', color: '#EF2C2D', name: 'Intervention urgente' },
+  { label: 'A', color: '#47BE62', textColor: '#fff', name: 'Bon état' },
+  { label: 'B', color: '#F4FBAB', textColor: '#555', name: 'Entretien à prévoir' },
+  { label: 'C', color: '#F9DD56', textColor: '#555', name: 'Entretien nécessaire' },
+  { label: 'D', color: '#F38F4B', textColor: '#fff', name: 'Réparation nécessaire' },
+  { label: 'E', color: '#EF2C2D', textColor: '#fff', name: 'Intervention urgente' },
 ];
 
 export const detectionResultColors = {
