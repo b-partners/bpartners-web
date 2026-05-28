@@ -42,6 +42,11 @@ export const App: FC<AppProps> = ({ title, ...rest }) => (
 );
 ```
 
+## Git
+
+- Always commit after making changes.
+- Never add `Co-Authored-By` lines in commit messages.
+
 ## Communication
 
 Answer directly. Explanations outside code blocks. When editing, skip reprinting `style.ts` if unchanged — just note `style.ts — unchanged`.
