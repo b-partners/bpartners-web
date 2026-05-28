@@ -1,4 +1,3 @@
-import { PALETTE_COLORS } from '@/bp-theme';
 import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
@@ -14,7 +13,6 @@ import {
   Box,
   Button,
   Divider,
-  Grid,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -35,6 +33,7 @@ import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
 import { ScreenSwitchTabs } from './components';
 import { SideBar } from './SideBar';
+import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle, annotatorPopoverPaperStyle } from './style';
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
 const AnnotatorWithDefaultCacheManager = () => {
@@ -87,22 +86,22 @@ const AnnotatorWithDefaultCacheManager = () => {
 
   return (
     <FormProvider {...annotatorFormState}>
-      <AppBar elevation={2} color='inherit' sx={{ border: 'none', margin: 0 }} position='fixed'>
+      <AppBar elevation={2} color='inherit' sx={annotatorAppBarStyle} position='fixed'>
         <Toolbar ref={toolbarRef}>
-          <Stack direction='row' gap={1} sx={{ flexGrow: 1 }}>
-            <img src='/logo.png' alt='birdia-logo' style={{ objectFit: 'contain', width: '5rem' }} />
-            <Divider orientation='vertical' flexItem sx={{ ml: 1 }} />
-            <ListItemText primary={address || <Skeleton sx={{ width: '7rem' }} />} secondary={`${source} ${gpsInfo}`} />
+          <Stack className='toolbar-logo-stack' direction='row' gap={1}>
+            <img src='/logo.png' alt='birdia-logo' className='toolbar-logo' />
+            <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
+            <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
           </Stack>
           <Stack direction='row' gap={1}>
-            <TextField margin='none' size='small' sx={{ minWidth: '10rem' }} select label='Niveau de zoom' value={zoomLevel}>
+            <TextField className='toolbar-select' margin='none' size='small' select label='Niveau de zoom' value={zoomLevel}>
               {ZOOM_LEVEL.map(zoomLevel => (
                 <MenuItem onClick={handleChangeZoomLevel(zoomLevel.value)} value={zoomLevel.value} key={zoomLevel.label}>
                   {zoomLevel.label}
                 </MenuItem>
               ))}
             </TextField>
-            <TextField margin='none' size='small' sx={{ minWidth: '10rem' }} select label="Source d'image" value={areaPicture?.actualLayer.id}>
+            <TextField className='toolbar-select' margin='none' size='small' select label="Source d'image" value={areaPicture?.actualLayer.id}>
               {otherLayers.map((layer: any) => (
                 <MenuItem value={layer.id} onClick={handleChangeLayer(layer)} key={layer.id}>
                   {layer.name}
@@ -113,11 +112,11 @@ const AnnotatorWithDefaultCacheManager = () => {
           </Stack>
           <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
             <Button
+              className='toolbar-3d-btn'
               size='small'
               variant='outlined'
               color='secondary'
               onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
-              sx={{ textTransform: 'none', fontSize: 11, px: 1.5, py: 0.25, mx: 0.5, whiteSpace: 'nowrap' }}
             >
               3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
             </Button>
@@ -136,16 +135,16 @@ const AnnotatorWithDefaultCacheManager = () => {
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               marginThreshold={0}
               slotProps={{
-                paper: { sx: { minWidth: 200, py: 0.5, borderRadius: '0 0 4px 4px', boxShadow: '0 2px 4px -1px rgba(0,0,0,.1)', borderTop: 'none' } },
+                paper: { sx: annotatorPopoverPaperStyle },
               }}
             >
-              <MenuItem sx={{ py: 1 }} onClick={() => setMenuAnchorEl(null)}>
+              <MenuItem className='toolbar-menu-item' onClick={() => setMenuAnchorEl(null)}>
                 <ListItemIcon>
                   <Download fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Exporter en PDF</ListItemText>
               </MenuItem>
-              <MenuItem sx={{ py: 1 }} onClick={() => setMenuAnchorEl(null)}>
+              <MenuItem className='toolbar-menu-item' onClick={() => setMenuAnchorEl(null)}>
                 <ListItemIcon>
                   <Save fontSize='small' />
                 </ListItemIcon>
@@ -155,89 +154,35 @@ const AnnotatorWithDefaultCacheManager = () => {
           </Stack>
         </Toolbar>
       </AppBar>
-      <Grid container height='100%' pl={1} mt={8}>
-        <Grid
-          item
-          xs={!shouldAnalyseRoof && screen !== '3d-annotator' ? 8.6 : 12}
-          display='flex'
-          position='relative'
-          justifyContent='center'
-          alignItems='start'
-          mr='1%'
-        >
-          <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
-        </Grid>
-        {!shouldAnalyseRoof && (
-          <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} flexShrink={0} item xs={3.2}>
-            <Stack flexGrow={2} maxHeight={'calc(100vh - 60px)'} position='relative'>
-              {screen !== '3d-annotator' && <SideBar />}
+      <Toolbar />
+      <Stack direction='row' gap={0.5} sx={{ pl: 0.5, height: 'calc(100vh - 130px)' }}>
+        <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
+        {!shouldAnalyseRoof && screen !== '3d-annotator' && <SideBar />}
+      </Stack>
+      <Toolbar sx={annotatorBottomToolbarStyle}>
+        <Stack direction='row'>
+          <Box className='degradation-fieldset'>
+            <Typography component='legend' className='degradation-legend'>Note de dégradation globale</Typography>
+            <Stack className='degradation-levels' direction='row' alignItems='center' gap={0.5}>
+              {degradationLevels.map(({ color, label }) =>
+                globalRate.type === label ? (
+                  <Box key={label} className='degradation-pill-active' sx={{ bgcolor: color }}>
+                    <Box className='degradation-pill-letter'>{label}</Box>
+                    <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
+                  </Box>
+                ) : (
+                  <Box key={label} className='degradation-dot' sx={{ bgcolor: color }}>
+                    {label}
+                  </Box>
+                )
+              )}
             </Stack>
-          </Grid>
-        )}
-      </Grid>
-      <Toolbar
-        sx={{
-          '& .global-rage-container ': {
-            '& .MuiTypography-root': {
-              textAlign: 'center',
-              width: '100%',
-              px: 2,
-              py: 0.7,
-              border: '1px solid black',
-              background: PALETTE_COLORS.pine,
-              borderRadius: 3,
-              color: '#fff',
-              fontWeight: 'bold',
-            },
-          },
-
-          '& .degratation-levels': {
-            mt: 0,
-            pt: 0,
-            '& .degratation-levels-box': {
-              width: 40,
-              height: 40,
-              mt: 0,
-              borderRadius: 2,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              transition: 'all 500ms',
-              cursor: 'pointer',
-            },
-            '&:hover': {
-              '& .degratation-levels-box:not(.degratation-levels-box-selected)': {
-                background: '#D9D9D9',
-              },
-              '& .degratation-levels-box-selected': {
-                transform: 'scale(120%)',
-                mx: 2,
-              },
-            },
-          },
-        }}
-      >
-        <Box className='global-rage-container'>
-          <Typography>Note de dégradation globale : {globalRate.value}%</Typography>
-        </Box>
-        <Stack className='degratation-levels' direction='row' justifyContent='center' m={1} gap={1}>
-          {degradationLevels.map(({ color, label }) => (
-            <Box
-              key={label}
-              className={`degratation-levels-box ${globalRate.type === label ? 'degratation-levels-box-selected' : ''}`}
-              sx={{
-                bgcolor: color,
-                border: `5px solid ${globalRate.type === label ? 'black' : 'transparent'}`,
-              }}
-            >
-              {label}
-            </Box>
-          ))}
+          </Box>
+          <Typography sx={annotatorDisclaimerStyle}>
+            Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
+          </Typography>
         </Stack>
       </Toolbar>
-      <Typography sx={{ textAlign: 'center', width: '100%', fontSize: 12, fontStyle: 'italic', color: 'text.secondary', mt: 1 }}>
-        Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
-      </Typography>
     </FormProvider>
   );
 };

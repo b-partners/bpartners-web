@@ -1,7 +1,7 @@
 import { annotatorStore, roof3DStore, useAnnotatorComponentStore } from '@/common/store';
-import { parseUrlParams } from '@/common/utils';
+import { parseUrlParams, Redirect } from '@/common/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { cache, SlopeAndHeightStatus } from '@/providers';
+import { authProvider, cache, SlopeAndHeightStatus } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
@@ -58,46 +58,52 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
     }
 
     if (areaPictureAnnotationFetcher) {
-      areaPictureAnnotationFetcher(pictureId).then(areaPictureAnnotations => {
-        if (areaPictureAnnotations.length > 0) {
-          const areaPictureAnnotation = areaPictureAnnotations[0];
-          const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
-            areaPictureAnnotation?.properties || {};
-          let heightStatus: SlopeAndHeightStatus = null;
+      areaPictureAnnotationFetcher(pictureId)
+        .then(areaPictureAnnotations => {
+          if (areaPictureAnnotations.length > 0) {
+            const areaPictureAnnotation = areaPictureAnnotations[0];
+            const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
+              areaPictureAnnotation?.properties || {};
+            let heightStatus: SlopeAndHeightStatus = null;
 
-          if (roofHeight) heightStatus = 'AVAILABLE';
-          else if (areaPictureAnnotation?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
-            heightStatus = 'UNAVAILABLE';
+            if (roofHeight) heightStatus = 'AVAILABLE';
+            else if (areaPictureAnnotation?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
+              heightStatus = 'UNAVAILABLE';
+            }
+            setLlm(llm);
+            setGlobalRate(global_rate_value, global_rate_type);
+            setSlopeAndHeightState({
+              height: roofHeight,
+              heightStatus,
+              slope: annotations?.annotations?.[0]?.metadata?.slope,
+              slopeStatus: 'AVAILABLE',
+            });
+
+            cache.roofDelimiterLongLatItem(roofDelimiter);
+
+            const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id?.includes(roofGlobalIdRef));
+            if (roofAnnotation)
+              areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => !a.id?.includes(roofGlobalIdRef))];
+
+            const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+
+            setRetrievedPolygon({
+              polygons,
+              annotations: areaPictureAnnotation,
+            });
+
+            setAreaPictureAnnotationState(areaPictureAnnotation);
+
+            annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
+            annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+            restoreThreeDMapping(areaPictureAnnotation?.properties);
           }
-          setLlm(llm);
-          setGlobalRate(global_rate_value, global_rate_type);
-          setSlopeAndHeightState({
-            height: roofHeight,
-            heightStatus,
-            slope: annotations?.annotations?.[0]?.metadata?.slope,
-            slopeStatus: 'AVAILABLE',
-          });
-
-          cache.roofDelimiterLongLatItem(roofDelimiter);
-
-          const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id?.includes(roofGlobalIdRef));
-          if (roofAnnotation)
-            areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => !a.id?.includes(roofGlobalIdRef))];
-
-          const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
-
-          setRetrievedPolygon({
-            polygons,
-            annotations: areaPictureAnnotation,
-          });
-
-          setAreaPictureAnnotationState(areaPictureAnnotation);
-
-          annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
-          annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
-          restoreThreeDMapping(areaPictureAnnotation?.properties);
-        }
-      });
+        })
+        .catch(error => {
+          if ([403, 401].includes(error.status)) {
+            authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
+          }
+        });
       return;
     }
 
