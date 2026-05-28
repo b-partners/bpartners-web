@@ -225,6 +225,5 @@ export const annotatorDisclaimerStyle: SxProps = {
   fontSize: 12,
   fontStyle: 'italic',
   color: 'text.secondary',
-  background: 'white',
   py: 0.5,
 };
