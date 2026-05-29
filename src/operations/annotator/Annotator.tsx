@@ -155,7 +155,7 @@ const AnnotatorWithDefaultCacheManager = () => {
         </Toolbar>
       </AppBar>
       <Toolbar />
-      <Stack direction='row' gap={0.5} sx={{ pl: 0.5, height: 'calc(100vh - 130px)' }}>
+      <Stack direction='row' gap={1} sx={{ pl: 1, mt: 0.5, height: 'calc(100vh - 130px)' }}>
         <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
         {!shouldAnalyseRoof && screen !== '3d-annotator' && <SideBar />}
       </Stack>
@@ -182,9 +182,7 @@ const AnnotatorWithDefaultCacheManager = () => {
           </Box>
         </Stack>
       </Toolbar>
-      <Typography sx={annotatorDisclaimerStyle}>
-        Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.
-      </Typography>
+      <Typography sx={annotatorDisclaimerStyle}>Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.</Typography>
     </FormProvider>
   );
 };

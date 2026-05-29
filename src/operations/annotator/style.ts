@@ -35,7 +35,7 @@ export const sideBarStyle: SxProps = {
     paddingLeft: 1,
     boxSizing: 'border-box',
     top: 62,
-    height: 'calc(100vh - 124px)',
+    height: 'calc(100vh - 120px)',
     overflow: 'hidden',
   },
   '& .sidebar-content': {

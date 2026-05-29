@@ -14,7 +14,6 @@ import {
   Annotator3DRegenerateButton,
   Annotator3DSaveButton,
   annotatorButtonsActions,
-  Disclaimer,
   LlmResult,
   SaveAnnotationsNotification,
   ThreeDMeasureMode,
@@ -126,7 +125,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
-            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, currentAreaPictureDetailsToUse)}
+            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
             image={geojsonResult?.image || imageSrcFromUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
@@ -155,7 +154,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
       </Box>
 
       <Stack>
-        <Disclaimer />
         <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
           <Annotator3DRegenerateButton />
           <Annotator3DSaveButton onSave={triggerManualSave} isSaving={isSaveAnnotationsPending} />
