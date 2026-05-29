@@ -10,45 +10,25 @@ export const annotatorTopBarStyle: SxProps = {
   top: 8,
   right: 8,
   zIndex: 999,
-  background: PALETTE_COLORS.black,
+  background: 'rgba(255,255,255,0.92)',
+  backdropFilter: 'blur(6px)',
   borderRadius: '12px',
   px: 1,
   py: 0.5,
-  boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   '& .top-bar-select': {
     minWidth: '9rem',
     '& .MuiInputBase-root': {
-      color: PALETTE_COLORS.white,
       fontSize: 13,
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'rgba(255,255,255,0.2)',
     },
     '& .MuiInputLabel-root': {
-      color: 'rgba(255,255,255,0.6)',
       fontSize: 13,
-    },
-    '& .MuiSvgIcon-root': {
-      color: PALETTE_COLORS.white,
     },
   },
   '& .top-bar-btn': {
-    color: PALETTE_COLORS.white,
     whiteSpace: 'nowrap',
     fontSize: 11,
     textTransform: 'none',
-  },
-  '& .top-bar-3d-btn': {
-    textTransform: 'none',
-    fontSize: 11,
-    px: 1.5,
-    py: 0.25,
-    whiteSpace: 'nowrap',
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  '& .MuiDivider-root': {
-    borderColor: 'rgba(255,255,255,0.15)',
-    my: 0.5,
   },
 };
 

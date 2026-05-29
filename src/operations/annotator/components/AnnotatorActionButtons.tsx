@@ -1,11 +1,9 @@
-import { annotatorStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle, annotatorTopBarStyle } from './style';
@@ -27,9 +25,6 @@ const getLabel = (direction: ShiftDirection, plus: boolean) => {
 export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
   const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
   const { open } = useDialog();
-  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
-    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
-  );
 
   const handleZoom = (fn: () => void) => () => {
     if (!clickActionValue) toggleClickAction();
@@ -74,12 +69,6 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
           <Button className='top-bar-btn' size='small' color={isExtended ? 'secondary' : 'inherit'}>
             {isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}
           </Button>
-          <Divider orientation='vertical' flexItem />
-          <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
-            <Button className='top-bar-3d-btn' size='small' variant='outlined' color='secondary' onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
-              3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
-            </Button>
-          </Tooltip>
         </Stack>
       )}
       <Stack className='annotator-info' direction='row' gap={0.5}>

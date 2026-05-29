@@ -96,6 +96,14 @@ export const annotatorAppBarStyle: SxProps = {
   '& .toolbar-address-skeleton': {
     width: '7rem',
   },
+  '& .toolbar-3d-btn': {
+    textTransform: 'none',
+    fontSize: 11,
+    px: 1.5,
+    py: 0.25,
+    mx: 0.5,
+    whiteSpace: 'nowrap',
+  },
   '& .toolbar-menu-item': {
     py: 1,
   },
