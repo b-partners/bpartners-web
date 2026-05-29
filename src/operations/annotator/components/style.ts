@@ -11,86 +11,42 @@ export const annotatorActionButtonsStyle: SxProps = {
   left: '50%',
   transform: 'translateX(-50%)',
   zIndex: 999,
-  display: 'flex',
-  alignItems: 'center',
-  gap: 1,
+  background: '#2c2c2c',
+  borderRadius: '12px',
+  px: 0.5,
+  py: 0.5,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06)',
   '& svg': {
     color: 'white',
   },
   '& .MuiIconButton-root': {
-    borderRadius: 2,
-    background: PALETTE_COLORS['neon_orange'],
-    color: PALETTE_COLORS['white'],
-  },
-  '& .floating-actions': {
-    background: '#2c2c2c',
-    borderRadius: '12px',
-    px: 0.5,
-    py: 0.5,
-    boxShadow: '0 2px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06)',
-    '& .MuiIconButton-root': {
-      borderRadius: '8px',
-      width: 36,
-      height: 36,
-      background: 'transparent',
-      transition: 'background 0.15s ease',
-      '&:hover': {
-        background: 'rgba(255,255,255,0.1)',
-      },
-      '&:active': {
-        background: 'rgba(255,255,255,0.15)',
-      },
+    borderRadius: '8px',
+    width: 36,
+    height: 36,
+    background: 'transparent',
+    transition: 'background 0.15s ease',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.1)',
     },
-    '& .MuiDivider-root': {
-      borderColor: 'rgba(255,255,255,0.12)',
-      my: 0.5,
-    },
-    '& .shift-toggle': {
-      '& svg': { transform: 'rotate(-90deg)' },
-    },
-    '& .shift-toggle-expanded': {
-      '& svg': { transform: 'rotate(90deg)' },
-    },
-    '& .shift-up': {
-      '& svg': { transform: 'rotate(-90deg)' },
-    },
-    '& .shift-down': {
-      '& svg': { transform: 'rotate(90deg)' },
+    '&:active': {
+      background: 'rgba(255,255,255,0.15)',
     },
   },
-  '& .annotator-info': {
-    '& .MuiBox-root': {
-      '& p': {
-        m: 0,
-        fontSize: 12,
-      },
-      color: '#fff',
-      px: 1,
-      py: 1,
-      borderRadius: 2,
-      minWidth: 70,
-      fontWeight: 'semi-bold',
-      background: PALETTE_COLORS.neon_orange,
-      fontSize: 14,
-    },
+  '& .MuiDivider-root': {
+    borderColor: 'rgba(255,255,255,0.12)',
+    my: 0.5,
   },
-  '& .image-info': {
-    background: PALETTE_COLORS.pine,
-    borderRadius: 2,
-    width: '100%',
-    display: 'flex',
-    py: 1,
-    justifyContent: 'center',
-    '& .MuiTypography-root': {
-      color: '#fff',
-      fontSize: 12,
-    },
-    '& .MuiDivider-root': {
-      marginX: 2,
-    },
+  '& .shift-toggle': {
+    '& svg': { transform: 'rotate(-90deg)' },
   },
-  '& .image-info-container': {
-    width: '100%',
+  '& .shift-toggle-expanded': {
+    '& svg': { transform: 'rotate(90deg)' },
+  },
+  '& .shift-up': {
+    '& svg': { transform: 'rotate(-90deg)' },
+  },
+  '& .shift-down': {
+    '& svg': { transform: 'rotate(90deg)' },
   },
 };
 

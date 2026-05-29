@@ -31,8 +31,8 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
   };
 
   return (
-    <Stack sx={annotatorActionButtonsStyle} direction='row' gap={1}>
-      <Stack className='annotator-info' direction='row' gap={1}>
+    <>
+      <Stack className='annotator-info' direction='row' gap={0.5}>
         <Box>
           <p ref={xRef}>x: 0</p>
         </Box>
@@ -40,7 +40,7 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
           <p ref={yRef}>y: 0</p>
         </Box>
       </Stack>
-      <Stack className='floating-actions' gap={0.5} direction='row' alignItems='center'>
+      <Stack sx={annotatorActionButtonsStyle} className='floating-actions' direction='row' gap={0.5} alignItems='center'>
         <Tooltip placement='top' onClick={handleZoom(scaleUp)} title='Zoom +'>
           <IconButton>
             <ZoomInIcon />
@@ -67,6 +67,6 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
           </>
         )}
       </Stack>
-    </Stack>
+    </>
   );
 };
