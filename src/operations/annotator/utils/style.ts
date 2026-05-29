@@ -7,10 +7,13 @@ export const annotatorComponentStyle: SxProps = {
   flexDirection: 'column',
   justifyContent: 'space-around',
   flexGrow: 1,
+  minWidth: 0,
   height: 'calc(100vh - 124px)',
   '& > .annotator-canvas-container': {
     flexGrow: 1,
     position: 'relative',
+    minWidth: 0,
+    overflow: 'hidden',
     m: 0,
     p: 0,
   },
