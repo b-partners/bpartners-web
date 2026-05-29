@@ -9,15 +9,7 @@ import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
-import {
-  Annotator3D,
-  Annotator3DRegenerateButton,
-  Annotator3DSaveButton,
-  annotatorButtonsActions,
-  LlmResult,
-  SaveAnnotationsNotification,
-  ThreeDMeasureMode,
-} from './components';
+import { Annotator3D, annotatorButtonsActions, LlmResult, SaveAnnotationsNotification, ThreeDMeasureMode } from './components';
 import { AnnotatorComponentProps } from './types';
 import {
   annotatorComponentStyle,
@@ -45,7 +37,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
-  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations, triggerManualSave } = useSaveAnnotations({
+  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations({
     analyseProperties: geojsonResult?.properties,
     areaPictureDetails: currentAreaPictureDetailsToUse,
   });
@@ -125,7 +117,9 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
-            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: currentAreaPictureDetailsToUse, mutateAreaPictureDetails })}
+            buttonsComponent={
+              buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: currentAreaPictureDetailsToUse, mutateAreaPictureDetails })
+            }
             image={geojsonResult?.image || imageSrcFromUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
@@ -152,13 +146,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         />
         {screen === 'llm' && <LlmResult width={width || containerWidth} height={height || containerHeight} />}
       </Box>
-
-      <Stack>
-        <Stack direction='row' justifyContent='space-between' alignItems='center' width={width || containerWidth}>
-          <Annotator3DRegenerateButton />
-          <Annotator3DSaveButton onSave={triggerManualSave} isSaving={isSaveAnnotationsPending} />
-        </Stack>
-      </Stack>
 
       {!geojsonResult && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && <Stack direction='row' className='bottom-action'></Stack>}
       {createPortal(
