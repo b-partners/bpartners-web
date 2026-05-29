@@ -1,16 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 
-export function useGetElementSize<T extends HTMLElement>(dependecies: any[]) {
+export const useGetElementSize = <T extends HTMLElement>(_dependencies?: any[]) => {
   const ref = useRef<T>(null);
-
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    if (ref.current) {
-      const { height, width } = ref.current.getBoundingClientRect();
-      if (size.height === 0 || size.width === 0) setSize({ height, width });
-    }
-  }, [ref.current?.getBoundingClientRect(), dependecies]);
+    const element = ref.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const { height, width } = element.getBoundingClientRect();
+      setSize(prev => (prev.width === width && prev.height === height ? prev : { width, height }));
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   return { ref, ...size };
-}
+};
