@@ -43,6 +43,18 @@ export const annotatorActionButtonsStyle: SxProps = {
       borderColor: 'rgba(255,255,255,0.12)',
       my: 0.5,
     },
+    '& .shift-toggle': {
+      '& svg': { transform: 'rotate(-90deg)' },
+    },
+    '& .shift-toggle-expanded': {
+      '& svg': { transform: 'rotate(90deg)' },
+    },
+    '& .shift-up': {
+      '& svg': { transform: 'rotate(-90deg)' },
+    },
+    '& .shift-down': {
+      '& svg': { transform: 'rotate(90deg)' },
+    },
   },
   '& .annotator-info': {
     '& .MuiBox-root': {

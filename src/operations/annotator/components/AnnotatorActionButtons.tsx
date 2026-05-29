@@ -60,8 +60,13 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
         <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
           <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
         </Tooltip>
+        {showShiftButtons && (
+          <>
+            <Divider orientation='vertical' flexItem />
+            <AnnotationShiftButtons handleShift={handleShift} />
+          </>
+        )}
       </Stack>
-      {showShiftButtons && <AnnotationShiftButtons handleShift={handleShift} />}
     </Stack>
   );
 };

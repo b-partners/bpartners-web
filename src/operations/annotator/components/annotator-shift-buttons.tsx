@@ -1,6 +1,6 @@
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { IconButton, Paper, Stack, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { FC, useState } from 'react';
 
 interface AnnotationShiftButtonsProps {
@@ -8,44 +8,40 @@ interface AnnotationShiftButtonsProps {
 }
 
 export const AnnotationShiftButtons: FC<AnnotationShiftButtonsProps> = ({ handleShift }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleChange = () => setIsExpanded(p => !p);
 
   return (
     <>
-      <Tooltip title={!isExpanded ? 'Ouvrir le menu de décalage.' : 'Fermé le menu de décalage.'} placement='top'>
-        <IconButton onClick={handleChange} sx={{ '& svg': { transform: `rotate(${isExpanded ? '180' : 0}deg)` } }}>
+      <Tooltip title={!isExpanded ? 'Ouvrir le menu de décalage.' : 'Fermer le menu de décalage.'} placement='top'>
+        <IconButton onClick={handleChange} className={`shift-toggle ${isExpanded ? 'shift-toggle-expanded' : ''}`}>
           <ExpandMoreIcon />
         </IconButton>
       </Tooltip>
       {isExpanded && (
-        <Paper sx={{ position: 'absolute', top: '115%', right: 1, p: 1, borderRadius: 3 }}>
-          <Stack justifyContent='center' direction='row' gap={1}>
-            <Tooltip placement='left' onClick={() => handleShift('UP_DOWN_SIDE', false)} title="Décaler l'image vers le haut">
-              <IconButton sx={{ '& svg': { transform: 'rotate(-90deg)' } }}>
-                <ArrowRightIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip placement='right' onClick={() => handleShift('UP_DOWN_SIDE', true)} title="Décaler l'image vers le bas">
-              <IconButton sx={{ '& svg': { transform: 'rotate(90deg)' } }}>
-                <ArrowRightIcon />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-          <Stack justifyContent='center' direction='row' gap={1} mt={1}>
-            <Tooltip onClick={() => handleShift('RIGHT_LEFT_SIDE', false)} title="Décaler l'image vers la gauche">
-              <IconButton>
-                <ArrowLeftIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip onClick={() => handleShift('RIGHT_LEFT_SIDE', true)} title="Décaler l'image vers la droite">
-              <IconButton>
-                <ArrowRightIcon />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        </Paper>
+        <>
+          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', false)} title="Décaler vers le haut">
+            <IconButton className='shift-up'>
+              <ArrowRightIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', true)} title="Décaler vers le bas">
+            <IconButton className='shift-down'>
+              <ArrowRightIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', false)} title="Décaler vers la gauche">
+            <IconButton>
+              <ArrowLeftIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', true)} title="Décaler vers la droite">
+            <IconButton>
+              <ArrowRightIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       )}
     </>
   );
