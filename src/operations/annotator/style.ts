@@ -88,14 +88,7 @@ export const annotatorAppBarStyle: SxProps = {
     alignItems: 'center',
   },
   '& .toolbar-back-btn': {
-    border: '1px solid',
-    borderColor: 'divider',
     borderRadius: 1,
-    transition: 'all .2s ease',
-    '&:hover': {
-      bgcolor: 'action.hover',
-      borderColor: 'text.secondary',
-    },
   },
   '& .toolbar-logo': {
     objectFit: 'contain',
