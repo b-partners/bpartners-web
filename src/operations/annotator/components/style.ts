@@ -20,6 +20,30 @@ export const annotatorActionButtonsStyle: SxProps = {
     background: PALETTE_COLORS['neon_orange'],
     color: PALETTE_COLORS['white'],
   },
+  '& .floating-actions': {
+    background: '#2c2c2c',
+    borderRadius: '12px',
+    px: 0.5,
+    py: 0.5,
+    boxShadow: '0 2px 12px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06)',
+    '& .MuiIconButton-root': {
+      borderRadius: '8px',
+      width: 36,
+      height: 36,
+      background: 'transparent',
+      transition: 'background 0.15s ease',
+      '&:hover': {
+        background: 'rgba(255,255,255,0.1)',
+      },
+      '&:active': {
+        background: 'rgba(255,255,255,0.15)',
+      },
+    },
+    '& .MuiDivider-root': {
+      borderColor: 'rgba(255,255,255,0.12)',
+      my: 0.5,
+    },
+  },
   '& .annotator-info': {
     '& .MuiBox-root': {
       '& p': {
