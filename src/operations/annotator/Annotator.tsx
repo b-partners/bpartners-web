@@ -7,7 +7,22 @@ import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCac
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { ArrowBack, Download, MoreVert, Save } from '@mui/icons-material';
-import { AppBar, Box, Button, Divider, IconButton, ListItemIcon, ListItemText, MenuItem, Popover, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Popover,
+  Skeleton,
+  Stack,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -76,17 +91,15 @@ const AnnotatorWithDefaultCacheManager = () => {
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
           </Stack>
-          <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
-            <Button
-              className='toolbar-3d-btn'
-              size='small'
-              variant='outlined'
-              color='secondary'
-              onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
-            >
-              3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
-            </Button>
-          </Tooltip>
+          <Button
+            className='toolbar-3d-btn'
+            size='small'
+            variant='outlined'
+            color='secondary'
+            onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
+          >
+            3D : {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
+          </Button>
           <ScreenSwitchTabs areaPicture={areaPicture} />
           <Stack direction='row' gap={1} alignItems='center'>
             <Divider orientation='vertical' flexItem />
