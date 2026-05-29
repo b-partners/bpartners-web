@@ -10,12 +10,9 @@ export const annotatorTopBarStyle: SxProps = {
   top: 8,
   right: 8,
   zIndex: 999,
-  background: 'rgba(255,255,255,0.92)',
-  backdropFilter: 'blur(6px)',
-  borderRadius: '12px',
+  background: 'transparent',
   px: 1,
   py: 0.5,
-  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   '& .top-bar-select': {
     minWidth: '9rem',
     '& .MuiInputBase-root': {
