@@ -1,13 +1,21 @@
+import { annotatorStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
+import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
-import { ShiftDirection } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
-import { Box, Divider, IconButton, Stack, Tooltip } from '@mui/material';
+import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
-import { annotatorActionButtonsStyle } from './style';
+import { annotatorActionButtonsStyle, annotatorTopBarStyle } from './style';
 
 type TShiftImage = (shiftNumber: number, shiftDirection: ShiftDirection) => void;
+
+export interface AnnotatorTopBarConfig {
+  areaPicture: AreaPictureDetails;
+  mutateAreaPictureDetails: (details: any) => void;
+}
 
 const getLabel = (direction: ShiftDirection, plus: boolean) => {
   if (direction === 'RIGHT_LEFT_SIDE') {
@@ -16,9 +24,12 @@ const getLabel = (direction: ShiftDirection, plus: boolean) => {
   return plus ? ({ label: 'shiftBottom', title: 'le bas' } as const) : ({ label: 'shiftTop', title: 'le haut' } as const);
 };
 
-export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButtons: boolean) => (zoomFunctions: ScaleCallbacks) => {
+export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
   const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
   const { open } = useDialog();
+  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
+    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
+  );
 
   const handleZoom = (fn: () => void) => () => {
     if (!clickActionValue) toggleClickAction();
@@ -30,8 +41,47 @@ export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButton
     open(<AnnotatorResetStateConfirmationDialog content={label} onConfirm={() => shiftImage(plus ? 1 : -1, direction)} title={`Décaler vers ${title}`} />);
   };
 
+  const zoomLevel = topBarConfig?.areaPicture?.zoom?.level;
+  const otherLayers = topBarConfig?.areaPicture?.otherLayers;
+  const isExtended = topBarConfig?.areaPicture?.isExtended;
+
+  const handleChangeZoomLevel = (zl: any) => () => {
+    if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel: zl, zoom: { level: zl } });
+  };
+
+  const handleChangeLayer = (layer: any) => () => {
+    if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel, layerId: layer.id });
+  };
+
   return (
     <>
+      {topBarConfig && (
+        <Stack sx={annotatorTopBarStyle} className='annotator-top-bar' direction='row' gap={0.5} alignItems='center'>
+          <TextField className='top-bar-select' margin='none' size='small' select label='Niveau de zoom' value={zoomLevel}>
+            {ZOOM_LEVEL.map(zl => (
+              <MenuItem onClick={handleChangeZoomLevel(zl.value)} value={zl.value} key={zl.label}>
+                {zl.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField className='top-bar-select' margin='none' size='small' select label="Source d'image" value={topBarConfig.areaPicture?.actualLayer?.id}>
+            {otherLayers?.map((layer: any) => (
+              <MenuItem value={layer.id} onClick={handleChangeLayer(layer)} key={layer.id}>
+                {layer.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Button className='top-bar-btn' size='small' color={isExtended ? 'secondary' : 'inherit'}>
+            {isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}
+          </Button>
+          <Divider orientation='vertical' flexItem />
+          <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
+            <Button className='top-bar-3d-btn' size='small' variant='outlined' color='secondary' onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
+              3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
+            </Button>
+          </Tooltip>
+        </Stack>
+      )}
       <Stack className='annotator-info' direction='row' gap={0.5}>
         <Box>
           <p ref={xRef}>x: 0</p>

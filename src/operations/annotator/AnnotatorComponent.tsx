@@ -125,7 +125,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
-            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended)}
+            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: currentAreaPictureDetailsToUse, mutateAreaPictureDetails })}
             image={geojsonResult?.image || imageSrcFromUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}

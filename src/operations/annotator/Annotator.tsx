@@ -3,28 +3,11 @@ import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { copyObject, parseUrlParams } from '@/common/utils';
-import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download, MoreVert, Save } from '@mui/icons-material';
-import {
-  AppBar,
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Popover,
-  Skeleton,
-  Stack,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { AppBar, Box, Divider, IconButton, ListItemIcon, ListItemText, MenuItem, Popover, Skeleton, Stack, Toolbar, Typography } from '@mui/material';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useShallow } from 'zustand/react/shallow';
@@ -41,7 +24,7 @@ const AnnotatorWithDefaultCacheManager = () => {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const { analyseRoof } = parseUrlParams();
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
-  const { currentAreaPictureDetailsToUse, mutateAreaPictureDetails, isLoading: isAreaPictureDetailsLoading } = useAreaPictureDetailsFetcher();
+  const { currentAreaPictureDetailsToUse, isLoading: isAreaPictureDetailsLoading } = useAreaPictureDetailsFetcher();
 
   const areaPicture = copyObject<AreaPictureDetails>(currentAreaPictureDetailsToUse);
 
@@ -63,9 +46,6 @@ const AnnotatorWithDefaultCacheManager = () => {
   }, [shouldAnalyseRoof]);
 
   const { screen } = useAnnotatorScreenSwitch();
-  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
-    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
-  );
 
   if (isLoading || isAreaPictureDetailsLoading) {
     return <BPLoader message='Chargement des données...' />;
@@ -73,14 +53,7 @@ const AnnotatorWithDefaultCacheManager = () => {
 
   const address = areaPicture?.address;
   const source = areaPicture?.actualLayer?.name;
-  const isExtended = areaPicture?.isExtended;
-  const otherLayers = areaPicture?.otherLayers;
-  const zoomLevel = areaPicture?.zoom?.level;
   const gpsInfo = ` (GPS ${areaPicture?.geoPositions?.[0]?.latitude}, ${areaPicture?.geoPositions?.[0]?.longitude})`;
-
-  const handleChangeZoomLevel = (zoomLevel: any) => () => mutateAreaPictureDetails({ ...areaPicture, zoomLevel, zoom: { level: zoomLevel } });
-
-  const handleChangeLayer = (layer: any) => () => mutateAreaPictureDetails({ ...areaPicture, zoomLevel, layerId: layer.id });
 
   const globalRate = calculateGlobalRate();
 
@@ -93,34 +66,6 @@ const AnnotatorWithDefaultCacheManager = () => {
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
           </Stack>
-          <Stack direction='row' gap={1}>
-            <TextField className='toolbar-select' margin='none' size='small' select label='Niveau de zoom' value={zoomLevel}>
-              {ZOOM_LEVEL.map(zoomLevel => (
-                <MenuItem onClick={handleChangeZoomLevel(zoomLevel.value)} value={zoomLevel.value} key={zoomLevel.label}>
-                  {zoomLevel.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField className='toolbar-select' margin='none' size='small' select label="Source d'image" value={areaPicture?.actualLayer.id}>
-              {otherLayers.map((layer: any) => (
-                <MenuItem value={layer.id} onClick={handleChangeLayer(layer)} key={layer.id}>
-                  {layer.name}
-                </MenuItem>
-              ))}
-            </TextField>
-            <Button color={isExtended ? 'secondary' : 'inherit'}>{isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}</Button>
-          </Stack>
-          <Tooltip title={`3D par ${threeDFromSegmentation ? 'segmentation' : 'emprise'}`} arrow>
-            <Button
-              className='toolbar-3d-btn'
-              size='small'
-              variant='outlined'
-              color='secondary'
-              onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
-            >
-              3D : {threeDFromSegmentation ? 'Segmentation' : 'Emprise'}
-            </Button>
-          </Tooltip>
           <ScreenSwitchTabs areaPicture={areaPicture} />
           <Stack direction='row' gap={1} alignItems='center'>
             <Divider orientation='vertical' flexItem />
