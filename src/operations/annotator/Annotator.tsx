@@ -1,7 +1,7 @@
 import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
-import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore } from '@/common/store';
 import { copyObject, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
@@ -47,7 +47,6 @@ const AnnotatorWithDefaultCacheManager = () => {
     stopLoading();
   }, [shouldAnalyseRoof]);
 
-  const { screen } = useAnnotatorScreenSwitch();
   const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
   );
@@ -124,7 +123,7 @@ const AnnotatorWithDefaultCacheManager = () => {
       <Toolbar />
       <Stack direction='row' gap={1} sx={{ pl: 1, mt: 0.5, height: 'calc(100vh - 130px)' }}>
         <AnnotatorComponent showAddress key={`${analyseRoof}-analyseRoof`} />
-        {!shouldAnalyseRoof && screen !== '3d-annotator' && <SideBar />}
+        {!shouldAnalyseRoof && <SideBar />}
       </Stack>
       <Toolbar sx={annotatorBottomToolbarStyle}>
         <Stack direction='row'>

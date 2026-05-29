@@ -1,5 +1,5 @@
 import { useLoadingHandler } from '@/common/hooks';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
@@ -12,6 +12,7 @@ import { useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
 import { AnnotationSlopeHeightAlert, AnnotatorFormItem, AnnotatorFormResultItem } from './components';
+import { RoofSurfacesList } from './components/3d-renderer/roof-surfaces-list';
 import { sideBarStyle } from './style';
 import { AnnotatorFormState, isAfterAnalyse } from './utils';
 
@@ -41,7 +42,7 @@ const AnnotatorItemList = () => {
   );
 };
 
-export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
+const AnnotationSideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -96,4 +97,14 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
       </Box>
     </Drawer>
   );
+};
+
+export const SideBar: FC<SideBarProps> = props => {
+  const { screen } = useAnnotatorScreenSwitch();
+
+  if (screen === '3d-annotator') {
+    return <RoofSurfacesList />;
+  }
+
+  return <AnnotationSideBar {...props} />;
 };
