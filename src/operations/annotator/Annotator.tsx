@@ -6,10 +6,11 @@ import { copyObject, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
-import { Download, MoreVert, Save } from '@mui/icons-material';
+import { ArrowBack, Download, MoreVert, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemIcon, ListItemText, MenuItem, Popover, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { FormProvider } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
@@ -20,6 +21,7 @@ import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerS
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
 const AnnotatorWithDefaultCacheManager = () => {
+  const navigate = useNavigate();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const { analyseRoof } = parseUrlParams();
@@ -65,6 +67,9 @@ const AnnotatorWithDefaultCacheManager = () => {
       <AppBar elevation={2} color='inherit' sx={annotatorAppBarStyle} position='fixed'>
         <Toolbar ref={toolbarRef}>
           <Stack className='toolbar-logo-stack' direction='row' gap={1}>
+            <IconButton onClick={() => navigate('/')}>
+              <ArrowBack />
+            </IconButton>
             <img src='/logo.png' alt='birdia-logo' className='toolbar-logo' />
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
