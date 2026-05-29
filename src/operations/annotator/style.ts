@@ -127,7 +127,7 @@ export const annotatorBottomToolbarStyle: SxProps = {
   '& .bottom-toolbar-actions': {
     alignItems: 'center',
   },
-  '& .bottom-toolbar-export-btn, & .bottom-toolbar-save-btn': {
+  '& .bottom-toolbar-regenerate-btn, & .bottom-toolbar-export-btn, & .bottom-toolbar-save-btn': {
     textTransform: 'none',
     whiteSpace: 'nowrap',
   },

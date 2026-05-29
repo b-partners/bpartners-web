@@ -6,7 +6,7 @@ import { copyObject, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
-import { ArrowBack, Download, Save } from '@mui/icons-material';
+import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { FormProvider } from 'react-hook-form';
@@ -115,10 +115,13 @@ const AnnotatorWithDefaultCacheManager = () => {
           </Box>
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
-          <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' startIcon={<Download fontSize='small' />}>
+          <Button className='bottom-toolbar-regenerate-btn' variant='outlined' size='small' color='secondary' startIcon={<Replay fontSize='small' />}>
+            Régénérer la 3D
+          </Button>
+          <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
             Exporter en PDF
           </Button>
-          <Button className='bottom-toolbar-save-btn' variant='contained' size='small' startIcon={<Save fontSize='small' />}>
+          <Button className='bottom-toolbar-save-btn' variant='contained' size='small' color='secondary' startIcon={<Save fontSize='small' />}>
             Sauvegarder
           </Button>
         </Stack>
