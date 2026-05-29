@@ -85,6 +85,17 @@ export const annotatorAppBarStyle: SxProps = {
   zIndex: (theme: any) => theme.zIndex.drawer + 1,
   '& .toolbar-logo-stack': {
     flexGrow: 1,
+    alignItems: 'center',
+  },
+  '& .toolbar-back-btn': {
+    border: '1px solid',
+    borderColor: 'divider',
+    borderRadius: 1,
+    transition: 'all .2s ease',
+    '&:hover': {
+      bgcolor: 'action.hover',
+      borderColor: 'text.secondary',
+    },
   },
   '& .toolbar-logo': {
     objectFit: 'contain',

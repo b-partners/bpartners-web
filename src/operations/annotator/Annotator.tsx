@@ -67,9 +67,12 @@ const AnnotatorWithDefaultCacheManager = () => {
       <AppBar elevation={2} color='inherit' sx={annotatorAppBarStyle} position='fixed'>
         <Toolbar ref={toolbarRef}>
           <Stack className='toolbar-logo-stack' direction='row' gap={1}>
-            <IconButton onClick={() => navigate('/')}>
-              <ArrowBack />
-            </IconButton>
+            <Tooltip title='Retour au tableau de bord' arrow>
+              <IconButton className='toolbar-back-btn' onClick={() => navigate('/')} size='small'>
+                <ArrowBack fontSize='small' />
+              </IconButton>
+            </Tooltip>
+            <Divider orientation='vertical' flexItem />
             <img src='/logo.png' alt='birdia-logo' className='toolbar-logo' />
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
