@@ -6,12 +6,14 @@ export const FreeAutocompleteInputStyle: SxProps = {
 };
 
 export const annotatorActionButtonsStyle: SxProps = {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  position: 'relative',
+  position: 'absolute',
+  bottom: 16,
+  left: '50%',
+  transform: 'translateX(-50%)',
   zIndex: 999,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 1,
   '& svg': {
     color: 'white',
   },
