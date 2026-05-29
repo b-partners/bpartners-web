@@ -108,17 +108,6 @@ export const annotatorAppBarStyle: SxProps = {
     mx: 0.5,
     whiteSpace: 'nowrap',
   },
-  '& .toolbar-menu-item': {
-    py: 1,
-  },
-};
-
-export const annotatorPopoverPaperStyle: SxProps = {
-  minWidth: 200,
-  py: 0.5,
-  borderRadius: '0 0 4px 4px',
-  boxShadow: '0 2px 4px -1px rgba(0,0,0,.1)',
-  borderTop: 'none',
 };
 
 export const annotatorContentStyle: SxProps = {
@@ -134,6 +123,14 @@ export const annotatorContentStyle: SxProps = {
 export const annotatorBottomToolbarStyle: SxProps = {
   zIndex: (theme: any) => theme.zIndex.drawer + 1,
   background: 'white',
+  justifyContent: 'space-between',
+  '& .bottom-toolbar-actions': {
+    alignItems: 'center',
+  },
+  '& .bottom-toolbar-export-btn, & .bottom-toolbar-save-btn': {
+    textTransform: 'none',
+    whiteSpace: 'nowrap',
+  },
   '& .global-rage-container ': {
     '& .MuiTypography-root': {
       textAlign: 'center',
