@@ -27,6 +27,9 @@ export const annotatorTopBarStyle: SxProps = {
     fontSize: 11,
     textTransform: 'none',
   },
+  '& .MuiTextField-root': {
+    maxWidth: 150,
+  },
 };
 
 export const annotatorActionButtonsStyle: SxProps = {
