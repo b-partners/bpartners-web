@@ -139,7 +139,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           polygons={polygonList}
           active={screen === '3d-annotator'}
           width={width || containerWidth}
-          height={height || containerHeight - 50}
+          height={height || containerHeight}
           areaPicture={currentAreaPictureDetailsToUse}
           measureMode={measureMode}
           setMeasureMode={setMeasureMode}
