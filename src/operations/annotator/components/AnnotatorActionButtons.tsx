@@ -22,90 +22,91 @@ const getLabel = (direction: ShiftDirection, plus: boolean) => {
   return plus ? ({ label: 'shiftBottom', title: 'le bas' } as const) : ({ label: 'shiftTop', title: 'le haut' } as const);
 };
 
-export const annotatorButtonsActions = (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
-  const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
-  const { open } = useDialog();
+export const annotatorButtonsActions =
+  (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
+    const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
+    const { open } = useDialog();
 
-  const handleZoom = (fn: () => void) => () => {
-    if (!clickActionValue) toggleClickAction();
-    fn();
-  };
+    const handleZoom = (fn: () => void) => () => {
+      if (!clickActionValue) toggleClickAction();
+      fn();
+    };
 
-  const handleShift = (direction: ShiftDirection, plus: boolean) => {
-    const { label, title } = getLabel(direction, plus);
-    open(<AnnotatorResetStateConfirmationDialog content={label} onConfirm={() => shiftImage(plus ? 1 : -1, direction)} title={`Décaler vers ${title}`} />);
-  };
+    const handleShift = (direction: ShiftDirection, plus: boolean) => {
+      const { label, title } = getLabel(direction, plus);
+      open(<AnnotatorResetStateConfirmationDialog content={label} onConfirm={() => shiftImage(plus ? 1 : -1, direction)} title={`Décaler vers ${title}`} />);
+    };
 
-  const zoomLevel = topBarConfig?.areaPicture?.zoom?.level;
-  const otherLayers = topBarConfig?.areaPicture?.otherLayers;
-  const isExtended = topBarConfig?.areaPicture?.isExtended;
+    const zoomLevel = topBarConfig?.areaPicture?.zoom?.level;
+    const otherLayers = topBarConfig?.areaPicture?.otherLayers;
+    const isExtended = topBarConfig?.areaPicture?.isExtended;
 
-  const handleChangeZoomLevel = (zl: any) => () => {
-    if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel: zl, zoom: { level: zl } });
-  };
+    const handleChangeZoomLevel = (zl: any) => () => {
+      if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel: zl, zoom: { level: zl } });
+    };
 
-  const handleChangeLayer = (layer: any) => () => {
-    if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel, layerId: layer.id });
-  };
+    const handleChangeLayer = (layer: any) => () => {
+      if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel, layerId: layer.id });
+    };
 
-  return (
-    <>
-      {topBarConfig && (
-        <Stack sx={annotatorTopBarStyle} className='annotator-top-bar' direction='row' gap={0.5} alignItems='center'>
-          <TextField className='top-bar-select' margin='none' size='small' select label='Niveau de zoom' value={zoomLevel}>
-            {ZOOM_LEVEL.map(zl => (
-              <MenuItem onClick={handleChangeZoomLevel(zl.value)} value={zl.value} key={zl.label}>
-                {zl.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField className='top-bar-select' margin='none' size='small' select label="Source d'image" value={topBarConfig.areaPicture?.actualLayer?.id}>
-            {otherLayers?.map((layer: any) => (
-              <MenuItem value={layer.id} onClick={handleChangeLayer(layer)} key={layer.id}>
-                {layer.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <Button className='top-bar-btn' size='small' color={isExtended ? 'secondary' : 'inherit'}>
-            {isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}
-          </Button>
-        </Stack>
-      )}
-      <Stack className='annotator-info' direction='row' gap={0.5}>
-        <Box>
-          <p ref={xRef}>x: 0</p>
-        </Box>
-        <Box>
-          <p ref={yRef}>y: 0</p>
-        </Box>
-      </Stack>
-      <Stack sx={annotatorActionButtonsStyle} className='floating-actions' direction='row' gap={0.5} alignItems='center'>
-        <Tooltip placement='top' onClick={handleZoom(scaleUp)} title='Zoom +'>
-          <IconButton>
-            <ZoomInIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip placement='top' onClick={handleZoom(scaleReste)} title='Reset'>
-          <IconButton>
-            <ZoomInMapIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip placement='top' onClick={handleZoom(scaleDown)} title='Zoom -'>
-          <IconButton>
-            <ZoomOutIcon />
-          </IconButton>
-        </Tooltip>
-        <Divider orientation='vertical' flexItem />
-        <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
-          <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
-        </Tooltip>
-        {showShiftButtons && (
-          <>
-            <Divider orientation='vertical' flexItem />
-            <AnnotationShiftButtons handleShift={handleShift} />
-          </>
+    return (
+      <>
+        {topBarConfig && (
+          <Stack sx={annotatorTopBarStyle} className='annotator-top-bar' direction='row' gap={0.5} alignItems='center'>
+            <TextField className='top-bar-select' margin='none' size='small' select label='Niveau de zoom' value={zoomLevel}>
+              {ZOOM_LEVEL.map(zl => (
+                <MenuItem onClick={handleChangeZoomLevel(zl.value)} value={zl.value} key={zl.label}>
+                  {zl.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField className='top-bar-select' margin='none' size='small' select label="Source d'image" value={topBarConfig.areaPicture?.actualLayer?.id}>
+              {otherLayers?.map((layer: any) => (
+                <MenuItem value={layer.id} onClick={handleChangeLayer(layer)} key={layer.id}>
+                  {layer.name}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Button className='top-bar-btn' size='small' color={isExtended ? 'secondary' : 'inherit'}>
+              {isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}
+            </Button>
+          </Stack>
         )}
-      </Stack>
-    </>
-  );
-};
+        <Stack className='annotator-info' direction='row' gap={0.5}>
+          <Box>
+            <p ref={xRef}>x: 0</p>
+          </Box>
+          <Box>
+            <p ref={yRef}>y: 0</p>
+          </Box>
+        </Stack>
+        <Stack sx={annotatorActionButtonsStyle} className='floating-actions' direction='row' gap={0.5} alignItems='center'>
+          <Tooltip placement='top' onClick={handleZoom(scaleUp)} title='Zoom +'>
+            <IconButton>
+              <ZoomInIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='top' onClick={handleZoom(scaleReste)} title='Reset'>
+            <IconButton>
+              <ZoomInMapIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='top' onClick={handleZoom(scaleDown)} title='Zoom -'>
+            <IconButton>
+              <ZoomOutIcon />
+            </IconButton>
+          </Tooltip>
+          <Divider orientation='vertical' flexItem />
+          <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
+            <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
+          </Tooltip>
+          {showShiftButtons && (
+            <>
+              <Divider orientation='vertical' flexItem />
+              <AnnotationShiftButtons handleShift={handleShift} />
+            </>
+          )}
+        </Stack>
+      </>
+    );
+  };

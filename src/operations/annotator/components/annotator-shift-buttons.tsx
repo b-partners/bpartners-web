@@ -21,22 +21,22 @@ export const AnnotationShiftButtons: FC<AnnotationShiftButtonsProps> = ({ handle
       </Tooltip>
       {isExpanded && (
         <>
-          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', false)} title="Décaler vers le haut">
+          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', false)} title='Décaler vers le haut'>
             <IconButton className='shift-up'>
               <ArrowRightIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', true)} title="Décaler vers le bas">
+          <Tooltip placement='top' onClick={() => handleShift('UP_DOWN_SIDE', true)} title='Décaler vers le bas'>
             <IconButton className='shift-down'>
               <ArrowRightIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', false)} title="Décaler vers la gauche">
+          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', false)} title='Décaler vers la gauche'>
             <IconButton>
               <ArrowLeftIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', true)} title="Décaler vers la droite">
+          <Tooltip placement='top' onClick={() => handleShift('RIGHT_LEFT_SIDE', true)} title='Décaler vers la droite'>
             <IconButton>
               <ArrowRightIcon />
             </IconButton>
