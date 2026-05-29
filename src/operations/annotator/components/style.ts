@@ -11,14 +11,13 @@ export const annotatorActionButtonsStyle: SxProps = {
   left: '50%',
   transform: 'translateX(-50%)',
   zIndex: 999,
-  background: PALETTE_COLORS.white,
+  background: PALETTE_COLORS.black,
   borderRadius: '12px',
   px: 0.5,
   py: 0.5,
-  border: '1px solid #ebebeb',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
   '& svg': {
-    color: PALETTE_COLORS.black,
+    color: PALETTE_COLORS.white,
   },
   '& .MuiIconButton-root': {
     borderRadius: '8px',
@@ -27,21 +26,21 @@ export const annotatorActionButtonsStyle: SxProps = {
     background: 'transparent',
     transition: 'all 0.15s ease',
     '&:hover': {
-      background: PALETTE_COLORS.cream,
+      background: 'rgba(255,255,255,0.1)',
     },
     '&:active': {
-      background: '#e0dbd0',
+      background: 'rgba(255,255,255,0.15)',
     },
   },
   '& .MuiDivider-root': {
-    borderColor: '#ebebeb',
+    borderColor: 'rgba(255,255,255,0.15)',
     my: 0.5,
   },
   '& .shift-toggle': {
-    '& svg': { transform: 'rotate(-90deg)', color: PALETTE_COLORS.pine },
+    '& svg': { transform: 'rotate(-90deg)', color: PALETTE_COLORS.cream },
   },
   '& .shift-toggle-expanded': {
-    '& svg': { transform: 'rotate(90deg)', color: PALETTE_COLORS.pine },
+    '& svg': { transform: 'rotate(90deg)', color: PALETTE_COLORS.cream },
   },
   '& .shift-up': {
     '& svg': { transform: 'rotate(-90deg)' },
