@@ -6,10 +6,13 @@ import { useCitJSONProcessQuery } from '@/common/fetcher';
 import { roof3DStore } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
+import { Button, Divider, Stack, Tooltip } from '@mui/material';
 import { RoofScanLoader } from '../loading';
 import { Annotator3DErrorUI } from './annotator-3d-error';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
+import { annotator3DFloatingActionsStyle } from './style';
 
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
@@ -39,25 +42,50 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
   return (
     <div style={{ width: '100%', height, position: 'relative', marginTop: 5, paddingTop: 5 }}>
       {!isError && !error && !isLoading && (
-        <Canvas
-          data-testid='3d-canvas'
-          camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
-          dpr={[1, 1.5]}
-          gl={{
-            antialias: true,
-            powerPreference: 'high-performance',
-            preserveDrawingBuffer: true,
-            alpha: true,
-            premultipliedAlpha: false,
-            logarithmicDepthBuffer: true,
-          }}
-        >
-          <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
-          <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
-          <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
-          <CityScene cityJson={cityJson} measureMode={measureMode} setMeasureMode={setMeasureMode} />
-          <Annotator3DSaveImage />
-        </Canvas>
+        <>
+          <Canvas
+            data-testid='3d-canvas'
+            camera={{ position: [0, -1, 1], up: [0, 0, 1], fov: 60, near: 0.0001, far: 4000 }}
+            dpr={[1, 1.5]}
+            gl={{
+              antialias: true,
+              powerPreference: 'high-performance',
+              preserveDrawingBuffer: true,
+              alpha: true,
+              premultipliedAlpha: false,
+              logarithmicDepthBuffer: true,
+            }}
+          >
+            <ambientLight intensity={0.7 * Math.PI} color={0x999999} position={[0, 0, 1]} />
+            <directionalLight intensity={Math.PI} color={0xdddddd} position={[1, 2, 3]} />
+            <directionalLight intensity={Math.PI} color={0xdddddd} position={[-1, -2, -3]} />
+            <CityScene cityJson={cityJson} measureMode={measureMode} setMeasureMode={setMeasureMode} />
+            <Annotator3DSaveImage />
+          </Canvas>
+          <Stack sx={annotator3DFloatingActionsStyle} direction='row' gap={0.5} alignItems='center'>
+            <Tooltip placement='top' title='Mesurer une ligne'>
+              <Button
+                className={`measure-btn ${measureMode === 'line' ? 'measure-btn-active' : ''}`}
+                startIcon={<StraightenIcon />}
+                variant='text'
+                onClick={() => setMeasureMode(measureMode === 'line' ? 'none' : 'line')}
+              >
+                Ligne
+              </Button>
+            </Tooltip>
+            <Divider orientation='vertical' flexItem />
+            <Tooltip placement='top' title='Mesurer un polygone'>
+              <Button
+                className={`measure-btn ${measureMode === 'polygon' ? 'measure-btn-active' : ''}`}
+                startIcon={<TimelineIcon />}
+                variant='text'
+                onClick={() => setMeasureMode(measureMode === 'polygon' ? 'none' : 'polygon')}
+              >
+                Polygone
+              </Button>
+            </Tooltip>
+          </Stack>
+        </>
       )}
       {isLoading && <RoofScanLoader polygons={polygons} />}
       {isError && error && <Annotator3DErrorUI error={error} />}

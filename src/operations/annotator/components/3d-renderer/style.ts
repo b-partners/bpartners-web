@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 import { CSSProperties } from 'react';
 
@@ -397,6 +398,44 @@ export const roofSurfacesDrawerStyle: SxProps = {
     color: '#6b6b6b',
     '& svg': { fontSize: 14 },
     '&:hover': { bgcolor: 'rgba(220,38,38,0.08)', color: '#dc2626' },
+  },
+};
+
+export const annotator3DFloatingActionsStyle: SxProps = {
+  position: 'absolute',
+  bottom: 16,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 999,
+  background: 'rgba(31,31,31,0.85)',
+  backdropFilter: 'blur(8px)',
+  borderRadius: '12px',
+  px: 0.5,
+  py: 0.5,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+  '& .measure-btn': {
+    color: PALETTE_COLORS.white,
+    fontSize: 11,
+    textTransform: 'none',
+    borderRadius: '8px',
+    px: 1.5,
+    py: 0.5,
+    minWidth: 0,
+    whiteSpace: 'nowrap',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.1)',
+    },
+  },
+  '& .measure-btn-active': {
+    background: PALETTE_COLORS.neon_orange,
+    '&:hover': {
+      background: '#e8431a',
+    },
+  },
+  '& .MuiDivider-root': {
+    borderColor: 'rgba(255,255,255,0.15)',
+    my: 0.5,
   },
 };
 
