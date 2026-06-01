@@ -21,7 +21,7 @@ import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 export const Annotator = () => {
   const { projectId } = useParams();
   const { setAreaPictureDetails } = useAnnotatorComponentStore();
-  const { data: areaPictureDetails, isLoading } = useGetOne(
+  const { data: annotations, isLoading } = useGetOne(
     'drafts-annotations',
     { id: projectId },
     {
@@ -30,7 +30,7 @@ export const Annotator = () => {
   );
   const [isCachingImage, setIsCachingImage] = useState(false);
 
-  const fileId = areaPictureDetails?.areaPicture?.fileId;
+  const fileId = annotations?.areaPicture?.fileId;
   const fileUrl = fileId ? getFileUrl(fileId, 'AREA_PICTURE') : null;
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const Annotator = () => {
     setIsCachingImage(true);
     downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
   }, [fileId, fileUrl]);
-  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureDetails);
+  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
   useEffect(() => {
@@ -57,12 +57,12 @@ export const Annotator = () => {
 
   const { screen } = useAnnotatorScreenSwitch();
 
-  if (isAnnotationEmpty || !areaPictureDetails || isLoading || isCachingImage) {
+  if (isAnnotationEmpty || !annotations || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
   }
 
   const { analyseRoof } = parseUrlParams();
-  const areaPicture = copyObject<AreaPictureDetails>(areaPictureDetails);
+  const areaPicture = copyObject<AreaPictureDetails>(annotations.areaPicture);
   const shouldAnalyseRoof = analyseRoof === 'true';
   const address = areaPicture?.address;
   const source = areaPicture?.actualLayer?.name;
@@ -94,7 +94,7 @@ export const Annotator = () => {
           >
             3D : {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
           </Button>
-          <ScreenSwitchTabs areaPicture={areaPicture} />
+          <ScreenSwitchTabs />
         </Toolbar>
       </AppBar>
       <Toolbar />

@@ -3,21 +3,16 @@ import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } 
 import { useDialog } from '@/common/store/dialog';
 import { clearPolygons } from '@/providers';
 import { UrlParams } from '@bpartners/annotator-component';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
 import { Box, ButtonBase } from '@mui/material';
-import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
 import { isAfterAnalyse, shiftPolygons } from '../../utils';
 import { RoofAnalysisDialog } from '../loading';
 import { ScreenSwitchTabsStyle } from './style';
 
-interface ScreenSwitchTabsProps {
-  areaPicture: AreaPictureDetails;
-}
-
-export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ areaPicture }) => {
+export const ScreenSwitchTabs = () => {
+  const { areaPictureDetails } = useAnnotatorComponentStore();
   const { screen, setScreen } = useAnnotatorScreenSwitch();
   const { polygonList } = annotatorStore.usePolygonStore();
   const { roofDelimiter } = useAnnotatorComponentStore();
@@ -33,14 +28,14 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ areaPicture }) => 
 
   const polygonListShifted = isAfterAnalyse(polygonList)
     ? polygonList
-    : shiftPolygons(polygonList, areaPicture, true).map(p => ({
+    : shiftPolygons(polygonList, areaPictureDetails, true).map(p => ({
         ...p,
         measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
       }));
-  const { mutate: _processDetection } = useRoofAnalyseQuery(polygonList || [], areaPicture, handleDetectionProcessingSuccess);
+  const { mutate: _processDetection } = useRoofAnalyseQuery(polygonList || [], areaPictureDetails, handleDetectionProcessingSuccess);
   const { wearLevel, humidityLevel, moldRate } = roofPolygon?.annotationInfos || {};
 
-  const isPrecisionLevelInCmCorrect = areaPicture?.actualLayer?.precisionLevelInCm === 5;
+  const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
   const isThereARoofPolygon = annotation.length === 1 && annotation[0].annotationInfos.labelType === 'roof';
 
   const { threeDFromSegmentation, annotations } = annotatorStore.useAnnotatorStore(
