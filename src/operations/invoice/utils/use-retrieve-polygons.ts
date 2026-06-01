@@ -57,7 +57,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
     }
 
     if (areaPictureAnnotationParam) {
-      const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
+      const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
         areaPictureAnnotationParam?.properties || {};
       let heightStatus: SlopeAndHeightStatus = null;
 
@@ -91,6 +91,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
 
       annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
       annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+      annotatorStore.useAnnotatorStore.getState().setRoofAnalyseId(roofAnalyseId);
       restoreThreeDMapping(areaPictureAnnotationParam?.properties);
       return;
     }
@@ -99,7 +100,8 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       if (areaPictureAnnotations.length > 0) {
         const areaPictureAnnotation = areaPictureAnnotations[0];
         const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
-        const { global_rate_type, global_rate_value, roofHeight, llm, threeDGenerationMode, threeDGenerationId } = areaPictureAnnotation?.properties || {};
+        const { global_rate_type, global_rate_value, roofHeight, llm, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
+          areaPictureAnnotation?.properties || {};
         setLlm(llm);
         setGlobalRate(global_rate_value, global_rate_type);
         setSlopeAndHeightState({
@@ -116,6 +118,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
 
         annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
         if (threeDGenerationId) annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+        annotatorStore.useAnnotatorStore.getState().setRoofAnalyseId(roofAnalyseId);
         restoreThreeDMapping(areaPictureAnnotation?.properties);
       }
     });

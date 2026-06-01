@@ -18,6 +18,7 @@ interface State {
   polygonToShowMeasurement: string;
   threeDFromSegmentation?: boolean;
   threeDGenerationId?: string;
+  roofAnalyseId?: string;
 }
 
 const defaultValue: State = {
@@ -41,6 +42,7 @@ interface Actions {
   showMeasurement: (polygonId: string) => void;
   setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
   setThreeDGenerationId: (threeDGenerationId: string | undefined) => void;
+  setRoofAnalyseId: (roofAnalyseId: string) => void;
 }
 
 // @ts-ignore
@@ -146,6 +148,9 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   setThreeDGenerationId: threeDGenerationId => set({ threeDGenerationId }),
   reset() {
     set(defaultValue);
+  },
+  setRoofAnalyseId(roofAnalyseId) {
+    set({ roofAnalyseId });
   },
 }));
 

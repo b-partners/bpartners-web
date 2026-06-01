@@ -16,7 +16,7 @@ export const ScreenSwitchTabs = () => {
   const { screen, setScreen } = useAnnotatorScreenSwitch();
   const { polygonList } = annotatorStore.usePolygonStore();
   const { roofDelimiter } = useAnnotatorComponentStore();
-  const annotation = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations));
+  const curruntAnnotations = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations));
   const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => a.isFirst));
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
   const { open: openDialog } = useDialog();
@@ -36,13 +36,14 @@ export const ScreenSwitchTabs = () => {
   const { wearLevel, humidityLevel, moldRate } = roofPolygon?.annotationInfos || {};
 
   const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
-  const isThereARoofPolygon = annotation.length === 1 && annotation[0].annotationInfos.labelType === 'roof';
+  const isThereARoofPolygon = curruntAnnotations.filter(annotation => annotation.annotationInfos.labelType === 'roof').length === 1;
 
   const { threeDFromSegmentation, annotations } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, annotations }) => ({ threeDFromSegmentation, annotations }))
   );
 
   const processDetection = () => {
+    setScreen('roof-analyse');
     openDialog(
       <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
       { maxWidth: 'lg' },

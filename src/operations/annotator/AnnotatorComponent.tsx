@@ -1,5 +1,5 @@
 import { BPLoader } from '@/common/components';
-import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useSaveAnnotations } from '@/common/fetcher';
+import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
@@ -7,9 +7,8 @@ import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { Annotator3D, annotatorButtonsActions, LlmResult, SaveAnnotationsNotification, ThreeDMeasureMode } from './components';
+import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
 import { AnnotatorComponentProps } from './types';
 import {
   annotatorComponentStyle,
@@ -35,11 +34,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
-
-  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations({
-    analyseProperties: geojsonResult?.properties,
-    areaPictureDetails,
-  });
 
   useEffect(() => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
@@ -148,14 +142,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
       </Box>
 
       {!geojsonResult && showFileSource && Object.keys(layer).length > 0 && !draftLlmValue && <Stack direction='row' className='bottom-action'></Stack>}
-      {createPortal(
-        <SaveAnnotationsNotification
-          isSaveAnnotationsPending={isSaveAnnotationsPending}
-          saveAnnotationsError={saveAnnotationsError}
-          savedAnnotations={savedAnnotations}
-        />,
-        document.getElementById('root')
-      )}
     </Box>
   );
 };
