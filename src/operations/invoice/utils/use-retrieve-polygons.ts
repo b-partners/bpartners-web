@@ -1,7 +1,7 @@
 import { annotatorStore, roof3DStore, useAnnotatorComponentStore } from '@/common/store';
-import { parseUrlParams, Redirect } from '@/common/utils';
+import { parseUrlParams } from '@/common/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { authProvider, cache, SlopeAndHeightStatus } from '@/providers';
+import { cache, SlopeAndHeightStatus } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { AreaPictureAnnotation, Polygon } from '@bpartners/typescript-client';
 import { useEffect, useState } from 'react';
@@ -40,8 +40,7 @@ const restoreThreeDMapping = (properties: Record<string, any> | undefined) => {
   }
 };
 
-export type AreaPictureAnnotationFetcherType = (pictureId: string) => Promise<AreaPictureAnnotation[]>;
-export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAnnotationFetcherType) => {
+export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnnotation) => {
   const { pictureId } = parseUrlParams();
   const [retrievedPolygon, setRetrievedPolygon] = useState<RetrievedPolygonsType>({
     annotations: {},
@@ -57,53 +56,42 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
       return;
     }
 
-    if (areaPictureAnnotationFetcher) {
-      areaPictureAnnotationFetcher(pictureId)
-        .then(areaPictureAnnotations => {
-          if (areaPictureAnnotations.length > 0) {
-            const areaPictureAnnotation = areaPictureAnnotations[0];
-            const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
-              areaPictureAnnotation?.properties || {};
-            let heightStatus: SlopeAndHeightStatus = null;
+    if (areaPictureAnnotationParam) {
+      const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, threeDGenerationMode, threeDGenerationId } =
+        areaPictureAnnotationParam?.properties || {};
+      let heightStatus: SlopeAndHeightStatus = null;
 
-            if (roofHeight) heightStatus = 'AVAILABLE';
-            else if (areaPictureAnnotation?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
-              heightStatus = 'UNAVAILABLE';
-            }
-            setLlm(llm);
-            setGlobalRate(global_rate_value, global_rate_type);
-            setSlopeAndHeightState({
-              height: roofHeight,
-              heightStatus,
-              slope: annotations?.annotations?.[0]?.metadata?.slope,
-              slopeStatus: 'AVAILABLE',
-            });
+      if (roofHeight) heightStatus = 'AVAILABLE';
+      else if (areaPictureAnnotationParam?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
+        heightStatus = 'UNAVAILABLE';
+      }
+      setLlm(llm);
+      setGlobalRate(global_rate_value, global_rate_type);
+      setSlopeAndHeightState({
+        height: roofHeight,
+        heightStatus,
+        slope: annotations?.annotations?.[0]?.metadata?.slope,
+        slopeStatus: 'AVAILABLE',
+      });
 
-            cache.roofDelimiterLongLatItem(roofDelimiter);
+      cache.roofDelimiterLongLatItem(roofDelimiter);
 
-            const roofAnnotation = areaPictureAnnotation.annotations.find(a => a.id?.includes(roofGlobalIdRef));
-            if (roofAnnotation)
-              areaPictureAnnotation.annotations = [roofAnnotation, ...areaPictureAnnotation.annotations.filter(a => !a.id?.includes(roofGlobalIdRef))];
+      const roofAnnotation = areaPictureAnnotationParam.annotations.find(a => a.id?.includes(roofGlobalIdRef));
+      if (roofAnnotation)
+        areaPictureAnnotationParam.annotations = [roofAnnotation, ...areaPictureAnnotationParam.annotations.filter(a => !a.id?.includes(roofGlobalIdRef))];
 
-            const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
+      const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotationParam);
 
-            setRetrievedPolygon({
-              polygons,
-              annotations: areaPictureAnnotation,
-            });
+      setRetrievedPolygon({
+        polygons,
+        annotations: areaPictureAnnotationParam,
+      });
 
-            setAreaPictureAnnotationState(areaPictureAnnotation);
+      setAreaPictureAnnotationState(areaPictureAnnotationParam);
 
-            annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
-            annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
-            restoreThreeDMapping(areaPictureAnnotation?.properties);
-          }
-        })
-        .catch(error => {
-          if ([403, 401].includes(error.status)) {
-            authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
-          }
-        });
+      annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
+      annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
+      restoreThreeDMapping(areaPictureAnnotationParam?.properties);
       return;
     }
 
@@ -131,7 +119,7 @@ export const useRetrievePolygons = (areaPictureAnnotationFetcher?: AreaPictureAn
         restoreThreeDMapping(areaPictureAnnotation?.properties);
       }
     });
-  }, [pictureId]);
+  }, [pictureId, areaPictureAnnotationParam]);
 
   return { polygons, annotations, isAnnotationEmpty, areaPictureAnnotation: areaPictureAnnotationState };
 };

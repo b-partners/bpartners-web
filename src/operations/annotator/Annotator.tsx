@@ -4,8 +4,7 @@ import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
-import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
-import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
+import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
@@ -132,9 +131,6 @@ const AnnotatorWithDefaultCacheManager = () => {
   );
 };
 
-const areaPictureFetcher = async (areaPictureId: string) =>
-  draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
-
 const AnnotatorWithDraftAnnotation = () => {
   const { projectId } = useParams();
   const { setAreaPictureDetails } = useAnnotatorComponentStore();
@@ -155,8 +151,7 @@ const AnnotatorWithDraftAnnotation = () => {
     setIsCachingImage(true);
     downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
   }, [fileId, fileUrl]);
-
-  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureFetcher);
+  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(data);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
   useEffect(() => {
