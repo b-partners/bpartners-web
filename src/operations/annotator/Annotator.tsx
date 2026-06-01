@@ -58,9 +58,9 @@ export const Annotator = () => {
 
   const { screen } = useAnnotatorScreenSwitch();
 
-  const { isSaveAnnotationsPending, savedAnnotations, triggerManualSave } = useSaveAnnotations();
+  const { isSaveAnnotationsPending, triggerManualSave, lastSavingDate: lastSavedDate } = useSaveAnnotations();
 
-  const lastSavingDate = (savedAnnotations?.properties?.lastSavingDate ?? annotations?.properties?.lastSavingDate) as string | undefined;
+  const lastSavingDate = lastSavedDate ?? (annotations?.properties?.lastSavingDate as string | undefined);
 
   if (isAnnotationEmpty || !annotations || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
