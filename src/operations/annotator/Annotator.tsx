@@ -139,7 +139,15 @@ export const Annotator = () => {
           <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
             Exporter en PDF
           </Button>
-          <Button className='bottom-toolbar-save-btn' variant='contained' size='small' color='secondary' startIcon={<Save fontSize='small' />} onClick={triggerManualSave}>
+          <Button
+            className='bottom-toolbar-save-btn'
+            variant='contained'
+            disabled={isSaveAnnotationsPending}
+            size='small'
+            color='secondary'
+            startIcon={<Save fontSize='small' />}
+            onClick={triggerManualSave}
+          >
             Sauvegarder
           </Button>
         </Stack>
