@@ -67,7 +67,7 @@ export const useMutateProspect = () => {
 
     const onDraftAnnotationSuccess = () => {
       navigate(
-        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}` +
+        `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}` +
           `&useDrafts=false` +
           `&fileId=${fileId}` +
           `&pictureId=${pictureId}` +

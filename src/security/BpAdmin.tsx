@@ -71,6 +71,7 @@ export const BpAdmin = () => {
       <Resource name='drafts-annotations' />
       <CustomRoutes noLayout>
         <Route path='/annotator' element={<Annotator />} />
+        <Route path='/projects/:projectId' element={<Annotator />} />
       </CustomRoutes>
       <CustomRoutes>
         <Route path='projects' element={<DraftAreaPictureAnnotations />} />

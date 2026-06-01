@@ -146,7 +146,7 @@ const AnnotatorWithDraftAnnotation = () => {
   }, [areaPictureAnnotation]);
 
   if (isAnnotationEmpty) {
-    return <BPLoader message="Chargement des brouillons d'annotation..." />;
+    return <BPLoader message='Chargement des données...' />;
   }
 
   return <AnnotatorWithDefaultCacheManager />;
