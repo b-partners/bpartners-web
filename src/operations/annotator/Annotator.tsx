@@ -1,5 +1,5 @@
 import { BPLoader } from '@/common/components';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
@@ -54,6 +54,8 @@ export const Annotator = () => {
   const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
   );
+
+  const { screen } = useAnnotatorScreenSwitch();
 
   if (isAnnotationEmpty || !areaPictureDetails || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
@@ -123,9 +125,11 @@ export const Annotator = () => {
           </Box>
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
-          <Button className='bottom-toolbar-regenerate-btn' variant='outlined' size='small' color='secondary' startIcon={<Replay fontSize='small' />}>
-            Régénérer la 3D
-          </Button>
+          {screen === '3d-annotator' && (
+            <Button className='bottom-toolbar-regenerate-btn' variant='outlined' size='small' color='secondary' startIcon={<Replay fontSize='small' />}>
+              Régénérer la 3D
+            </Button>
+          )}
           <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
             Exporter en PDF
           </Button>
