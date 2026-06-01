@@ -2,7 +2,7 @@ import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useSaveAnnotations } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getImageFromCache, getUrlParams } from '@/common/utils';
+import { getImageFromCache } from '@/common/utils';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
@@ -17,7 +17,6 @@ import {
   createDefaultAnnotationInfo,
   getNewPolygonColor,
   isAfterAnalyse,
-  refreshImageUrl,
   shiftPolygons,
 } from './utils';
 
@@ -31,27 +30,26 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
-  const { geoJsonResultUrl, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { mutateAreaPictureDetails, currentAreaPictureDetailsToUse, isLoading: areaPictureLoading } = useAreaPictureDetailsFetcher();
+  const { mutateAreaPictureDetails } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
   const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations({
     analyseProperties: geojsonResult?.properties,
-    areaPictureDetails: currentAreaPictureDetailsToUse,
+    areaPictureDetails,
   });
 
   useEffect(() => {
-    if (currentAreaPictureDetailsToUse && currentAreaPictureDetailsToUse.xTile && currentAreaPictureDetailsToUse.xTile)
-      mutateMarker(currentAreaPictureDetailsToUse);
-  }, [currentAreaPictureDetailsToUse]);
+    if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
+  }, [areaPictureDetails]);
 
   useEffect(() => {
-    setAreaPictureDetails(currentAreaPictureDetailsToUse);
-  }, [JSON.stringify(currentAreaPictureDetailsToUse)]);
+    setAreaPictureDetails(areaPictureDetails);
+  }, [JSON.stringify(areaPictureDetails)]);
 
-  const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = currentAreaPictureDetailsToUse;
+  const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = areaPictureDetails;
   const { number: newZoomLevelAsNumber } = zoom;
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
@@ -78,7 +76,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
 
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
-  const { fileId } = currentAreaPictureDetailsToUse || {};
+  const { fileId } = areaPictureDetails || {};
 
   useEffect(() => {
     if (!fileId) return;
@@ -87,33 +85,31 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   }, [fileId]);
 
-  if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
+  if (!filename || !areaPictureDetails || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
 
   const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
     if (isExtended) {
       mutateAreaPictureDetails({
-        ...currentAreaPictureDetailsToUse,
-        shiftNb: (shiftDirection !== currentAreaPictureDetailsToUse?.shiftDirection ? 0 : shiftNb || 0) + shift,
+        ...areaPictureDetails,
+        shiftNb: (shiftDirection !== areaPictureDetails?.shiftDirection ? 0 : shiftNb || 0) + shift,
         shiftDirection,
       });
       resetAnnotations();
     }
   };
 
-  const imageSrcFromUrl = cachedImageUrl || refreshImageUrl(getUrlParams(window.location.search, 'imgUrl'), currentAreaPictureDetailsToUse);
-
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
     setPolygonList(_polygons => {
       const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons) : polygonsOrFunction;
-      return geojsonResult?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, currentAreaPictureDetailsToUse, false);
+      return geojsonResult?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, areaPictureDetails, false);
     });
   };
 
   const polygonListShifted = isAfterAnalyse(polygonList)
     ? polygonList
-    : shiftPolygons(polygonList, currentAreaPictureDetailsToUse, true).map(p => ({
+    : shiftPolygons(polygonList, areaPictureDetails, true).map(p => ({
         ...p,
         measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
       }));
@@ -127,14 +123,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
-            buttonsComponent={
-              buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: currentAreaPictureDetailsToUse, mutateAreaPictureDetails })
-            }
-            image={geojsonResult?.image || imageSrcFromUrl}
+            buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: areaPictureDetails, mutateAreaPictureDetails })}
+            image={geojsonResult?.image || cachedImageUrl}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
             getNewPolygonColor={getNewPolygonColor}
-            imagePrecisionLevel={currentAreaPictureDetailsToUse?.actualLayer?.precisionLevelInCm || 5}
+            imagePrecisionLevel={areaPictureDetails?.actualLayer?.precisionLevelInCm || 5}
             polygonLineSizeProps={{
               imageName: `${filename}.jpg`,
               showLineSize: true,
@@ -150,7 +144,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           active={screen === '3d-annotator'}
           width={width || containerWidth}
           height={height || containerHeight}
-          areaPicture={currentAreaPictureDetailsToUse}
+          areaPicture={areaPictureDetails}
           measureMode={measureMode}
           setMeasureMode={setMeasureMode}
         />

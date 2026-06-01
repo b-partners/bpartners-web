@@ -11,6 +11,7 @@ import {
   prospectingProvider,
   RaDataProviderType,
   relaunchProvider,
+  saveUserAnnotationProvider,
 } from '.';
 import { areaPictureDetailsProvider } from './area-picture-provider';
 import { draftAreaPictureAnnotatorProvider } from './draft-area-annotations-provider';
@@ -30,6 +31,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
   if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
   if (resourceType === 'files') return fileProvider;
+  if (resourceType === 'save-user-annotation') return saveUserAnnotationProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
 

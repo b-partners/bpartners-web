@@ -1,7 +1,7 @@
 import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
-import { annotatorStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
@@ -137,7 +137,14 @@ const areaPictureFetcher = async (areaPictureId: string) =>
 
 const AnnotatorWithDraftAnnotation = () => {
   const { projectId } = useParams();
-  const { data, isLoading } = useGetOne('drafts-annotations', { id: projectId });
+  const { setAreaPictureDetails } = useAnnotatorComponentStore();
+  const { data, isLoading } = useGetOne(
+    'drafts-annotations',
+    { id: projectId },
+    {
+      onSuccess: data => setAreaPictureDetails(data.areaPicture),
+    }
+  );
   const [isCachingImage, setIsCachingImage] = useState(false);
 
   const fileId = data?.areaPicture?.fileId;
