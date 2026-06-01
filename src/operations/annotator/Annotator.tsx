@@ -1,9 +1,7 @@
 import { BPLoader } from '@/common/components';
-import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
-import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
-import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
+import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
@@ -20,40 +18,50 @@ import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
-const AnnotatorWithDefaultCacheManager = () => {
-  const navigate = useNavigate();
-  const toolbarRef = useRef<HTMLDivElement>(null);
-  const { analyseRoof } = parseUrlParams();
-  const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
-  const { currentAreaPictureDetailsToUse, isLoading: isAreaPictureDetailsLoading } = useAreaPictureDetailsFetcher();
+export const Annotator = () => {
+  const { projectId } = useParams();
+  const { setAreaPictureDetails } = useAnnotatorComponentStore();
+  const { data: areaPictureDetails, isLoading } = useGetOne(
+    'drafts-annotations',
+    { id: projectId },
+    {
+      onSuccess: data => setAreaPictureDetails(data.areaPicture),
+    }
+  );
+  const [isCachingImage, setIsCachingImage] = useState(false);
 
-  const areaPicture = copyObject<AreaPictureDetails>(currentAreaPictureDetailsToUse);
-
-  const { isLoading, stopLoading } = useLoadingHandler(true);
-
-  const annotatorFormState = useAnnotationInfosForm();
-
-  const shouldAnalyseRoof = analyseRoof === 'true';
+  const fileId = areaPictureDetails?.areaPicture?.fileId;
+  const fileUrl = fileId ? getFileUrl(fileId, 'AREA_PICTURE') : null;
 
   useEffect(() => {
-    const cachedDefaultAnnotationInfo = getCached.annotationsInfoList();
-    const cachedDefaultPolygons = getCached.polygons() || [];
+    if (!fileId || !fileUrl) return;
+    setIsCachingImage(true);
+    downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
+  }, [fileId, fileUrl]);
+  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureDetails);
+  const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
-    if (cachedDefaultAnnotationInfo.length > 0 && cachedDefaultPolygons.length > 0 && !shouldAnalyseRoof)
-      replaceAnnotations(cachedDefaultPolygons, cachedDefaultAnnotationInfo);
-    else clearPolygons();
+  useEffect(() => {
+    if (areaPictureAnnotation?.annotations) {
+      const { annotationsInfos, polygons } = areaPictureAnnotationToPolygonAndAreaPictureInfo(areaPictureAnnotation);
+      replaceAnnotations(polygons, annotationsInfos);
+    }
+  }, [areaPictureAnnotation]);
 
-    stopLoading();
-  }, [shouldAnalyseRoof]);
-
+  const navigate = useNavigate();
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const annotatorFormState = useAnnotationInfosForm();
   const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
   );
 
-  if (isLoading || isAreaPictureDetailsLoading) {
+  if (isAnnotationEmpty || !areaPictureDetails || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
   }
 
+  const { analyseRoof } = parseUrlParams();
+  const areaPicture = copyObject<AreaPictureDetails>(areaPictureDetails);
+  const shouldAnalyseRoof = analyseRoof === 'true';
   const address = areaPicture?.address;
   const source = areaPicture?.actualLayer?.name;
   const gpsInfo = ` (GPS ${areaPicture?.geoPositions?.[0]?.latitude}, ${areaPicture?.geoPositions?.[0]?.longitude})`;
@@ -129,47 +137,6 @@ const AnnotatorWithDefaultCacheManager = () => {
       <Typography sx={annotatorDisclaimerStyle}>Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.</Typography>
     </FormProvider>
   );
-};
-
-const AnnotatorWithDraftAnnotation = () => {
-  const { projectId } = useParams();
-  const { setAreaPictureDetails } = useAnnotatorComponentStore();
-  const { data, isLoading } = useGetOne(
-    'drafts-annotations',
-    { id: projectId },
-    {
-      onSuccess: data => setAreaPictureDetails(data.areaPicture),
-    }
-  );
-  const [isCachingImage, setIsCachingImage] = useState(false);
-
-  const fileId = data?.areaPicture?.fileId;
-  const fileUrl = fileId ? getFileUrl(fileId, 'AREA_PICTURE') : null;
-
-  useEffect(() => {
-    if (!fileId || !fileUrl) return;
-    setIsCachingImage(true);
-    downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
-  }, [fileId, fileUrl]);
-  const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(data);
-  const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
-
-  useEffect(() => {
-    if (areaPictureAnnotation?.annotations) {
-      const { annotationsInfos, polygons } = areaPictureAnnotationToPolygonAndAreaPictureInfo(areaPictureAnnotation);
-      replaceAnnotations(polygons, annotationsInfos);
-    }
-  }, [areaPictureAnnotation]);
-
-  if (isAnnotationEmpty || !data || isLoading || isCachingImage) {
-    return <BPLoader message='Chargement des données...' />;
-  }
-
-  return <AnnotatorWithDefaultCacheManager />;
-};
-
-export const Annotator = () => {
-  return <AnnotatorWithDraftAnnotation />;
 };
 
 export default Annotator;
