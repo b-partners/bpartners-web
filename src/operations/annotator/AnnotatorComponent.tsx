@@ -30,7 +30,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
-  const { geoJsonResultUrl, llm: draftLlmValue, setAreaPictureDetails, setRoofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails } = useAreaPictureDetailsFetcher();
@@ -45,12 +45,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
   }, [areaPictureDetails]);
 
-  useEffect(() => {
-    setAreaPictureDetails(areaPictureDetails);
-  }, [JSON.stringify(areaPictureDetails)]);
-
-  const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = areaPictureDetails;
-  const { number: newZoomLevelAsNumber } = zoom;
+  const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = areaPictureDetails || {};
+  const { number: newZoomLevelAsNumber } = zoom || {};
 
   const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
   const { screen } = useAnnotatorScreenSwitch();
@@ -85,7 +81,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   }, [fileId]);
 
-  if (!filename || !areaPictureDetails || (geoJsonResultUrl && !geojsonResult?.image)) {
+  if (!filename || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
 

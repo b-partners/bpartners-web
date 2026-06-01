@@ -161,7 +161,7 @@ const AnnotatorWithDraftAnnotation = () => {
     }
   }, [areaPictureAnnotation]);
 
-  if (isAnnotationEmpty || isLoading || isCachingImage) {
+  if (isAnnotationEmpty || !data || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
   }
 
@@ -169,8 +169,7 @@ const AnnotatorWithDraftAnnotation = () => {
 };
 
 export const Annotator = () => {
-  const { useDrafts } = parseUrlParams();
-  return useDrafts === 'true' ? <AnnotatorWithDraftAnnotation /> : <AnnotatorWithDefaultCacheManager />;
+  return <AnnotatorWithDraftAnnotation />;
 };
 
 export default Annotator;
