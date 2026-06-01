@@ -2,15 +2,16 @@ import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher } from '@/common/fetcher';
 import { useLoadingHandler } from '@/common/hooks';
 import { annotatorStore } from '@/common/store';
-import { copyObject, parseUrlParams } from '@/common/utils';
+import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, clearPolygons, getCached } from '@/providers';
 import { draftAreaPictureAnnotatorProvider } from '@/providers/draft-area-annotations-provider';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useGetOne } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
@@ -135,6 +136,19 @@ const areaPictureFetcher = async (areaPictureId: string) =>
   draftAreaPictureAnnotatorProvider.getList(1, 1, { areaPictureId }) satisfies Promise<AreaPictureAnnotation[]>;
 
 const AnnotatorWithDraftAnnotation = () => {
+  const { projectId } = useParams();
+  const { data, isLoading } = useGetOne('drafts-annotations', { id: projectId });
+  const [isCachingImage, setIsCachingImage] = useState(false);
+
+  const fileId = data?.areaPicture?.fileId;
+  const fileUrl = fileId ? getFileUrl(fileId, 'AREA_PICTURE') : null;
+
+  useEffect(() => {
+    if (!fileId || !fileUrl) return;
+    setIsCachingImage(true);
+    downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
+  }, [fileId, fileUrl]);
+
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(areaPictureFetcher);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
@@ -145,7 +159,7 @@ const AnnotatorWithDraftAnnotation = () => {
     }
   }, [areaPictureAnnotation]);
 
-  if (isAnnotationEmpty) {
+  if (isAnnotationEmpty || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
   }
 

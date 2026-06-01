@@ -9,6 +9,7 @@ export * from './empty-to-null';
 export * from './file';
 export * from './get-current-account';
 export * from './get-file-url';
+export * from './indexed-db-image-cache';
 export * from './get-geojson-url';
 export * from './get-image-size';
 export * from './get-mime-type';
