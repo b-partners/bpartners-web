@@ -1,4 +1,5 @@
 import { BPLoader } from '@/common/components';
+import { useSaveAnnotations } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
@@ -13,7 +14,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { ScreenSwitchTabs } from './components';
+import { SaveStatus, ScreenSwitchTabs } from './components';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
@@ -56,6 +57,10 @@ export const Annotator = () => {
   );
 
   const { screen } = useAnnotatorScreenSwitch();
+
+  const { isSaveAnnotationsPending, savedAnnotations, triggerManualSave } = useSaveAnnotations();
+
+  const lastSavingDate = (savedAnnotations?.properties?.lastSavingDate ?? annotations?.properties?.lastSavingDate) as string | undefined;
 
   if (isAnnotationEmpty || !annotations || isLoading || isCachingImage) {
     return <BPLoader message='Chargement des données...' />;
@@ -125,6 +130,7 @@ export const Annotator = () => {
           </Box>
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
+          <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />
           {screen === '3d-annotator' && (
             <Button className='bottom-toolbar-regenerate-btn' variant='outlined' size='small' color='secondary' startIcon={<Replay fontSize='small' />}>
               Régénérer la 3D
@@ -133,7 +139,7 @@ export const Annotator = () => {
           <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
             Exporter en PDF
           </Button>
-          <Button className='bottom-toolbar-save-btn' variant='contained' size='small' color='secondary' startIcon={<Save fontSize='small' />}>
+          <Button className='bottom-toolbar-save-btn' variant='contained' size='small' color='secondary' startIcon={<Save fontSize='small' />} onClick={triggerManualSave}>
             Sauvegarder
           </Button>
         </Stack>
