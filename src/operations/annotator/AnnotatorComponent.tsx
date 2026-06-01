@@ -2,7 +2,7 @@ import { BPLoader } from '@/common/components';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher, useSaveAnnotations } from '@/common/fetcher';
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { getUrlParams } from '@/common/utils';
+import { getImageFromCache, getUrlParams } from '@/common/utils';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
@@ -77,6 +77,16 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
 
+  const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
+  const { fileId } = currentAreaPictureDetailsToUse || {};
+
+  useEffect(() => {
+    if (!fileId) return;
+    getImageFromCache(fileId).then(blob => {
+      if (blob) setCachedImageUrl(URL.createObjectURL(blob));
+    });
+  }, [fileId]);
+
   if (!filename || areaPictureLoading || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
@@ -92,7 +102,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     }
   };
 
-  const imageSrcFromUrl = refreshImageUrl(getUrlParams(window.location.search, 'imgUrl'), currentAreaPictureDetailsToUse);
+  const imageSrcFromUrl = cachedImageUrl || refreshImageUrl(getUrlParams(window.location.search, 'imgUrl'), currentAreaPictureDetailsToUse);
 
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
     setPolygonList(_polygons => {
