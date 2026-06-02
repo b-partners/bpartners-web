@@ -5,6 +5,7 @@ import { clearPolygons } from '@/providers';
 import { UrlParams } from '@bpartners/annotator-component';
 import { Roofing } from '@mui/icons-material';
 import { Button } from '@mui/material';
+import { useEffect, useRef } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
 import { isAfterAnalyse, shiftPolygons } from '../../utils';
@@ -38,16 +39,27 @@ export const RoofAnalyseRunButton = () => {
   const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
   const isAlreadyAnalysed = !!analyseImageUrl || isAfterAnalyse(polygonList);
 
-  if (isAlreadyAnalysed) return null;
-
-  const runAnalyse = () => {
-    if (!isThereARoofPolygon) return notify('Veuillez délimiter un seul toit avant de lancer l’analyse.', { type: 'warning' });
+  const launchAnalyse = () => {
     openDialog(
       <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
       { maxWidth: 'lg' },
       false
     );
     processDetection();
+  };
+
+  const didAutoRun = useRef(false);
+  useEffect(() => {
+    if (didAutoRun.current || isAlreadyAnalysed || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect) return;
+    didAutoRun.current = true;
+    launchAnalyse();
+  }, []);
+
+  if (isAlreadyAnalysed) return null;
+
+  const runAnalyse = () => {
+    if (!isThereARoofPolygon) return notify('Veuillez délimiter un seul toit avant de lancer l’analyse.', { type: 'warning' });
+    launchAnalyse();
   };
 
   return (
