@@ -1,21 +1,17 @@
 import { useRoofAnalyseQuery } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
-import { useDialog } from '@/common/store/dialog';
 import { clearPolygons } from '@/providers';
-import { UrlParams } from '@bpartners/annotator-component';
 import { Roofing } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
 import { isAfterAnalyse, shiftPolygons } from '../../utils';
-import { RoofAnalysisDialog } from '../loading';
 import { RoofAnalyseRunButtonStyle } from './style';
 
 export const RoofAnalyseRunButton = () => {
   const notify = useNotify();
-  const { open: openDialog } = useDialog();
-  const { areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
+  const { areaPictureDetails, analyseImageUrl, analyseLoadingPolygon, setAnalyseLoadingPolygon } = useAnnotatorComponentStore();
   const { polygonList: analysePolygonList } = annotatorStore.useScreenPolygonStore();
   const analyseInfos = annotatorStore.useScreenAnnotatorInfoStore();
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
@@ -44,11 +40,7 @@ export const RoofAnalyseRunButton = () => {
   const isAlreadyAnalysed = !!analyseImageUrl || isAfterAnalyse(analysePolygonList);
 
   const launchAnalyse = () => {
-    openDialog(
-      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
-      { maxWidth: 'lg' },
-      false
-    );
+    setAnalyseLoadingPolygon(polygonListShifted?.[0]?.points?.slice() ?? []);
     processDetection();
   };
 
@@ -59,7 +51,7 @@ export const RoofAnalyseRunButton = () => {
     launchAnalyse();
   }, [isAlreadyAnalysed, isThereARoofPolygon, isPrecisionLevelInCmCorrect]);
 
-  if (isAlreadyAnalysed) return null;
+  if (isAlreadyAnalysed || analyseLoadingPolygon) return null;
 
   const runAnalyse = () => {
     if (!isThereARoofPolygon) return notify('Veuillez délimiter un seul toit avant de lancer l’analyse.', { type: 'warning' });

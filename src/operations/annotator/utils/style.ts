@@ -17,6 +17,13 @@ export const annotatorComponentStyle: SxProps = {
     m: 0,
     p: 0,
   },
+  '& .analyse-loading-container': {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   '& .annotator-info': {
     position: 'absolute',
     top: 12,
