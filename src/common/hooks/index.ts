@@ -1,4 +1,5 @@
 export * from './use-autocomplete';
+export * from './use-cache-image';
 export * from './use-change-invoice-status';
 export * from './use-check-auth';
 export * from './use-get-element-size';

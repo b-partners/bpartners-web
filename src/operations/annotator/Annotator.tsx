@@ -1,12 +1,13 @@
 import { BPLoader } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
+import { useCacheImage } from '@/common/hooks';
+import { copyObject, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGetOne } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,16 +30,14 @@ export const Annotator = () => {
       onSuccess: data => setAreaPictureDetails(data.areaPicture),
     }
   );
-  const [isCachingImage, setIsCachingImage] = useState(false);
+  const { isCaching: isCachingImage, cacheImage } = useCacheImage();
 
   const fileId = annotations?.areaPicture?.fileId;
-  const fileUrl = fileId ? getFileUrl(fileId, 'AREA_PICTURE') : null;
 
   useEffect(() => {
-    if (!fileId || !fileUrl) return;
-    setIsCachingImage(true);
-    downloadAndCacheImage(fileId, fileUrl).finally(() => setIsCachingImage(false));
-  }, [fileId, fileUrl]);
+    if (!fileId) return;
+    cacheImage(fileId, 'AREA_PICTURE');
+  }, [fileId, cacheImage]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
