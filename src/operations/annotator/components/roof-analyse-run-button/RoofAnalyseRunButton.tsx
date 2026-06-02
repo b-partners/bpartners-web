@@ -5,6 +5,7 @@ import { clearPolygons } from '@/providers';
 import { UrlParams } from '@bpartners/annotator-component';
 import { Roofing } from '@mui/icons-material';
 import { Button } from '@mui/material';
+import { useEffect, useRef } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
 import { isAfterAnalyse, shiftPolygons } from '../../utils';
@@ -50,6 +51,13 @@ export const RoofAnalyseRunButton = () => {
     );
     processDetection();
   };
+
+  const didAutoRun = useRef(false);
+  useEffect(() => {
+    if (didAutoRun.current || isAlreadyAnalysed || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect) return;
+    didAutoRun.current = true;
+    launchAnalyse();
+  }, [isAlreadyAnalysed, isThereARoofPolygon, isPrecisionLevelInCmCorrect]);
 
   if (isAlreadyAnalysed) return null;
 
