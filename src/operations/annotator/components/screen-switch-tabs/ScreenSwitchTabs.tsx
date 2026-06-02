@@ -1,12 +1,21 @@
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
 import { Box, ButtonBase } from '@mui/material';
+import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
 import { ScreenSwitchTabsStyle } from './style';
 
-export const ScreenSwitchTabs = () => {
-  const { screen, setScreen } = useAnnotatorScreenSwitch();
+interface ScreenSwitchTabsProps {
+  onBeforeSwitch?: () => void;
+}
+
+export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) => {
+  const { screen, setScreen: setScreenRaw } = useAnnotatorScreenSwitch();
+  const setScreen: typeof setScreenRaw = (...args) => {
+    onBeforeSwitch?.();
+    setScreenRaw(...args);
+  };
   const { polygonList } = annotatorStore.usePolygonStore();
   const { roofDelimiter } = useAnnotatorComponentStore();
   const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => a.isFirst));

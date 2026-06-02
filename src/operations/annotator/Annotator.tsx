@@ -105,7 +105,7 @@ export const Annotator = () => {
           >
             3D : {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
           </Button>
-          <ScreenSwitchTabs />
+          <ScreenSwitchTabs onBeforeSwitch={triggerManualSave} />
         </Toolbar>
       </AppBar>
       <Toolbar />
