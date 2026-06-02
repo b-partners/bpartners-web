@@ -41,6 +41,9 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
       id: pictureId,
     };
     annotatorStore.useAnnotatorStore.getState().replaceAnnotations([], []);
+    annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
+    removeCache.cityJSONRequestId();
+    clearRoofDelimiter();
 
     update(
       'area-picture-details',
@@ -68,6 +71,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
     setIsRebeginLoading(true);
     ref.current = new Date().getTime();
     annotatorStore.useAnnotatorStore.getState().resetAnnotations();
+    annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
     clearPolygons(true);
 
     mutate({ ...annotatorComponentStore.areaPictureDetails }, () => {

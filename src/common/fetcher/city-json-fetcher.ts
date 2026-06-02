@@ -65,10 +65,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         let mappedCoordinates = [];
 
         if (threeDMode === 'roof') {
-          mappedCoordinates = [
-            (getCached.roofDelimiterLongLatItem() as [number, number][]) ||
-              (await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)),
-          ];
+          mappedCoordinates = [await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)];
         } else {
           const pans = Object.values(annotations)
             .filter(annotation => annotation.annotationInfos.labelType === 'pan')
