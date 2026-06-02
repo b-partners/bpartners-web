@@ -19,7 +19,7 @@ export const useGetElementSize = <T extends HTMLElement>(_dependencies?: any[]) 
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, []);
+  }, [_dependencies]);
 
   return { ref, ...size };
 };

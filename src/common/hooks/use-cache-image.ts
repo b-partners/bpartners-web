@@ -16,5 +16,5 @@ export const useCacheImage = () => {
     }
   }, []);
 
-  return { isCaching, cacheImage };
+  return { isCaching, cacheImage, setIsCaching };
 };

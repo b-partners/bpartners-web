@@ -16,7 +16,7 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
   const annotatorComponentStore = useAnnotatorComponentStore();
   const { prospectId, id: pictureId, fileId } = annotatorComponentStore.areaPictureDetails || {};
 
-  const { isCaching: isCachingImage, cacheImage } = useCacheImage();
+  const { isCaching: isCachingImage, cacheImage, setIsCaching } = useCacheImage();
 
   const [update, { data, isPending, reset }] = useUpdate(
     'area-picture-details',
@@ -33,12 +33,14 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
 
   const mutate = (crupdateAreaPictureDetails: CrupdateAreaPictureDetails, onSuccess?: () => void): void => {
     if (!prospectId || !fileId) return null;
+    setIsCaching(true);
     const areaPictureDetailsToUpdate = {
       ...crupdateAreaPictureDetails,
       fileId,
       prospectId,
       id: pictureId,
     };
+    annotatorStore.useAnnotatorStore.getState().replaceAnnotations([], []);
 
     update(
       'area-picture-details',

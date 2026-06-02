@@ -32,7 +32,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
-  const { mutateAreaPictureDetails } = useAreaPictureDetailsFetcher();
+  const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { filename, isExtended, shiftNb, zoom, actualLayer: layer } = areaPictureDetails || {};
   const { number: newZoomLevelAsNumber } = zoom || {};
 
-  const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename]);
+  const { ref: containerHeightRef, height: containerHeight, width: containerWidth } = useGetElementSize([filename, areaPictureDetails]);
   const { screen } = useAnnotatorScreenSwitch();
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     getImageFromCache(fileId).then(blob => {
       if (blob) setCachedImageUrl(URL.createObjectURL(blob));
     });
-  }, [fileId]);
+  }, [areaPictureDetails]);
 
   if (!filename || (geoJsonResultUrl && !geojsonResult?.image)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
@@ -104,10 +104,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
       }));
 
+  if (isLoading) return <BPLoader message='Chargement des données...' />;
+
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
-        {containerWidth > 0 && screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
+        {screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
