@@ -1,7 +1,7 @@
 import { BPLoader, GlobaDialog } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
 import { useCacheImage } from '@/common/hooks';
-import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
@@ -17,6 +17,7 @@ import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
 import { SaveStatus, ScreenSwitchTabs } from './components';
+import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
@@ -62,8 +63,6 @@ export const Annotator = () => {
   const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
   );
-
-  const { screen } = useAnnotatorScreenSwitch();
 
   const { isSaveAnnotationsPending, triggerManualSave, lastSavingDate: lastSavedDate } = useSaveAnnotations();
 
@@ -138,11 +137,14 @@ export const Annotator = () => {
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
           <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />
-          {screen === '3d-annotator' && (
-            <Button className='bottom-toolbar-regenerate-btn' variant='outlined' size='small' color='secondary' startIcon={<Replay fontSize='small' />}>
-              Régénérer la 3D
-            </Button>
-          )}
+          <Annotator3DRegenerateButton
+            className='bottom-toolbar-regenerate-btn'
+            sx={{ minWidth: 'auto' }}
+            variant='outlined'
+            size='small'
+            color='secondary'
+            startIcon={<Replay fontSize='small' />}
+          />
           <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
             Exporter en PDF
           </Button>
