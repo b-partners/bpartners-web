@@ -149,7 +149,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           />
         )}
         <Annotator3D
-          polygons={screenPolygonList}
+          polygons={polygonList}
           active={screen === '3d-annotator'}
           width={width || containerWidth}
           height={height || containerHeight}
