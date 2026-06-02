@@ -24,9 +24,10 @@ const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height, showAddress } = props;
 
-  const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
+  const { polygonList } = annotatorStore.usePolygonStore();
+  const { polygonList: screenPolygonList, setPolygons: setPolygonList } = annotatorStore.useScreenPolygonStore();
 
-  const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
+  const setScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.setScreenAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
   const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
@@ -51,7 +52,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     const currentPolygons = geojsonResult?.polygons?.slice(1) || [];
     const roofPolygon = geojsonResult?.polygons?.[0];
 
-    if (polygonList.length === 0 && currentPolygons.length > 0 && geojsonResult?.properties && geojsonResult?.image) {
+    if (!isAfterAnalyse(polygonList) && currentPolygons.length > 0 && geojsonResult?.properties && geojsonResult?.image) {
       const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
         roofPolygon.id,
         geojsonResult?.properties,
@@ -59,7 +60,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         geojsonResult?.properties?.roof_slope_in_degrees
       );
       const annotationInfos = geojsonResult?.polygons?.slice(1).map((polygon, index) => createDefaultAnnotationInfo(polygon, index));
-      replaceAnnotations([roofPolygon, ...currentPolygons], [roofAnnotationInfo, ...annotationInfos]);
+      setScreenAnnotations('roof-analyse', [roofPolygon, ...currentPolygons], [roofAnnotationInfo, ...annotationInfos]);
     }
   }, [JSON.stringify(geojsonResult), isPending]);
 
@@ -93,13 +94,13 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
     setPolygonList(_polygons => {
       const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons) : polygonsOrFunction;
-      return geojsonResult?.properties?.global_rate_type ? polygons : shiftPolygons(polygons, areaPictureDetails, false);
+      return isAfterAnalyse(polygons) ? polygons : shiftPolygons(polygons, areaPictureDetails, false);
     });
   };
 
-  const polygonListShifted = isAfterAnalyse(polygonList)
-    ? polygonList
-    : shiftPolygons(polygonList, areaPictureDetails, true).map(p => ({
+  const polygonListShifted = isAfterAnalyse(screenPolygonList)
+    ? screenPolygonList
+    : shiftPolygons(screenPolygonList, areaPictureDetails, true).map(p => ({
         ...p,
         measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
       }));
@@ -136,7 +137,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           />
         )}
         <Annotator3D
-          polygons={polygonList}
+          polygons={screenPolygonList}
           active={screen === '3d-annotator'}
           width={width || containerWidth}
           height={height || containerHeight}

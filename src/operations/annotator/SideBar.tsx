@@ -23,7 +23,7 @@ export type SideBarProps = {
 const AnnotatorItemList = () => {
   const { areaPictureDetails } = useAnnotatorComponentStore();
 
-  const annotationsInfos = annotatorStore.useAnnotatorInfoStore();
+  const annotationsInfos = annotatorStore.useScreenAnnotatorInfoStore();
   const { polygonList } = annotatorStore.usePolygonStore();
 
   const isAfterAnalyseValue = isAfterAnalyse(polygonList);

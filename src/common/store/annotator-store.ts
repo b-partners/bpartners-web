@@ -8,11 +8,25 @@ import { useShallow } from 'zustand/react/shallow';
 import { copyObject, ObjectUtilities } from '../utils';
 import { useAnnotatorScreenSwitch } from './annotator-switch-store';
 
+type AnnotationScreen = 'annotator' | 'roof-analyse';
+
 interface Annotation {
   isFirst: boolean;
   polygon: Polygon;
   annotationInfos: AnnotationInfo;
+  screen?: AnnotationScreen;
 }
+
+const resolveCurrentScreen = (): AnnotationScreen => (useAnnotatorScreenSwitch.getState().screen === 'roof-analyse' ? 'roof-analyse' : 'annotator');
+
+const deriveScreenFromPolygon = (polygon?: Polygon, annotationInfos?: AnnotationInfo): AnnotationScreen => {
+  const id = polygon?.id || '';
+  if (id.includes(analyseGeneratedIdRef)) return 'roof-analyse';
+  if (annotationInfos?.labelType === 'velux') return 'roof-analyse';
+  return 'annotator';
+};
+
+const getAnnotationScreen = (annotation: Annotation): AnnotationScreen => annotation.screen ?? deriveScreenFromPolygon(annotation.polygon, annotation.annotationInfos);
 
 interface State {
   annotations: Record<string, Annotation>;
@@ -36,7 +50,9 @@ interface Actions {
   removeAnnotationInfo: (id: string) => void;
   addPolygon: (polygon: Polygon) => void;
   updatePolygon: (id: string, polygon: Polygon) => void;
-  replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
+  replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[], screenOverride?: AnnotationScreen) => void;
+  setScreenAnnotations: (screen: AnnotationScreen, polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
+  clearScreenAnnotations: (screen: AnnotationScreen) => void;
   resetAnnotations: () => void;
   reset: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
@@ -64,12 +80,15 @@ const useAnnotatorStore = create<State & Actions>(set => ({
     set(state => {
       const annotations = copyObject(state.annotations);
       if (annotations[polygon.id]) return { annotations };
+      const currentScreen = resolveCurrentScreen();
+      const screenAnnotations = Object.values(annotations).filter(a => getAnnotationScreen(a) === currentScreen);
       const isFirst = Object.values(annotations).length === 0;
-      const hasRoof = Object.values(annotations).some(a => a.annotationInfos?.labelType === 'roof');
-      const isAnalyseScreen = useAnnotatorScreenSwitch.getState().screen === 'roof-analyse';
+      const hasRoof = screenAnnotations.some(a => a.annotationInfos?.labelType === 'roof');
+      const isAnalyseScreen = currentScreen === 'roof-analyse';
       const secondaryType = isAnalyseScreen ? 'velux' : 'pan';
       const annotation: any = {
         isFirst,
+        screen: currentScreen,
         polygon,
         annotationInfos: {
           polygonId: polygon.id,
@@ -110,20 +129,58 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       annotations[annotationInfos.polygonId].annotationInfos = annotationInfos;
       return { annotations };
     }),
-  replaceAnnotations: (polygons, annotationsInfos) =>
+  replaceAnnotations: (polygons, annotationsInfos, screenOverride) =>
     set(() => {
       const annotations: State['annotations'] = {};
 
       polygons.forEach((polygon, index) => {
         const isFirst = index === 0;
+        const annotationInfos = annotationsInfos.find(({ polygonId }) => polygonId === polygon.id);
         const annotation = {
           isFirst,
-          annotationInfos: annotationsInfos.find(({ polygonId }) => polygonId === polygon.id),
+          annotationInfos,
           polygon,
+          screen: screenOverride ?? deriveScreenFromPolygon(polygon, annotationInfos),
         };
         annotations[polygon.id] = annotation;
       });
 
+      return { annotations };
+    }),
+  setScreenAnnotations: (screen, polygons, annotationsInfos) =>
+    set(state => {
+      const annotations = copyObject(state.annotations);
+      Object.keys(annotations)
+        .filter(id => getAnnotationScreen(annotations[id]) === screen)
+        .forEach(id => delete annotations[id]);
+
+      polygons.forEach((polygon, index) => {
+        annotations[polygon.id] = {
+          isFirst: index === 0,
+          annotationInfos: annotationsInfos.find(({ polygonId }) => polygonId === polygon.id),
+          polygon,
+          screen,
+        };
+      });
+
+      if (polygons.length > 0) {
+        Object.keys(annotations)
+          .filter(id => getAnnotationScreen(annotations[id]) !== screen)
+          .forEach(id => (annotations[id].isFirst = false));
+      }
+
+      const resultKeys = Object.keys(annotations).filter(key => key.includes(analyseGeneratedIdRef) && !key.includes(roofGlobalIdRef));
+      const nonResultKeys = Object.keys(annotations).filter(key => !key.includes(analyseGeneratedIdRef) || key.includes(roofGlobalIdRef));
+      return { annotations: copyObject(ObjectUtilities.reorder(annotations, [...nonResultKeys, ...resultKeys])) };
+    }),
+  clearScreenAnnotations: screen =>
+    set(state => {
+      const annotations = copyObject(state.annotations);
+      Object.keys(annotations)
+        .filter(id => getAnnotationScreen(annotations[id]) === screen)
+        .forEach(id => delete annotations[id]);
+      const remaining = Object.values(annotations);
+      if (remaining.length > 0 && !remaining.some(a => a.isFirst)) remaining[0].isFirst = true;
       return { annotations };
     }),
   resetAnnotations: () =>
@@ -224,10 +281,56 @@ const usePolygonStore = () => {
   return { polygonList, setPolygons };
 };
 
+const useScreenPolygonStore = () => {
+  const currentScreen = useAnnotatorScreenSwitch(state => (state.screen === 'roof-analyse' ? 'roof-analyse' : 'annotator'));
+  const polygonList = useAnnotatorStore(params => {
+    let isSecond = false;
+    return Object.values(params.annotations)
+      .filter(a => getAnnotationScreen(a) === currentScreen)
+      .map(a => {
+        const currentPolygon = a.polygon;
+        if ((currentPolygon.id.includes(analyseGeneratedIdRef) && !currentPolygon.id.includes(roofGlobalIdRef)) || currentPolygon.isInvisible || isSecond) {
+          currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: true }));
+        } else {
+          isSecond = true;
+          currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: false }));
+        }
+        return currentPolygon;
+      });
+  });
+  const addPolygon = useAnnotatorStore(params => params.addPolygon);
+  const replacePolygonById = useAnnotatorStore(params => params.replacePolygonById);
+
+  const setPolygons: Dispatch<SetStateAction<Polygon[]>> = _polygon => {
+    const polygon = typeof _polygon === 'function' ? _polygon(polygonList) : _polygon;
+    const storedAnnotations = useAnnotatorStore.getState().annotations;
+    const newPolygon = polygon.find(p => !storedAnnotations[p.id]);
+    if (newPolygon) return addPolygon(newPolygon);
+
+    const differentPolygon = polygon.find(p => JSON.stringify(p.points) !== JSON.stringify(storedAnnotations[p.id].polygon.points));
+    if (differentPolygon) return replacePolygonById(differentPolygon.id, differentPolygon);
+  };
+
+  return { polygonList, setPolygons };
+};
+
+const useScreenAnnotatorInfoStore = () => {
+  const currentScreen = useAnnotatorScreenSwitch(state => (state.screen === 'roof-analyse' ? 'roof-analyse' : 'annotator'));
+  return useAnnotatorStore(
+    useShallow(param =>
+      Object.values(param.annotations)
+        .filter(a => getAnnotationScreen(a) === currentScreen)
+        .map(a => a.annotationInfos)
+    )
+  );
+};
+
 export const annotatorStore = {
   usePolygonStore,
+  useScreenPolygonStore,
   useOneAnnotatorStore,
   useAnnotatorStore,
   useAnnotatorInfoStore,
+  useScreenAnnotatorInfoStore,
   useOneAnnotationStore,
 };

@@ -19,10 +19,10 @@ export const RoofAnalyseRunButton = () => {
   const { polygonList } = annotatorStore.usePolygonStore();
   const annotations = annotatorStore.useAnnotatorStore(useShallow(params => Object.values(params.annotations)));
   const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
-  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const clearScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.clearScreenAnnotations);
 
   const handleDetectionProcessingSuccess = () => {
-    resetAnnotations();
+    clearScreenAnnotations('roof-analyse');
     clearPolygons(false);
   };
 
