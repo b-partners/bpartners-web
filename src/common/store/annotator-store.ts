@@ -6,6 +6,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { copyObject, ObjectUtilities } from '../utils';
+import { useAnnotatorScreenSwitch } from './annotator-switch-store';
 
 interface Annotation {
   isFirst: boolean;
@@ -64,12 +65,15 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       const annotations = copyObject(state.annotations);
       if (annotations[polygon.id]) return { annotations };
       const isFirst = Object.values(annotations).length === 0;
+      const hasRoof = Object.values(annotations).some(a => a.annotationInfos?.labelType === 'roof');
+      const isAnalyseScreen = useAnnotatorScreenSwitch.getState().screen === 'roof-analyse';
+      const secondaryType = isAnalyseScreen ? 'velux' : 'pan';
       const annotation: any = {
         isFirst,
         polygon,
         annotationInfos: {
           polygonId: polygon.id,
-          labelType: state.threeDFromSegmentation ? 'pan' : 'roof',
+          labelType: state.threeDFromSegmentation ? 'pan' : hasRoof ? secondaryType : 'roof',
           fillColor: polygon.fillColor,
           strokeColor: polygon.strokeColor,
           labelName: addAlphabet('Polygon', Object.values(annotations).length),
