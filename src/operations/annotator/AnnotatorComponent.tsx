@@ -3,6 +3,7 @@ import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFe
 import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
+import { analyseRoofIdRef } from '@/operations/prospects/constants';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
@@ -29,6 +30,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const setScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.setScreenAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+  const seedAnalyseRoofFromAnnotator = annotatorStore.useAnnotatorStore(params => params.seedAnalyseRoofFromAnnotator);
 
   const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending, isError } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
@@ -47,14 +49,20 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { screen } = useAnnotatorScreenSwitch();
 
   useEffect(() => {
+    if (screen === 'roof-analyse') seedAnalyseRoofFromAnnotator();
+  }, [screen, seedAnalyseRoofFromAnnotator]);
+
+  useEffect(() => {
     setRoofAnalyseProperties(geojsonResult?.properties);
 
     const currentPolygons = geojsonResult?.polygons?.slice(1) || [];
-    const roofPolygon = geojsonResult?.polygons?.[0];
+    const detectedRoof = geojsonResult?.polygons?.[0];
 
     if (!isAfterAnalyse(polygonList) && currentPolygons.length > 0 && geojsonResult?.properties && geojsonResult?.image) {
+      const analyseRoofId = `${detectedRoof.id}__${analyseRoofIdRef}`;
+      const roofPolygon = { ...detectedRoof, id: analyseRoofId };
       const roofAnnotationInfo = createAnnotationInfoFromRoofAnalyseProperties(
-        roofPolygon.id,
+        analyseRoofId,
         geojsonResult?.properties,
         geojsonResult?.properties?.roof_height_in_meters,
         geojsonResult?.properties?.roof_slope_in_degrees

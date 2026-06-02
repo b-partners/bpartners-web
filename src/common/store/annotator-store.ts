@@ -1,8 +1,9 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { addAlphabet } from '@/operations/annotator/utils';
-import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
+import { analyseGeneratedIdRef, analyseRoofIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Polygon } from '@bpartners/annotator-component';
 import { Dispatch, SetStateAction } from 'react';
+import { v4 } from 'uuid';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { copyObject, ObjectUtilities } from '../utils';
@@ -21,12 +22,14 @@ const resolveCurrentScreen = (): AnnotationScreen => (useAnnotatorScreenSwitch.g
 
 const deriveScreenFromPolygon = (polygon?: Polygon, annotationInfos?: AnnotationInfo): AnnotationScreen => {
   const id = polygon?.id || '';
+  if (id.includes(analyseRoofIdRef)) return 'roof-analyse';
   if (id.includes(analyseGeneratedIdRef)) return 'roof-analyse';
   if (annotationInfos?.labelType === 'velux') return 'roof-analyse';
   return 'annotator';
 };
 
-const getAnnotationScreen = (annotation: Annotation): AnnotationScreen => annotation.screen ?? deriveScreenFromPolygon(annotation.polygon, annotation.annotationInfos);
+const getAnnotationScreen = (annotation: Annotation): AnnotationScreen =>
+  annotation.screen ?? deriveScreenFromPolygon(annotation.polygon, annotation.annotationInfos);
 
 interface State {
   annotations: Record<string, Annotation>;
@@ -53,6 +56,7 @@ interface Actions {
   replaceAnnotations: (polygons: Polygon[], annotationsInfos: AnnotationInfo[], screenOverride?: AnnotationScreen) => void;
   setScreenAnnotations: (screen: AnnotationScreen, polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
   clearScreenAnnotations: (screen: AnnotationScreen) => void;
+  seedAnalyseRoofFromAnnotator: () => void;
   resetAnnotations: () => void;
   reset: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
@@ -181,6 +185,25 @@ const useAnnotatorStore = create<State & Actions>(set => ({
         .forEach(id => delete annotations[id]);
       const remaining = Object.values(annotations);
       if (remaining.length > 0 && !remaining.some(a => a.isFirst)) remaining[0].isFirst = true;
+      return { annotations };
+    }),
+  seedAnalyseRoofFromAnnotator: () =>
+    set(state => {
+      const values = Object.values(state.annotations);
+      const hasAnalyseAnnotation = values.some(a => getAnnotationScreen(a) === 'roof-analyse');
+      if (hasAnalyseAnnotation) return state;
+
+      const roof2d = values.find(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof');
+      if (!roof2d) return state;
+
+      const annotations = copyObject(state.annotations);
+      const analyseRoofId = `${v4()}__${analyseRoofIdRef}__${roofGlobalIdRef}`;
+      annotations[analyseRoofId] = {
+        isFirst: false,
+        screen: 'roof-analyse',
+        polygon: { ...copyObject(roof2d.polygon), id: analyseRoofId },
+        annotationInfos: { ...copyObject(roof2d.annotationInfos), polygonId: analyseRoofId, labelType: 'roof' },
+      };
       return { annotations };
     }),
   resetAnnotations: () =>
