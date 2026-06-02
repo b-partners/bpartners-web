@@ -3,7 +3,7 @@ import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescrip
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useCreate, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
-import { v4 as uuidV4, v4 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 import {
   annotatorStore,
   roof3DStore,
