@@ -3,7 +3,6 @@ import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material'
 import { Box, ButtonBase } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
-import { isAfterAnalyse } from '../../utils';
 import { ScreenSwitchTabsStyle } from './style';
 
 export const ScreenSwitchTabs = () => {
@@ -24,12 +23,13 @@ export const ScreenSwitchTabs = () => {
   const select3DGenerationMode = () => {
     if (screen === '3d-annotator') return setScreen('annotator');
 
-    if (!isAfterAnalyse(polygonList) && threeDFromSegmentation && hasPan) setScreen('3d-annotator', 'pan');
-    if (!isAfterAnalyse(polygonList) && threeDFromSegmentation && !hasPan)
-      notify('Veuillez ajouter au moins un pan pour lancer la modélisation 3D par segmentation.', { type: 'warning' });
+    if (threeDFromSegmentation) {
+      if (hasPan) return setScreen('3d-annotator', 'pan');
+      return notify('Veuillez ajouter au moins un pan pour lancer la modélisation 3D par segmentation.', { type: 'warning' });
+    }
 
-    if (!threeDFromSegmentation && hasRoof) setScreen('3d-annotator');
-    if (!threeDFromSegmentation && !hasRoof) notify('Veuillez délimiter le toit pour lancer la modélisation 3D par emprise.', { type: 'warning' });
+    if (hasRoof) return setScreen('3d-annotator');
+    notify('Veuillez délimiter le toit pour lancer la modélisation 3D par emprise.', { type: 'warning' });
   };
 
   return (
