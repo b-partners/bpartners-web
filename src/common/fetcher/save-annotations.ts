@@ -25,7 +25,6 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const annotatorState = annotatorStore.useAnnotatorStore.getState();
   const annotationsInfos = Object.values(annotatorState.annotations).map(a => a.annotationInfos);
   const polygonList = Object.values(annotatorState.annotations).map(a => a.polygon);
-  if (polygonList.length === 0) return null;
 
   const annotationId = UrlParams.get('draftAnnotationId');
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
