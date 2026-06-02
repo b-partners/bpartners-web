@@ -30,6 +30,16 @@ export const saveImageToCache = async (fileId: string, blob: Blob): Promise<void
   });
 };
 
+export const removeImageFromCache = async (fileId: string): Promise<void> => {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const request = tx.objectStore(STORE_NAME).delete(fileId);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
 export const downloadAndCacheImage = async (fileId: string, fileUrl: string): Promise<string> => {
   const cached = await getImageFromCache(fileId);
   if (cached) return URL.createObjectURL(cached);
