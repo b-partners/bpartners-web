@@ -6,7 +6,7 @@ import { getImageFromCache } from '@/common/utils';
 import { AnnotatorCanvas, Polygon } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { Annotator3D, annotatorButtonsActions, LlmResult, RoofAnalyseRunButton, ThreeDMeasureMode } from './components';
 import { AnnotatorComponentProps } from './types';
@@ -76,6 +76,17 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   }, [areaPictureDetails]);
 
+  const polygonListShifted = useMemo(
+    () =>
+      isAfterAnalyse(screenPolygonList)
+        ? screenPolygonList
+        : shiftPolygons(screenPolygonList, areaPictureDetails, true).map(p => ({
+            ...p,
+            measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
+          })),
+    [screenPolygonList, areaPictureDetails, visibleMeasurementPolygonId]
+  );
+
   if (!filename || (geoJsonResultUrl && !geojsonResult?.image && !isError)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
@@ -97,13 +108,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
       return isAfterAnalyse(polygons) ? polygons : shiftPolygons(polygons, areaPictureDetails, false);
     });
   };
-
-  const polygonListShifted = isAfterAnalyse(screenPolygonList)
-    ? screenPolygonList
-    : shiftPolygons(screenPolygonList, areaPictureDetails, true).map(p => ({
-        ...p,
-        measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
-      }));
 
   if (isLoading) return <BPLoader message='Chargement des données...' />;
 

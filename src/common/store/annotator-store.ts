@@ -247,21 +247,7 @@ const useOneAnnotationStore = (id: string) => {
 };
 
 const usePolygonStore = () => {
-  const polygonList = useAnnotatorStore(params => {
-    let isSecond = false;
-    const currentPolygons = Object.values(params.annotations).map(a => {
-      const currentPolygon = a.polygon;
-      if ((currentPolygon.id.includes(analyseGeneratedIdRef) && !currentPolygon.id.includes(roofGlobalIdRef)) || currentPolygon.isInvisible || isSecond) {
-        currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: true }));
-      } else {
-        isSecond = true;
-        currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: false }));
-      }
-      return currentPolygon;
-    });
-
-    return currentPolygons;
-  });
+  const polygonList = useAnnotatorStore(useShallow(params => Object.values(params.annotations).map(a => a.polygon)));
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
   const replacePolygonById = useAnnotatorStore(params => params.replacePolygonById);
   const polygonIdList = polygonList.map(a => a.id);
@@ -283,21 +269,13 @@ const usePolygonStore = () => {
 
 const useScreenPolygonStore = () => {
   const currentScreen = useAnnotatorScreenSwitch(state => (state.screen === 'roof-analyse' ? 'roof-analyse' : 'annotator'));
-  const polygonList = useAnnotatorStore(params => {
-    let isSecond = false;
-    return Object.values(params.annotations)
-      .filter(a => getAnnotationScreen(a) === currentScreen)
-      .map(a => {
-        const currentPolygon = a.polygon;
-        if ((currentPolygon.id.includes(analyseGeneratedIdRef) && !currentPolygon.id.includes(roofGlobalIdRef)) || currentPolygon.isInvisible || isSecond) {
-          currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: true }));
-        } else {
-          isSecond = true;
-          currentPolygon.measurements = currentPolygon?.measurements?.map(m => ({ ...m, isInvisible: false }));
-        }
-        return currentPolygon;
-      });
-  });
+  const polygonList = useAnnotatorStore(
+    useShallow(params =>
+      Object.values(params.annotations)
+        .filter(a => getAnnotationScreen(a) === currentScreen)
+        .map(a => a.polygon)
+    )
+  );
   const addPolygon = useAnnotatorStore(params => params.addPolygon);
   const replacePolygonById = useAnnotatorStore(params => params.replacePolygonById);
 

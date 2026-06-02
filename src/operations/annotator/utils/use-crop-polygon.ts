@@ -109,7 +109,7 @@ export const getCroppedImageAndPolygons = (polygons: DomainPolygonResultType[], 
   canvas.width = boundingBoxXSize > 1024 ? 1024 : boundingBoxXSize;
 
   const xScale = canvas.width / boundingBoxXSize;
-  const yScale = canvas.height / boundingBoxXSize;
+  const yScale = canvas.height / boundingBoxYSize;
 
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxXSize, boundingBoxYSize, 0, 0, canvas.width, canvas.height);
