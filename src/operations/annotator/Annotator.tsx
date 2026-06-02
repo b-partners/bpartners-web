@@ -6,7 +6,7 @@ import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@
 import { getAnalyseImageFileId } from '@/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
-import { ArrowBack, Download, Replay, Save } from '@mui/icons-material';
+import { ArrowBack, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useGetOne } from 'react-admin';
@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { SaveStatus, ScreenSwitchTabs } from './components';
+import { AnnotatorExportPdfButton, SaveStatus, ScreenSwitchTabs } from './components';
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
@@ -145,9 +145,7 @@ export const Annotator = () => {
             color='secondary'
             startIcon={<Replay fontSize='small' />}
           />
-          <Button className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' startIcon={<Download fontSize='small' />}>
-            Exporter en PDF
-          </Button>
+          <AnnotatorExportPdfButton className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' areaPictureDetails={areaPicture} />
           <Button
             className='bottom-toolbar-save-btn'
             variant='contained'
