@@ -5,7 +5,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
-import { copyObject, getFileUrl, getImageSize, UrlParams } from '../utils';
+import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
@@ -43,6 +43,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
     queryFn: async () => {
       const existingId = annotatorStore.useAnnotatorStore.getState().threeDGenerationId;
       const imageUri = getFileUrl(areaPicture.fileId, 'AREA_PICTURE');
+      const cachedImageBlob = await getImageFromCache(areaPicture.fileId);
+      const imageUrl = cachedImageBlob ? URL.createObjectURL(cachedImageBlob) : imageUri;
 
       let data;
 
@@ -53,7 +55,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         const cityJSONRequestId = cachedCityJSONRequestId || uuid();
 
         cache.cityJSONRequestId(cityJSONRequestId);
-        const imageUrl = UrlParams.get('imgUrl');
         const _imageSize = await getImageSize(imageUrl);
         let imageSize = +_imageSize.toString();
         // do not remove
@@ -63,6 +64,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           imageSize = imageSize / 3;
         }
         let mappedCoordinates = [];
+        console.log('here existing 12');
 
         if (threeDMode === 'roof') {
           mappedCoordinates = [await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)];
@@ -75,6 +77,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         }
 
         const tileOffset = areaPicture.isExtended ? 1 : 0;
+
+        console.log('here existing 13');
 
         data = await getCityJSON(
           {
@@ -93,14 +97,12 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         );
       }
 
-      const imageAsBase64 = await fetch(imageUri).then(async response => {
-        const blob = await response.blob();
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
+      const imageBlob = cachedImageBlob || (await fetch(imageUri).then(response => response.blob()));
+      const imageAsBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(imageBlob);
       });
       const result = copyObject(data);
 
