@@ -83,10 +83,7 @@ export const useMutateProspect = () => {
         id: draftAnnotationId,
         annotations: [],
         idAreaPicture: pictureId,
-        properties: {
-          roofAnalyseId: v4(),
-          threeDGenerationId: v4(),
-        },
+        properties: {},
         isDraft: true,
       };
 
