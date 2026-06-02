@@ -1,7 +1,7 @@
-import { BPLoader } from '@/common/components';
+import { BPLoader, GlobaDialog } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
-import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { useCacheImage } from '@/common/hooks';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { copyObject, parseUrlParams } from '@/common/utils';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
@@ -152,6 +152,7 @@ export const Annotator = () => {
         </Stack>
       </Toolbar>
       <Typography sx={annotatorDisclaimerStyle}>Disclaimer : rapport généré par IA statistique nécessitant confirmation par votre expert toiture.</Typography>
+      <GlobaDialog />
     </FormProvider>
   );
 };

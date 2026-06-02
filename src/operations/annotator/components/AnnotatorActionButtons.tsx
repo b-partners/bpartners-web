@@ -49,6 +49,18 @@ export const annotatorButtonsActions =
       if (topBarConfig) topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, zoomLevel, layerId: layer.id });
     };
 
+    const refocusImage = () => topBarConfig.mutateAreaPictureDetails({ ...topBarConfig.areaPicture, isExtended: !topBarConfig.areaPicture.isExtended });
+
+    const handleRefocusImage = () => {
+      open(
+        <AnnotatorResetStateConfirmationDialog
+          title="Recentrer l'image"
+          onConfirm={refocusImage}
+          content={!topBarConfig.areaPicture.isExtended ? 'refocusImage' : 'resetRefocusImage'}
+        />
+      );
+    };
+
     return (
       <>
         {topBarConfig && (
@@ -67,7 +79,7 @@ export const annotatorButtonsActions =
                 </MenuItem>
               ))}
             </TextField>
-            <Button className='top-bar-btn' size='small' color={isExtended ? 'secondary' : 'inherit'}>
+            <Button onClick={handleRefocusImage} className='top-bar-btn' size='small' color='secondary' variant={isExtended ? 'contained' : 'outlined'}>
               {isExtended ? "Réinitialiser l'image" : "Recentrer l'image"}
             </Button>
           </Stack>
