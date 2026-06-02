@@ -43,7 +43,7 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, setAnalyseImageUrl } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl } = useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
@@ -114,7 +114,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     );
 
     // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
-    const fileId = UrlParams.get('fileId');
+    const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
     const base64Image = regions.length > 0 ? croppedImage : imageAsBase64;
 
     if (fileId && base64Image && base64Image.length > 0) {

@@ -30,7 +30,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
   const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
-  const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
+  const { data: geojsonResult, isPending, isError } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
@@ -75,7 +75,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     });
   }, [areaPictureDetails]);
 
-  if (!filename || (geoJsonResultUrl && !geojsonResult?.image)) {
+  if (!filename || (geoJsonResultUrl && !geojsonResult?.image && !isError)) {
     return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
   }
 
