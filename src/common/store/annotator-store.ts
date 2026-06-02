@@ -290,8 +290,11 @@ const usePolygonStore = () => {
   return { polygonList, setPolygons };
 };
 
+const resolveScopedScreen = (screen: ReturnType<typeof useAnnotatorScreenSwitch.getState>['screen']): AnnotationScreen =>
+  screen === 'roof-analyse' || screen === 'llm' ? 'roof-analyse' : 'annotator';
+
 const useScreenPolygonStore = () => {
-  const currentScreen = useAnnotatorScreenSwitch(state => (state.screen === 'roof-analyse' ? 'roof-analyse' : 'annotator'));
+  const currentScreen = useAnnotatorScreenSwitch(state => resolveScopedScreen(state.screen));
   const polygonList = useAnnotatorStore(
     useShallow(params =>
       Object.values(params.annotations)
@@ -316,7 +319,7 @@ const useScreenPolygonStore = () => {
 };
 
 const useScreenAnnotatorInfoStore = () => {
-  const currentScreen = useAnnotatorScreenSwitch(state => (state.screen === 'roof-analyse' ? 'roof-analyse' : 'annotator'));
+  const currentScreen = useAnnotatorScreenSwitch(state => resolveScopedScreen(state.screen));
   return useAnnotatorStore(
     useShallow(param =>
       Object.values(param.annotations)
