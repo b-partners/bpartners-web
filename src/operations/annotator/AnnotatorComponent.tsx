@@ -33,7 +33,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
   const seedAnalyseRoofFromAnnotator = annotatorStore.useAnnotatorStore(params => params.seedAnalyseRoofFromAnnotator);
 
-  const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails, analyseImageUrl, analyseLoadingPolygon } = useAnnotatorComponentStore();
+  const {
+    geoJsonResultUrl,
+    llm: draftLlmValue,
+    setRoofAnalyseProperties,
+    areaPictureDetails,
+    analyseImageUrl,
+    analyseLoadingPolygon,
+  } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending, isError } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
@@ -130,7 +137,12 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         {isAnalyseScreen && showAddress && <RoofAnalyseRunButton />}
         {isAnalysing && (
           <Box className='analyse-loading-container'>
-            <RoofAnalysisDialog imageUrl={cachedImageUrl || UrlParams.get('imgUrl')} imageWidth={1024 * 3} imageHeight={1024 * 3} polygon={analyseLoadingPolygon} />
+            <RoofAnalysisDialog
+              imageUrl={cachedImageUrl || UrlParams.get('imgUrl')}
+              imageWidth={1024 * 3}
+              imageHeight={1024 * 3}
+              polygon={analyseLoadingPolygon}
+            />
           </Box>
         )}
         {!isAnalysing && (screen === 'annotator' || isAnalyseScreen) && (!geoJsonResultUrl || geojsonResult?.image || isAnalyseScreen) && (
