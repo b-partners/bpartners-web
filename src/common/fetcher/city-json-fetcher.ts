@@ -64,11 +64,13 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           imageSize = imageSize / 3;
         }
         let mappedCoordinates = [];
+        const annotationValues = Object.values(annotations);
 
         if (threeDMode === 'roof') {
-          mappedCoordinates = [await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)];
+          const roofPolygon = annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygonFromAnnotator;
+          mappedCoordinates = [await mapPixelPolygonToLatLonPolygon(roofPolygon, areaPicture, imageSize)];
         } else {
-          const pans = Object.values(annotations)
+          const pans = annotationValues
             .filter(annotation => annotation.annotationInfos.labelType === 'pan')
             .map(annotation => mapPixelPolygonToLatLonPolygon(annotation.polygon, areaPicture, imageSize));
 

@@ -1,9 +1,10 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { Canvas } from '@react-three/fiber';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { roof3DStore } from '@/common/store';
+import { annotatorStore, roof3DStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
@@ -26,8 +27,19 @@ interface Annotator3DProps {
 }
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, areaPicture, polygons, measureMode, setMeasureMode }) => {
+  const { threeDMode } = useAnnotatorScreenSwitch();
+  const annotations = annotatorStore.useAnnotatorStore(useShallow(({ annotations }) => annotations));
   const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
   const { setSelectedRoofIndex, setPanNames, setEdgeTypes } = roof3DStore.useRoof3DActions();
+
+  const loadingPolygons = useMemo(() => {
+    const annotationValues = Object.values(annotations);
+    if (threeDMode === 'roof') {
+      const roofPolygon = annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygons[0];
+      return [roofPolygon].filter(Boolean);
+    }
+    return annotationValues.filter(annotation => annotation.annotationInfos.labelType === 'pan').map(annotation => annotation.polygon);
+  }, [annotations, threeDMode, polygons]);
 
   useEffect(() => {
     setSelectedRoofIndex(null);
@@ -87,7 +99,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
           </Stack>
         </>
       )}
-      {isLoading && <RoofScanLoader polygons={[polygons[0]]} />}
+      {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
       {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
