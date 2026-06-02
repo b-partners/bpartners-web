@@ -48,7 +48,8 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
 
-  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
+  const isAnnotatorRoute = pathname === '/annotator' || pathname.startsWith('/projects/');
+  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && isAnnotatorRoute;
 
   const queryFnVgg = async () => {
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': 'application/json' } });
