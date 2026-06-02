@@ -64,7 +64,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           imageSize = imageSize / 3;
         }
         let mappedCoordinates = [];
-        console.log('here existing 12');
 
         if (threeDMode === 'roof') {
           mappedCoordinates = [await mapPixelPolygonToLatLonPolygon(polygonFromAnnotator, areaPicture, imageSize)];
@@ -77,8 +76,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
         }
 
         const tileOffset = areaPicture.isExtended ? 1 : 0;
-
-        console.log('here existing 13');
 
         data = await getCityJSON(
           {
