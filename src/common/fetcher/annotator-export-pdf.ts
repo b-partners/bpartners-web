@@ -4,6 +4,7 @@ import { areaPictureApi, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
+import { v4 } from 'uuid';
 import { useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
@@ -56,7 +57,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
       jsonToFile(exportAreaPictureAnnotation)
     );
     const { value } = data;
-    await downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
+    await downloadPdf(value, `Rapport d'analyse - ${params.address} - ${v4().slice(0, 8)}.pdf`);
   };
 
   const onSuccess = () => notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
