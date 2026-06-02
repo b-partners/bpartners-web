@@ -87,7 +87,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
           </Stack>
         </>
       )}
-      {isLoading && <RoofScanLoader polygons={polygons} />}
+      {isLoading && <RoofScanLoader polygons={[polygons[0]]} />}
       {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
