@@ -35,6 +35,7 @@ interface Action {
   setRoofDelimiter(roofDelimiter: any): void;
   setImageTileInfoOrigin?: (imageTileInfoOrigin: any) => void;
   setRoofAnalyseProperties: (roofAnalyseProperties: RoofAnalyseProperties) => void;
+  setAnalyseImageUrl: (analyseImageUrl: string | null) => void;
 }
 
 interface State {
@@ -56,6 +57,7 @@ interface State {
     value: number;
   } | null;
   roofAnalyseProperties?: RoofAnalyseProperties;
+  analyseImageUrl: string | null;
 }
 
 const defaultState: any = {
@@ -69,6 +71,7 @@ const defaultState: any = {
   isSlopeAndHeightPending: false,
   llm: null,
   globalRate: null,
+  analyseImageUrl: null,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
@@ -86,4 +89,5 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setRoofDelimiter: roofDelimiter => set({ roofDelimiter }),
   setImageTileInfoOrigin: imageTileInfoOrigin => set({ imageTileInfoOrigin }),
   setRoofAnalyseProperties: roofAnalyseProperties => set({ roofAnalyseProperties }),
+  setAnalyseImageUrl: analyseImageUrl => set({ analyseImageUrl }),
 }));

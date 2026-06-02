@@ -14,6 +14,7 @@ export * from './image-option-top-bar';
 export * from './llm-result';
 export * from './llm-switch-button';
 export * from './RefocusImageButton';
+export * from './roof-analyse-run-button';
 export * from './save-annotations-button';
 export * from './save-status';
 export * from './screen-switch-tabs';

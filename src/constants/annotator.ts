@@ -22,6 +22,9 @@ export const ANNOTATION_ANALYSE_LABELS_TRANSLATION = {
 } as const;
 export const ANNOTATION_ANALYSE_LABELS_CHOICES = toRaInputChoices(ANNOTATION_ANALYSE_LABELS_TRANSLATION);
 
+export const ANALYSE_IMAGE_SUFFIX = '_analyse_image';
+export const getAnalyseImageFileId = (fileId: string) => `${fileId}${ANALYSE_IMAGE_SUFFIX}`;
+
 export const coveringTypeMap = {
   ROOF_ARDOISE: 'Ardoise',
   ROOF_ASPHALTE_BITUME: 'Asphalte Bitume',

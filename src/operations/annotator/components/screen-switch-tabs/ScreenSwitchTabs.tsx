@@ -1,56 +1,21 @@
-import { useRoofAnalyseQuery } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { useDialog } from '@/common/store/dialog';
-import { clearPolygons } from '@/providers';
-import { UrlParams } from '@bpartners/annotator-component';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
 import { Box, ButtonBase } from '@mui/material';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
-import { isAfterAnalyse, shiftPolygons } from '../../utils';
-import { RoofAnalysisDialog } from '../loading';
+import { isAfterAnalyse } from '../../utils';
 import { ScreenSwitchTabsStyle } from './style';
 
 export const ScreenSwitchTabs = () => {
-  const { areaPictureDetails } = useAnnotatorComponentStore();
   const { screen, setScreen } = useAnnotatorScreenSwitch();
   const { polygonList } = annotatorStore.usePolygonStore();
   const { roofDelimiter } = useAnnotatorComponentStore();
-  const curruntAnnotations = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations));
   const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => a.isFirst));
-  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
-  const { open: openDialog } = useDialog();
-  const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
-  const handleDetectionProcessingSuccess = () => {
-    resetAnnotations();
-    clearPolygons(false);
-  };
-
-  const polygonListShifted = isAfterAnalyse(polygonList)
-    ? polygonList
-    : shiftPolygons(polygonList, areaPictureDetails, true).map(p => ({
-        ...p,
-        measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
-      }));
-  const { mutate: _processDetection } = useRoofAnalyseQuery(polygonList || [], areaPictureDetails, handleDetectionProcessingSuccess);
   const { wearLevel, humidityLevel, moldRate } = roofPolygon?.annotationInfos || {};
-
-  const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
-  const isThereARoofPolygon = curruntAnnotations.filter(annotation => annotation.annotationInfos.labelType === 'roof').length === 1;
 
   const { threeDFromSegmentation, annotations } = annotatorStore.useAnnotatorStore(
     useShallow(({ threeDFromSegmentation, annotations }) => ({ threeDFromSegmentation, annotations }))
   );
-
-  const processDetection = () => {
-    setScreen('roof-analyse');
-    openDialog(
-      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
-      { maxWidth: 'lg' },
-      false
-    );
-    _processDetection();
-  };
 
   const hasRoof = Object.values(annotations).find(a => a.annotationInfos.labelType === 'roof');
   const hasPan = Object.values(annotations).find(a => a.annotationInfos.labelType === 'pan');
@@ -73,7 +38,7 @@ export const ScreenSwitchTabs = () => {
         <CropSquare />
         2D
       </ButtonBase>
-      <ButtonBase onClick={processDetection} disabled={!isPrecisionLevelInCmCorrect || !isThereARoofPolygon} type='button' className='screen-tab'>
+      <ButtonBase type='button' onClick={() => setScreen('roof-analyse')} className={`screen-tab ${screen === 'roof-analyse' ? 'active' : ''}`}>
         <Roofing />
         Analyse
       </ButtonBase>

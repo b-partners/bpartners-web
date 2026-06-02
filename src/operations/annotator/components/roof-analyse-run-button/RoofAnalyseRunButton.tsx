@@ -1,0 +1,66 @@
+import { useRoofAnalyseQuery } from '@/common/fetcher';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { useDialog } from '@/common/store/dialog';
+import { clearPolygons } from '@/providers';
+import { UrlParams } from '@bpartners/annotator-component';
+import { Roofing } from '@mui/icons-material';
+import { Button } from '@mui/material';
+import { useNotify } from 'react-admin';
+import { useShallow } from 'zustand/react/shallow';
+import { isAfterAnalyse, shiftPolygons } from '../../utils';
+import { RoofAnalysisDialog } from '../loading';
+import { RoofAnalyseRunButtonStyle } from './style';
+
+export const RoofAnalyseRunButton = () => {
+  const notify = useNotify();
+  const { open: openDialog } = useDialog();
+  const { areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
+  const { polygonList } = annotatorStore.usePolygonStore();
+  const annotations = annotatorStore.useAnnotatorStore(useShallow(params => Object.values(params.annotations)));
+  const visibleMeasurementPolygonId = annotatorStore.useAnnotatorStore(useShallow(({ polygonToShowMeasurement }) => polygonToShowMeasurement));
+  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
+
+  const handleDetectionProcessingSuccess = () => {
+    resetAnnotations();
+    clearPolygons(false);
+  };
+
+  const polygonListShifted = isAfterAnalyse(polygonList)
+    ? polygonList
+    : shiftPolygons(polygonList, areaPictureDetails, true).map(p => ({
+        ...p,
+        measurements: p.id !== visibleMeasurementPolygonId ? [] : (p.measurements || []).map(m => ({ ...m, isInvisible: false })),
+      }));
+
+  const { mutate: processDetection } = useRoofAnalyseQuery(polygonList || [], areaPictureDetails, handleDetectionProcessingSuccess);
+
+  const isThereARoofPolygon = annotations.filter(annotation => annotation.annotationInfos.labelType === 'roof').length === 1;
+  const isPrecisionLevelInCmCorrect = areaPictureDetails?.actualLayer?.precisionLevelInCm === 5;
+  const isAlreadyAnalysed = !!analyseImageUrl || isAfterAnalyse(polygonList);
+
+  if (isAlreadyAnalysed) return null;
+
+  const runAnalyse = () => {
+    if (!isThereARoofPolygon) return notify('Veuillez délimiter un seul toit avant de lancer l’analyse.', { type: 'warning' });
+    openDialog(
+      <RoofAnalysisDialog imageHeight={1024 * 3} imageWidth={1024 * 3} imageUrl={UrlParams.get('imgUrl')} polygon={polygonListShifted?.[0]?.points?.slice()} />,
+      { maxWidth: 'lg' },
+      false
+    );
+    processDetection();
+  };
+
+  return (
+    <Button
+      sx={RoofAnalyseRunButtonStyle}
+      variant='contained'
+      color='secondary'
+      size='small'
+      startIcon={<Roofing fontSize='small' />}
+      disabled={!isThereARoofPolygon || !isPrecisionLevelInCmCorrect}
+      onClick={runAnalyse}
+    >
+      Lancer l’analyse
+    </Button>
+  );
+};

@@ -8,7 +8,7 @@ import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
+import { Annotator3D, annotatorButtonsActions, LlmResult, RoofAnalyseRunButton, ThreeDMeasureMode } from './components';
 import { AnnotatorComponentProps } from './types';
 import {
   annotatorComponentStyle,
@@ -22,14 +22,14 @@ import {
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
-  const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
+  const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height, showAddress } = props;
 
   const { polygonList, setPolygons: setPolygonList } = annotatorStore.usePolygonStore();
 
   const replaceAnnotations = annotatorStore.useAnnotatorStore(params => params.replaceAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
 
-  const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, llm: draftLlmValue, setRoofAnalyseProperties, areaPictureDetails, analyseImageUrl } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
@@ -106,17 +106,21 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   if (isLoading) return <BPLoader message='Chargement des données...' />;
 
+  const isAnalyseScreen = screen === 'roof-analyse';
+  const canvasImage = isAnalyseScreen ? analyseImageUrl || geojsonResult?.image || cachedImageUrl : cachedImageUrl;
+
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
-        {screen === 'annotator' && (!geoJsonResultUrl || geojsonResult?.image) && (
+        {isAnalyseScreen && showAddress && <RoofAnalyseRunButton />}
+        {(screen === 'annotator' || isAnalyseScreen) && (!geoJsonResultUrl || geojsonResult?.image || isAnalyseScreen) && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
             height={height || containerHeight - 50}
             buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: areaPictureDetails, mutateAreaPictureDetails })}
-            image={geojsonResult?.image || cachedImageUrl}
+            image={canvasImage}
             setPolygons={setPolygonShifted}
             polygonList={polygonListShifted}
             getNewPolygonColor={getNewPolygonColor}
