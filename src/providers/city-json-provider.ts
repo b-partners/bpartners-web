@@ -118,62 +118,75 @@ export const getThreeDStatus = async (id: string) => {
   return (await response.json()) as ThreeDResponseStatus;
 };
 
-export const getExistingCityJSON = async (id: string) => {
-  const threeDResponse = await retryUntilReady({
-    maxAttemps: 20,
-    sleepDelay: 7_000,
-    fetcher: () => getThreeDStatus(id),
-    isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
-  });
+const inflightCityJSON = new Map<string, Promise<CityJSONData>>();
 
-  if (threeDResponse.status.health === HealthStatus.FAILED) {
-    throw new Error(`[ThreeD] Status: FAILED — Unable to generate CityJSON.`);
-  }
+const dedupeById = (id: string, run: () => Promise<CityJSONData>) => {
+  const existing = inflightCityJSON.get(id);
+  if (existing) return existing;
 
-  if (threeDResponse.status.health === HealthStatus.UNKNOWN) {
-    throw new Error(`[ThreeD] Status: UNAVAILABLE — CityJSON is currently unavailable.`);
-  }
-
-  if (!threeDResponse.cityJsonFileUrls?.length) {
-    throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
-  }
-
-  const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
-  return (await urlResponse.json()) as CityJSONData;
+  const promise = run().finally(() => inflightCityJSON.delete(id));
+  inflightCityJSON.set(id, promise);
+  return promise;
 };
 
-export const getCityJSON = async (params: ProcessCityJSONRequestParams, onProcessSuccess?: () => void) => {
-  await retryUntilReady({
-    maxAttemps: 5,
-    sleepDelay: 3_000,
-    fetcher: async () => {
-      await processCityJSONRequest(params);
-      return true;
-    },
-    isReady: () => true,
+export const getExistingCityJSON = (id: string) =>
+  dedupeById(id, async () => {
+    const threeDResponse = await retryUntilReady({
+      maxAttemps: 20,
+      sleepDelay: 7_000,
+      fetcher: () => getThreeDStatus(id),
+      isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
+    });
+
+    if (threeDResponse.status.health === HealthStatus.FAILED) {
+      throw new Error(`[ThreeD] Status: FAILED — Unable to generate CityJSON.`);
+    }
+
+    if (threeDResponse.status.health === HealthStatus.UNKNOWN) {
+      throw new Error(`[ThreeD] Status: UNAVAILABLE — CityJSON is currently unavailable.`);
+    }
+
+    if (!threeDResponse.cityJsonFileUrls?.length) {
+      throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
+    }
+
+    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
+    return (await urlResponse.json()) as CityJSONData;
   });
 
-  onProcessSuccess?.();
+export const getCityJSON = (params: ProcessCityJSONRequestParams, onProcessSuccess?: () => void) =>
+  dedupeById(params.id, async () => {
+    await retryUntilReady({
+      maxAttemps: 5,
+      sleepDelay: 3_000,
+      fetcher: async () => {
+        await processCityJSONRequest(params);
+        return true;
+      },
+      isReady: () => true,
+    });
 
-  const threeDResponse = await retryUntilReady({
-    maxAttemps: 20,
-    sleepDelay: 7_000,
-    fetcher: () => getThreeDStatus(params.id),
-    isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
+    onProcessSuccess?.();
+
+    const threeDResponse = await retryUntilReady({
+      maxAttemps: 20,
+      sleepDelay: 7_000,
+      fetcher: () => getThreeDStatus(params.id),
+      isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
+    });
+
+    if (threeDResponse.status.health === HealthStatus.FAILED) {
+      throw new Error(`[ThreeD] Status: FAILED — Unable to generate CityJSON.`);
+    }
+
+    if (threeDResponse.status.health === HealthStatus.UNKNOWN) {
+      throw new Error(`[ThreeD] Status: UNAVAILABLE — CityJSON is currently unavailable.`);
+    }
+
+    if (!threeDResponse.cityJsonFileUrls?.length) {
+      throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
+    }
+
+    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
+    return (await urlResponse.json()) as CityJSONData;
   });
-
-  if (threeDResponse.status.health === HealthStatus.FAILED) {
-    throw new Error(`[ThreeD] Status: FAILED — Unable to generate CityJSON.`);
-  }
-
-  if (threeDResponse.status.health === HealthStatus.UNKNOWN) {
-    throw new Error(`[ThreeD] Status: UNAVAILABLE — CityJSON is currently unavailable.`);
-  }
-
-  if (!threeDResponse.cityJsonFileUrls?.length) {
-    throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
-  }
-
-  const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
-  return (await urlResponse.json()) as CityJSONData;
-};
