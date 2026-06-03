@@ -77,6 +77,7 @@ export const annotatorActionButtonsStyle: SxProps = {
   },
   '& .gen-mode-toggle': {
     color: PALETTE_COLORS.white,
+    background: 'transparent',
     textTransform: 'none',
     fontSize: 12,
     height: 36,
