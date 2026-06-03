@@ -28,7 +28,7 @@ const deriveScreenFromPolygon = (polygon?: Polygon, annotationInfos?: Annotation
   return 'annotator';
 };
 
-const getAnnotationScreen = (annotation: Annotation): AnnotationScreen =>
+export const getAnnotationScreen = (annotation: Annotation): AnnotationScreen =>
   annotation.screen ?? deriveScreenFromPolygon(annotation.polygon, annotation.annotationInfos);
 
 interface State {

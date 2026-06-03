@@ -4,7 +4,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
-import { annotatorStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
+import { annotatorStore, getAnnotationScreen, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
@@ -64,7 +64,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           imageSize = imageSize / 3;
         }
         let mappedCoordinates = [];
-        const annotationValues = Object.values(annotations);
+        const annotationValues = Object.values(annotations).filter(annotation => getAnnotationScreen(annotation) === 'annotator');
 
         if (threeDMode === 'roof') {
           const roofPolygon = annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygonFromAnnotator;
