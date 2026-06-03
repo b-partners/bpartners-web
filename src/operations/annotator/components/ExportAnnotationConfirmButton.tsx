@@ -1,7 +1,7 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
@@ -20,7 +20,6 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const { handleClose: closeConfirm } = useToggle();
   const annotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   const { polygonList } = annotatorStore.useAnalysePolygonStore();
-  const { analyseImageUrl } = useAnnotatorComponentStore();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -30,14 +29,11 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     const globalRate = calculateGlobalRate();
-    const imageUrl = analyseImageUrl
-      ? getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE')
-      : getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE');
     exportAsPdf({
       annotationInfos,
       polygons: polygonList,
       address,
-      imageUrl,
+      imageUrl: getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE'),
       globalRateType: globalRate.type,
       globalRateValue: globalRate.value,
     });
