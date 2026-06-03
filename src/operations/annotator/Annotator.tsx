@@ -69,9 +69,6 @@ export const Annotator = () => {
   const navigate = useNavigate();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const annotatorFormState = useAnnotationInfosForm();
-  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
-    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
-  );
 
   const { isSaveAnnotationsPending, triggerManualSave, lastSavingDate: lastSavedDate } = useSaveAnnotations();
 
@@ -105,15 +102,6 @@ export const Annotator = () => {
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
           </Stack>
-          <Button
-            className='toolbar-3d-btn'
-            size='small'
-            variant='outlined'
-            color='secondary'
-            onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
-          >
-            3D : {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
-          </Button>
           <ScreenSwitchTabs onBeforeSwitch={triggerManualSave} />
         </Toolbar>
       </AppBar>

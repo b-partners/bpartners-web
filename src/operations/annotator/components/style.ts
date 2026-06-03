@@ -75,6 +75,22 @@ export const annotatorActionButtonsStyle: SxProps = {
   '& .shift-down': {
     '& svg': { transform: 'rotate(90deg)' },
   },
+  '& .gen-mode-toggle': {
+    color: PALETTE_COLORS.white,
+    textTransform: 'none',
+    fontSize: 12,
+    height: 36,
+    borderRadius: '8px',
+    px: 1.25,
+    whiteSpace: 'nowrap',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.1)',
+    },
+    '&:active': {
+      background: 'rgba(255,255,255,0.15)',
+    },
+  },
 };
 
 export const llmResultStyle: SxProps = {
