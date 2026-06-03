@@ -1,5 +1,5 @@
 import { useAnnotatorExportAsPdf } from '@/common/fetcher';
-import { annotatorStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
@@ -14,6 +14,7 @@ interface AnnotatorExportPdfButtonProps extends ButtonProps {
 export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ areaPictureDetails, disabled, ...rest }) => {
   const annotationInfos = annotatorStore.useAnnotatorInfoStore();
   const { polygonList } = annotatorStore.usePolygonStore();
+  const analyseImageFileId = useAnnotatorComponentStore(state => state.analyseImageFileId);
 
   const { mutate: exportAsPdf, isPending } = useAnnotatorExportAsPdf({});
 
@@ -27,7 +28,7 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
       annotationInfos,
       polygons: shiftedPolygonList,
       address: areaPictureDetails.address,
-      imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
+      imageUrl: getFileUrl(analyseImageFileId ?? areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: globalRate.type,
       globalRateValue: globalRate.value,
     });

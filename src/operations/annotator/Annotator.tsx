@@ -2,9 +2,9 @@ import { BPLoader, GlobaDialog } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
 import { useCacheImage } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
-import { copyObject, downloadAndCacheImage, getFileUrl, parseUrlParams } from '@/common/utils';
+import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
-import { areaPictureAnnotationToPolygonAndAreaPictureInfo } from '@/providers';
+import { areaPictureAnnotationToPolygonAndAreaPictureInfo, fileProvider } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { ArrowBack, Replay, Save } from '@mui/icons-material';
 import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
@@ -24,7 +24,7 @@ import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
 export const Annotator = () => {
   const { projectId } = useParams();
-  const { setAreaPictureDetails, setAnalyseImageUrl } = useAnnotatorComponentStore();
+  const { setAreaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } = useAnnotatorComponentStore();
   const { data: annotations, isLoading } = useGetOne(
     'drafts-annotations',
     { id: projectId },
@@ -45,8 +45,16 @@ export const Annotator = () => {
   useEffect(() => {
     if (!fileId || !analyseImageGenerated) return;
     const analyseImageFileId = getAnalyseImageFileId(fileId);
-    downloadAndCacheImage(analyseImageFileId, getFileUrl(analyseImageFileId, FileType.AREA_PICTURE)).then(setAnalyseImageUrl);
-  }, [fileId, analyseImageGenerated, setAnalyseImageUrl]);
+    downloadAndCacheImage(analyseImageFileId, getFileUrl(analyseImageFileId, FileType.AREA_PICTURE)).then(async url => {
+      setAnalyseImageUrl(url);
+      const blob = await getImageFromCache(analyseImageFileId);
+      if (blob) {
+        const fileAsArrayBuffer = await blob.arrayBuffer();
+        await fileProvider.update([{ fileId: analyseImageFileId, fileType: FileType.AREA_PICTURE, fileMimeType: blob.type || 'image/png', fileAsArrayBuffer }]);
+      }
+      setAnalyseImageFileId(analyseImageFileId);
+    });
+  }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
 
