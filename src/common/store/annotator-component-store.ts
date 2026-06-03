@@ -35,6 +35,9 @@ interface Action {
   setRoofDelimiter(roofDelimiter: any): void;
   setImageTileInfoOrigin?: (imageTileInfoOrigin: any) => void;
   setRoofAnalyseProperties: (roofAnalyseProperties: RoofAnalyseProperties) => void;
+  setAnalyseImageUrl: (analyseImageUrl: string | null) => void;
+  setAnalyseImageFileId: (analyseImageFileId: string | null) => void;
+  setAnalyseLoadingPolygon: (analyseLoadingPolygon: { x: number; y: number }[] | null) => void;
 }
 
 interface State {
@@ -56,6 +59,9 @@ interface State {
     value: number;
   } | null;
   roofAnalyseProperties?: RoofAnalyseProperties;
+  analyseImageUrl: string | null;
+  analyseImageFileId: string | null;
+  analyseLoadingPolygon: { x: number; y: number }[] | null;
 }
 
 const defaultState: any = {
@@ -69,6 +75,9 @@ const defaultState: any = {
   isSlopeAndHeightPending: false,
   llm: null,
   globalRate: null,
+  analyseImageUrl: null,
+  analyseImageFileId: null,
+  analyseLoadingPolygon: null,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
@@ -86,4 +95,7 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setRoofDelimiter: roofDelimiter => set({ roofDelimiter }),
   setImageTileInfoOrigin: imageTileInfoOrigin => set({ imageTileInfoOrigin }),
   setRoofAnalyseProperties: roofAnalyseProperties => set({ roofAnalyseProperties }),
+  setAnalyseImageUrl: analyseImageUrl => set({ analyseImageUrl }),
+  setAnalyseImageFileId: analyseImageFileId => set({ analyseImageFileId }),
+  setAnalyseLoadingPolygon: analyseLoadingPolygon => set({ analyseLoadingPolygon }),
 }));

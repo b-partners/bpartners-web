@@ -2,7 +2,9 @@
 
 **Stack:** TypeScript + React + MUI. Never JS unless asked.
 
-**Skill:** `.claude/skills/react-component/` — invoke for any `.tsx` work (component, page, form, dialog, etc.), even if not named.
+**Skills:**
+- `.claude/skills/react-component/` — invoke for any `.tsx` work (component, page, form, dialog, etc.), even if not named.
+- `.claude/skills/annotator/` — invoke when asking about or modifying the Annotator feature (annotations, polygons, area pictures, roof analysis, CityJSON 3D, measurements).
 
 ## Rules
 
@@ -41,6 +43,11 @@ export const App: FC<AppProps> = ({ title, ...rest }) => (
   </Box>
 );
 ```
+
+## Git
+
+- Always commit after making changes.
+- Never add `Co-Authored-By` lines in commit messages.
 
 ## Communication
 

@@ -2,19 +2,48 @@ import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const annotatorComponentStyle: SxProps = {
-  width: '100%',
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-around',
-  mb: 5,
+  flexGrow: 1,
+  minWidth: 0,
+  height: 'calc(100vh - 124px)',
   '& > .annotator-canvas-container': {
     flexGrow: 1,
     position: 'relative',
+    minWidth: 0,
+    overflow: 'hidden',
     m: 0,
     p: 0,
-    marginBlock: 1,
-    height: '80vh',
+  },
+  '& .analyse-loading-container': {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  '& .annotator-info': {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    zIndex: 999,
+    background: PALETTE_COLORS.black,
+    borderRadius: '8px',
+    boxShadow: '0 1px 6px rgba(0,0,0,0.2)',
+    px: 1.5,
+    py: 0.5,
+    '& .MuiBox-root': {
+      px: 0.5,
+      '& p': {
+        m: 0,
+        fontSize: 11,
+        fontFamily: "'Roboto Mono', monospace",
+        fontWeight: 500,
+        color: PALETTE_COLORS.cream,
+      },
+    },
   },
   '& .image-properties-actions': {
     width: '100%',
@@ -68,28 +97,50 @@ export const annotatorComponentStyle: SxProps = {
     },
   },
 
-  '& .degratation-levels': {
-    mt: 0,
-    pt: 0,
-    '& .degratation-levels-box': {
-      width: 40,
-      height: 40,
-      mt: 0,
-      borderRadius: 2,
+  '& .degradation-levels': {
+    '& .degradation-dot': {
+      width: 36,
+      height: 36,
+      borderRadius: '50%',
       display: 'flex',
-      justifyContent: 'center',
       alignItems: 'center',
-      transition: 'all 500ms',
+      justifyContent: 'center',
+      fontWeight: 700,
+      fontSize: 14,
+      color: 'rgba(0,0,0,.45)',
+      opacity: 0.4,
       cursor: 'pointer',
+      transition: 'all .3s ease',
+      '&:hover': {
+        opacity: 0.75,
+        transform: 'scale(1.1)',
+      },
     },
-    '&:hover': {
-      '& .degratation-levels-box:not(.degratation-levels-box-selected)': {
-        background: '#D9D9D9',
-      },
-      '& .degratation-levels-box-selected': {
-        transform: 'scale(120%)',
-        mx: 2,
-      },
+    '& .degradation-pill-active': {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1,
+      px: 2,
+      py: 0.75,
+      borderRadius: 50,
+      color: '#fff',
+      fontWeight: 600,
+      boxShadow: '0 3px 12px rgba(0,0,0,.15)',
+    },
+    '& .degradation-pill-letter': {
+      width: 32,
+      height: 32,
+      borderRadius: '50%',
+      bgcolor: 'rgba(255,255,255,.25)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 15,
+      fontWeight: 700,
+    },
+    '& .degradation-pill-value': {
+      fontSize: 14,
+      fontWeight: 700,
     },
   },
 };

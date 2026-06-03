@@ -1,4 +1,5 @@
 import { annotatorStore } from '@/common/store';
+import { analyseRoofIdRef } from '@/operations/prospects/constants';
 import { annotationCoveringMapper, cache } from '@/providers';
 import { useQuery } from '@tanstack/react-query';
 import { useShallow } from 'zustand/react/shallow';
@@ -8,11 +9,12 @@ const baseUrl = `${process.env.LLM_ANALYSE_RESULT}`;
 const apiKey = `${process.env.LLM_API_KEY}`;
 
 export const useLlmResultQuery = () => {
-  const { annotationInfos, polygon } = annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => a.isFirst))) || {};
+  const { annotationInfos, polygon } =
+    annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => (a.polygon?.id || '').includes(analyseRoofIdRef)))) || {};
 
   const { moldRate, wearLevel, humidityLevel, comment, obstacle, area: _area, covering } = annotationInfos || {};
 
-  const area = _area || polygon.surface;
+  const area = _area || polygon?.surface;
 
   const queryFn = async () => {
     try {

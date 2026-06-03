@@ -1,4 +1,5 @@
 import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { analyseRoofIdRef } from '@/operations/prospects/constants';
 import { Cached } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { FC } from 'react';
@@ -10,7 +11,7 @@ interface Props {
 
 export const LlmSwitchButton: FC<Props> = ({ onClick }) => {
   const { setScreen, screen } = useAnnotatorScreenSwitch();
-  const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => a.isFirst));
+  const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => (a.polygon?.id || '').includes(analyseRoofIdRef)));
 
   const handleClick = () => {
     onClick?.();

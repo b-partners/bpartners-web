@@ -8,6 +8,8 @@ export const downloadPdf = async (url: string, filename = 'file.pdf') => {
   link.style.display = 'none';
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(fileUrl);
+  setTimeout(() => {
+    document.body.removeChild(link);
+    URL.revokeObjectURL(fileUrl);
+  }, 1000);
 };

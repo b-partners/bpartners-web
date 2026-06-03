@@ -5,54 +5,75 @@ export const FreeAutocompleteInputStyle: SxProps = {
   width: '100%',
 };
 
-export const annotatorActionButtonsStyle: SxProps = {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  position: 'relative',
+export const annotatorTopBarStyle: SxProps = {
+  position: 'absolute',
+  top: 8,
+  right: 8,
   zIndex: 999,
+  background: 'transparent',
+  px: 1,
+  py: 0.5,
+  '& .top-bar-select': {
+    minWidth: '9rem',
+    '& .MuiInputBase-root': {
+      fontSize: 13,
+    },
+    '& .MuiInputLabel-root': {
+      fontSize: 13,
+    },
+  },
+  '& .top-bar-btn': {
+    whiteSpace: 'nowrap',
+    fontSize: 11,
+    textTransform: 'none',
+  },
+  '& .MuiTextField-root': {
+    maxWidth: 150,
+  },
+};
+
+export const annotatorActionButtonsStyle: SxProps = {
+  position: 'absolute',
+  bottom: 16,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 999,
+  background: PALETTE_COLORS.black,
+  borderRadius: '12px',
+  px: 0.5,
+  py: 0.5,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
   '& svg': {
-    color: 'white',
+    color: PALETTE_COLORS.white,
   },
   '& .MuiIconButton-root': {
-    borderRadius: 2,
-    background: PALETTE_COLORS['neon_orange'],
-    color: PALETTE_COLORS['white'],
-  },
-  '& .annotator-info': {
-    '& .MuiBox-root': {
-      '& p': {
-        m: 0,
-        fontSize: 12,
-      },
-      color: '#fff',
-      px: 1,
-      py: 1,
-      borderRadius: 2,
-      minWidth: 70,
-      fontWeight: 'semi-bold',
-      background: PALETTE_COLORS.neon_orange,
-      fontSize: 14,
+    borderRadius: '8px',
+    width: 36,
+    height: 36,
+    background: 'transparent',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.1)',
+    },
+    '&:active': {
+      background: 'rgba(255,255,255,0.15)',
     },
   },
-  '& .image-info': {
-    background: PALETTE_COLORS.pine,
-    borderRadius: 2,
-    width: '100%',
-    display: 'flex',
-    py: 1,
-    justifyContent: 'center',
-    '& .MuiTypography-root': {
-      color: '#fff',
-      fontSize: 12,
-    },
-    '& .MuiDivider-root': {
-      marginX: 2,
-    },
+  '& .MuiDivider-root': {
+    borderColor: 'rgba(255,255,255,0.15)',
+    my: 0.5,
   },
-  '& .image-info-container': {
-    width: '100%',
+  '& .shift-toggle': {
+    '& svg': { transform: 'rotate(-90deg)', color: PALETTE_COLORS.cream },
+  },
+  '& .shift-toggle-expanded': {
+    '& svg': { transform: 'rotate(90deg)', color: PALETTE_COLORS.cream },
+  },
+  '& .shift-up': {
+    '& svg': { transform: 'rotate(-90deg)' },
+  },
+  '& .shift-down': {
+    '& svg': { transform: 'rotate(90deg)' },
   },
 };
 

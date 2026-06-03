@@ -4,21 +4,23 @@ import { areaPictureApi, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
+import { v4 } from 'uuid';
 import { useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
+  const validAnnotationInfos = (annotationInfos ?? []).filter((info): info is AnnotationInfo => Boolean(info?.polygonId));
   const labelNames: Record<string, number> = {};
 
-  annotationInfos.forEach(({ area, polygonId }) => {
+  validAnnotationInfos.forEach(({ area, polygonId }) => {
     const labelNameSplitted = polygonId.split('___');
 
     if (labelNameSplitted.length > 0) {
-      labelNames[labelNameSplitted[1]] = area + (labelNames[labelNameSplitted[1]] || 0);
+      labelNames[labelNameSplitted[1]] = (area || 0) + (labelNames[labelNameSplitted[1]] || 0);
     }
   });
 
-  return annotationInfos.map(annotationInfo => {
+  return validAnnotationInfos.map(annotationInfo => {
     const currentLabeNameSplitted = annotationInfo.polygonId.split('___');
 
     if (currentLabeNameSplitted.length === 0) {
@@ -42,7 +44,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
 
-    const shouldAdd3d = imageUrl && cityJsonModel;
+    const cityObject: any = cityJsonModel ? Object.values(cityJsonModel.CityObjects)[0] : undefined;
+    const has3dSurfaces = !!cityObject?.geometry?.[0]?.semantics?.surfaces?.length;
+    const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
@@ -56,15 +60,16 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
       jsonToFile(exportAreaPictureAnnotation)
     );
     const { value } = data;
-    await downloadPdf(value, `Rapport d'analyse - ${params.address}.pdf`);
+    await downloadPdf(value, `Rapport d'analyse - ${params.address} - ${v4().slice(0, 8)}.pdf`);
   };
 
   const onSuccess = () => notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
   const onError = (error: any) => {
+    const message = error?.response?.data?.message ?? error?.message ?? 'Erreur inconnue';
     try {
-      sentryErrorLogger(error.response.data.message, { payload: exportAreaPictureAnnotation });
+      sentryErrorLogger(message, { payload: exportAreaPictureAnnotation });
     } finally {
-      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + error.response.data.message, { type: 'error', multiLine: true });
+      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + message, { type: 'error', multiLine: true });
     }
   };
 

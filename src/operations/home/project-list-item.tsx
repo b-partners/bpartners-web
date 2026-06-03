@@ -41,7 +41,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
     setScreen('annotator');
     roof3DStore.useRoof3DStore.getState().reset();
     navigate(
-      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
+      `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
     );
   };
 

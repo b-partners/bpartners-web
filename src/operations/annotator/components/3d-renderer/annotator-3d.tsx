@@ -1,16 +1,19 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { Canvas } from '@react-three/fiber';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { roof3DStore } from '@/common/store';
+import { annotatorStore, roof3DStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
+import { Button, Divider, Stack, Tooltip } from '@mui/material';
 import { RoofScanLoader } from '../loading';
 import { Annotator3DErrorUI } from './annotator-3d-error';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
-import { RoofSurfacesList } from './roof-surfaces-list';
+import { annotator3DFloatingActionsStyle } from './style';
 
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
@@ -24,8 +27,19 @@ interface Annotator3DProps {
 }
 
 export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, areaPicture, polygons, measureMode, setMeasureMode }) => {
+  const { threeDMode } = useAnnotatorScreenSwitch();
+  const annotations = annotatorStore.useAnnotatorStore(useShallow(({ annotations }) => annotations));
   const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
   const { setSelectedRoofIndex, setPanNames, setEdgeTypes } = roof3DStore.useRoof3DActions();
+
+  const loadingPolygons = useMemo(() => {
+    const annotationValues = Object.values(annotations);
+    if (threeDMode === 'roof') {
+      const roofPolygon = annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygons[0];
+      return [roofPolygon].filter(Boolean);
+    }
+    return annotationValues.filter(annotation => annotation.annotationInfos.labelType === 'pan').map(annotation => annotation.polygon);
+  }, [annotations, threeDMode, polygons]);
 
   useEffect(() => {
     setSelectedRoofIndex(null);
@@ -60,10 +74,32 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
             <CityScene cityJson={cityJson} measureMode={measureMode} setMeasureMode={setMeasureMode} />
             <Annotator3DSaveImage />
           </Canvas>
-          <RoofSurfacesList />
+          <Stack sx={annotator3DFloatingActionsStyle} direction='row' gap={0.5} alignItems='center'>
+            <Tooltip placement='top' title='Mesurer une ligne'>
+              <Button
+                className={`measure-btn ${measureMode === 'line' ? 'measure-btn-active' : ''}`}
+                startIcon={<StraightenIcon />}
+                variant='text'
+                onClick={() => setMeasureMode(measureMode === 'line' ? 'none' : 'line')}
+              >
+                Ligne
+              </Button>
+            </Tooltip>
+            <Divider orientation='vertical' flexItem />
+            <Tooltip placement='top' title='Mesurer un polygone'>
+              <Button
+                className={`measure-btn ${measureMode === 'polygon' ? 'measure-btn-active' : ''}`}
+                startIcon={<TimelineIcon />}
+                variant='text'
+                onClick={() => setMeasureMode(measureMode === 'polygon' ? 'none' : 'polygon')}
+              >
+                Polygone
+              </Button>
+            </Tooltip>
+          </Stack>
         </>
       )}
-      {isLoading && <RoofScanLoader polygons={polygons} />}
+      {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
       {isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );

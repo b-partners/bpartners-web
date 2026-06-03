@@ -9,6 +9,22 @@ export const ANNOTATION_LABELS_TRANSLATION = {
 export type AnnotationLabelsType = typeof ANNOTATION_LABELS_TRANSLATION;
 export const ANNOTATION_LABELS_CHOICES = toRaInputChoices(ANNOTATION_LABELS_TRANSLATION);
 
+export const ANNOTATION_2D_LABELS_TRANSLATION = {
+  roof: 'Toit',
+  pan: 'Pan',
+} as const;
+export const ANNOTATION_2D_LABELS_CHOICES = toRaInputChoices(ANNOTATION_2D_LABELS_TRANSLATION);
+export const ANNOTATION_2D_PAN_ONLY_CHOICES = toRaInputChoices({ pan: 'Pan' });
+
+export const ANNOTATION_ANALYSE_LABELS_TRANSLATION = {
+  roof: 'Toit',
+  velux: 'Velux',
+} as const;
+export const ANNOTATION_ANALYSE_LABELS_CHOICES = toRaInputChoices(ANNOTATION_ANALYSE_LABELS_TRANSLATION);
+
+export const ANALYSE_IMAGE_SUFFIX = '_analyse_image';
+export const getAnalyseImageFileId = (fileId: string) => `${fileId}${ANALYSE_IMAGE_SUFFIX}`;
+
 export const coveringTypeMap = {
   ROOF_ARDOISE: 'Ardoise',
   ROOF_ASPHALTE_BITUME: 'Asphalte Bitume',

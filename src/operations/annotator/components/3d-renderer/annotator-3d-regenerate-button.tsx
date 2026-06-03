@@ -1,24 +1,23 @@
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '@/common/store';
-import { removeCache } from '@/providers';
+import { cache, removeCache } from '@/providers';
 import { Refresh } from '@mui/icons-material';
 import { Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { FC, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   const { screen, setScreen, threeDMode } = useAnnotatorScreenSwitch();
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   if (screen !== '3d-annotator') return null;
 
   const handleConfirm = () => {
     annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
     removeCache.cityJSONRequestId();
+    cache.cityJSONRequestId(uuid());
     roof3DStore.useRoof3DStore.getState().reset();
     useAnnotator3DStore.getState().reset();
     useAnnotator3DStore.getState().incrementRegenerateVersion();
-    queryClient.removeQueries();
     setScreen('annotator');
     setTimeout(() => setScreen('3d-annotator', threeDMode), 100);
     setOpen(false);

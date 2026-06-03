@@ -1,3 +1,4 @@
+import { getAnalyseImageFileId } from '@/constants';
 import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import {
@@ -16,7 +17,7 @@ import { useUpdate } from 'react-admin';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
-import { base64ToFile } from '../utils';
+import { base64ToFile, saveImageToCache } from '../utils';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
   const detections = Object.values(detectionResult);
@@ -42,12 +43,14 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } =
+    useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
 
-  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && pathname === '/annotator';
+  const isAnnotatorRoute = pathname === '/annotator' || pathname.startsWith('/projects/');
+  const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && isAnnotatorRoute;
 
   const queryFnVgg = async () => {
     const detectionResultText = await fetch(geoJsonResultUrl, { headers: { 'content-type': 'application/json' } });
@@ -111,15 +114,28 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       image as HTMLImageElement
     );
 
-    // save new image from roof analyse as the current area picture details default image
-    const fileId = UrlParams.get('fileId');
+    // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
+    const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
     const base64Image = regions.length > 0 ? croppedImage : imageAsBase64;
 
     if (fileId && base64Image && base64Image.length > 0) {
+      const analyseImageFileId = getAnalyseImageFileId(fileId);
       const fileType = FileType.AREA_PICTURE;
       const fileMimeType = 'image/png';
-      const fileAsArrayBuffer = base64ToFile(base64Image, fileId + '.png');
-      uploadFile('files', { data: { id: fileId, fileAsArrayBuffer, fileId, fileType, fileMimeType }, id: fileId });
+      const analyseImageFile = base64ToFile(base64Image, `${analyseImageFileId}.png`);
+      await new Promise(resolve =>
+        uploadFile(
+          'files',
+          {
+            data: { id: analyseImageFileId, fileAsArrayBuffer: analyseImageFile, fileId: analyseImageFileId, fileType, fileMimeType },
+            id: analyseImageFileId,
+          },
+          { onSettled: () => resolve(undefined) }
+        )
+      );
+      await saveImageToCache(analyseImageFileId, analyseImageFile);
+      setAnalyseImageUrl(URL.createObjectURL(analyseImageFile));
+      setAnalyseImageFileId(analyseImageFileId);
     }
 
     return {

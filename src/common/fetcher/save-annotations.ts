@@ -1,4 +1,3 @@
-import { AnalyseProperties } from '@/operations/annotator/components';
 import { calculateGlobalRate } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotationsAttributeMapper, annotatorMapper, cache, clearPolygons, getCached } from '@/providers';
@@ -6,13 +5,12 @@ import { UrlParams } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation, AreaPictureDetails } from '@bpartners/typescript-client';
 import { debounce } from '@mui/material';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useUpdate } from 'react-admin';
 import { annotatorStore, roof3DStore, useAnnotatorComponentStore } from '../store';
 
 export interface saveAnnotationsParams {
   areaPictureDetails: AreaPictureDetails;
-  analyseProperties: AnalyseProperties;
 }
 
 const getThreeDMapping = () =>
@@ -23,28 +21,33 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
-const buildRequestBody = (pictureId: string, analyseProperties: AnalyseProperties, llm: any): AreaPictureAnnotation | null => {
+const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
   const annotatorState = annotatorStore.useAnnotatorStore.getState();
   const annotationsInfos = Object.values(annotatorState.annotations).map(a => a.annotationInfos);
   const polygonList = Object.values(annotatorState.annotations).map(a => a.polygon);
-  if (polygonList.length === 0) return null;
 
   const annotationId = UrlParams.get('draftAnnotationId');
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
   const globalRate = calculateGlobalRate();
+  const { analyseImageUrl, analyseImageFileId } = useAnnotatorComponentStore.getState();
+  const analyseImageGenerated = !!analyseImageUrl;
 
   return {
     ...annotatorMapper(annotationAttributeMapped, pictureId, annotationId, true),
     properties: {
       global_rate_type: globalRate?.type,
       global_rate_value: globalRate?.value,
-      roofHeight: analyseProperties?.roof_height_in_meters || annotationsInfos[0]?.height,
+      roofHeight: roofHeightInMeters || annotationsInfos[0]?.height,
       llm: getCached.llmResult() || llm,
       roofDelimiter: roofDelimiterLongLat,
       threeDGenerationMode: annotatorState.threeDFromSegmentation,
       threeDGenerationId: annotatorState.threeDGenerationId,
+      roofAnalyseId: annotatorState.roofAnalyseId,
+      analyseImageGenerated,
+      analyseImageFileId,
       threeDMapping: getThreeDMapping(),
+      lastSavingDate: new Date().toISOString(),
     },
   };
 };
@@ -56,10 +59,21 @@ const saveDraftAnnotation = (requestBody: AreaPictureAnnotation, save: (...args:
   clearPolygons();
 };
 
-export const useSaveAnnotations = (params: saveAnnotationsParams) => {
-  const { analyseProperties, areaPictureDetails } = params;
+export const useSaveAnnotations = () => {
   const [saveAnnotations, { data, isPending, error }] = useUpdate('drafts-annotations');
-  const { llm } = useAnnotatorComponentStore();
+  const { llm, slopeAndHeightState, areaPictureDetails } = useAnnotatorComponentStore();
+
+  const [lastSavingDate, setLastSavingDate] = useState<string | undefined>(undefined);
+  const wasPendingRef = useRef(false);
+
+  useEffect(() => {
+    if (isPending) {
+      wasPendingRef.current = true;
+    } else if (wasPendingRef.current && !error) {
+      wasPendingRef.current = false;
+      setLastSavingDate(new Date().toISOString());
+    }
+  }, [isPending, error]);
 
   const lastSavedThreeDGenerationIdRef = useRef<string | undefined>(undefined);
 
@@ -70,6 +84,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
 
   // Auto-save draft when 2D annotations change (polygons, labels, etc.)
   useEffect(() => {
+    if (!areaPictureDetails) return () => {};
     return annotatorStore.useAnnotatorStore.subscribe(params => {
       const pictureId = areaPictureDetails.id;
       if (!pictureId) return;
@@ -91,7 +106,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
       if (_.isEqual(JSON.parse(getCached.annotationToSave()), currentData)) return;
       cache.annotationToSave(currentData);
 
-      const requestBody = buildRequestBody(pictureId, analyseProperties, llm);
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, llm);
       if (!requestBody) return;
 
       const currentThreeDGenerationId = annotatorStore.useAnnotatorStore.getState().threeDGenerationId;
@@ -105,7 +120,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
       }
     });
   }, [
-    analyseProperties,
+    slopeAndHeightState?.height,
     annotatorStore.useAnnotatorStore.getState().threeDGenerationId,
     annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation,
     !!areaPictureDetails,
@@ -117,6 +132,7 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
 
   // Auto-save draft when 3D sidebar mapping changes (pan names, edge types, measurements)
   useEffect(() => {
+    if (!areaPictureDetails) return () => {};
     let prev = getThreeDMapping();
 
     return roof3DStore.useRoof3DStore.subscribe(() => {
@@ -127,14 +143,14 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
       const pictureId = areaPictureDetails?.id;
       if (!pictureId) return;
 
-      const requestBody = buildRequestBody(pictureId, analyseProperties, llm);
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, llm);
       if (!requestBody) return;
 
       saveDraftAnnotation(requestBody, debouncedSave);
     });
   }, [
     !!areaPictureDetails,
-    analyseProperties,
+    slopeAndHeightState?.height,
     annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation,
     annotatorStore.useAnnotatorStore.getState().threeDGenerationId,
     roof3DStore.useRoof3DStore.getState().roofSurfaces,
@@ -147,11 +163,11 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
     () => () => {
       const pictureId = areaPictureDetails?.id;
       if (!pictureId) return;
-      const requestBody = buildRequestBody(pictureId, analyseProperties, llm);
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, llm);
       if (!requestBody) return;
       saveDraftAnnotation(requestBody, saveAnnotations);
     },
-    [areaPictureDetails?.id, analyseProperties, llm, saveAnnotations]
+    [areaPictureDetails?.id, slopeAndHeightState?.height, llm, saveAnnotations]
   );
 
   return {
@@ -159,5 +175,6 @@ export const useSaveAnnotations = (params: saveAnnotationsParams) => {
     isSaveAnnotationsPending: isPending,
     saveAnnotationsError: error,
     triggerManualSave,
+    lastSavingDate,
   };
 };

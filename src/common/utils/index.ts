@@ -14,6 +14,7 @@ export * from './get-image-size';
 export * from './get-mime-type';
 export * from './get-params';
 export * from './includes-object';
+export * from './indexed-db-image-cache';
 export * from './isBlank';
 export * from './json-to-file';
 export * from './money';
