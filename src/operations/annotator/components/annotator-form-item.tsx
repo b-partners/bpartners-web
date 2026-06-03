@@ -16,7 +16,13 @@ interface Props {
 }
 
 export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse }) => {
-  const { polygon: currentPolygon, annotationInfos, removeAnnotationInfo, updatePolygon, updateAnnotationInfo } = annotatorStore.useOneAnnotationStore(polygonId);
+  const {
+    polygon: currentPolygon,
+    annotationInfos,
+    removeAnnotationInfo,
+    updatePolygon,
+    updateAnnotationInfo,
+  } = annotatorStore.useOneAnnotationStore(polygonId);
   const { slopeAndHeightState, isSlopeAndHeightPending, areaPictureDetails } = useAnnotatorComponentStore();
   const [isEditingName, setIsEditingName] = useState(false);
   const [draftName, setDraftName] = useState('');
