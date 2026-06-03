@@ -3,9 +3,9 @@ import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, stringCutter } from '@/common/utils';
 import { ANNOTATION_LABELS_CHOICES } from '@/constants';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Delete as DeleteIcon, Straighten, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Edit as EditIcon, Straighten, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { Box, Divider, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import React, { ChangeEvent, FC, FocusEvent, FormEvent, SyntheticEvent, useEffect, useState } from 'react';
+import React, { FC, FormEvent, KeyboardEvent, MouseEvent, SyntheticEvent, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { FreeAutocompleteInput } from './free-autocomplete-input';
 import { annotatorFormItem } from './style';
@@ -18,11 +18,8 @@ interface Props {
 export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse }) => {
   const { polygon: currentPolygon, annotationInfos, removeAnnotationInfo, updatePolygon, updateAnnotationInfo } = annotatorStore.useOneAnnotationStore(polygonId);
   const { slopeAndHeightState, isSlopeAndHeightPending, areaPictureDetails } = useAnnotatorComponentStore();
-  const [labelName, setLabelName] = useState(annotationInfos?.labelName ?? '');
-
-  useEffect(() => {
-    setLabelName(annotationInfos?.labelName ?? '');
-  }, [annotationInfos?.labelName]);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [draftName, setDraftName] = useState('');
 
   const handleChangeLabelType = (value: string) => {
     const tempAnnotationInfos = copyObject(annotationInfos);
@@ -30,10 +27,25 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
     updateAnnotationInfo(tempAnnotationInfos);
   };
 
-  const handleChangeLabelName = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const startEditName = (event: MouseEvent) => {
+    event.stopPropagation();
+    setDraftName(annotationInfos.labelName ?? '');
+    setIsEditingName(true);
+  };
+
+  const commitEditName = () => {
     const tempAnnotationInfos = copyObject(annotationInfos);
-    tempAnnotationInfos.labelName = event.target.value;
+    tempAnnotationInfos.labelName = draftName.trim();
     updateAnnotationInfo(tempAnnotationInfos);
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      (event.target as HTMLInputElement).blur();
+    }
+    if (event.key === 'Escape') setIsEditingName(false);
   };
 
   const togglePolygonVisibility = (event: FormEvent) => {
@@ -65,9 +77,32 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
   return (
     <Stack sx={annotatorFormItem} data-cy='annotation-info-item' p={1} gap={1}>
       <Stack direction='row' alignItems='center' justifyContent='space-between'>
-        <Stack direction='row' alignItems='center'>
+        <Stack direction='row' alignItems='center' flexGrow={1} minWidth={0}>
           <Box className='polygon-color-line' bgcolor={currentPolygon.strokeColor} />
-          <Typography>{stringCutter(annotationInfos.labelName, 25)}</Typography>
+          {isEditingName ? (
+            <TextField
+              autoFocus
+              fullWidth
+              size='small'
+              variant='standard'
+              value={draftName}
+              onChange={event => setDraftName(event.target.value)}
+              onBlur={commitEditName}
+              onKeyDown={handleNameKeyDown}
+              onClick={event => event.stopPropagation()}
+            />
+          ) : (
+            <>
+              <Typography>{stringCutter(annotationInfos.labelName, 25)}</Typography>
+              <Tooltip title='Renommer le label'>
+                <span>
+                  <IconButton size='small' onClick={startEditName}>
+                    <EditIcon fontSize='inherit' />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </>
+          )}
         </Stack>
         <Stack direction='row'>
           <Tooltip title={!isMeasurementVisible ? 'Afficher les mesures du polygone' : 'Cacher les mesures du polygone'}>
@@ -115,14 +150,6 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
       </Stack>
       <Divider />
       <FreeAutocompleteInput onChange={handleChangeLabelType} options={ANNOTATION_LABELS_CHOICES} label='Type' defaultValue={annotationInfos.labelType} />
-      <TextField
-        fullWidth
-        size='small'
-        label='Nom du label'
-        value={labelName}
-        onChange={(event: ChangeEvent<HTMLInputElement>) => setLabelName(event.target.value)}
-        onBlur={handleChangeLabelName}
-      />
     </Stack>
   );
 });
