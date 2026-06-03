@@ -1,6 +1,6 @@
 import { BPLoader, GlobaDialog } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
-import { useCacheImage } from '@/common/hooks';
+import { useCacheImage, useHeartBeat } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
@@ -23,6 +23,7 @@ import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerS
 import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
 
 export const Annotator = () => {
+  useHeartBeat();
   const { projectId } = useParams();
   const { setAreaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } = useAnnotatorComponentStore();
   const { data: annotations, isLoading } = useGetOne(
