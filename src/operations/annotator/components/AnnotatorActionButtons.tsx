@@ -134,6 +134,7 @@ export const annotatorButtonsActions =
           <Divider orientation='vertical' flexItem />
           <Button
             className='gen-mode-toggle'
+            color='inherit'
             onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
             startIcon={threeDFromSegmentation ? <RoofingIcon /> : <DashboardIcon />}
           >
