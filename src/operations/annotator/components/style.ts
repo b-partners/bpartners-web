@@ -78,6 +78,8 @@ export const annotatorActionButtonsStyle: SxProps = {
   '& .gen-mode-toggle': {
     color: PALETTE_COLORS.white,
     background: 'transparent',
+    border: 'none',
+    outline: 'none',
     textTransform: 'none',
     fontSize: 12,
     height: 36,
@@ -85,6 +87,10 @@ export const annotatorActionButtonsStyle: SxProps = {
     px: 1.25,
     whiteSpace: 'nowrap',
     transition: 'all 0.15s ease',
+    '&:focus, &:focus-visible': {
+      outline: 'none',
+      border: 'none',
+    },
     '&:hover': {
       background: 'rgba(255,255,255,0.1)',
     },
