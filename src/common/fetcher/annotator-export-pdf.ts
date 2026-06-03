@@ -44,7 +44,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
 
-    const shouldAdd3d = imageUrl && cityJsonModel;
+    const cityObject: any = cityJsonModel ? Object.values(cityJsonModel.CityObjects)[0] : undefined;
+    const has3dSurfaces = !!cityObject?.geometry?.[0]?.semantics?.surfaces?.length;
+    const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
