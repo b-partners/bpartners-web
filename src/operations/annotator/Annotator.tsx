@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { AnnotatorExportPdfButton, SaveStatus, ScreenSwitchTabs } from './components';
+import { AnnotatorExportPdfButton, RoofAnalyseRegenerateButton, SaveStatus, ScreenSwitchTabs } from './components';
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
@@ -136,6 +136,14 @@ export const Annotator = () => {
           <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />
           <Annotator3DRegenerateButton
             className='bottom-toolbar-regenerate-btn'
+            sx={{ minWidth: 'auto' }}
+            variant='outlined'
+            size='small'
+            color='secondary'
+            startIcon={<Replay fontSize='small' />}
+          />
+          <RoofAnalyseRegenerateButton
+            className='bottom-toolbar-roof-analyse-regenerate-btn'
             sx={{ minWidth: 'auto' }}
             variant='outlined'
             size='small'
