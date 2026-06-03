@@ -9,17 +9,18 @@ import { useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
+  const validAnnotationInfos = (annotationInfos ?? []).filter((info): info is AnnotationInfo => Boolean(info?.polygonId));
   const labelNames: Record<string, number> = {};
 
-  annotationInfos.forEach(({ area, polygonId }) => {
+  validAnnotationInfos.forEach(({ area, polygonId }) => {
     const labelNameSplitted = polygonId.split('___');
 
     if (labelNameSplitted.length > 0) {
-      labelNames[labelNameSplitted[1]] = area + (labelNames[labelNameSplitted[1]] || 0);
+      labelNames[labelNameSplitted[1]] = (area || 0) + (labelNames[labelNameSplitted[1]] || 0);
     }
   });
 
-  return annotationInfos.map(annotationInfo => {
+  return validAnnotationInfos.map(annotationInfo => {
     const currentLabeNameSplitted = annotationInfo.polygonId.split('___');
 
     if (currentLabeNameSplitted.length === 0) {
@@ -62,10 +63,11 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
   const onSuccess = () => notify('Le rapport sera envoyé à votre adresse email dans quelques instants.');
   const onError = (error: any) => {
+    const message = error?.response?.data?.message ?? error?.message ?? 'Erreur inconnue';
     try {
-      sentryErrorLogger(error.response.data.message, { payload: exportAreaPictureAnnotation });
+      sentryErrorLogger(message, { payload: exportAreaPictureAnnotation });
     } finally {
-      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + error.response.data.message, { type: 'error', multiLine: true });
+      notify("Une erreur s'est produite lors de l'exportation du rapport d'analyse.\n" + message, { type: 'error', multiLine: true });
     }
   };
 
