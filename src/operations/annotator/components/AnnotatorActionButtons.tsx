@@ -1,9 +1,19 @@
+import { annotatorStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
-import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
+import {
+  Dashboard as DashboardIcon,
+  Edit as EditIcon,
+  PanTool as PanToolIcon,
+  Roofing as RoofingIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomInMap as ZoomInMapIcon,
+  ZoomOut as ZoomOutIcon,
+} from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
 import { annotatorActionButtonsStyle, annotatorTopBarStyle } from './style';
@@ -26,6 +36,9 @@ export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
     const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
+    const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
+      useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
+    );
 
     const handleZoom = (fn: () => void) => () => {
       if (!clickActionValue) toggleClickAction();
@@ -118,6 +131,15 @@ export const annotatorButtonsActions =
               <AnnotationShiftButtons handleShift={handleShift} />
             </>
           )}
+          <Divider orientation='vertical' flexItem />
+          <Button
+            className='gen-mode-toggle'
+            color='inherit'
+            onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}
+            startIcon={threeDFromSegmentation ? <RoofingIcon /> : <DashboardIcon />}
+          >
+            {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
+          </Button>
         </Stack>
       </>
     );
