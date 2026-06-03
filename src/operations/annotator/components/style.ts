@@ -174,11 +174,6 @@ export const annotatorFormItem: SxProps = {
     mr: 1,
     borderRadius: '5px',
   },
-  '& .svg-expanded-true': {
-    '& svg': {
-      transform: 'rotate(180deg)',
-    },
-  },
 };
 
 export const saveAnnotationsButtonStyle: SxProps = {
