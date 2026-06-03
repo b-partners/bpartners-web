@@ -43,7 +43,8 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl } = useAnnotatorComponentStore();
+  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } =
+    useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
@@ -122,12 +123,19 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       const fileType = FileType.AREA_PICTURE;
       const fileMimeType = 'image/png';
       const analyseImageFile = base64ToFile(base64Image, `${analyseImageFileId}.png`);
-      uploadFile('files', {
-        data: { id: analyseImageFileId, fileAsArrayBuffer: analyseImageFile, fileId: analyseImageFileId, fileType, fileMimeType },
-        id: analyseImageFileId,
-      });
+      await new Promise(resolve =>
+        uploadFile(
+          'files',
+          {
+            data: { id: analyseImageFileId, fileAsArrayBuffer: analyseImageFile, fileId: analyseImageFileId, fileType, fileMimeType },
+            id: analyseImageFileId,
+          },
+          { onSettled: () => resolve(undefined) }
+        )
+      );
       await saveImageToCache(analyseImageFileId, analyseImageFile);
       setAnalyseImageUrl(URL.createObjectURL(analyseImageFile));
+      setAnalyseImageFileId(analyseImageFileId);
     }
 
     return {

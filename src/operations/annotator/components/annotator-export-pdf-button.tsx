@@ -24,6 +24,7 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
       !isAfterAnalyse(polygonList) && areaPictureDetails.shiftNb && areaPictureDetails.shiftNb !== 0
         ? shiftPolygons(polygonList, areaPictureDetails, true)
         : polygonList;
+
     exportAsPdf({
       annotationInfos,
       polygons: shiftedPolygonList,
