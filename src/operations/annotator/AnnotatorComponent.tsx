@@ -104,7 +104,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   );
 
   if (!filename || (geoJsonResultUrl && !geojsonResult?.image && !isError)) {
-    return <BPLoader sx={{ width: width || undefined }} message='Chargement des données...' />;
+    return <BPLoader sx={{ width: '100%' }} message='Chargement des données...' />;
   }
 
   const shiftImage = (shift: number, shiftDirection: ShiftDirection) => {
