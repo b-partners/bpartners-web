@@ -5,7 +5,7 @@ import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
-import { useAnnotator3DStore } from '../store';
+import { annotatorStore, useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
@@ -39,6 +39,8 @@ interface Params {
 export const useAnnotatorExportAsPdf = (params: Params) => {
   const notify = useNotify();
   const { imageUrl, cityJsonModel } = useAnnotator3DStore();
+  const { polygonList: analysePolygons } = annotatorStore.useAnalysePolygonStore();
+  const analyseAnnotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
@@ -50,7 +52,11 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
-    exportAreaPictureAnnotation = await exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
+    exportAreaPictureAnnotation = await exportAnnotationMapper({
+      ...params,
+      polygons: analysePolygons,
+      annotationInfos: mapExportAnnotationInfoArea(analyseAnnotationInfos),
+    });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 
