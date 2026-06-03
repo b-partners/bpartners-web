@@ -1,5 +1,5 @@
 import { AnnotationInfo } from '@/operations/annotator';
-import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs } from '@/operations/annotator/utils';
+import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs, findSurfaceGeometry } from '@/operations/annotator/utils';
 import { areaPictureApi, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
@@ -46,8 +46,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
 
-    const cityObject: any = cityJsonModel ? Object.values(cityJsonModel.CityObjects)[0] : undefined;
-    const has3dSurfaces = !!cityObject?.geometry?.[0]?.semantics?.surfaces?.length;
+    const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
