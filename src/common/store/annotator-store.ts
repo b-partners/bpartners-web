@@ -329,12 +329,34 @@ const useScreenAnnotatorInfoStore = () => {
   );
 };
 
+const useAnalysePolygonStore = () => {
+  const polygonList = useAnnotatorStore(
+    useShallow(params =>
+      Object.values(params.annotations)
+        .filter(a => getAnnotationScreen(a) === 'roof-analyse')
+        .map(a => a.polygon)
+    )
+  );
+  return { polygonList };
+};
+
+const useAnalyseAnnotatorInfoStore = () =>
+  useAnnotatorStore(
+    useShallow(param =>
+      Object.values(param.annotations)
+        .filter(a => getAnnotationScreen(a) === 'roof-analyse')
+        .map(a => a.annotationInfos)
+    )
+  );
+
 export const annotatorStore = {
   usePolygonStore,
   useScreenPolygonStore,
+  useAnalysePolygonStore,
   useOneAnnotatorStore,
   useAnnotatorStore,
   useAnnotatorInfoStore,
   useScreenAnnotatorInfoStore,
+  useAnalyseAnnotatorInfoStore,
   useOneAnnotationStore,
 };

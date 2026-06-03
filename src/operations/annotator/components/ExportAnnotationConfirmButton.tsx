@@ -1,11 +1,12 @@
 import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
-import { annotatorStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
+import { getAnalyseImageFileId } from '@/constants';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { calculateGlobalRate, isAfterAnalyse, shiftPolygons } from '../utils';
+import { calculateGlobalRate } from '../utils';
 
 export interface ExportAnnotationConfirmButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -17,8 +18,9 @@ export interface ExportAnnotationConfirmButtonProps {
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, disabled = false }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
-  const annotationInfos = annotatorStore.useAnnotatorInfoStore();
-  const { polygonList } = annotatorStore.usePolygonStore();
+  const annotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
+  const { polygonList } = annotatorStore.useAnalysePolygonStore();
+  const { analyseImageUrl } = useAnnotatorComponentStore();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -28,15 +30,14 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const uploadImageOnSuccess = () => {
     const globalRate = calculateGlobalRate();
-    const shiftedPolygonList =
-      !isAfterAnalyse(polygonList) && areaPictureDetails.shiftNb && areaPictureDetails.shiftNb !== 0
-        ? shiftPolygons(polygonList, areaPictureDetails, true)
-        : polygonList;
+    const imageUrl = analyseImageUrl
+      ? getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE')
+      : getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE');
     exportAsPdf({
       annotationInfos,
-      polygons: shiftedPolygonList,
+      polygons: polygonList,
       address,
-      imageUrl: getFileUrl(areaPictureDetails.fileId, 'AREA_PICTURE'),
+      imageUrl,
       globalRateType: globalRate.type,
       globalRateValue: globalRate.value,
     });
