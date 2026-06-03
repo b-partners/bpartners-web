@@ -1,11 +1,11 @@
 import { AnnotationInfo } from '@/operations/annotator';
-import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs } from '@/operations/annotator/utils';
+import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs, findSurfaceGeometry } from '@/operations/annotator/utils';
 import { areaPictureApi, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
-import { useAnnotator3DStore } from '../store';
+import { annotatorStore, useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
@@ -39,18 +39,23 @@ interface Params {
 export const useAnnotatorExportAsPdf = (params: Params) => {
   const notify = useNotify();
   const { imageUrl, cityJsonModel } = useAnnotator3DStore();
+  const { polygonList: analysePolygons } = annotatorStore.useAnalysePolygonStore();
+  const analyseAnnotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
 
-    const cityObject: any = cityJsonModel ? Object.values(cityJsonModel.CityObjects)[0] : undefined;
-    const has3dSurfaces = !!cityObject?.geometry?.[0]?.semantics?.surfaces?.length;
+    const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
 
-    exportAreaPictureAnnotation = await exportAnnotationMapper({ ...params, annotationInfos: mapExportAnnotationInfoArea(params.annotationInfos) });
+    exportAreaPictureAnnotation = await exportAnnotationMapper({
+      ...params,
+      polygons: analysePolygons,
+      annotationInfos: mapExportAnnotationInfoArea(analyseAnnotationInfos),
+    });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
 

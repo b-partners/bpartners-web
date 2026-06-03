@@ -17,10 +17,10 @@ type CityObject = {
 type Geometry = {
   type: string;
   lod?: string | number;
-  boundaries: number[][][];
+  boundaries: number[][][] | number[][][][];
   semantics?: {
     surfaces: SemanticSurface[];
-    values: number[];
+    values: number[] | number[][];
   };
 };
 
@@ -29,7 +29,7 @@ type SemanticSurface =
       type: 'RoofSurface';
       slope_in_degrees: number;
       area_in_square_meters: number;
-      distance_2d_scale: number;
+      distance_2d_scale?: number;
     }
   | {
       type: 'WallSurface';

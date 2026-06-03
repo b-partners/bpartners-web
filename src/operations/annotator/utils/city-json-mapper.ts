@@ -54,26 +54,40 @@ const boundaryMapper = {
   },
 };
 
+export const findSurfaceGeometry = (cityJson: CityJSON) =>
+  Object.values(cityJson?.CityObjects ?? {})
+    .flatMap(cityObject => cityObject?.geometry ?? [])
+    .find(geometry => Boolean(geometry?.semantics?.surfaces?.length));
+
 export const cityJsonMapper = {
   toExportAreaPictureAnnotation3D: (cityJson: CityJSON) => {
-    const cityObject = Object.values(cityJson.CityObjects)[0];
-    const geometry = cityObject.geometry[0];
+    const geometry = findSurfaceGeometry(cityJson);
+
+    if (!geometry?.semantics?.surfaces?.length) {
+      return { pans: [] } as ExportAreaPictureAnnotation3D;
+    }
+
     const surfaces = geometry.semantics.surfaces;
-    const boundaries = geometry.boundaries;
+    const isSolid = geometry.type === 'Solid';
+    const surfaceBoundaries = (isSolid ? geometry.boundaries[0] : geometry.boundaries) as number[][][];
+    const surfaceValues = (isSolid ? geometry.semantics.values[0] : geometry.semantics.values) as number[];
     const roofBoundaries: { boundary: number[]; area: number; slope: number; distance_2d_scale: number }[] = [];
     const vertices = cityJson.vertices;
 
     let totalArea = 0;
 
-    for (let index = 0; index < surfaces.length; index++) {
-      const currentSurface = surfaces[index];
-      if (currentSurface.type === 'RoofSurface' && boundaries[index][0].length > 3) {
+    for (let index = 0; index < surfaceBoundaries.length; index++) {
+      const semanticIndex = surfaceValues ? surfaceValues[index] : index;
+      const currentSurface = surfaces[semanticIndex];
+      const ring = surfaceBoundaries[index]?.[0] ?? [];
+
+      if (currentSurface?.type === 'RoofSurface' && ring.length > 3) {
         totalArea += currentSurface.area_in_square_meters;
         roofBoundaries.push({
-          boundary: boundaries[index][0],
+          boundary: ring,
           area: currentSurface.area_in_square_meters,
           slope: currentSurface.slope_in_degrees,
-          distance_2d_scale: currentSurface.distance_2d_scale,
+          distance_2d_scale: currentSurface.distance_2d_scale ?? 1,
         });
       }
     }
@@ -82,7 +96,9 @@ export const cityJsonMapper = {
       boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index)
     );
 
-    pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}m²` }, ...pans[0].infos] };
+    if (pans.length > 0) {
+      pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}m²` }, ...pans[0].infos] };
+    }
 
     const result: ExportAreaPictureAnnotation3D = { pans };
 
