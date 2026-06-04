@@ -1,7 +1,12 @@
+import { SavedLineMeasure, SavedPolygonMeasure, Vec3Tuple } from '@/common/store';
 import { ExportAreaPictureAnnotation3D, ExportAreaPictureAnnotation3DPan } from '@bpartners/typescript-client';
 import { degToRad } from 'three/src/math/MathUtils.js';
 import { CityJSON } from '../city-json-type';
 import { getDistance2D } from './segment-utilities';
+
+const toFootprintPoint = ([x, , z]: Vec3Tuple) => ({ x, y: z });
+
+const toLengthMeasurement = (value: number) => ({ isInvisible: false, unit: 'm', value: +value.toFixed(2) });
 
 export const addAlphabet = (name: string, index: number) => {
   const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
@@ -104,5 +109,29 @@ export const cityJsonMapper = {
     const result: ExportAreaPictureAnnotation3D = { pans };
 
     return result;
+  },
+
+  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+    const ring = polygon.points.length ? [...polygon.points, polygon.points[0]] : [];
+    const pan: ExportAreaPictureAnnotation3DPan = {
+      name: polygon.name,
+      polygon: { points: ring.map(toFootprintPoint) },
+      measurements: polygon.edges.map(edge => toLengthMeasurement(edge.distanceSlope)),
+      infos: [{ label: 'Surface', value: `${+polygon.area.toFixed(2)}m²` }],
+    };
+    return imageUri ? { ...pan, imageUri } : pan;
+  },
+
+  userLineToPan: (line: SavedLineMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+    const pan: ExportAreaPictureAnnotation3DPan = {
+      name: line.name,
+      polygon: { points: [line.pointA, line.pointB].map(toFootprintPoint) },
+      measurements: [toLengthMeasurement(line.distanceSlope)],
+      infos: [
+        { label: 'Distance', value: `${+line.distanceSlope.toFixed(2)}m` },
+        { label: 'Pente', value: `${line.slopeAngle}°` },
+      ],
+    };
+    return imageUri ? { ...pan, imageUri } : pan;
   },
 };

@@ -5,8 +5,8 @@ import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-cli
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
-import { PanCapture, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
-import { annotatorStore, useAnnotator3DStore } from '../store';
+import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
+import { annotatorStore, roof3DStore, useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
@@ -35,11 +35,16 @@ const waitForPanCapture = (timeoutMs = 30000): Promise<PanCapture[]> =>
 const savePanCaptureImage = async (capture: PanCapture): Promise<string> => {
   const fileId = v4();
   const fileAsArrayBuffer = dataUrlToArrayBuffer(capture.dataUrl);
-  await fileProvider.update([{ fileId, fileType: FileType.AREA_PICTURE, fileMimeType: 'image/png', fileAsArrayBuffer }]);
+  await fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]);
   return fileId;
 };
 
-const captureAndSavePanImages = async (): Promise<string[]> => {
+interface SavedCapture {
+  capture: PanCapture;
+  id: string;
+}
+
+const captureAndSaveImages = async (): Promise<SavedCapture[]> => {
   const { isMounted, triggerCapture } = useCityJsonPanCaptureStore.getState();
 
   if (!isMounted) return [];
@@ -48,12 +53,17 @@ const captureAndSavePanImages = async (): Promise<string[]> => {
   const captures = await waitForPanCapture();
   const savedIds = await Promise.all(captures.map(savePanCaptureImage));
 
-  return captures
-    .map((capture, index) => ({ capture, id: savedIds[index] }))
+  return captures.map((capture, index) => ({ capture, id: savedIds[index] }));
+};
+
+const panImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
+  saved
     .filter(({ capture }) => capture.kind === 'pan')
     .sort((a, b) => a.capture.index - b.capture.index)
     .map(({ id }) => id);
-};
+
+const imageIdForCapture = (saved: SavedCapture[], kind: PanCaptureKind, index: number): string | undefined =>
+  saved.find(({ capture }) => capture.kind === kind && capture.index === index)?.id;
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const validAnnotationInfos = (annotationInfos ?? []).filter((info): info is AnnotationInfo => Boolean(info?.polygonId));
@@ -103,7 +113,13 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
-    const panImageIds = await captureAndSavePanImages();
+    const savedCaptures = await captureAndSaveImages();
+    const panImageIds = panImageIdsFromCaptures(savedCaptures);
+
+    const { savedPolygons, savedLines } = roof3DStore.useRoof3DStore.getState();
+    const userPolygonPans = savedPolygons.map((polygon, index) => cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1)));
+    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1)));
+    const userPans = [...userPolygonPans, ...userLinePans];
 
     const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds) : undefined;
 
@@ -113,7 +129,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
       annotationInfos: mapExportAnnotationInfoArea(annotationInfos),
     });
 
-    exportAreaPictureAnnotation['3d'] = exportAnnotation3D;
+    exportAreaPictureAnnotation['3d'] = userPans.length ? { pans: [...(exportAnnotation3D?.pans ?? []), ...userPans] } : exportAnnotation3D;
 
     const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(
       accountId,
