@@ -52,7 +52,7 @@ export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode, setMeasur
     setSelectedRoofIndex(typeof roofIndex === 'number' ? roofIndex : null);
   };
 
-  useCityJsonPanCapture(cityGroupRef, controlsRef, setSelectedMesh);
+  useCityJsonPanCapture(cityGroupRef, controlsRef, setSelectedMesh, cityJson);
 
   const { onClick, highlightMesh, clearHighlight } = useCityJsonHighlight(cityGroupRef.current, handleSelectedMesh);
   const { result: lineResult, pendingPoint, onMouseDown: lineMD, onMouseUp: lineMU, reset: lineReset } = useCityJsonPointMeasure(cityGroupRef.current);

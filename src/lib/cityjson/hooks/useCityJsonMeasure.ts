@@ -116,7 +116,7 @@ export const computeFaceArea = (faceVertexIndices: number[], cityJson: CityJsonD
   );
 };
 
-export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
+export const getFaceMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
   if (!mesh || !cityJson) return { edges: [], area: 0, centroid: new THREE.Vector3() };
 
   const rawVertices = cityJson.vertices as number[][];
@@ -176,3 +176,5 @@ export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonDa
 
   return { edges, area, centroid };
 };
+
+export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => getFaceMeasure(mesh, cityJson);

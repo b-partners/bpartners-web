@@ -1,4 +1,5 @@
 import { roof3DStore, Vec3Tuple } from '@/common/store';
+import { getFaceMeasure } from '@/lib/cityjson';
 import { useThree } from '@react-three/fiber';
 import { MutableRefObject, useEffect } from 'react';
 import * as THREE from 'three';
@@ -45,8 +46,98 @@ const HIGHLIGHT_COLOR = new THREE.Color('#fabb56');
 const WORLD_UP = new THREE.Vector3(0, 1, 0);
 const MIN_ELEVATION_RAD = (35 * Math.PI) / 180;
 const FRAME_PADDING = 1.2;
+const EDGE_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#e91e63'];
+const LABEL_WHITE = '#ffffff';
+
+interface MeasureLabel {
+  position: THREE.Vector3;
+  texts: string[];
+  color: string;
+}
 
 const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+const projectToScreen = (point: THREE.Vector3, camera: THREE.Camera, width: number, height: number) => {
+  const projected = point.clone().project(camera);
+  return { x: (projected.x * 0.5 + 0.5) * width, y: (-projected.y * 0.5 + 0.5) * height, visible: projected.z < 1 };
+};
+
+const loadImage = (src: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+const compositeMeasureLabels = async (dataUrl: string, labels: MeasureLabel[], camera: THREE.Camera, gl: THREE.WebGLRenderer): Promise<string> => {
+  if (!labels.length) return dataUrl;
+
+  const width = gl.domElement.width;
+  const height = gl.domElement.height;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return dataUrl;
+
+  const image = await loadImage(dataUrl);
+  ctx.drawImage(image, 0, 0, width, height);
+
+  const ratio = gl.getPixelRatio();
+  const fontSize = 14 * ratio;
+  const padX = 8 * ratio;
+  const padY = 4 * ratio;
+  const gap = 3 * ratio;
+  const radius = 5 * ratio;
+  ctx.font = `bold ${fontSize}px sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+
+  labels.forEach(({ position, texts, color }) => {
+    const { x, y, visible } = projectToScreen(position, camera, width, height);
+    if (!visible) return;
+    const pillHeight = fontSize + padY * 2;
+    const totalHeight = pillHeight * texts.length + gap * (texts.length - 1);
+    let pillY = y - totalHeight / 2;
+    texts.forEach(text => {
+      const pillWidth = ctx.measureText(text).width + padX * 2;
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.beginPath();
+      ctx.roundRect(x - pillWidth / 2, pillY, pillWidth, pillHeight, radius);
+      ctx.fill();
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, pillY + pillHeight / 2);
+      pillY += pillHeight + gap;
+    });
+  });
+
+  return canvas.toDataURL('image/png');
+};
+
+const panMeasureLabels = (mesh: THREE.Mesh, cityJson: any): MeasureLabel[] => {
+  const { edges, area, centroid } = getFaceMeasure(mesh, cityJson);
+  const labels: MeasureLabel[] = edges.map(edge => ({ position: edge.midpoint, texts: [`${edge.distanceMeters} m`], color: edge.color }));
+  labels.push({ position: centroid, texts: [`${area} m²`], color: LABEL_WHITE });
+  return labels;
+};
+
+const polygonMeasureLabels = (polygon: { points: Vec3Tuple[]; centroid: Vec3Tuple; area: number; edges: { pointA: Vec3Tuple; pointB: Vec3Tuple; distanceSlope: number; slopeAngle: number }[] }): MeasureLabel[] => {
+  const labels: MeasureLabel[] = polygon.edges.map((edge, i) => {
+    const a = new THREE.Vector3(...edge.pointA);
+    const b = new THREE.Vector3(...edge.pointB);
+    const mid = a.add(b).multiplyScalar(0.5);
+    mid.y += 0.5;
+    return { position: mid, texts: [`${edge.distanceSlope} m`, `${edge.slopeAngle}°`], color: EDGE_COLORS[i % EDGE_COLORS.length] };
+  });
+  labels.push({ position: new THREE.Vector3(...polygon.centroid), texts: [`${polygon.area} m²`], color: LABEL_WHITE });
+  return labels;
+};
+
+const lineMeasureLabels = (line: { pointA: Vec3Tuple; pointB: Vec3Tuple; distanceSlope: number; slopeAngle: number }): MeasureLabel[] => {
+  const mid = new THREE.Vector3(...line.pointA).add(new THREE.Vector3(...line.pointB)).multiplyScalar(0.5);
+  return [{ position: mid, texts: [`${line.distanceSlope} m`, `${line.slopeAngle}°`], color: LABEL_WHITE }];
+};
 
 const computeMeshNormal = (mesh: THREE.Mesh): THREE.Vector3 => {
   const normalAttr = mesh.geometry.getAttribute('normal');
@@ -151,7 +242,8 @@ const captureBounds = async (
 export const useCityJsonPanCapture = (
   groupRef: MutableRefObject<THREE.Group | null>,
   controlsRef: MutableRefObject<any>,
-  setSelectedMesh: (mesh: THREE.Mesh | null) => void
+  setSelectedMesh: (mesh: THREE.Mesh | null) => void,
+  cityJson: any
 ) => {
   const { gl, scene, camera } = useThree();
   const nonce = useCityJsonPanCaptureStore(state => state.nonce);
@@ -211,7 +303,8 @@ export const useCityJsonPanCapture = (
           await nextFrame();
 
           const dataUrl = await captureMesh(mesh, scene, persp, gl, controls);
-          captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan' });
+          const withMeasures = await compositeMeasureLabels(dataUrl, panMeasureLabels(mesh, cityJson), persp, gl);
+          captures.push({ index: i + 1, dataUrl: withMeasures, label: `Pan ${i + 1}`, kind: 'pan' });
         }
 
         setCaptureMode(false);
@@ -226,7 +319,8 @@ export const useCityJsonPanCapture = (
 
         const { center, radius } = boundsOfPoints(polygon.points);
         const dataUrl = await captureBounds(center, radius, scene, persp, gl, controls);
-        captures.push({ index: i + 1, dataUrl, label: polygon.name, kind: 'polygon' });
+        const withMeasures = await compositeMeasureLabels(dataUrl, polygonMeasureLabels(polygon), persp, gl);
+        captures.push({ index: i + 1, dataUrl: withMeasures, label: polygon.name, kind: 'polygon' });
       }
 
       for (let i = 0; i < savedLines.length; i++) {
@@ -237,7 +331,8 @@ export const useCityJsonPanCapture = (
 
         const { center, radius } = boundsOfPoints([line.pointA, line.pointB]);
         const dataUrl = await captureBounds(center, radius, scene, persp, gl, controls);
-        captures.push({ index: i + 1, dataUrl, label: line.name, kind: 'line' });
+        const withMeasures = await compositeMeasureLabels(dataUrl, lineMeasureLabels(line), persp, gl);
+        captures.push({ index: i + 1, dataUrl: withMeasures, label: line.name, kind: 'line' });
       }
 
       setSelectedMeasureId(savedMeasureId);
