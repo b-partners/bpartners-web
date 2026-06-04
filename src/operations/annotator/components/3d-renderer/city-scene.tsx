@@ -4,6 +4,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { v4 as uuidV4 } from 'uuid';
 
+import { useCityJsonPanCapture } from '@/common/hooks';
 import { RoofSurfaceItem, Vec3Tuple, roof3DStore } from '@/common/store';
 import {
   PointMeasureResult,
@@ -50,6 +51,8 @@ export const CityScene: FC<CitySceneProps> = ({ cityJson, measureMode, setMeasur
     const roofIndex = mesh?.userData?.roofIndex;
     setSelectedRoofIndex(typeof roofIndex === 'number' ? roofIndex : null);
   };
+
+  useCityJsonPanCapture(cityGroupRef, controlsRef, setSelectedMesh);
 
   const { onClick, highlightMesh, clearHighlight } = useCityJsonHighlight(cityGroupRef.current, handleSelectedMesh);
   const { result: lineResult, pendingPoint, onMouseDown: lineMD, onMouseUp: lineMU, reset: lineReset } = useCityJsonPointMeasure(cityGroupRef.current);

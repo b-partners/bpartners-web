@@ -1,12 +1,59 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs, findSurfaceGeometry } from '@/operations/annotator/utils';
-import { areaPictureApi, getCached } from '@/providers';
-import { ExportAreaPictureAnnotation } from '@bpartners/typescript-client';
+import { areaPictureApi, fileProvider, getCached } from '@/providers';
+import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
+import { PanCapture, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
 import { annotatorStore, useAnnotator3DStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
+
+const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
+  const base64 = dataUrl.split(',')[1] ?? '';
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+};
+
+const waitForPanCapture = (timeoutMs = 30000): Promise<PanCapture[]> =>
+  new Promise(resolve => {
+    const startedAt = performance.now();
+    const tick = () => {
+      const state = useCityJsonPanCaptureStore.getState();
+      if (!state.isCapturing) return resolve(state.captures);
+      if (performance.now() - startedAt > timeoutMs) {
+        state.setIsCapturing(false);
+        return resolve(useCityJsonPanCaptureStore.getState().captures);
+      }
+      requestAnimationFrame(tick);
+    };
+    tick();
+  });
+
+const savePanCaptureImage = async (capture: PanCapture): Promise<string> => {
+  const fileId = v4();
+  const fileAsArrayBuffer = dataUrlToArrayBuffer(capture.dataUrl);
+  await fileProvider.update([{ fileId, fileType: FileType.AREA_PICTURE, fileMimeType: 'image/png', fileAsArrayBuffer }]);
+  return fileId;
+};
+
+const captureAndSavePanImages = async (): Promise<string[]> => {
+  const { isMounted, triggerCapture } = useCityJsonPanCaptureStore.getState();
+
+  if (!isMounted) return [];
+
+  triggerCapture();
+  const captures = await waitForPanCapture();
+  const savedIds = await Promise.all(captures.map(savePanCaptureImage));
+
+  return captures
+    .map((capture, index) => ({ capture, id: savedIds[index] }))
+    .filter(({ capture }) => capture.kind === 'pan')
+    .sort((a, b) => a.capture.index - b.capture.index)
+    .map(({ id }) => id);
+};
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const validAnnotationInfos = (annotationInfos ?? []).filter((info): info is AnnotationInfo => Boolean(info?.polygonId));
@@ -56,7 +103,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
-    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel) : undefined;
+    const panImageIds = await captureAndSavePanImages();
+
+    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds) : undefined;
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
       ...params,

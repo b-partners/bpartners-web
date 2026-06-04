@@ -60,7 +60,7 @@ export const findSurfaceGeometry = (cityJson: CityJSON) =>
     .find(geometry => Boolean(geometry?.semantics?.surfaces?.length));
 
 export const cityJsonMapper = {
-  toExportAreaPictureAnnotation3D: (cityJson: CityJSON) => {
+  toExportAreaPictureAnnotation3D: (cityJson: CityJSON, panImageIds: string[] = []) => {
     const geometry = findSurfaceGeometry(cityJson);
 
     if (!geometry?.semantics?.surfaces?.length) {
@@ -92,9 +92,10 @@ export const cityJsonMapper = {
       }
     }
 
-    const pans = roofBoundaries.map(({ boundary, area, slope, distance_2d_scale }, index) =>
-      boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index)
-    );
+    const pans = roofBoundaries.map(({ boundary, area, slope, distance_2d_scale }, index) => {
+      const pan = boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index);
+      return panImageIds[index] ? { ...pan, imageUri: panImageIds[index] } : pan;
+    });
 
     if (pans.length > 0) {
       pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}m²` }, ...pans[0].infos] };
