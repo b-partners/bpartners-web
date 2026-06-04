@@ -41,6 +41,13 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const { imageUrl, cityJsonModel } = useAnnotator3DStore();
   const { polygonList: analysePolygons } = annotatorStore.useAnalysePolygonStore();
   const analyseAnnotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
+  const { polygonList: roof2DPolygons } = annotatorStore.use2DRoofPolygonStore();
+  const roof2DAnnotationInfos = annotatorStore.use2DRoofAnnotatorInfoStore();
+
+  const hasAnalysePolygons = analysePolygons.length > 0;
+  const polygons = hasAnalysePolygons ? analysePolygons : roof2DPolygons;
+  const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : roof2DAnnotationInfos;
+
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
@@ -53,8 +60,8 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
       ...params,
-      polygons: analysePolygons,
-      annotationInfos: mapExportAnnotationInfoArea(analyseAnnotationInfos),
+      polygons,
+      annotationInfos: mapExportAnnotationInfoArea(annotationInfos),
     });
 
     exportAreaPictureAnnotation['3d'] = exportAnnotation3D;

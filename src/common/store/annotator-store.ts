@@ -329,6 +329,26 @@ const useScreenAnnotatorInfoStore = () => {
   );
 };
 
+const use2DRoofPolygonStore = () => {
+  const polygonList = useAnnotatorStore(
+    useShallow(params =>
+      Object.values(params.annotations)
+        .filter(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof')
+        .map(a => a.polygon)
+    )
+  );
+  return { polygonList };
+};
+
+const use2DRoofAnnotatorInfoStore = () =>
+  useAnnotatorStore(
+    useShallow(param =>
+      Object.values(param.annotations)
+        .filter(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof')
+        .map(a => a.annotationInfos)
+    )
+  );
+
 const useAnalysePolygonStore = () => {
   const polygonList = useAnnotatorStore(
     useShallow(params =>
@@ -358,5 +378,7 @@ export const annotatorStore = {
   useAnnotatorInfoStore,
   useScreenAnnotatorInfoStore,
   useAnalyseAnnotatorInfoStore,
+  use2DRoofPolygonStore,
+  use2DRoofAnnotatorInfoStore,
   useOneAnnotationStore,
 };
