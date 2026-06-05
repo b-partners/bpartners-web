@@ -1,6 +1,6 @@
 import { Polygon } from '@bpartners/annotator-component';
 import { Canvas } from '@react-three/fiber';
-import { FC, useEffect, useMemo } from 'react';
+import { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
@@ -29,7 +29,9 @@ interface Annotator3DProps {
 export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, areaPicture, polygons, measureMode, setMeasureMode }) => {
   const { threeDMode } = useAnnotatorScreenSwitch();
   const annotations = annotatorStore.useAnnotatorStore(useShallow(({ annotations }) => annotations));
-  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, active);
+  const threeDGenerationId = annotatorStore.useAnnotatorStore(useShallow(({ threeDGenerationId }) => threeDGenerationId));
+  const shouldMount = active || !!threeDGenerationId;
+  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, shouldMount);
   const { setSelectedRoofIndex, setPanNames, setEdgeTypes } = roof3DStore.useRoof3DActions();
 
   const loadingPolygons = useMemo(() => {
@@ -47,12 +49,16 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
     setEdgeTypes(cityJson ? classifyRoofEdges(cityJson).edgeTypes : {});
   }, [cityJson]);
 
-  if (!active) {
+  if (!shouldMount) {
     return null;
   }
 
+  const containerStyle: CSSProperties = active
+    ? { width: '100%', height, position: 'relative', marginTop: 5, paddingTop: 5 }
+    : { position: 'absolute', inset: 0, visibility: 'hidden', pointerEvents: 'none', zIndex: -1 };
+
   return (
-    <div style={{ width: '100%', height, position: 'relative', marginTop: 5, paddingTop: 5 }}>
+    <div style={containerStyle}>
       {!isError && !error && !isLoading && (
         <>
           <Canvas
@@ -74,33 +80,35 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
             <CityScene cityJson={cityJson} measureMode={measureMode} setMeasureMode={setMeasureMode} />
             <Annotator3DSaveImage />
           </Canvas>
-          <Stack sx={annotator3DFloatingActionsStyle} direction='row' gap={0.5} alignItems='center'>
-            <Tooltip placement='top' title='Mesurer une ligne'>
-              <Button
-                className={`measure-btn ${measureMode === 'line' ? 'measure-btn-active' : ''}`}
-                startIcon={<StraightenIcon />}
-                variant='text'
-                onClick={() => setMeasureMode(measureMode === 'line' ? 'none' : 'line')}
-              >
-                Ligne
-              </Button>
-            </Tooltip>
-            <Divider orientation='vertical' flexItem />
-            <Tooltip placement='top' title='Mesurer un polygone'>
-              <Button
-                className={`measure-btn ${measureMode === 'polygon' ? 'measure-btn-active' : ''}`}
-                startIcon={<TimelineIcon />}
-                variant='text'
-                onClick={() => setMeasureMode(measureMode === 'polygon' ? 'none' : 'polygon')}
-              >
-                Polygone
-              </Button>
-            </Tooltip>
-          </Stack>
+          {active && (
+            <Stack sx={annotator3DFloatingActionsStyle} direction='row' gap={0.5} alignItems='center'>
+              <Tooltip placement='top' title='Mesurer une ligne'>
+                <Button
+                  className={`measure-btn ${measureMode === 'line' ? 'measure-btn-active' : ''}`}
+                  startIcon={<StraightenIcon />}
+                  variant='text'
+                  onClick={() => setMeasureMode(measureMode === 'line' ? 'none' : 'line')}
+                >
+                  Ligne
+                </Button>
+              </Tooltip>
+              <Divider orientation='vertical' flexItem />
+              <Tooltip placement='top' title='Mesurer un polygone'>
+                <Button
+                  className={`measure-btn ${measureMode === 'polygon' ? 'measure-btn-active' : ''}`}
+                  startIcon={<TimelineIcon />}
+                  variant='text'
+                  onClick={() => setMeasureMode(measureMode === 'polygon' ? 'none' : 'polygon')}
+                >
+                  Polygone
+                </Button>
+              </Tooltip>
+            </Stack>
+          )}
         </>
       )}
-      {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
-      {isError && error && <Annotator3DErrorUI error={error} />}
+      {active && isLoading && <RoofScanLoader polygons={loadingPolygons} />}
+      {active && isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
 };
