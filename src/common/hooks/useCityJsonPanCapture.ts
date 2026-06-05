@@ -122,7 +122,12 @@ const panMeasureLabels = (mesh: THREE.Mesh, cityJson: any): MeasureLabel[] => {
   return labels;
 };
 
-const polygonMeasureLabels = (polygon: { points: Vec3Tuple[]; centroid: Vec3Tuple; area: number; edges: { pointA: Vec3Tuple; pointB: Vec3Tuple; distanceSlope: number; slopeAngle: number }[] }): MeasureLabel[] => {
+const polygonMeasureLabels = (polygon: {
+  points: Vec3Tuple[];
+  centroid: Vec3Tuple;
+  area: number;
+  edges: { pointA: Vec3Tuple; pointB: Vec3Tuple; distanceSlope: number; slopeAngle: number }[];
+}): MeasureLabel[] => {
   const labels: MeasureLabel[] = polygon.edges.map((edge, i) => {
     const a = new THREE.Vector3(...edge.pointA);
     const b = new THREE.Vector3(...edge.pointB);
