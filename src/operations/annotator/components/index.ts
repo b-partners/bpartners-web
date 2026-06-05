@@ -1,6 +1,7 @@
 export * from './3d-renderer';
 export * from './address-top-bar';
 export * from './analyse-result-button';
+export * from './annotation-help-dialog';
 export * from './annotation-item-label-type-select';
 export * from './annotation-slope-height-alert';
 export * from './AnnotationInfoShow';

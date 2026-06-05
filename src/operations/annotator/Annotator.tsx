@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
 import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { AnnotatorExportPdfButton, RoofAnalyseRegenerateButton, SaveStatus, ScreenSwitchTabs } from './components';
+import { AnnotationHelpButton, AnnotatorExportPdfButton, RoofAnalyseRegenerateButton, SaveStatus, ScreenSwitchTabs } from './components';
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
@@ -102,6 +102,7 @@ export const Annotator = () => {
             <Divider className='toolbar-divider-left' orientation='vertical' flexItem />
             <ListItemText primary={address || <Skeleton className='toolbar-address-skeleton' />} secondary={`${source} ${gpsInfo}`} />
           </Stack>
+          <AnnotationHelpButton />
           <ScreenSwitchTabs onBeforeSwitch={triggerManualSave} />
         </Toolbar>
       </AppBar>
