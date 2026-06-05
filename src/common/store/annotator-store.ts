@@ -349,6 +349,26 @@ const use2DRoofAnnotatorInfoStore = () =>
     )
   );
 
+const use2DPanPolygonStore = () => {
+  const polygonList = useAnnotatorStore(
+    useShallow(params =>
+      Object.values(params.annotations)
+        .filter(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'pan')
+        .map(a => a.polygon)
+    )
+  );
+  return { polygonList };
+};
+
+const use2DPanAnnotatorInfoStore = () =>
+  useAnnotatorStore(
+    useShallow(param =>
+      Object.values(param.annotations)
+        .filter(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'pan')
+        .map(a => a.annotationInfos)
+    )
+  );
+
 const useAnalysePolygonStore = () => {
   const polygonList = useAnnotatorStore(
     useShallow(params =>
@@ -380,5 +400,7 @@ export const annotatorStore = {
   useAnalyseAnnotatorInfoStore,
   use2DRoofPolygonStore,
   use2DRoofAnnotatorInfoStore,
+  use2DPanPolygonStore,
+  use2DPanAnnotatorInfoStore,
   useOneAnnotationStore,
 };

@@ -100,10 +100,14 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const analyseAnnotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   const { polygonList: roof2DPolygons } = annotatorStore.use2DRoofPolygonStore();
   const roof2DAnnotationInfos = annotatorStore.use2DRoofAnnotatorInfoStore();
+  const { polygonList: pan2DPolygons } = annotatorStore.use2DPanPolygonStore();
+  const pan2DAnnotationInfos = annotatorStore.use2DPanAnnotatorInfoStore();
 
   const hasAnalysePolygons = analysePolygons.length > 0;
-  const polygons = hasAnalysePolygons ? analysePolygons : roof2DPolygons;
-  const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : roof2DAnnotationInfos;
+  const has2DRoofPolygons = roof2DPolygons.length > 0;
+
+  const polygons = hasAnalysePolygons ? analysePolygons : has2DRoofPolygons ? roof2DPolygons : pan2DPolygons;
+  const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : has2DRoofPolygons ? roof2DAnnotationInfos : pan2DAnnotationInfos;
 
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
