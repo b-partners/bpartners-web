@@ -24,7 +24,7 @@ const AnnotatorItemList = () => {
   const { areaPictureDetails } = useAnnotatorComponentStore();
 
   const annotationsInfos = annotatorStore.useScreenAnnotatorInfoStore();
-  const { polygonList } = annotatorStore.usePolygonStore();
+  const { polygonList } = annotatorStore.useScreenPolygonStore();
 
   const isAfterAnalyseValue = isAfterAnalyse(polygonList);
 
