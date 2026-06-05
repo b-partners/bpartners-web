@@ -17,6 +17,8 @@ export const addAlphabet = (name: string, index: number) => {
   return `${name} ${suffix}`;
 };
 
+const EDGE_TYPE_UNKNOWN_ID = 'unknown';
+
 const boundaryMapper = {
   toPan: (
     _boundary: number[],
@@ -24,7 +26,8 @@ const boundaryMapper = {
     area: number,
     slope: number,
     distance_2d_scale: number,
-    index: number
+    index: number,
+    panEdgeTypes: Record<number, string> = {}
   ): ExportAreaPictureAnnotation3DPan => {
     const boundary = _boundary.slice();
     boundary.push(boundary[0]);
@@ -33,6 +36,7 @@ const boundaryMapper = {
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = { points: points3D.map(([x, y]) => ({ x, y })) };
     const measurements: ExportAreaPictureAnnotation3DPan['measurements'] = [];
+    const edgeTypeNames: string[] = [];
     const infos: ExportAreaPictureAnnotation3DPan['infos'] = [
       { label: 'Surface rampant', value: `${area}m²` },
       { label: 'Pente', value: `${slope}°` },
@@ -48,7 +52,10 @@ const boundaryMapper = {
       const distance = +((getDistance2D(prev3DPoint, current3DPoint) * distance_2d_scale) / Math.cos(angle)).toFixed(2);
 
       measurements.push({ isInvisible: false, unit: 'm', value: distance });
+      edgeTypeNames.push(panEdgeTypes[index - 1] ?? EDGE_TYPE_UNKNOWN_ID);
     }
+
+    infos.push({ label: 'edgeTypes', value: JSON.stringify(edgeTypeNames) });
 
     return {
       polygon,
@@ -65,7 +72,12 @@ export const findSurfaceGeometry = (cityJson: CityJSON) =>
     .find(geometry => Boolean(geometry?.semantics?.surfaces?.length));
 
 export const cityJsonMapper = {
-  toExportAreaPictureAnnotation3D: (cityJson: CityJSON, panImageIds: string[] = [], panNames: Record<number, string> = {}) => {
+  toExportAreaPictureAnnotation3D: (
+    cityJson: CityJSON,
+    panImageIds: string[] = [],
+    panNames: Record<number, string> = {},
+    edgeTypes: Record<number, Record<number, string>> = {}
+  ) => {
     const geometry = findSurfaceGeometry(cityJson);
 
     if (!geometry?.semantics?.surfaces?.length) {
@@ -98,7 +110,7 @@ export const cityJsonMapper = {
     }
 
     const pans = roofBoundaries.map(({ boundary, area, slope, distance_2d_scale }, index) => {
-      const pan = boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index);
+      const pan = boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index, edgeTypes[index] ?? {});
       const customName = panNames[index]?.trim();
       const named = customName ? { ...pan, name: customName } : pan;
       return panImageIds[index] ? { ...named, imageUri: panImageIds[index] } : named;
