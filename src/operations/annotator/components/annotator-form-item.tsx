@@ -90,6 +90,8 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
 
   const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
 
+  const surfaceLabel = isRoofPolygon ? (annotationInfos.slope ? 'Surface rampante' : 'Surface au sol') : 'Surface';
+
   const toggleMeasurementVisibility = (event: SyntheticEvent) => {
     event?.stopPropagation();
     annotatorStore.useAnnotatorStore.getState().showMeasurement(polygonId);
@@ -125,7 +127,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
     <Stack>
       {data?.area && (
         <Typography sx={{ fontSize: '14px' }}>
-          Surface :
+          {surfaceLabel} :
           <Typography component='span' fontWeight='bold'>
             {data?.area} m²
           </Typography>
