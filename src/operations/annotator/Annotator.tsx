@@ -148,7 +148,6 @@ export const Annotator = () => {
             variant='outlined'
             size='small'
             color='secondary'
-            startIcon={<Replay fontSize='small' />}
           />
           <AnnotatorExportPdfButton className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' areaPictureDetails={areaPicture} />
           <Button

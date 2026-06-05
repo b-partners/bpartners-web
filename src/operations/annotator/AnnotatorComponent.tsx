@@ -9,7 +9,7 @@ import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Annotator3D, annotatorButtonsActions, LlmResult, RoofAnalyseRunButton, ThreeDMeasureMode } from './components';
+import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
 import { RoofAnalysisDialog } from './components/loading';
 import { AnnotatorComponentProps } from './types';
 import {
@@ -24,7 +24,7 @@ import {
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
-  const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height, showAddress } = props;
+  const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
 
   const { polygonList } = annotatorStore.usePolygonStore();
   const { polygonList: screenPolygonList, setPolygons: setPolygonList } = annotatorStore.useScreenPolygonStore();
@@ -134,7 +134,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
-        {isAnalyseScreen && showAddress && <RoofAnalyseRunButton />}
         {isAnalysing && (
           <Box className='analyse-loading-container'>
             <RoofAnalysisDialog
