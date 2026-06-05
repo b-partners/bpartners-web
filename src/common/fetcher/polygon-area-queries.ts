@@ -7,7 +7,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import getAreaOfPolygon from 'geolib/es/getAreaOfPolygon';
 import getDistance from 'geolib/es/getPreciseDistance';
-import { copyObject, getImageSize, UrlParams } from '../utils';
+import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
 interface Params {
   polygon: Polygon;
@@ -19,9 +19,14 @@ interface Params {
 
 export const usePolygonAreaQuery = (params: Params) => {
   const queryFn = async () => {
-    const imageUrl = UrlParams.get('imgUrl');
-    const imageSize =
-      params.isAfterAnalyse && UrlParams.get('useDrafts') === 'true' ? 2048 : getCached.currentImageSize() || (await getImageSize(imageUrl)) || 1024;
+    const imageUri = getFileUrl(params.areaPictureDetails.fileId, 'AREA_PICTURE');
+    const cachedImageBlob = await getImageFromCache(params.areaPictureDetails.fileId);
+    const imageUrl = cachedImageBlob ? URL.createObjectURL(cachedImageBlob) : imageUri;
+
+    let imageSize = await getImageSize(imageUrl);
+    if (params.areaPictureDetails.actualLayer.name === 'FLUX_IGN_2023_20CM' && params.areaPictureDetails.isExtended) {
+      imageSize = imageSize / 3;
+    }
 
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
