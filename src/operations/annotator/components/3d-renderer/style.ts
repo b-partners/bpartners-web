@@ -56,17 +56,16 @@ export const roofEdgeMenuItemStyle: SxProps = {
 };
 
 export const roofSurfacesDrawerStyle: SxProps = {
-  position: 'absolute',
-  inset: 0,
-  left: 'auto',
   width: 300,
+  flexShrink: 0,
   '& .roof-drawer-paper': {
-    position: 'absolute',
     width: 300,
     boxSizing: 'border-box',
     border: 0,
     borderLeft: '1px solid #ebebeb',
     bgcolor: '#ffffff',
+    top: 62,
+    height: 'calc(100vh - 120px)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
