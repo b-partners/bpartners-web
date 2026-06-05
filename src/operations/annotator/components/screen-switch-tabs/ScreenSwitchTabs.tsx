@@ -4,6 +4,7 @@ import { Box, ButtonBase } from '@mui/material';
 import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
+import { isAnalyseRoofAnnotation } from '../../utils';
 import { ScreenSwitchTabsStyle } from './style';
 
 interface ScreenSwitchTabsProps {
@@ -18,7 +19,7 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
   };
   const { polygonList } = annotatorStore.usePolygonStore();
   const { roofDelimiter } = useAnnotatorComponentStore();
-  const roofPolygon = annotatorStore.useAnnotatorStore(params => Object.values(params.annotations).find(a => a.isFirst));
+  const roofPolygon = annotatorStore.useAnnotatorStore(useShallow(params => Object.values(params.annotations).find(isAnalyseRoofAnnotation)));
   const { wearLevel, humidityLevel, moldRate } = roofPolygon?.annotationInfos || {};
 
   const { threeDFromSegmentation, annotations } = annotatorStore.useAnnotatorStore(

@@ -1,16 +1,15 @@
 import { annotatorStore } from '@/common/store';
-import { analyseRoofIdRef } from '@/operations/prospects/constants';
 import { annotationCoveringMapper, cache } from '@/providers';
 import { useQuery } from '@tanstack/react-query';
 import { useShallow } from 'zustand/react/shallow';
-import { calculateGlobalRate } from './global-rate-calculator';
+import { calculateGlobalRate, isAnalyseRoofAnnotation } from './global-rate-calculator';
 
 const baseUrl = `${process.env.LLM_ANALYSE_RESULT}`;
 const apiKey = `${process.env.LLM_API_KEY}`;
 
 export const useLlmResultQuery = () => {
   const { annotationInfos, polygon } =
-    annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(a => (a.polygon?.id || '').includes(analyseRoofIdRef)))) || {};
+    annotatorStore.useAnnotatorStore(useShallow(p => Object.values(p.annotations).find(isAnalyseRoofAnnotation))) || {};
 
   const { moldRate, wearLevel, humidityLevel, comment, obstacle, area: _area, covering } = annotationInfos || {};
 
