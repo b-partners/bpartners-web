@@ -6,8 +6,11 @@ export const annotationHelpButtonStyle: SxProps = {
   border: '1px solid',
   borderColor: 'rgba(0,0,0,0.12)',
   borderRadius: '8px',
-  padding: '5px',
+  padding: '4px 12px',
   marginLeft: 1,
+  textTransform: 'none',
+  fontWeight: 600,
+  whiteSpace: 'nowrap',
   transition: 'all 0.15s',
   '&:hover': {
     background: 'rgba(255,82,27,0.08)',

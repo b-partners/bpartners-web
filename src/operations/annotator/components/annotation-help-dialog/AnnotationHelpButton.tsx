@@ -1,5 +1,5 @@
 import { Close, HelpOutline } from '@mui/icons-material';
-import { Box, CircularProgress, Dialog, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
@@ -19,9 +19,16 @@ export const AnnotationHelpButton = () => {
   return (
     <>
       <Tooltip title="Aide à l'annotation" arrow>
-        <IconButton sx={annotationHelpButtonStyle} size='small' onClick={() => setOpen(true)}>
-          <HelpOutline fontSize='small' />
-        </IconButton>
+        <Button
+          sx={annotationHelpButtonStyle}
+          size='small'
+          onClick={() => setOpen(true)}
+          color='primary'
+          variant='outlined'
+          startIcon={<HelpOutline fontSize='small' />}
+        >
+          Tutoriel
+        </Button>
       </Tooltip>
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth sx={annotationHelpDialogStyle}>
         <Box className='help-topbar'>
