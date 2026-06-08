@@ -48,10 +48,6 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
         <CropSquare />
         2D
       </ButtonBase>
-      <ButtonBase type='button' onClick={() => setScreen('roof-analyse')} className={`screen-tab ${screen === 'roof-analyse' ? 'active' : ''}`}>
-        <Roofing />
-        Analyse
-      </ButtonBase>
       <ButtonBase
         disabled={!roofDelimiter?.polygon && polygonList.length === 0}
         type='button'
@@ -60,6 +56,10 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
       >
         <ViewInAr />
         3D
+      </ButtonBase>
+      <ButtonBase type='button' onClick={() => setScreen('roof-analyse')} className={`screen-tab ${screen === 'roof-analyse' ? 'active' : ''}`}>
+        <Roofing />
+        Analyse
       </ButtonBase>
       <ButtonBase
         disabled={!wearLevel && !humidityLevel && !moldRate}
