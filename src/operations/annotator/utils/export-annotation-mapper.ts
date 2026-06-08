@@ -63,10 +63,13 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
           ? polygon.measurements.map(exportMeasurementMapper(polygon.id || ''))
           : points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
       infos: [
-        ...translateAnnotationInfo({
-          ...emptyToNull(annotationInfo),
-          area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
-        }),
+        ...translateAnnotationInfo(
+          {
+            ...emptyToNull(annotationInfo),
+            area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
+          },
+          !!isAfterAnalyse
+        ),
         { label: 'key', value: annotatorLabelSplitted.length === 2 ? annotatorLabelSplitted[1] : annotationInfo.labelName },
       ],
     };

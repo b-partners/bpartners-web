@@ -90,7 +90,9 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
 
   const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
 
-  const surfaceLabel = isRoofPolygon ? (annotationInfos.slope ? 'Surface rampante' : 'Surface au sol') : 'Surface';
+  const hasDynamicSurfaceLabel = isRoofPolygon || isAfterAnalyse;
+
+  const surfaceLabel = hasDynamicSurfaceLabel ? (annotationInfos.slope ? 'Surface rampante' : 'Surface au sol') : 'Surface';
 
   const toggleMeasurementVisibility = (event: SyntheticEvent) => {
     event?.stopPropagation();
