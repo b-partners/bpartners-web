@@ -1,5 +1,5 @@
 import { Close, HelpOutline } from '@mui/icons-material';
-import { Box, CircularProgress, Dialog, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, CircularProgress, Dialog, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
@@ -25,13 +25,6 @@ export const AnnotationHelpButton = () => {
       </Tooltip>
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth sx={annotationHelpDialogStyle}>
         <Box className='help-topbar'>
-          <Stack className='help-brand' direction='row' alignItems='center' gap={1}>
-            <Box className='help-brand-mark'>B</Box>
-            <Box>
-              <Typography className='help-brand-text'>BIRDIA · Aide</Typography>
-              <Typography className='help-brand-sub'>Guide d'annotation · Tutoriel</Typography>
-            </Box>
-          </Stack>
           <IconButton className='help-close' onClick={handleClose}>
             <Close fontSize='small' />
           </IconButton>
