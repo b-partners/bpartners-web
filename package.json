@@ -43,6 +43,7 @@
     "react-pdf": "6.2.2",
     "react-router": "6.27.0",
     "react-router-dom": "6.27.0",
+    "react-youtube": "^10.1.0",
     "recharts": "2.13.3",
     "three": "^0.165.0",
     "uuid": "9.0.1",

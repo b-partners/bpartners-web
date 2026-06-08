@@ -2,18 +2,30 @@ import { cache, getCached } from '@/providers';
 import { Close, HelpOutline } from '@mui/icons-material';
 import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
+import YouTube, { YouTubeProps } from 'react-youtube';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
-const HELP_VIDEO_URL = 'https://www.youtube-nocookie.com/embed/6nub7AjiwgQ?rel=0';
+const HELP_VIDEO_ID = '6nub7AjiwgQ';
+
+const playerOptions: YouTubeProps['opts'] = {
+  width: '100%',
+  height: '100%',
+  playerVars: {
+    rel: 0,
+    modestbranding: 1,
+  },
+};
 
 export const AnnotationHelpButton = () => {
   const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
   const [errored, setErrored] = useState(false);
+  const [ready, setReady] = useState(false);
   const [doNotShowAgain, setDoNotShowAgain] = useState(() => getCached.annotatorTutorialSeen());
 
   const handleClose = () => {
     setOpen(false);
     setErrored(false);
+    setReady(false);
   };
 
   const handleDoNotShowAgain = (checked: boolean) => {
@@ -50,16 +62,15 @@ export const AnnotationHelpButton = () => {
         </Box>
         <Box className='help-stage'>
           {open && errored && <HelpLoader message='Échec de chargement du guide' />}
+          {open && !errored && !ready && <HelpLoader />}
           {open && !errored && (
             <Box className='help-frame'>
-              <iframe
+              <YouTube
                 className='help-video'
-                src={HELP_VIDEO_URL}
-                title="Tutoriel d'annotation"
-                frameBorder='0'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                referrerPolicy='strict-origin-when-cross-origin'
-                allowFullScreen
+                iframeClassName='help-video-iframe'
+                videoId={HELP_VIDEO_ID}
+                opts={playerOptions}
+                onReady={() => setReady(true)}
                 onError={() => setErrored(true)}
               />
             </Box>
