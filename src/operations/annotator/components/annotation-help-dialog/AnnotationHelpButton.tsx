@@ -4,7 +4,7 @@ import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, Icon
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
-const HELP_VIDEO_URL = 'https://www.youtube.com/embed/6nub7AjiwgQ';
+const HELP_VIDEO_URL = 'https://www.youtube-nocookie.com/embed/6nub7AjiwgQ?rel=0';
 
 export const AnnotationHelpButton = () => {
   const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
