@@ -33,6 +33,8 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
 
   const isAfterAnalyse = annotationInfos.find(a => a.polygonId.includes(analyseGeneratedIdRef));
 
+  const isAnalyseSession = annotationInfos.some(a => a.polygonId.includes(analyseGeneratedIdRef) || a.polygonId.includes(roofGlobalIdRef));
+
   if (!isAfterAnalyse) {
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
@@ -68,7 +70,7 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
             ...emptyToNull(annotationInfo),
             area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
           },
-          !!isAfterAnalyse
+          isAnalyseSession
         ),
         { label: 'key', value: annotatorLabelSplitted.length === 2 ? annotatorLabelSplitted[1] : annotationInfo.labelName },
       ],

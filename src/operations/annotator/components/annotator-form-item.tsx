@@ -90,7 +90,9 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
 
   const isRoofPolygon = annotationInfos.polygonId.includes(roofGlobalIdRef);
 
-  const hasDynamicSurfaceLabel = isRoofPolygon || isAfterAnalyse;
+  const isAnalyseScreen = screen === 'roof-analyse';
+
+  const hasDynamicSurfaceLabel = isRoofPolygon || isAnalyseScreen || isAfterAnalyse;
 
   const surfaceLabel = hasDynamicSurfaceLabel ? (annotationInfos.slope ? 'Surface rampante' : 'Surface au sol') : 'Surface';
 
