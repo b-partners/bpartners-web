@@ -1,19 +1,26 @@
+import { cache, getCached } from '@/providers';
 import { Close, HelpOutline } from '@mui/icons-material';
-import { Box, Button, CircularProgress, Dialog, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
 const HELP_VIDEO_URL = '/tuto-annotator.mp4';
 
 export const AnnotationHelpButton = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
+  const [doNotShowAgain, setDoNotShowAgain] = useState(() => getCached.annotatorTutorialSeen());
 
   const handleClose = () => {
     setOpen(false);
     setLoaded(false);
     setErrored(false);
+  };
+
+  const handleDoNotShowAgain = (checked: boolean) => {
+    setDoNotShowAgain(checked);
+    cache.annotatorTutorialSeen(checked);
   };
 
   return (
@@ -32,6 +39,11 @@ export const AnnotationHelpButton = () => {
       </Tooltip>
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth sx={annotationHelpDialogStyle}>
         <Box className='help-topbar'>
+          <FormControlLabel
+            className='help-do-not-show'
+            control={<Checkbox className='help-do-not-show-checkbox' size='small' checked={doNotShowAgain} onChange={(_, checked) => handleDoNotShowAgain(checked)} />}
+            label='Ne plus afficher automatiquement'
+          />
           <IconButton className='help-close' onClick={handleClose}>
             <Close fontSize='small' />
           </IconButton>

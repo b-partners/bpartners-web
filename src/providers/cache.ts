@@ -27,6 +27,7 @@ const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
 const annotationToSave = 'birdia_annotation_to_save';
+const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -131,6 +132,10 @@ export const cache = {
   annotationToSave(annotation: any) {
     localStorage.setItem(annotationToSave, JSON.stringify(annotation || {}));
   },
+  annotatorTutorialSeen(value: boolean) {
+    localStorage.setItem(annotatorTutorialSeenItem, JSON.stringify(value));
+    return value;
+  },
 };
 
 export const getCached = {
@@ -229,6 +234,9 @@ export const getCached = {
   },
   annotationToSave() {
     return localStorage.getItem(annotationToSave);
+  },
+  annotatorTutorialSeen(): boolean {
+    return JSON.parse(localStorage.getItem(annotatorTutorialSeenItem) || 'false');
   },
 };
 

@@ -29,10 +29,22 @@ export const annotationHelpDialogStyle: SxProps = {
   '& .help-topbar': {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     padding: '10px 14px',
     background: `linear-gradient(135deg, ${PALETTE_COLORS.forest} 0%, ${PALETTE_COLORS.pine} 100%)`,
     color: '#fff',
+  },
+  '& .help-do-not-show': {
+    color: '#fff',
+    marginLeft: 0,
+    '& .MuiFormControlLabel-label': {
+      fontSize: '0.8rem',
+      fontWeight: 500,
+    },
+    '& .help-do-not-show-checkbox': {
+      color: 'rgba(255,255,255,.7)',
+      '&.Mui-checked': { color: '#fff' },
+    },
   },
   '& .help-close': {
     background: 'rgba(255,255,255,.10)',
