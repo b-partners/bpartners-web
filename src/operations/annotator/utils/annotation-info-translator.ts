@@ -17,7 +17,7 @@ const formatInfo = <T extends object = any, K extends keyof T = any>({ label, tr
 export const translateAnnotationInfo = (info: AnnotationInfo & { area: number }): { label: string; value: string }[] => {
   const isAnalyseResult = info.polygonId.includes('___');
 
-  const result = [formatInfo({ label: 'Surface', value: info?.area, unit: 'm²' })];
+  const result = [formatInfo({ label: !info?.slope && info?.slope > 0 ? 'Surface rampante' : 'Surface au sol', value: info?.area, unit: 'm²' })];
 
   if (!isAnalyseResult) {
     result.push(
