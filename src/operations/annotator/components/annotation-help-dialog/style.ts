@@ -81,9 +81,6 @@ export const annotationHelpDialogStyle: SxProps = {
       background: '#000',
     },
   },
-  '& .help-frame-hidden': {
-    display: 'none',
-  },
   '@keyframes helpFrameFade': {
     from: { opacity: 0 },
     to: { opacity: 1 },

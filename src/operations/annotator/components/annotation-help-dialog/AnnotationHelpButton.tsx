@@ -8,13 +8,11 @@ const HELP_VIDEO_URL = 'https://www.youtube.com/embed/6nub7AjiwgQ';
 
 export const AnnotationHelpButton = () => {
   const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
-  const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
   const [doNotShowAgain, setDoNotShowAgain] = useState(() => getCached.annotatorTutorialSeen());
 
   const handleClose = () => {
     setOpen(false);
-    setLoaded(false);
     setErrored(false);
   };
 
@@ -51,10 +49,9 @@ export const AnnotationHelpButton = () => {
           </IconButton>
         </Box>
         <Box className='help-stage'>
-          {open && !errored && !loaded && <HelpLoader />}
           {open && errored && <HelpLoader message='Échec de chargement du guide' />}
           {open && !errored && (
-            <Box className={`help-frame ${loaded ? '' : 'help-frame-hidden'}`}>
+            <Box className='help-frame'>
               <iframe
                 className='help-video'
                 src={HELP_VIDEO_URL}
@@ -63,7 +60,6 @@ export const AnnotationHelpButton = () => {
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
                 referrerPolicy='strict-origin-when-cross-origin'
                 allowFullScreen
-                onLoad={() => setLoaded(true)}
                 onError={() => setErrored(true)}
               />
             </Box>
