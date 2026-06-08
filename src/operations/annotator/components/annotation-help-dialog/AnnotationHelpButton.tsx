@@ -3,8 +3,7 @@ import { Close, HelpOutline } from '@mui/icons-material';
 import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
-
-const HELP_VIDEO_URL = '/tuto-annotator.mp4';
+import HELP_VIDEO_URL from '/tuto-annotator.mp4';
 
 export const AnnotationHelpButton = () => {
   const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
