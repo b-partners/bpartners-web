@@ -4,7 +4,7 @@ import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, Icon
 import { FC, useState } from 'react';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
-const HELP_VIDEO_URL = '/tuto-annotator.mp4';
+const HELP_VIDEO_URL = 'https://www.youtube.com/embed/6nub7AjiwgQ';
 
 export const AnnotationHelpButton = () => {
   const [open, setOpen] = useState(() => !getCached.annotatorTutorialSeen());
@@ -55,15 +55,15 @@ export const AnnotationHelpButton = () => {
           {open && errored && <HelpLoader message='Échec de chargement du guide' />}
           {open && !errored && (
             <Box className={`help-frame ${loaded ? '' : 'help-frame-hidden'}`}>
-              <video
+              <iframe
                 className='help-video'
                 src={HELP_VIDEO_URL}
-                preload='metadata'
-                controls
-                autoPlay
-                muted
-                controlsList='nodownload'
-                onLoadedData={() => setLoaded(true)}
+                title="Tutoriel d'annotation"
+                frameBorder='0'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                referrerPolicy='strict-origin-when-cross-origin'
+                allowFullScreen
+                onLoad={() => setLoaded(true)}
                 onError={() => setErrored(true)}
               />
             </Box>

@@ -72,7 +72,9 @@ export const annotationHelpDialogStyle: SxProps = {
     width: '100%',
     '& .help-video': {
       width: '100%',
+      aspectRatio: '16 / 9',
       maxHeight: '70vh',
+      border: 'none',
       borderRadius: '8px',
       boxShadow: '0 12px 40px rgba(0,0,0,.45)',
       margin: '0 auto',
