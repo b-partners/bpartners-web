@@ -41,7 +41,9 @@ export const AnnotationHelpButton = () => {
         <Box className='help-topbar'>
           <FormControlLabel
             className='help-do-not-show'
-            control={<Checkbox className='help-do-not-show-checkbox' size='small' checked={doNotShowAgain} onChange={(_, checked) => handleDoNotShowAgain(checked)} />}
+            control={
+              <Checkbox className='help-do-not-show-checkbox' size='small' checked={doNotShowAgain} onChange={(_, checked) => handleDoNotShowAgain(checked)} />
+            }
             label='Ne plus afficher automatiquement'
           />
           <IconButton className='help-close' onClick={handleClose}>
