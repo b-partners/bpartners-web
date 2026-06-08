@@ -79,11 +79,17 @@ export const annotationHelpDialogStyle: SxProps = {
     display: 'flex',
     justifyContent: 'center',
     width: '100%',
-    '& canvas': {
+    '& .help-video': {
+      width: '100%',
+      maxHeight: '70vh',
       borderRadius: '8px',
       boxShadow: '0 12px 40px rgba(0,0,0,.45)',
       margin: '0 auto',
+      background: '#000',
     },
+  },
+  '& .help-frame-hidden': {
+    display: 'none',
   },
   '@keyframes helpFrameFade': {
     from: { opacity: 0 },
@@ -96,58 +102,5 @@ export const annotationHelpDialogStyle: SxProps = {
     minHeight: 420,
     width: '100%',
     color: 'rgba(255,255,255,.7)',
-  },
-  '& .help-controls': {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1.5,
-    padding: '14px 22px',
-    background: '#fff',
-    borderTop: '1px solid',
-    borderColor: 'divider',
-  },
-  '& .help-btn': {
-    color: PALETTE_COLORS.forest,
-    width: 36,
-    height: 36,
-    '&:hover': { background: 'rgba(0,0,0,.06)', color: PALETTE_COLORS.neon_orange },
-  },
-  '& .help-progress-wrap': {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0.75,
-  },
-  '& .help-progress': {
-    position: 'relative',
-    height: 6,
-    borderRadius: 3,
-    background: '#e8eaf0',
-    overflow: 'hidden',
-    cursor: 'pointer',
-  },
-  '& .help-progress-fill': {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    background: `linear-gradient(90deg, ${PALETTE_COLORS.neon_orange}, ${PALETTE_COLORS.peach})`,
-    transition: 'width .15s linear',
-  },
-  '& .help-meta': {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: 11.5,
-    color: '#9ba3c3',
-  },
-  '& .help-counter': {
-    color: PALETTE_COLORS.forest,
-    fontWeight: 600,
-    letterSpacing: '.3px',
-    fontSize: 11.5,
-  },
-  '& .help-timing': {
-    fontSize: 11.5,
   },
 };
