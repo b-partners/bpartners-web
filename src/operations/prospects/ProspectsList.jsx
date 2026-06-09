@@ -23,6 +23,7 @@ import ProspectsConfiguration from './ProspectsConfiguration';
 import { importantCSS } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
+import { useMutateProspect } from '@/common/fetcher';
 import { useLoadingHandler, useTabManager } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { parseLocalStorage } from '@/common/utils/local-storage';
@@ -39,6 +40,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
   const { isLoading, stopLoading, startLoading, setIsLoading } = useLoadingHandler();
   const bpUser = parseLocalStorage(BP_USER_CACHE_NAME);
+  const { mutate: mutateProspect, isPending } = useMutateProspect();
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
@@ -73,71 +75,24 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
         prospect.invoiceID = prospect?.invoice?.id;
         prospect.invoice = undefined;
 
-        await prospectingProvider.saveOrUpdate([prospect]);
-        notify(`resources.prospects.creation.success`, { type: 'success' });
-
-        try {
-          const fileId = uuidV4();
-          const pictureId = uuidV4();
-          const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-
-          await annotatorProvider.getPictureFormAddress(pictureId, {
-            address: prospect.address,
-            fileId,
-            filename: `Layer ${prospect.address}`,
-            prospectId: prospect.id,
-            zoomLevel: ZoomLevel.BUILDING,
-            isExtended: true,
-          });
-
-          annotatorComponentStore.reset();
-          setAnnotatorSidebarAccordionItem(0);
-          resetAnnotations();
-          clearPolygons();
-          annotatorStore.useAnnotatorStore.getState().reset();
-          roof3DStore.useRoof3DStore.getState().reset();
-          navigate(
-            `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
-          );
-          return;
-        } catch (err) {
-          let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
-
-          const notSupportedPattern = /Address or zone [\s\S]* not yet supported/i;
-          const temporarilyUnavailablePattern = /Address or zone [\s\S]* temporarily unavailable/i;
-
-          if (err.message === 'precisionLevelInCm' || temporarilyUnavailablePattern.test(err.message)) errorMessage = 'Adresse momentanément indisponible.';
-          if (notSupportedPattern.test(err.message)) errorMessage = "La zone contenant cette adresse n'est pas encore supporté.";
-          if (err.message.includes('Roof analysis consumption ') && err.message.includes(' limit exceeded for free trial period for User.id='))
-            errorMessage = 'La limite des analyses gratuites a été atteinte.';
-
-          openDialog(
-            <>
-              <DialogTitle>Erreur</DialogTitle>
-              <DialogContent>
-                <DialogContentText>{errorMessage}</DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={closeDialog}>Fermer</Button>
-              </DialogActions>
-            </>
-          );
-        }
-        stopLoading();
+        mutateProspect(prospect);
       };
 
-      fetch().catch(() => {
-        stopLoading();
-      });
+      fetch();
     });
 
     doSubmit(event);
   };
 
   return (
-    <ProspectContextProvider loading={isLoading} setLoading={setIsLoading}>
+    <ProspectContextProvider loading={isLoading || isPending} setLoading={setIsLoading}>
       <FormProvider {...form}>
-        <ComponentChild bpUser={bpUser} isLoading={isLoading} setIsLoading={setIsLoading} saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit} />
+        <ComponentChild
+          bpUser={bpUser}
+          isLoading={isLoading || isPending}
+          setIsLoading={setIsLoading}
+          saveOrUpdateProspectSubmit={saveOrUpdateProspectSubmit}
+        />
       </FormProvider>
     </ProspectContextProvider>
   );
