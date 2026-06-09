@@ -53,7 +53,7 @@ export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotat
     setAnnotatorSidebarAccordionItem(0);
     setScreen('annotator');
     navigate(
-      `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}}`
+      `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
     );
   };
 

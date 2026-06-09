@@ -97,7 +97,7 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
           annotatorStore.useAnnotatorStore.getState().reset();
           roof3DStore.useRoof3DStore.getState().reset();
           navigate(
-            `/annotator?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${ZoomLevel.BUILDING}&pictureId=${pictureId}&useDrafts=false&prospectId=${prospect.id}&fileId=${fileId}&draftAnnotationId=${v4()}`
+            `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
           );
           return;
         } catch (err) {

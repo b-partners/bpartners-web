@@ -79,23 +79,14 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
       const address = UrlParams.get('address');
       const zoomLevel = UrlParams.get('zoomLevel');
       const pictureId = UrlParams.get('pictureId');
-      const prospectId = UrlParams.get('prospectId');
-      const fileId = UrlParams.get('fileId');
+      const draftAnnotationId = UrlParams.get('draftAnnotationId');
 
       removeCache.cityJSONRequestId();
       clearRoofDelimiter();
       annotatorComponentStore.reset();
       cache.loadingRedirection(
-        `/annotator?` +
-          `imgUrl=${encodeURIComponent(fileUrl)}` +
-          `&address=${address}` +
-          `&zoomLevel=${zoomLevel}` +
-          `&pictureId=${pictureId}` +
-          `&useDrafts=false` +
-          `&prospectId=${prospectId}` +
-          `&fileId=${fileId}`
+        `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${address}&zoomLevel=${zoomLevel}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotationId}`
       );
-
       setIsRebeginLoading(false);
       navigate(`/loading`);
     });
