@@ -20,7 +20,7 @@ export function BpAutoCompleteBackend<T = any>({ name, label, fetcher, textField
     setInputValue(typeof value === 'string' ? value : '');
   }, [value]);
 
-  const debouncedMutateFn = useMemo(() => debounce(mutate, 1000), [mutate]);
+  const debouncedMutateFn = useMemo(() => debounce(mutate, 200), [mutate]);
 
   const { onBlur, ref } = register(name);
   const error = errors[name];
