@@ -27,6 +27,7 @@ const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
 const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
 const annotationToSave = 'birdia_annotation_to_save';
+const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -131,6 +132,10 @@ export const cache = {
   annotationToSave(annotation: any) {
     localStorage.setItem(annotationToSave, JSON.stringify(annotation || {}));
   },
+  annotatorTutorialSeen(value: boolean) {
+    localStorage.setItem(annotatorTutorialSeenItem, JSON.stringify(value));
+    return value;
+  },
 };
 
 export const getCached = {
@@ -230,6 +235,9 @@ export const getCached = {
   annotationToSave() {
     return localStorage.getItem(annotationToSave);
   },
+  annotatorTutorialSeen(): boolean {
+    return JSON.parse(localStorage.getItem(annotatorTutorialSeenItem) || 'false');
+  },
 };
 
 export const clearCache = () => {
@@ -241,6 +249,7 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
   cache.polygons(null);
   cache.annotationsInfo(null);
   localStorage.removeItem(llmResultItem);
+  localStorage.removeItem(cityJSONRequestIdItem);
 
   if (removeRoofAnalyseId) {
     localStorage.removeItem(roofAnalyseIdItem);
@@ -252,6 +261,7 @@ export const clearPolygons = (removeRoofAnalyseId = true) => {
 };
 
 export const clearRoofDelimiter = () => {
+  localStorage.removeItem(cityJSONRequestIdItem);
   localStorage.removeItem(defaultRoofDelimiterItem);
   localStorage.removeItem(roofDelimiterLongLatItem);
   localStorage.removeItem(currentImageSize);
@@ -263,6 +273,7 @@ export const removeCache = {
   },
   roofDelimitation() {
     localStorage.removeItem(defaultRoofDelimiterItem);
+    localStorage.removeItem(cityJSONRequestIdItem);
     localStorage.removeItem(roofDelimiterLongLatItem);
   },
 };

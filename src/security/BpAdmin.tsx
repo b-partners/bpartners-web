@@ -69,13 +69,15 @@ export const BpAdmin = () => {
       <Resource name='prospects' {...prospects} />
       <Resource name='accountHolder' />
       <Resource name='drafts-annotations' />
+      <CustomRoutes noLayout>
+        <Route path='/projects/:projectId' element={<Annotator />} />
+      </CustomRoutes>
       <CustomRoutes>
         <Route path='projects' element={<DraftAreaPictureAnnotations />} />
         <Route path='/sheets/consent/success' element={<GoogleSheetsConsentSuccess />} />
         <Route path='/loading' element={<LoadingPage />} />
         <Route path='/account/:id' element={<account.show />} />
         <Route path='/partners' element={<PartnersPage />} />
-        <Route path='/annotator' element={<Annotator />} />
         <Route path='/error' element={<BPErrorPage error={new Error()} />} />
       </CustomRoutes>
     </Admin>

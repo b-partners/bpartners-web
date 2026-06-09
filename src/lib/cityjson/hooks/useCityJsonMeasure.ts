@@ -37,7 +37,86 @@ const computeArea = (indices: number[], vertices3D: THREE.Vector3[]): number => 
   return Math.round(area * 100) / 100;
 };
 
-export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
+export interface FaceEdgeMeasure {
+  distanceMeters: number;
+  slopeDegrees: number;
+  color: string;
+}
+
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
+export const computeFaceEdges = (faceVertexIndices: number[], cityJson: CityJsonData): FaceEdgeMeasure[] => {
+  const rawVertices = cityJson.vertices as number[][];
+  const transform = (cityJson as any).transform;
+  const realVertices = rawVertices.map(v => applyTransform(v, transform));
+
+  const indices = faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
+
+  const result: FaceEdgeMeasure[] = [];
+  for (let i = 0; i < indices.length; i++) {
+    const realA = realVertices[indices[i]];
+    const realB = realVertices[indices[(i + 1) % indices.length]];
+    if (!realA || !realB) continue;
+    const dx = realB[0] - realA[0];
+    const dy = realB[1] - realA[1];
+    const dz = realB[2] - realA[2];
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    if (dist < 0.01) continue;
+    const horizontal = Math.sqrt(dx * dx + dy * dy);
+    const slopeRad = horizontal < 1e-9 ? Math.PI / 2 : Math.atan2(Math.abs(dz), horizontal);
+    result.push({
+      distanceMeters: Math.round(dist * 100) / 100,
+      slopeDegrees: round1((slopeRad * 180) / Math.PI),
+      color: EDGE_COLORS[i % EDGE_COLORS.length],
+    });
+  }
+  return result;
+};
+
+export const computeFaceSlope = (faceVertexIndices: number[], cityJson: CityJsonData): number => {
+  const rawVertices = cityJson.vertices as number[][];
+  const transform = (cityJson as any).transform;
+  const realVertices = rawVertices.map(v => applyTransform(v, transform));
+
+  const indices = faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
+  if (indices.length < 3) return 0;
+
+  let nx = 0;
+  let ny = 0;
+  let nz = 0;
+  for (let i = 0; i < indices.length; i++) {
+    const c = realVertices[indices[i]];
+    const n = realVertices[indices[(i + 1) % indices.length]];
+    nx += (c[1] - n[1]) * (c[2] + n[2]);
+    ny += (c[2] - n[2]) * (c[0] + n[0]);
+    nz += (c[0] - n[0]) * (c[1] + n[1]);
+  }
+  const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+  if (len < 1e-9) return 0;
+
+  const cosAngle = Math.min(1, Math.abs(nz) / len);
+  return round1((Math.acos(cosAngle) * 180) / Math.PI);
+};
+
+export const computeFaceArea = (faceVertexIndices: number[], cityJson: CityJsonData): number => {
+  const rawVertices = cityJson.vertices as number[][];
+  const transform = (cityJson as any).transform;
+  const realVertices = rawVertices.map(v => applyTransform(v, transform));
+
+  const indices = faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
+
+  const points = indices.map(i => {
+    const v = realVertices[i];
+    return new THREE.Vector3(v[0], v[1], v[2]);
+  });
+
+  return computeArea(
+    points.map((_, i) => i),
+    points
+  );
+};
+
+export const getFaceMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
   if (!mesh || !cityJson) return { edges: [], area: 0, centroid: new THREE.Vector3() };
 
   const rawVertices = cityJson.vertices as number[][];
@@ -97,3 +176,5 @@ export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonDa
 
   return { edges, area, centroid };
 };
+
+export const useCityJsonMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => getFaceMeasure(mesh, cityJson);

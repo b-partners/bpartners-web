@@ -17,8 +17,11 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
       .getDraftAnnotationsByAccountId(accountId, page, pageSize)
       .then(response => response.data);
   },
-  getOne: () => {
-    throw new Error('Not Implemented');
+  getOne: async (pictureId: string) => {
+    const { accountId } = getCached.userInfo();
+    const { data } = await areaPictureApi().getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, pictureId, 1, 1);
+    const draftAnnotation = data?.[0];
+    return { ...draftAnnotation, draftId: draftAnnotation?.id, id: pictureId };
   },
   saveOrUpdate: async (annotations: any, options: any) => {
     const { accountId } = getCached.userInfo();

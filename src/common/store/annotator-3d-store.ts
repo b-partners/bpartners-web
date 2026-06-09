@@ -7,6 +7,7 @@ interface Action {
   setCityJsonModel: (value: any) => void;
   reset: () => void;
   setImageUrl: (imageUrl: File) => void;
+  incrementRegenerateVersion: () => void;
 }
 interface State {
   selectedObject: any;
@@ -14,6 +15,7 @@ interface State {
   shouldSelectSurface: boolean;
   cityJsonModel: any;
   imageUrl: File;
+  regenerateVersion: number;
 }
 
 type Annotator3DStore = Action & State;
@@ -30,4 +32,6 @@ export const useAnnotator3DStore = create<Annotator3DStore>(set => ({
   reset: () => set({ selectedObject: null, selectedObjectInfo: null, shouldSelectSurface: true, cityJsonModel: null, imageUrl: null }),
   imageUrl: null,
   setImageUrl: imageUrl => set({ imageUrl }),
+  regenerateVersion: 0,
+  incrementRegenerateVersion: () => set(state => ({ regenerateVersion: state.regenerateVersion + 1 })),
 }));

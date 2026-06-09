@@ -12,15 +12,15 @@ const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
 );
 
-const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = props => {
-  const [value, setValue] = useState(props.defaultValue);
+const CustomTextField: FC<TextFieldProps & { isLoading?: boolean }> = ({ defaultValue, isLoading, ...rest }) => {
+  const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
-    setValue(props.defaultValue);
-  }, [props.defaultValue]);
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setValue(event.target.value);
-  return <TextField {...props} onChange={handleChange} value={props.isLoading ? '' : value} />;
+  return <TextField {...rest} onChange={handleChange} value={isLoading ? '' : value ?? ''} />;
 };
 
 type HandleChange = (
@@ -120,9 +120,11 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
           disabled={isSlopeAndHeightPending}
           isLoading={isSlopeAndHeightPending}
           InputProps={
-            isSlopeAndHeightPending && {
-              endAdornment: <CircularProgress size={25} />,
-            }
+            isSlopeAndHeightPending
+              ? {
+                  endAdornment: <CircularProgress size={25} />,
+                }
+              : undefined
           }
         />
       }
@@ -131,7 +133,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         select
         label='Usure'
-        value={annotationInfos.wear}
+        value={annotationInfos.wear ?? ''}
         onChange={handleChange('wear')}
         size='small'
       >
@@ -145,7 +147,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='USURE' /> }}
         select
         label="Taux d'usure"
-        value={annotationInfos.wearLevel}
+        value={annotationInfos.wearLevel ?? ''}
         onChange={handleChange('wearLevel')}
         size='small'
       >
@@ -159,7 +161,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='MOISISSURE' /> }}
         select
         label='Taux de moisissure'
-        value={annotationInfos.moldRate}
+        value={annotationInfos.moldRate ?? ''}
         onChange={handleChange('moldRate')}
         size='small'
       >
@@ -173,7 +175,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         InputProps={{ startAdornment: <FormColorBox type='HUMIDITE' /> }}
         select
         label="Taux d'humidité"
-        value={annotationInfos.humidityLevel}
+        value={annotationInfos.humidityLevel ?? ''}
         onChange={handleChange('humidityLevel')}
         size='small'
       >

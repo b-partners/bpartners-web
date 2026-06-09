@@ -1,4 +1,3 @@
-import { saveAnnotationsParams, useSaveAnnotations } from '@/common/fetcher';
 import { Check, Error } from '@mui/icons-material';
 import { Alert, AlertColor, CircularProgress } from '@mui/material';
 import { FC, useEffect, useRef, useState } from 'react';
@@ -28,8 +27,13 @@ const getCurrentAlertState = (isLoading: boolean, error: boolean) => {
   return 'success';
 };
 
-export const SaveAnnotationsButton: FC<saveAnnotationsParams> = props => {
-  const { isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations } = useSaveAnnotations(props);
+interface SaveAnnotationsButtonProps {
+  isSaveAnnotationsPending: boolean;
+  saveAnnotationsError: unknown;
+  savedAnnotations: unknown;
+}
+
+export const SaveAnnotationsNotification: FC<SaveAnnotationsButtonProps> = ({ isSaveAnnotationsPending, saveAnnotationsError, savedAnnotations }) => {
   const [shouldShow, setShouldShow] = useState(false);
   const timeoutRef = useRef(null);
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface State {
-  screen: 'llm' | 'annotator' | '3d-annotator';
+  screen: 'llm' | 'annotator' | '3d-annotator' | 'roof-analyse';
   threeDMode: 'pan' | 'roof';
 }
 

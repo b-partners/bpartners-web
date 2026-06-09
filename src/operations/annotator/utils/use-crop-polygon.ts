@@ -2,7 +2,8 @@ import { cache, DomainPolygonResultType } from '@/providers';
 const margin = 10;
 
 export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
-  const { x: firstX, y: firstY } = polygons[0].points[0];
+  const validPolygons = (polygons ?? []).filter(polygon => polygon?.points?.length);
+  const { x: firstX, y: firstY } = validPolygons[0]?.points[0] ?? { x: 0, y: 0 };
   const boundingBox = {
     left: firstX,
     right: firstX,
@@ -10,7 +11,7 @@ export const getBoundingBox = (polygons: DomainPolygonResultType[]) => {
     bottom: firstY,
   };
 
-  polygons.forEach(({ points }) => {
+  validPolygons.forEach(({ points }) => {
     points.forEach(({ x, y }) => {
       if (x < boundingBox.left) boundingBox.left = x;
       if (x > boundingBox.right) boundingBox.right = x;
@@ -109,13 +110,16 @@ export const getCroppedImageAndPolygons = (polygons: DomainPolygonResultType[], 
   canvas.width = boundingBoxXSize > 1024 ? 1024 : boundingBoxXSize;
 
   const xScale = canvas.width / boundingBoxXSize;
-  const yScale = canvas.height / boundingBoxXSize;
+  const yScale = canvas.height / boundingBoxYSize;
 
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   ctx.drawImage(image, originPoint.x, originPoint.y, boundingBoxXSize, boundingBoxYSize, 0, 0, canvas.width, canvas.height);
 
   const newImage = canvas.toDataURL('image/png');
-  const newPolygons = polygons.map(p => ({ ...p, points: p.points.map(({ x, y }) => ({ x: (x - originPoint.x) * xScale, y: (y - originPoint.y) * yScale })) }));
+  const newPolygons = polygons.map(p => ({
+    ...p,
+    points: (p?.points ?? []).map(({ x, y }) => ({ x: (x - originPoint.x) * xScale, y: (y - originPoint.y) * yScale })),
+  }));
   cache.currentImageSize(canvas.width);
   return {
     polygons: newPolygons,

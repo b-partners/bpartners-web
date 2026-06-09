@@ -1,17 +1,19 @@
 import { useLoadingHandler } from '@/common/hooks';
-import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { parseUrlParams, printError } from '@/common/utils';
 import { clearPolygons } from '@/providers';
 import { annotatorProvider } from '@/providers/annotator-provider';
 import { annotationsAttributeMapper, annotatorMapper } from '@/providers/mappers';
 import { Inbox as InboxIcon } from '@mui/icons-material';
-import { Box, List, Stack, Typography } from '@mui/material';
+import { Box, Drawer, Stack, Typography } from '@mui/material';
 import { BaseSyntheticEvent, FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 
 import { AnnotationSlopeHeightAlert, AnnotatorFormItem, AnnotatorFormResultItem } from './components';
+import { RoofSurfacesList } from './components/3d-renderer/roof-surfaces-list';
+import { sideBarStyle } from './style';
 import { AnnotatorFormState, isAfterAnalyse } from './utils';
 
 export type SideBarProps = {
@@ -21,8 +23,8 @@ export type SideBarProps = {
 const AnnotatorItemList = () => {
   const { areaPictureDetails } = useAnnotatorComponentStore();
 
-  const annotationsInfos = annotatorStore.useAnnotatorInfoStore();
-  const { polygonList } = annotatorStore.usePolygonStore();
+  const annotationsInfos = annotatorStore.useScreenAnnotatorInfoStore();
+  const { polygonList } = annotatorStore.useScreenPolygonStore();
 
   const isAfterAnalyseValue = isAfterAnalyse(polygonList);
 
@@ -40,7 +42,7 @@ const AnnotatorItemList = () => {
   );
 };
 
-export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
+const AnnotationSideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const redirect = useRedirect();
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
@@ -76,8 +78,8 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const annotationList = AnnotatorItemList();
 
   return (
-    <List sx={{ pb: '50px', maxHeight: window.innerHeight * 0.9, overflow: 'auto', pr: 1 }}>
-      <Box py={2}>
+    <Drawer variant='permanent' anchor='right' sx={sideBarStyle}>
+      <Box className='sidebar-content' py={2}>
         <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />
         <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
           <Stack component='form' gap={1}>
@@ -85,16 +87,24 @@ export const SideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
           </Stack>
         </form>
         {annotationList.length === 0 && (
-          <Box display='flex' color='#00000050' marginTop='2rem' width='100%' alignItems='center' flexDirection='column'>
+          <Box className='sidebar-empty'>
             <div>
-              <InboxIcon sx={{ fontSize: '6rem' }} />
+              <InboxIcon className='sidebar-empty-icon' />
             </div>
-            <Typography width={200} textAlign='center'>
-              Aucune annotation n'a encore été effectuée.
-            </Typography>
+            <Typography className='sidebar-empty-text'>Aucune annotation n'a encore été effectuée.</Typography>
           </Box>
         )}
       </Box>
-    </List>
+    </Drawer>
   );
+};
+
+export const SideBar: FC<SideBarProps> = props => {
+  const { screen } = useAnnotatorScreenSwitch();
+
+  if (screen === '3d-annotator') {
+    return <RoofSurfacesList />;
+  }
+
+  return <AnnotationSideBar {...props} />;
 };

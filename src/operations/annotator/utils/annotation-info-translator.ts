@@ -1,4 +1,5 @@
 import { ANNOTATION_LABELS_TRANSLATION, ANNOTATION_WEAR_TRANSLATION, coveringTypeMap } from '@/constants';
+import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { AnnotationInfo } from '../types';
 
 export const EMPTY_ANNOTATION_INFO_VALUE = 'Non renseigné';
@@ -14,10 +15,13 @@ const formatInfo = <T extends object = any, K extends keyof T = any>({ label, tr
   return { label, value: translatedValue ? translatedValue + unit : EMPTY_ANNOTATION_INFO_VALUE };
 };
 
-export const translateAnnotationInfo = (info: AnnotationInfo & { area: number }): { label: string; value: string }[] => {
+export const translateAnnotationInfo = (info: AnnotationInfo & { area: number }, isAfterAnalyse = false): { label: string; value: string }[] => {
   const isAnalyseResult = info.polygonId.includes('___');
+  const isRoofPolygon = info.polygonId.includes(roofGlobalIdRef);
+  const hasDynamicSurfaceLabel = isRoofPolygon || isAfterAnalyse;
+  const surfaceLabel = hasDynamicSurfaceLabel ? (info?.slope > 0 ? 'Surface rampante' : 'Surface au sol') : 'Surface';
 
-  const result = [formatInfo({ label: 'Surface', value: info?.area, unit: 'm²' })];
+  const result = [formatInfo({ label: surfaceLabel, value: info?.area, unit: 'm²' })];
 
   if (!isAnalyseResult) {
     result.push(

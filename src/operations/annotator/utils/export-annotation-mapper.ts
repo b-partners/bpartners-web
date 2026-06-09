@@ -33,6 +33,8 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
 
   const isAfterAnalyse = annotationInfos.find(a => a.polygonId.includes(analyseGeneratedIdRef));
 
+  const isAnalyseSession = annotationInfos.some(a => a.polygonId.includes(analyseGeneratedIdRef) || a.polygonId.includes(roofGlobalIdRef));
+
   if (!isAfterAnalyse) {
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
@@ -44,8 +46,10 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
     imageUrl = getFileUrl(fileId, 'ATTACHMENT');
   }
 
-  const annotations = polygons.map((polygon, index) => {
+  const annotations = polygons.filter(Boolean).map((polygon, index) => {
     const annotationInfo = annotationInfos.find(info => info.polygonId === polygon.id) ?? createDefaultAnnotationInfo(polygon, index);
+
+    const points = polygon.points ?? [];
 
     const annotatorLabelSplitted = polygon.id.split('___');
 
@@ -59,12 +63,15 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
       measurements:
         polygon.measurements && polygon.measurements.length > 0
           ? polygon.measurements.map(exportMeasurementMapper(polygon.id || ''))
-          : polygon.points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
+          : points.map(() => ({ isInvisible: true, unit: 'm', value: 0 })),
       infos: [
-        ...translateAnnotationInfo({
-          ...emptyToNull(annotationInfo),
-          area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
-        }),
+        ...translateAnnotationInfo(
+          {
+            ...emptyToNull(annotationInfo),
+            area: polygon.id.includes(roofGlobalIdRef) ? annotationInfo.area || polygon.surface : polygon.surface || annotationInfo.area,
+          },
+          isAnalyseSession
+        ),
         { label: 'key', value: annotatorLabelSplitted.length === 2 ? annotatorLabelSplitted[1] : annotationInfo.labelName },
       ],
     };

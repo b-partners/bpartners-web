@@ -1,3 +1,4 @@
+import { annotatorStore } from '@/common/store/annotator-store';
 import { v4 } from 'uuid';
 import { getApiKey } from './auth-provider';
 import { cache, getCached } from './cache';
@@ -89,7 +90,7 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
 
   (geoJson as any).needsImageOutput = true;
 
-  processCityJSONRequest(cityJSONRequestId, coordinates[0] as any).catch(() => {
+  processCityJSONRequest({ id: cityJSONRequestId, roofDelimiter: coordinates[0] as any }).catch(() => {
     console.error('[CityJSONRequest]: Failed to process CityJSON');
   });
 
@@ -98,6 +99,8 @@ export const initializeRoofAnalyse = async (layers: string, address: string, coo
     method: 'POST',
     body: JSON.stringify(geoJson),
   });
+
+  annotatorStore.useAnnotatorStore.getState().setRoofAnalyseId(detectionId);
 
   const throwRooferError = () => {
     const error = new Error('Roofer error');
@@ -140,7 +143,7 @@ export const getDetectionResult = async () => {
 
 export const initiateRoofProperties = async () => {
   const apiKey = await getApiKey();
-  const detectionId = getCached.roofAnalyseId() ?? '';
+  const detectionId = annotatorStore.useAnnotatorStore.getState().roofAnalyseId || getCached.roofAnalyseId() || '';
   const result = await fetch(`${baseUrl}/detections/${detectionId}/roofs/properties`, {
     headers: { 'x-api-key': apiKey, 'content-type': 'application/json' },
     method: 'PUT',

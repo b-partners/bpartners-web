@@ -1,12 +1,18 @@
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
-import { AreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
+import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useCreate, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentFormItemStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '../store';
+import {
+  annotatorStore,
+  roof3DStore,
+  useAnnotator3DStore,
+  useAnnotatorComponentFormItemStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+} from '../store';
 import { useDialog } from '../store/dialog';
-import { getFileUrl } from '../utils';
 
 const onError = (error: any) => {
   let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
@@ -47,7 +53,7 @@ export const useMutateProspect = () => {
     const fileId = uuidV4();
     const pictureId = uuidV4();
     const draftAnnotationId = uuidV4();
-    const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
+
     const areaPictureDetailsToCreate = {
       id: pictureId,
       address: prospect.address,
@@ -60,7 +66,7 @@ export const useMutateProspect = () => {
 
     const onDraftAnnotationSuccess = () => {
       navigate(
-        `/annotator?imgUrl=${encodeURIComponent(fileUrl)}` +
+        `/projects/${pictureId}?` +
           `&useDrafts=false` +
           `&fileId=${fileId}` +
           `&pictureId=${pictureId}` +
@@ -99,6 +105,8 @@ export const useMutateProspect = () => {
     useAnnotatorComponentStore.getState().reset();
     setAnnotatorSidebarAccordionItem(0);
     resetAnnotations();
+    annotatorStore.useAnnotatorStore.getState().reset();
+    roof3DStore.useRoof3DStore.getState().reset();
     clearPolygons();
     setScreen('annotator');
     // reset annotator page state

@@ -94,8 +94,10 @@ export const authProvider = {
   },
 
   logout: async (): Promise<void> => {
+    const annotatorTutorialSeen = getCached.annotatorTutorialSeen();
     await awsAuth.signOut();
     clearCache();
+    if (annotatorTutorialSeen) cache.annotatorTutorialSeen(annotatorTutorialSeen);
   },
 
   checkAuth: async (): Promise<void> => ((await whoami()) ? Promise.resolve() : Promise.reject({ message: false })),

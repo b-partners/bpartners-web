@@ -6,3 +6,4 @@ export * from './annotator-switch-store';
 export * from './bank-disconnection-store';
 export * from './prospect-search-store';
 export * from './prospect-store';
+export * from './roof-3d-store';

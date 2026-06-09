@@ -2,28 +2,28 @@ import { cache, clearPolygons, clearRoofDelimiter, removeCache } from '@/provide
 import { UrlParams } from '@bpartners/annotator-component';
 import { AreaPictureDetails, CrupdateAreaPictureDetails } from '@bpartners/typescript-client';
 import { useRef, useState } from 'react';
-import { useGetOne, useNotify, useUpdate } from 'react-admin';
+import { useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
+import { useCacheImage } from '../hooks';
 import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
-import { parseUrlParams } from '../utils';
 
 export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails: AreaPictureDetails) => void) => {
-  const { pictureId, prospectId, fileId } = parseUrlParams();
   const notify = useNotify();
   const ref = useRef(new Date().getTime());
   const navigate = useNavigate();
   const { reset: reset3dStore } = useAnnotator3DStore();
 
   const annotatorComponentStore = useAnnotatorComponentStore();
-  const query = useGetOne(
-    'area-picture-details',
-    { id: pictureId },
-    { enabled: !!pictureId, refetchOnWindowFocus: false, queryKeyHashFn: value => JSON.stringify({ value, pictureId, prospectId, fileId }) }
-  );
+  const { prospectId, id: pictureId, fileId } = annotatorComponentStore.areaPictureDetails || {};
+
+  const { isCaching: isCachingImage, cacheImage, setIsCaching } = useCacheImage();
+
   const [update, { data, isPending, reset }] = useUpdate(
     'area-picture-details',
     { id: pictureId },
-    { mutationKey: ['crupdateAreaPictureDetails', query.data, prospectId, fileId, ref.current] }
+    {
+      mutationKey: ['crupdateAreaPictureDetails', annotatorComponentStore.areaPictureDetails, prospectId, fileId, ref.current],
+    }
   );
 
   const onAreaPictureDetailsError = (error: Error) => {
@@ -32,15 +32,18 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
   };
 
   const mutate = (crupdateAreaPictureDetails: CrupdateAreaPictureDetails, onSuccess?: () => void): void => {
-    if (!query.data || !prospectId || !fileId) return null;
+    if (!prospectId || !fileId) return null;
+    setIsCaching(true);
     const areaPictureDetailsToUpdate = {
       ...crupdateAreaPictureDetails,
-      address: query.data.address,
-      filename: query.data.filename,
       fileId,
       prospectId,
       id: pictureId,
     };
+    annotatorStore.useAnnotatorStore.getState().replaceAnnotations([], []);
+    annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
+    removeCache.cityJSONRequestId();
+    clearRoofDelimiter();
 
     update(
       'area-picture-details',
@@ -51,7 +54,9 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
           onSuccess?.();
           mutateMarker?.(data[0]);
         },
-        onSettled() {
+        onSettled(data) {
+          const { fileId: newFileId } = data;
+          cacheImage(newFileId, 'AREA_PICTURE', fileId).then(() => annotatorComponentStore.setAreaPictureDetails(data));
           onSuccess?.();
         },
       }
@@ -66,40 +71,31 @@ export const useAreaPictureDetailsFetcher = (mutateMarker?: (areaPictureDetails:
     setIsRebeginLoading(true);
     ref.current = new Date().getTime();
     annotatorStore.useAnnotatorStore.getState().resetAnnotations();
+    annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
     clearPolygons(true);
 
-    mutate({ ...query.data }, () => {
+    mutate({ ...annotatorComponentStore.areaPictureDetails }, () => {
       const fileUrl = UrlParams.get('imgUrl');
       const address = UrlParams.get('address');
       const zoomLevel = UrlParams.get('zoomLevel');
       const pictureId = UrlParams.get('pictureId');
-      const prospectId = UrlParams.get('prospectId');
-      const fileId = UrlParams.get('fileId');
+      const draftAnnotationId = UrlParams.get('draftAnnotationId');
 
       removeCache.cityJSONRequestId();
       clearRoofDelimiter();
       annotatorComponentStore.reset();
       cache.loadingRedirection(
-        `/annotator?` +
-          `imgUrl=${encodeURIComponent(fileUrl)}` +
-          `&address=${address}` +
-          `&zoomLevel=${zoomLevel}` +
-          `&pictureId=${pictureId}` +
-          `&useDrafts=false` +
-          `&prospectId=${prospectId}` +
-          `&fileId=${fileId}`
+        `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${address}&zoomLevel=${zoomLevel}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotationId}`
       );
-
       setIsRebeginLoading(false);
       navigate(`/loading`);
     });
   };
 
   return {
-    query,
     mutateAreaPictureDetails: mutate,
-    isLoading: query.isLoading || query.isPending || isPending || isRebeginLoading,
-    currentAreaPictureDetailsToUse: data || query.data || { zoom: {} },
+    isLoading: isPending || isRebeginLoading || isCachingImage,
+    currentAreaPictureDetailsToUse: data || { zoom: {} },
     rebeginAreaPictureDetails,
   };
 };
