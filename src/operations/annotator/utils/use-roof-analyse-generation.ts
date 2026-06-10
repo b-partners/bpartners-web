@@ -16,11 +16,20 @@ export interface RoofAnalyseGeneration {
 
 export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const { screen } = useAnnotatorScreenSwitch();
-  const { areaPictureDetails, analyseImageUrl, analyseLoadingPolygon, setAnalyseInformation, setAnalyseImageUrl, setAnalyseImageFileId, setAnalyseLoadingPolygon } =
-    useAnnotatorComponentStore();
+  const {
+    areaPictureDetails,
+    analyseImageUrl,
+    analyseLoadingPolygon,
+    setAnalyseInformation,
+    setAnalyseImageUrl,
+    setAnalyseImageFileId,
+    setAnalyseLoadingPolygon,
+  } = useAnnotatorComponentStore();
   const clearScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.clearScreenAnnotations);
   const roof2dPolygon = annotatorStore.useAnnotatorStore(
-    useShallow(({ annotations }) => Object.values(annotations).find(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof')?.polygon)
+    useShallow(
+      ({ annotations }) => Object.values(annotations).find(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof')?.polygon
+    )
   );
   const { polygonList: analysePolygonList } = annotatorStore.useAnalysePolygonStore();
   const analyseInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
