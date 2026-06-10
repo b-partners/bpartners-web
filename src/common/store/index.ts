@@ -1,6 +1,7 @@
 export * from './annotator-3d-store';
 export * from './annotator-component-form-item-store';
 export * from './annotator-component-store';
+export * from './annotator-loading-store';
 export * from './annotator-store';
 export * from './annotator-switch-store';
 export * from './bank-disconnection-store';

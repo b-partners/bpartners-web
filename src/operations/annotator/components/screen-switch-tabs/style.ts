@@ -60,4 +60,8 @@ export const ScreenSwitchTabsStyle: SxProps = {
     borderRadius: '10px',
     lineHeight: 1.4,
   },
+  '& .tab-loading': {
+    color: PALETTE_COLORS.neon_orange,
+    marginLeft: '2px',
+  },
 };

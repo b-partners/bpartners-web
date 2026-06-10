@@ -4,7 +4,7 @@ import { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { annotatorStore, getAnnotationScreen, roof3DStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, getAnnotationScreen, roof3DStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
@@ -42,11 +42,18 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
   const loadingPolygonsKey = JSON.stringify(loadingPolygonsRaw.map(polygon => polygon?.points));
   const loadingPolygons = useMemo(() => loadingPolygonsRaw, [loadingPolygonsKey]);
 
+  const setIs3DLoading = useAnnotatorLoadingStore(params => params.setIs3DLoading);
+
   useEffect(() => {
     setSelectedRoofIndex(null);
     setPanNames({});
     setEdgeTypes(cityJson ? classifyRoofEdges(cityJson).edgeTypes : {});
   }, [cityJson]);
+
+  useEffect(() => {
+    setIs3DLoading(isLoading);
+    return () => setIs3DLoading(false);
+  }, [isLoading, setIs3DLoading]);
 
   const keepMounted = enableQuery || isLoading;
   if (!keepMounted) {
