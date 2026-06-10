@@ -438,6 +438,44 @@ export const annotator3DFloatingActionsStyle: SxProps = {
   },
 };
 
+export const regenerate3DModeSelectStyle: SxProps = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 1.25,
+  mt: 2,
+  '& .regen-mode-block': {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 0.75,
+    px: 2,
+    py: 1.75,
+    borderRadius: '10px',
+    border: '1.5px solid #e0e0e0',
+    bgcolor: '#fafafb',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    color: '#6b6b6b',
+    '&:hover': {
+      borderColor: '#bdbdbd',
+      bgcolor: '#f2f2f3',
+    },
+  },
+  '& .regen-mode-block.active': {
+    borderColor: PALETTE_COLORS.neon_orange,
+    bgcolor: '#FFF1EC',
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& .regen-mode-block .MuiSvgIcon-root': {
+    fontSize: 26,
+  },
+  '& .regen-mode-block-label': {
+    fontSize: 13,
+    fontWeight: 600,
+  },
+};
+
 export const polygonMeasureLineStyle = {
   measureSpan: (color: any) => ({
     color,
