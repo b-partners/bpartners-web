@@ -128,14 +128,15 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   if (isLoading) return <BPLoader message='Chargement des données...' />;
 
   const isAnalyseScreen = screen === 'roof-analyse';
-  const isAnalysing = isAnalyseScreen && !!analyseLoadingPolygon;
+  const isAnalysing = !!analyseLoadingPolygon;
+  const isAnalysingOnScreen = isAnalyseScreen && isAnalysing;
   const canvasImage = isAnalyseScreen ? analyseImageUrl || geojsonResult?.image || cachedImageUrl : cachedImageUrl;
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
       <Box className='annotator-canvas-container' ref={containerHeightRef}>
         {isAnalysing && (
-          <Box className='analyse-loading-container'>
+          <Box className={`analyse-loading-container ${isAnalyseScreen ? '' : 'analyse-loading-hidden'}`}>
             <RoofAnalysisDialog
               imageUrl={cachedImageUrl || UrlParams.get('imgUrl')}
               imageWidth={1024 * 3}
@@ -144,7 +145,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             />
           </Box>
         )}
-        {!isAnalysing && (screen === 'annotator' || isAnalyseScreen) && (!geoJsonResultUrl || geojsonResult?.image || isAnalyseScreen) && (
+        {!isAnalysingOnScreen && (screen === 'annotator' || isAnalyseScreen) && (!geoJsonResultUrl || geojsonResult?.image || isAnalyseScreen) && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}

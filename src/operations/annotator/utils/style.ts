@@ -24,6 +24,9 @@ export const annotatorComponentStyle: SxProps = {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  '& .analyse-loading-container.analyse-loading-hidden': {
+    display: 'none',
+  },
   '& .annotator-info': {
     position: 'absolute',
     top: 12,
