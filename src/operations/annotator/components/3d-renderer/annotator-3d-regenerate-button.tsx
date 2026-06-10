@@ -44,16 +44,26 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
             <Typography component='span' className='regen-mode-caption'>
               Mode de délimitation
             </Typography>
-            <Box className='regen-mode-tabs'>
-              <ButtonBase type='button' onClick={() => setFromSegmentation(false)} className={`regen-mode-tab ${!fromSegmentation ? 'active' : ''}`}>
+            <ButtonBase type='button' onClick={() => setFromSegmentation(false)} className={`regen-mode-option ${!fromSegmentation ? 'active' : ''}`}>
+              <Box className='regen-mode-icon'>
                 <Roofing />
-                Toit
-              </ButtonBase>
-              <ButtonBase type='button' onClick={() => setFromSegmentation(true)} className={`regen-mode-tab ${fromSegmentation ? 'active' : ''}`}>
+              </Box>
+              <Box className='regen-mode-text'>
+                <Typography className='regen-mode-label'>Toit</Typography>
+                <Typography className='regen-mode-desc'>Modélisation à partir du contour du toit</Typography>
+              </Box>
+              <Box className='regen-mode-radio' />
+            </ButtonBase>
+            <ButtonBase type='button' onClick={() => setFromSegmentation(true)} className={`regen-mode-option ${fromSegmentation ? 'active' : ''}`}>
+              <Box className='regen-mode-icon'>
                 <Dashboard />
-                Pans
-              </ButtonBase>
-            </Box>
+              </Box>
+              <Box className='regen-mode-text'>
+                <Typography className='regen-mode-label'>Pans</Typography>
+                <Typography className='regen-mode-desc'>Modélisation à partir des pans segmentés</Typography>
+              </Box>
+              <Box className='regen-mode-radio' />
+            </ButtonBase>
           </Box>
         </DialogContent>
         <DialogActions>
