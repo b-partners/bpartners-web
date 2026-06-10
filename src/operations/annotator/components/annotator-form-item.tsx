@@ -92,6 +92,8 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
 
   const isAnalyseScreen = screen === 'roof-analyse';
 
+  const is2DTab = screen === 'annotator';
+
   const hasDynamicSurfaceLabel = isRoofPolygon || isAnalyseScreen || isAfterAnalyse;
 
   const surfaceLabel = hasDynamicSurfaceLabel ? (annotationInfos.slope ? 'Surface rampante' : 'Surface au sol') : 'Surface';
@@ -138,7 +140,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
         </Typography>
       )}
       {isSurfaceLoading && <Typography>Chargement de la surface sélectionnée...</Typography>}
-      {slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
+      {!is2DTab && slopeAndHeightState?.heightStatus === 'AVAILABLE' && height && (
         <Typography sx={{ fontSize: '14px' }}>
           Hauteur du bâtiment :
           <Typography component='span' fontWeight='bold'>
@@ -146,7 +148,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
           </Typography>
         </Typography>
       )}
-      {isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
+      {!is2DTab && isSlopeAndHeightPending && <Typography>Chargement de la hauteur du bâtiment en cours...</Typography>}
     </Stack>
   );
 

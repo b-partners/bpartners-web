@@ -136,9 +136,11 @@ export const getDetectionResult = async () => {
   });
   const result = await data.json();
 
-  if (!result.geoJsonZone[0]?.properties?.vgg_file_url) throw new Error('Not done');
+  const lastDetection = [...result].sort((a, b) => +new Date(b.creationDatetime) - +new Date(a.creationDatetime))[0];
 
-  return result;
+  if (!lastDetection || !lastDetection?.geoJsonZone[0]?.properties?.vgg_file_url) throw new Error('Not done');
+
+  return lastDetection;
 };
 
 export const initiateRoofProperties = async () => {
