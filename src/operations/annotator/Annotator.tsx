@@ -20,7 +20,7 @@ import { AnnotationHelpButton, AnnotatorExportPdfButton, RoofAnalyseRegenerateBu
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
-import { calculateGlobalRate, useAnnotationInfosForm } from './utils';
+import { calculateGlobalRate, useAnnotationInfosForm, useRoofAnalyseGeneration } from './utils';
 
 export const Annotator = () => {
   useHeartBeat();
@@ -71,6 +71,7 @@ export const Annotator = () => {
   const annotatorFormState = useAnnotationInfosForm();
 
   const { isSaveAnnotationsPending, triggerManualSave, lastSavingDate: lastSavedDate } = useSaveAnnotations();
+  const roofAnalyseGeneration = useRoofAnalyseGeneration();
 
   const lastSavingDate = lastSavedDate ?? (annotations?.properties?.lastSavingDate as string | undefined);
 
@@ -149,6 +150,7 @@ export const Annotator = () => {
             variant='outlined'
             size='small'
             color='secondary'
+            generation={roofAnalyseGeneration}
           />
           <AnnotatorExportPdfButton className='bottom-toolbar-export-btn' variant='outlined' size='small' color='secondary' areaPictureDetails={areaPicture} />
           <Button

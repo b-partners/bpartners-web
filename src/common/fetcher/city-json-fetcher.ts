@@ -35,7 +35,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
   const hasPolygonFromAnnotator = !!polygonFromAnnotator;
   const { setCityJsonModel, regenerateVersion } = useAnnotator3DStore();
   const { threeDMode } = useAnnotatorScreenSwitch();
-  const annotations = annotatorStore.useAnnotatorStore.getState().annotations;
   return useQuery({
     enabled: active && hasPolygonFromAnnotator,
     refetchOnMount: false,
@@ -64,6 +63,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           imageSize = imageSize / 3;
         }
         let mappedCoordinates = [];
+        const annotations = annotatorStore.useAnnotatorStore.getState().annotations;
         const annotationValues = Object.values(annotations).filter(annotation => getAnnotationScreen(annotation) === 'annotator');
 
         if (threeDMode === 'roof') {
@@ -109,6 +109,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       result.appearance.textures[0].image = imageAsBase64;
       return result;
     },
-    queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, annotations, regenerateVersion })],
+    queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, regenerateVersion })],
   });
 };

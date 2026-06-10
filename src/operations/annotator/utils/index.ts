@@ -20,3 +20,4 @@ export * from './segment-utilities';
 export * from './shift-polygons';
 export * from './style';
 export * from './use-crop-polygon';
+export * from './use-roof-analyse-generation';
