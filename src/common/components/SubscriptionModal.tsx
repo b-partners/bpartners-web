@@ -27,14 +27,14 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const whoami = getCached.whoami();
   const today = dayjs();
-  const remainingDays = dayjs(whoami?.user?.subscription?.end).diff(today, 'day');
-  const startDate = new Date(whoami?.user?.subscription?.start);
-  const endDate = new Date(whoami?.user?.subscription?.end);
+  const remainingDays = whoami?.user?.subscription?.end ? dayjs(whoami?.user?.subscription?.end).diff(today, 'day') : null;
+  const startDate = whoami?.user?.subscription?.start ? new Date(whoami.user.subscription.start) : null;
+  const endDate = whoami?.user?.subscription?.end ? new Date(whoami.user.subscription.end) : null;
   const firstDebitDate = getFirstDebitDate(startDate, endDate);
 
   return (
     <>
-      <DialogTitle>Finalisez votre inscription en toute sérénité !</DialogTitle>
+      <DialogTitle>Effectuez votre abonnement en toute sérénité !</DialogTitle>
       <DialogContent>
         {error && (
           <Alert severity='error' variant='filled'>
@@ -46,18 +46,22 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
           <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
         </p>
-        <ul>
-          <li>
-            <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
-          </li>
-          <li>
-            <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
-          </li>
-          <li>
-            <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-          </li>
-        </ul>
-        <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d’essai. Vous pouvez annuler à tout moment, sans engagement.</p>
+        {startDate && endDate && remainingDays && (
+          <>
+            <ul>
+              <li>
+                <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
+              </li>
+              <li>
+                <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
+              </li>
+              <li>
+                <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+              </li>
+            </ul>
+            <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d'essai. Vous pouvez annuler à tout moment, sans engagement.</p>
+          </>
+        )}
         <p>
           Si vous avez la moindre question, n’hésitez à nous appeler au{' '}
           <a rel='noreferrer' href='tel:0668624836' target='_blank'>

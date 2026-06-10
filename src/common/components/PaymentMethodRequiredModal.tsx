@@ -6,7 +6,7 @@ import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
 
 const mutationFn = async () => {
-  const { redirectionUrl } = await userSubscriptionProvider.billingPortal();
+  const { redirectionUrl } = await userSubscriptionProvider.checkoutSetup();
   cache.whoami(undefined);
   cache.user(undefined);
   Redirect.toURL(redirectionUrl);
@@ -15,12 +15,12 @@ const mutationFn = async () => {
 
 export const PaymentMethodRequiredModal = () => {
   const onGetDemo = () => Redirect.toURL('https://meet.brevo.com/birdia/reunion-de-15-minutes');
-  const { isPending, mutate, error: billingPortalError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const { isPending, mutate, error: paymentMethodInsertionError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
 
   const [searchParams] = useSearchParams();
 
-  const error = searchParams.get('stripeStatus') === 'error' || !!billingPortalError;
-  const errorMessage = (billingPortalError as any)?.response?.data?.message;
+  const error = searchParams.get('stripeStatus') === 'error' || !!paymentMethodInsertionError;
+  const errorMessage = (paymentMethodInsertionError as any)?.response?.data?.message;
 
   return (
     <>
