@@ -49,6 +49,7 @@ const AnnotationSideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   const formState = useFormContext<AnnotatorFormState>();
   const { startLoading, stopLoading } = useLoadingHandler();
   const { slopeAndHeightState } = useAnnotatorComponentStore();
+  const { screen } = useAnnotatorScreenSwitch();
 
   const handleSubmitFormsWrapper = (event: BaseSyntheticEvent, isDraft: boolean) => {
     const handleSubmitForms = formState.handleSubmit(async ({ annotationInfos }) => {
@@ -80,7 +81,7 @@ const AnnotationSideBar: FC<SideBarProps> = ({ draftAnnotationId }) => {
   return (
     <Drawer variant='permanent' anchor='right' sx={sideBarStyle}>
       <Box className='sidebar-content' py={2}>
-        <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />
+        {screen === 'roof-analyse' && <AnnotationSlopeHeightAlert status={slopeAndHeightState?.heightStatus} />}
         <form onSubmit={event => handleSubmitFormsWrapper(event, false)}>
           <Stack component='form' gap={1}>
             {annotationList}
