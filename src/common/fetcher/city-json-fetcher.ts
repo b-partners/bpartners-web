@@ -7,6 +7,9 @@ import { v4 as uuid } from 'uuid';
 import { annotatorStore, getAnnotationScreen, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
+export const CITY_JSON_QUERY_KEY_PREFIX = 'city-json-process';
+export const CITY_JSON_QUERY_KEY = (hash: string) => [CITY_JSON_QUERY_KEY_PREFIX, hash];
+
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
   const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
@@ -39,7 +42,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
     enabled: active && hasPolygonFromAnnotator,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const existingId = annotatorStore.useAnnotatorStore.getState().threeDGenerationId;
       const imageUri = getFileUrl(areaPicture.fileId, 'AREA_PICTURE');
       const cachedImageBlob = await getImageFromCache(areaPicture.fileId);
@@ -48,7 +51,7 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       let data;
 
       if (existingId) {
-        data = await getExistingCityJSON(existingId);
+        data = await getExistingCityJSON(existingId, signal);
       } else {
         const cachedCityJSONRequestId = getCached.cityJSONRequestId();
         const cityJSONRequestId = cachedCityJSONRequestId || uuid();
@@ -92,7 +95,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
             zoom: areaPicture.zoom.number,
             tileImageSizePx: imageSize > 2048 ? 1024 : imageSize,
           },
-          () => annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(cityJSONRequestId)
+          () => annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(cityJSONRequestId),
+          signal
         );
       }
 
@@ -109,6 +113,6 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       result.appearance.textures[0].image = imageAsBase64;
       return result;
     },
-    queryKey: [JSON.stringify({ areaPicture, polygonFromAnnotator, regenerateVersion })],
+    queryKey: CITY_JSON_QUERY_KEY(JSON.stringify({ areaPicture, polygonFromAnnotator, regenerateVersion })),
   });
 };

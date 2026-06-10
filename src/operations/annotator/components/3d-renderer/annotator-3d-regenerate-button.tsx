@@ -1,13 +1,16 @@
+import { CITY_JSON_QUERY_KEY_PREFIX } from '@/common/fetcher';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { cache, removeCache } from '@/providers';
 import { Dashboard, Refresh, Roofing } from '@mui/icons-material';
 import { Box, Button, ButtonBase, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { FC, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { regenerate3DModeSelectStyle } from './style';
 
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   const { screen, setScreen, threeDMode } = useAnnotatorScreenSwitch();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [fromSegmentation, setFromSegmentation] = useState(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
 
@@ -19,6 +22,7 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   };
 
   const handleConfirm = () => {
+    queryClient.cancelQueries({ queryKey: [CITY_JSON_QUERY_KEY_PREFIX] });
     annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(fromSegmentation);
     annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
     removeCache.cityJSONRequestId();

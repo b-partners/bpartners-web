@@ -49,7 +49,7 @@ interface ProcessCityJSONRequestParams {
   zoom?: number;
 }
 
-export const processCityJSONRequest = async (params: ProcessCityJSONRequestParams) => {
+export const processCityJSONRequest = async (params: ProcessCityJSONRequestParams, signal?: AbortSignal) => {
   const { id, imageUrl, roofDelimiter, usePan, imageHeight, imageWidth, zoom, tileX, tileY, tileImageSizePx } = params;
   const apiKey = await getApiKey();
 
@@ -65,6 +65,7 @@ export const processCityJSONRequest = async (params: ProcessCityJSONRequestParam
 
   const response = await fetch(`${baseUrl}/city-jsons/${id}/process`, {
     method: 'PUT',
+    signal,
     headers: {
       'x-api-key': apiKey,
       'content-type': 'application/json',
@@ -96,11 +97,12 @@ export const processCityJSONRequest = async (params: ProcessCityJSONRequestParam
   }
 };
 
-export const getThreeDStatus = async (id: string) => {
+export const getThreeDStatus = async (id: string, signal?: AbortSignal) => {
   const apiKey = await getApiKey();
 
   const response = await fetch(`${baseUrl}/3d/${id}`, {
     method: 'GET',
+    signal,
     headers: {
       'x-api-key': apiKey,
     },
@@ -129,12 +131,13 @@ const dedupeById = (id: string, run: () => Promise<CityJSONData>) => {
   return promise;
 };
 
-export const getExistingCityJSON = (id: string) =>
+export const getExistingCityJSON = (id: string, signal?: AbortSignal) =>
   dedupeById(id, async () => {
     const threeDResponse = await retryUntilReady({
       maxAttemps: 20,
       sleepDelay: 7_000,
-      fetcher: () => getThreeDStatus(id),
+      signal,
+      fetcher: () => getThreeDStatus(id, signal),
       isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
     });
 
@@ -150,17 +153,18 @@ export const getExistingCityJSON = (id: string) =>
       throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
     }
 
-    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
+    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET', signal });
     return (await urlResponse.json()) as CityJSONData;
   });
 
-export const getCityJSON = (params: ProcessCityJSONRequestParams, onProcessSuccess?: () => void) =>
+export const getCityJSON = (params: ProcessCityJSONRequestParams, onProcessSuccess?: () => void, signal?: AbortSignal) =>
   dedupeById(params.id, async () => {
     await retryUntilReady({
       maxAttemps: 5,
       sleepDelay: 3_000,
+      signal,
       fetcher: async () => {
-        await processCityJSONRequest(params);
+        await processCityJSONRequest(params, signal);
         return true;
       },
       isReady: () => true,
@@ -171,7 +175,8 @@ export const getCityJSON = (params: ProcessCityJSONRequestParams, onProcessSucce
     const threeDResponse = await retryUntilReady({
       maxAttemps: 20,
       sleepDelay: 7_000,
-      fetcher: () => getThreeDStatus(params.id),
+      signal,
+      fetcher: () => getThreeDStatus(params.id, signal),
       isReady: response => response.status.progression !== ProgressionStatus.PROCESSING && response.status.progression !== ProgressionStatus.PENDING,
     });
 
@@ -187,6 +192,6 @@ export const getCityJSON = (params: ProcessCityJSONRequestParams, onProcessSucce
       throw new Error(`[ThreeD] Status: FAILED — No CityJSON files available.`);
     }
 
-    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET' });
+    const urlResponse = await fetch(threeDResponse.cityJsonFileUrls[0].url, { method: 'GET', signal });
     return (await urlResponse.json()) as CityJSONData;
   });
