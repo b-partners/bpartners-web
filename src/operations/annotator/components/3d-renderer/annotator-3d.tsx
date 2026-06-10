@@ -4,7 +4,7 @@ import { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useCitJSONProcessQuery } from '@/common/fetcher';
-import { annotatorStore, roof3DStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, getAnnotationScreen, roof3DStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
@@ -30,18 +30,19 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
   const { threeDMode } = useAnnotatorScreenSwitch();
   const annotations = annotatorStore.useAnnotatorStore(useShallow(({ annotations }) => annotations));
   const threeDGenerationId = annotatorStore.useAnnotatorStore(useShallow(({ threeDGenerationId }) => threeDGenerationId));
-  const shouldMount = active || !!threeDGenerationId;
-  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, shouldMount);
+  const enableQuery = active || !!threeDGenerationId;
+  const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, enableQuery);
   const { setSelectedRoofIndex, setPanNames, setEdgeTypes } = roof3DStore.useRoof3DActions();
 
-  const loadingPolygons = useMemo(() => {
-    const annotationValues = Object.values(annotations);
-    if (threeDMode === 'roof') {
-      const roofPolygon = annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygons[0];
-      return [roofPolygon].filter(Boolean);
-    }
-    return annotationValues.filter(annotation => annotation.annotationInfos.labelType === 'pan').map(annotation => annotation.polygon);
-  }, [annotations, threeDMode, polygons]);
+  const annotationValues = Object.values(annotations).filter(annotation => getAnnotationScreen(annotation) === 'annotator');
+  const loadingPolygonsRaw =
+    threeDMode === 'roof'
+      ? [annotationValues.find(annotation => annotation.annotationInfos.labelType === 'roof')?.polygon || polygons[0]].filter(Boolean)
+      : annotationValues.filter(annotation => annotation.annotationInfos.labelType === 'pan').map(annotation => annotation.polygon);
+  const loadingPolygonsKey = JSON.stringify(loadingPolygonsRaw.map(polygon => polygon?.points));
+  const loadingPolygons = useMemo(() => loadingPolygonsRaw, [loadingPolygonsKey]);
+
+  const setIs3DLoading = useAnnotatorLoadingStore(params => params.setIs3DLoading);
 
   useEffect(() => {
     setSelectedRoofIndex(null);
@@ -49,7 +50,13 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
     setEdgeTypes(cityJson ? classifyRoofEdges(cityJson).edgeTypes : {});
   }, [cityJson]);
 
-  if (!shouldMount) {
+  useEffect(() => {
+    setIs3DLoading(isLoading);
+    return () => setIs3DLoading(false);
+  }, [isLoading, setIs3DLoading]);
+
+  const keepMounted = enableQuery || isLoading;
+  if (!keepMounted) {
     return null;
   }
 
@@ -107,7 +114,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
           )}
         </>
       )}
-      {active && isLoading && <RoofScanLoader polygons={loadingPolygons} />}
+      {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
       {active && isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );

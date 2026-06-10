@@ -1,6 +1,6 @@
-import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
-import { Box, ButtonBase } from '@mui/material';
+import { Box, ButtonBase, CircularProgress } from '@mui/material';
 import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
@@ -28,6 +28,7 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
 
   const hasRoof = Object.values(annotations).find(a => a.annotationInfos.labelType === 'roof');
   const hasPan = Object.values(annotations).find(a => a.annotationInfos.labelType === 'pan');
+  const { is3DLoading, isAnalyseLoading } = useAnnotatorLoadingStore();
   const notify = useNotify();
 
   const select3DGenerationMode = () => {
@@ -56,10 +57,12 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
       >
         <ViewInAr />
         3D
+        {is3DLoading && <CircularProgress className='tab-loading' size={10} thickness={6} />}
       </ButtonBase>
       <ButtonBase type='button' onClick={() => setScreen('roof-analyse')} className={`screen-tab ${screen === 'roof-analyse' ? 'active' : ''}`}>
         <Roofing />
         Analyse
+        {isAnalyseLoading && <CircularProgress className='tab-loading' size={10} thickness={6} />}
       </ButtonBase>
       <ButtonBase
         disabled={!wearLevel && !humidityLevel && !moldRate}
