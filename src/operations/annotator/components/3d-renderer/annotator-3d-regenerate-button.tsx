@@ -1,6 +1,6 @@
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { cache, removeCache } from '@/providers';
-import { CheckCircle, Dashboard, Refresh, Roofing } from '@mui/icons-material';
+import { Dashboard, Refresh, Roofing } from '@mui/icons-material';
 import { Box, Button, ButtonBase, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { v4 as uuid } from 'uuid';
@@ -41,26 +41,19 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
         <DialogContent>
           <DialogContentText>Toutes les informations de la modélisation 3D précédente seront supprimées. Voulez-vous continuer ?</DialogContentText>
           <Box sx={regenerate3DModeSelectStyle}>
-            <ButtonBase type='button' onClick={() => setFromSegmentation(false)} className={`regen-mode-block ${!fromSegmentation ? 'active' : ''}`}>
-              <Box className='regen-mode-check'>
-                <CheckCircle />
-              </Box>
-              <Box className='regen-mode-icon'>
+            <Typography component='span' className='regen-mode-caption'>
+              Mode de délimitation
+            </Typography>
+            <Box className='regen-mode-tabs'>
+              <ButtonBase type='button' onClick={() => setFromSegmentation(false)} className={`regen-mode-tab ${!fromSegmentation ? 'active' : ''}`}>
                 <Roofing />
-              </Box>
-              <Typography className='regen-mode-block-label'>Toit</Typography>
-              <Typography className='regen-mode-block-desc'>Modélisation à partir du contour du toit</Typography>
-            </ButtonBase>
-            <ButtonBase type='button' onClick={() => setFromSegmentation(true)} className={`regen-mode-block ${fromSegmentation ? 'active' : ''}`}>
-              <Box className='regen-mode-check'>
-                <CheckCircle />
-              </Box>
-              <Box className='regen-mode-icon'>
+                Toit
+              </ButtonBase>
+              <ButtonBase type='button' onClick={() => setFromSegmentation(true)} className={`regen-mode-tab ${fromSegmentation ? 'active' : ''}`}>
                 <Dashboard />
-              </Box>
-              <Typography className='regen-mode-block-label'>Pans</Typography>
-              <Typography className='regen-mode-block-desc'>Modélisation à partir des pans segmentés</Typography>
-            </ButtonBase>
+                Pans
+              </ButtonBase>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
