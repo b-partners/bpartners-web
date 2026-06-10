@@ -138,7 +138,7 @@ export const getDetectionResult = async () => {
 
   const lastDetection = [...result].sort((a, b) => +new Date(b.creationDatetime) - +new Date(a.creationDatetime))[0];
 
-  if (!lastDetection?.geoJsonZone[0]?.properties?.vgg_file_url) throw new Error('Not done');
+  if (!lastDetection || !lastDetection?.geoJsonZone[0]?.properties?.vgg_file_url) throw new Error('Not done');
 
   return lastDetection;
 };
