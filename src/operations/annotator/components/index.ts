@@ -20,3 +20,4 @@ export * from './roof-analyse-regenerate-button';
 export * from './save-annotations-button';
 export * from './save-status';
 export * from './screen-switch-tabs';
+export * from './three-d-generation-mode-switch';
