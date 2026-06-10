@@ -438,6 +438,88 @@ export const annotator3DFloatingActionsStyle: SxProps = {
   },
 };
 
+export const regenerate3DModeSelectStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 1.25,
+  mt: 2.5,
+  '& .regen-mode-caption': {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#71717a',
+  },
+  '& .regen-mode-option': {
+    display: 'flex',
+    alignItems: 'center',
+    textAlign: 'left',
+    gap: 1.5,
+    width: '100%',
+    px: 1.75,
+    py: 1.5,
+    borderRadius: '10px',
+    border: '1.5px solid #e4e4e7',
+    bgcolor: '#ffffff',
+    cursor: 'pointer',
+    transition: 'border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease',
+    '&:hover': {
+      borderColor: '#c9c9cf',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    },
+  },
+  '& .regen-mode-option.active': {
+    borderColor: PALETTE_COLORS.neon_orange,
+    bgcolor: '#FFF7F4',
+    boxShadow: `0 0 0 1px ${PALETTE_COLORS.neon_orange}`,
+  },
+  '& .regen-mode-icon': {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    width: 40,
+    height: 40,
+    borderRadius: '9px',
+    bgcolor: '#f4f4f5',
+    color: '#52525b',
+    transition: 'background 0.15s ease, color 0.15s ease',
+    '& .MuiSvgIcon-root': { fontSize: 22 },
+  },
+  '& .regen-mode-option.active .regen-mode-icon': {
+    bgcolor: '#FFE4D9',
+    color: PALETTE_COLORS.neon_orange,
+  },
+  '& .regen-mode-text': {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.25,
+  },
+  '& .regen-mode-label': {
+    fontSize: 14,
+    fontWeight: 700,
+    lineHeight: 1.2,
+    color: '#18181b',
+  },
+  '& .regen-mode-desc': {
+    fontSize: 11.5,
+    lineHeight: 1.35,
+    color: '#71717a',
+  },
+  '& .regen-mode-radio': {
+    flexShrink: 0,
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    border: '2px solid #d4d4d8',
+    transition: 'border-color 0.15s ease',
+  },
+  '& .regen-mode-option.active .regen-mode-radio': {
+    borderColor: PALETTE_COLORS.neon_orange,
+    borderWidth: '5px',
+  },
+};
+
 export const polygonMeasureLineStyle = {
   measureSpan: (color: any) => ({
     color,

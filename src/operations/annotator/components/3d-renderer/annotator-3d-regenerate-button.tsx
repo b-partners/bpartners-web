@@ -1,17 +1,25 @@
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { cache, removeCache } from '@/providers';
-import { Refresh } from '@mui/icons-material';
-import { Button, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Dashboard, Refresh, Roofing } from '@mui/icons-material';
+import { Box, Button, ButtonBase, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { FC, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { regenerate3DModeSelectStyle } from './style';
 
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   const { screen, setScreen, threeDMode } = useAnnotatorScreenSwitch();
   const [open, setOpen] = useState(false);
+  const [fromSegmentation, setFromSegmentation] = useState(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
 
   if (screen !== '3d-annotator') return null;
 
+  const handleOpen = () => {
+    setFromSegmentation(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
+    setOpen(true);
+  };
+
   const handleConfirm = () => {
+    annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(fromSegmentation);
     annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
     removeCache.cityJSONRequestId();
     cache.cityJSONRequestId(uuid());
@@ -25,13 +33,38 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
 
   return (
     <>
-      <Button sx={{ minWidth: 300 }} onClick={() => setOpen(true)} startIcon={<Refresh />} {...props}>
+      <Button sx={{ minWidth: 300 }} onClick={handleOpen} startIcon={<Refresh />} {...props}>
         Régénérer la 3D
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Régénérer la modélisation 3D</DialogTitle>
         <DialogContent>
           <DialogContentText>Toutes les informations de la modélisation 3D précédente seront supprimées. Voulez-vous continuer ?</DialogContentText>
+          <Box sx={regenerate3DModeSelectStyle}>
+            <Typography component='span' className='regen-mode-caption'>
+              Mode de délimitation
+            </Typography>
+            <ButtonBase type='button' onClick={() => setFromSegmentation(false)} className={`regen-mode-option ${!fromSegmentation ? 'active' : ''}`}>
+              <Box className='regen-mode-icon'>
+                <Roofing />
+              </Box>
+              <Box className='regen-mode-text'>
+                <Typography className='regen-mode-label'>Toit</Typography>
+                <Typography className='regen-mode-desc'>Modélisation à partir du contour du toit</Typography>
+              </Box>
+              <Box className='regen-mode-radio' />
+            </ButtonBase>
+            <ButtonBase type='button' onClick={() => setFromSegmentation(true)} className={`regen-mode-option ${fromSegmentation ? 'active' : ''}`}>
+              <Box className='regen-mode-icon'>
+                <Dashboard />
+              </Box>
+              <Box className='regen-mode-text'>
+                <Typography className='regen-mode-label'>Pans</Typography>
+                <Typography className='regen-mode-desc'>Modélisation à partir des pans segmentés</Typography>
+              </Box>
+              <Box className='regen-mode-radio' />
+            </ButtonBase>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Annuler</Button>

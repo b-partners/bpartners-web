@@ -1,12 +1,12 @@
-import { annotatorStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { useAnnotatorScreenSwitch } from '@/common/store';
 import { stringCutter } from '@/common/utils';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Public } from '@mui/icons-material';
-import { Button, Stack, Tooltip, Typography } from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
 import { FC } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { addressStyle } from '../style';
 import { AnnotatorHelpButton } from '../utils';
+import { ThreeDGenerationModeSwitch } from './three-d-generation-mode-switch';
 
 interface AddressTopBarProps {
   areaPictureDetails: AreaPictureDetails;
@@ -15,9 +15,6 @@ interface AddressTopBarProps {
 
 export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show }) => {
   const { address } = areaPictureDetails;
-  const { threeDFromSegmentation, setThreeDFromSegmentation } = annotatorStore.useAnnotatorStore(
-    useShallow(({ threeDFromSegmentation, setThreeDFromSegmentation }) => ({ threeDFromSegmentation, setThreeDFromSegmentation }))
-  );
   const { screen } = useAnnotatorScreenSwitch();
   if (!show) return null;
 
@@ -32,11 +29,7 @@ export const AddressTopBar: FC<AddressTopBarProps> = ({ areaPictureDetails, show
         </Tooltip>
       </Stack>
       <Stack direction='row' gap={1}>
-        {screen === 'annotator' && (
-          <Button color={threeDFromSegmentation ? 'primary' : 'inherit'} onClick={() => setThreeDFromSegmentation(!threeDFromSegmentation)}>
-            {threeDFromSegmentation ? 'Délimiter le toit' : 'Délimiter les pans'}
-          </Button>
-        )}
+        {screen === 'annotator' && <ThreeDGenerationModeSwitch />}
         <AnnotatorHelpButton />
       </Stack>
     </Stack>
