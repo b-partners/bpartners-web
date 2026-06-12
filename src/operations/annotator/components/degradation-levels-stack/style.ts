@@ -2,9 +2,9 @@ import { SxProps } from '@mui/material';
 
 export const DegradationLevelsStackStyle: SxProps = {
   position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
   px: 1.5,
-  pt: 1.5,
-  pb: 1,
   '& .degradation-stack': {
     position: 'relative',
     width: 'fit-content',
