@@ -50,9 +50,17 @@ export const DegradationLevelsStackStyle: SxProps = {
     fontSize: 15,
     fontWeight: 700,
   },
+  '& .degradation-pill-name': {
+    fontSize: 13,
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+  },
   '& .degradation-pill-value': {
     fontSize: 14,
     fontWeight: 700,
+    ml: 0.5,
+    pl: 1,
+    borderLeft: '1px solid rgba(255,255,255,.35)',
   },
   '& .degradation-popup': {
     position: 'absolute',
