@@ -123,8 +123,13 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
           </Box>
         </Box>
         <Box className='degradation-pill-active' sx={{ bgcolor: activeLevel.main, color: '#fff' }}>
-          <Box className='degradation-pill-letter'>{activeLevel.label}</Box>
-          <Typography className='degradation-pill-name'>{activeLevel.title}</Typography>
+          <Box className='degradation-pill-icon'>
+            <ActiveIcon className='degradation-pill-icon-svg' />
+          </Box>
+          <Box className='degradation-pill-texts'>
+            <Typography className='degradation-pill-name'>{activeLevel.title}</Typography>
+            <Typography className='degradation-pill-desc'>{activeLevel.description}</Typography>
+          </Box>
           <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
         </Box>
       </Box>

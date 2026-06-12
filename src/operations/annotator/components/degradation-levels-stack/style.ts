@@ -22,21 +22,36 @@ export const DegradationLevelsStackStyle: SxProps = {
     boxShadow: '0 3px 12px rgba(0,0,0,.15)',
     cursor: 'pointer',
   },
-  '& .degradation-pill-letter': {
-    width: 32,
-    height: 32,
+  '& .degradation-pill-icon': {
+    width: 34,
+    height: 34,
     borderRadius: '50%',
     bgcolor: 'rgba(255,255,255,.25)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 15,
-    fontWeight: 700,
+    flexShrink: 0,
+  },
+  '& .degradation-pill-icon-svg': {
+    fontSize: 20,
+  },
+  '& .degradation-pill-texts': {
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: 1.1,
   },
   '& .degradation-pill-name': {
     fontSize: 13,
-    fontWeight: 600,
+    fontWeight: 700,
     whiteSpace: 'nowrap',
+    lineHeight: 1.2,
+  },
+  '& .degradation-pill-desc': {
+    fontSize: 11,
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+    opacity: 0.9,
+    lineHeight: 1.2,
   },
   '& .degradation-pill-value': {
     fontSize: 14,
