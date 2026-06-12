@@ -12,25 +12,27 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
 
   return (
     <Box className='degradation-fieldset' sx={DegradationLevelsStackStyle} {...rest}>
-      <Typography component='legend' className='degradation-legend'>
-        Note de dégradation globale
-      </Typography>
       <Box className='degradation-stack'>
-        <Stack className='degradation-popup' direction='row' gap={0.5}>
-          {degradationLevels.map(({ color, label, textColor, name }) => (
-            <Stack
-              key={label}
-              className={`degradation-popup-item${label === activeLevel.label ? ' degradation-popup-item-active' : ''}`}
-              direction='row'
-              alignItems='center'
-              gap={1}
-              sx={{ bgcolor: color, color: textColor }}
-            >
-              <Box className='degradation-popup-letter'>{label}</Box>
-              <Typography className='degradation-popup-name'>{name}</Typography>
-            </Stack>
-          ))}
-        </Stack>
+        <Box className='degradation-popup'>
+          <Typography component='legend' className='degradation-legend'>
+            Note de dégradation globale
+          </Typography>
+          <Stack className='degradation-popup-row' direction='row' gap={0.5}>
+            {degradationLevels.map(({ color, label, textColor, name }) => (
+              <Stack
+                key={label}
+                className={`degradation-popup-item${label === activeLevel.label ? ' degradation-popup-item-active' : ''}`}
+                direction='row'
+                alignItems='center'
+                gap={1}
+                sx={{ bgcolor: color, color: textColor }}
+              >
+                <Box className='degradation-popup-letter'>{label}</Box>
+                <Typography className='degradation-popup-name'>{name}</Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
         <Box className='degradation-pill-active' sx={{ bgcolor: activeLevel.color, color: activeLevel.textColor }}>
           <Box className='degradation-pill-letter'>{activeLevel.label}</Box>
           <Typography className='degradation-pill-name'>{activeLevel.name}</Typography>
