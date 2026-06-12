@@ -54,6 +54,9 @@ export const DegradationLevelsStackStyle: SxProps = {
     lineHeight: 1.2,
   },
   '& .degradation-pill-value': {
+    display: 'flex',
+    alignItems: 'center',
+    alignSelf: 'stretch',
     fontSize: 14,
     fontWeight: 700,
     ml: 0.5,
