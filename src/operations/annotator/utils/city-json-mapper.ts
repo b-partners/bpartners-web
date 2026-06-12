@@ -1,8 +1,7 @@
 import { SavedLineMeasure, SavedPolygonMeasure, Vec3Tuple } from '@/common/store';
+import { CityJsonData, computeFaceArea, computeFaceEdges } from '@/lib/cityjson';
 import { ExportAreaPictureAnnotation3D, ExportAreaPictureAnnotation3DPan } from '@bpartners/typescript-client';
-import { degToRad } from 'three/src/math/MathUtils.js';
 import { CityJSON } from '../city-json-type';
-import { getDistance2D } from './segment-utilities';
 
 const toFootprintPoint = ([x, , z]: Vec3Tuple) => ({ x, y: z });
 
@@ -22,40 +21,33 @@ const EDGE_TYPE_UNKNOWN_ID = 'unknown';
 const boundaryMapper = {
   toPan: (
     _boundary: number[],
-    vertices: number[][],
+    cityJson: CityJSON,
     area: number,
     slope: number,
-    distance_2d_scale: number,
     index: number,
     panEdgeTypes: Record<number, string> = {}
   ): ExportAreaPictureAnnotation3DPan => {
     const boundary = _boundary.slice();
     boundary.push(boundary[0]);
 
-    const points3D = boundary.map(vIndex => vertices[vIndex].map(value => value * 0.001));
+    const points3D = boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = { points: points3D.map(([x, y]) => ({ x, y })) };
-    const measurements: ExportAreaPictureAnnotation3DPan['measurements'] = [];
-    const edgeTypeNames: string[] = [];
+
+    const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
+    const measurements: ExportAreaPictureAnnotation3DPan['measurements'] = faceEdges.map(edge => ({
+      isInvisible: false,
+      unit: 'm',
+      value: edge.distanceMeters,
+    }));
+    const edgeTypeNames = faceEdges.map((_edge, edgeIndex) => panEdgeTypes[edgeIndex] ?? EDGE_TYPE_UNKNOWN_ID);
+
     const infos: ExportAreaPictureAnnotation3DPan['infos'] = [
       { label: 'Surface rampant', value: `${area}m²` },
       { label: 'Pente', value: `${slope}°` },
+      { label: 'edgeTypes', value: JSON.stringify(edgeTypeNames) },
     ];
     const name = addAlphabet('Pan', index);
-
-    for (let index = 1; index < points3D.length; index++) {
-      const current3DPoint = points3D[index];
-      const prev3DPoint = points3D[index - 1];
-
-      const angle = prev3DPoint[2] === current3DPoint[2] ? 0 : degToRad(slope);
-
-      const distance = +((getDistance2D(prev3DPoint, current3DPoint) * distance_2d_scale) / Math.cos(angle)).toFixed(2);
-
-      measurements.push({ isInvisible: false, unit: 'm', value: distance });
-      edgeTypeNames.push(panEdgeTypes[index - 1] ?? EDGE_TYPE_UNKNOWN_ID);
-    }
-
-    infos.push({ label: 'edgeTypes', value: JSON.stringify(edgeTypeNames) });
 
     return {
       polygon,
@@ -88,8 +80,7 @@ export const cityJsonMapper = {
     const isSolid = geometry.type === 'Solid';
     const surfaceBoundaries = (isSolid ? geometry.boundaries[0] : geometry.boundaries) as number[][][];
     const surfaceValues = (isSolid ? geometry.semantics.values[0] : geometry.semantics.values) as number[];
-    const roofBoundaries: { boundary: number[]; area: number; slope: number; distance_2d_scale: number }[] = [];
-    const vertices = cityJson.vertices;
+    const roofBoundaries: { boundary: number[]; area: number; slope: number }[] = [];
 
     let totalArea = 0;
 
@@ -99,25 +90,25 @@ export const cityJsonMapper = {
       const ring = surfaceBoundaries[index]?.[0] ?? [];
 
       if (currentSurface?.type === 'RoofSurface' && ring.length > 3) {
-        totalArea += currentSurface.area_in_square_meters;
+        const area = computeFaceArea(ring, cityJson as unknown as CityJsonData);
+        totalArea += area;
         roofBoundaries.push({
           boundary: ring,
-          area: currentSurface.area_in_square_meters,
+          area,
           slope: currentSurface.slope_in_degrees,
-          distance_2d_scale: currentSurface.distance_2d_scale ?? 1,
         });
       }
     }
 
-    const pans = roofBoundaries.map(({ boundary, area, slope, distance_2d_scale }, index) => {
-      const pan = boundaryMapper.toPan(boundary, vertices, area, slope, distance_2d_scale, index, edgeTypes[index] ?? {});
+    const pans = roofBoundaries.map(({ boundary, area, slope }, index) => {
+      const pan = boundaryMapper.toPan(boundary, cityJson, area, slope, index, edgeTypes[index] ?? {});
       const customName = panNames[index]?.trim();
       const named = customName ? { ...pan, name: customName } : pan;
       return panImageIds[index] ? { ...named, imageUri: panImageIds[index] } : named;
     });
 
     if (pans.length > 0) {
-      pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${totalArea}m²` }, ...pans[0].infos] };
+      pans[0] = { ...pans[0], infos: [{ label: 'Surface totale réelle', value: `${+totalArea.toFixed(2)}m²` }, ...pans[0].infos] };
     }
 
     const result: ExportAreaPictureAnnotation3D = { pans };
