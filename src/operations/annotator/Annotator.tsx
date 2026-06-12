@@ -7,16 +7,22 @@ import { getAnalyseImageFileId } from '@/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, fileProvider } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { ArrowBack, Replay, Save } from '@mui/icons-material';
-import { AppBar, Box, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useGetOne } from 'react-admin';
 import { FormProvider } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useRetrievePolygons } from '../invoice/utils/use-retrieve-polygons';
-import { degradationLevels } from '../prospects/constants';
 import { AnnotatorComponent } from './AnnotatorComponent';
-import { AnnotationHelpButton, AnnotatorExportPdfButton, RoofAnalyseRegenerateButton, SaveStatus, ScreenSwitchTabs } from './components';
+import {
+  AnnotationHelpButton,
+  AnnotatorExportPdfButton,
+  DegradationLevelsStack,
+  RoofAnalyseRegenerateButton,
+  SaveStatus,
+  ScreenSwitchTabs,
+} from './components';
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
@@ -114,25 +120,7 @@ export const Annotator = () => {
       </Stack>
       <Toolbar sx={annotatorBottomToolbarStyle}>
         <Stack direction='row'>
-          <Box className='degradation-fieldset'>
-            <Typography component='legend' className='degradation-legend'>
-              Note de dégradation globale
-            </Typography>
-            <Stack className='degradation-levels' direction='row' alignItems='center' gap={0.5}>
-              {degradationLevels.map(({ color, label, textColor }) =>
-                globalRate.type === label ? (
-                  <Box key={label} className='degradation-pill-active' sx={{ bgcolor: color, color: textColor }}>
-                    <Box className='degradation-pill-letter'>{label}</Box>
-                    <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
-                  </Box>
-                ) : (
-                  <Box key={label} className='degradation-dot' sx={{ bgcolor: color }}>
-                    {label}
-                  </Box>
-                )
-              )}
-            </Stack>
-          </Box>
+          <DegradationLevelsStack globalRate={globalRate} />
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
           <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />

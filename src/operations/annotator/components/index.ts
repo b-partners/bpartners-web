@@ -10,6 +10,7 @@ export * from './annotator-form-item';
 export * from './annotator-form-result-item';
 export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
+export * from './degradation-levels-stack/DegradationLevelsStack';
 export * from './disclaimer';
 export * from './ExportAnnotationConfirmButton';
 export * from './image-option-top-bar';
