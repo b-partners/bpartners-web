@@ -72,11 +72,7 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
                 {roofStateLevels.map(({ label, icon, title, description, main, soft }) => {
                   const Icon = icon;
                   return (
-                    <Box
-                      key={label}
-                      className={`roof-state-col${label === activeLevel.label ? ' roof-state-col-active' : ''}`}
-                      sx={label === activeLevel.label ? { borderColor: main } : undefined}
-                    >
+                    <Box key={label} className={`roof-state-col${label === activeLevel.label ? ' roof-state-col-active' : ''}`}>
                       <Box className='roof-state-col-icon' sx={{ bgcolor: soft, color: main }}>
                         <Icon className='roof-state-col-icon-svg' />
                       </Box>

@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const DegradationLevelsStackStyle: SxProps = {
@@ -120,10 +121,9 @@ export const DegradationLevelsStackStyle: SxProps = {
     },
   },
   '& .roof-state-col-active': {
-    borderWidth: '1.5px',
-    borderStyle: 'solid',
+    borderColor: PALETTE_COLORS.pine,
     '&:not(:last-of-type)': {
-      borderRightWidth: '1.5px',
+      borderRightColor: PALETTE_COLORS.pine,
     },
   },
   '& .roof-state-col-icon': {
