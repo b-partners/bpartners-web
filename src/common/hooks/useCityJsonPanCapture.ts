@@ -62,29 +62,32 @@ const projectToScreen = (point: THREE.Vector3, camera: THREE.Camera, width: numb
   return { x: (projected.x * 0.5 + 0.5) * width, y: (-projected.y * 0.5 + 0.5) * height, visible: projected.z < 1 };
 };
 
-const loadImage = (src: string): Promise<HTMLImageElement> =>
-  new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
+const readTargetToCanvas = (gl: THREE.WebGLRenderer, renderTarget: THREE.WebGLRenderTarget, width: number, height: number): HTMLCanvasElement => {
+  const buffer = new Uint8Array(width * height * 4);
+  gl.readRenderTargetPixels(renderTarget, 0, 0, width, height, buffer);
 
-const compositeMeasureLabels = async (dataUrl: string, labels: MeasureLabel[], camera: THREE.Camera, gl: THREE.WebGLRenderer): Promise<string> => {
-  if (!labels.length) return dataUrl;
+  const source = document.createElement('canvas');
+  source.width = width;
+  source.height = height;
+  source.getContext('2d')?.putImageData(new ImageData(new Uint8ClampedArray(buffer), width, height), 0, 0);
 
-  const width = gl.domElement.width;
-  const height = gl.domElement.height;
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return dataUrl;
+  if (ctx) {
+    ctx.translate(0, height);
+    ctx.scale(1, -1);
+    ctx.drawImage(source, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+  return canvas;
+};
 
-  const image = await loadImage(dataUrl);
-  ctx.drawImage(image, 0, 0, width, height);
+const drawMeasureLabels = (canvas: HTMLCanvasElement, labels: MeasureLabel[], camera: THREE.Camera, width: number, height: number, ratio: number): string => {
+  const ctx = canvas.getContext('2d');
+  if (!ctx || !labels.length) return canvas.toDataURL('image/png');
 
-  const ratio = gl.getPixelRatio();
   const fontSize = 14 * ratio;
   const padX = 8 * ratio;
   const padY = 4 * ratio;
@@ -159,7 +162,15 @@ const computeMeshNormal = (mesh: THREE.Mesh): THREE.Vector3 => {
   return sum.applyMatrix3(normalMatrix).normalize();
 };
 
-const captureMesh = async (mesh: THREE.Mesh, scene: THREE.Scene, camera: THREE.PerspectiveCamera, gl: THREE.WebGLRenderer, controls: any): Promise<string> => {
+const captureMesh = (
+  mesh: THREE.Mesh,
+  scene: THREE.Scene,
+  camera: THREE.PerspectiveCamera,
+  gl: THREE.WebGLRenderer,
+  renderTarget: THREE.WebGLRenderTarget,
+  width: number,
+  height: number
+): HTMLCanvasElement => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
   const center = sphere.center.clone().applyMatrix4(mesh.matrixWorld);
@@ -179,14 +190,11 @@ const captureMesh = async (mesh: THREE.Mesh, scene: THREE.Scene, camera: THREE.P
 
   const distance = (radius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING;
 
-  if (controls?.target) controls.target.copy(center);
-
+  camera.aspect = width / height;
   camera.position.copy(center).addScaledVector(cameraDir, distance);
   camera.up.copy(WORLD_UP);
   camera.lookAt(center);
   camera.updateProjectionMatrix();
-
-  if (controls?.update) controls.update();
 
   const original = mesh.material as THREE.Material | THREE.Material[];
   const base = (Array.isArray(original) ? original[0] : original) as THREE.MeshStandardMaterial;
@@ -196,16 +204,14 @@ const captureMesh = async (mesh: THREE.Mesh, scene: THREE.Scene, camera: THREE.P
   highlight.emissiveIntensity = 0.15;
   mesh.material = highlight;
 
-  await nextFrame();
-  await nextFrame();
+  gl.setRenderTarget(renderTarget);
   gl.render(scene, camera);
-
-  const dataUrl = gl.domElement.toDataURL('image/png');
+  gl.setRenderTarget(null);
 
   mesh.material = original;
   highlight.dispose();
 
-  return dataUrl;
+  return readTargetToCanvas(gl, renderTarget, width, height);
 };
 
 const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: number } => {
@@ -218,43 +224,43 @@ const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: n
   return { center, radius };
 };
 
-const captureBounds = async (
+const captureBounds = (
   center: THREE.Vector3,
   radius: number,
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera,
   gl: THREE.WebGLRenderer,
-  controls: any
-): Promise<string> => {
+  renderTarget: THREE.WebGLRenderTarget,
+  width: number,
+  height: number
+): HTMLCanvasElement => {
   const safeRadius = Math.max(radius, 0.5);
   const cameraDir = new THREE.Vector3(0.4, 1, 0.4).normalize();
   const distance = (safeRadius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING * 1.6;
 
-  if (controls?.target) controls.target.copy(center);
+  camera.aspect = width / height;
   camera.position.copy(center).addScaledVector(cameraDir, distance);
   camera.up.copy(WORLD_UP);
   camera.lookAt(center);
   camera.updateProjectionMatrix();
-  if (controls?.update) controls.update();
 
-  await nextFrame();
-  await nextFrame();
+  gl.setRenderTarget(renderTarget);
   gl.render(scene, camera);
+  gl.setRenderTarget(null);
 
-  return gl.domElement.toDataURL('image/png');
+  return readTargetToCanvas(gl, renderTarget, width, height);
 };
 
 export const useCityJsonPanCapture = (
   groupRef: MutableRefObject<THREE.Group | null>,
-  controlsRef: MutableRefObject<any>,
+  _controlsRef: MutableRefObject<any>,
   setSelectedMesh: (mesh: THREE.Mesh | null) => void,
   cityJson: any
 ) => {
-  const { gl, scene, camera } = useThree();
+  const { gl, scene, camera, setFrameloop, invalidate } = useThree();
   const nonce = useCityJsonPanCaptureStore(state => state.nonce);
   const setCaptures = useCityJsonPanCaptureStore(state => state.setCaptures);
   const setIsCapturing = useCityJsonPanCaptureStore(state => state.setIsCapturing);
-  const setCaptureMode = useCityJsonPanCaptureStore(state => state.setCaptureMode);
   const setMounted = useCityJsonPanCaptureStore(state => state.setMounted);
 
   useEffect(() => {
@@ -280,79 +286,72 @@ export const useCityJsonPanCapture = (
 
     const run = async () => {
       const persp = camera as THREE.PerspectiveCamera;
-      const controls = controlsRef.current;
       const { savedPolygons, savedLines, selectedMeasureId: savedMeasureId, setSelectedMeasureId } = roof3DStore.useRoof3DStore.getState();
 
-      const savedPosition = camera.position.clone();
-      const savedUp = camera.up.clone();
-      const savedQuaternion = camera.quaternion.clone();
-      const savedTarget = controls?.target ? controls.target.clone() : null;
-      const savedDamping = controls?.enableDamping ?? false;
-      if (controls) controls.enableDamping = false;
+      const width = gl.domElement.width;
+      const height = gl.domElement.height;
+      const pixelRatio = gl.getPixelRatio();
+
+      const renderTarget = new THREE.WebGLRenderTarget(width, height, { samples: 4 });
+      renderTarget.texture.colorSpace = THREE.SRGBColorSpace;
+
+      const captureCamera = new THREE.PerspectiveCamera(persp.fov, width / height, persp.near, persp.far);
+
+      setFrameloop('never');
 
       const captures: PanCapture[] = [];
 
-      if (roofMeshes.length) {
-        setCaptureMode(true);
-        setSelectedMeasureId(null);
-        setSelectedMesh(roofMeshes[0]);
-        await nextFrame();
-        await nextFrame();
-        gl.render(scene, camera);
-        await new Promise<void>(resolve => setTimeout(resolve, 800));
+      try {
+        if (roofMeshes.length) {
+          setSelectedMeasureId(null);
 
-        for (let i = 0; i < roofMeshes.length; i++) {
-          const mesh = roofMeshes[i];
-          setSelectedMesh(mesh);
-          await nextFrame();
-          await nextFrame();
+          for (let i = 0; i < roofMeshes.length; i++) {
+            const mesh = roofMeshes[i];
+            setSelectedMesh(mesh);
+            await nextFrame();
+            await nextFrame();
 
-          const dataUrl = await captureMesh(mesh, scene, persp, gl, controls);
-          const withMeasures = await compositeMeasureLabels(dataUrl, panMeasureLabels(mesh, cityJson), persp, gl);
-          captures.push({ index: i + 1, dataUrl: withMeasures, label: `Pan ${i + 1}`, kind: 'pan' });
+            const canvas = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
+            const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
+            captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan' });
+          }
+
+          setSelectedMesh(null);
         }
 
-        setCaptureMode(false);
-        setSelectedMesh(null);
+        for (let i = 0; i < savedPolygons.length; i++) {
+          const polygon = savedPolygons[i];
+          setSelectedMeasureId(polygon.id);
+          await nextFrame();
+          await nextFrame();
+
+          const { center, radius } = boundsOfPoints(polygon.points);
+          const canvas = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
+          const dataUrl = drawMeasureLabels(canvas, polygonMeasureLabels(polygon), captureCamera, width, height, pixelRatio);
+          captures.push({ index: i + 1, dataUrl, label: polygon.name, kind: 'polygon' });
+        }
+
+        for (let i = 0; i < savedLines.length; i++) {
+          const line = savedLines[i];
+          setSelectedMeasureId(line.id);
+          await nextFrame();
+          await nextFrame();
+
+          const { center, radius } = boundsOfPoints([line.pointA, line.pointB]);
+          const canvas = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
+          const dataUrl = drawMeasureLabels(canvas, lineMeasureLabels(line), captureCamera, width, height, pixelRatio);
+          captures.push({ index: i + 1, dataUrl, label: line.name, kind: 'line' });
+        }
+
+        setSelectedMeasureId(savedMeasureId);
+      } finally {
+        gl.setRenderTarget(null);
+        renderTarget.dispose();
+        setFrameloop('always');
+        invalidate();
+        setCaptures(captures);
+        setIsCapturing(false);
       }
-
-      for (let i = 0; i < savedPolygons.length; i++) {
-        const polygon = savedPolygons[i];
-        setSelectedMeasureId(polygon.id);
-        await nextFrame();
-        await nextFrame();
-
-        const { center, radius } = boundsOfPoints(polygon.points);
-        const dataUrl = await captureBounds(center, radius, scene, persp, gl, controls);
-        const withMeasures = await compositeMeasureLabels(dataUrl, polygonMeasureLabels(polygon), persp, gl);
-        captures.push({ index: i + 1, dataUrl: withMeasures, label: polygon.name, kind: 'polygon' });
-      }
-
-      for (let i = 0; i < savedLines.length; i++) {
-        const line = savedLines[i];
-        setSelectedMeasureId(line.id);
-        await nextFrame();
-        await nextFrame();
-
-        const { center, radius } = boundsOfPoints([line.pointA, line.pointB]);
-        const dataUrl = await captureBounds(center, radius, scene, persp, gl, controls);
-        const withMeasures = await compositeMeasureLabels(dataUrl, lineMeasureLabels(line), persp, gl);
-        captures.push({ index: i + 1, dataUrl: withMeasures, label: line.name, kind: 'line' });
-      }
-
-      setSelectedMeasureId(savedMeasureId);
-
-      if (controls?.target && savedTarget) controls.target.copy(savedTarget);
-      camera.position.copy(savedPosition);
-      camera.up.copy(savedUp);
-      camera.quaternion.copy(savedQuaternion);
-      persp.updateProjectionMatrix();
-      if (controls) controls.enableDamping = savedDamping;
-      if (controls?.update) controls.update();
-      gl.render(scene, camera);
-
-      setCaptures(captures);
-      setIsCapturing(false);
     };
 
     run();
