@@ -16,7 +16,7 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
         Note de dégradation globale
       </Typography>
       <Box className='degradation-stack'>
-        <Stack className='degradation-popup' gap={0.5}>
+        <Stack className='degradation-popup' direction='row' gap={0.5}>
           {degradationLevels.map(({ color, label, textColor, name }) => (
             <Stack
               key={label}

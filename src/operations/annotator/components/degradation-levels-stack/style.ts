@@ -66,7 +66,7 @@ export const DegradationLevelsStackStyle: SxProps = {
     position: 'absolute',
     bottom: 'calc(100% + 8px)',
     left: 0,
-    minWidth: '100%',
+    width: 'max-content',
     p: 0.75,
     borderRadius: 2,
     bgcolor: 'white',
