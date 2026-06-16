@@ -21,9 +21,10 @@ import { annotatorFormItem } from './style';
 interface Props {
   polygonId: string;
   isAfterAnalyse?: boolean;
+  isFirstInScreen?: boolean;
 }
 
-export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse }) => {
+export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnalyse, isFirstInScreen }) => {
   const {
     polygon: currentPolygon,
     annotationInfos,
@@ -34,7 +35,7 @@ export const AnnotatorFormItem: FC<Props> = React.memo(({ polygonId, isAfterAnal
   } = annotatorStore.useOneAnnotationStore(polygonId);
   const { slopeAndHeightState, isSlopeAndHeightPending, roofAnalyseProperties, areaPictureDetails } = useAnnotatorComponentStore();
   const { screen } = useAnnotatorScreenSwitch();
-  const [isExpanded, setIsExpanded] = useState(isFirst);
+  const [isExpanded, setIsExpanded] = useState(isFirst || (screen === 'roof-analyse' && isFirstInScreen));
   const [isEditingName, setIsEditingName] = useState(false);
   const [draftName, setDraftName] = useState('');
 
