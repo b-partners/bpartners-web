@@ -108,7 +108,7 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
                 </Stack>
                 <Divider className='roof-state-footer-divider' orientation='vertical' flexItem />
                 <Box className='roof-state-score'>
-                  <Typography className='roof-state-footer-label'>Score d'usure visible</Typography>
+                  <Typography className='roof-state-footer-label'>Score de dégradation visible</Typography>
                   <Typography className='roof-state-score-value' sx={{ color: activeLevel.main }}>
                     {globalRate.value}%
                   </Typography>
