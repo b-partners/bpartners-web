@@ -63,6 +63,51 @@ export const findSurfaceGeometry = (cityJson: CityJSON) =>
     .flatMap(cityObject => cityObject?.geometry ?? [])
     .find(geometry => Boolean(geometry?.semantics?.surfaces?.length));
 
+interface RoofBoundary {
+  boundary: number[];
+  area: number;
+  slope: number;
+}
+
+const flattenGeometrySurfaces = (geometry: any): { boundary: any; semanticIndex: number | null }[] => {
+  if (geometry?.type === 'Solid') {
+    const shellValues = geometry?.semantics?.values ?? [];
+    return (geometry?.boundaries ?? []).flatMap((shell: any[], shellIdx: number) => {
+      const values = shellValues[shellIdx] ?? [];
+      return shell.map((boundary: any, surfaceIdx: number) => ({ boundary, semanticIndex: values[surfaceIdx] ?? null }));
+    });
+  }
+  const values = geometry?.semantics?.values ?? [];
+  return (geometry?.boundaries ?? []).map((boundary: any, index: number) => ({ boundary, semanticIndex: values[index] ?? null }));
+};
+
+export const collectRoofBoundaries = (cityJson: CityJSON): { roofBoundaries: RoofBoundary[]; totalArea: number } => {
+  const roofBoundaries: RoofBoundary[] = [];
+  let totalArea = 0;
+
+  Object.values((cityJson as any)?.CityObjects ?? {}).forEach((cityObject: any) => {
+    if (Array.isArray(cityObject?.children)) return;
+
+    (cityObject?.geometry ?? []).forEach((geometry: any) => {
+      const surfaces = geometry?.semantics?.surfaces ?? [];
+
+      flattenGeometrySurfaces(geometry).forEach(({ boundary, semanticIndex }) => {
+        const currentSurface = semanticIndex != null ? surfaces[semanticIndex] : undefined;
+        const ring = Array.isArray(boundary) && Array.isArray(boundary[0]) ? boundary[0] : boundary;
+
+        if (currentSurface?.type !== 'RoofSurface') return;
+        if (!Array.isArray(ring) || ring.length < 3 || !ring.every((vertex: any) => typeof vertex === 'number')) return;
+
+        const area = computeFaceArea(ring, cityJson as unknown as CityJsonData);
+        totalArea += area;
+        roofBoundaries.push({ boundary: ring, area, slope: currentSurface.slope_in_degrees });
+      });
+    });
+  });
+
+  return { roofBoundaries, totalArea };
+};
+
 export const cityJsonMapper = {
   toExportAreaPictureAnnotation3D: (
     cityJson: CityJSON,
@@ -70,34 +115,10 @@ export const cityJsonMapper = {
     panNames: Record<number, string> = {},
     edgeTypes: Record<number, Record<number, string>> = {}
   ) => {
-    const geometry = findSurfaceGeometry(cityJson);
+    const { roofBoundaries, totalArea } = collectRoofBoundaries(cityJson);
 
-    if (!geometry?.semantics?.surfaces?.length) {
+    if (!roofBoundaries.length) {
       return { pans: [] } as ExportAreaPictureAnnotation3D;
-    }
-
-    const surfaces = geometry.semantics.surfaces;
-    const isSolid = geometry.type === 'Solid';
-    const surfaceBoundaries = (isSolid ? geometry.boundaries[0] : geometry.boundaries) as number[][][];
-    const surfaceValues = (isSolid ? geometry.semantics.values[0] : geometry.semantics.values) as number[];
-    const roofBoundaries: { boundary: number[]; area: number; slope: number }[] = [];
-
-    let totalArea = 0;
-
-    for (let index = 0; index < surfaceBoundaries.length; index++) {
-      const semanticIndex = surfaceValues ? surfaceValues[index] : index;
-      const currentSurface = surfaces[semanticIndex];
-      const ring = surfaceBoundaries[index]?.[0] ?? [];
-
-      if (currentSurface?.type === 'RoofSurface' && ring.length > 3) {
-        const area = computeFaceArea(ring, cityJson as unknown as CityJsonData);
-        totalArea += area;
-        roofBoundaries.push({
-          boundary: ring,
-          area,
-          slope: currentSurface.slope_in_degrees,
-        });
-      }
     }
 
     const pans = roofBoundaries.map(({ boundary, area, slope }, index) => {
