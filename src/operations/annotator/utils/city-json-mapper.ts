@@ -7,6 +7,17 @@ const toFootprintPoint = ([x, , z]: Vec3Tuple) => ({ x, y: z });
 
 const toLengthMeasurement = (value: number) => ({ isInvisible: false, unit: 'm', value: +value.toFixed(2) });
 
+type PanPoint = { x: number; y: number };
+
+const arePanPointsEqual = (a: PanPoint, b: PanPoint) => a.x === b.x && a.y === b.y;
+
+const closeRingWithoutSuperposition = (points: PanPoint[]): PanPoint[] => {
+  if (!points.length) return [];
+  const deduped = points.filter((point, index) => index === 0 || !arePanPointsEqual(point, points[index - 1]));
+  while (deduped.length > 1 && arePanPointsEqual(deduped[0], deduped[deduped.length - 1])) deduped.pop();
+  return [...deduped, deduped[0]];
+};
+
 export const addAlphabet = (name: string, index: number) => {
   const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const base = alphabet.length;
@@ -27,12 +38,9 @@ const boundaryMapper = {
     index: number,
     panEdgeTypes: Record<number, string> = {}
   ): ExportAreaPictureAnnotation3DPan => {
-    const boundary = _boundary.slice();
-    boundary.push(boundary[0]);
+    const points3D = _boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
 
-    const points3D = boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
-
-    const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = { points: points3D.map(([x, y]) => ({ x, y })) };
+    const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = { points: closeRingWithoutSuperposition(points3D.map(([x, y]) => ({ x, y }))) };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
     const measurements: ExportAreaPictureAnnotation3DPan['measurements'] = faceEdges.map(edge => ({
@@ -138,10 +146,9 @@ export const cityJsonMapper = {
   },
 
   userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
-    const ring = polygon.points.length ? [...polygon.points, polygon.points[0]] : [];
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: polygon.name,
-      polygon: { points: ring.map(toFootprintPoint) },
+      polygon: { points: closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)) },
       measurements: polygon.edges.map(edge => toLengthMeasurement(edge.distanceSlope)),
       infos: [{ label: 'Surface', value: `${+polygon.area.toFixed(2)}m²` }],
     };
