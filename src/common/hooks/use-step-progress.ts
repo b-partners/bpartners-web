@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const CREEP_SPEED = 7;
+
 export const useStepProgress = (steps: number) => {
   const [progress, setProgress] = useState(0);
   const valueRef = useRef(0);
@@ -7,14 +9,22 @@ export const useStepProgress = (steps: number) => {
   const completedRef = useRef(0);
   const runningRef = useRef(false);
   const frameRef = useRef(0);
+  const lastRef = useRef(0);
 
   const stop = useCallback(() => {
     runningRef.current = false;
+    lastRef.current = 0;
     cancelAnimationFrame(frameRef.current);
   }, []);
 
-  const tick = useCallback(() => {
-    valueRef.current += (targetRef.current - valueRef.current) * 0.05;
+  const tick = useCallback((now: number) => {
+    const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
+    lastRef.current = now;
+    const remaining = targetRef.current - valueRef.current;
+    if (remaining > 0.05) {
+      const decel = Math.max(0.04, (100 - valueRef.current) / 100);
+      valueRef.current = Math.min(targetRef.current, valueRef.current + Math.min(remaining, CREEP_SPEED * decel * dt));
+    }
     setProgress(Math.round(valueRef.current));
     if (runningRef.current) frameRef.current = requestAnimationFrame(tick);
   }, []);
@@ -22,6 +32,7 @@ export const useStepProgress = (steps: number) => {
   const start = useCallback(() => {
     if (runningRef.current) return;
     runningRef.current = true;
+    lastRef.current = 0;
     completedRef.current = 0;
     targetRef.current = (1 / steps) * 100;
     frameRef.current = requestAnimationFrame(tick);
