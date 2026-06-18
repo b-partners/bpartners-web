@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const CREEP_SPEED = 7;
+const DEFAULT_CAP = 90;
 
-export const useStepProgress = (steps: number) => {
+export const useStepProgress = (steps: number, cap: number = DEFAULT_CAP) => {
   const [progress, setProgress] = useState(0);
   const valueRef = useRef(0);
   const targetRef = useRef(0);
@@ -17,31 +18,35 @@ export const useStepProgress = (steps: number) => {
     cancelAnimationFrame(frameRef.current);
   }, []);
 
-  const tick = useCallback((now: number) => {
-    const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
-    lastRef.current = now;
-    const remaining = targetRef.current - valueRef.current;
-    if (remaining > 0.05) {
-      const decel = Math.max(0.04, (100 - valueRef.current) / 100);
-      valueRef.current = Math.min(targetRef.current, valueRef.current + Math.min(remaining, CREEP_SPEED * decel * dt));
-    }
-    setProgress(Math.round(valueRef.current));
-    if (runningRef.current) frameRef.current = requestAnimationFrame(tick);
-  }, []);
+  const tick = useCallback(
+    (now: number) => {
+      const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
+      lastRef.current = now;
+      const remaining = targetRef.current - valueRef.current;
+      if (remaining > 0.05) {
+        const decel = Math.max(0.04, (cap - valueRef.current) / cap);
+        valueRef.current = Math.min(targetRef.current, valueRef.current + Math.min(remaining, CREEP_SPEED * decel * dt));
+      }
+      setProgress(Math.round(valueRef.current));
+      if (runningRef.current) frameRef.current = requestAnimationFrame(tick);
+    },
+    [cap]
+  );
 
   const start = useCallback(() => {
     if (runningRef.current) return;
     runningRef.current = true;
     lastRef.current = 0;
     completedRef.current = 0;
-    targetRef.current = (1 / steps) * 100;
+    targetRef.current = cap;
     frameRef.current = requestAnimationFrame(tick);
-  }, [steps, tick]);
+  }, [cap, tick]);
 
   const advance = useCallback(() => {
     completedRef.current = Math.min(completedRef.current + 1, steps);
-    targetRef.current = Math.min(100, ((completedRef.current + 1) / steps) * 100);
-  }, [steps]);
+    valueRef.current = Math.max(valueRef.current, (completedRef.current / steps) * cap);
+    targetRef.current = cap;
+  }, [cap, steps]);
 
   const complete = useCallback(() => {
     stop();
