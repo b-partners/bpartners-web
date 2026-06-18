@@ -23,6 +23,8 @@ import {
 
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
+const ROOF_ANALYSE_PROGRESS_DURATION_MS = 56000;
+
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
 
@@ -158,7 +160,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             <BPLoader sx={{ width: '100%' }} message='Chargement des données...' />
           </Box>
         )}
-        <LoadingProgressBar className='analyse-progress' isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)} />
+        <LoadingProgressBar
+          className='analyse-progress'
+          durationMs={ROOF_ANALYSE_PROGRESS_DURATION_MS}
+          isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)}
+        />
         {showAnnotatorCanvas && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}

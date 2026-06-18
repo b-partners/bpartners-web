@@ -16,6 +16,8 @@ import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
 import { annotator3DFloatingActionsStyle, roofScanProgressStyle } from './style';
 
+const THREE_D_PROGRESS_DURATION_MS = 35000;
+
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
   width: number | string;
@@ -116,7 +118,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
         </>
       )}
       {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
-      <LoadingProgressBar sx={roofScanProgressStyle} isLoading={isLoading} />
+      <LoadingProgressBar sx={roofScanProgressStyle} durationMs={THREE_D_PROGRESS_DURATION_MS} isLoading={isLoading} />
       {active && isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );

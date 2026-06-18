@@ -6,8 +6,6 @@ import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } 
 import { useCreate, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
-
-const PROSPECT_STEPS = 3;
 import {
   annotatorStore,
   roof3DStore,
@@ -17,6 +15,9 @@ import {
   useAnnotatorScreenSwitch,
 } from '../store';
 import { useDialog } from '../store/dialog';
+
+const PROSPECT_STEPS = 3;
+const PROSPECT_PROGRESS_DURATION_MS = 19000;
 
 const onError = (error: any) => {
   let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
@@ -51,7 +52,7 @@ export const useMutateProspect = () => {
   const [create, { isPending: isAreaPictureDetailsPending }] = useCreate();
   const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
   const { reset: reset3DStore } = useAnnotator3DStore();
-  const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS);
+  const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
 
   const handleError = (error: any) => {
     resetProgress();

@@ -7,13 +7,14 @@ interface LoadingProgressBarProps {
   isLoading: boolean;
   steps?: number;
   cap?: number;
+  durationMs?: number;
   lingerMs?: number;
   sx?: SxProps;
   className?: string;
 }
 
-export const LoadingProgressBar: FC<LoadingProgressBarProps> = ({ isLoading, steps, cap, lingerMs = 900, sx, ...rest }) => {
-  const progress = useLoadingProgress(isLoading, steps, cap);
+export const LoadingProgressBar: FC<LoadingProgressBarProps> = ({ isLoading, steps, cap, durationMs, lingerMs = 900, sx, ...rest }) => {
+  const progress = useLoadingProgress(isLoading, steps, cap, durationMs);
   const [visible, setVisible] = useState(isLoading);
   const timeoutRef = useRef(0);
 
