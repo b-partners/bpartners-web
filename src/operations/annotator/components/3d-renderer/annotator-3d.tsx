@@ -3,17 +3,19 @@ import { Canvas } from '@react-three/fiber';
 import { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { ProgressBar } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
+import { useLoadingProgress } from '@/common/hooks';
 import { annotatorStore, getAnnotationScreen, roof3DStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { Straighten as StraightenIcon, Timeline as TimelineIcon } from '@mui/icons-material';
-import { Button, Divider, Stack, Tooltip } from '@mui/material';
+import { Box, Button, Divider, Stack, Tooltip } from '@mui/material';
 import { RoofScanLoader } from '../loading';
 import { Annotator3DErrorUI } from './annotator-3d-error';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
-import { annotator3DFloatingActionsStyle } from './style';
+import { annotator3DFloatingActionsStyle, roofScanProgressStyle } from './style';
 
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
@@ -32,6 +34,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
   const threeDGenerationId = annotatorStore.useAnnotatorStore(useShallow(({ threeDGenerationId }) => threeDGenerationId));
   const enableQuery = active || !!threeDGenerationId;
   const { isLoading, error, isError, data: cityJson } = useCitJSONProcessQuery(polygons[0], areaPicture, enableQuery);
+  const threeDProgress = useLoadingProgress(isLoading);
   const { setSelectedRoofIndex, setPanNames, setEdgeTypes } = roof3DStore.useRoof3DActions();
 
   const annotationValues = Object.values(annotations).filter(annotation => getAnnotationScreen(annotation) === 'annotator');
@@ -114,7 +117,14 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
           )}
         </>
       )}
-      {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
+      {isLoading && (
+        <>
+          <RoofScanLoader polygons={loadingPolygons} />
+          <Box sx={roofScanProgressStyle}>
+            <ProgressBar value={threeDProgress} />
+          </Box>
+        </>
+      )}
       {active && isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );
