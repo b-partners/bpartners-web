@@ -7,7 +7,7 @@ import { analyseRoofIdRef } from '@/operations/prospects/constants';
 import { AnnotatorCanvas, Point, Polygon, UrlParams } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
 import { RoofAnalysisDialog } from './components/loading';
@@ -49,8 +49,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
   const [annotatorScale, setAnnotatorScale] = useState(0);
   const [analyseScale, setAnalyseScale] = useState(0);
-  const [annotatorScrollPosition, setAnnotatorScrollPosition] = useState<Point | undefined>(undefined);
-  const [analyseScrollPosition, setAnalyseScrollPosition] = useState<Point | undefined>(undefined);
+  const annotatorScrollPositionRef = useRef<Point | undefined>(undefined);
+  const analyseScrollPositionRef = useRef<Point | undefined>(undefined);
 
   useEffect(() => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
@@ -190,8 +190,11 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             zoom={newZoomLevelAsNumber}
             scale={isAnalyseScreen ? analyseScale : annotatorScale}
             onScaleChange={scale => (isAnalyseScreen ? setAnalyseScale(scale) : setAnnotatorScale(scale))}
-            scrollPosition={isAnalyseScreen ? analyseScrollPosition : annotatorScrollPosition}
-            onScrollChange={position => (isAnalyseScreen ? setAnalyseScrollPosition(position) : setAnnotatorScrollPosition(position))}
+            scrollPosition={isAnalyseScreen ? analyseScrollPositionRef.current : annotatorScrollPositionRef.current}
+            onScrollChange={position => {
+              if (isAnalyseScreen) analyseScrollPositionRef.current = position;
+              else annotatorScrollPositionRef.current = position;
+            }}
             closeOnNear
           />
         )}
