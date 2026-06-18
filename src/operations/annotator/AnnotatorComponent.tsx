@@ -47,6 +47,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
+  const [annotatorScale, setAnnotatorScale] = useState(0);
+  const [analyseScale, setAnalyseScale] = useState(0);
 
   useEffect(() => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
@@ -167,7 +169,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         />
         {showAnnotatorCanvas && (
           <AnnotatorCanvas
-            key={isAnalyseScreen ? 'analyse-canvas' : 'annotator-canvas'}
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
@@ -185,6 +186,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
               showOnly: true,
             }}
             zoom={newZoomLevelAsNumber}
+            scale={isAnalyseScreen ? analyseScale : annotatorScale}
+            onScaleChange={scale => (isAnalyseScreen ? setAnalyseScale(scale) : setAnnotatorScale(scale))}
             closeOnNear
           />
         )}
