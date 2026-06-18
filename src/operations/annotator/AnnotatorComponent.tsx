@@ -1,6 +1,6 @@
-import { BPLoader, ProgressBar } from '@/common/components';
+import { BPLoader, LoadingProgressBar } from '@/common/components';
 import { useAreaPictureDetailsFetcher, useGeojsonQueryResult, usePolygonMarkerFetcher } from '@/common/fetcher';
-import { useGetElementSize, useLoadingProgress } from '@/common/hooks';
+import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
 import { analyseRoofIdRef } from '@/operations/prospects/constants';
@@ -59,7 +59,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const isAnalysing = !!analyseLoadingPolygon;
   const isAnalyseResultLoading = !!geoJsonResultUrl && !geojsonResult?.image && !isError;
-  const analyseProgress = useLoadingProgress(isAnalysing || isAnalyseResultLoading);
 
   useEffect(() => {
     setIsAnalyseLoading(isAnalysing || isAnalyseResultLoading);
@@ -159,11 +158,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             <BPLoader sx={{ width: '100%' }} message='Chargement des données...' />
           </Box>
         )}
-        {isAnalyseScreen && (isAnalysing || isAnalyseResultLoading) && (
-          <Box className='analyse-progress'>
-            <ProgressBar value={analyseProgress} />
-          </Box>
-        )}
+        <LoadingProgressBar className='analyse-progress' isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)} />
         {showAnnotatorCanvas && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}

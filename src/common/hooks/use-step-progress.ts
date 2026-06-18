@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const CREEP_SPEED = 7;
-const DEFAULT_CAP = 90;
+const DEFAULT_CAP = 98;
 
 export const useStepProgress = (steps: number, cap: number = DEFAULT_CAP) => {
   const [progress, setProgress] = useState(0);
