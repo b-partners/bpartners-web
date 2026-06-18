@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bpartners/annotator-component": "^0.20.0",
+    "@bpartners/annotator-component": "^0.21.0",
     "@bpartners/typescript-client": "^0.78.1",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",
