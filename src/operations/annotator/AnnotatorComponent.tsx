@@ -4,7 +4,7 @@ import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
 import { analyseRoofIdRef } from '@/operations/prospects/constants';
-import { AnnotatorCanvas, Polygon, UrlParams } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Point, Polygon, UrlParams } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
@@ -49,6 +49,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
   const [annotatorScale, setAnnotatorScale] = useState(0);
   const [analyseScale, setAnalyseScale] = useState(0);
+  const [annotatorScrollPosition, setAnnotatorScrollPosition] = useState<Point | undefined>(undefined);
+  const [analyseScrollPosition, setAnalyseScrollPosition] = useState<Point | undefined>(undefined);
 
   useEffect(() => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
@@ -188,6 +190,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             zoom={newZoomLevelAsNumber}
             scale={isAnalyseScreen ? analyseScale : annotatorScale}
             onScaleChange={scale => (isAnalyseScreen ? setAnalyseScale(scale) : setAnnotatorScale(scale))}
+            scrollPosition={isAnalyseScreen ? analyseScrollPosition : annotatorScrollPosition}
+            onScrollChange={position => (isAnalyseScreen ? setAnalyseScrollPosition(position) : setAnnotatorScrollPosition(position))}
             closeOnNear
           />
         )}
