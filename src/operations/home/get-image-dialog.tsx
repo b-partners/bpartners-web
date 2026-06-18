@@ -11,7 +11,10 @@ import { FC, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '../annotator/components/loading';
+import { ProgressBar } from './progress-bar';
 import { getImageDialogStyle } from './style';
+
+const LOADING_DURATION = 13000;
 
 interface GetImageDialogProps {
   address: string;
@@ -50,7 +53,12 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
       </DialogTitle>
       <DialogContent>
         <FormProvider {...form}>
-          {Object.values(satellites).includes(true) && <LoadingSteps />}
+          {Object.values(satellites).includes(true) && (
+            <>
+              <LoadingSteps />
+              <ProgressBar duration={LOADING_DURATION} />
+            </>
+          )}
           <Stack className='form-container' spacing={1}>
             {satellites.screnShot && (
               <Box sx={{ width: '100%', height: '400px', position: 'relative', overflow: 'hidden' }}>
