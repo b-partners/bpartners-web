@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
-import { BpAutoCompleteBackend, BpFormField } from '@/common/components';
+import { BpAutoCompleteBackend, BpFormField, ProgressBar } from '@/common/components';
 import { useMutateProspect } from '@/common/fetcher';
 import { useDialog } from '@/common/store/dialog';
 import { wait } from '@/common/utils';
@@ -11,10 +11,7 @@ import { FC, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
 import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '../annotator/components/loading';
-import { ProgressBar } from './progress-bar';
 import { getImageDialogStyle } from './style';
-
-const LOADING_DURATION = 13000;
 
 interface GetImageDialogProps {
   address: string;
@@ -26,7 +23,7 @@ interface FormType {
 }
 
 export const GetImageDialog: FC<GetImageDialogProps> = props => {
-  const { mutate, isPending } = useMutateProspect();
+  const { mutate, isPending, progress } = useMutateProspect();
   const { close } = useDialog();
   const form = useForm<FormType>({ defaultValues: { address: props.address } });
   const [scope, animate] = useAnimate();
@@ -56,7 +53,7 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
           {Object.values(satellites).includes(true) && (
             <>
               <LoadingSteps />
-              <ProgressBar duration={LOADING_DURATION} />
+              <ProgressBar value={progress} />
             </>
           )}
           <Stack className='form-container' spacing={1}>
