@@ -167,6 +167,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
         />
         {showAnnotatorCanvas && (
           <AnnotatorCanvas
+            key={isAnalyseScreen ? 'analyse-canvas' : 'annotator-canvas'}
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
             width={width || containerWidth}
