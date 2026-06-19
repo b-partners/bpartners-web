@@ -400,6 +400,16 @@ export const roofSurfacesDrawerStyle: SxProps = {
   },
 };
 
+export const roofScanProgressStyle: SxProps = {
+  position: 'absolute',
+  bottom: 32,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: '60%',
+  maxWidth: 480,
+  zIndex: 1000,
+};
+
 export const annotator3DFloatingActionsStyle: SxProps = {
   position: 'absolute',
   bottom: 16,

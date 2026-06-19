@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { CSSProperties, FC, useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { LoadingProgressBar } from '@/common/components';
 import { useCitJSONProcessQuery } from '@/common/fetcher';
 import { annotatorStore, getAnnotationScreen, roof3DStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { classifyRoofEdges } from '@/lib/roof-mapping';
@@ -13,7 +14,9 @@ import { RoofScanLoader } from '../loading';
 import { Annotator3DErrorUI } from './annotator-3d-error';
 import { Annotator3DSaveImage } from './annotator-3d-save-image';
 import { CityScene } from './city-scene';
-import { annotator3DFloatingActionsStyle } from './style';
+import { annotator3DFloatingActionsStyle, roofScanProgressStyle } from './style';
+
+const THREE_D_PROGRESS_DURATION_MS = 35000;
 
 export type ThreeDMeasureMode = 'none' | 'line' | 'polygon';
 interface Annotator3DProps {
@@ -115,6 +118,7 @@ export const Annotator3D: FC<Annotator3DProps> = ({ height, active = false, area
         </>
       )}
       {isLoading && <RoofScanLoader polygons={loadingPolygons} />}
+      <LoadingProgressBar sx={roofScanProgressStyle} durationMs={THREE_D_PROGRESS_DURATION_MS} isLoading={isLoading} />
       {active && isError && error && <Annotator3DErrorUI error={error} />}
     </div>
   );

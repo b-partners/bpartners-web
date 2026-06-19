@@ -27,6 +27,15 @@ export const annotatorComponentStyle: SxProps = {
   '& .analyse-loading-container.analyse-loading-hidden': {
     display: 'none',
   },
+  '& .analyse-progress': {
+    position: 'absolute',
+    bottom: 32,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '60%',
+    maxWidth: 480,
+    zIndex: 1000,
+  },
   '& .annotator-info': {
     position: 'absolute',
     top: 12,
