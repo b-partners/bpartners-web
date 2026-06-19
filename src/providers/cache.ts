@@ -28,6 +28,8 @@ const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
 const annotationToSave = 'birdia_annotation_to_save';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
+export const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
+export const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -275,5 +277,7 @@ export const removeCache = {
     localStorage.removeItem(defaultRoofDelimiterItem);
     localStorage.removeItem(cityJSONRequestIdItem);
     localStorage.removeItem(roofDelimiterLongLatItem);
+    localStorage.removeItem(ANALYSE_VIEW_STORAGE_KEY);
+    localStorage.removeItem(ANNOTATOR_VIEW_STORAGE_KEY);
   },
 };

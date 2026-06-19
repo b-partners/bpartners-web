@@ -4,6 +4,7 @@ import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
 import { analyseRoofIdRef } from '@/operations/prospects/constants';
+import { ANALYSE_VIEW_STORAGE_KEY, ANNOTATOR_VIEW_STORAGE_KEY } from '@/providers';
 import { AnnotatorCanvas, Polygon, UrlParams } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
@@ -24,9 +25,6 @@ import {
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 const ROOF_ANALYSE_PROGRESS_DURATION_MS = 56000;
-
-const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
-const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
 
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
