@@ -20,13 +20,13 @@ const schema = z
     }),
     companyInfo: z.object({
       tvaNumber: requiredStringCustom(),
-      socialCapital: requiredStringCustom(),
+      socialCapital: z.custom(() => true),
       website: z.string(),
       phone: requiredStringCustom().refine(phoneValidator, FieldErrorMessage.accountPhone),
       email: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
     }),
     officialActivityName: requiredStringCustom(),
-    siren: requiredStringCustom(),
+    siren: z.custom(() => true),
     feedback: z.object({
       feedbackLink: requiredStringCustom(),
     }),
