@@ -79,7 +79,7 @@ export const annotationHelpDialogStyle: SxProps = {
       overflow: 'hidden',
       boxShadow: '0 12px 40px rgba(0,0,0,.45)',
       background: '#000',
-      '& .help-video-iframe': {
+      '& iframe': {
         width: '100%',
         height: '100%',
         border: 'none',
