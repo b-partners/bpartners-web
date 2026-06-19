@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
-import { BpAutoCompleteBackend, BpFormField } from '@/common/components';
+import { BpAutoCompleteBackend, BpFormField, ProgressBar } from '@/common/components';
 import { useMutateProspect } from '@/common/fetcher';
 import { useDialog } from '@/common/store/dialog';
 import { wait } from '@/common/utils';
@@ -23,7 +23,7 @@ interface FormType {
 }
 
 export const GetImageDialog: FC<GetImageDialogProps> = props => {
-  const { mutate, isPending } = useMutateProspect();
+  const { mutate, isPending, progress } = useMutateProspect();
   const { close } = useDialog();
   const form = useForm<FormType>({ defaultValues: { address: props.address } });
   const [scope, animate] = useAnimate();
@@ -50,7 +50,12 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
       </DialogTitle>
       <DialogContent>
         <FormProvider {...form}>
-          {Object.values(satellites).includes(true) && <LoadingSteps />}
+          {Object.values(satellites).includes(true) && (
+            <>
+              <LoadingSteps />
+              <ProgressBar value={progress} />
+            </>
+          )}
           <Stack className='form-container' spacing={1}>
             {satellites.screnShot && (
               <Box sx={{ width: '100%', height: '400px', position: 'relative', overflow: 'hidden' }}>

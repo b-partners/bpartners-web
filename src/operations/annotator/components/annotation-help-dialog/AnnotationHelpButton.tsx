@@ -2,17 +2,17 @@ import { cache, getCached } from '@/providers';
 import { Close, HelpOutline } from '@mui/icons-material';
 import { Box, Button, Checkbox, CircularProgress, Dialog, FormControlLabel, IconButton, Tooltip, Typography } from '@mui/material';
 import { FC, useState } from 'react';
-import YouTube, { YouTubeProps } from 'react-youtube';
+import ReactPlayer from 'react-player';
 import { annotationHelpButtonStyle, annotationHelpDialogStyle } from './style';
 
-const HELP_VIDEO_ID = '6nub7AjiwgQ';
+const HELP_VIDEO_URL = 'https://www.youtube.com/watch?v=6nub7AjiwgQ';
 
-const playerOptions: YouTubeProps['opts'] = {
-  width: '100%',
-  height: '100%',
-  playerVars: {
-    rel: 0,
-    modestbranding: 1,
+const playerConfig = {
+  youtube: {
+    playerVars: {
+      rel: 0,
+      modestbranding: 1,
+    },
   },
 };
 
@@ -65,11 +65,13 @@ export const AnnotationHelpButton = () => {
           {open && !errored && !ready && <HelpLoader />}
           {open && !errored && (
             <Box className='help-frame'>
-              <YouTube
+              <ReactPlayer
                 className='help-video'
-                iframeClassName='help-video-iframe'
-                videoId={HELP_VIDEO_ID}
-                opts={playerOptions}
+                url={HELP_VIDEO_URL}
+                width='100%'
+                height='100%'
+                controls
+                config={playerConfig}
                 onReady={() => setReady(true)}
                 onError={() => setErrored(true)}
               />

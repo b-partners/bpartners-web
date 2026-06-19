@@ -1,3 +1,5 @@
+import { useStepProgress } from '@/common/hooks';
+import { wait } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
@@ -13,6 +15,9 @@ import {
   useAnnotatorScreenSwitch,
 } from '../store';
 import { useDialog } from '../store/dialog';
+
+const PROSPECT_STEPS = 3;
+const PROSPECT_PROGRESS_DURATION_MS = 19000;
 
 const onError = (error: any) => {
   let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
@@ -47,8 +52,15 @@ export const useMutateProspect = () => {
   const [create, { isPending: isAreaPictureDetailsPending }] = useCreate();
   const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
   const { reset: reset3DStore } = useAnnotator3DStore();
+  const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
+
+  const handleError = (error: any) => {
+    resetProgress();
+    onError(error);
+  };
 
   const onProspectSuccess = (prospect: Prospect) => {
+    advance();
     notify(`resources.prospects.creation.success`, { type: 'success' });
     const fileId = uuidV4();
     const pictureId = uuidV4();
@@ -65,20 +77,24 @@ export const useMutateProspect = () => {
     };
 
     const onDraftAnnotationSuccess = () => {
-      navigate(
-        `/projects/${pictureId}?` +
-          `&useDrafts=false` +
-          `&fileId=${fileId}` +
-          `&pictureId=${pictureId}` +
-          `&prospectId=${prospect.id}` +
-          `&address=${prospect.address}` +
-          `&zoomLevel=${ZoomLevel.BUILDING}` +
-          `&draftAnnotationId=${draftAnnotationId}`
-      );
-      useDialog.getState().close();
+      complete();
+      wait(800).then(() => {
+        navigate(
+          `/projects/${pictureId}?` +
+            `&useDrafts=false` +
+            `&fileId=${fileId}` +
+            `&pictureId=${pictureId}` +
+            `&prospectId=${prospect.id}` +
+            `&address=${prospect.address}` +
+            `&zoomLevel=${ZoomLevel.BUILDING}` +
+            `&draftAnnotationId=${draftAnnotationId}`
+        );
+        useDialog.getState().close();
+      });
     };
 
     const onAreaPictureDetailsSuccess = () => {
+      advance();
       const requestBody: AreaPictureAnnotation = {
         id: draftAnnotationId,
         annotations: [],
@@ -90,11 +106,11 @@ export const useMutateProspect = () => {
       saveDraftAnnotations(
         'drafts-annotations',
         { data: requestBody, meta: { pictureId, annotationId: draftAnnotationId }, id: draftAnnotationId },
-        { onSuccess: onDraftAnnotationSuccess }
+        { onError: handleError, onSuccess: onDraftAnnotationSuccess }
       );
     };
 
-    create('area-picture-details', { data: areaPictureDetailsToCreate }, { onError, onSuccess: onAreaPictureDetailsSuccess });
+    create('area-picture-details', { data: areaPictureDetailsToCreate }, { onError: handleError, onSuccess: onAreaPictureDetailsSuccess });
   };
 
   const mutate = (prospect: Prospect) => {
@@ -111,8 +127,9 @@ export const useMutateProspect = () => {
     setScreen('annotator');
     // reset annotator page state
 
-    create('prospects', { data: prospect }, { onError, onSuccess: onProspectSuccess });
+    start();
+    create('prospects', { data: prospect }, { onError: handleError, onSuccess: onProspectSuccess });
   };
 
-  return { mutate, isPending: isAreaPictureDetailsPending || isDraftAnnotationsPending };
+  return { mutate, isPending: isAreaPictureDetailsPending || isDraftAnnotationsPending, progress };
 };

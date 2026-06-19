@@ -28,7 +28,7 @@ const AnnotatorItemList = () => {
 
   const isAfterAnalyseValue = isAfterAnalyse(polygonList);
 
-  return annotationsInfos.map(annotationInfo =>
+  return annotationsInfos.map((annotationInfo, index) =>
     annotationInfo?.polygonId?.includes('___') ? (
       <AnnotatorFormResultItem
         isAfterAnalyse={isAfterAnalyseValue}
@@ -37,7 +37,12 @@ const AnnotatorItemList = () => {
         polygonId={annotationInfo.polygonId}
       />
     ) : (
-      <AnnotatorFormItem isAfterAnalyse={isAfterAnalyseValue} polygonId={annotationInfo.polygonId} key={`${annotationInfo.polygonId}_AnnotatorFormItem`} />
+      <AnnotatorFormItem
+        isAfterAnalyse={isAfterAnalyseValue}
+        isFirstInScreen={index === 0}
+        polygonId={annotationInfo.polygonId}
+        key={`${annotationInfo.polygonId}_AnnotatorFormItem`}
+      />
     )
   );
 };

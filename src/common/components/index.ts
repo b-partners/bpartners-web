@@ -16,6 +16,7 @@ export * from './global-dialog.tsx';
 export * from './loading-page';
 export * from './PaymentMethodRequiredModal.tsx';
 export * from './Pdf';
+export * from './ProgressBar';
 export * from './RichTextEditor';
 export * from './slash-icon';
 export * from './SubscriptionBillingModal';
