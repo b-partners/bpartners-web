@@ -4,10 +4,10 @@ import { useGetElementSize } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { getImageFromCache } from '@/common/utils';
 import { analyseRoofIdRef } from '@/operations/prospects/constants';
-import { AnnotatorCanvas, Point, Polygon, UrlParams } from '@bpartners/annotator-component';
+import { AnnotatorCanvas, Polygon, UrlParams } from '@bpartners/annotator-component';
 import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
-import { Dispatch, FC, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
 import { RoofAnalysisDialog } from './components/loading';
@@ -24,6 +24,9 @@ import {
 const CONVERTER_BASE_URL = process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL || '';
 
 const ROOF_ANALYSE_PROGRESS_DURATION_MS = 56000;
+
+const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
+const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
 
 export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { boxWrapperSx = {}, showFileSource = true, buttonComponent, allowAnnotation = true, width, height } = props;
@@ -47,10 +50,6 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
   const { mutateAreaPictureDetails, isLoading } = useAreaPictureDetailsFetcher();
   const [measureMode, setMeasureMode] = useState<ThreeDMeasureMode>('none');
-  const [annotatorScale, setAnnotatorScale] = useState(0);
-  const [analyseScale, setAnalyseScale] = useState(0);
-  const annotatorScrollPositionRef = useRef<Point | undefined>(undefined);
-  const analyseScrollPositionRef = useRef<Point | undefined>(undefined);
 
   useEffect(() => {
     if (areaPictureDetails && areaPictureDetails.xTile && areaPictureDetails.xTile) mutateMarker(areaPictureDetails);
@@ -188,13 +187,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
               showOnly: true,
             }}
             zoom={newZoomLevelAsNumber}
-            scale={isAnalyseScreen ? analyseScale : annotatorScale}
-            onScaleChange={scale => (isAnalyseScreen ? setAnalyseScale(scale) : setAnnotatorScale(scale))}
-            scrollPosition={isAnalyseScreen ? analyseScrollPositionRef.current : annotatorScrollPositionRef.current}
-            onScrollChange={position => {
-              if (isAnalyseScreen) analyseScrollPositionRef.current = position;
-              else annotatorScrollPositionRef.current = position;
-            }}
+            key={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
+            storageKey={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
             closeOnNear
           />
         )}
