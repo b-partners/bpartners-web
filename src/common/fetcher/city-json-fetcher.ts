@@ -4,6 +4,7 @@ import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
+import { getCurrentShift, shiftImageWithBlankOffset } from '@/operations/annotator/utils';
 import { annotatorStore, getAnnotationScreen, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
@@ -110,7 +111,11 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       const result = copyObject(data);
 
       if (result && result.transform) setCityJsonModel(result);
-      result.appearance.textures[0].image = imageAsBase64;
+
+      const { xShift, yShift } = getCurrentShift(areaPicture);
+      const textureImage = areaPicture.shiftNb ? await shiftImageWithBlankOffset(imageAsBase64, xShift, yShift) : imageAsBase64;
+      result.appearance.textures[0].image = textureImage;
+
       return result;
     },
     queryKey: CITY_JSON_QUERY_KEY(JSON.stringify({ areaPicture, polygonFromAnnotator, regenerateVersion })),
