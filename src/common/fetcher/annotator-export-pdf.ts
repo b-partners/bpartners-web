@@ -1,12 +1,19 @@
 import { AnnotationInfo } from '@/operations/annotator';
-import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs, findSurfaceGeometry } from '@/operations/annotator/utils';
+import {
+  cityJsonMapper,
+  exportAnnotationMapper,
+  ExportAnnotationMapperArgs,
+  findSurfaceGeometry,
+  isAfterAnalyse,
+  shiftPolygons,
+} from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
 import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
-import { annotatorStore, roof3DStore, useAnnotator3DStore } from '../store';
+import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
 import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
@@ -102,12 +109,15 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const roof2DAnnotationInfos = annotatorStore.use2DRoofAnnotatorInfoStore();
   const { polygonList: pan2DPolygons } = annotatorStore.use2DPanPolygonStore();
   const pan2DAnnotationInfos = annotatorStore.use2DPanAnnotatorInfoStore();
+  const areaPictureDetails = useAnnotatorComponentStore(params => params.areaPictureDetails);
 
   const hasAnalysePolygons = analysePolygons.length > 0;
   const has2DRoofPolygons = roof2DPolygons.length > 0;
 
-  const polygons = hasAnalysePolygons ? analysePolygons : has2DRoofPolygons ? roof2DPolygons : pan2DPolygons;
+  const selectedPolygons = hasAnalysePolygons ? analysePolygons : has2DRoofPolygons ? roof2DPolygons : pan2DPolygons;
   const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : has2DRoofPolygons ? roof2DAnnotationInfos : pan2DAnnotationInfos;
+
+  const polygons = isAfterAnalyse(selectedPolygons) ? selectedPolygons : shiftPolygons(selectedPolygons, areaPictureDetails, true);
 
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
