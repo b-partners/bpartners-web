@@ -1,5 +1,12 @@
 import { AnnotationInfo } from '@/operations/annotator';
-import { cityJsonMapper, exportAnnotationMapper, ExportAnnotationMapperArgs, findSurfaceGeometry, isAfterAnalyse, shiftPolygons } from '@/operations/annotator/utils';
+import {
+  cityJsonMapper,
+  exportAnnotationMapper,
+  ExportAnnotationMapperArgs,
+  findSurfaceGeometry,
+  isAfterAnalyse,
+  shiftPolygons,
+} from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
 import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';

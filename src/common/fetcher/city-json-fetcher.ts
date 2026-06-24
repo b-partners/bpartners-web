@@ -1,10 +1,10 @@
+import { getCurrentShift, shiftImageWithBlankOffset } from '@/operations/annotator/utils';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
 import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider';
 import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { v4 as uuid } from 'uuid';
-import { getCurrentShift, shiftImageWithBlankOffset } from '@/operations/annotator/utils';
 import { annotatorStore, getAnnotationScreen, useAnnotator3DStore, useAnnotatorScreenSwitch } from '../store';
 import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
