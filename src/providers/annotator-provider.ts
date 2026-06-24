@@ -74,4 +74,13 @@ export const annotatorProvider = {
       console.log(error);
     }
   },
+  async pixelPointsToLonLat(geoJson: any) {
+    try {
+      const { accountId } = getCached.userInfo();
+      const { data } = await areaPictureApi().convertAreaPictureAnnotationsToLonLat(accountId, geoJson);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
