@@ -1,3 +1,4 @@
+import { getCurrentShift, shiftImageWithBlankOffset } from '@/operations/annotator/utils';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
 import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider';
 import { Polygon } from '@bpartners/annotator-component';
@@ -110,7 +111,11 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
       const result = copyObject(data);
 
       if (result && result.transform) setCityJsonModel(result);
-      result.appearance.textures[0].image = imageAsBase64;
+
+      const { xShift, yShift } = getCurrentShift(areaPicture);
+      const textureImage = areaPicture.shiftNb ? await shiftImageWithBlankOffset(imageAsBase64, xShift, yShift) : imageAsBase64;
+      result.appearance.textures[0].image = textureImage;
+
       return result;
     },
     queryKey: CITY_JSON_QUERY_KEY(JSON.stringify({ areaPicture, polygonFromAnnotator, regenerateVersion })),
