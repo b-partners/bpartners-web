@@ -57,8 +57,17 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
     }
 
     if (areaPictureAnnotationParam) {
-      const { global_rate_type, global_rate_value, roofHeight, llm, roofDelimiter, imageTileInfoOrigin, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
-        areaPictureAnnotationParam?.properties || {};
+      const {
+        global_rate_type,
+        global_rate_value,
+        roofHeight,
+        llm,
+        roofDelimiter,
+        imageTileInfoOrigin,
+        threeDGenerationMode,
+        threeDGenerationId,
+        roofAnalyseId,
+      } = areaPictureAnnotationParam?.properties || {};
       let heightStatus: SlopeAndHeightStatus = null;
 
       if (roofHeight) heightStatus = 'AVAILABLE';
@@ -75,6 +84,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       });
 
       cache.roofDelimiterLongLatItem(roofDelimiter);
+
       setImageTileInfoOrigin?.(imageTileInfoOrigin);
 
       const roofAnnotation = areaPictureAnnotationParam.annotations.find(a => a.id?.includes(roofGlobalIdRef));

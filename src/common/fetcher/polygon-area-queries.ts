@@ -50,12 +50,8 @@ const getAnalyseCoordinates = async (polygon: Polygon, imageTileInfoOrigin: any)
   return coordinates;
 };
 
-const getRefererCoordinates = async (polygon: Polygon, areaPictureDetails: AreaPictureDetails, imageSize: number, divisor: number): Promise<GeoCoordinate[]> => {
-  const geoJson = polygonMapper.toRefererGeoJson(
-    { ...polygon, points: polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
-    imageSize,
-    areaPictureDetails
-  );
+const getRefererCoordinates = async (polygon: Polygon, areaPictureDetails: AreaPictureDetails, imageSize: number): Promise<GeoCoordinate[]> => {
+  const geoJson = polygonMapper.toRefererGeoJson({ ...polygon, points: polygon.points.map(p => ({ x: p.x, y: p.y })) }, imageSize, areaPictureDetails);
   const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
 
   const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
@@ -91,11 +87,9 @@ export const usePolygonAreaQuery = (params: Params) => {
       }
 
       const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
-      const cachedImageSize = cachedImageBlob ? await getImageSize(imageUrl) : null;
-      const divisor = params.isAfterAnalyse && cachedImageSize && params.areaPictureDetails.zoom.number !== 20 ? 20 - params.areaPictureDetails.zoom.number : 1;
 
       [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
-      coordinates = await getRefererCoordinates(polygon, currentAreaPictureDetails, imageSize, divisor);
+      coordinates = await getRefererCoordinates(polygon, currentAreaPictureDetails, imageSize);
     }
 
     const area = +(getAreaOfPolygon(coordinates) / (params.annotationInfos.slope ? Math.cos(params.annotationInfos.slope * (Math.PI / 180)) : 1)).toFixed(2);
