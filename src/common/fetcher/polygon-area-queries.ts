@@ -1,7 +1,7 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import { getCenter, shiftPolygons } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { annotatorProvider, getCached, polygonMapper } from '@/providers';
+import { annotatorProvider, polygonMapper } from '@/providers';
 import { Measurement, Polygon } from '@bpartners/annotator-component';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
@@ -30,7 +30,8 @@ export const usePolygonAreaQuery = (params: Params) => {
 
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
-    const divisor = getCached.currentImageSize() ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
+    const cachedImageSize = cachedImageBlob ? await getImageSize(imageUrl) : null;
+    const divisor = cachedImageSize ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
 
     const [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
 
