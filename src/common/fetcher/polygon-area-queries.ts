@@ -31,7 +31,8 @@ export const usePolygonAreaQuery = (params: Params) => {
     const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
 
     const cachedImageSize = cachedImageBlob ? await getImageSize(imageUrl) : null;
-    const divisor = cachedImageSize ? (20 - params.areaPictureDetails.zoom.number) * 2 : 1;
+
+    const divisor = params.isAfterAnalyse && cachedImageSize && params.areaPictureDetails.zoom.number !== 20 ? 20 - params.areaPictureDetails.zoom.number : 1;
 
     const [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
 
