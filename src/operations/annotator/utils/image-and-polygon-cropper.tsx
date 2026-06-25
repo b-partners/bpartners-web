@@ -61,27 +61,43 @@ export const getCropRegion = (polygons: DomainPolygonResultType[], imageWidth: n
   };
 };
 
-type WithPoints = { points?: { x: number; y: number }[] };
+type Coordinate = { x: number; y: number };
+type WithMeasurements = { measurements?: { position?: Coordinate }[] };
+type WithPoints = { points?: Coordinate[] } & WithMeasurements;
+
+/** Adds `offsetX`/`offsetY` to a point while preserving any extra fields it carries. */
+const translatePoint = <T extends Coordinate>({ x, y, ...rest }: T, offsetX: number, offsetY: number): T =>
+  ({ ...rest, x: x + offsetX, y: y + offsetY }) as T;
 
 /**
- * Translates polygon points from original image space into the cropped image space by
- * subtracting the crop origin. No scaling is applied, so polygon sizes are preserved.
+ * Translates a polygon's `points` and its `measurements` label positions by the given offset.
+ * No scaling is applied, so polygon sizes and measurement values are preserved. `measurements`
+ * is only rewritten when present, leaving polygons without measurements untouched.
+ */
+const translatePolygon = <T extends WithPoints>(polygon: T, offsetX: number, offsetY: number): T => ({
+  ...polygon,
+  points: (polygon?.points ?? []).map(point => translatePoint(point, offsetX, offsetY)),
+  ...(polygon?.measurements && {
+    measurements: polygon.measurements.map(measurement => ({
+      ...measurement,
+      ...(measurement?.position && { position: translatePoint(measurement.position, offsetX, offsetY) }),
+    })),
+  }),
+});
+
+/**
+ * Translates polygon points and measurement positions from original image space into the cropped
+ * image space by subtracting the crop origin.
  */
 export const cropPolygons = <T extends WithPoints>(polygons: T[], cropRegion: CropRegion): T[] =>
-  (polygons ?? []).map(polygon => ({
-    ...polygon,
-    points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x - cropRegion.x, y: y - cropRegion.y })),
-  }));
+  (polygons ?? []).map(polygon => translatePolygon(polygon, -cropRegion.x, -cropRegion.y));
 
 /**
- * Inverse of {@link cropPolygons}: maps polygon points from the cropped image space back to the
- * original image space by adding the crop origin.
+ * Inverse of {@link cropPolygons}: maps polygon points and measurement positions from the cropped
+ * image space back to the original image space by adding the crop origin.
  */
 export const restorePolygons = <T extends WithPoints>(polygons: T[], cropRegion: CropRegion): T[] =>
-  (polygons ?? []).map(polygon => ({
-    ...polygon,
-    points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x + cropRegion.x, y: y + cropRegion.y })),
-  }));
+  (polygons ?? []).map(polygon => translatePolygon(polygon, cropRegion.x, cropRegion.y));
 
 /**
  * Draws the crop region of the source image 1:1 onto a canvas (no scaling) and returns it
