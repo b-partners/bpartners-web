@@ -113,8 +113,17 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       if (areaPictureAnnotations.length > 0) {
         const areaPictureAnnotation = areaPictureAnnotations[0];
         const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
-        const { global_rate_type, global_rate_value, roofHeight, llm, imageTileInfoOrigin, cropRegion, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
-          areaPictureAnnotation?.properties || {};
+        const {
+          global_rate_type,
+          global_rate_value,
+          roofHeight,
+          llm,
+          imageTileInfoOrigin,
+          cropRegion,
+          threeDGenerationMode,
+          threeDGenerationId,
+          roofAnalyseId,
+        } = areaPictureAnnotation?.properties || {};
         setLlm(llm);
         setImageTileInfoOrigin?.(imageTileInfoOrigin);
         setCropRegion(cropRegion ?? null);

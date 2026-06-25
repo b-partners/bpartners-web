@@ -44,8 +44,18 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, slopeAndHeightState, llm, setAnalyseImageUrl, setAnalyseImageFileId, setCropRegion } =
-    useAnnotatorComponentStore();
+  const {
+    geoJsonResultUrl,
+    imageUrl,
+    roofDelimiter,
+    imageTileInfoOrigin,
+    areaPictureDetails,
+    slopeAndHeightState,
+    llm,
+    setAnalyseImageUrl,
+    setAnalyseImageFileId,
+    setCropRegion,
+  } = useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');

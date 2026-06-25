@@ -66,8 +66,7 @@ type WithMeasurements = { measurements?: { position?: Coordinate }[] };
 type WithPoints = { points?: Coordinate[] } & WithMeasurements;
 
 /** Adds `offsetX`/`offsetY` to a point while preserving any extra fields it carries. */
-const translatePoint = <T extends Coordinate>({ x, y, ...rest }: T, offsetX: number, offsetY: number): T =>
-  ({ ...rest, x: x + offsetX, y: y + offsetY }) as T;
+const translatePoint = <T extends Coordinate>({ x, y, ...rest }: T, offsetX: number, offsetY: number): T => ({ ...rest, x: x + offsetX, y: y + offsetY }) as T;
 
 /**
  * Translates a polygon's `points` and its `measurements` label positions by the given offset.

@@ -1,9 +1,9 @@
+import type { CropRegion } from '@/operations/annotator/utils/image-and-polygon-cropper';
 import { AnnotationCoveringFromAnalyse } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { create } from 'zustand';
 import { SlopeAndHeightState } from '../fetcher';
 import { copyObject } from '../utils';
-import type { CropRegion } from '@/operations/annotator/utils/image-and-polygon-cropper';
 
 interface AnalyseInformation {
   imageUrl: string;
