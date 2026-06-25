@@ -17,8 +17,10 @@ import {
   annotatorComponentStyle,
   createAnnotationInfoFromRoofAnalyseProperties,
   createDefaultAnnotationInfo,
+  cropPolygons,
   getNewPolygonColor,
   isAfterAnalyse,
+  restorePolygons,
   shiftPolygons,
 } from './utils';
 
@@ -43,6 +45,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     areaPictureDetails,
     analyseImageUrl,
     analyseLoadingPolygon,
+    cropRegion,
   } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending, isError } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
@@ -129,10 +132,14 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     }
   };
 
+  const isAnalyseCropCanvas = screen === 'roof-analyse' && !!cropRegion;
+
   const setPolygonShifted: Dispatch<SetStateAction<Polygon[]>> = polygonsOrFunction => {
     setPolygonList(_polygons => {
-      const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(_polygons) : polygonsOrFunction;
-      return isAfterAnalyse(polygons) ? polygons : shiftPolygons(polygons, areaPictureDetails, false);
+      const currentForCanvas = isAnalyseCropCanvas ? cropPolygons(_polygons, cropRegion) : _polygons;
+      const polygons: Polygon[] = typeof polygonsOrFunction === 'function' ? polygonsOrFunction(currentForCanvas) : polygonsOrFunction;
+      if (isAfterAnalyse(polygons)) return isAnalyseCropCanvas ? restorePolygons(polygons, cropRegion) : polygons;
+      return shiftPolygons(polygons, areaPictureDetails, false);
     });
   };
 
@@ -142,6 +149,8 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   const isAnalysingOnScreen = isAnalyseScreen && isAnalysing;
   const showAnnotatorCanvas = !isAnalysingOnScreen && (screen === 'annotator' || (isAnalyseScreen && !isAnalyseResultLoading));
   const canvasImage = isAnalyseScreen ? analyseImageUrl || geojsonResult?.image || cachedImageUrl : cachedImageUrl;
+  const canvasPolygonList =
+    isAnalyseScreen && cropRegion && isAfterAnalyse(polygonListShifted) ? cropPolygons(polygonListShifted, cropRegion) : polygonListShifted;
 
   return (
     <Box sx={{ ...annotatorComponentStyle, ...boxWrapperSx } as SxProps}>
@@ -175,7 +184,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             buttonsComponent={buttonComponent ?? annotatorButtonsActions(shiftImage, isExtended, { areaPicture: areaPictureDetails, mutateAreaPictureDetails })}
             image={canvasImage}
             setPolygons={setPolygonShifted}
-            polygonList={polygonListShifted}
+            polygonList={canvasPolygonList}
             getNewPolygonColor={getNewPolygonColor}
             imagePrecisionLevel={areaPictureDetails?.actualLayer?.precisionLevelInCm || 5}
             polygonLineSizeProps={{

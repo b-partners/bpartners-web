@@ -61,11 +61,13 @@ export const getCropRegion = (polygons: DomainPolygonResultType[], imageWidth: n
   };
 };
 
+type WithPoints = { points?: { x: number; y: number }[] };
+
 /**
  * Translates polygon points from original image space into the cropped image space by
  * subtracting the crop origin. No scaling is applied, so polygon sizes are preserved.
  */
-export const cropPolygons = (polygons: DomainPolygonResultType[], cropRegion: CropRegion): DomainPolygonResultType[] =>
+export const cropPolygons = <T extends WithPoints>(polygons: T[], cropRegion: CropRegion): T[] =>
   (polygons ?? []).map(polygon => ({
     ...polygon,
     points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x - cropRegion.x, y: y - cropRegion.y })),
@@ -75,7 +77,7 @@ export const cropPolygons = (polygons: DomainPolygonResultType[], cropRegion: Cr
  * Inverse of {@link cropPolygons}: maps polygon points from the cropped image space back to the
  * original image space by adding the crop origin.
  */
-export const restorePolygons = (polygons: DomainPolygonResultType[], cropRegion: CropRegion): DomainPolygonResultType[] =>
+export const restorePolygons = <T extends WithPoints>(polygons: T[], cropRegion: CropRegion): T[] =>
   (polygons ?? []).map(polygon => ({
     ...polygon,
     points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x + cropRegion.x, y: y + cropRegion.y })),

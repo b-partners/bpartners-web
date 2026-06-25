@@ -1,5 +1,5 @@
 import { getAnalyseImageFileId } from '@/constants';
-import { createImage, cropImage, cropPolygons, fetchImageAsBase64, getCropRegion } from '@/operations/annotator/utils';
+import { createImage, cropImage, fetchImageAsBase64, getCropRegion } from '@/operations/annotator/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import {
   annotatorProvider,
@@ -111,13 +111,14 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const allPolygons = [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons];
     const cropRegion = getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height);
     const croppedImage = cropImage(image as HTMLImageElement, cropRegion);
-    const croppedPolygons = cropPolygons(allPolygons, cropRegion);
 
-    setCropRegion(cropRegion);
+    // crop only the analyse image; polygons stay in original image space and are cropped at display time
+    const shouldCrop = regions.length > 0;
+    setCropRegion(shouldCrop ? cropRegion : null);
 
     // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
     const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
-    const base64Image = regions.length > 0 ? croppedImage : imageAsBase64;
+    const base64Image = shouldCrop ? croppedImage : imageAsBase64;
 
     if (fileId && base64Image && base64Image.length > 0) {
       const analyseImageFileId = getAnalyseImageFileId(fileId);
@@ -141,7 +142,7 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
 
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
-      polygons: croppedPolygons,
+      polygons: allPolygons,
       image: base64Image,
     };
   };
