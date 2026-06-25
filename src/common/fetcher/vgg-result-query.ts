@@ -1,5 +1,5 @@
 import { getAnalyseImageFileId } from '@/constants';
-import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
+import { createImage, cropImage, fetchImageAsBase64, getCropRegion } from '@/operations/annotator/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import {
   annotatorProvider,
@@ -18,6 +18,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
 import { base64ToFile, saveImageToCache } from '../utils';
+import { saveCropRegionDraft } from './save-annotations';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
   const detections = Object.values(detectionResult);
@@ -43,11 +44,22 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } =
-    useAnnotatorComponentStore();
+  const {
+    geoJsonResultUrl,
+    imageUrl,
+    roofDelimiter,
+    imageTileInfoOrigin,
+    areaPictureDetails,
+    slopeAndHeightState,
+    llm,
+    setAnalyseImageUrl,
+    setAnalyseImageFileId,
+    setCropRegion,
+  } = useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
+  const [saveDraft] = useUpdate('drafts-annotations');
 
   const isAnnotatorRoute = pathname === '/annotator' || pathname.startsWith('/projects/');
   const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && isAnnotatorRoute;
@@ -108,15 +120,17 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
-    const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(
-      [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons],
-      [roofPolygon],
-      image as HTMLImageElement
-    );
+    const allPolygons = [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons];
+    const cropRegion = getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height);
+    const croppedImage = cropImage(image as HTMLImageElement, cropRegion);
+
+    // crop only the analyse image; polygons stay in original image space and are cropped at display time
+    const shouldCrop = regions.length > 0;
+    setCropRegion(shouldCrop ? cropRegion : null);
 
     // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
     const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
-    const base64Image = regions.length > 0 ? croppedImage : imageAsBase64;
+    const base64Image = shouldCrop ? croppedImage : imageAsBase64;
 
     if (fileId && base64Image && base64Image.length > 0) {
       const analyseImageFileId = getAnalyseImageFileId(fileId);
@@ -138,9 +152,12 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       setAnalyseImageFileId(analyseImageFileId);
     }
 
+    const pictureId = areaPictureDetails?.id;
+    if (pictureId) saveCropRegionDraft(pictureId, saveDraft, slopeAndHeightState?.height, llm);
+
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },
-      polygons: croppedPolygons,
+      polygons: allPolygons,
       image: base64Image,
     };
   };
