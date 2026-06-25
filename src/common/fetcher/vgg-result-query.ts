@@ -1,5 +1,5 @@
 import { getAnalyseImageFileId } from '@/constants';
-import { createImage, fetchImageAsBase64, getCroppedImageAndPolygons } from '@/operations/annotator/utils';
+import { createImage, cropImage, cropPolygons, fetchImageAsBase64, getCropRegion } from '@/operations/annotator/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import {
   annotatorProvider,
@@ -43,7 +43,7 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } =
+  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId, setCropRegion } =
     useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -108,11 +108,12 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     const imageAsBase64 = await fetchImageAsBase64(imageUrl);
     const image = await createImage(imageAsBase64);
 
-    const { image: croppedImage, polygons: croppedPolygons } = getCroppedImageAndPolygons(
-      [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons],
-      [roofPolygon],
-      image as HTMLImageElement
-    );
+    const allPolygons = [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons];
+    const cropRegion = getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height);
+    const croppedImage = cropImage(image as HTMLImageElement, cropRegion);
+    const croppedPolygons = cropPolygons(allPolygons, cropRegion);
+
+    setCropRegion(cropRegion);
 
     // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
     const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');

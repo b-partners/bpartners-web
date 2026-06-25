@@ -30,7 +30,7 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
   const globalRate = calculateGlobalRate();
-  const { analyseImageUrl, analyseImageFileId, imageTileInfoOrigin } = useAnnotatorComponentStore.getState();
+  const { analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
   const analyseImageGenerated = !!analyseImageUrl;
 
   return {
@@ -47,6 +47,7 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
       analyseImageGenerated,
       analyseImageFileId,
       imageTileInfoOrigin,
+      cropRegion,
       threeDMapping: getThreeDMapping(),
       lastSavingDate: new Date().toISOString(),
     },

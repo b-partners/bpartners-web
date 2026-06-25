@@ -49,7 +49,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
   const [areaPictureAnnotationState, setAreaPictureAnnotationState] = useState<AreaPictureAnnotation>(null);
   const { polygons, annotations } = retrievedPolygon;
   const isAnnotationEmpty = !annotations || Object.keys(annotations || {}).length === 0;
-  const { setSlopeAndHeightState, setGlobalRate, setLlm, setImageTileInfoOrigin } = useAnnotatorComponentStore();
+  const { setSlopeAndHeightState, setGlobalRate, setLlm, setImageTileInfoOrigin, setCropRegion } = useAnnotatorComponentStore();
 
   useEffect(() => {
     if (!pictureId) {
@@ -64,6 +64,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
         llm,
         roofDelimiter,
         imageTileInfoOrigin,
+        cropRegion,
         threeDGenerationMode,
         threeDGenerationId,
         roofAnalyseId,
@@ -86,6 +87,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       cache.roofDelimiterLongLatItem(roofDelimiter);
 
       setImageTileInfoOrigin?.(imageTileInfoOrigin);
+      setCropRegion(cropRegion ?? null);
 
       const roofAnnotation = areaPictureAnnotationParam.annotations.find(a => a.id?.includes(roofGlobalIdRef));
       if (roofAnnotation)
@@ -111,10 +113,11 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       if (areaPictureAnnotations.length > 0) {
         const areaPictureAnnotation = areaPictureAnnotations[0];
         const polygons = getPolygonsFromAreaPictureAnnotation(areaPictureAnnotation);
-        const { global_rate_type, global_rate_value, roofHeight, llm, imageTileInfoOrigin, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
+        const { global_rate_type, global_rate_value, roofHeight, llm, imageTileInfoOrigin, cropRegion, threeDGenerationMode, threeDGenerationId, roofAnalyseId } =
           areaPictureAnnotation?.properties || {};
         setLlm(llm);
         setImageTileInfoOrigin?.(imageTileInfoOrigin);
+        setCropRegion(cropRegion ?? null);
         setGlobalRate(global_rate_value, global_rate_type);
         setSlopeAndHeightState({
           height: roofHeight,
