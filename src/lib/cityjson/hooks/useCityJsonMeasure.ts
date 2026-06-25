@@ -44,6 +44,8 @@ export interface FaceEdgeMeasure {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
+const round2 = (n: number) => Math.round(n * 100) / 100;
+const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export const computeFaceEdges = (faceVertexIndices: number[], cityJson: CityJsonData): FaceEdgeMeasure[] => {
   const rawVertices = cityJson.vertices as number[][];
@@ -105,15 +107,18 @@ export const computeFaceArea = (faceVertexIndices: number[], cityJson: CityJsonD
 
   const indices = faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
 
-  const points = indices.map(i => {
+  const points2D = indices.map(i => {
     const v = realVertices[i];
-    return new THREE.Vector3(v[0], v[1], v[2]);
+    return new THREE.Vector3(v[0], v[1], 0);
   });
 
-  return computeArea(
-    points.map((_, i) => i),
-    points
+  const area2D = computeArea(
+    points2D.map((_, i) => i),
+    points2D
   );
+
+  const slope = computeFaceSlope(faceVertexIndices, cityJson);
+  return Math.abs(round2(area2D / Math.cos(toRadians(slope))));
 };
 
 export const getFaceMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
