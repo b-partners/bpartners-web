@@ -1,3 +1,4 @@
+import type { CropRegion } from '@/operations/annotator/utils/image-and-polygon-cropper';
 import { AnnotationCoveringFromAnalyse } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { create } from 'zustand';
@@ -38,6 +39,7 @@ interface Action {
   setAnalyseImageUrl: (analyseImageUrl: string | null) => void;
   setAnalyseImageFileId: (analyseImageFileId: string | null) => void;
   setAnalyseLoadingPolygon: (analyseLoadingPolygon: { x: number; y: number }[] | null) => void;
+  setCropRegion: (cropRegion: CropRegion | null) => void;
 }
 
 interface State {
@@ -62,6 +64,7 @@ interface State {
   analyseImageUrl: string | null;
   analyseImageFileId: string | null;
   analyseLoadingPolygon: { x: number; y: number }[] | null;
+  cropRegion: CropRegion | null;
 }
 
 const defaultState: any = {
@@ -78,6 +81,7 @@ const defaultState: any = {
   analyseImageUrl: null,
   analyseImageFileId: null,
   analyseLoadingPolygon: null,
+  cropRegion: null,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
@@ -98,4 +102,5 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setAnalyseImageUrl: analyseImageUrl => set({ analyseImageUrl }),
   setAnalyseImageFileId: analyseImageFileId => set({ analyseImageFileId }),
   setAnalyseLoadingPolygon: analyseLoadingPolygon => set({ analyseLoadingPolygon }),
+  setCropRegion: cropRegion => set({ cropRegion }),
 }));

@@ -7,6 +7,7 @@ import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import getAreaOfPolygon from 'geolib/es/getAreaOfPolygon';
 import getDistance from 'geolib/es/getPreciseDistance';
+import { useAnnotatorComponentStore } from '../store';
 import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../utils';
 
 interface Params {
@@ -17,40 +18,79 @@ interface Params {
   isAfterAnalyse?: boolean;
 }
 
+type GeoCoordinate = { longitude: number; latitude: number };
+
+const getAnalyseCoordinates = async (polygon: Polygon, imageTileInfoOrigin: any): Promise<GeoCoordinate[]> => {
+  const feature = {
+    geometry: {
+      coordinates: [[polygon.points.map(({ x, y }) => [x, y])]],
+      type: 'MultiPolygon',
+    },
+    properties: { confidence: 1, label: 'polygon' },
+    type: 'Feature',
+  };
+
+  const pixelGeoJson = polygonMapper.toPixelGeoJson(
+    [feature],
+    imageTileInfoOrigin?.coordinates?.x,
+    imageTileInfoOrigin?.coordinates?.y,
+    imageTileInfoOrigin?.size?.width,
+    20
+  );
+
+  const lonLatGeoJson: any = (await annotatorProvider.pixelPointsToLonLat(pixelGeoJson)) || {};
+  const regions = (Object.values(lonLatGeoJson)[0] as any)?.regions;
+  const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
+
+  const coordinates: GeoCoordinate[] = [];
+  (all_points_x as any[])?.forEach((longitude, index) => {
+    coordinates.push({ longitude, latitude: all_points_y[index] });
+  });
+
+  return coordinates;
+};
+
+const getRefererCoordinates = async (polygon: Polygon, areaPictureDetails: AreaPictureDetails, imageSize: number): Promise<GeoCoordinate[]> => {
+  const geoJson = polygonMapper.toRefererGeoJson({ ...polygon, points: polygon.points.map(p => ({ x: p.x, y: p.y })) }, imageSize, areaPictureDetails);
+  const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
+
+  const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
+  const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
+
+  const coordinates: GeoCoordinate[] = [];
+  (all_points_x as any[])?.forEach((latitude, index) => {
+    coordinates.push({ latitude, longitude: all_points_y[index] });
+  });
+
+  return coordinates;
+};
+
 export const usePolygonAreaQuery = (params: Params) => {
+  const imageTileInfoOrigin = useAnnotatorComponentStore(state => state.imageTileInfoOrigin);
+  const useAnalyseTileConversion = !!params.isAfterAnalyse && !!imageTileInfoOrigin?.coordinates && !!imageTileInfoOrigin?.size?.width;
+
   const queryFn = async () => {
-    const imageUri = getFileUrl(params.areaPictureDetails.fileId, 'AREA_PICTURE');
-    const cachedImageBlob = await getImageFromCache(params.areaPictureDetails.fileId);
-    const imageUrl = cachedImageBlob ? URL.createObjectURL(cachedImageBlob) : imageUri;
+    let polygon: Polygon;
+    let coordinates: GeoCoordinate[];
 
-    let imageSize = await getImageSize(imageUrl);
-    if (params.areaPictureDetails.actualLayer.name === 'FLUX_IGN_2023_20CM' && params.areaPictureDetails.isExtended) {
-      imageSize = imageSize / 3;
+    if (useAnalyseTileConversion) {
+      polygon = params.polygon;
+      coordinates = await getAnalyseCoordinates(polygon, imageTileInfoOrigin);
+    } else {
+      const imageUri = getFileUrl(params.areaPictureDetails.fileId, 'AREA_PICTURE');
+      const cachedImageBlob = await getImageFromCache(params.areaPictureDetails.fileId);
+      const imageUrl = cachedImageBlob ? URL.createObjectURL(cachedImageBlob) : imageUri;
+
+      let imageSize = await getImageSize(imageUrl);
+      if (params.areaPictureDetails.actualLayer.name === 'FLUX_IGN_2023_20CM' && params.areaPictureDetails.isExtended) {
+        imageSize = imageSize / 3;
+      }
+
+      const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
+
+      [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
+      coordinates = await getRefererCoordinates(polygon, currentAreaPictureDetails, imageSize);
     }
-
-    const currentAreaPictureDetails = copyObject(params.areaPictureDetails);
-
-    const cachedImageSize = cachedImageBlob ? await getImageSize(imageUrl) : null;
-
-    const divisor = params.isAfterAnalyse && cachedImageSize && params.areaPictureDetails.zoom.number !== 20 ? 20 - params.areaPictureDetails.zoom.number : 1;
-
-    const [polygon] = !params.isAfterAnalyse ? shiftPolygons([copyObject(params.polygon)], currentAreaPictureDetails, true) : [params.polygon];
-
-    const geoJson = polygonMapper.toRefererGeoJson(
-      { ...polygon, points: polygon.points.map(p => ({ x: p.x / divisor, y: p.y / divisor })) },
-      imageSize,
-      currentAreaPictureDetails
-    );
-    const refererGeoJson: any = (await annotatorProvider.pointsToGeoPoints(geoJson as any)) || {};
-
-    const regions = (Object.values(refererGeoJson)[0] as any)?.regions;
-    const { all_points_x, all_points_y } = (Object.values(regions)[0] as any)?.shape_attributes || {};
-
-    const coordinates: { longitude: number; latitude: number }[] = [];
-
-    (all_points_x as any[])?.forEach((latitude, index) => {
-      coordinates.push({ latitude, longitude: all_points_y[index] });
-    });
 
     const area = +(getAreaOfPolygon(coordinates) / (params.annotationInfos.slope ? Math.cos(params.annotationInfos.slope * (Math.PI / 180)) : 1)).toFixed(2);
 
@@ -76,5 +116,8 @@ export const usePolygonAreaQuery = (params: Params) => {
     return { area, measurements };
   };
 
-  return useQuery({ queryFn, queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points), params.annotationInfos.slope] });
+  return useQuery({
+    queryFn,
+    queryKey: [params.polygon?.id, JSON.stringify(params.polygon?.points), params.annotationInfos.slope, useAnalyseTileConversion],
+  });
 };

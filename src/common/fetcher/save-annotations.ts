@@ -30,7 +30,7 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
   const globalRate = calculateGlobalRate();
-  const { analyseImageUrl, analyseImageFileId } = useAnnotatorComponentStore.getState();
+  const { analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
   const analyseImageGenerated = !!analyseImageUrl;
 
   return {
@@ -46,17 +46,25 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
       roofAnalyseId: annotatorState.roofAnalyseId,
       analyseImageGenerated,
       analyseImageFileId,
+      imageTileInfoOrigin,
+      cropRegion,
       threeDMapping: getThreeDMapping(),
       lastSavingDate: new Date().toISOString(),
     },
   };
 };
 
-const saveDraftAnnotation = (requestBody: AreaPictureAnnotation, save: (...args: any[]) => void) => {
+const saveDraftAnnotation = (requestBody: AreaPictureAnnotation, save: (...args: any[]) => void, shouldClearPolygons = true) => {
   const pictureId = requestBody.properties?.pictureId ?? requestBody.id;
   const annotationId = UrlParams.get('draftAnnotationId');
   save('drafts-annotations', { data: requestBody, meta: { pictureId, annotationId }, id: requestBody.id });
-  clearPolygons();
+  if (shouldClearPolygons) clearPolygons();
+};
+
+export const saveCropRegionDraft = (pictureId: string, save: (...args: any[]) => void, roofHeightInMeters?: number, llm?: any) => {
+  const requestBody = buildRequestBody(pictureId, roofHeightInMeters as number, llm);
+  if (!requestBody) return;
+  saveDraftAnnotation(requestBody, save, false);
 };
 
 export const useSaveAnnotations = () => {
