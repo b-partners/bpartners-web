@@ -10,6 +10,7 @@ export * from './export-annotation-mapper';
 export * from './get-areapicture-shift-for-zoom';
 export * from './global-rate-calculator';
 export * from './help-button';
+export * from './image-and-polygon-cropper';
 export * from './image-utilities';
 export * from './is-after-analyse';
 export * from './is-roof-polygon';
