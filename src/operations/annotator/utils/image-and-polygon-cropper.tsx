@@ -1,12 +1,3 @@
-/**
- * functions to handle image and polygon crop
- * inputs : image url and polygons
- *
- * the image can have square or rectangular for x can be equal to y or not
- * i need you to crop the image to recenter the polygon inside the image with max 50px margin and min 0px
- * i need the polygons cropped to fit the new image, (without changing the size, no scalling)
- * i need method to restore the polygons from cropped to the original
- */
 import { DomainPolygonResultType } from '@/providers';
 import { createImage, fetchImageAsBase64 } from './use-crop-polygon';
 
@@ -26,8 +17,13 @@ export interface CropImageAndPolygonsResult {
   cropRegion: CropRegion;
 }
 
+/** Restricts a value to the inclusive `[min, max]` range. */
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
+/**
+ * Computes the axis-aligned bounding box that encloses every point of the given polygons,
+ * in original image pixel coordinates. Returns a zeroed box when there are no points.
+ */
 export const getPolygonsBoundingBox = (polygons: DomainPolygonResultType[]) => {
   const points = (polygons ?? []).flatMap(polygon => polygon?.points ?? []);
   if (points.length === 0) return { left: 0, top: 0, right: 0, bottom: 0 };
@@ -43,12 +39,12 @@ export const getPolygonsBoundingBox = (polygons: DomainPolygonResultType[]) => {
   };
 };
 
-export const getCropRegion = (
-  polygons: DomainPolygonResultType[],
-  imageWidth: number,
-  imageHeight: number,
-  margin = MAX_CROP_MARGIN
-): CropRegion => {
+/**
+ * Builds the crop rectangle (in original image coordinates) that recenters the polygons
+ * with a margin clamped to `[MIN_CROP_MARGIN, MAX_CROP_MARGIN]` and clamped to the image bounds,
+ * so the crop never overflows the image.
+ */
+export const getCropRegion = (polygons: DomainPolygonResultType[], imageWidth: number, imageHeight: number, margin = MAX_CROP_MARGIN): CropRegion => {
   const safeMargin = clamp(margin, MIN_CROP_MARGIN, MAX_CROP_MARGIN);
   const boundingBox = getPolygonsBoundingBox(polygons);
 
@@ -65,18 +61,30 @@ export const getCropRegion = (
   };
 };
 
+/**
+ * Translates polygon points from original image space into the cropped image space by
+ * subtracting the crop origin. No scaling is applied, so polygon sizes are preserved.
+ */
 export const cropPolygons = (polygons: DomainPolygonResultType[], cropRegion: CropRegion): DomainPolygonResultType[] =>
   (polygons ?? []).map(polygon => ({
     ...polygon,
     points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x - cropRegion.x, y: y - cropRegion.y })),
   }));
 
+/**
+ * Inverse of {@link cropPolygons}: maps polygon points from the cropped image space back to the
+ * original image space by adding the crop origin.
+ */
 export const restorePolygons = (polygons: DomainPolygonResultType[], cropRegion: CropRegion): DomainPolygonResultType[] =>
   (polygons ?? []).map(polygon => ({
     ...polygon,
     points: (polygon?.points ?? []).map(({ x, y, ...rest }) => ({ ...rest, x: x + cropRegion.x, y: y + cropRegion.y })),
   }));
 
+/**
+ * Draws the crop region of the source image 1:1 onto a canvas (no scaling) and returns it
+ * as a PNG data URL.
+ */
 export const cropImage = (image: HTMLImageElement, cropRegion: CropRegion): string => {
   const canvas = document.createElement('canvas');
   canvas.width = cropRegion.width;
@@ -88,6 +96,11 @@ export const cropImage = (image: HTMLImageElement, cropRegion: CropRegion): stri
   return canvas.toDataURL('image/png');
 };
 
+/**
+ * Loads the image from `imageUrl`, crops it around `polygonsForBoundingBox`, and returns the
+ * cropped PNG data URL together with the polygons mapped into the cropped space and the
+ * `cropRegion` needed to restore them later via {@link restorePolygons}.
+ */
 export const cropImageAndPolygons = async (
   imageUrl: string,
   polygons: DomainPolygonResultType[],
