@@ -23,18 +23,19 @@ const applyTransform = (vertex: number[], transform?: { scale: number[]; transla
   return [vertex[0] * scale[0] + translate[0], vertex[1] * scale[1] + translate[1], vertex[2] * scale[2] + translate[2]];
 };
 
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 const computeArea = (indices: number[], vertices3D: THREE.Vector3[]): number => {
-  let area = 0;
   const n = indices.length;
-  for (let i = 1; i < n - 1; i++) {
-    const a = vertices3D[indices[0]];
-    const b = vertices3D[indices[i]];
-    const c = vertices3D[indices[i + 1]];
-    const ab = b.clone().sub(a);
-    const ac = c.clone().sub(a);
-    area += ab.cross(ac).length() / 2;
+  if (n < 3) return 0;
+  const origin = vertices3D[indices[0]];
+  const areaVector = new THREE.Vector3();
+  for (let i = 0; i < n; i++) {
+    const current = vertices3D[indices[i]].clone().sub(origin);
+    const next = vertices3D[indices[(i + 1) % n]].clone().sub(origin);
+    areaVector.add(current.cross(next));
   }
-  return Math.round(area * 100) / 100;
+  return round2(areaVector.length() / 2);
 };
 
 export interface FaceEdgeMeasure {
@@ -44,8 +45,6 @@ export interface FaceEdgeMeasure {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
-const round2 = (n: number) => Math.round(n * 100) / 100;
-const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
 export const computeFaceEdges = (faceVertexIndices: number[], cityJson: CityJsonData): FaceEdgeMeasure[] => {
   const rawVertices = cityJson.vertices as number[][];
@@ -107,18 +106,15 @@ export const computeFaceArea = (faceVertexIndices: number[], cityJson: CityJsonD
 
   const indices = faceVertexIndices[0] === faceVertexIndices[faceVertexIndices.length - 1] ? faceVertexIndices.slice(0, -1) : faceVertexIndices;
 
-  const points2D = indices.map(i => {
-    const v = realVertices[i];
-    return new THREE.Vector3(v[0], v[1], 0);
+  const points = indices.map(i => {
+    const [x, y, z] = realVertices[i];
+    return new THREE.Vector3(x, y, z);
   });
 
-  const area2D = computeArea(
-    points2D.map((_, i) => i),
-    points2D
+  return computeArea(
+    points.map((_, i) => i),
+    points
   );
-
-  const slope = computeFaceSlope(faceVertexIndices, cityJson);
-  return Math.abs(round2(area2D / Math.cos(toRadians(slope))));
 };
 
 export const getFaceMeasure = (mesh: THREE.Mesh | null, cityJson: CityJsonData | null): UseCityJsonMeasureReturn => {
