@@ -18,6 +18,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
 import { base64ToFile, saveImageToCache } from '../utils';
+import { saveCropRegionDraft } from './save-annotations';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
   const detections = Object.values(detectionResult);
@@ -43,11 +44,12 @@ const isThereAnObstacle = (regions: Region[]) => {
 };
 
 export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) => {
-  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId, setCropRegion } =
+  const { geoJsonResultUrl, imageUrl, roofDelimiter, imageTileInfoOrigin, areaPictureDetails, slopeAndHeightState, llm, setAnalyseImageUrl, setAnalyseImageFileId, setCropRegion } =
     useAnnotatorComponentStore();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
   const [uploadFile] = useUpdate('files');
+  const [saveDraft] = useUpdate('drafts-annotations');
 
   const isAnnotatorRoute = pathname === '/annotator' || pathname.startsWith('/projects/');
   const enabled = !!geoJsonResultUrl && enabledParams && searchParams.get('useDraft') !== 'true' && isAnnotatorRoute;
@@ -139,6 +141,9 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       setAnalyseImageUrl(URL.createObjectURL(analyseImageFile));
       setAnalyseImageFileId(analyseImageFileId);
     }
+
+    const pictureId = areaPictureDetails?.id;
+    if (pictureId) saveCropRegionDraft(pictureId, saveDraft, slopeAndHeightState?.height, llm);
 
     return {
       properties: { ...Object.values(detectionResultJson)[0].properties, obstacle: obstacle },

@@ -54,11 +54,17 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   };
 };
 
-const saveDraftAnnotation = (requestBody: AreaPictureAnnotation, save: (...args: any[]) => void) => {
+const saveDraftAnnotation = (requestBody: AreaPictureAnnotation, save: (...args: any[]) => void, shouldClearPolygons = true) => {
   const pictureId = requestBody.properties?.pictureId ?? requestBody.id;
   const annotationId = UrlParams.get('draftAnnotationId');
   save('drafts-annotations', { data: requestBody, meta: { pictureId, annotationId }, id: requestBody.id });
-  clearPolygons();
+  if (shouldClearPolygons) clearPolygons();
+};
+
+export const saveCropRegionDraft = (pictureId: string, save: (...args: any[]) => void, roofHeightInMeters?: number, llm?: any) => {
+  const requestBody = buildRequestBody(pictureId, roofHeightInMeters as number, llm);
+  if (!requestBody) return;
+  saveDraftAnnotation(requestBody, save, false);
 };
 
 export const useSaveAnnotations = () => {
