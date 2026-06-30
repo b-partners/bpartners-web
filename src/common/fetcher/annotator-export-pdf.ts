@@ -1,6 +1,7 @@
 import { AnnotationInfo } from '@/operations/annotator';
 import {
   cityJsonMapper,
+  cropPolygons,
   exportAnnotationMapper,
   ExportAnnotationMapperArgs,
   findSurfaceGeometry,
@@ -110,6 +111,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const { polygonList: pan2DPolygons } = annotatorStore.use2DPanPolygonStore();
   const pan2DAnnotationInfos = annotatorStore.use2DPanAnnotatorInfoStore();
   const areaPictureDetails = useAnnotatorComponentStore(params => params.areaPictureDetails);
+  const cropRegion = useAnnotatorComponentStore(params => params.cropRegion);
 
   const hasAnalysePolygons = analysePolygons.length > 0;
   const has2DRoofPolygons = roof2DPolygons.length > 0;
@@ -117,7 +119,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const selectedPolygons = hasAnalysePolygons ? analysePolygons : has2DRoofPolygons ? roof2DPolygons : pan2DPolygons;
   const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : has2DRoofPolygons ? roof2DAnnotationInfos : pan2DAnnotationInfos;
 
-  const polygons = isAfterAnalyse(selectedPolygons) ? selectedPolygons : shiftPolygons(selectedPolygons, areaPictureDetails, true);
+  const isAfterAnalyseSession = isAfterAnalyse(selectedPolygons);
+  const shiftedPolygons = isAfterAnalyseSession ? selectedPolygons : shiftPolygons(selectedPolygons, areaPictureDetails, true);
+  const polygons = isAfterAnalyseSession && cropRegion ? cropPolygons(shiftedPolygons, cropRegion) : shiftedPolygons;
 
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
