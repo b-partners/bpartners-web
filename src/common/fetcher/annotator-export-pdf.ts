@@ -112,6 +112,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const pan2DAnnotationInfos = annotatorStore.use2DPanAnnotatorInfoStore();
   const areaPictureDetails = useAnnotatorComponentStore(params => params.areaPictureDetails);
   const cropRegion = useAnnotatorComponentStore(params => params.cropRegion);
+  const analyseImageFileId = useAnnotatorComponentStore(params => params.analyseImageFileId);
 
   const hasAnalysePolygons = analysePolygons.length > 0;
   const has2DRoofPolygons = roof2DPolygons.length > 0;
@@ -121,7 +122,8 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
   const isAfterAnalyseSession = isAfterAnalyse(selectedPolygons);
   const shiftedPolygons = isAfterAnalyseSession ? selectedPolygons : shiftPolygons(selectedPolygons, areaPictureDetails, true);
-  const polygons = isAfterAnalyseSession && cropRegion ? cropPolygons(shiftedPolygons, cropRegion) : shiftedPolygons;
+  const exportsCroppedAnalyseImage = isAfterAnalyseSession && !!cropRegion && !!analyseImageFileId;
+  const polygons = exportsCroppedAnalyseImage ? cropPolygons(shiftedPolygons, cropRegion) : shiftedPolygons;
 
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
 
