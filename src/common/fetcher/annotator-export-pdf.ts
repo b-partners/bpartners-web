@@ -5,7 +5,6 @@ import {
   exportAnnotationMapper,
   ExportAnnotationMapperArgs,
   findSurfaceGeometry,
-  isAfterAnalyse,
   shiftPolygons,
 } from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
@@ -110,25 +109,25 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
   const roof2DAnnotationInfos = annotatorStore.use2DRoofAnnotatorInfoStore();
   const { polygonList: pan2DPolygons } = annotatorStore.use2DPanPolygonStore();
   const pan2DAnnotationInfos = annotatorStore.use2DPanAnnotatorInfoStore();
-  const areaPictureDetails = useAnnotatorComponentStore(params => params.areaPictureDetails);
-  const cropRegion = useAnnotatorComponentStore(params => params.cropRegion);
-  const analyseImageFileId = useAnnotatorComponentStore(params => params.analyseImageFileId);
-
   const hasAnalysePolygons = analysePolygons.length > 0;
   const has2DRoofPolygons = roof2DPolygons.length > 0;
 
   const selectedPolygons = hasAnalysePolygons ? analysePolygons : has2DRoofPolygons ? roof2DPolygons : pan2DPolygons;
   const annotationInfos = hasAnalysePolygons ? analyseAnnotationInfos : has2DRoofPolygons ? roof2DAnnotationInfos : pan2DAnnotationInfos;
 
-  const isAfterAnalyseSession = isAfterAnalyse(selectedPolygons);
-  const shiftedPolygons = isAfterAnalyseSession ? selectedPolygons : shiftPolygons(selectedPolygons, areaPictureDetails, true);
-  const exportsCroppedAnalyseImage = isAfterAnalyseSession && !!cropRegion && !!analyseImageFileId;
-  const polygons = exportsCroppedAnalyseImage ? cropPolygons(shiftedPolygons, cropRegion) : shiftedPolygons;
-
   let exportAreaPictureAnnotation: ExportAreaPictureAnnotation = undefined;
+
+  const resolveExportPolygons = () => {
+    const { cropRegion, analyseImageFileId, areaPictureDetails } = useAnnotatorComponentStore.getState();
+    if (!hasAnalysePolygons) return shiftPolygons(selectedPolygons, areaPictureDetails, true);
+    const exportsCroppedAnalyseImage = !!cropRegion && !!analyseImageFileId;
+    return exportsCroppedAnalyseImage ? cropPolygons(selectedPolygons, cropRegion) : selectedPolygons;
+  };
 
   const mutationFn = async (params: ExportAnnotationMapperArgs) => {
     const { accountId } = getCached.userInfo();
+
+    const polygons = resolveExportPolygons();
 
     const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
