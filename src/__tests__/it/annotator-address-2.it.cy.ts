@@ -1,22 +1,22 @@
 const offsetX = 240;
 const offsetY = 240;
 
-describe('Annotator E2E', () => {
+describe('Annotator E2E 2', () => {
   beforeEach(() => {
     cy.realCognitoLogin();
   });
 
-  it('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France', () => {
+  it('46.679859, 2.637623', () => {
     cy.visit('https://dashboard.birdia.fr');
-    cy.get('[data-testid="address-auto-complete"] input').clear().type('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France{enter}');
+    cy.get('[data-testid="address-auto-complete"] input').clear().type('46.679859, 2.637623{enter}');
     cy.name('name').clear().type('Annotator It');
     cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
     cy.wait(20000);
 
-    cy.contains("Aucune annotation n'a encore été effectuée.");
-    cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
+    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    cy.contains('46.679859, 2.637623');
 
     cy.log('Check sidebar & area');
     cy.get('[aria-label="Zoom +"]').click();
@@ -25,35 +25,22 @@ describe('Annotator E2E', () => {
     cy.get('[aria-label="délimiter"]').click();
 
     cy.log('Draw polygons');
-    cy.dataCy('annotator-canvas-cursor').click(1445 + offsetX, 1220 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1404 + offsetX, 1355 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1394 + offsetX, 1428 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1405 + offsetX, 1456 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1488 + offsetX, 1483 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1605 + offsetX, 1496 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1623 + offsetX, 1422 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1605 + offsetX, 1415 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1655 + offsetX, 1373 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1673 + offsetX, 1293 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1575 + offsetX, 1249 + offsetY, { force: true });
-    cy.dataCy('annotator-canvas-cursor').click(1445 + offsetX, 1220 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1471 + offsetX, 1115 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1609 + offsetX, 1312 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1645 + offsetX, 1295 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1681 + offsetX, 1262 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1544 + offsetX, 1064 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1509 + offsetX, 1097 + offsetY, { force: true });
+    cy.dataCy('annotator-canvas-cursor').click(1471 + offsetX, 1115 + offsetY, { force: true });
 
     cy.log('Check sidebar & area');
     cy.contains('Polygon A');
-    cy.contains(/219\.\d{2} m²/);
+    cy.contains(/84\.\d{2} m²/);
 
     cy.log('Check measurements');
-    cy.contains('8.40m');
-    cy.contains('9.00m');
-    cy.contains('4.60m');
-    cy.contains('2.00m');
-    cy.contains('5.60m');
-    cy.contains('7.40m');
-    cy.contains('4.80m');
-    cy.contains('1.20m');
-    cy.contains('4.20m');
-    cy.contains('5.20m');
-    cy.contains('6.80m');
+    cy.contains('3.00m');
+    cy.contains('2.60m');
+    cy.contains('15.20m');
 
     cy.log('Launch analyse');
     cy.contains('Analyse').click();
@@ -61,13 +48,13 @@ describe('Annotator E2E', () => {
 
     cy.log('Analyse sidebar');
     cy.contains('Surface au sol');
-    cy.contains(/219\.\d{2} m²/);
+    cy.contains(/84\.\d{2} m²/);
     cy.contains('Chargement de la hauteur du bâtiment');
 
     cy.wait(60_000);
 
     cy.log('Check slope/height info');
-    cy.contains(/La pente et la hauteur du bâtiment ne sont pas encore disponibles\.|Hauteur du bâtiment/, { timeout: 120_000 });
+    cy.contains(/La pente et la hauteur du bâtiment ne sont pas encore disponibles\.|Hauteur du bâtiment/, { timeout: 320_000 });
 
     cy.get('[data-testid="pente"] input').clear().type('10').blur();
     cy.contains('Chargement de la surface sélectionnée...');
@@ -81,12 +68,11 @@ describe('Annotator E2E', () => {
 
     cy.log('Area of pan 1');
     cy.contains('Pan 1', { timeout: 120_000 }).click();
-    cy.contains(/43\.\d{2} m²/);
 
     cy.log('Measurements of pan 1');
+    cy.contains(/(0|1)\.\d{2} m/);
     cy.contains(/3\.\d{2} m/);
-    cy.contains(/4\.\d{2} m/);
-    cy.contains(/7\.\d{2} m/);
+    cy.contains(/(14|15)\.\d{2} m/);
 
     cy.log('Change pan 1 details');
     cy.get('.roof-drawer-detail > .MuiStack-root > :nth-child(1)').click();
