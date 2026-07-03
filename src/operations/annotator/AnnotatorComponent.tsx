@@ -197,6 +197,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             key={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
             storageKey={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
             closeOnNear
+            edit={false}
           />
         )}
         <Annotator3D
