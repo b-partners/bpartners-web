@@ -280,4 +280,7 @@ export const removeCache = {
     localStorage.removeItem(ANALYSE_VIEW_STORAGE_KEY);
     localStorage.removeItem(ANNOTATOR_VIEW_STORAGE_KEY);
   },
+  whoami() {
+    localStorage.removeItem(whoamiItem);
+  },
 };
