@@ -82,15 +82,15 @@ jobs:
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/analyse-address-1.it.cy.ts" --config videosFolder=cypress/videos/detection-1
         continue-on-error: true
 
-      # - name: Launch Roof detection analysis 2 IT
-      #   id: detection-2
-      #   run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/analyse-address-2.it.cy.ts" --config videosFolder=cypress/videos/detection-2
-      #   continue-on-error: true
+      - name: Launch Roof detection analysis 2 IT
+        id: detection-2
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/analyse-address-2.it.cy.ts" --config videosFolder=cypress/videos/detection-2
+        continue-on-error: true
 
-      # - name: Launch Roof detection analysis 3 IT
-      #   id: detection-3
-      #   run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/analyse-address-3.it.cy.ts" --config videosFolder=cypress/videos/detection-3
-      #   continue-on-error: true
+      - name: Launch Roof detection analysis 3 IT
+        id: detection-3
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/analyse-address-3.it.cy.ts" --config videosFolder=cypress/videos/detection-3
+        continue-on-error: true
 
       - name: Monitor Roof analysis on Instatus
         env:
