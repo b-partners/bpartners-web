@@ -79,17 +79,17 @@ jobs:
 
       - name: Launch PDF Generation 1 IT
         id: pdf-1
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-1.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-1.it.cy.ts" --config videosFolder=cypress/videos/pdf-1
         continue-on-error: true
 
       - name: Launch PDF Generation 2 IT
         id: pdf-2
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-2.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-2.it.cy.ts" --config videosFolder=cypress/videos/pdf-2
         continue-on-error: true
 
       - name: Launch PDF Generation 3 IT
         id: pdf-3
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-3.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-3.it.cy.ts" --config videosFolder=cypress/videos/pdf-3
         continue-on-error: true
 
       - name: Monitor PDF Generation on Instatus
@@ -176,7 +176,7 @@ jobs:
                 --arg message "$ERROR_MESSAGE" \
                 --arg component "$INSTATUS_COMPONENT_ID" \
                 '{
-                  name: "[Roof] Failed to process roof",
+                  name: "[PDF] Failed to process generation",
                   status: "INVESTIGATING",
                   message: $message,
                   components: [$component],

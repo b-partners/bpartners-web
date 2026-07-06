@@ -85,17 +85,17 @@ jobs:
 
       - name: Launch 3D Pan Generation IT
         id: monitor-3d-pan
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-pan-address-1.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-pan-address-1.it.cy.ts" --config videosFolder=cypress/videos/pan-1
         continue-on-error: true
 
       - name: Launch 3D Roofer first address Generation IT
         id: monitor-3d-roofer-1
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-1.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-1.it.cy.ts" --config videosFolder=cypress/videos/roofer-1
         continue-on-error: true
 
       - name: Launch 3D Roofer second address Generation IT
         id: monitor-3d-roofer-2
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-2.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-2.it.cy.ts" --config videosFolder=cypress/videos/roofer-2
         continue-on-error: true
 
       - name: Monitor 3D Generation on Instatus
