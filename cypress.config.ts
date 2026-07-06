@@ -58,7 +58,7 @@ export default defineConfig({
     setupNodeEvents(on, _config) {
       on('file:preprocessor', vitePreprocessor());
       on('task', {
-        async getOpenInstatusIncident({componentId}) {
+        async getOpenInstatusIncident({ componentId }) {
           try {
             console.log(`Check if there is an open incident on ${IS_3D_MONITORING === 'true' ? '3D component' : 'Detection Component'}`);
             const res = await fetch(`${BASE_URL}/incidents`, {
@@ -74,7 +74,7 @@ export default defineConfig({
             const data = JSON.parse(text);
 
             if (data && Array.isArray(data)) {
-              console.log("Component Id = " + componentId)
+              console.log('Component Id = ' + componentId);
               const openIncident = data
                 .filter(i => i.status !== 'RESOLVED' && i.components?.some(c => c.id === componentId))
                 .sort((a, b) => new Date(b.started).getTime() - new Date(a.started).getTime())[0];
@@ -146,7 +146,7 @@ export default defineConfig({
           }
         },
 
-        async resolveInstatusIncident({componentId, incidentId, message }) {
+        async resolveInstatusIncident({ componentId, incidentId, message }) {
           try {
             console.log(`Resolve incident : ${incidentId}`);
             const res = await fetch(`${BASE_URL}/incidents/${incidentId}/incident-updates`, {

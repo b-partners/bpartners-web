@@ -50,7 +50,9 @@ const realCognitoLogin = () => {
     username: process.env.REACT_APP_IT_USERNAME,
     password: process.env.REACT_APP_IT_PASSWORD,
   };
+  // cy.session([REAL_COGNITO_REAL_PARAMS], () => {
   cy.then(async () => await authProvider.login(REAL_COGNITO_REAL_PARAMS));
+  // });
 };
 
 const dataCy = <Subject = any>(value: string, additionalCommand = '') => cy.get<Subject>(`[data-cy="${value}"]${additionalCommand}`);
