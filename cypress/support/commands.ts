@@ -71,6 +71,14 @@ const removeApiDummyUser = async () => {
   }
 };
 
+const assertWithinMs = (limitMs: number, check: () => Cypress.Chainable) => {
+  const start = Date.now();
+  return check().then(() => {
+    const elapsed = Date.now() - start;
+    if (elapsed > limitMs) throw new Error(`Took ${elapsed}ms, exceeded ${limitMs}ms`);
+  });
+};
+
 const e2eLogin = () => {
   cy.clearAllLocalStorage();
   cy.visit(process.env.REACT_APP_PROD_URL);
@@ -91,3 +99,4 @@ Cypress.Commands.add('cognitoLogin', mockCognitoLogin);
 Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
 Cypress.Commands.add('waitAuthRequestNeeded', waitAuthRequestNeeded);
+Cypress.Commands.add('assertWithinMs', assertWithinMs);
