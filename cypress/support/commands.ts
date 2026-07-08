@@ -75,7 +75,21 @@ const assertWithinMs = (limitMs: number, check: () => Cypress.Chainable) => {
   const start = Date.now();
   return check().then(() => {
     const elapsed = Date.now() - start;
+    cy.log(`⏱️ Took ${elapsed}ms (limit ${limitMs}ms)`);
     if (elapsed > limitMs) throw new Error(`Took ${elapsed}ms, exceeded ${limitMs}ms`);
+  });
+};
+
+const measure = (step: string, check: () => Cypress.Chainable, limitMs?: number) => {
+  const start = Date.now();
+  return check().then(() => {
+    const elapsed = Date.now() - start;
+    cy.log(`⏱️ [${step}] ${elapsed}ms${limitMs ? ` (limit ${limitMs}ms)` : ''}`);
+    return cy
+      .task('recordTiming', { spec: Cypress.spec.name, test: Cypress.currentTest.title, step, ms: elapsed })
+      .then(() => {
+        if (limitMs && elapsed > limitMs) throw new Error(`[${step}] Took ${elapsed}ms, exceeded ${limitMs}ms`);
+      });
   });
 };
 
@@ -100,3 +114,4 @@ Cypress.Commands.add('realCognitoLogin', realCognitoLogin);
 Cypress.Commands.add('removeApiDummyUser', removeApiDummyUser);
 Cypress.Commands.add('waitAuthRequestNeeded', waitAuthRequestNeeded);
 Cypress.Commands.add('assertWithinMs', assertWithinMs);
+Cypress.Commands.add('measure', measure);

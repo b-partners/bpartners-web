@@ -2,7 +2,25 @@ import taskCoverage from '@cypress/code-coverage/task.js';
 import { defineConfig } from 'cypress';
 import vitePreprocessor from 'cypress-vite';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
 dotenv.config();
+
+const TIMINGS_FILE = path.resolve('cypress/results/annotator-timings.json');
+
+const ensureTimingsFile = () => {
+  const dir = path.dirname(TIMINGS_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+};
+
+const readTimings = () => {
+  if (!fs.existsSync(TIMINGS_FILE)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(TIMINGS_FILE, 'utf-8'));
+  } catch {
+    return [];
+  }
+};
 
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
 const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
@@ -57,7 +75,20 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on, _config) {
       on('file:preprocessor', vitePreprocessor());
+
+      ensureTimingsFile();
+      fs.writeFileSync(TIMINGS_FILE, JSON.stringify([], null, 2));
+
       on('task', {
+        recordTiming(entry) {
+          ensureTimingsFile();
+          const timings = readTimings();
+          timings.push({ ...entry, at: new Date().toISOString() });
+          fs.writeFileSync(TIMINGS_FILE, JSON.stringify(timings, null, 2));
+          console.log(`⏱️ [${entry.step}] ${entry.ms}ms — ${entry.spec} :: ${entry.test}`);
+          return null;
+        },
+
         async getOpenInstatusIncident({ componentId }) {
           try {
             console.log(`Check if there is an open incident on ${IS_3D_MONITORING === 'true' ? '3D component' : 'Detection Component'}`);
@@ -176,6 +207,14 @@ export default defineConfig({
             throw new Error(`Error resolving incident:${error}`);
           }
         },
+      });
+
+      on('after:run', () => {
+        const timings = readTimings();
+        if (timings.length === 0) return;
+        console.log('\n⏱️  Annotator timings summary:');
+        console.table(timings.map(({ spec, test, step, ms }) => ({ spec, test, step, ms })));
+        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`);
       });
     },
 

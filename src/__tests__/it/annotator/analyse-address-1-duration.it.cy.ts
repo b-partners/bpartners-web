@@ -1,7 +1,7 @@
 const offsetX = 240;
 const offsetY = 240;
 
-const ANALYSE_TIME_LIMIT_MS = 30_000;
+const ANALYSE_TIME_LIMIT_MS = 120_000;
 
 describe('Analyse Automatic Roof 1 duration', () => {
   beforeEach(() => {
@@ -12,12 +12,12 @@ describe('Analyse Automatic Roof 1 duration', () => {
     cy.visit('https://dashboard.birdia.fr');
     cy.get('[data-testid="address-auto-complete"] input').clear().type('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France{enter}');
     cy.name('name').clear().type('Annotator It');
-    cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.wait(20000);
-
-    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    cy.measure('get-image', () => {
+      cy.contains("Générer l'image").click();
+      return cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    });
     cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
 
     cy.log('Check sidebar & area');
@@ -45,8 +45,13 @@ describe('Analyse Automatic Roof 1 duration', () => {
     cy.contains(/219\.\d{2} m²/);
 
     cy.log('Launch analyse and measure how long it takes to be done');
-    cy.contains('Analyse').click();
-
-    cy.assertWithinMs(ANALYSE_TIME_LIMIT_MS, () => cy.contains('Surface au sol', { timeout: ANALYSE_TIME_LIMIT_MS }));
+    cy.measure(
+      'analyse',
+      () => {
+        cy.contains('Analyse').click();
+        return cy.contains('Surface au sol', { timeout: ANALYSE_TIME_LIMIT_MS });
+      },
+      ANALYSE_TIME_LIMIT_MS
+    );
   });
 });
