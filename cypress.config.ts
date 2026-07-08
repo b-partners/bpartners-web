@@ -8,18 +8,49 @@ dotenv.config();
 
 const TIMINGS_FILE = path.resolve('cypress/results/annotator-timings.json');
 
+interface Timing {
+  spec: string;
+  test: string;
+  step: string;
+  ms: number;
+  at: string;
+}
+
+interface TimingsReport {
+  timings: Timing[];
+  summary: Record<string, { averageMs: number; count: number }>;
+}
+
 const ensureTimingsFile = () => {
   const dir = path.dirname(TIMINGS_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 };
 
-const readTimings = () => {
+const readTimings = (): Timing[] => {
   if (!fs.existsSync(TIMINGS_FILE)) return [];
   try {
-    return JSON.parse(fs.readFileSync(TIMINGS_FILE, 'utf-8'));
+    const parsed = JSON.parse(fs.readFileSync(TIMINGS_FILE, 'utf-8'));
+    return Array.isArray(parsed) ? parsed : (parsed.timings ?? []);
   } catch {
     return [];
   }
+};
+
+const buildSummary = (timings: Timing[]): TimingsReport['summary'] => {
+  const byStep: Record<string, number[]> = {};
+  timings.forEach(({ step, ms }) => {
+    byStep[step] = byStep[step] ?? [];
+    byStep[step].push(ms);
+  });
+  return Object.fromEntries(
+    Object.entries(byStep).map(([step, values]) => [step, { averageMs: Math.round(values.reduce((a, b) => a + b, 0) / values.length), count: values.length }])
+  );
+};
+
+const writeTimings = (timings: Timing[]) => {
+  ensureTimingsFile();
+  const report: TimingsReport = { summary: buildSummary(timings), timings };
+  fs.writeFileSync(TIMINGS_FILE, JSON.stringify(report, null, 2));
 };
 
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
@@ -76,15 +107,13 @@ export default defineConfig({
     setupNodeEvents(on, _config) {
       on('file:preprocessor', vitePreprocessor());
 
-      ensureTimingsFile();
-      fs.writeFileSync(TIMINGS_FILE, JSON.stringify([], null, 2));
+      writeTimings([]);
 
       on('task', {
-        recordTiming(entry) {
-          ensureTimingsFile();
+        recordTiming(entry: Omit<Timing, 'at'>) {
           const timings = readTimings();
           timings.push({ ...entry, at: new Date().toISOString() });
-          fs.writeFileSync(TIMINGS_FILE, JSON.stringify(timings, null, 2));
+          writeTimings(timings);
           console.log(`⏱️ [${entry.step}] ${entry.ms}ms — ${entry.spec} :: ${entry.test}`);
           return null;
         },
@@ -212,8 +241,8 @@ export default defineConfig({
       on('after:run', () => {
         const timings = readTimings();
         if (timings.length === 0) return;
-        console.log('\n⏱️  Annotator timings summary:');
-        console.table(timings.map(({ spec, test, step, ms }) => ({ spec, test, step, ms })));
+        console.log('\n⏱️  Annotator timings summary (average per step):');
+        console.table(buildSummary(timings));
         console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`);
       });
     },
