@@ -43,10 +43,8 @@ describe('Annotator E2E 2', () => {
     cy.contains('15.20m');
 
     cy.log('Launch analyse');
-    cy.measure('analyse', () => {
-      cy.contains('Analyse').click();
-      return cy.contains('Surface au sol', { timeout: 180_000 });
-    });
+    cy.contains('Analyse').click();
+    cy.contains('Surface au sol', { timeout: 180_000 });
 
     cy.log('Analyse sidebar');
     cy.contains(/84\.\d{2} m²/);
@@ -64,10 +62,8 @@ describe('Annotator E2E 2', () => {
 
     cy.log('Génération 3d');
     cy.contains('3D').click();
-    cy.measure('3d-generation', () => {
-      cy.contains('Génération du modèle 3D').click();
-      return cy.contains('Pan 1', { timeout: 180_000 });
-    });
+    cy.contains('Génération du modèle 3D').click();
+    cy.contains('Pan 1', { timeout: 180_000 });
 
     cy.log('Area of pan 1');
     cy.contains('Pan 1').click();

@@ -12,10 +12,8 @@ describe('Analyse Automatic Roof 1', () => {
     cy.name('name').clear().type('Annotator It');
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.measure('get-image', () => {
-      cy.contains("Générer l'image").click();
-      return cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
-    });
+    cy.contains("Générer l'image").click();
+    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
     cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
 
     cy.log('Check sidebar & area');

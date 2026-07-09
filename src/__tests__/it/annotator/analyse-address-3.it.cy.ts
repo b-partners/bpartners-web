@@ -12,10 +12,8 @@ describe('Annotator E2E 2', () => {
     cy.name('name').clear().type('Annotator It');
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.measure('get-image', () => {
-      cy.contains("Générer l'image").click();
-      return cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
-    });
+    cy.contains("Générer l'image").click();
+    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
     cy.contains('2 Place Bellecour, 69002 Lyon');
 
     cy.log('Check sidebar & area');
