@@ -12,6 +12,7 @@ export interface PanCapture {
   dataUrl: string;
   label: string;
   kind: PanCaptureKind;
+  angle: number;
 }
 
 interface PanCaptureStore {
@@ -56,6 +57,14 @@ interface MeasureLabel {
 }
 
 const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+const footprintUpAngle = (cameraDir: THREE.Vector3, footprintZSign: number): number => {
+  const camX = new THREE.Vector3().crossVectors(WORLD_UP, cameraDir);
+  if (camX.lengthSq() < 1e-8) return 0;
+  camX.normalize();
+  const camY = new THREE.Vector3().crossVectors(cameraDir, camX).normalize();
+  return Math.PI / 2 - Math.atan2(footprintZSign * camY.z, camY.x);
+};
 
 const projectToScreen = (point: THREE.Vector3, camera: THREE.Camera, width: number, height: number) => {
   const projected = point.clone().project(camera);
@@ -170,7 +179,7 @@ const captureMesh = (
   renderTarget: THREE.WebGLRenderTarget,
   width: number,
   height: number
-): HTMLCanvasElement => {
+): { canvas: HTMLCanvasElement; angle: number } => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
   const center = sphere.center.clone().applyMatrix4(mesh.matrixWorld);
@@ -211,7 +220,7 @@ const captureMesh = (
   mesh.material = original;
   highlight.dispose();
 
-  return readTargetToCanvas(gl, renderTarget, width, height);
+  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, -1) };
 };
 
 const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: number } => {
@@ -233,7 +242,7 @@ const captureBounds = (
   renderTarget: THREE.WebGLRenderTarget,
   width: number,
   height: number
-): HTMLCanvasElement => {
+): { canvas: HTMLCanvasElement; angle: number } => {
   const safeRadius = Math.max(radius, 0.5);
   const cameraDir = new THREE.Vector3(0.4, 1, 0.4).normalize();
   const distance = (safeRadius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING * 1.6;
@@ -248,7 +257,7 @@ const captureBounds = (
   gl.render(scene, camera);
   gl.setRenderTarget(null);
 
-  return readTargetToCanvas(gl, renderTarget, width, height);
+  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, 1) };
 };
 
 export const useCityJsonPanCapture = (
@@ -311,9 +320,9 @@ export const useCityJsonPanCapture = (
             await nextFrame();
             await nextFrame();
 
-            const canvas = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
+            const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
-            captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan' });
+            captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan', angle });
           }
 
           setSelectedMesh(null);
@@ -326,9 +335,9 @@ export const useCityJsonPanCapture = (
           await nextFrame();
 
           const { center, radius } = boundsOfPoints(polygon.points);
-          const canvas = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
+          const { canvas, angle } = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
           const dataUrl = drawMeasureLabels(canvas, polygonMeasureLabels(polygon), captureCamera, width, height, pixelRatio);
-          captures.push({ index: i + 1, dataUrl, label: polygon.name, kind: 'polygon' });
+          captures.push({ index: i + 1, dataUrl, label: polygon.name, kind: 'polygon', angle });
         }
 
         for (let i = 0; i < savedLines.length; i++) {
@@ -338,9 +347,9 @@ export const useCityJsonPanCapture = (
           await nextFrame();
 
           const { center, radius } = boundsOfPoints([line.pointA, line.pointB]);
-          const canvas = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
+          const { canvas, angle } = captureBounds(center, radius, scene, captureCamera, gl, renderTarget, width, height);
           const dataUrl = drawMeasureLabels(canvas, lineMeasureLabels(line), captureCamera, width, height, pixelRatio);
-          captures.push({ index: i + 1, dataUrl, label: line.name, kind: 'line' });
+          captures.push({ index: i + 1, dataUrl, label: line.name, kind: 'line', angle });
         }
 
         setSelectedMeasureId(savedMeasureId);
