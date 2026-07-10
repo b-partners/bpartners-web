@@ -29,9 +29,22 @@ export const getApiKey = async () => {
 };
 
 export const getBackWhoami = async () => {
-  const { whoami } = securityApi();
-  const { data } = await whoami();
+  const session = (await awsAuth.fetchAuthSession()) || {};
+  const conf = new Configuration();
+  const accessToken = session.tokens?.idToken?.toString();
+
+  conf.accessToken = accessToken;
+  if (!accessToken) {
+    return null;
+  }
+  cache.token(accessToken, session.tokens?.accessToken.toString());
+
+  const securityApi = new SecurityApi(conf);
+  const { data } = await securityApi.whoami();
   cache.whoami(data);
+
+  const unapprovedFiles = getCached.unapprovedFiles();
+  if ((unapprovedFiles || 1) === 0) await cacheAccounts();
   return data;
 };
 
