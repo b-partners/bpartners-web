@@ -28,6 +28,13 @@ export const getApiKey = async () => {
   return apiKey;
 };
 
+export const getBackWhoami = async () => {
+  const { whoami } = securityApi();
+  const { data } = await whoami();
+  cache.whoami(data);
+  return data;
+};
+
 export const whoami = async (): Promise<any> => {
   const session = (await awsAuth.fetchAuthSession()) || {};
   const conf = new Configuration();
