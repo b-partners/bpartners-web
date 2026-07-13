@@ -76,15 +76,21 @@ jobs:
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-1.it.cy.ts"
         continue-on-error: true
 
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-1-timing.json
+
       - name: Launch PDF Generation 2 IT
         id: pdf-2
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-2.it.cy.ts"
         continue-on-error: true
 
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-2-timing.json
+
       - name: Launch PDF Generation 3 IT
         id: pdf-3
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-3.it.cy.ts"
         continue-on-error: true
+
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-3-timing.json
 
       - name: Monitor PDF Generation on Instatus
         env:
@@ -134,11 +140,47 @@ jobs:
           PY
           )
 
-          # Check error message
+          SLOW_GENERATION_MESSAGE=$(python3 <<'PY'
+          import json
+          import glob
+
+          MAX_DURATION_MS = 120000
+
+          messages = []
+
+          for file in glob.glob("cypress/results/*-timing.json"):
+              try:
+                  with open(file) as f:
+                      report = json.load(f)
+
+                  for timing in report.get("timings", []):
+                      duration = timing.get("ms", 0)
+                      if duration > MAX_DURATION_MS:
+                          messages.append(
+                              f"[{file}] "
+                              f"{timing.get('spec')} - "
+                              f"{timing.get('step')} took "
+                              f"{duration}ms"
+                          )
+
+              except Exception as e:
+                  messages.append(
+                      f"[{file}] JSON parse error: {str(e)}"
+                  )
+          print("\n".join(messages)[:4000])
+          PY
+          )
+
           if [ -n "$ERROR_MESSAGE" ]; then
             HAS_ERROR=true
           else
             HAS_ERROR=false
+          fi
+
+          if [ -n "$SLOW_GENERATION_MESSAGE" ]; then
+            HAS_SLOW_GENERATION=true
+          else
+            HAS_SLOW_GENERATION=false
           fi
 
           ACTIVE_INCIDENT_ID=$(curl -fsSL \
@@ -164,17 +206,47 @@ jobs:
             if [ -n "$ACTIVE_INCIDENT_ID" ]; then
               echo "Incident already active: $ACTIVE_INCIDENT_ID"
             else
-              echo "Creating incident..."
+              echo "Creating MAJOR outage incident..."
 
               PAYLOAD=$(jq -n \
                 --arg message "$ERROR_MESSAGE" \
                 --arg component "$INSTATUS_COMPONENT_ID" \
                 '{
-                  name: "[Roof] Failed to process roof",
+                  name: "[PDF] Generation failed",
                   status: "INVESTIGATING",
                   message: $message,
                   components: [$component],
-                  statuses: [{id: $component, status: "MAJOROUTAGE"}]
+                  statuses: [
+                    {
+                      id: $component,
+                      status: "MAJOROUTAGE"
+                    }
+                  ]
+                }')
+
+              curl -fsSL \
+                -X POST \
+                -H "Authorization: Bearer ${INSTATUS_API_KEY}" \
+                -H "Content-Type: application/json" \
+                "https://api.instatus.com/v1/${INSTATUS_PAGE_ID}/incidents" \
+                -d "$PAYLOAD"
+
+            fi
+
+          elif [ "$HAS_SLOW_GENERATION" = true ]; then
+            if [ -n "$ACTIVE_INCIDENT_ID" ]; then
+              echo "Incident already active: $ACTIVE_INCIDENT_ID"
+            else
+              echo "Creating PARTIALOUTAGE incident..."
+              PAYLOAD=$(jq -n \
+                --arg message "$SLOW_GENERATION_MESSAGE" \
+                --arg component "$INSTATUS_COMPONENT_ID" \
+                '{
+                  name: "[PDF] Took too much time to process",
+                  status: "INVESTIGATING",
+                  message: $message,
+                  components: [$component],
+                  statuses: [{id: $component, status: "PARTIALOUTAGE"}]
                 }')
 
               curl -fsSL \
@@ -184,13 +256,13 @@ jobs:
                 "https://api.instatus.com/v1/${INSTATUS_PAGE_ID}/incidents" \
                 -d "$PAYLOAD"
             fi
-
           else
             if [ -n "$ACTIVE_INCIDENT_ID" ]; then
               echo "Resolving incident $ACTIVE_INCIDENT_ID..."
-              curl -s -o /dev/null -X POST \
-              https://api.instatus.com/v2/${INSTATUS_PAGE_ID}/incidents/${ACTIVE_INCIDENT_ID}/incident-updates/${INSTATUS_PDF_RESTORED_TMPL_ID} \
-              -H "Authorization: Bearer ${INSTATUS_API_KEY}"
+              curl -s -o /dev/null \
+                -X POST \
+                "https://api.instatus.com/v2/${INSTATUS_PAGE_ID}/incidents/${ACTIVE_INCIDENT_ID}/incident-updates/${INSTATUS_3D_RESTORED_TMPL_ID}" \
+                -H "Authorization: Bearer ${INSTATUS_API_KEY}"
             else
               echo "No active incident."
             fi
