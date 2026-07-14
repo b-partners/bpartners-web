@@ -46,6 +46,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     analyseImageUrl,
     analyseLoadingPolygon,
     cropRegion,
+    isEditable,
   } = useAnnotatorComponentStore();
   const { data: geojsonResult, isPending, isError } = useGeojsonQueryResult([geoJsonResultUrl], !!geoJsonResultUrl);
   const { data: markerPosition, mutate: mutateMarker } = usePolygonMarkerFetcher();
@@ -197,7 +198,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
             key={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
             storageKey={isAnalyseScreen ? ANALYSE_VIEW_STORAGE_KEY : ANNOTATOR_VIEW_STORAGE_KEY}
             closeOnNear
-            edit={false}
+            edit={isEditable}
           />
         )}
         <Annotator3D

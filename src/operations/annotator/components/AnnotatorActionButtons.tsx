@@ -1,8 +1,16 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
-import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
+import {
+  Edit as EditIcon,
+  EditOff as EditOffIcon,
+  PanTool as PanToolIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomInMap as ZoomInMapIcon,
+  ZoomOut as ZoomOutIcon,
+} from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
@@ -27,6 +35,8 @@ export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
     const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
+    const isEditable = useAnnotatorComponentStore(state => state.isEditable);
+    const toggleIsEditable = useAnnotatorComponentStore(state => state.toggleIsEditable);
 
     const handleZoom = (fn: () => void) => () => {
       if (!clickActionValue) toggleClickAction();
@@ -112,6 +122,10 @@ export const annotatorButtonsActions =
           <Divider orientation='vertical' flexItem />
           <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
+          </Tooltip>
+          <Divider orientation='vertical' flexItem />
+          <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Activer la modification'}>
+            <IconButton color={isEditable ? 'primary' : 'default'}>{isEditable ? <EditIcon /> : <EditOffIcon />}</IconButton>
           </Tooltip>
           {showShiftButtons && (
             <>
