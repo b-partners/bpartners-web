@@ -244,8 +244,10 @@ jobs:
           elif [ "$HAS_SLOW_GENERATION" = true ]; then
             if [ -n "$ACTIVE_INCIDENT_ID" ]; then
               echo "Incident already active: $ACTIVE_INCIDENT_ID"
+              echo "Error message : $SLOW_GENERATION_MESSAGE"
             else
               echo "Creating PARTIAL outage incident..."
+              echo "Error message : $SLOW_GENERATION_MESSAGE"
               PAYLOAD=$(jq -n \
                 --arg message "$SLOW_GENERATION_MESSAGE" \
                 --arg component "$INSTATUS_COMPONENT_ID" \

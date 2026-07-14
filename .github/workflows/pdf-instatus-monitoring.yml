@@ -242,8 +242,10 @@ jobs:
           elif [ "$HAS_SLOW_GENERATION" = true ]; then
             if [ -n "$ACTIVE_INCIDENT_ID" ]; then
               echo "Incident already active: $ACTIVE_INCIDENT_ID"
+              echo "Error message : $SLOW_GENERATION_MESSAGE"
             else
               echo "Creating PARTIALOUTAGE incident..."
+              echo "Error message : $SLOW_GENERATION_MESSAGE"
               PAYLOAD=$(jq -n \
                 --arg message "$SLOW_GENERATION_MESSAGE" \
                 --arg component "$INSTATUS_COMPONENT_ID" \
@@ -267,7 +269,7 @@ jobs:
               echo "Resolving incident $ACTIVE_INCIDENT_ID..."
               curl -s -o /dev/null \
                 -X POST \
-                "https://api.instatus.com/v2/${INSTATUS_PAGE_ID}/incidents/${ACTIVE_INCIDENT_ID}/incident-updates/${INSTATUS_3D_RESTORED_TMPL_ID}" \
+                "https://api.instatus.com/v2/${INSTATUS_PAGE_ID}/incidents/${ACTIVE_INCIDENT_ID}/incident-updates/${INSTATUS_PDF_RESTORED_TMPL_ID}" \
                 -H "Authorization: Bearer ${INSTATUS_API_KEY}"
             else
               echo "No active incident."
