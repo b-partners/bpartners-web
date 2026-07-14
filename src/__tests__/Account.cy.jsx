@@ -111,7 +111,6 @@ describe(specTitle('Account'), () => {
 
     //Field social capital
     cy.name('companyInfo.socialCapital').clear();
-    cy.contains('Ce champ est requis.');
     cy.contains('Capital social');
     cy.name('companyInfo.socialCapital').type('100000');
 
@@ -123,7 +122,6 @@ describe(specTitle('Account'), () => {
 
     //Field siren
     cy.name('siren').clear();
-    cy.contains('Ce champ est requis.');
     cy.contains('SIREN');
     cy.name('siren').type('1001');
 

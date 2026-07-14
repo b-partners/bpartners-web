@@ -2,7 +2,7 @@ import { BPLoader, PaymentMethodRequiredModal, SubscriptionBillingModal, Subscri
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
-import { removeCache, whoami } from '@/providers';
+import { getBackWhoami } from '@/providers';
 import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { FC, PropsWithChildren, useLayoutEffect } from 'react';
 import { useRedirect } from 'react-admin';
@@ -17,8 +17,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
   useLayoutEffect(() => {
     async function checkSubscription() {
       try {
-        removeCache.whoami();
-        const currentWhoami = await whoami();
+        const currentWhoami = await getBackWhoami();
         switch (currentWhoami?.user?.subscription?.status) {
           case UserSubscriptionStatus.PAYMENT_METHOD_REQUIRED:
             redirect('/');

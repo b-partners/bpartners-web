@@ -55,9 +55,15 @@ jobs:
       - run: npm install --legacy-peer-deps
 
       - run: |
-          echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
-          echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
-          echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} >> .env
+          echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} > .env
+          echo REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} >> .env
+          echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
+          echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
+          echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
+          echo REACT_APP_BPARTNERS_API_URL=https://api.dashboard.birdia.fr >> .env
+          echo REACT_APP_IT_USERNAME=${{ secrets.IT_USERNAME }} >> .env
+          echo REACT_APP_IT_PASSWORD='${{ secrets.IT_PASSWORD }}' >> .env
+          echo REACT_APP_PROD_URL='${{ secrets.REACT_APP_PROD_URL }}' >> .env
           echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
           echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
           echo REACT_APP_IT_ONBOARD_PHONE_NUMBER=${{ secrets.REACT_APP_IT_ONBOARD_PHONE_NUMBER }} >> .env
@@ -79,21 +85,21 @@ jobs:
 
       - name: Launch 3D Pan Generation IT
         id: monitor-3d-pan
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-pan-address-1.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-pan-address-1.it.cy.ts" --config videosFolder=cypress/videos/pan-1
         continue-on-error: true
 
       - run: mv cypress/results/annotator-timings.json cypress/results/3d-pan-address-1-timing.json
 
       - name: Launch 3D Roofer first address Generation IT
         id: monitor-3d-roofer-1
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-1.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-1.it.cy.ts" --config videosFolder=cypress/videos/roofer-1
         continue-on-error: true
 
       - run: mv cypress/results/annotator-timings.json cypress/results/3d-roofer-address-1-timing.json
 
       - name: Launch 3D Roofer second address Generation IT
         id: monitor-3d-roofer-2
-        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-2.it.cy.ts"
+        run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/3d-roofer-address-2.it.cy.ts" --config videosFolder=cypress/videos/roofer-2
         continue-on-error: true
 
       - run: mv cypress/results/annotator-timings.json cypress/results/3d-roofer-address-2-timing.json

@@ -124,7 +124,17 @@ export default defineConfig({
         if (timings.length === 0) return;
         console.log('\n⏱️  Annotator timings summary (average per step):');
         console.table(buildSummary(timings));
-        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`);
+        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`)});
+
+      on('before:browser:launch', (browser, launchOptions) => {
+        if (browser.family === 'chromium') {
+          launchOptions.args.push('--use-gl=angle');
+          launchOptions.args.push('--use-angle=swiftshader');
+          launchOptions.args.push('--enable-webgl');
+          launchOptions.args.push('--ignore-gpu-blocklist');
+          launchOptions.args.push('--enable-unsafe-swiftshader'); // requis sur Chrome récent
+        }
+        return launchOptions;
       });
     },
 
