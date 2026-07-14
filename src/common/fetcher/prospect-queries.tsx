@@ -3,7 +3,6 @@ import { wait } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useEffect } from 'react';
 import { useCreate, useGetOne, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
@@ -55,19 +54,20 @@ export const useMutateProspect = () => {
   const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
   const { reset: reset3DStore } = useAnnotator3DStore();
   const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
+  const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
   const { data: geocode } = useGetOne(
     'geocode',
     {
       id: uuidV4(),
       meta: { longitude: data?.geoPositions?.[0]?.longitude, latitude: data?.geoPositions?.[0]?.latitude },
     },
-    { enabled: !!data }
+    {
+      enabled: !!data,
+      onSuccess: (geocodeResult: any) => {
+        if (geocodeResult?.data) mutateRoofPolygon({ areaPictureDetails: data, geoJson: geocodeResult.data });
+      },
+    }
   );
-  const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
-
-  useEffect(() => {
-    if (geocode?.data && data?.currentTile) mutateRoofPolygon({ areaPictureDetails: data, geoJson: geocode.data });
-  }, [geocode, data]);
 
   const handleError = (error: any) => {
     resetProgress();
