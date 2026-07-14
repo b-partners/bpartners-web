@@ -92,9 +92,9 @@ jobs:
           file: version.yml
           version: version
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'corretto'
       - run: npm install --location=global sonar-scanner
       - name: Sonar

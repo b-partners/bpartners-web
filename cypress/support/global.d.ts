@@ -15,6 +15,8 @@ export declare global {
       realCognitoLogin(): void;
       removeApiDummyUser(): void;
       waitAuthRequestNeeded(): void;
+      assertWithinMs(limitMs: number, check: () => Cypress.Chainable): Chainable;
+      measure(step: string, check: () => Cypress.Chainable, limitMs?: number): Chainable;
     }
   }
 }

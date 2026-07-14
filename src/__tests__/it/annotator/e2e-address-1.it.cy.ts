@@ -10,12 +10,12 @@ describe('Annotator E2E', () => {
     cy.visit('https://dashboard.birdia.fr');
     cy.get('[data-testid="address-auto-complete"] input').clear().type('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France{enter}');
     cy.name('name').clear().type('Annotator It');
-    cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.wait(20000);
-
-    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    cy.measure('get-image', () => {
+      cy.contains("Générer l'image").click();
+      return cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    });
     cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
 
     cy.log('Check sidebar & area');
@@ -57,10 +57,9 @@ describe('Annotator E2E', () => {
 
     cy.log('Launch analyse');
     cy.contains('Analyse').click();
-    cy.wait(60_000);
+    cy.contains('Surface au sol', { timeout: 180_000 });
 
     cy.log('Analyse sidebar');
-    cy.contains('Surface au sol');
     cy.contains(/219\.\d{2} m²/);
     cy.contains('Chargement de la hauteur du bâtiment');
 
@@ -77,10 +76,10 @@ describe('Annotator E2E', () => {
     cy.log('Génération 3d');
     cy.contains('3D').click();
     cy.contains('Génération du modèle 3D').click();
-    cy.wait(60_000);
+    cy.contains('Pan 1', { timeout: 180_000 });
 
     cy.log('Area of pan 1');
-    cy.contains('Pan 1', { timeout: 120_000 }).click();
+    cy.contains('Pan 1').click();
     cy.contains(/43\.\d{2} m²/);
 
     cy.log('Measurements of pan 1');

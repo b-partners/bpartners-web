@@ -10,11 +10,9 @@ describe('Analyse Automatic Roof 1', () => {
     cy.visit('https://dashboard.birdia.fr');
     cy.get('[data-testid="address-auto-complete"] input').clear().type('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France{enter}');
     cy.name('name').clear().type('Annotator It');
-    cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.wait(20000);
-
+    cy.contains("Générer l'image").click();
     cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
     cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
 
@@ -56,11 +54,12 @@ describe('Analyse Automatic Roof 1', () => {
     cy.contains('6.80m');
 
     cy.log('Launch analyse');
-    cy.contains('Analyse').click();
-    cy.wait(60_000);
+    cy.measure('analyse', () => {
+      cy.contains('Analyse').click();
+      return cy.contains('Surface au sol', { timeout: 180_000 });
+    });
 
     cy.log('Analyse sidebar');
-    cy.contains('Surface au sol');
     cy.contains(/219\.\d{2} m²/);
     cy.contains('Chargement de la hauteur du bâtiment');
 

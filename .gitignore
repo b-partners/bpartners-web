@@ -11,6 +11,7 @@ cypress/integration/
 cypress/screenshots/
 cypress/downloads/
 cypress/videos
+cypress/results/
 
 .env
 .DS_Store

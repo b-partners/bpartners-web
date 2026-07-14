@@ -10,12 +10,12 @@ describe('Annotator E2E 2', () => {
     cy.visit('https://dashboard.birdia.fr');
     cy.get('[data-testid="address-auto-complete"] input').clear().type('2 Place Bellecour, 69002 Lyon{enter}');
     cy.name('name').clear().type('Annotator It');
-    cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.wait(20000);
-
-    cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    cy.measure('get-image', () => {
+      cy.contains("Générer l'image").click();
+      return cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
+    });
     cy.contains('2 Place Bellecour, 69002 Lyon');
 
     cy.log('Check sidebar & area');
@@ -99,10 +99,9 @@ describe('Annotator E2E 2', () => {
 
     cy.log('Launch analyse');
     cy.contains('Analyse').click();
-    cy.wait(60_000);
+    cy.contains('Surface au sol', { timeout: 180_000 });
 
     cy.log('Analyse sidebar');
-    cy.contains('Surface au sol');
     cy.contains(/446\.\d{2} m²/);
     cy.contains('Chargement de la hauteur du bâtiment');
 
@@ -119,10 +118,10 @@ describe('Annotator E2E 2', () => {
     cy.log('Génération 3d');
     cy.contains('3D').click({ force: true });
     cy.contains('Génération du modèle 3D').click();
-    cy.wait(60_000);
+    cy.contains('Pan 1', { timeout: 180_000 });
 
     cy.log('Area of pan 1');
-    cy.contains('Pan 1', { timeout: 120_000 }).click();
+    cy.contains('Pan 1').click();
     cy.contains(/191\.\d{2} m²/);
     cy.contains(/157\.\d{2} m²/);
     cy.contains(/50\.\d{2} m²/);

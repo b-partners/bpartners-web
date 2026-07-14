@@ -10,11 +10,9 @@ describe('3D Roofer Address 1', () => {
     cy.visit('https://dashboard.birdia.fr');
     cy.get('[data-testid="address-auto-complete"] input').clear().type('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France{enter}');
     cy.name('name').clear().type('Annotator It');
-    cy.contains("Générer l'image").click();
     // Do not show the tutorial
     localStorage.setItem('bp_annotator_tutorial_seen', 'true');
-    cy.wait(20000);
-
+    cy.contains("Générer l'image").click();
     cy.contains("Aucune annotation n'a encore été effectuée.", { timeout: 180_000 });
     cy.contains('1 Rue de la Vau Saint-Jacques, 79200 Parthenay, France');
 
@@ -40,11 +38,13 @@ describe('3D Roofer Address 1', () => {
 
     cy.log('Génération 3d');
     cy.contains('3D').click();
-    cy.contains('Génération du modèle 3D').click();
-    cy.wait(60_000);
+    cy.measure('3d-generation', () => {
+      cy.contains('Génération du modèle 3D').click();
+      return cy.contains('Pan 1', { timeout: 180_000 });
+    });
 
     cy.log('Area of pan 1');
-    cy.contains('Pan 1', { timeout: 120_000 }).click();
+    cy.contains('Pan 1').click();
     cy.contains(/43\.\d{2} m²/);
 
     cy.log('Measurements of pan 1');
