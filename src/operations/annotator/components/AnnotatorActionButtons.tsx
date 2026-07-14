@@ -5,9 +5,8 @@ import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
 import {
   Edit as EditIcon,
-  Lock as LockIcon,
-  LockOpen as LockOpenIcon,
   PanTool as PanToolIcon,
+  ShapeLine as ShapeLineIcon,
   ZoomIn as ZoomInIcon,
   ZoomInMap as ZoomInMapIcon,
   ZoomOut as ZoomOutIcon,
@@ -125,8 +124,10 @@ export const annotatorButtonsActions =
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
           </Tooltip>
           <Divider orientation='vertical' flexItem />
-          <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Verrouiller la modification' : 'Déverrouiller la modification'}>
-            <IconButton color={isEditable ? 'primary' : 'default'}>{isEditable ? <LockOpenIcon /> : <LockIcon />}</IconButton>
+          <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Modifier les polygones'}>
+            <IconButton color={isEditable ? 'primary' : 'default'}>
+              <ShapeLineIcon />
+            </IconButton>
           </Tooltip>
           {showShiftButtons && (
             <>
