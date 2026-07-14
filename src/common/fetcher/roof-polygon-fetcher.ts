@@ -12,6 +12,7 @@ const defaultImageSize = 1024;
 interface RoofPolygonFetcherPayload {
   areaPictureDetails: AreaPictureDetails;
   geoJson: any;
+  isForOriginImage?: boolean;
 }
 
 const toGeoPositions = (geoJson: any): GeoPosition[] => {
@@ -23,7 +24,7 @@ export const useRoofPolygonFetcher = () => {
   const mutation = useMutation({
     mutationKey: ['useRoofPolygonFetcher'],
     onError: console.log,
-    mutationFn: async ({ areaPictureDetails, geoJson }: RoofPolygonFetcherPayload) => {
+    mutationFn: async ({ areaPictureDetails, geoJson, isForOriginImage }: RoofPolygonFetcherPayload) => {
       if (!areaPictureDetails || !geoJson) return null;
       const {
         filename,
@@ -42,11 +43,12 @@ export const useRoofPolygonFetcher = () => {
       });
 
       const pixelResult = await polygonConverterProvider.coordinatesToPixel(payload);
+
       const shapeAttributes = Object.values(pixelResult?.[0]?.regions || {})[0]?.shape_attributes;
       if (!shapeAttributes) return null;
 
       const roofPolygon: Polygon = {
-        id: `${v4()}__${roofGlobalIdRef}`,
+        id: isForOriginImage ? v4() : `${v4()}__${roofGlobalIdRef}`,
         points: geoShapeAttributesToPoints(shapeAttributes),
         fillColor: '#00ff0000',
         strokeColor: '#00ff00',

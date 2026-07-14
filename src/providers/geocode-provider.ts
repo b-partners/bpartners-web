@@ -1,3 +1,4 @@
+import { getApiKey } from './auth-provider';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 export const geocodeProvider: BpDataProviderType = {
@@ -6,13 +7,16 @@ export const geocodeProvider: BpDataProviderType = {
   },
   async getOne(id?: string, option?: any) {
     const params = new URLSearchParams(option).toString();
-    const res = await fetch(`${process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL}/geocode?${params}`, {
+    const apiKey = await getApiKey();
+    const res = await fetch(`${process.env.REACT_APP_GEO_DETECTION_API}/geocode?${params}`, {
       method: 'GET',
       headers: {
+        'x-api-key': apiKey,
         'Content-Type': 'application/json',
       },
     });
-    return { id, data: await res.json() };
+    const data = await res.json();
+    return { id, data };
   },
   saveOrUpdate: function (): Promise<Array<any>> {
     throw new Error('Function not implemented.');

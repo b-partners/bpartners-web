@@ -15,7 +15,6 @@ import {
   useAnnotatorScreenSwitch,
 } from '../store';
 import { useDialog } from '../store/dialog';
-import { useRoofPolygonFetcher } from './roof-polygon-fetcher';
 
 const PROSPECT_STEPS = 3;
 const PROSPECT_PROGRESS_DURATION_MS = 19000;
@@ -54,17 +53,17 @@ export const useMutateProspect = () => {
   const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
   const { reset: reset3DStore } = useAnnotator3DStore();
   const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
-  const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
+
   const { data: geocode } = useGetOne(
     'geocode',
     {
-      id: uuidV4(),
+      id: data?.id + '-geocode',
       meta: { longitude: data?.geoPositions?.[0]?.longitude, latitude: data?.geoPositions?.[0]?.latitude },
     },
     {
       enabled: !!data,
-      onSuccess: (geocodeResult: any) => {
-        if (geocodeResult?.data) mutateRoofPolygon({ areaPictureDetails: data, geoJson: geocodeResult.data });
+      onSettled(geocodeResult) {
+        annotatorStore.useAnnotatorStore.getState().setGeocode(geocodeResult);
       },
     }
   );
