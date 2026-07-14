@@ -3,7 +3,8 @@ import { wait } from '@/common/utils';
 import { clearPolygons, clearRoofDelimiter } from '@/providers';
 import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useCreate, useNotify, useUpdate } from 'react-admin';
+import { useEffect } from 'react';
+import { useCreate, useGetOne, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
 import {
@@ -15,6 +16,7 @@ import {
   useAnnotatorScreenSwitch,
 } from '../store';
 import { useDialog } from '../store/dialog';
+import { useRoofPolygonFetcher } from './roof-polygon-fetcher';
 
 const PROSPECT_STEPS = 3;
 const PROSPECT_PROGRESS_DURATION_MS = 19000;
@@ -49,10 +51,23 @@ export const useMutateProspect = () => {
   const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
   const { setScreen } = useAnnotatorScreenSwitch();
-  const [create, { isPending: isAreaPictureDetailsPending }] = useCreate();
+  const [create, { isPending: isAreaPictureDetailsPending, data }] = useCreate();
   const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
   const { reset: reset3DStore } = useAnnotator3DStore();
   const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
+  const { data: geocode } = useGetOne(
+    'geocode',
+    {
+      id: uuidV4(),
+      meta: { longitude: data?.geoPositions?.[0]?.longitude, latitude: data?.geoPositions?.[0]?.latitude },
+    },
+    { enabled: !!data }
+  );
+  const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
+
+  useEffect(() => {
+    if (geocode?.data && data?.currentTile) mutateRoofPolygon({ areaPictureDetails: data, geoJson: geocode.data });
+  }, [geocode, data]);
 
   const handleError = (error: any) => {
     resetProgress();
@@ -131,5 +146,5 @@ export const useMutateProspect = () => {
     create('prospects', { data: prospect }, { onError: handleError, onSuccess: onProspectSuccess });
   };
 
-  return { mutate, isPending: isAreaPictureDetailsPending || isDraftAnnotationsPending, progress };
+  return { mutate, isPending: isAreaPictureDetailsPending || isDraftAnnotationsPending, progress, geocode };
 };
