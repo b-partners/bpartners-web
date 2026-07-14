@@ -3,18 +3,11 @@ import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
 import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client';
-import {
-  Edit as EditIcon,
-  PanTool as PanToolIcon,
-  Polyline as PolylineIcon,
-  ShapeLine as ShapeLineIcon,
-  ZoomIn as ZoomInIcon,
-  ZoomInMap as ZoomInMapIcon,
-  ZoomOut as ZoomOutIcon,
-} from '@mui/icons-material';
+import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInMap as ZoomInMapIcon, ZoomOut as ZoomOutIcon } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
+import { RebaseEditIcon } from './RebaseEditIcon';
 import { annotatorActionButtonsStyle, annotatorTopBarStyle } from './style';
 import { ThreeDGenerationModeSwitch } from './three-d-generation-mode-switch';
 
@@ -126,7 +119,9 @@ export const annotatorButtonsActions =
           </Tooltip>
           <Divider orientation='vertical' flexItem />
           <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Modifier les polygones'}>
-            <IconButton color={isEditable ? 'primary' : 'default'}>{isEditable ? <ShapeLineIcon /> : <PolylineIcon />}</IconButton>
+            <IconButton color={isEditable ? 'primary' : 'default'}>
+              <RebaseEditIcon slashed={!isEditable} />
+            </IconButton>
           </Tooltip>
           {showShiftButtons && (
             <>
