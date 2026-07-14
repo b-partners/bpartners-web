@@ -1,3 +1,4 @@
+import { PALETTE_COLORS } from '@/bp-theme';
 import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
@@ -120,7 +121,7 @@ export const annotatorButtonsActions =
           <Divider orientation='vertical' flexItem />
           <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Modifier les polygones'}>
             <IconButton color={isEditable ? 'primary' : 'default'}>
-              <RebaseEditIcon slashed={!isEditable} />
+              <RebaseEditIcon slashed={!isEditable} slashCutoutColor={PALETTE_COLORS.black} />
             </IconButton>
           </Tooltip>
           {showShiftButtons && (
