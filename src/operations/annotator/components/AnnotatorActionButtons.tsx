@@ -6,6 +6,7 @@ import { AreaPictureDetails, ShiftDirection } from '@bpartners/typescript-client
 import {
   Edit as EditIcon,
   PanTool as PanToolIcon,
+  Polyline as PolylineIcon,
   ShapeLine as ShapeLineIcon,
   ZoomIn as ZoomInIcon,
   ZoomInMap as ZoomInMapIcon,
@@ -125,9 +126,7 @@ export const annotatorButtonsActions =
           </Tooltip>
           <Divider orientation='vertical' flexItem />
           <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Modifier les polygones'}>
-            <IconButton color={isEditable ? 'primary' : 'default'}>
-              <ShapeLineIcon />
-            </IconButton>
+            <IconButton color={isEditable ? 'primary' : 'default'}>{isEditable ? <ShapeLineIcon /> : <PolylineIcon />}</IconButton>
           </Tooltip>
           {showShiftButtons && (
             <>
