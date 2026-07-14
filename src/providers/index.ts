@@ -12,6 +12,7 @@ export * from './customer-provider';
 export * from './data-provider';
 export * from './feedback-provider';
 export * from './file-provider';
+export * from './geocode-provider';
 export * from './invoice-provider';
 export * from './mailing-provider';
 export * from './mappers';

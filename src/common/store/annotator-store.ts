@@ -37,6 +37,7 @@ interface State {
   threeDFromSegmentation?: boolean;
   threeDGenerationId?: string;
   roofAnalyseId?: string;
+  geocode?: any;
 }
 
 const defaultValue: State = {
@@ -64,6 +65,7 @@ interface Actions {
   setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
   setThreeDGenerationId: (threeDGenerationId: string | undefined) => void;
   setRoofAnalyseId: (roofAnalyseId: string) => void;
+  setGeocode: (geocode: any) => void;
 }
 
 // @ts-ignore
@@ -236,6 +238,9 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   setRoofAnalyseId(roofAnalyseId) {
     set({ roofAnalyseId });
   },
+  setGeocode(geocode) {
+    set({ geocode });
+  },
 }));
 
 const useOneAnnotatorStore = (polygonId: string) => {
@@ -389,6 +394,8 @@ const useAnalyseAnnotatorInfoStore = () =>
     )
   );
 
+const useGeocodeStore = () => useAnnotatorStore(useShallow(param => ({ geocode: param.geocode, setGeocode: param.setGeocode })));
+
 export const annotatorStore = {
   usePolygonStore,
   useScreenPolygonStore,
@@ -403,4 +410,5 @@ export const annotatorStore = {
   use2DPanPolygonStore,
   use2DPanAnnotatorInfoStore,
   useOneAnnotationStore,
+  useGeocodeStore,
 };

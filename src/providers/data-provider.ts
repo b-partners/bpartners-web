@@ -6,6 +6,7 @@ import {
   BpDataProviderType,
   customerProvider,
   fileProvider,
+  geocodeProvider,
   productProvider,
   profileProvider,
   prospectingProvider,
@@ -31,6 +32,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
   if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
   if (resourceType === 'files') return fileProvider;
+  if (resourceType === 'geocode') return geocodeProvider;
   if (resourceType === 'save-user-annotation') return saveUserAnnotationProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };
@@ -59,7 +61,7 @@ export const dataProvider: RaDataProviderType = {
     return { data, pageInfo, total: data.length === 0 ? 0 : Number.MAX_SAFE_INTEGER };
   },
   async getOne(resourceType: string, params: any) {
-    const result = await getProvider(resourceType).getOne(params.id);
+    const result = await getProvider(resourceType).getOne(params.id, params.meta);
     return { data: result };
   },
   async update(resourceType: string, params: UpdateParams) {

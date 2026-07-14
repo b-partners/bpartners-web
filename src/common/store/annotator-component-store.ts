@@ -40,6 +40,8 @@ interface Action {
   setAnalyseImageFileId: (analyseImageFileId: string | null) => void;
   setAnalyseLoadingPolygon: (analyseLoadingPolygon: { x: number; y: number }[] | null) => void;
   setCropRegion: (cropRegion: CropRegion | null) => void;
+  setIsEditable: (isEditable: boolean) => void;
+  toggleIsEditable: () => void;
 }
 
 interface State {
@@ -65,6 +67,7 @@ interface State {
   analyseImageFileId: string | null;
   analyseLoadingPolygon: { x: number; y: number }[] | null;
   cropRegion: CropRegion | null;
+  isEditable: boolean;
 }
 
 const defaultState: any = {
@@ -82,6 +85,7 @@ const defaultState: any = {
   analyseImageFileId: null,
   analyseLoadingPolygon: null,
   cropRegion: null,
+  isEditable: false,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
@@ -103,4 +107,6 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setAnalyseImageFileId: analyseImageFileId => set({ analyseImageFileId }),
   setAnalyseLoadingPolygon: analyseLoadingPolygon => set({ analyseLoadingPolygon }),
   setCropRegion: cropRegion => set({ cropRegion }),
+  setIsEditable: isEditable => set({ isEditable }),
+  toggleIsEditable: () => set(state => ({ isEditable: !state.isEditable })),
 }));
