@@ -5,7 +5,7 @@ import { MutableRefObject, useEffect } from 'react';
 import * as THREE from 'three';
 import { create } from 'zustand';
 
-export type PanCaptureKind = 'pan' | 'polygon' | 'line';
+export type PanCaptureKind = 'pan' | 'facade' | 'polygon' | 'line';
 
 export interface PanCapture {
   index: number;
@@ -288,9 +288,12 @@ export const useCityJsonPanCapture = (
     setIsCapturing(true);
 
     const roofMeshes: THREE.Mesh[] = [];
+    const wallMeshes: THREE.Mesh[] = [];
     group.traverse(obj => {
       const mesh = obj as THREE.Mesh;
-      if (mesh.isMesh && mesh.userData?.surfaceType === 'RoofSurface') roofMeshes.push(mesh);
+      if (!mesh.isMesh) return;
+      if (mesh.userData?.surfaceType === 'RoofSurface') roofMeshes.push(mesh);
+      if (mesh.userData?.surfaceType === 'WallSurface') wallMeshes.push(mesh);
     });
 
     const run = async () => {
@@ -323,6 +326,23 @@ export const useCityJsonPanCapture = (
             const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
             captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan', angle });
+          }
+
+          setSelectedMesh(null);
+        }
+
+        if (wallMeshes.length) {
+          setSelectedMeasureId(null);
+
+          for (let i = 0; i < wallMeshes.length; i++) {
+            const mesh = wallMeshes[i];
+            setSelectedMesh(mesh);
+            await nextFrame();
+            await nextFrame();
+
+            const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
+            const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
+            captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle });
           }
 
           setSelectedMesh(null);
