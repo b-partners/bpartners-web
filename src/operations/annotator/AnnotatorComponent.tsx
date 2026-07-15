@@ -176,7 +176,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           durationMs={ROOF_ANALYSE_PROGRESS_DURATION_MS}
           isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)}
         />
-        {showAnnotatorCanvas && (
+        {showAnnotatorCanvas && markerPosition && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
