@@ -139,6 +139,8 @@ export const useMutateProspect = () => {
     roof3DStore.useRoof3DStore.getState().reset();
     clearPolygons();
     setScreen('annotator');
+    localStorage.removeItem('annotator-view:2d');
+    localStorage.removeItem('annotator-view:analyse');
     // reset annotator page state
 
     start();
