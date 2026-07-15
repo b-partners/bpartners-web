@@ -178,7 +178,8 @@ const captureMesh = (
   gl: THREE.WebGLRenderer,
   renderTarget: THREE.WebGLRenderTarget,
   width: number,
-  height: number
+  height: number,
+  paddingScale = 1
 ): { canvas: HTMLCanvasElement; angle: number } => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
@@ -197,7 +198,7 @@ const captureMesh = (
     cameraDir.copy(horizontalNormal.multiplyScalar(Math.cos(MIN_ELEVATION_RAD)).add(WORLD_UP.clone().multiplyScalar(minY))).normalize();
   }
 
-  const distance = (radius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING;
+  const distance = (radius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING * paddingScale;
 
   camera.aspect = width / height;
   camera.position.copy(center).addScaledVector(cameraDir, distance);
@@ -340,7 +341,7 @@ export const useCityJsonPanCapture = (
             await nextFrame();
             await nextFrame();
 
-            const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
+            const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
             captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle });
           }
