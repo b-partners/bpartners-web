@@ -18,6 +18,14 @@ const closeRingWithoutSuperposition = (points: PanPoint[]): PanPoint[] => {
   return [...deduped, deduped[0]];
 };
 
+const shiftPointsToPositive = (points: PanPoint[]): PanPoint[] => {
+  if (!points.length) return points;
+  const offsetX = Math.max(0, -Math.min(...points.map(({ x }) => x)));
+  const offsetY = Math.max(0, -Math.min(...points.map(({ y }) => y)));
+  if (!offsetX && !offsetY) return points;
+  return points.map(({ x, y }) => ({ x: x + offsetX, y: y + offsetY }));
+};
+
 const rotatePointsAroundCentroid = (points: PanPoint[], angle: number): PanPoint[] => {
   if (!angle || points.length === 0) return points;
   const cx = points.reduce((sum, point) => sum + point.x, 0) / points.length;
@@ -76,7 +84,7 @@ const boundaryMapper = {
     const points3D = _boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: rotatePointsAroundCentroid(closeRingWithoutSuperposition(points3D.map(([x, y]) => ({ x, y }))), angle),
+      points: shiftPointsToPositive(rotatePointsAroundCentroid(closeRingWithoutSuperposition(points3D.map(([x, y]) => ({ x, y }))), angle)),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
@@ -108,7 +116,7 @@ const boundaryMapper = {
       : facadePolygonPoints(_boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001)));
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: closeRingWithoutSuperposition(points),
+      points: shiftPointsToPositive(closeRingWithoutSuperposition(points)),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
