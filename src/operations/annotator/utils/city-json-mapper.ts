@@ -102,11 +102,13 @@ const boundaryMapper = {
     };
   },
 
-  toFacade: (_boundary: number[], cityJson: CityJSON, area: number, height: number, index: number): ExportAreaPictureAnnotation3DPan => {
-    const points3D = _boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
+  toFacade: (_boundary: number[], cityJson: CityJSON, area: number, height: number, index: number, polygonPoints?: PanPoint[]): ExportAreaPictureAnnotation3DPan => {
+    const points = polygonPoints?.length
+      ? polygonPoints
+      : facadePolygonPoints(_boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001)));
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: closeRingWithoutSuperposition(facadePolygonPoints(points3D)),
+      points: closeRingWithoutSuperposition(points),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
@@ -226,7 +228,8 @@ export const cityJsonMapper = {
     panNames: Record<number, string> = {},
     edgeTypes: Record<number, Record<number, string>> = {},
     panAngles: number[] = [],
-    facadeImageIds: string[] = []
+    facadeImageIds: string[] = [],
+    facadePolygons: PanPoint[][] = []
   ) => {
     const { roofBoundaries, totalArea } = collectRoofBoundaries(cityJson);
     const wallBoundaries = collectWallBoundaries(cityJson);
@@ -243,7 +246,7 @@ export const cityJsonMapper = {
     }
 
     const facades = wallBoundaries.map(({ boundary, area, height }, index) => {
-      const facade = boundaryMapper.toFacade(boundary, cityJson, area, height, index);
+      const facade = boundaryMapper.toFacade(boundary, cityJson, area, height, index, facadePolygons[index]);
       return facadeImageIds[index] ? { ...facade, imageUri: facadeImageIds[index] } : facade;
     });
 

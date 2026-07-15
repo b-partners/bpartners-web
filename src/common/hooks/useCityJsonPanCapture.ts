@@ -13,6 +13,7 @@ export interface PanCapture {
   label: string;
   kind: PanCaptureKind;
   angle: number;
+  polygon?: { x: number; y: number }[];
 }
 
 interface PanCaptureStore {
@@ -180,7 +181,7 @@ const captureMesh = (
   width: number,
   height: number,
   paddingScale = 1
-): { canvas: HTMLCanvasElement; angle: number } => {
+): { canvas: HTMLCanvasElement; angle: number; center: THREE.Vector3; right: THREE.Vector3; up: THREE.Vector3 } => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
   const center = sphere.center.clone().applyMatrix4(mesh.matrixWorld);
@@ -221,8 +222,17 @@ const captureMesh = (
   mesh.material = original;
   highlight.dispose();
 
-  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, -1) };
+  const right = new THREE.Vector3().crossVectors(WORLD_UP, cameraDir).normalize();
+  const up = new THREE.Vector3().crossVectors(cameraDir, right).normalize();
+
+  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, -1), center: center.clone(), right, up };
 };
+
+const projectRingToCameraPlane = (ring: THREE.Vector3[], center: THREE.Vector3, right: THREE.Vector3, up: THREE.Vector3): { x: number; y: number }[] =>
+  ring.map(point => {
+    const delta = point.clone().sub(center);
+    return { x: +delta.dot(right).toFixed(2), y: +-delta.dot(up).toFixed(2) };
+  });
 
 const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: number } => {
   const vectors = points.map(p => new THREE.Vector3(p[0], p[1], p[2]));
@@ -341,9 +351,11 @@ export const useCityJsonPanCapture = (
             await nextFrame();
             await nextFrame();
 
-            const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
+            const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
-            captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle });
+            const ring = getFaceMeasure(mesh, cityJson).edges.map(edge => edge.start);
+            const polygon = projectRingToCameraPlane(ring, center, right, up);
+            captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle, polygon });
           }
 
           setSelectedMesh(null);
