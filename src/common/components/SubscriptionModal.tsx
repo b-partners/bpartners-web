@@ -1,5 +1,5 @@
 import { useDialog } from '@/common/store/dialog';
-import { cache, getCached, userSubscriptionProvider } from '@/providers';
+import { authProvider, cache, getCached, userSubscriptionProvider } from '@/providers';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -31,6 +31,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const startDate = whoami?.user?.subscription?.start ? new Date(whoami.user.subscription.start) : null;
   const endDate = whoami?.user?.subscription?.end ? new Date(whoami.user.subscription.end) : null;
   const firstDebitDate = getFirstDebitDate(startDate, endDate);
+
+  const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   return (
     <>
@@ -75,6 +77,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       </DialogContent>
       <DialogActions>
         {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
+        {!allowClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
         <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
       </DialogActions>
     </>
