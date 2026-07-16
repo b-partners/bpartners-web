@@ -4,22 +4,30 @@ import { cache, removeCache } from '@/providers';
 import { Dashboard, Refresh, Roofing } from '@mui/icons-material';
 import { Box, Button, ButtonBase, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { regenerate3DModeSelectStyle } from './style';
 
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   const { screen, setScreen, threeDMode } = useAnnotatorScreenSwitch();
+  const { shouldPromptRegenerate, setShouldPromptRegenerate } = useAnnotator3DStore();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [fromSegmentation, setFromSegmentation] = useState(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
-
-  if (screen !== '3d-annotator') return null;
 
   const handleOpen = () => {
     setFromSegmentation(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
     setOpen(true);
   };
+
+  useEffect(() => {
+    if (screen === '3d-annotator' && shouldPromptRegenerate) {
+      handleOpen();
+      setShouldPromptRegenerate(false);
+    }
+  }, [screen, shouldPromptRegenerate, setShouldPromptRegenerate]);
+
+  if (screen !== '3d-annotator') return null;
 
   const handleConfirm = () => {
     queryClient.cancelQueries({ queryKey: [CITY_JSON_QUERY_KEY_PREFIX] });

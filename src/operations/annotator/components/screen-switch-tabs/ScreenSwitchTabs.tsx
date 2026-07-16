@@ -1,10 +1,10 @@
-import { annotatorStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
 import { Box, ButtonBase, CircularProgress } from '@mui/material';
 import { FC } from 'react';
 import { useNotify } from 'react-admin';
 import { useShallow } from 'zustand/react/shallow';
-import { isAnalyseRoofAnnotation } from '../../utils';
+import { hasTwoDStateChangedSince, isAnalyseRoofAnnotation, ThreeDGenerationMode } from '../../utils';
 import { ScreenSwitchTabsStyle } from './style';
 
 interface ScreenSwitchTabsProps {
@@ -18,7 +18,8 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
     setScreenRaw(...args);
   };
   const { polygonList } = annotatorStore.usePolygonStore();
-  const { roofDelimiter } = useAnnotatorComponentStore();
+  const { roofDelimiter, areaPictureDetails } = useAnnotatorComponentStore();
+  const setShouldPromptRegenerate = useAnnotator3DStore(params => params.setShouldPromptRegenerate);
   const roofPolygon = annotatorStore.useAnnotatorStore(useShallow(params => Object.values(params.annotations).find(isAnalyseRoofAnnotation)));
   const { wearLevel, humidityLevel, moldRate } = roofPolygon?.annotationInfos || {};
 
@@ -34,12 +35,18 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
   const select3DGenerationMode = () => {
     if (screen === '3d-annotator') return setScreen('annotator');
 
+    const cameFrom2D = screen === 'annotator';
+    const goTo3D = (mode: ThreeDGenerationMode) => {
+      if (cameFrom2D && hasTwoDStateChangedSince(areaPictureDetails?.fileId, mode)) setShouldPromptRegenerate(true);
+      return setScreen('3d-annotator', mode === 'pan' ? 'pan' : 'roof');
+    };
+
     if (threeDFromSegmentation) {
-      if (hasPan) return setScreen('3d-annotator', 'pan');
+      if (hasPan) return goTo3D('pan');
       return notify('Veuillez ajouter au moins un pan pour lancer la modélisation 3D par segmentation.', { type: 'warning' });
     }
 
-    if (hasRoof) return setScreen('3d-annotator');
+    if (hasRoof) return goTo3D('roof');
     notify('Veuillez délimiter le toit pour lancer la modélisation 3D par emprise.', { type: 'warning' });
   };
 
