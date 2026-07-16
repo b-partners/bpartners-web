@@ -18,6 +18,33 @@ const closeRingWithoutSuperposition = (points: PanPoint[]): PanPoint[] => {
   return [...deduped, deduped[0]];
 };
 
+type PanPoint3D = { x: number; y: number; z: number };
+
+const dedupeFootprintRing = (points: number[][]): PanPoint3D[] => {
+  const mapped = points.map(([x, y, z]) => ({ x, y, z }));
+  const deduped = mapped.filter((point, index) => index === 0 || point.x !== mapped[index - 1].x || point.y !== mapped[index - 1].y);
+  while (deduped.length > 1 && deduped[0].x === deduped[deduped.length - 1].x && deduped[0].y === deduped[deduped.length - 1].y) deduped.pop();
+  return deduped;
+};
+
+const edge3DLength = (a: PanPoint3D, b: PanPoint3D) => Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
+
+const rescaleRingToLengths = (points: PanPoint[], lengths: number[]): PanPoint[] => {
+  if (points.length < 2) return points;
+  const result: PanPoint[] = [points[0]];
+  for (let i = 0; i < points.length - 1; i++) {
+    const from = points[i];
+    const to = points[i + 1];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    const target = lengths[i] ?? distance;
+    const last = result[result.length - 1];
+    result.push({ x: +(last.x + (dx / distance) * target).toFixed(2), y: +(last.y + (dy / distance) * target).toFixed(2) });
+  }
+  return result;
+};
+
 const shiftPointsToPositive = (points: PanPoint[]): PanPoint[] => {
   if (!points.length) return points;
   const offsetX = Math.max(0, -Math.min(...points.map(({ x }) => x)));
@@ -83,8 +110,13 @@ const boundaryMapper = {
   ): ExportAreaPictureAnnotation3DPan => {
     const points3D = _boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001));
 
+    const ring3D = dedupeFootprintRing(points3D);
+    const footprintPoints = ring3D.map(({ x, y }) => ({ x, y }));
+    const footprintLengths = ring3D.map((point, i) => edge3DLength(point, ring3D[(i + 1) % ring3D.length]));
+    const rescaledPoints = rescaleRingToLengths(footprintPoints, footprintLengths);
+
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: shiftPointsToPositive(rotatePointsAroundCentroid(closeRingWithoutSuperposition(points3D.map(([x, y]) => ({ x, y }))), angle)),
+      points: shiftPointsToPositive(rotatePointsAroundCentroid(closeRingWithoutSuperposition(rescaledPoints), angle)),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);

@@ -234,6 +234,22 @@ const projectRingToCameraPlane = (ring: THREE.Vector3[], center: THREE.Vector3, 
     return { x: +delta.dot(right).toFixed(2), y: +-delta.dot(up).toFixed(2) };
   });
 
+const rescaleRingToLengths = (points: { x: number; y: number }[], lengths: number[]): { x: number; y: number }[] => {
+  if (points.length < 2) return points;
+  const result = [points[0]];
+  for (let i = 0; i < points.length - 1; i++) {
+    const from = points[i];
+    const to = points[i + 1];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    const target = lengths[i] ?? distance;
+    const last = result[result.length - 1];
+    result.push({ x: +(last.x + (dx / distance) * target).toFixed(2), y: +(last.y + (dy / distance) * target).toFixed(2) });
+  }
+  return result;
+};
+
 const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: number } => {
   const vectors = points.map(p => new THREE.Vector3(p[0], p[1], p[2]));
   const center = new THREE.Vector3();
@@ -353,8 +369,9 @@ export const useCityJsonPanCapture = (
 
             const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
-            const ring = getFaceMeasure(mesh, cityJson).edges.map(edge => edge.start);
-            const polygon = projectRingToCameraPlane(ring, center, right, up);
+            const faceEdges = getFaceMeasure(mesh, cityJson).edges;
+            const projected = projectRingToCameraPlane(faceEdges.map(edge => edge.start), center, right, up);
+            const polygon = rescaleRingToLengths(projected, faceEdges.map(edge => edge.distanceMeters));
             captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle, polygon });
           }
 
