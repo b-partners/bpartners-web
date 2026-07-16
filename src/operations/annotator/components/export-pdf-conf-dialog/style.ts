@@ -1,6 +1,8 @@
 import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
+const ACCENT = PALETTE_COLORS.neon_orange;
+
 export const ExportPdfConfDialogStyle: SxProps = {
   display: 'flex',
   flexDirection: 'column',
@@ -23,8 +25,8 @@ export const ExportPdfConfDialogStyle: SxProps = {
     height: 44,
     flexShrink: 0,
     borderRadius: '12px',
-    color: PALETTE_COLORS.pine,
-    bgcolor: 'rgba(74, 100, 78, 0.12)',
+    color: ACCENT,
+    bgcolor: 'rgba(255, 82, 27, 0.12)',
     '& svg': { fontSize: 24 },
   },
   '& .dialog-title': {
@@ -55,12 +57,12 @@ export const ExportPdfConfDialogStyle: SxProps = {
   '& .dialog-select-all': {
     fontSize: 12.5,
     fontWeight: 600,
-    color: PALETTE_COLORS.pine,
+    color: ACCENT,
     px: 0.75,
     py: 0.25,
     borderRadius: '6px',
     transition: 'background-color 0.15s ease',
-    '&:hover': { bgcolor: 'rgba(74, 100, 78, 0.1)' },
+    '&:hover': { bgcolor: 'rgba(255, 82, 27, 0.08)' },
   },
 
   '& .dialog-groups': {
@@ -100,8 +102,8 @@ export const ExportPdfConfDialogStyle: SxProps = {
     '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.03)' },
   },
   '& .conf-row.conf-row-active': {
-    bgcolor: 'var(--accent-12)',
-    borderColor: 'var(--accent-30)',
+    bgcolor: 'rgba(255, 82, 27, 0.06)',
+    borderColor: 'rgba(255, 82, 27, 0.25)',
   },
   '& .conf-row-icon': {
     display: 'flex',
@@ -111,13 +113,14 @@ export const ExportPdfConfDialogStyle: SxProps = {
     height: 36,
     flexShrink: 0,
     borderRadius: '8px',
-    color: 'var(--accent)',
-    bgcolor: 'var(--accent-12)',
-    transition: 'background-color 0.15s ease',
+    color: '#6b7280',
+    bgcolor: 'rgba(0, 0, 0, 0.05)',
+    transition: 'background-color 0.15s ease, color 0.15s ease',
     '& svg': { fontSize: 20 },
   },
   '& .conf-row.conf-row-active .conf-row-icon': {
-    bgcolor: 'var(--accent-22)',
+    color: ACCENT,
+    bgcolor: 'rgba(255, 82, 27, 0.15)',
   },
   '& .conf-row-text': {
     flex: 1,
@@ -138,8 +141,6 @@ export const ExportPdfConfDialogStyle: SxProps = {
   '& .conf-row-switch': {
     flexShrink: 0,
     pointerEvents: 'none',
-    '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--accent)' },
-    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: 'var(--accent)', opacity: 0.5 },
   },
 
   '& .dialog-footer': {
