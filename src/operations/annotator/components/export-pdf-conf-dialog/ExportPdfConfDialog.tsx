@@ -14,30 +14,41 @@ import {
   ViewInArOutlined,
 } from '@mui/icons-material';
 import { Box, Button, ButtonBase, Switch, Typography } from '@mui/material';
-import { FC, ReactNode, useState } from 'react';
+import { CSSProperties, FC, ReactNode, useState } from 'react';
 import { ExportPdfConfDialogStyle } from './style';
 
 type ConfKey = keyof ExportAreaPictureAnnotationConf;
 
-const OPTION_META: Record<ConfKey, { icon: ReactNode; description: string }> = {
-  showTitlePage: { icon: <DescriptionOutlined />, description: "Page de couverture avec l'adresse et les informations générales." },
-  showAnnotationPages: { icon: <LayersOutlined />, description: 'Vue annotée de la toiture en 2D.' },
-  showAnnotation3dPages: { icon: <ViewInArOutlined />, description: 'Rendu et annotations du modèle 3D.' },
-  showMeasurementSummary: { icon: <StraightenOutlined />, description: 'Tableau récapitulatif des mesures relevées.' },
-  showPitchSummary: { icon: <ArchitectureOutlined />, description: 'Détail des pentes par pan de toiture.' },
-  showAreaSummary: { icon: <SquareFootOutlined />, description: 'Surfaces calculées par zone.' },
-  showOverallSummary: { icon: <AssessmentOutlined />, description: "Synthèse générale de l'analyse." },
-  showLlmSummary: { icon: <AutoAwesomeOutlined />, description: "Commentaires générés par l'intelligence artificielle." },
+const OPTION_META: Record<ConfKey, { icon: ReactNode; description: string; color: string }> = {
+  showTitlePage: { icon: <DescriptionOutlined />, description: "Page de couverture avec l'adresse et les informations générales.", color: '#4A644E' },
+  showAnnotationPages: { icon: <LayersOutlined />, description: 'Vue annotée de la toiture en 2D.', color: '#FF521B' },
+  showAnnotation3dPages: { icon: <ViewInArOutlined />, description: 'Rendu et annotations du modèle 3D.', color: '#3D6E8F' },
+  showLlmSummary: { icon: <AutoAwesomeOutlined />, description: "Pages du rapport généré par l'intelligence artificielle.", color: '#6D4C9F' },
+  showMeasurementSummary: { icon: <StraightenOutlined />, description: 'Tableau récapitulatif des mesures relevées.', color: '#B45309' },
+  showPitchSummary: { icon: <ArchitectureOutlined />, description: 'Détail des pentes par pan de toiture.', color: '#2C7A7B' },
+  showAreaSummary: { icon: <SquareFootOutlined />, description: 'Surfaces calculées par zone.', color: '#2F855A' },
+  showOverallSummary: { icon: <AssessmentOutlined />, description: "Synthèse générale de l'analyse.", color: '#112717' },
 };
 
 const LABEL_BY_KEY = EXPORT_PDF_CONF_OPTIONS.reduce<Record<string, string>>((acc, { key, label }) => ({ ...acc, [key]: label }), {});
 
 const GROUPS: { title: string; keys: ConfKey[] }[] = [
-  { title: 'Pages', keys: ['showTitlePage', 'showAnnotationPages', 'showAnnotation3dPages'] },
-  { title: 'Résumés', keys: ['showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary', 'showLlmSummary'] },
+  { title: 'Pages', keys: ['showTitlePage', 'showAnnotationPages', 'showAnnotation3dPages', 'showLlmSummary'] },
+  { title: 'Résumés', keys: ['showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary'] },
 ];
 
 const ALL_KEYS = EXPORT_PDF_CONF_OPTIONS.map(({ key }) => key);
+
+const hexToRgba = (hex: string, alpha: number) => {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const accentVars = (color: string) =>
+  ({ '--accent': color, '--accent-12': hexToRgba(color, 0.12), '--accent-22': hexToRgba(color, 0.22), '--accent-30': hexToRgba(color, 0.3) }) as CSSProperties;
 
 interface ConfRowProps {
   confKey: ConfKey;
@@ -48,6 +59,7 @@ interface ConfRowProps {
 const ConfRow: FC<ConfRowProps> = ({ confKey, checked, onToggle }) => (
   <ButtonBase
     className={`conf-row ${checked ? 'conf-row-active' : ''}`}
+    style={accentVars(OPTION_META[confKey].color)}
     onClick={() => onToggle(confKey)}
     role='switch'
     aria-checked={checked}
