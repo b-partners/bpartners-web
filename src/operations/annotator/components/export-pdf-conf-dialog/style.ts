@@ -1,0 +1,160 @@
+import { PALETTE_COLORS } from '@/bp-theme';
+import { SxProps } from '@mui/material';
+
+const ACCENT = PALETTE_COLORS.neon_orange;
+
+export const ExportPdfConfDialogStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: 480,
+  maxWidth: '100%',
+  maxHeight: '88vh',
+  p: 3,
+  bgcolor: PALETTE_COLORS.white,
+
+  '& .dialog-header': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.5,
+  },
+  '& .dialog-header-icon': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 44,
+    height: 44,
+    flexShrink: 0,
+    borderRadius: '12px',
+    color: ACCENT,
+    bgcolor: 'rgba(255, 82, 27, 0.12)',
+    '& svg': { fontSize: 24 },
+  },
+  '& .dialog-title': {
+    fontSize: 18,
+    fontWeight: 700,
+    color: PALETTE_COLORS.forest,
+    lineHeight: 1.25,
+  },
+  '& .dialog-subtitle': {
+    fontSize: 13,
+    color: '#6b7280',
+    lineHeight: 1.35,
+    mt: 0.25,
+  },
+
+  '& .dialog-toolbar': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    mt: 2.5,
+    mb: 1,
+  },
+  '& .dialog-count': {
+    fontSize: 12.5,
+    fontWeight: 500,
+    color: '#6b7280',
+  },
+  '& .dialog-select-all': {
+    fontSize: 12.5,
+    fontWeight: 600,
+    color: ACCENT,
+    px: 0.75,
+    py: 0.25,
+    borderRadius: '6px',
+    transition: 'background-color 0.15s ease',
+    '&:hover': { bgcolor: 'rgba(255, 82, 27, 0.08)' },
+  },
+
+  '& .dialog-groups': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    overflowY: 'auto',
+    pr: 0.5,
+    mr: -0.5,
+  },
+  '& .group-title': {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.6px',
+    textTransform: 'uppercase',
+    color: '#9ca3af',
+    ml: 0.5,
+    mb: 0.75,
+  },
+  '& .group-rows': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.5,
+  },
+
+  '& .conf-row': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.25,
+    width: '100%',
+    justifyContent: 'flex-start',
+    textAlign: 'left',
+    p: 1,
+    borderRadius: '10px',
+    border: '1px solid transparent',
+    transition: 'background-color 0.15s ease, border-color 0.15s ease',
+    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.03)' },
+  },
+  '& .conf-row.conf-row-active': {
+    bgcolor: 'rgba(255, 82, 27, 0.06)',
+    borderColor: 'rgba(255, 82, 27, 0.25)',
+  },
+  '& .conf-row-icon': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 36,
+    height: 36,
+    flexShrink: 0,
+    borderRadius: '8px',
+    color: '#6b7280',
+    bgcolor: 'rgba(0, 0, 0, 0.05)',
+    transition: 'background-color 0.15s ease, color 0.15s ease',
+    '& svg': { fontSize: 20 },
+  },
+  '& .conf-row.conf-row-active .conf-row-icon': {
+    color: ACCENT,
+    bgcolor: 'rgba(255, 82, 27, 0.15)',
+  },
+  '& .conf-row-text': {
+    flex: 1,
+    minWidth: 0,
+  },
+  '& .conf-row-label': {
+    fontSize: 14,
+    fontWeight: 600,
+    color: PALETTE_COLORS.black,
+    lineHeight: 1.3,
+  },
+  '& .conf-row-desc': {
+    fontSize: 12,
+    color: '#6b7280',
+    lineHeight: 1.35,
+    mt: 0.25,
+  },
+  '& .conf-row-switch': {
+    flexShrink: 0,
+    pointerEvents: 'none',
+  },
+
+  '& .dialog-footer': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 1,
+    mt: 3,
+    pt: 2,
+    borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+  },
+  '& .dialog-footer .footer-btn': {
+    minWidth: 110,
+    textTransform: 'none',
+    fontWeight: 600,
+  },
+};

@@ -1,11 +1,13 @@
 import { useAnnotatorExportAsPdf } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
+import { useDialog } from '@/common/store/dialog';
 import { getFileUrl } from '@/common/utils';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
 import { Button, ButtonProps, CircularProgress } from '@mui/material';
 import { FC } from 'react';
 import { calculateGlobalRate, isAfterAnalyse, shiftPolygons } from '../utils';
+import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
 
 interface AnnotatorExportPdfButtonProps extends ButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -17,8 +19,9 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
   const analyseImageFileId = useAnnotatorComponentStore(state => state.analyseImageFileId);
 
   const { mutate: exportAsPdf, isPending } = useAnnotatorExportAsPdf({});
+  const { open } = useDialog();
 
-  const handleExport = () => {
+  const runExport = (conf: ExportAreaPictureAnnotationConf) => {
     const globalRate = calculateGlobalRate();
     const shiftedPolygonList =
       !isAfterAnalyse(polygonList) && areaPictureDetails.shiftNb && areaPictureDetails.shiftNb !== 0
@@ -32,8 +35,11 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
       imageUrl: getFileUrl(analyseImageFileId ?? areaPictureDetails.fileId, 'AREA_PICTURE'),
       globalRateType: globalRate.type,
       globalRateValue: globalRate.value,
+      conf,
     });
   };
+
+  const handleExport = () => open(<ExportPdfConfDialog onConfirm={runExport} />);
 
   return (
     <Button
