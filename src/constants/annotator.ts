@@ -1,5 +1,5 @@
 import { toRaInputChoices } from '@/common/utils/to-ra-input-choices';
-import { Wearness } from '@bpartners/typescript-client';
+import { ExportAreaPictureAnnotationConf, Wearness } from '@bpartners/typescript-client';
 
 export const ANNOTATION_LABELS_TRANSLATION = {
   roof: 'Toit',
@@ -52,3 +52,25 @@ export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLAT
 
 export const MEASUREMENT_MAP_ON_EXTENDED_AREA = 9;
 export const MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 3;
+
+export const DEFAULT_EXPORT_PDF_CONF: Required<ExportAreaPictureAnnotationConf> = {
+  showTitlePage: true,
+  showAnnotationPages: true,
+  showAnnotation3dPages: true,
+  showMeasurementSummary: true,
+  showPitchSummary: true,
+  showAreaSummary: true,
+  showOverallSummary: true,
+  showLlmSummary: true,
+};
+
+export const EXPORT_PDF_CONF_OPTIONS: { key: keyof ExportAreaPictureAnnotationConf; label: string }[] = [
+  { key: 'showTitlePage', label: 'Page de titre' },
+  { key: 'showAnnotationPages', label: "Pages d'annotation 2D" },
+  { key: 'showAnnotation3dPages', label: "Pages d'annotation 3D" },
+  { key: 'showMeasurementSummary', label: 'Résumé des mesures' },
+  { key: 'showPitchSummary', label: 'Résumé des pentes' },
+  { key: 'showAreaSummary', label: 'Résumé des surfaces' },
+  { key: 'showOverallSummary', label: 'Résumé global' },
+  { key: 'showLlmSummary', label: "Résumé de l'analyse IA" },
+];

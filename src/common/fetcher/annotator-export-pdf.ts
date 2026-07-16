@@ -1,3 +1,4 @@
+import { DEFAULT_EXPORT_PDF_CONF } from '@/constants';
 import { AnnotationInfo } from '@/operations/annotator';
 import {
   cityJsonMapper,
@@ -8,7 +9,7 @@ import {
   shiftPolygons,
 } from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
-import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
+import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
@@ -145,7 +146,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     return exportsCroppedAnalyseImage ? cropPolygons(selectedPolygons, cropRegion) : selectedPolygons;
   };
 
-  const mutationFn = async (params: ExportAnnotationMapperArgs) => {
+  const mutationFn = async (params: ExportAnnotationMapperArgs & { conf?: ExportAreaPictureAnnotationConf }) => {
     const { accountId } = getCached.userInfo();
 
     const polygons = resolveExportPolygons();
@@ -181,6 +182,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const facades = exportAnnotation3D?.facades ?? [];
     const allPans = [...(exportAnnotation3D?.pans ?? []), ...userPans];
     exportAreaPictureAnnotation['3d'] = allPans.length || facades.length ? { pans: allPans, ...(facades.length ? { facades } : {}) } : exportAnnotation3D;
+    exportAreaPictureAnnotation.conf = params.conf ?? DEFAULT_EXPORT_PDF_CONF;
 
     const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(
       accountId,

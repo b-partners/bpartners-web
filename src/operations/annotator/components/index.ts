@@ -12,6 +12,7 @@ export * from './AnnotatorActionButtons';
 export * from './AnnotatorResetConfirmationDialog';
 export * from './degradation-levels-stack/DegradationLevelsStack';
 export * from './disclaimer';
+export * from './export-pdf-conf-dialog/ExportPdfConfDialog';
 export * from './ExportAnnotationConfirmButton';
 export * from './image-option-top-bar';
 export * from './llm-result';

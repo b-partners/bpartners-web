@@ -2,11 +2,13 @@ import { BPButton } from '@/common/components';
 import { useAnnotatorExportAsPdf, useAnnotatorImageUploadQuery } from '@/common/fetcher';
 import { useToggle } from '@/common/hooks';
 import { annotatorStore } from '@/common/store';
+import { useDialog } from '@/common/store/dialog';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
-import { getAnalyseImageFileId } from '@/constants';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
-import { FC } from 'react';
+import { DEFAULT_EXPORT_PDF_CONF, getAnalyseImageFileId } from '@/constants';
+import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
+import { FC, useRef } from 'react';
 import { calculateGlobalRate } from '../utils';
+import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
 
 export interface ExportAnnotationConfirmButtonProps {
   areaPictureDetails: AreaPictureDetails;
@@ -18,6 +20,8 @@ export interface ExportAnnotationConfirmButtonProps {
 export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProps> = ({ areaPictureDetails, image, isCropped, disabled = false }) => {
   const { address } = useWrappedSearchParams(['imgUrl', 'address']);
   const { handleClose: closeConfirm } = useToggle();
+  const { open } = useDialog();
+  const confRef = useRef<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
   const annotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   const { polygonList } = annotatorStore.useAnalysePolygonStore();
 
@@ -36,6 +40,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       imageUrl: getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE'),
       globalRateType: globalRate.type,
       globalRateValue: globalRate.value,
+      conf: confRef.current,
     });
   };
 
@@ -43,7 +48,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const isLoading = exportAsPdfPending || uploadIsPending;
 
-  const handleCloseConfirm = () => {
+  const runExport = (conf: ExportAreaPictureAnnotationConf) => {
+    confRef.current = conf;
     closeConfirm();
     if (isCropped) {
       return uploadImage({ file: image, id: areaPictureDetails.fileId });
@@ -51,9 +57,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
     uploadImageOnSuccess();
   };
 
-  const doAnnotationExport = async () => {
-    handleCloseConfirm();
-  };
+  const doAnnotationExport = () => open(<ExportPdfConfDialog onConfirm={runExport} />);
 
   return (
     <BPButton
