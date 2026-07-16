@@ -370,8 +370,16 @@ export const useCityJsonPanCapture = (
             const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
             const faceEdges = getFaceMeasure(mesh, cityJson).edges;
-            const projected = projectRingToCameraPlane(faceEdges.map(edge => edge.start), center, right, up);
-            const polygon = rescaleRingToLengths(projected, faceEdges.map(edge => edge.distanceMeters));
+            const projected = projectRingToCameraPlane(
+              faceEdges.map(edge => edge.start),
+              center,
+              right,
+              up
+            );
+            const polygon = rescaleRingToLengths(
+              projected,
+              faceEdges.map(edge => edge.distanceMeters)
+            );
             captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle, polygon });
           }
 

@@ -45,8 +45,7 @@ const rescaleRingToLengths = (points: PanPoint[], lengths: number[]): PanPoint[]
   return result;
 };
 
-const ceilPointsToTwoDecimals = (points: PanPoint[]): PanPoint[] =>
-  points.map(({ x, y }) => ({ x: Math.ceil(x * 100) / 100, y: Math.ceil(y * 100) / 100 }));
+const ceilPointsToTwoDecimals = (points: PanPoint[]): PanPoint[] => points.map(({ x, y }) => ({ x: Math.ceil(x * 100) / 100, y: Math.ceil(y * 100) / 100 }));
 
 const shiftPointsToPositive = (points: PanPoint[]): PanPoint[] => {
   if (!points.length) return points;
@@ -145,10 +144,15 @@ const boundaryMapper = {
     };
   },
 
-  toFacade: (_boundary: number[], cityJson: CityJSON, area: number, height: number, index: number, polygonPoints?: PanPoint[]): ExportAreaPictureAnnotation3DPan => {
-    const points = polygonPoints?.length
-      ? polygonPoints
-      : facadePolygonPoints(_boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001)));
+  toFacade: (
+    _boundary: number[],
+    cityJson: CityJSON,
+    area: number,
+    height: number,
+    index: number,
+    polygonPoints?: PanPoint[]
+  ): ExportAreaPictureAnnotation3DPan => {
+    const points = polygonPoints?.length ? polygonPoints : facadePolygonPoints(_boundary.map(vIndex => cityJson.vertices[vIndex].map(value => value * 0.001)));
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
       points: ceilPointsToTwoDecimals(shiftPointsToPositive(closeRingWithoutSuperposition(points))),

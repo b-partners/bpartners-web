@@ -180,8 +180,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const facades = exportAnnotation3D?.facades ?? [];
     const allPans = [...(exportAnnotation3D?.pans ?? []), ...userPans];
-    exportAreaPictureAnnotation['3d'] =
-      allPans.length || facades.length ? { pans: allPans, ...(facades.length ? { facades } : {}) } : exportAnnotation3D;
+    exportAreaPictureAnnotation['3d'] = allPans.length || facades.length ? { pans: allPans, ...(facades.length ? { facades } : {}) } : exportAnnotation3D;
 
     const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(
       accountId,
