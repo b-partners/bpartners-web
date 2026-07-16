@@ -72,5 +72,5 @@ export const EXPORT_PDF_CONF_OPTIONS: { key: keyof ExportAreaPictureAnnotationCo
   { key: 'showPitchSummary', label: 'Résumé des pentes' },
   { key: 'showAreaSummary', label: 'Résumé des surfaces' },
   { key: 'showOverallSummary', label: 'Résumé global' },
-  { key: 'showLlmSummary', label: "Résumé de l'analyse IA" },
+  { key: 'showLlmSummary', label: "Rapport de l'analyse IA" },
 ];
