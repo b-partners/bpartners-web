@@ -75,6 +75,18 @@ const panAnglesFromCaptures = (saved: SavedCapture[]): number[] =>
     .sort((a, b) => a.capture.index - b.capture.index)
     .map(({ capture }) => capture.angle);
 
+const facadeImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
+  saved
+    .filter(({ capture }) => capture.kind === 'facade')
+    .sort((a, b) => a.capture.index - b.capture.index)
+    .map(({ id }) => id);
+
+const facadePolygonsFromCaptures = (saved: SavedCapture[]): { x: number; y: number }[][] =>
+  saved
+    .filter(({ capture }) => capture.kind === 'facade')
+    .sort((a, b) => a.capture.index - b.capture.index)
+    .map(({ capture }) => capture.polygon ?? []);
+
 const imageIdForCapture = (saved: SavedCapture[], kind: PanCaptureKind, index: number): string | undefined =>
   saved.find(({ capture }) => capture.kind === kind && capture.index === index)?.id;
 
@@ -144,6 +156,8 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const savedCaptures = await captureAndSaveImages();
     const panImageIds = panImageIdsFromCaptures(savedCaptures);
     const panAngles = panAnglesFromCaptures(savedCaptures);
+    const facadeImageIds = facadeImageIdsFromCaptures(savedCaptures);
+    const facadePolygons = facadePolygonsFromCaptures(savedCaptures);
 
     const { savedPolygons, savedLines, panNames, edgeTypes } = roof3DStore.useRoof3DStore.getState();
     const userPolygonPans = savedPolygons.map((polygon, index) =>
@@ -155,7 +169,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const userPans = [...userPolygonPans, ...userLinePans];
 
     const exportAnnotation3D = shouldAdd3d
-      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, panAngles)
+      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, panAngles, facadeImageIds, facadePolygons)
       : undefined;
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
@@ -164,7 +178,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
       annotationInfos: mapExportAnnotationInfoArea(annotationInfos),
     });
 
-    exportAreaPictureAnnotation['3d'] = userPans.length ? { pans: [...(exportAnnotation3D?.pans ?? []), ...userPans] } : exportAnnotation3D;
+    const facades = exportAnnotation3D?.facades ?? [];
+    const allPans = [...(exportAnnotation3D?.pans ?? []), ...userPans];
+    exportAreaPictureAnnotation['3d'] = allPans.length || facades.length ? { pans: allPans, ...(facades.length ? { facades } : {}) } : exportAnnotation3D;
 
     const { data } = await areaPictureApi().exportAreaPictureAnnotationToPdf(
       accountId,
