@@ -33,6 +33,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const { polygonList } = annotatorStore.usePolygonStore();
   const { polygonList: screenPolygonList, setPolygons: setPolygonList } = annotatorStore.useScreenPolygonStore();
+  const { geocodeStatus, geocode } = annotatorStore.useGeocodeStore();
 
   const setScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.setScreenAnnotations);
   const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
@@ -102,10 +103,17 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   useEffect(() => {
     if (!fileId) return;
+    let objectUrl: string | null = null;
     getImageFromCache(fileId).then(blob => {
-      if (blob) setCachedImageUrl(URL.createObjectURL(blob));
+      if (blob) {
+        objectUrl = URL.createObjectURL(blob);
+        setCachedImageUrl(objectUrl);
+      }
     });
-  }, [areaPictureDetails]);
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [fileId]);
 
   const polygonListShifted = useMemo(
     () =>
@@ -176,7 +184,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           durationMs={ROOF_ANALYSE_PROGRESS_DURATION_MS}
           isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)}
         />
-        {showAnnotatorCanvas && markerPosition && (
+        {showAnnotatorCanvas && markerPosition && ((geocodeStatus === 'done' && geocode) || geocodeStatus === 'no-annotation') && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}
             allowAnnotation={allowAnnotation}
