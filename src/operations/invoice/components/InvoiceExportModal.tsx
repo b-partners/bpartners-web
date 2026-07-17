@@ -1,4 +1,4 @@
-import { EnableStatus, InvoiceStatus } from '@bpartners/typescript-client';
+import { ArchiveStatus, InvoiceStatus } from '@bpartners/typescript-client';
 import {
   Autocomplete,
   Box,
@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  LinearProgress,
   Radio,
   RadioGroup,
   SxProps,
@@ -101,9 +102,9 @@ const INVOICE_STATUS_CHOICES = [
   { id: InvoiceStatus.PAID, name: 'Payé' },
 ];
 
-const ENABLE_STATUS_CHOICES = [
-  { id: EnableStatus.ENABLED, name: 'Actif' },
-  { id: EnableStatus.DISABLED, name: 'Archivé' },
+const ARCHIVE_STATUS_CHOICES = [
+  { id: ArchiveStatus.ENABLED, name: 'Actif' },
+  { id: ArchiveStatus.DISABLED, name: 'Archivé' },
 ];
 
 export interface InvoiceExportFilters {
@@ -111,7 +112,7 @@ export interface InvoiceExportFilters {
   from: Dayjs | null;
   to: Dayjs | null;
   statuses: InvoiceStatus[];
-  enableStatus: EnableStatus;
+  archiveStatus: ArchiveStatus;
 }
 
 interface InvoiceExportModalProps {
@@ -126,7 +127,7 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
   const [from, setFrom] = useState<Dayjs | null>(dayjs().startOf('month'));
   const [to, setTo] = useState<Dayjs | null>(dayjs());
   const [statuses, setStatuses] = useState<InvoiceStatus[]>([InvoiceStatus.CONFIRMED]);
-  const [enableStatus, setEnableStatus] = useState<EnableStatus>(EnableStatus.ENABLED);
+  const [archiveStatus, setArchiveStatus] = useState<ArchiveStatus>(ArchiveStatus.ENABLED);
 
   const isCustom = period === PeriodChoice.CUSTOM;
   const selectedRange = PERIOD_CHOICES.find(({ id }) => id === period)?.getRange?.();
@@ -136,6 +137,7 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
   return (
     <Dialog open={open} onClose={onClose} maxWidth='sm' sx={INVOICE_EXPORT_MODAL_STYLE} {...rest}>
       <DialogTitle>Télécharger les factures</DialogTitle>
+      {isLoading && <LinearProgress className='export-progress' />}
       <DialogContent>
         <Box className='export-content'>
           <Box className='export-field-group'>
@@ -198,11 +200,11 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
             <Typography className='export-field-label'>État des factures</Typography>
             <RadioGroup
               row
-              value={enableStatus}
-              name='export-invoice-enable-status'
-              onChange={({ target: { value } }) => setEnableStatus(value as EnableStatus)}
+              value={archiveStatus}
+              name='export-invoice-archive-status'
+              onChange={({ target: { value } }) => setArchiveStatus(value as ArchiveStatus)}
             >
-              {ENABLE_STATUS_CHOICES.map(({ id, name }) => (
+              {ARCHIVE_STATUS_CHOICES.map(({ id, name }) => (
                 <FormControlLabel key={id} value={id} label={name} control={<Radio />} />
               ))}
             </RadioGroup>
@@ -217,7 +219,7 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
           variant='contained'
           name='export-invoice-submit'
           disabled={isLoading || !exportFrom || !exportTo || statuses.length === 0}
-          onClick={() => onSubmit({ period, from: exportFrom, to: exportTo, statuses, enableStatus })}
+          onClick={() => onSubmit({ period, from: exportFrom, to: exportTo, statuses, archiveStatus: archiveStatus })}
         >
           Initier le téléchargement
         </Button>
