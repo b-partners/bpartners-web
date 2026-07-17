@@ -107,12 +107,15 @@ const ARCHIVE_STATUS_CHOICES = [
   { id: ArchiveStatus.DISABLED, name: 'Archivé' },
 ];
 
+const DEFAULT_BATCH_SIZE = 100;
+
 export interface InvoiceExportFilters {
   period: PeriodChoice;
   from: Dayjs | null;
   to: Dayjs | null;
   statuses: InvoiceStatus[];
   archiveStatus: ArchiveStatus;
+  batchSize: number;
 }
 
 interface InvoiceExportModalProps {
@@ -120,24 +123,28 @@ interface InvoiceExportModalProps {
   onClose: () => void;
   onSubmit: (filters: InvoiceExportFilters) => void;
   isLoading?: boolean;
+  progress?: number;
 }
 
-export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose, onSubmit, isLoading = false, ...rest }) => {
+export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose, onSubmit, isLoading = false, progress, ...rest }) => {
   const [period, setPeriod] = useState<PeriodChoice>(PeriodChoice.CURRENT_MONTH);
   const [from, setFrom] = useState<Dayjs | null>(dayjs().startOf('month'));
   const [to, setTo] = useState<Dayjs | null>(dayjs());
   const [statuses, setStatuses] = useState<InvoiceStatus[]>([InvoiceStatus.CONFIRMED]);
   const [archiveStatus, setArchiveStatus] = useState<ArchiveStatus>(ArchiveStatus.ENABLED);
+  const [batchSize, setBatchSize] = useState(String(DEFAULT_BATCH_SIZE));
 
   const isCustom = period === PeriodChoice.CUSTOM;
   const selectedRange = PERIOD_CHOICES.find(({ id }) => id === period)?.getRange?.();
   const exportFrom = isCustom ? from : selectedRange?.from || null;
   const exportTo = isCustom ? to : selectedRange?.to || null;
+  const exportBatchSize = Number(batchSize);
+  const isBatchSizeValid = Number.isInteger(exportBatchSize) && exportBatchSize >= 1;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth='sm' sx={INVOICE_EXPORT_MODAL_STYLE} {...rest}>
       <DialogTitle>Télécharger les factures</DialogTitle>
-      {isLoading && <LinearProgress className='export-progress' />}
+      {isLoading && <LinearProgress className='export-progress' variant={progress === undefined ? 'indeterminate' : 'determinate'} value={progress} />}
       <DialogContent>
         <Box className='export-content'>
           <Box className='export-field-group'>
@@ -209,6 +216,18 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
               ))}
             </RadioGroup>
           </Box>
+          <Box className='export-field-group'>
+            <Typography className='export-field-label'>Nombre de factures par lot</Typography>
+            <TextField
+              type='number'
+              name='export-invoice-batch-size'
+              value={batchSize}
+              inputProps={{ min: 1 }}
+              onChange={({ target: { value } }) => setBatchSize(value)}
+              error={!isBatchSizeValid}
+              helperText={isBatchSizeValid ? "L'archive est découpée en lots de cette taille." : 'Indiquez un nombre entier supérieur ou égal à 1.'}
+            />
+          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -218,8 +237,8 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
         <Button
           variant='contained'
           name='export-invoice-submit'
-          disabled={isLoading || !exportFrom || !exportTo || statuses.length === 0}
-          onClick={() => onSubmit({ period, from: exportFrom, to: exportTo, statuses, archiveStatus: archiveStatus })}
+          disabled={isLoading || !exportFrom || !exportTo || statuses.length === 0 || !isBatchSizeValid}
+          onClick={() => onSubmit({ period, from: exportFrom, to: exportTo, statuses, archiveStatus, batchSize: exportBatchSize })}
         >
           Initier le téléchargement
         </Button>
