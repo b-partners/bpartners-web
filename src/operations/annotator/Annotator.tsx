@@ -44,7 +44,7 @@ export const Annotator = () => {
   const fileId = annotations?.areaPicture?.fileId;
   const analyseImageGenerated = annotations?.properties?.analyseImageGenerated;
 
-  const { geocode } = annotatorStore.useGeocodeStore();
+  const { geocode, setGeocodeStatus } = annotatorStore.useGeocodeStore();
   const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
 
   useEffect(() => {
@@ -74,8 +74,13 @@ export const Annotator = () => {
       replaceAnnotations(polygons, annotationsInfos);
     }
     if (geocode && areaPictureAnnotation?.annotations.length === 0) {
-      console.log('here 2');
-      mutateRoofPolygon({ areaPictureDetails: annotations?.areaPicture, geoJson: geocode.data, isForOriginImage: true });
+      setGeocodeStatus('pending');
+      mutateRoofPolygon(
+        { areaPictureDetails: annotations?.areaPicture, geoJson: geocode.data, isForOriginImage: true },
+        { onSettled: () => setGeocodeStatus('done') }
+      );
+    } else {
+      setGeocodeStatus('no-annotation');
     }
   }, [areaPictureAnnotation, geocode]);
 

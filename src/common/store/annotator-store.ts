@@ -38,6 +38,7 @@ interface State {
   threeDGenerationId?: string;
   roofAnalyseId?: string;
   geocode?: any;
+  geocodeStatus?: 'done' | 'pending' | 'not-started' | 'no-annotation';
 }
 
 const defaultValue: State = {
@@ -66,11 +67,13 @@ interface Actions {
   setThreeDGenerationId: (threeDGenerationId: string | undefined) => void;
   setRoofAnalyseId: (roofAnalyseId: string) => void;
   setGeocode: (geocode: any) => void;
+  setGeocodeStatus: (geocodeStatus: State['geocodeStatus']) => void;
 }
 
 // @ts-ignore
 const useAnnotatorStore = create<State & Actions>(set => ({
   annotations: {},
+  geocodeStatus: 'not-started',
   setAnnotations: annotations => set({ annotations }),
   removeAnnotationInfo: id =>
     set(state => {
@@ -211,7 +214,11 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   resetAnnotations: () =>
     set({
       annotations: {},
+      geocodeStatus: 'not-started',
     }),
+  setGeocodeStatus(geocodeStatus) {
+    set({ geocodeStatus });
+  },
   updateRoofAnnotation: annotationOrDispatcher =>
     set(state => {
       const annotations = copyObject(state.annotations);
@@ -394,7 +401,15 @@ const useAnalyseAnnotatorInfoStore = () =>
     )
   );
 
-const useGeocodeStore = () => useAnnotatorStore(useShallow(param => ({ geocode: param.geocode, setGeocode: param.setGeocode })));
+const useGeocodeStore = () =>
+  useAnnotatorStore(
+    useShallow(param => ({
+      geocode: param.geocode,
+      setGeocode: param.setGeocode,
+      geocodeStatus: param.geocodeStatus,
+      setGeocodeStatus: param.setGeocodeStatus,
+    }))
+  );
 
 export const annotatorStore = {
   usePolygonStore,
