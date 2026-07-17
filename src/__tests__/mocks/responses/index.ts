@@ -6,6 +6,7 @@ export * from './draft-annotation-api';
 export * from './Evaluation-jobs-api';
 export * from './file-api';
 export * from './import-prospects-api';
+export * from './invoice-export-api';
 export * from './invoice-relaunch-api';
 export * from './invoices-api';
 export * from './paying-api';
