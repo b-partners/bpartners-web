@@ -1,12 +1,26 @@
+import { useToggle } from '@/common/hooks';
+import { InvoiceExportFilters, InvoiceExportModal } from '@/operations/invoice/components';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
-import { Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
 export const SubscriptionCard = () => {
+  const { value: isExportOpen, handleOpen, handleClose } = useToggle();
+
+  const exportInvoices = (filters: InvoiceExportFilters) => {
+    console.log(filters);
+    handleClose();
+  };
+
   return (
     <Card className='card subscription-card'>
       <CardContent>
-        <Typography className='section-title-subscription'>Mon abonnement</Typography>
+        <Box className='subscription-header'>
+          <Typography className='section-title-subscription'>Mon abonnement</Typography>
+          <Button variant='contained' className='export-invoice-action' name='open-invoice-export-modal' onClick={handleOpen}>
+            Télécharger mes factures
+          </Button>
+        </Box>
         <Typography className='price-subscription'>Pour 49 € par mois :</Typography>
 
         <List disablePadding>
@@ -19,6 +33,7 @@ export const SubscriptionCard = () => {
             </ListItem>
           ))}
         </List>
+        <InvoiceExportModal open={isExportOpen} onClose={handleClose} onSubmit={exportInvoices} />
         <Typography className='unsubscribe-text'>
           Pour résilier votre abonnement merci d'écrire à <a href='mailto:contact@birdia.fr'>contact@birdia.fr</a>.
         </Typography>
