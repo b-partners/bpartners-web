@@ -90,6 +90,7 @@
     "lint": "eslint ./src",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --component ",
+    "test:fast": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --component --config video=false,retries=0",
     "it": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress run --config video=true --e2e",
     "cy:open": "NODE_OPTIONS=\"--max_old_space_size=8192\" cypress open",
     "eject": "react-scripts eject",
