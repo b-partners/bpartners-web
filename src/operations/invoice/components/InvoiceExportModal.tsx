@@ -39,11 +39,61 @@ export const INVOICE_EXPORT_MODAL_STYLE: SxProps = {
   '& .export-date-range': {
     display: 'flex',
     gap: 2,
+    mt: 1,
     '& > *': {
       flex: 1,
     },
   },
+  '& .period-choice': {
+    mr: 0,
+    '& .MuiFormControlLabel-label': {
+      flex: 1,
+    },
+  },
+  '& .period-option': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 2,
+  },
+  '& .period-option-range': {
+    color: 'text.secondary',
+  },
 };
+
+export const PeriodChoice = {
+  TODAY: 'TODAY',
+  CURRENT_MONTH: 'CURRENT_MONTH',
+  LAST_7_DAYS: 'LAST_7_DAYS',
+  LAST_4_WEEKS: 'LAST_4_WEEKS',
+  LAST_MONTH: 'LAST_MONTH',
+  CUSTOM: 'CUSTOM',
+} as const;
+
+export type PeriodChoice = (typeof PeriodChoice)[keyof typeof PeriodChoice];
+
+type PeriodRange = { from: Dayjs; to: Dayjs };
+
+const PERIOD_CHOICES: { id: PeriodChoice; name: string; getRange?: () => PeriodRange }[] = [
+  { id: PeriodChoice.TODAY, name: "Aujourd'hui", getRange: () => ({ from: dayjs().startOf('day'), to: dayjs().startOf('day') }) },
+  { id: PeriodChoice.CURRENT_MONTH, name: 'Mois en cours', getRange: () => ({ from: dayjs().startOf('month'), to: dayjs().startOf('day') }) },
+  { id: PeriodChoice.LAST_7_DAYS, name: '7 derniers jours', getRange: () => ({ from: dayjs().startOf('day').subtract(6, 'day'), to: dayjs().startOf('day') }) },
+  {
+    id: PeriodChoice.LAST_4_WEEKS,
+    name: '4 dernières semaines',
+    getRange: () => ({ from: dayjs().startOf('day').subtract(27, 'day'), to: dayjs().startOf('day') }),
+  },
+  {
+    id: PeriodChoice.LAST_MONTH,
+    name: 'Mois dernier',
+    getRange: () => ({ from: dayjs().subtract(1, 'month').startOf('month'), to: dayjs().subtract(1, 'month').endOf('month').startOf('day') }),
+  },
+  { id: PeriodChoice.CUSTOM, name: 'Personnalisé' },
+];
+
+const formatDate = (date: Dayjs) => date.locale('fr').format('D MMM');
+
+const formatRange = ({ from, to }: PeriodRange) => (from.isSame(to, 'day') ? formatDate(from) : `du ${formatDate(from)} au ${formatDate(to)}`);
 
 const INVOICE_STATUS_CHOICES = [
   { id: InvoiceStatus.CONFIRMED, name: 'Facture émise' },
@@ -57,6 +107,7 @@ const ENABLE_STATUS_CHOICES = [
 ];
 
 export interface InvoiceExportFilters {
+  period: PeriodChoice;
   from: Dayjs | null;
   to: Dayjs | null;
   statuses: InvoiceStatus[];
@@ -71,10 +122,16 @@ interface InvoiceExportModalProps {
 }
 
 export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose, onSubmit, isLoading = false, ...rest }) => {
+  const [period, setPeriod] = useState<PeriodChoice>(PeriodChoice.CURRENT_MONTH);
   const [from, setFrom] = useState<Dayjs | null>(dayjs().startOf('month'));
   const [to, setTo] = useState<Dayjs | null>(dayjs());
   const [statuses, setStatuses] = useState<InvoiceStatus[]>([InvoiceStatus.CONFIRMED]);
   const [enableStatus, setEnableStatus] = useState<EnableStatus>(EnableStatus.ENABLED);
+
+  const isCustom = period === PeriodChoice.CUSTOM;
+  const selectedRange = PERIOD_CHOICES.find(({ id }) => id === period)?.getRange?.();
+  const exportFrom = isCustom ? from : selectedRange?.from || null;
+  const exportTo = isCustom ? to : selectedRange?.to || null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth='sm' sx={INVOICE_EXPORT_MODAL_STYLE} {...rest}>
@@ -83,24 +140,42 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
         <Box className='export-content'>
           <Box className='export-field-group'>
             <Typography className='export-field-label'>Période de création de la facture</Typography>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='fr'>
-              <Box className='export-date-range'>
-                <DatePicker
-                  label='Date de début'
-                  value={from}
-                  maxDate={to || undefined}
-                  onChange={setFrom}
-                  renderInput={params => <TextField {...params} name='export-invoice-from' />}
+            <RadioGroup value={period} name='export-invoice-period' onChange={({ target: { value } }) => setPeriod(value as PeriodChoice)}>
+              {PERIOD_CHOICES.map(({ id, name, getRange }) => (
+                <FormControlLabel
+                  key={id}
+                  value={id}
+                  className='period-choice'
+                  control={<Radio />}
+                  label={
+                    <Box className='period-option'>
+                      <Typography>{name}</Typography>
+                      {getRange && <Typography className='period-option-range'>{formatRange(getRange())}</Typography>}
+                    </Box>
+                  }
                 />
-                <DatePicker
-                  label='Date de fin'
-                  value={to}
-                  minDate={from || undefined}
-                  onChange={setTo}
-                  renderInput={params => <TextField {...params} name='export-invoice-to' />}
-                />
-              </Box>
-            </LocalizationProvider>
+              ))}
+            </RadioGroup>
+            {isCustom && (
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='fr'>
+                <Box className='export-date-range'>
+                  <DatePicker
+                    label='Date de début'
+                    value={from}
+                    maxDate={to || undefined}
+                    onChange={setFrom}
+                    renderInput={params => <TextField {...params} name='export-invoice-from' />}
+                  />
+                  <DatePicker
+                    label='Date de fin'
+                    value={to}
+                    minDate={from || undefined}
+                    onChange={setTo}
+                    renderInput={params => <TextField {...params} name='export-invoice-to' />}
+                  />
+                </Box>
+              </LocalizationProvider>
+            )}
           </Box>
           <Box className='export-field-group'>
             <Typography className='export-field-label'>Statuts des factures</Typography>
@@ -141,8 +216,8 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
         <Button
           variant='contained'
           name='export-invoice-submit'
-          disabled={isLoading || !from || !to || statuses.length === 0}
-          onClick={() => onSubmit({ from, to, statuses, enableStatus })}
+          disabled={isLoading || !exportFrom || !exportTo || statuses.length === 0}
+          onClick={() => onSubmit({ period, from: exportFrom, to: exportTo, statuses, enableStatus })}
         >
           Initier le téléchargement
         </Button>
