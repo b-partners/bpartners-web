@@ -1,14 +1,13 @@
 import { ShortWarning } from '@/common/components/BPBetaTestWarning';
 import BPDialog from '@/common/components/BPDialog';
 import { printError, Redirect } from '@/common/utils';
+import { GeneralConditionOfUse } from '@/operations/configurations';
 import { authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import { Menu } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
 import { useNotify, useSidebarState } from 'react-admin';
-import { GeneralConditionOfUse } from '../../operations/configurations';
-import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -41,8 +40,6 @@ export const AppBar = () => {
   const [name, setName] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const isBeta = process.env.REACT_APP_BETA !== 'false';
-  const cachedUser = getCached.user();
-  const isVerifiedUser = cachedUser?.idVerified;
   const isSubscribed = authProvider.isSubscribed();
   const notify = useNotify();
 
@@ -77,8 +74,7 @@ export const AppBar = () => {
         <img src={'/logo.png'} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
-          Bonjour <b>{name}</b> !{isVerifiedUser === null && <span style={{ color: 'rgb(168,141,104)' }}> (Chargement du statut du compte...)</span>}
-          {isVerifiedUser === false && <span style={{ color: 'rgb(168,141,104)' }}> (Compte non vérifié)</span>}
+          Bonjour <b>{name}</b> !
         </Box>
 
         <Box sx={{ display: 'inherit', alignItems: 'center', paddingInline: '.6rem' }}>
@@ -100,7 +96,6 @@ export const AppBar = () => {
         onClose={onClose}
       />
       {isSubscribed && <GeneralConditionOfUse />}
-      <UnverifiedUser />
     </>
   );
 };

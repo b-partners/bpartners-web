@@ -8,13 +8,12 @@ export const user1: User = {
   lastName: 'last Name 1',
   phone: '11 11 11',
   logoFileId: 'file-id-1',
-  idVerified: true,
   roles: [UserRole.EVAL_PROSPECT],
   subscription: {
     status: 'ACTIVE',
   },
 };
-export const user2: User = { ...user1, idVerified: false, roles: [] };
+export const user2: User = { ...user1, roles: [] };
 export const whoami1: Whoami = { user: user1 };
 export const whoami2: Whoami = { user: user2 };
 export const token1: Token = { accessToken: 'accessToken1', whoami: whoami1 };
