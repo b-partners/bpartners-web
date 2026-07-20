@@ -27,7 +27,6 @@ export const INVOICE_EXPORT_MODAL_STYLE: SxProps = {
     flexDirection: 'column',
     gap: 3,
     pt: 1,
-    minWidth: '30vw',
   },
   '& .export-field-group': {
     display: 'flex',
@@ -142,7 +141,7 @@ export const InvoiceExportModal: FC<InvoiceExportModalProps> = ({ open, onClose,
   const isBatchSizeValid = Number.isInteger(exportBatchSize) && exportBatchSize >= 1;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='sm' sx={INVOICE_EXPORT_MODAL_STYLE} {...rest}>
+    <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth sx={INVOICE_EXPORT_MODAL_STYLE} {...rest}>
       <DialogTitle>Télécharger les factures</DialogTitle>
       {isLoading && <LinearProgress className='export-progress' variant={progress === undefined ? 'indeterminate' : 'determinate'} value={progress} />}
       <DialogContent>

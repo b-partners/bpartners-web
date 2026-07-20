@@ -166,21 +166,6 @@ export const AccountStyle: SxProps = {
     fontSize: '2.8rem',
     ml: 5,
   },
-  '& .subscription-header': {
-    display: 'flex',
-    alignItems: 'center',
-    position: 'relative',
-    mb: 3,
-    '& .section-title-subscription': {
-      mb: 0,
-    },
-  },
-  '& .export-invoice-action': {
-    position: 'absolute',
-    right: 0,
-    top: '50%',
-    transform: 'translateY(-50%)',
-  },
   '& .unsubscribe-text': {
     textAlign: 'end',
   },

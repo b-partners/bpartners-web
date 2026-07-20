@@ -166,6 +166,20 @@ describe('InvoiceExportModal', () => {
     cy.get('.export-progress .MuiLinearProgress-bar').should('have.attr', 'style').and('include', 'translateX(-50%)');
   });
 
+  it('never overflows horizontally', () => {
+    mountModal();
+
+    cy.get('.MuiDialogContent-root').should($content => {
+      expect($content[0].scrollWidth).to.eq($content[0].clientWidth);
+    });
+
+    cy.get(period('CUSTOM')).check({ force: true });
+
+    cy.get('.MuiDialogContent-root').should($content => {
+      expect($content[0].scrollWidth).to.eq($content[0].clientWidth);
+    });
+  });
+
   it('closes without submitting', () => {
     mountModal();
 
