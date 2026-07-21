@@ -1,4 +1,5 @@
-import { userSubscriptionApi } from './api';
+import { SubscriptionInvoice } from '@bpartners/typescript-client';
+import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
 
 const getSubscriptionRedirectionUrls = async () => {
@@ -15,6 +16,27 @@ const getPaymentMethodRedirectionUrls = async () => {
     failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
     successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripePaymentStatus=done`).href,
   };
+};
+
+export const downloadSubscriptionInvoices = async (yearMonth: string) => {
+  const { id } = await asyncGetUser();
+  const { data } = await payingApi().getUserSubscriptionInvoices(id, yearMonth);
+  const subscriptionInvoices: SubscriptionInvoice[] = data || [];
+
+  const fileUrls = subscriptionInvoices.map(({ fileUrl }) => fileUrl?.value).filter((value): value is string => !!value);
+
+  fileUrls.forEach((url, index) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.download = `facture-abonnement-${yearMonth}${fileUrls.length > 1 ? `-${index + 1}` : ''}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  });
+
+  return fileUrls.length;
 };
 
 export const userSubscriptionProvider = {
