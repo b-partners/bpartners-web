@@ -8,13 +8,14 @@ import {
   shiftPolygons,
 } from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
+import { getAnalyseImageFileId } from '@/constants';
 import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
 import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
-import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
+import { downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger } from '../utils';
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
   const base64 = dataUrl.split(',')[1] ?? '';
@@ -129,6 +130,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const polygons = resolveExportPolygons();
 
+    const { areaPictureDetails } = useAnnotatorComponentStore.getState();
+    const analyseImageUrl = getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE');
+
     const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
@@ -146,6 +150,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
       ...params,
+      imageUrl: analyseImageUrl,
       polygons,
       annotationInfos: mapExportAnnotationInfoArea(annotationInfos),
     });
