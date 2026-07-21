@@ -1,5 +1,6 @@
 import { invoiceMapper } from '@/operations/invoice/utils/invoice-utils';
-import { ArchiveStatus } from '@bpartners/typescript-client';
+import { ArchiveStatus, InvoiceExportOutputFormat, InvoiceExportRequest, InvoiceStatus } from '@bpartners/typescript-client';
+import { v4 as uuid } from 'uuid';
 import { asyncGetAccountId, asyncGetUserInfo, getCached, payingApi } from '.';
 import { BpDataProviderType } from './bp-data-provider-type';
 
@@ -45,3 +46,52 @@ export const getInvoicesSummary = async () => {
   const { accountId } = await asyncGetUserInfo();
   return (await payingApi().getInvoicesSummary(accountId || '')).data;
 };
+
+export type InvoicesExportParams = {
+  statuses: InvoiceStatus[];
+  archiveStatus: ArchiveStatus;
+  batchSize: number;
+  from: string;
+  to: string;
+};
+
+export const submitInvoicesExportRequest = async ({ statuses, archiveStatus, batchSize, from, to }: InvoicesExportParams) => {
+  const { userId } = await asyncGetUserInfo();
+  const requestId = uuid();
+
+  await payingApi().submitInvoiceExportRequest(userId, [
+    {
+      id: requestId,
+      from,
+      to,
+      batchSize,
+      statusList: statuses,
+      archiveStatus,
+      outputFormat: InvoiceExportOutputFormat.ZIP,
+    },
+  ]);
+
+  return requestId;
+};
+
+export const retrieveInvoicesExportRequest = async (requestId: string) => {
+  const { userId } = await asyncGetUserInfo();
+  return (await payingApi().retrieveInvoiceExportRequest(userId, requestId)).data;
+};
+
+export const getExportReadyBatches = (exportRequest?: InvoiceExportRequest) => (exportRequest?.batchList || []).filter(({ url }) => !!url);
+
+export const isExportRequestReady = (exportRequest?: InvoiceExportRequest) => {
+  const { totalBatchCount } = exportRequest || {};
+  return totalBatchCount !== undefined && getExportReadyBatches(exportRequest).length >= totalBatchCount;
+};
+
+export const downloadExportBatches = (exportRequest: InvoiceExportRequest) =>
+  getExportReadyBatches(exportRequest).forEach(({ url }, index) => {
+    const link = document.createElement('a');
+    link.href = url as string;
+    link.download = `factures-${exportRequest.from}-${exportRequest.to}-${index + 1}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  });
