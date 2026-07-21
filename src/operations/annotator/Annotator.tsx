@@ -52,6 +52,7 @@ export const Annotator = () => {
   useEffect(() => {
     if (!fileId || !analyseImageGenerated) return;
     const analyseImageFileId = getAnalyseImageFileId(fileId);
+    setAnalyseImageFileId(analyseImageFileId);
     downloadAndCacheImage(analyseImageFileId, getFileUrl(analyseImageFileId, FileType.AREA_PICTURE)).then(async url => {
       setAnalyseImageUrl(url);
       const blob = await getImageFromCache(analyseImageFileId);
@@ -59,7 +60,6 @@ export const Annotator = () => {
         const fileAsArrayBuffer = await blob.arrayBuffer();
         await fileProvider.update([{ fileId: analyseImageFileId, fileType: FileType.AREA_PICTURE, fileMimeType: blob.type || 'image/png', fileAsArrayBuffer }]);
       }
-      setAnalyseImageFileId(analyseImageFileId);
     });
   }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
