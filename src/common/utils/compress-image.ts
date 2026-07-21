@@ -15,7 +15,10 @@ interface CompressImageOptions {
   outputType?: string;
 }
 
-export const compressImage = async (source: Blob | ArrayBuffer, { mimeType, quality = 0.92, outputType = 'image/jpeg' }: CompressImageOptions): Promise<Blob> => {
+export const compressImage = async (
+  source: Blob | ArrayBuffer,
+  { mimeType, quality = 0.92, outputType = 'image/jpeg' }: CompressImageOptions
+): Promise<Blob> => {
   const blob = source instanceof Blob ? source : new Blob([source], { type: mimeType });
   if (!mimeType.startsWith('image/')) return blob;
 
