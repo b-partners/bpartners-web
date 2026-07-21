@@ -15,7 +15,7 @@ import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
 import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
-import { downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger } from '../utils';
+import { downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger, wait } from '../utils';
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
   const base64 = dataUrl.split(',')[1] ?? '';
@@ -40,10 +40,23 @@ const waitForPanCapture = (timeoutMs = 30000): Promise<PanCapture[]> =>
     tick();
   });
 
+const retry = async <T>(fn: () => Promise<T>, retries = 5, delayMs = 500): Promise<T> => {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) await wait(delayMs);
+    }
+  }
+  throw lastError;
+};
+
 const savePanCaptureImage = async (capture: PanCapture): Promise<string> => {
   const fileId = v4();
   const fileAsArrayBuffer = dataUrlToArrayBuffer(capture.dataUrl);
-  await fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]);
+  await retry(() => fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]));
   return fileId;
 };
 
