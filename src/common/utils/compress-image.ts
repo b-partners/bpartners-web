@@ -15,7 +15,7 @@ interface CompressImageOptions {
   outputType?: string;
 }
 
-export const compressImage = async (source: Blob | ArrayBuffer, { mimeType, quality = 0.92, outputType = 'image/webp' }: CompressImageOptions): Promise<Blob> => {
+export const compressImage = async (source: Blob | ArrayBuffer, { mimeType, quality = 0.92, outputType = 'image/jpeg' }: CompressImageOptions): Promise<Blob> => {
   const blob = source instanceof Blob ? source : new Blob([source], { type: mimeType });
   if (!mimeType.startsWith('image/')) return blob;
 
@@ -27,6 +27,10 @@ export const compressImage = async (source: Blob | ArrayBuffer, { mimeType, qual
     canvas.height = image.naturalHeight;
     const context = canvas.getContext('2d');
     if (!context) return blob;
+    if (outputType !== 'image/png') {
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
     context.drawImage(image, 0, 0);
     const compressed = await canvasToBlob(canvas, outputType, quality);
     return compressed && compressed.size < blob.size ? compressed : blob;
