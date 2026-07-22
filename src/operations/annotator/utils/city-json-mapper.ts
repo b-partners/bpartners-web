@@ -68,19 +68,6 @@ const rotatePointsAroundCentroid = (points: PanPoint[], angle: number): PanPoint
   });
 };
 
-const rotatePointsAroundCentroidUpright = (points: PanPoint[], angle: number): PanPoint[] => {
-  if (!angle || points.length === 0) return points;
-  const cx = points.reduce((sum, point) => sum + point.x, 0) / points.length;
-  const cy = points.reduce((sum, point) => sum + point.y, 0) / points.length;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return points.map(({ x, y }) => {
-    const dx = x - cx;
-    const dy = y - cy;
-    return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos };
-  });
-};
-
 export const addAlphabet = (name: string, index: number) => {
   const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const base = alphabet.length;
@@ -136,7 +123,7 @@ const boundaryMapper = {
       points: ceilPointsToTwoDecimals(closedRing),
     };
     const orientedPolygon: ExportAreaPictureAnnotation3DPan['orientedPolygon'] = {
-      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroidUpright(closedRing, angle))),
+      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closedRing, angle))),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
