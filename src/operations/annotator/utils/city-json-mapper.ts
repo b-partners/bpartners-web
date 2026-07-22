@@ -117,8 +117,13 @@ const boundaryMapper = {
     const footprintLengths = ring3D.map((point, i) => edge3DLength(point, ring3D[(i + 1) % ring3D.length]));
     const rescaledPoints = rescaleRingToLengths(footprintPoints, footprintLengths);
 
+    const closedRing = closeRingWithoutSuperposition(rescaledPoints);
+
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closeRingWithoutSuperposition(rescaledPoints), angle))),
+      points: ceilPointsToTwoDecimals(closedRing),
+    };
+    const orientedPolygon: ExportAreaPictureAnnotation3DPan['orientedPolygon'] = {
+      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closedRing, angle))),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
@@ -138,6 +143,7 @@ const boundaryMapper = {
 
     return {
       polygon,
+      orientedPolygon,
       measurements,
       infos,
       name,
