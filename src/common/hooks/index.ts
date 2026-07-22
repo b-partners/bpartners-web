@@ -6,6 +6,7 @@ export * from './use-get-element-size';
 export * from './use-heart-beat';
 export * from './use-loading-handler';
 export * from './use-loading-progress';
+export * from './use-siren-requirement';
 export * from './use-step-progress';
 export * from './use-tab-manager';
 export * from './use-toggle';

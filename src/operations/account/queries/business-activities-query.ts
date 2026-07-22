@@ -9,10 +9,10 @@ export const useGetBusinessJob = () => {
 };
 
 export const useUpdateBusinessJob = () => {
-  const { isPending, mutate } = useMutation({ mutationKey: ['BusinessJobMutation'], mutationFn: businessActivitiesProvider.update });
+  const { isPending, mutateAsync } = useMutation({ mutationKey: ['BusinessJobMutation'], mutationFn: businessActivitiesProvider.update });
 
   return {
     isUpldateBusinessJobLoading: isPending,
-    updateBusinessJob: mutate,
+    updateBusinessJob: mutateAsync,
   };
 };

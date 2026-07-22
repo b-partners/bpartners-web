@@ -2,7 +2,7 @@ import { accountHolderProvider } from '@/providers';
 import { useMutation } from '@tanstack/react-query';
 
 export const useAccountHolderProviderFieldsCompany = () => {
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutateAsync } = useMutation({
     mutationKey: ['accountHolderProviderFieldsCompany'],
     mutationFn: accountHolderProvider.saveOrUpdate,
     onError: error => console.log(error),
@@ -10,6 +10,6 @@ export const useAccountHolderProviderFieldsCompany = () => {
 
   return {
     isaccountHolderProvider: isPending,
-    accountHolderProvider: mutate,
+    accountHolderProvider: mutateAsync,
   };
 };

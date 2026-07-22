@@ -2,7 +2,7 @@ import { updateGlobalInformation } from '@/providers';
 import { useMutation } from '@tanstack/react-query';
 
 export const useUpdateGlobalInformationFieldsCompany = () => {
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutateAsync } = useMutation({
     mutationKey: ['GlobalInformationFieldsCompany'],
     mutationFn: updateGlobalInformation,
     onError: error => console.log(error),
@@ -10,6 +10,6 @@ export const useUpdateGlobalInformationFieldsCompany = () => {
 
   return {
     isUpldateGlobalInformation: isPending,
-    updateGlobalInformation: mutate,
+    updateGlobalInformation: mutateAsync,
   };
 };

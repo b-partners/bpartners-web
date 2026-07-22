@@ -1,4 +1,5 @@
 import { BPLoader, UpdateBusinessModal } from '@/common/components';
+import { hasSiren, useSirenRequirement } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { accountHolderProvider, authProvider } from '@/providers';
 import { AccountHolder } from '@bpartners/typescript-client';
@@ -10,6 +11,7 @@ const isAuthError = (error: AxiosError) => error?.status === 401 || error?.statu
 const hasBusinessActivities = (accountHolder: AccountHolder) => !!(accountHolder?.businessActivities?.primary || accountHolder?.businessActivities?.secondary);
 export const AccountHolderHandlerWrapper: FC<PropsWithChildren> = ({ children }) => {
   const { open } = useDialog();
+  const { openSirenModal } = useSirenRequirement();
   const isSubscribed = authProvider.isSubscribed();
   const { isLoading, data: accountHolder } = useQuery<AccountHolder>({
     retry: 5,
@@ -31,8 +33,11 @@ export const AccountHolderHandlerWrapper: FC<PropsWithChildren> = ({ children })
   const hasBusinessActivity = hasBusinessActivities(accountHolder);
 
   useEffect(() => {
-    if (!isLoading && !hasBusinessActivity && accountHolder) {
+    if (isLoading || !accountHolder) return;
+    if (!hasBusinessActivity) {
       open(<UpdateBusinessModal />, undefined, false);
+    } else if (!hasSiren(accountHolder)) {
+      openSirenModal();
     }
   }, [isLoading]);
 
