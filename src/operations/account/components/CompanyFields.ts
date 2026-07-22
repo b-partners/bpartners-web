@@ -11,6 +11,20 @@ export const businessActivitiesField = [
   },
 ];
 
+const flattenErrorPaths = (errors: any, prefix = ''): string[] =>
+  Object.entries(errors || {}).flatMap(([key, value]: [string, any]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    return value?.message ? [path] : flattenErrorPaths(value, path);
+  });
+
+export const getInvalidFieldLabels = (errors: any): string[] => {
+  const labelByName = [...getCompanyFields(undefined), ...businessActivitiesField].reduce(
+    (acc, { name, label }) => ({ ...acc, [name]: label }),
+    {} as Record<string, string>
+  );
+  return flattenErrorPaths(errors).map(path => labelByName[path] || path);
+};
+
 export const getCompanyFields = (record: any) => {
   return [
     {

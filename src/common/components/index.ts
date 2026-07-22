@@ -18,6 +18,7 @@ export * from './PaymentMethodRequiredModal.tsx';
 export * from './Pdf';
 export * from './ProgressBar';
 export * from './RichTextEditor';
+export * from './SirenModal';
 export * from './slash-icon';
 export * from './SubscriptionBillingModal';
 export * from './SubscriptionModal';

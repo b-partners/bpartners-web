@@ -1,5 +1,17 @@
 import { SxProps } from '@mui/material';
 
+export const SirenModalStyle: SxProps = {
+  minWidth: 420,
+  paddingTop: 1,
+  '& .siren-description': {
+    marginBottom: 2,
+    fontSize: '0.9rem',
+  },
+  '& .siren-input': {
+    width: '100%',
+  },
+};
+
 export const SlashIconStyle: SxProps = {
   position: 'relative',
   display: 'flex',

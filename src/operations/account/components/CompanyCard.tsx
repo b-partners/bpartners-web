@@ -6,12 +6,12 @@ import { AccountHolder } from '@bpartners/typescript-client';
 import { Edit } from '@mui/icons-material';
 import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useRecordContext } from 'react-admin';
-import { FormProvider } from 'react-hook-form';
+import { useNotify, useRecordContext, useRefresh } from 'react-admin';
+import { FieldErrors, FormProvider } from 'react-hook-form';
 import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFieldsCompany } from '../queries';
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
 import { useUpdateFeedbackLink } from '../queries/feedback-query';
-import { businessActivitiesField, getCompanyFields } from './CompanyFields';
+import { businessActivitiesField, getCompanyFields, getInvalidFieldLabels } from './CompanyFields';
 
 const mapAccountHolder = (accountHolder: AccountHolder) => {
   return {
@@ -22,7 +22,10 @@ const mapAccountHolder = (accountHolder: AccountHolder) => {
 
 export const CompanyCard = () => {
   const record = useRecordContext();
+  const refresh = useRefresh();
+  const notify = useNotify();
   const fields = getCompanyFields(record);
+  const notifyInvalidFields = (errors: FieldErrors) => notify(`Impossible d'enregistrer : ${getInvalidFieldLabels(errors).join(', ')}`, { type: 'warning' });
   const accountForm = useAccountForm(mapAccountHolder(record as any) as any);
   const { jobList } = useGetBusinessJob();
   const { isUpldateBusinessJobLoading, updateBusinessJob } = useUpdateBusinessJob();
@@ -34,17 +37,18 @@ export const CompanyCard = () => {
     setEditMode(!editMode);
   };
 
-  const handleSubmit = accountForm.handleSubmit(formData => {
-    updateBusinessJob(formData.businessActivities);
-    updateGlobalInformation({
+  const handleSubmit = accountForm.handleSubmit(async formData => {
+    await updateBusinessJob(formData.businessActivities);
+    await accountHolderProvider([formData.companyInfo]);
+    await updateFeedbackLink(formData.feedback?.feedbackLink);
+    await updateGlobalInformation({
       name: formData.name,
       siren: formData.siren,
       officialActivityName: formData.officialActivityName,
       contactAddress: formData.contactAddress,
     });
-    accountHolderProvider([formData.companyInfo]);
-    updateFeedbackLink(formData.feedback?.feedbackLink);
-  });
+    refresh();
+  }, notifyInvalidFields);
 
   return (
     <FormProvider {...accountForm}>

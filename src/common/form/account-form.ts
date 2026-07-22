@@ -19,7 +19,7 @@ const schema = z
       prospectingPerimeter: z.custom(() => true),
     }),
     companyInfo: z.object({
-      tvaNumber: requiredStringCustom(),
+      tvaNumber: z.custom(() => true),
       socialCapital: z.custom(() => true),
       website: z.string(),
       phone: requiredStringCustom().refine(phoneValidator, FieldErrorMessage.accountPhone),

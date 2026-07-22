@@ -13,7 +13,7 @@ export const BpAutoComplete: FC<BpAutoCompleteProps> = ({ name, label, ...others
 
   const handleChange = (_event: SyntheticEvent, value: any) => setValue(name, value);
   const { onBlur, ref } = register(name);
-  const error = errors[name];
+  const error = name.split('.').reduce<any>((acc, key) => acc?.[key], errors);
 
   return (
     <div>
@@ -24,7 +24,7 @@ export const BpAutoComplete: FC<BpAutoCompleteProps> = ({ name, label, ...others
         onBlur={onBlur}
         onChange={handleChange}
         data-testid={`${name}-auto-complete`}
-        renderInput={params => <TextField {...params} label={label} error={errors && !!errors[name]} />}
+        renderInput={params => <TextField {...params} label={label} error={!!error} />}
       />
 
       {!!error && (
