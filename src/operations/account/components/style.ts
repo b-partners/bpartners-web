@@ -130,6 +130,32 @@ export const AccountStyle: SxProps = {
   '& .subscription-card': {
     mt: 3,
   },
+  '& .subscription-header': {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    mb: 3,
+    '& .section-title-subscription': {
+      mx: 0,
+      mb: 0,
+    },
+    '& .export-invoice-action': {
+      position: 'absolute',
+      right: 0,
+    },
+  },
+  '& .export-invoice-action': {
+    backgroundColor: PALETTE_COLORS.neon_orange,
+    color: 'white',
+    borderRadius: 25,
+    py: 1,
+    px: 3,
+    whiteSpace: 'nowrap',
+    textTransform: 'none',
+    flexShrink: 0,
+  },
   '& .section-title-subscription': {
     backgroundColor: PALETTE_COLORS.pine,
     color: 'white',
