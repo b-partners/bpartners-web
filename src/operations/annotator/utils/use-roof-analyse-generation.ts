@@ -26,6 +26,7 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
     setAnalyseLoadingPolygon,
   } = useAnnotatorComponentStore();
   const clearScreenAnnotations = annotatorStore.useAnnotatorStore(params => params.clearScreenAnnotations);
+  const promoteAnalyseRoofToAnnotator = annotatorStore.useAnnotatorStore(params => params.promoteAnalyseRoofToAnnotator);
   const roof2dPolygon = annotatorStore.useAnnotatorStore(
     useShallow(
       ({ annotations }) => Object.values(annotations).find(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof')?.polygon
@@ -54,6 +55,7 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
 
   const runAnalyse = () => {
     const loadingPolygon = shiftPolygons(roofPolygons, areaPictureDetails, true)?.[0]?.points?.slice() ?? [];
+    promoteAnalyseRoofToAnnotator();
     removeCache.roofDelimitation();
     clearScreenAnnotations('roof-analyse');
     setAnalyseInformation({ geoJsonResultUrl: '', imageUrl: '' });
