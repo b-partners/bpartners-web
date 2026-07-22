@@ -1,12 +1,21 @@
 import App from '@/App';
 import { InvoiceStatus } from '@bpartners/typescript-client';
-import { accountHolders1, accounts1, invoiceExportRequestEmpty, invoiceExportRequestPending, invoiceExportRequestReady, whoami1 } from './mocks/responses';
+import {
+  accountHolders1,
+  accounts1,
+  invoiceExportRequestEmpty,
+  invoiceExportRequestPending,
+  invoiceExportRequestPreparing,
+  invoiceExportRequestReady,
+  whoami1,
+} from './mocks/responses';
 import { customers1 } from './mocks/responses/customer-api';
 import { getInvoices, invoicesSummary } from './mocks/responses/invoices-api';
 import { products } from './mocks/responses/product-api';
 
 const EXPORT_BUTTON = '[name="open-invoice-export-modal"]';
 const SUBMIT = '[name="export-invoice-submit"]';
+const SLOW_SERVER_DELAY = 15000;
 
 const goToInvoiceList = () => {
   cy.mount(<App />);
@@ -80,6 +89,37 @@ describe('Invoice export', () => {
 
     cy.wait('@retrievePending');
     cy.get('.export-progress').should('have.class', 'MuiLinearProgress-determinate');
+
+    cy.wait('@retrieveReady');
+    cy.contains('Le téléchargement de vos factures a démarré.').should('be.visible');
+    cy.contains('Télécharger les factures').should('not.exist');
+  });
+
+  it('keeps loading while the server has not published the batch urls yet', () => {
+    cy.intercept('PUT', `/users/${whoami1.user.id}/invoiceExportRequests`, {}).as('submitExport');
+    cy.intercept('GET', '/dummy-export/*', { body: 'dummy-archive' }).as('downloadBatch');
+    cy.intercept('GET', `/users/${whoami1.user.id}/invoiceExportRequests/*`, invoiceExportRequestReady).as('retrieveReady');
+    cy.intercept(
+      { method: 'GET', url: `/users/${whoami1.user.id}/invoiceExportRequests/*`, times: 1 },
+      { body: invoiceExportRequestPreparing, delay: SLOW_SERVER_DELAY }
+    ).as('retrievePreparing');
+
+    goToInvoiceList();
+    cy.get(EXPORT_BUTTON).click();
+    cy.get(SUBMIT).click();
+
+    cy.wait('@submitExport');
+
+    cy.get('.export-progress').should('have.class', 'MuiLinearProgress-indeterminate');
+    cy.get(SUBMIT).should('be.disabled');
+    cy.contains('Le téléchargement de vos factures a démarré.').should('not.exist');
+
+    cy.wait('@retrievePreparing', { timeout: SLOW_SERVER_DELAY + 10000 });
+
+    cy.get('.export-progress').should('have.class', 'MuiLinearProgress-indeterminate');
+    cy.get(SUBMIT).should('be.disabled');
+    cy.contains('Télécharger les factures').should('be.visible');
+    cy.contains('Le téléchargement de vos factures a démarré.').should('not.exist');
 
     cy.wait('@retrieveReady');
     cy.contains('Le téléchargement de vos factures a démarré.').should('be.visible');
