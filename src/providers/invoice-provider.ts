@@ -81,10 +81,15 @@ export const retrieveInvoicesExportRequest = async (requestId: string) => {
 
 export const getExportReadyBatches = (exportRequest?: InvoiceExportRequest) => (exportRequest?.batchList || []).filter(({ url }) => !!url);
 
+export const isExportRequestEmpty = (exportRequest?: InvoiceExportRequest) => exportRequest?.totalInvoiceCount === 0;
+
 export const isExportRequestReady = (exportRequest?: InvoiceExportRequest) => {
   const { totalBatchCount } = exportRequest || {};
-  return totalBatchCount !== undefined && getExportReadyBatches(exportRequest).length >= totalBatchCount;
+  if (!totalBatchCount) return false;
+  return getExportReadyBatches(exportRequest).length >= totalBatchCount;
 };
+
+export const isExportRequestSettled = (exportRequest?: InvoiceExportRequest) => isExportRequestEmpty(exportRequest) || isExportRequestReady(exportRequest);
 
 export const downloadExportBatches = (exportRequest: InvoiceExportRequest) =>
   getExportReadyBatches(exportRequest).forEach(({ url }, index) => {

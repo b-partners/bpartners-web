@@ -13,6 +13,12 @@ export const invoiceExportRequestPending: InvoiceExportRequest = {
   batchList: [{ url: '/dummy-export/factures-1.zip', contentSize: 1024 }],
 };
 
+export const invoiceExportRequestPreparing: InvoiceExportRequest = {
+  ...invoiceExportRequestPending,
+  totalBatchCount: 0,
+  batchList: [],
+};
+
 export const invoiceExportRequestReady: InvoiceExportRequest = {
   ...invoiceExportRequestPending,
   batchList: [
