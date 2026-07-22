@@ -170,6 +170,47 @@ describe(specTitle('Account'), () => {
   });
 
   //OK
+  it('Toggle subject to VAT switch', () => {
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/businessActivities`, req =>
+      req.reply(accountHolders1[0])
+    );
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/globalInfo`, req =>
+      req.reply(accountHolders1[0])
+    );
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => req.reply(accountHoldersFeedbackLink));
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
+      expect(req.body.isSubjectToVat).to.eq(false);
+      const response = { ...accountHolders1[0] };
+      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      req.reply({ body: response });
+    }).as('updateCompanyInfo');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Micro-entreprise exonérée de TVA');
+    cy.contains('Oui');
+
+    cy.dataCy('edit-mode-button').click();
+
+    cy.dataCy('companyInfo-subjectToVatSwitch').find('input[type="checkbox"]').should('be.checked');
+    cy.dataCy('companyInfo-subjectToVatSwitch').click();
+    cy.dataCy('companyInfo-subjectToVatSwitch').find('input[type="checkbox"]').should('not.be.checked');
+
+    //Make the form valid before saving
+    cy.name('contactAddress.postalCode').clear().type('75001');
+    cy.name('companyInfo.phone').clear().type('+261345656756');
+    cy.name('feedback.feedbackLink').clear().type('https://birdia.fr');
+
+    cy.dataCy('save-profile').click();
+    cy.wait('@updateCompanyInfo');
+  });
+
+  //OK
   it('Check full typography', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
