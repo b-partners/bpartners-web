@@ -226,4 +226,47 @@ export const DegradationLevelsStackStyle: SxProps = {
     fontSize: 11,
     color: '#9aa3b2',
   },
+  '&.degradation-pending .roof-state-col': {
+    opacity: 0.55,
+  },
+  '&.degradation-pending .roof-state-col-icon': {
+    bgcolor: '#E0DAC7',
+    color: '#999',
+  },
+  '&.degradation-pending .roof-state-bar-seg': {
+    bgcolor: '#E0DAC7',
+  },
+  '& .roof-state-search-icon': {
+    bgcolor: 'rgba(233,107,51,.12)',
+    color: '#E96B33',
+  },
+  '& .roof-state-pending-main': {
+    fontSize: 17,
+    fontWeight: 700,
+    color: '#2f2f2f',
+    lineHeight: 1.3,
+  },
+  '& .roof-state-pending-accent': {
+    color: '#E96B33',
+  },
+  '& .roof-state-pending-sub': {
+    mt: 0.5,
+    fontSize: 11,
+    color: '#9aa3b2',
+  },
+  '& .roof-state-pending-score': {
+    color: '#2f2f2f',
+  },
+  '& .degradation-pill-pending': {
+    bgcolor: '#F0EAD9',
+    color: '#5f5f5f',
+    boxShadow: '0 3px 12px rgba(0,0,0,.08)',
+  },
+  '& .degradation-pill-pending .degradation-pill-icon': {
+    bgcolor: 'rgba(233,107,51,.12)',
+    color: '#E96B33',
+  },
+  '& .degradation-pill-pending .degradation-pill-value': {
+    borderLeft: '1px solid rgba(0,0,0,.12)',
+  },
 };
