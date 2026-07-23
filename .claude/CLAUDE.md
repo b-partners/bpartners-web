@@ -6,6 +6,10 @@
 - `.claude/skills/react-component/` — invoke for any `.tsx` work (component, page, form, dialog, etc.), even if not named.
 - `.claude/skills/annotator/` — invoke when asking about or modifying the Annotator feature (annotations, polygons, area pictures, roof analysis, CityJSON 3D, measurements).
 
+## API Reference
+
+The backend API is consumed via `@bpartners/typescript-client`. When you need to check endpoints, request/response shapes, or model definitions, use the live OpenAPI spec as the source of truth: https://bpdocs.netlify.app/#/ — it is updated regularly, so prefer it over the local generated types when they disagree.
+
 ## Rules
 
 - Arrow functions only. No `function` keyword. No comments inside function bodies.
