@@ -1,3 +1,4 @@
+import { getAnalyseImageFileId } from '@/constants';
 import { AnnotationInfo } from '@/operations/annotator';
 import {
   cityJsonMapper,
@@ -8,7 +9,6 @@ import {
   shiftPolygons,
 } from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
-import { getAnalyseImageFileId } from '@/constants';
 import { ExportAreaPictureAnnotation, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
