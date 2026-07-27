@@ -1,4 +1,3 @@
-import { getCurrentShift, shiftImageWithBlankOffset } from '@/operations/annotator/utils';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
 import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider';
 import { Polygon } from '@bpartners/annotator-component';
@@ -10,6 +9,20 @@ import { copyObject, getFileUrl, getImageFromCache, getImageSize } from '../util
 
 export const CITY_JSON_QUERY_KEY_PREFIX = 'city-json-process';
 export const CITY_JSON_QUERY_KEY = (hash: string) => [CITY_JSON_QUERY_KEY_PREFIX, hash];
+
+const VERTICES_TEXTURE_OFFSET_PER_SHIFT = 1024;
+
+export const shiftVerticesTextures = (verticesTextures: [number, number][] = [], areaPicture: AreaPictureDetails, imageSize: number): [number, number][] => {
+  const shift = areaPicture?.shiftNb || 0;
+  if (!shift) return verticesTextures;
+
+  const offset = (shift * VERTICES_TEXTURE_OFFSET_PER_SHIFT) / imageSize;
+
+  const xOffset = areaPicture.shiftDirection === 'RIGHT_LEFT_SIDE' ? offset : 0;
+  const yOffset = areaPicture.shiftDirection === 'UP_DOWN_SIDE' ? offset : 0;
+
+  return verticesTextures.map(([u, v]) => [u - xOffset, v + yOffset]);
+};
 
 const mapPixelPolygonToLatLonPolygon = async (polygon: Polygon, areaPicture: AreaPictureDetails, imageSize: number) => {
   const geoJson = polygonMapper.toRefererGeoJson(polygon, imageSize, areaPicture);
@@ -112,9 +125,10 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
 
       if (result && result.transform) setCityJsonModel(result);
 
-      const { xShift, yShift } = getCurrentShift(areaPicture);
-      const textureImage = areaPicture.shiftNb ? await shiftImageWithBlankOffset(imageAsBase64, xShift, yShift) : imageAsBase64;
+      const textureImage = imageAsBase64;
+      const imageSize = await getImageSize(imageAsBase64);
       result.appearance.textures[0].image = textureImage;
+      result.appearance['vertices-texture'] = shiftVerticesTextures(result.appearance['vertices-texture'], areaPicture, imageSize);
 
       return result;
     },
