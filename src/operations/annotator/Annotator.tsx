@@ -2,7 +2,7 @@ import { BPLoader, GlobaDialog } from '@/common/components';
 import { useSaveAnnotations } from '@/common/fetcher';
 import { useCacheImage, useHeartBeat } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
-import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams } from '@/common/utils';
+import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams, saveImageToCache } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, fileProvider } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
@@ -50,16 +50,18 @@ export const Annotator = () => {
   }, [fileId, cacheImage]);
 
   useEffect(() => {
-    if (!fileId || !analyseImageGenerated) return;
+    if (!fileId) return;
     const analyseImageFileId = getAnalyseImageFileId(fileId);
     setAnalyseImageFileId(analyseImageFileId);
-    downloadAndCacheImage(analyseImageFileId, getFileUrl(analyseImageFileId, FileType.AREA_PICTURE)).then(async url => {
-      setAnalyseImageUrl(url);
-      const blob = await getImageFromCache(analyseImageFileId);
+    const sourceFileId = analyseImageGenerated ? analyseImageFileId : fileId;
+    downloadAndCacheImage(sourceFileId, getFileUrl(sourceFileId, FileType.AREA_PICTURE)).then(async url => {
+      const blob = await getImageFromCache(sourceFileId);
       if (blob) {
         const fileAsArrayBuffer = await blob.arrayBuffer();
         await fileProvider.update([{ fileId: analyseImageFileId, fileType: FileType.AREA_PICTURE, fileMimeType: blob.type || 'image/png', fileAsArrayBuffer }]);
+        if (!analyseImageGenerated) await saveImageToCache(analyseImageFileId, blob);
       }
+      setAnalyseImageUrl(url);
     });
   }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
