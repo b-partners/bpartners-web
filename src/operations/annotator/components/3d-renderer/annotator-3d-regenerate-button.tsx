@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { regenerate3DModeSelectStyle } from './style';
 
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
-  const { screen, setScreen, threeDMode } = useAnnotatorScreenSwitch();
+  const { screen, setScreen } = useAnnotatorScreenSwitch();
   const { shouldPromptRegenerate, setShouldPromptRegenerate } = useAnnotator3DStore();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -39,7 +39,7 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
     useAnnotator3DStore.getState().reset();
     useAnnotator3DStore.getState().incrementRegenerateVersion();
     setScreen('annotator');
-    setTimeout(() => setScreen('3d-annotator', threeDMode), 100);
+    setTimeout(() => setScreen('3d-annotator', fromSegmentation ? 'pan' : 'roof'), 100);
     setOpen(false);
   };
 
