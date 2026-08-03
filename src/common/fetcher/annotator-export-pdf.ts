@@ -1,4 +1,4 @@
-import { DEFAULT_EXPORT_PDF_CONF } from '@/constants';
+import { getAnalyseImageFileId } from '@/constants';
 import { AnnotationInfo } from '@/operations/annotator';
 import {
   cityJsonMapper,
@@ -15,7 +15,7 @@ import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
 import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
-import { downloadPdf, jsonToFile, sentryErrorLogger } from '../utils';
+import { downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger, wait } from '../utils';
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
   const base64 = dataUrl.split(',')[1] ?? '';
@@ -40,10 +40,23 @@ const waitForPanCapture = (timeoutMs = 30000): Promise<PanCapture[]> =>
     tick();
   });
 
+const retry = async <T>(fn: () => Promise<T>, retries = 5, delayMs = 500): Promise<T> => {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) await wait(delayMs);
+    }
+  }
+  throw lastError;
+};
+
 const savePanCaptureImage = async (capture: PanCapture): Promise<string> => {
   const fileId = v4();
   const fileAsArrayBuffer = dataUrlToArrayBuffer(capture.dataUrl);
-  await fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]);
+  await retry(() => fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]));
   return fileId;
 };
 
@@ -70,29 +83,8 @@ const panImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
     .sort((a, b) => a.capture.index - b.capture.index)
     .map(({ id }) => id);
 
-const panAnglesFromCaptures = (saved: SavedCapture[]): number[] =>
-  saved
-    .filter(({ capture }) => capture.kind === 'pan')
-    .sort((a, b) => a.capture.index - b.capture.index)
-    .map(({ capture }) => capture.angle);
-
-const facadeImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
-  saved
-    .filter(({ capture }) => capture.kind === 'facade')
-    .sort((a, b) => a.capture.index - b.capture.index)
-    .map(({ id }) => id);
-
-const facadePolygonsFromCaptures = (saved: SavedCapture[]): { x: number; y: number }[][] =>
-  saved
-    .filter(({ capture }) => capture.kind === 'facade')
-    .sort((a, b) => a.capture.index - b.capture.index)
-    .map(({ capture }) => capture.polygon ?? []);
-
 const imageIdForCapture = (saved: SavedCapture[], kind: PanCaptureKind, index: number): string | undefined =>
   saved.find(({ capture }) => capture.kind === kind && capture.index === index)?.id;
-
-const angleForCapture = (saved: SavedCapture[], kind: PanCaptureKind, index: number): number =>
-  saved.find(({ capture }) => capture.kind === kind && capture.index === index)?.capture.angle ?? 0;
 
 const mapExportAnnotationInfoArea = (annotationInfos: AnnotationInfo[]) => {
   const validAnnotationInfos = (annotationInfos ?? []).filter((info): info is AnnotationInfo => Boolean(info?.polygonId));
@@ -151,30 +143,27 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const polygons = resolveExportPolygons();
 
+    const { areaPictureDetails } = useAnnotatorComponentStore.getState();
+    const analyseImageUrl = getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE');
+
     const has3dSurfaces = cityJsonModel ? !!findSurfaceGeometry(cityJsonModel) : false;
     const shouldAdd3d = imageUrl && cityJsonModel && has3dSurfaces;
 
     const savedCaptures = await captureAndSaveImages();
     const panImageIds = panImageIdsFromCaptures(savedCaptures);
-    const panAngles = panAnglesFromCaptures(savedCaptures);
-    const facadeImageIds = facadeImageIdsFromCaptures(savedCaptures);
-    const facadePolygons = facadePolygonsFromCaptures(savedCaptures);
 
     const { savedPolygons, savedLines, panNames, edgeTypes } = roof3DStore.useRoof3DStore.getState();
     const userPolygonPans = savedPolygons.map((polygon, index) =>
-      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1), angleForCapture(savedCaptures, 'polygon', index + 1))
+      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1), 0)
     );
-    const userLinePans = savedLines.map((line, index) =>
-      cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1), angleForCapture(savedCaptures, 'line', index + 1))
-    );
+    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1), 0));
     const userPans = [...userPolygonPans, ...userLinePans];
 
-    const exportAnnotation3D = shouldAdd3d
-      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, panAngles, facadeImageIds, facadePolygons)
-      : undefined;
+    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, []) : undefined;
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
       ...params,
+      imageUrl: analyseImageUrl,
       polygons,
       annotationInfos: mapExportAnnotationInfoArea(annotationInfos),
     });

@@ -1,7 +1,7 @@
 import { FileType } from '@bpartners/typescript-client';
 import axios from 'axios';
 import { FileApi, getCached } from '.';
-import { getFileUrl, getMimeType, toArrayBuffer } from '../common/utils';
+import { compressImage, getFileUrl, getMimeType, toArrayBuffer } from '../common/utils';
 import { BpDataProviderType } from './bp-data-provider-type';
 
 export const fileProvider: BpDataProviderType = {
@@ -40,8 +40,10 @@ export const fileProvider: BpDataProviderType = {
   async update(resources: any): Promise<any> {
     const { fileId, fileType, fileMimeType, fileAsArrayBuffer } = resources[0];
     const { accountId } = getCached.userInfo();
+    const compressed = await compressImage(fileAsArrayBuffer, { mimeType: fileMimeType });
+    const compressedFile = new File([compressed], fileId, { type: compressed.type || fileMimeType });
     return FileApi()
-      .uploadFile(accountId, fileId, fileAsArrayBuffer, fileType, { headers: { 'Content-Type': fileMimeType } })
+      .uploadFile(accountId, fileId, compressedFile, fileType, { headers: { 'Content-Type': compressedFile.type } })
       .then(({ data }) => ({ data, id: fileId }));
   },
 };
