@@ -1,4 +1,4 @@
-import { getAnalyseImageFileId } from '@/constants';
+import { DEFAULT_EXPORT_PDF_CONF, getAnalyseImageFileId } from '@/constants';
 import { AnnotationInfo } from '@/operations/annotator';
 import {
   cityJsonMapper,

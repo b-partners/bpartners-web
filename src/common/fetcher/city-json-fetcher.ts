@@ -1,3 +1,4 @@
+import { saveThreeDGenerationSnapshot } from '@/operations/annotator/utils';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
 import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider';
 import { Polygon } from '@bpartners/annotator-component';
