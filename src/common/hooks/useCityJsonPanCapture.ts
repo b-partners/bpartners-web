@@ -5,7 +5,7 @@ import { MutableRefObject, useEffect } from 'react';
 import * as THREE from 'three';
 import { create } from 'zustand';
 
-export type PanCaptureKind = 'pan' | 'polygon' | 'line';
+export type PanCaptureKind = 'pan' | 'facade' | 'polygon' | 'line';
 
 export interface PanCapture {
   index: number;
@@ -13,6 +13,7 @@ export interface PanCapture {
   label: string;
   kind: PanCaptureKind;
   angle: number;
+  polygon?: { x: number; y: number }[];
 }
 
 interface PanCaptureStore {
@@ -178,8 +179,9 @@ const captureMesh = (
   gl: THREE.WebGLRenderer,
   renderTarget: THREE.WebGLRenderTarget,
   width: number,
-  height: number
-): { canvas: HTMLCanvasElement; angle: number } => {
+  height: number,
+  paddingScale = 1
+): { canvas: HTMLCanvasElement; angle: number; center: THREE.Vector3; right: THREE.Vector3; up: THREE.Vector3 } => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
   const center = sphere.center.clone().applyMatrix4(mesh.matrixWorld);
@@ -197,7 +199,7 @@ const captureMesh = (
     cameraDir.copy(horizontalNormal.multiplyScalar(Math.cos(MIN_ELEVATION_RAD)).add(WORLD_UP.clone().multiplyScalar(minY))).normalize();
   }
 
-  const distance = (radius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING;
+  const distance = (radius / Math.tan((camera.fov * Math.PI) / 360)) * FRAME_PADDING * paddingScale;
 
   camera.aspect = width / height;
   camera.position.copy(center).addScaledVector(cameraDir, distance);
@@ -220,7 +222,32 @@ const captureMesh = (
   mesh.material = original;
   highlight.dispose();
 
-  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, -1) };
+  const right = new THREE.Vector3().crossVectors(WORLD_UP, cameraDir).normalize();
+  const up = new THREE.Vector3().crossVectors(cameraDir, right).normalize();
+
+  return { canvas: readTargetToCanvas(gl, renderTarget, width, height), angle: footprintUpAngle(cameraDir, -1), center: center.clone(), right, up };
+};
+
+const projectRingToCameraPlane = (ring: THREE.Vector3[], center: THREE.Vector3, right: THREE.Vector3, up: THREE.Vector3): { x: number; y: number }[] =>
+  ring.map(point => {
+    const delta = point.clone().sub(center);
+    return { x: +delta.dot(right).toFixed(2), y: +-delta.dot(up).toFixed(2) };
+  });
+
+const rescaleRingToLengths = (points: { x: number; y: number }[], lengths: number[]): { x: number; y: number }[] => {
+  if (points.length < 2) return points;
+  const result = [points[0]];
+  for (let i = 0; i < points.length - 1; i++) {
+    const from = points[i];
+    const to = points[i + 1];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    const target = lengths[i] ?? distance;
+    const last = result[result.length - 1];
+    result.push({ x: +(last.x + (dx / distance) * target).toFixed(2), y: +(last.y + (dy / distance) * target).toFixed(2) });
+  }
+  return result;
 };
 
 const boundsOfPoints = (points: Vec3Tuple[]): { center: THREE.Vector3; radius: number } => {
@@ -288,9 +315,12 @@ export const useCityJsonPanCapture = (
     setIsCapturing(true);
 
     const roofMeshes: THREE.Mesh[] = [];
+    const wallMeshes: THREE.Mesh[] = [];
     group.traverse(obj => {
       const mesh = obj as THREE.Mesh;
-      if (mesh.isMesh && mesh.userData?.surfaceType === 'RoofSurface') roofMeshes.push(mesh);
+      if (!mesh.isMesh) return;
+      if (mesh.userData?.surfaceType === 'RoofSurface') roofMeshes.push(mesh);
+      if (mesh.userData?.surfaceType === 'WallSurface') wallMeshes.push(mesh);
     });
 
     const run = async () => {
@@ -323,6 +353,34 @@ export const useCityJsonPanCapture = (
             const { canvas, angle } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
             captures.push({ index: i + 1, dataUrl, label: `Pan ${i + 1}`, kind: 'pan', angle });
+          }
+
+          setSelectedMesh(null);
+        }
+
+        if (wallMeshes.length) {
+          setSelectedMeasureId(null);
+
+          for (let i = 0; i < wallMeshes.length; i++) {
+            const mesh = wallMeshes[i];
+            setSelectedMesh(mesh);
+            await nextFrame();
+            await nextFrame();
+
+            const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
+            const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
+            const faceEdges = getFaceMeasure(mesh, cityJson).edges;
+            const projected = projectRingToCameraPlane(
+              faceEdges.map(edge => edge.start),
+              center,
+              right,
+              up
+            );
+            const polygon = rescaleRingToLengths(
+              projected,
+              faceEdges.map(edge => edge.distanceMeters)
+            );
+            captures.push({ index: i + 1, dataUrl, label: `Façade ${i + 1}`, kind: 'facade', angle, polygon });
           }
 
           setSelectedMesh(null);

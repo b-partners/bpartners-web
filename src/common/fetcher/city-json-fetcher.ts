@@ -1,3 +1,4 @@
+import { saveThreeDGenerationSnapshot } from '@/operations/annotator/utils';
 import { annotatorProvider, cache, getCached, polygonMapper } from '@/providers';
 import { getCityJSON, getExistingCityJSON } from '@/providers/city-json-provider';
 import { Polygon } from '@bpartners/annotator-component';
@@ -112,6 +113,8 @@ export const useCitJSONProcessQuery = (polygonFromAnnotator?: Polygon, areaPictu
           () => annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(cityJSONRequestId),
           signal
         );
+
+        saveThreeDGenerationSnapshot(areaPicture.fileId, threeDMode === 'pan' ? 'pan' : 'roof');
       }
 
       const imageBlob = cachedImageBlob || (await fetch(imageUri).then(response => response.blob()));

@@ -1,3 +1,5 @@
+import { PALETTE_COLORS } from '@/bp-theme';
+import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { ZOOM_LEVEL } from '@/constants/zoom-level';
 import { ScaleCallbacks } from '@bpartners/annotator-component';
@@ -6,6 +8,7 @@ import { Edit as EditIcon, PanTool as PanToolIcon, ZoomIn as ZoomInIcon, ZoomInM
 import { Box, Button, Divider, IconButton, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { AnnotationShiftButtons } from './annotator-shift-buttons';
 import { AnnotatorResetStateConfirmationDialog } from './AnnotatorResetConfirmationDialog';
+import { RebaseEditIcon } from './RebaseEditIcon';
 import { annotatorActionButtonsStyle, annotatorTopBarStyle } from './style';
 import { ThreeDGenerationModeSwitch } from './three-d-generation-mode-switch';
 
@@ -27,6 +30,8 @@ export const annotatorButtonsActions =
   (shiftImage: TShiftImage, showShiftButtons: boolean, topBarConfig?: AnnotatorTopBarConfig) => (zoomFunctions: ScaleCallbacks) => {
     const { scaleDown, scaleReste, scaleUp, xRef, yRef, clickActionValue, toggleClickAction } = zoomFunctions;
     const { open } = useDialog();
+    const isEditable = useAnnotatorComponentStore(state => state.isEditable);
+    const toggleIsEditable = useAnnotatorComponentStore(state => state.toggleIsEditable);
 
     const handleZoom = (fn: () => void) => () => {
       if (!clickActionValue) toggleClickAction();
@@ -112,6 +117,12 @@ export const annotatorButtonsActions =
           <Divider orientation='vertical' flexItem />
           <Tooltip placement='top' onClick={toggleClickAction} title={!clickActionValue ? 'bouger' : 'délimiter'}>
             <IconButton>{clickActionValue ? <EditIcon /> : <PanToolIcon />}</IconButton>
+          </Tooltip>
+          <Divider orientation='vertical' flexItem />
+          <Tooltip placement='top' onClick={toggleIsEditable} title={isEditable ? 'Désactiver la modification' : 'Modifier les polygones'}>
+            <IconButton color={isEditable ? 'primary' : 'default'}>
+              <RebaseEditIcon slashed={!isEditable} slashCutoutColor={PALETTE_COLORS.black} />
+            </IconButton>
           </Tooltip>
           {showShiftButtons && (
             <>

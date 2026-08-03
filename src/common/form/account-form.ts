@@ -19,11 +19,12 @@ const schema = z
       prospectingPerimeter: z.custom(() => true),
     }),
     companyInfo: z.object({
-      tvaNumber: requiredStringCustom(),
+      tvaNumber: z.custom(() => true),
       socialCapital: z.custom(() => true),
       website: z.string(),
       phone: requiredStringCustom().refine(phoneValidator, FieldErrorMessage.accountPhone),
       email: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
+      isSubjectToVat: z.boolean().optional(),
     }),
     officialActivityName: requiredStringCustom(),
     siren: z.custom(() => true),

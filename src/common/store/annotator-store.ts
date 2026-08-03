@@ -37,6 +37,8 @@ interface State {
   threeDFromSegmentation?: boolean;
   threeDGenerationId?: string;
   roofAnalyseId?: string;
+  geocode?: any;
+  geocodeStatus?: 'done' | 'pending' | 'not-started' | 'no-annotation';
 }
 
 const defaultValue: State = {
@@ -57,6 +59,7 @@ interface Actions {
   setScreenAnnotations: (screen: AnnotationScreen, polygons: Polygon[], annotationsInfos: AnnotationInfo[]) => void;
   clearScreenAnnotations: (screen: AnnotationScreen) => void;
   seedAnalyseRoofFromAnnotator: () => void;
+  promoteAnalyseRoofToAnnotator: () => void;
   resetAnnotations: () => void;
   reset: () => void;
   updateRoofAnnotation: Dispatch<SetStateAction<Annotation>>;
@@ -64,11 +67,14 @@ interface Actions {
   setThreeDFromSegmentation: (threeDFromSegmentation: boolean) => void;
   setThreeDGenerationId: (threeDGenerationId: string | undefined) => void;
   setRoofAnalyseId: (roofAnalyseId: string) => void;
+  setGeocode: (geocode: any) => void;
+  setGeocodeStatus: (geocodeStatus: State['geocodeStatus']) => void;
 }
 
 // @ts-ignore
 const useAnnotatorStore = create<State & Actions>(set => ({
   annotations: {},
+  geocodeStatus: 'not-started',
   setAnnotations: annotations => set({ annotations }),
   removeAnnotationInfo: id =>
     set(state => {
@@ -206,10 +212,36 @@ const useAnnotatorStore = create<State & Actions>(set => ({
       };
       return { annotations };
     }),
+  promoteAnalyseRoofToAnnotator: () =>
+    set(state => {
+      const values = Object.values(state.annotations);
+      const hasAnnotatorRoof = values.some(a => getAnnotationScreen(a) === 'annotator' && a.annotationInfos?.labelType === 'roof');
+      if (hasAnnotatorRoof) return state;
+
+      const analyseRoof = values.find(
+        a => getAnnotationScreen(a) === 'roof-analyse' && a.annotationInfos?.labelType === 'roof' && !a.polygon.id.includes(analyseGeneratedIdRef)
+      );
+      if (!analyseRoof) return state;
+
+      const annotations = copyObject(state.annotations);
+      Object.values(annotations).forEach(a => (a.isFirst = false));
+      const annotatorRoofId = v4();
+      annotations[annotatorRoofId] = {
+        isFirst: true,
+        screen: 'annotator',
+        polygon: { ...copyObject(analyseRoof.polygon), id: annotatorRoofId },
+        annotationInfos: { ...copyObject(analyseRoof.annotationInfos), polygonId: annotatorRoofId, labelType: 'roof' },
+      };
+      return { annotations };
+    }),
   resetAnnotations: () =>
     set({
       annotations: {},
+      geocodeStatus: 'not-started',
     }),
+  setGeocodeStatus(geocodeStatus) {
+    set({ geocodeStatus });
+  },
   updateRoofAnnotation: annotationOrDispatcher =>
     set(state => {
       const annotations = copyObject(state.annotations);
@@ -235,6 +267,9 @@ const useAnnotatorStore = create<State & Actions>(set => ({
   },
   setRoofAnalyseId(roofAnalyseId) {
     set({ roofAnalyseId });
+  },
+  setGeocode(geocode) {
+    set({ geocode });
   },
 }));
 
@@ -389,6 +424,16 @@ const useAnalyseAnnotatorInfoStore = () =>
     )
   );
 
+const useGeocodeStore = () =>
+  useAnnotatorStore(
+    useShallow(param => ({
+      geocode: param.geocode,
+      setGeocode: param.setGeocode,
+      geocodeStatus: param.geocodeStatus,
+      setGeocodeStatus: param.setGeocodeStatus,
+    }))
+  );
+
 export const annotatorStore = {
   usePolygonStore,
   useScreenPolygonStore,
@@ -403,4 +448,5 @@ export const annotatorStore = {
   use2DPanPolygonStore,
   use2DPanAnnotatorInfoStore,
   useOneAnnotationStore,
+  useGeocodeStore,
 };

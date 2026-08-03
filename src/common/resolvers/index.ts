@@ -4,4 +4,5 @@ export * from './feedback-link-validator';
 export * from './general-info-validator';
 export * from './invoice-relaunch-validator';
 export * from './reset-password-validator';
+export * from './siren-validator';
 export * from './utils';

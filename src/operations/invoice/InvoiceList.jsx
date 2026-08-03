@@ -1,6 +1,7 @@
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import BPListActions from '@/common/components/BPListActions';
 import { useInvoiceToolContext } from '@/common/store/invoice';
+import { parseUrlParams } from '@/common/utils';
 import { InvoiceStatus } from '@bpartners/typescript-client';
 import { Box } from '@mui/material';
 import { useEffect } from 'react';
@@ -11,6 +12,7 @@ import Pagination, { pageSize } from '../../common/components/Pagination';
 import {
   EmptyInvoiceList,
   InvoiceCreationButton,
+  InvoiceExportButton,
   InvoiceGridTable,
   InvoiceRelaunchHistoryModal,
   InvoiceRelaunchHistoryShowModal,
@@ -20,7 +22,6 @@ import {
 import FeedbackModal from './components/FeedbackModal';
 import InvoiceSumsCards from './components/InvoiceSumsCards';
 import { invoiceInitialValue, viewScreenState } from './utils/utils';
-import { parseUrlParams } from '@/common/utils';
 
 const InvoiceList = props => {
   const { onStateChange, invoiceTypes, actions, emptyAction } = props;
@@ -63,7 +64,10 @@ const InvoiceList = props => {
         perPage={pageSize}
         actions={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <InvoiceSearchBar />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <InvoiceSearchBar />
+              <InvoiceExportButton />
+            </Box>
             <InvoiceSumsCards />
             <BPListActions
               hasCreate={false}

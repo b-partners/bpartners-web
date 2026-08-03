@@ -1,4 +1,4 @@
-import { BlockOutlined, BuildOutlined, GppGoodOutlined, TrendingUpOutlined, WarningAmberOutlined } from '@mui/icons-material';
+import { BlockOutlined, BuildOutlined, GppGoodOutlined, Search, TrendingUpOutlined, WarningAmberOutlined } from '@mui/icons-material';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
@@ -57,11 +57,12 @@ const roofStateLevels = [
 ];
 
 export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ globalRate, ...rest }) => {
+  const isPending = globalRate.value === 0;
   const activeLevel = roofStateLevels.find(({ label }) => label === globalRate.type) ?? roofStateLevels[0];
   const ActiveIcon = activeLevel.icon;
 
   return (
-    <Box className='degradation-fieldset' sx={DegradationLevelsStackStyle} {...rest}>
+    <Box className={`degradation-fieldset${isPending ? ' degradation-pending' : ''}`} sx={DegradationLevelsStackStyle} {...rest}>
       <Box className='degradation-stack'>
         <Box className='degradation-popup'>
           <Box className='roof-state-card'>
@@ -71,9 +72,10 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
               <Stack className='roof-state-columns' direction='row'>
                 {roofStateLevels.map(({ label, icon, title, description, main, soft }) => {
                   const Icon = icon;
+                  const isActive = !isPending && label === activeLevel.label;
                   return (
-                    <Box key={label} className={`roof-state-col${label === activeLevel.label ? ' roof-state-col-active' : ''}`}>
-                      <Box className='roof-state-col-icon' sx={{ bgcolor: soft, color: main }}>
+                    <Box key={label} className={`roof-state-col${isActive ? ' roof-state-col-active' : ''}`}>
+                      <Box className='roof-state-col-icon' sx={isPending ? undefined : { bgcolor: soft, color: main }}>
                         <Icon className='roof-state-col-icon-svg' />
                       </Box>
                       <Typography className='roof-state-col-title'>{title}</Typography>
@@ -84,50 +86,89 @@ export const DegradationLevelsStack: FC<DegradationLevelsStackProps> = ({ global
               </Stack>
               <Stack className='roof-state-bar' direction='row'>
                 {roofStateLevels.map(({ label, bar }) => (
-                  <Box key={label} className='roof-state-bar-seg' sx={{ bgcolor: bar }} />
+                  <Box key={label} className='roof-state-bar-seg' sx={isPending ? undefined : { bgcolor: bar }} />
                 ))}
               </Stack>
               <Stack className='roof-state-markers' direction='row'>
                 {roofStateLevels.map(({ label }) => (
                   <Box key={label} className='roof-state-marker'>
-                    {label === activeLevel.label ? <ArrowDropUpIcon className='roof-state-pointer' /> : <Box className='roof-state-dot' />}
+                    {!isPending && label === activeLevel.label ? <ArrowDropUpIcon className='roof-state-pointer' /> : <Box className='roof-state-dot' />}
                   </Box>
                 ))}
               </Stack>
-              <Stack className='roof-state-footer' direction='row'>
-                <Stack className='roof-state-detected' direction='row' alignItems='center' gap={1.5}>
-                  <Box className='roof-state-footer-icon' sx={{ bgcolor: activeLevel.soft, color: activeLevel.main }}>
-                    <ActiveIcon className='roof-state-footer-icon-svg' />
-                  </Box>
-                  <Box>
-                    <Typography className='roof-state-footer-label'>Niveau détecté</Typography>
-                    <Typography className='roof-state-detected-value' sx={{ color: activeLevel.main }}>
-                      {activeLevel.description}
-                    </Typography>
+              {isPending ? (
+                <Stack className='roof-state-footer' direction='row'>
+                  <Stack className='roof-state-detected' direction='row' alignItems='center' gap={1.5}>
+                    <Box className='roof-state-footer-icon roof-state-search-icon'>
+                      <Search className='roof-state-footer-icon-svg' />
+                    </Box>
+                    <Box>
+                      <Typography className='roof-state-pending-main'>
+                        Allez dans l'onglet{' '}
+                        <Box component='span' className='roof-state-pending-accent'>
+                          Analyser
+                        </Box>
+                      </Typography>
+                      <Typography className='roof-state-pending-sub'>Analyse issue d'images aériennes. Ne remplace pas une expertise terrain.</Typography>
+                    </Box>
+                  </Stack>
+                  <Divider className='roof-state-footer-divider' orientation='vertical' flexItem />
+                  <Box className='roof-state-score'>
+                    <Typography className='roof-state-footer-label'>Score de dégradation visible</Typography>
+                    <Typography className='roof-state-score-value roof-state-pending-score'>0 %</Typography>
                   </Box>
                 </Stack>
-                <Divider className='roof-state-footer-divider' orientation='vertical' flexItem />
-                <Box className='roof-state-score'>
-                  <Typography className='roof-state-footer-label'>Score de dégradation visible</Typography>
-                  <Typography className='roof-state-score-value' sx={{ color: activeLevel.main }}>
-                    {globalRate.value}%
-                  </Typography>
-                </Box>
-              </Stack>
-              <Typography className='roof-state-disclaimer'>Analyse issue d'images aériennes. Ne remplace pas une expertise terrain.</Typography>
+              ) : (
+                <>
+                  <Stack className='roof-state-footer' direction='row'>
+                    <Stack className='roof-state-detected' direction='row' alignItems='center' gap={1.5}>
+                      <Box className='roof-state-footer-icon' sx={{ bgcolor: activeLevel.soft, color: activeLevel.main }}>
+                        <ActiveIcon className='roof-state-footer-icon-svg' />
+                      </Box>
+                      <Box>
+                        <Typography className='roof-state-footer-label'>Niveau détecté</Typography>
+                        <Typography className='roof-state-detected-value' sx={{ color: activeLevel.main }}>
+                          {activeLevel.description}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <Divider className='roof-state-footer-divider' orientation='vertical' flexItem />
+                    <Box className='roof-state-score'>
+                      <Typography className='roof-state-footer-label'>Score de dégradation visible</Typography>
+                      <Typography className='roof-state-score-value' sx={{ color: activeLevel.main }}>
+                        {globalRate.value}%
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <Typography className='roof-state-disclaimer'>Analyse issue d'images aériennes. Ne remplace pas une expertise terrain.</Typography>
+                </>
+              )}
             </Box>
           </Box>
         </Box>
-        <Box className='degradation-pill-active' sx={{ bgcolor: activeLevel.main, color: '#fff' }}>
-          <Box className='degradation-pill-icon'>
-            <ActiveIcon className='degradation-pill-icon-svg' />
+        {isPending ? (
+          <Box className='degradation-pill-active degradation-pill-pending'>
+            <Box className='degradation-pill-icon'>
+              <Search className='degradation-pill-icon-svg' />
+            </Box>
+            <Box className='degradation-pill-texts'>
+              <Typography className='degradation-pill-name'>Allez dans l'onglet Analyser</Typography>
+              <Typography className='degradation-pill-desc'>Analyse non lancée</Typography>
+            </Box>
+            <Typography className='degradation-pill-value'>0 %</Typography>
           </Box>
-          <Box className='degradation-pill-texts'>
-            <Typography className='degradation-pill-name'>{activeLevel.title}</Typography>
-            <Typography className='degradation-pill-desc'>{activeLevel.description}</Typography>
+        ) : (
+          <Box className='degradation-pill-active' sx={{ bgcolor: activeLevel.main, color: '#fff' }}>
+            <Box className='degradation-pill-icon'>
+              <ActiveIcon className='degradation-pill-icon-svg' />
+            </Box>
+            <Box className='degradation-pill-texts'>
+              <Typography className='degradation-pill-name'>{activeLevel.title}</Typography>
+              <Typography className='degradation-pill-desc'>{activeLevel.description}</Typography>
+            </Box>
+            <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
           </Box>
-          <Typography className='degradation-pill-value'>{globalRate.value}%</Typography>
-        </Box>
+        )}
       </Box>
     </Box>
   );

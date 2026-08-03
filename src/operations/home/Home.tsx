@@ -1,5 +1,6 @@
 import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
+import { useSirenRequirement } from '@/common/hooks';
 import { Add, Inbox as InboxIcon } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, List, Paper, Typography } from '@mui/material';
@@ -17,7 +18,11 @@ import { HomeStyle } from './style';
 const AddressInput = () => {
   const form = useForm<{ address: string }>();
   const { open } = useDialog();
-  const handleCreate = () => open(<GetImageDialog address={form.watch('address')} />, {}, false);
+  const { requireSiren } = useSirenRequirement();
+  const handleCreate = () => {
+    if (!requireSiren(handleCreate)) return;
+    open(<GetImageDialog address={form.watch('address')} />, {}, false);
+  };
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     handleCreate();

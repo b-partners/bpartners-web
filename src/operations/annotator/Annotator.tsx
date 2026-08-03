@@ -1,5 +1,5 @@
 import { BPLoader, GlobaDialog } from '@/common/components';
-import { useSaveAnnotations } from '@/common/fetcher';
+import { useRoofPolygonFetcher, useSaveAnnotations } from '@/common/fetcher';
 import { useCacheImage, useHeartBeat } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams, saveImageToCache } from '@/common/utils';
@@ -44,6 +44,9 @@ export const Annotator = () => {
   const fileId = annotations?.areaPicture?.fileId;
   const analyseImageGenerated = annotations?.properties?.analyseImageGenerated;
 
+  const { geocode, setGeocodeStatus } = annotatorStore.useGeocodeStore();
+  const { mutate: mutateRoofPolygon } = useRoofPolygonFetcher();
+
   useEffect(() => {
     if (!fileId) return;
     cacheImage(fileId, 'AREA_PICTURE');
@@ -72,7 +75,16 @@ export const Annotator = () => {
       const { annotationsInfos, polygons } = areaPictureAnnotationToPolygonAndAreaPictureInfo(areaPictureAnnotation);
       replaceAnnotations(polygons, annotationsInfos);
     }
-  }, [areaPictureAnnotation]);
+    if (geocode && areaPictureAnnotation?.annotations.length === 0) {
+      setGeocodeStatus('pending');
+      mutateRoofPolygon(
+        { areaPictureDetails: annotations?.areaPicture, geoJson: geocode.data, isForOriginImage: true },
+        { onSettled: () => setGeocodeStatus('done') }
+      );
+    } else {
+      setGeocodeStatus('no-annotation');
+    }
+  }, [areaPictureAnnotation, geocode]);
 
   const navigate = useNavigate();
   const toolbarRef = useRef<HTMLDivElement>(null);

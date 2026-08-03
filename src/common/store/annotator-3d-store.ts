@@ -8,6 +8,7 @@ interface Action {
   reset: () => void;
   setImageUrl: (imageUrl: File) => void;
   incrementRegenerateVersion: () => void;
+  setShouldPromptRegenerate: (shouldPromptRegenerate: boolean) => void;
 }
 interface State {
   selectedObject: any;
@@ -16,6 +17,7 @@ interface State {
   cityJsonModel: any;
   imageUrl: File;
   regenerateVersion: number;
+  shouldPromptRegenerate: boolean;
 }
 
 type Annotator3DStore = Action & State;
@@ -34,4 +36,6 @@ export const useAnnotator3DStore = create<Annotator3DStore>(set => ({
   setImageUrl: imageUrl => set({ imageUrl }),
   regenerateVersion: 0,
   incrementRegenerateVersion: () => set(state => ({ regenerateVersion: state.regenerateVersion + 1 })),
+  shouldPromptRegenerate: false,
+  setShouldPromptRegenerate: shouldPromptRegenerate => set({ shouldPromptRegenerate }),
 }));

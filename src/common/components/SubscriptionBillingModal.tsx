@@ -1,4 +1,4 @@
-import { cache, userSubscriptionProvider } from '@/providers';
+import { authProvider, cache, userSubscriptionProvider } from '@/providers';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import { FC } from 'react';
@@ -29,6 +29,8 @@ export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ ti
   const error = searchParams.get('stripeStatus') === 'error' || !!billingPortalError;
   const errorMessage = (billingPortalError as any)?.response?.data?.message;
 
+  const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
+
   return (
     <>
       <DialogTitle>{title}</DialogTitle>
@@ -43,6 +45,7 @@ export const SubscriptionBillingModal: FC<SubscriptionBillingModalProps> = ({ ti
         <p>{additionalDescription}</p>
       </DialogContent>
       <DialogActions>
+        <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />
         <BPButton data-cy='subscription-billing-btn' onClick={() => mutate()} label={button} isLoading={isPending} />
       </DialogActions>
     </>
