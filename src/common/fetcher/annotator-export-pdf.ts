@@ -15,7 +15,9 @@ import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';
 import { PanCapture, PanCaptureKind, useCityJsonPanCaptureStore } from '../hooks/useCityJsonPanCapture';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorComponentStore } from '../store';
-import { downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger, wait } from '../utils';
+import { compressImage, downloadPdf, getFileUrl, jsonToFile, sentryErrorLogger, wait } from '../utils';
+
+const CAPTURE_COMPRESSION_QUALITY = 0.7;
 
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
   const base64 = dataUrl.split(',')[1] ?? '';
@@ -55,8 +57,11 @@ const retry = async <T>(fn: () => Promise<T>, retries = 5, delayMs = 500): Promi
 
 const savePanCaptureImage = async (capture: PanCapture): Promise<string> => {
   const fileId = v4();
-  const fileAsArrayBuffer = dataUrlToArrayBuffer(capture.dataUrl);
-  await retry(() => fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType: 'image/png', fileAsArrayBuffer }]));
+  const pngBuffer = dataUrlToArrayBuffer(capture.dataUrl);
+  const compressed = await compressImage(pngBuffer, { mimeType: 'image/png', quality: CAPTURE_COMPRESSION_QUALITY });
+  const fileMimeType = compressed.type || 'image/jpeg';
+  const fileAsArrayBuffer = await compressed.arrayBuffer();
+  await retry(() => fileProvider.update([{ fileId, fileType: FileType.IMAGE, fileMimeType, fileAsArrayBuffer }]));
   return fileId;
 };
 
