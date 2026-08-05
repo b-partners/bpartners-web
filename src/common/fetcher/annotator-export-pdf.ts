@@ -165,9 +165,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const { savedPolygons, savedLines, panNames, edgeTypes } = roof3DStore.useRoof3DStore.getState();
     const userPolygonPans = savedPolygons.map((polygon, index) =>
-      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1), 0)
+      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1))
     );
-    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1), 0));
+    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1)));
     const userPans = [...userPolygonPans, ...userLinePans];
 
     const exportAnnotation3D = shouldAdd3d

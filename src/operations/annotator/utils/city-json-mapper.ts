@@ -120,7 +120,7 @@ const boundaryMapper = {
     const closedRing = closeRingWithoutSuperposition(rescaledPoints);
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: ceilPointsToTwoDecimals(closedRing),
+      points: ceilPointsToTwoDecimals(closeRingWithoutSuperposition(footprintPoints)),
     };
     const orientedPolygon: ExportAreaPictureAnnotation3DPan['orientedPolygon'] = {
       points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closedRing, angle))),
@@ -309,20 +309,20 @@ export const cityJsonMapper = {
     return result;
   },
 
-  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string, angle = 0): ExportAreaPictureAnnotation3DPan => {
+  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: polygon.name,
-      polygon: { points: rotatePointsAroundCentroid(closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)), angle) },
+      polygon: { points: closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)) },
       measurements: polygon.edges.map(edge => toLengthMeasurement(edge.distanceSlope)),
       infos: [{ label: 'Surface', value: `${+polygon.area.toFixed(2)}m²` }],
     };
     return imageUri ? { ...pan, imageUri } : pan;
   },
 
-  userLineToPan: (line: SavedLineMeasure, imageUri?: string, angle = 0): ExportAreaPictureAnnotation3DPan => {
+  userLineToPan: (line: SavedLineMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: line.name,
-      polygon: { points: rotatePointsAroundCentroid([line.pointA, line.pointB].map(toFootprintPoint), angle) },
+      polygon: { points: [line.pointA, line.pointB].map(toFootprintPoint) },
       measurements: [toLengthMeasurement(line.distanceSlope)],
       infos: [
         { label: 'Distance', value: `${+line.distanceSlope.toFixed(2)}m` },
