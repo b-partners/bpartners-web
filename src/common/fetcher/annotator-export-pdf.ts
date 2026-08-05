@@ -88,6 +88,11 @@ const panImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
     .sort((a, b) => a.capture.index - b.capture.index)
     .map(({ id }) => id);
 
+const facadeImagesFromCaptures = (saved: SavedCapture[]): { ids: string[]; polygons: { x: number; y: number }[][] } => {
+  const facades = saved.filter(({ capture }) => capture.kind === 'facade').sort((a, b) => a.capture.index - b.capture.index);
+  return { ids: facades.map(({ id }) => id), polygons: facades.map(({ capture }) => capture.polygon ?? []) };
+};
+
 const imageIdForCapture = (saved: SavedCapture[], kind: PanCaptureKind, index: number): string | undefined =>
   saved.find(({ capture }) => capture.kind === kind && capture.index === index)?.id;
 
@@ -156,6 +161,7 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const savedCaptures = await captureAndSaveImages();
     const panImageIds = panImageIdsFromCaptures(savedCaptures);
+    const facadeImages = facadeImagesFromCaptures(savedCaptures);
 
     const { savedPolygons, savedLines, panNames, edgeTypes } = roof3DStore.useRoof3DStore.getState();
     const userPolygonPans = savedPolygons.map((polygon, index) =>
@@ -164,7 +170,9 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
     const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1), 0));
     const userPans = [...userPolygonPans, ...userLinePans];
 
-    const exportAnnotation3D = shouldAdd3d ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, []) : undefined;
+    const exportAnnotation3D = shouldAdd3d
+      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, [], facadeImages.ids, facadeImages.polygons)
+      : undefined;
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({
       ...params,
