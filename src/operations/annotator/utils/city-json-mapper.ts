@@ -66,7 +66,7 @@ const rotatePointsAroundCentroid = (points: PanPoint[], angle: number): PanPoint
   return points.map(({ x, y }) => {
     const dx = x - cx;
     const dy = y - cy;
-    return { x: cx + dx * cos - dy * sin, y: cy - (dx * sin + dy * cos) };
+    return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos };
   });
 };
 
