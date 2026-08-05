@@ -7,4 +7,7 @@ export const PALETTE_COLORS = {
   cream: '#F0ECE1',
   forest: '#112717',
   neon_orange: '#FF521B',
+  neon_orange_dark: '#D8410F',
+  stone: '#6B6B6B',
+  sand: '#C9A87A',
 };
