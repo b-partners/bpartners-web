@@ -47,6 +47,8 @@ const rescaleRingToLengths = (points: PanPoint[], lengths: number[]): PanPoint[]
 
 const ceilPointsToTwoDecimals = (points: PanPoint[]): PanPoint[] => points.map(({ x, y }) => ({ x: Math.ceil(x * 100) / 100, y: Math.ceil(y * 100) / 100 }));
 
+const mirrorPointsAroundYAxis = (points: PanPoint[]): PanPoint[] => points.map(({ x, y }) => ({ x: -x, y }));
+
 const shiftPointsToPositive = (points: PanPoint[]): PanPoint[] => {
   if (!points.length) return points;
   const offsetX = Math.max(0, -Math.min(...points.map(({ x }) => x)));
@@ -64,7 +66,7 @@ const rotatePointsAroundCentroid = (points: PanPoint[], angle: number): PanPoint
   return points.map(({ x, y }) => {
     const dx = x - cx;
     const dy = y - cy;
-    return { x: cx + dx * cos - dy * sin, y: cy - (dx * sin + dy * cos) };
+    return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos };
   });
 };
 
@@ -120,10 +122,10 @@ const boundaryMapper = {
     const closedRing = closeRingWithoutSuperposition(rescaledPoints);
 
     const polygon: ExportAreaPictureAnnotation3DPan['polygon'] = {
-      points: ceilPointsToTwoDecimals(closedRing),
+      points: ceilPointsToTwoDecimals(closeRingWithoutSuperposition(footprintPoints)),
     };
     const orientedPolygon: ExportAreaPictureAnnotation3DPan['orientedPolygon'] = {
-      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closedRing, angle))),
+      points: ceilPointsToTwoDecimals(shiftPointsToPositive(mirrorPointsAroundYAxis(rotatePointsAroundCentroid(closedRing, angle)))),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
@@ -309,20 +311,20 @@ export const cityJsonMapper = {
     return result;
   },
 
-  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string, angle = 0): ExportAreaPictureAnnotation3DPan => {
+  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: polygon.name,
-      polygon: { points: rotatePointsAroundCentroid(closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)), angle) },
+      polygon: { points: closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)) },
       measurements: polygon.edges.map(edge => toLengthMeasurement(edge.distanceSlope)),
       infos: [{ label: 'Surface', value: `${+polygon.area.toFixed(2)}m²` }],
     };
     return imageUri ? { ...pan, imageUri } : pan;
   },
 
-  userLineToPan: (line: SavedLineMeasure, imageUri?: string, angle = 0): ExportAreaPictureAnnotation3DPan => {
+  userLineToPan: (line: SavedLineMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: line.name,
-      polygon: { points: rotatePointsAroundCentroid([line.pointA, line.pointB].map(toFootprintPoint), angle) },
+      polygon: { points: [line.pointA, line.pointB].map(toFootprintPoint) },
       measurements: [toLengthMeasurement(line.distanceSlope)],
       infos: [
         { label: 'Distance', value: `${+line.distanceSlope.toFixed(2)}m` },
