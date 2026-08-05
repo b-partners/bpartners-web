@@ -47,6 +47,8 @@ const rescaleRingToLengths = (points: PanPoint[], lengths: number[]): PanPoint[]
 
 const ceilPointsToTwoDecimals = (points: PanPoint[]): PanPoint[] => points.map(({ x, y }) => ({ x: Math.ceil(x * 100) / 100, y: Math.ceil(y * 100) / 100 }));
 
+const mirrorPointsAroundYAxis = (points: PanPoint[]): PanPoint[] => points.map(({ x, y }) => ({ x: -x, y }));
+
 const shiftPointsToPositive = (points: PanPoint[]): PanPoint[] => {
   if (!points.length) return points;
   const offsetX = Math.max(0, -Math.min(...points.map(({ x }) => x)));
@@ -123,7 +125,7 @@ const boundaryMapper = {
       points: ceilPointsToTwoDecimals(closeRingWithoutSuperposition(footprintPoints)),
     };
     const orientedPolygon: ExportAreaPictureAnnotation3DPan['orientedPolygon'] = {
-      points: ceilPointsToTwoDecimals(shiftPointsToPositive(rotatePointsAroundCentroid(closedRing, angle))),
+      points: ceilPointsToTwoDecimals(shiftPointsToPositive(mirrorPointsAroundYAxis(rotatePointsAroundCentroid(closedRing, angle)))),
     };
 
     const faceEdges = computeFaceEdges(_boundary, cityJson as unknown as CityJsonData);
