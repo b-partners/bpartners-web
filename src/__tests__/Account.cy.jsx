@@ -301,19 +301,21 @@ describe(specTitle('Account'), () => {
 
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Période d’essai');
+    cy.contains('Pas de période d’essai en cours.');
   });
 
-  it('Block Trial card ACTIVE', () => {
+  it('Block Trial card FREE_TRIAL', () => {
+    const trialStart = '2022-01-01';
+    const trialEnd = '2022-01-31';
     const modifiedAccountHolders = [...accountHolders1];
     modifiedAccountHolders[0] = {
       ...modifiedAccountHolders[0],
       user: {
         ...modifiedAccountHolders[0].user,
         subscription: {
-          status: 'ACTIVE',
-          start: '2022-01-01',
-          end: '2022-01-31',
+          status: 'FREE_TRIAL',
+          start: trialStart,
+          end: trialEnd,
         },
       },
     };
@@ -333,5 +335,46 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.contains('Période d’essai');
+    cy.contains('Vous bénéficiez actuellement d’une période d’essai gratuite.');
+    cy.contains(`Début de la période d’essai : ${new Date(trialStart).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains(`Fin de la période d’essai : ${new Date(trialEnd).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+  });
+
+  it('Block Trial card ACTIVE', () => {
+    const subscriptionStart = '2022-01-01';
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          start: subscriptionStart,
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    const commitmentEnd = new Date(subscriptionStart);
+    commitmentEnd.setUTCFullYear(commitmentEnd.getUTCFullYear() + 1);
+    commitmentEnd.setUTCDate(commitmentEnd.getUTCDate() - 1);
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.contains('Fermer').click();
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Période de votre abonnement');
+    cy.contains(`Début de votre abonnement : ${new Date(subscriptionStart).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains(`Fin de votre abonnement : ${commitmentEnd.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
   });
 });
