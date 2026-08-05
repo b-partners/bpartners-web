@@ -37,10 +37,10 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
             );
             break;
           case UserSubscriptionStatus.EMPTY:
-            openDialog(<SubscriptionModal />, undefined, false);
+            openDialog(<SubscriptionModal />, { maxWidth: 'lg', fullWidth: true }, false);
             break;
           case UserSubscriptionStatus.FREE_TRIAL:
-            openDialog(<SubscriptionModal />, undefined, true);
+            openDialog(<SubscriptionModal />, { maxWidth: 'lg', fullWidth: true }, true);
             break;
           default:
             break;

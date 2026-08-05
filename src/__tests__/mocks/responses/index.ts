@@ -15,5 +15,6 @@ export * from './prospects-api';
 export * from './security-api';
 export * from './stripe-api';
 export * from './subscription-invoice-api';
+export * from './subscription-plans-api';
 export * from './transaction-category-api';
 export * from './transaction-mailing-api';

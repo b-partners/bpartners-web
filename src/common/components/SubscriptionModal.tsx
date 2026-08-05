@@ -1,15 +1,17 @@
 import { useDialog } from '@/common/store/dialog';
+import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, cache, getCached, userSubscriptionProvider } from '@/providers';
+import { SubscriptionPlan } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { FC } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { formatDate, getFirstDebitDate, Redirect } from '../utils';
+import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
 
-const mutationFn = async () => {
-  const { redirectionUrl } = await userSubscriptionProvider.init();
+const mutationFn = async (subscriptionPlanIdentifier: string) => {
+  const { redirectionUrl } = await userSubscriptionProvider.init(subscriptionPlanIdentifier);
   cache.whoami(undefined);
   cache.user(undefined);
   Redirect.toURL(redirectionUrl);
@@ -17,7 +19,7 @@ const mutationFn = async () => {
 };
 
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
-  const { isPending, mutate, error: subscriptionInitError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const { isPending, mutate, variables: pendingPlanId, error: subscriptionInitError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
   const { close } = useDialog();
 
   const [searchParams] = useSearchParams();
@@ -28,57 +30,37 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const whoami = getCached.whoami();
   const today = dayjs();
   const remainingDays = whoami?.user?.subscription?.end ? dayjs(whoami?.user?.subscription?.end).diff(today, 'day') : null;
-  const startDate = whoami?.user?.subscription?.start ? new Date(whoami.user.subscription.start) : null;
-  const endDate = whoami?.user?.subscription?.end ? new Date(whoami.user.subscription.end) : null;
-  const firstDebitDate = getFirstDebitDate(startDate, endDate);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
+  const onSelectPlan = (plan: SubscriptionPlan) => {
+    if (plan.id) mutate(plan.id);
+  };
+
   return (
     <>
-      <DialogTitle>Effectuez votre abonnement en toute sérénité !</DialogTitle>
-      <DialogContent>
+      <DialogTitle sx={{ py: 1.5 }}>Choisissez l'offre qui vous convient</DialogTitle>
+      <DialogContent sx={{ pt: 1 }}>
         {error && (
-          <Alert severity='error' variant='filled'>
+          <Alert severity='error' variant='filled' sx={{ mb: 2 }}>
             <AlertTitle>Une erreur s'est produite.</AlertTitle>
             {errorMessage}
           </Alert>
         )}
-        <p>
-          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
-          <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
-        </p>
-        {startDate && endDate && remainingDays && (
-          <>
-            <ul>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
-              </li>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
-              </li>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-              </li>
-            </ul>
-            <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d'essai. Vous pouvez annuler à tout moment, sans engagement.</p>
-          </>
+        {remainingDays !== null && remainingDays > 0 && (
+          <p>
+            Il vous reste{' '}
+            <span style={{ fontWeight: 'bold' }}>
+              {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+            </span>{' '}
+            d'essai. Aucun prélèvement ne sera effectué avant la fin de votre période d'essai, et vous pouvez annuler à tout moment.
+          </p>
         )}
-        <p>
-          Si vous avez la moindre question, n’hésitez à nous appeler au{' '}
-          <a rel='noreferrer' href='tel:0668624836' target='_blank'>
-            06.68.62.48.36
-          </a>{' '}
-          ou par mail à{' '}
-          <a rel='noreferrer' href='mailto:contact@birdia.fr' target='_blank'>
-            contact@birdia.fr
-          </a>
-        </p>
+        <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingPlanId : undefined} />
       </DialogContent>
       <DialogActions>
         {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
         {!allowClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
-        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
       </DialogActions>
     </>
   );

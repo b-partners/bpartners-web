@@ -1,6 +1,11 @@
-import { SubscriptionInvoice } from '@bpartners/typescript-client';
+import { SubscriptionInvoice, SubscriptionPlan } from '@bpartners/typescript-client';
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
+
+export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
+  const { data } = await userSubscriptionApi().getSubscriptionPlans();
+  return data || [];
+};
 
 const getSubscriptionRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
@@ -40,11 +45,11 @@ export const downloadSubscriptionInvoices = async (yearMonth: string) => {
 };
 
 export const userSubscriptionProvider = {
-  async init() {
+  async init(subscriptionPlanIdentifier?: string) {
     const { id } = await asyncGetUser();
     const { data } = await userSubscriptionApi().initiateUserSubscription(id, {
       redirectionStatusUrls: await getSubscriptionRedirectionUrls(),
-      subscriptionType: 'ESSENTIAL',
+      ...(subscriptionPlanIdentifier ? { subscriptionPlanIdentifier } : { subscriptionType: 'ESSENTIAL' }),
     });
     return data;
   },

@@ -1,23 +1,22 @@
 import App from '@/App';
+import { userSubscriptionProvider } from '@/providers';
 import { User } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
+import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
 const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
 const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
 
-const expectedSubscriptionInitializationPayload = {
-  redirectionStatusUrls: {
-    failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
-    successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripeStatus=done',
-  },
-  subscriptionType: 'ESSENTIAL',
-};
+const chosenPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
+const expectedPlanOrder = ["À l'usage", 'Essentiel', 'Pro', 'Expert'];
+
+const APP_BASE_URL = process.env.REACT_APP_URL || 'http://localhost:3000';
 const expectedSubscriptionBillingPayload = {
-  failureUrl: 'https://dashboard.preprod.bpartners.app/?stripeStatus=error',
-  successUrl: 'https://dashboard.preprod.bpartners.app/account/mock-user-id1?stripePaymentStatus=done',
+  failureUrl: new URL(`${APP_BASE_URL}?stripeStatus=error`).href,
+  successUrl: new URL(`${APP_BASE_URL}/account/${unpaidSubscriptionUser.id}?stripePaymentStatus=done`).href,
 };
 
 describe('Test user subscription', () => {
@@ -26,35 +25,47 @@ describe('Test user subscription', () => {
 
     cy.stub(Redirect, 'toURL').as('toURL');
 
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.mount(<App />);
 
-    cy.contains('Effectuez votre abonnement en toute sérénité !');
-    cy.contains("Activez votre abonnement aujourd'hui pour 49€ HT, votre carte ne sera débitée qu'à compter du 05/02/2026.");
-    cy.contains("Début de la période d'essai : 01/01/2026");
-    cy.contains("Fin de la période d'essai : 07/01/2026");
-    cy.contains('Si vous avez la moindre question, n’hésitez à nous appeler au 06.68.62.48.36 ou par mail à contact@birdia.fr');
+    cy.contains("Choisissez l'offre qui vous convient");
+    cy.wait('@getSubscriptionPlans');
+    cy.contains('Le plus choisi');
+    cy.contains(`Choisir ${chosenPlan.name}`);
+    cy.contains('588 € HT / an');
+
+    cy.contains('Ancien plan').should('not.exist');
+    cy.get('.plan-name').should('have.length', expectedPlanOrder.length);
+    cy.get('.plan-name').each(($el, index) => {
+      expect($el.text()).to.equal(expectedPlanOrder[index]);
+    });
+
+    cy.get('.MuiDialogContent-root').then($el => {
+      expect($el[0].scrollHeight, 'no vertical scroll in dialog content').to.be.at.most($el[0].clientHeight + 2);
+    });
   });
   it('Invalid subscription', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
     cy.stub(Redirect, 'toURL').as('toURL');
 
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
 
     cy.mount(<App />);
 
-    cy.contains('Effectuez votre abonnement en toute sérénité !');
-    cy.intercept(`/users/${invalidSubscriptionUser.id}/subscriptionInitiation`, ({ body, reply }) => {
-      expect(body).deep.equal(expectedSubscriptionInitializationPayload);
-      reply({ statusCode: 200 });
-    }).as('initializeSubscription');
+    cy.contains("Choisissez l'offre qui vous convient");
+    cy.wait('@getSubscriptionPlans');
 
-    cy.dataCy('subscribe-btn').click();
+    cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: 'http://dummy-url.com' });
+
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+    cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id);
   });
   it('Unpaid subscription', () => {
     cy.cognitoLogin({ whoami: { user: unpaidSubscriptionUser }, user: unpaidSubscriptionUser });

@@ -19,7 +19,7 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
   const remainingDays = dayjs(whoamiValue?.user?.subscription?.end).diff(today, 'day');
 
   const handleDoSubscription = () => {
-    openDialog(<SubscriptionModal allowClose />, undefined, true);
+    openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
   };
 
   return isFreeTrialSubscription ? (
