@@ -88,6 +88,12 @@ const panImageIdsFromCaptures = (saved: SavedCapture[]): string[] =>
     .sort((a, b) => a.capture.index - b.capture.index)
     .map(({ id }) => id);
 
+const panAnglesFromCaptures = (saved: SavedCapture[]): number[] =>
+  saved
+    .filter(({ capture }) => capture.kind === 'pan')
+    .sort((a, b) => a.capture.index - b.capture.index)
+    .map(({ capture }) => capture.angle);
+
 const facadeImagesFromCaptures = (saved: SavedCapture[]): { ids: string[]; polygons: { x: number; y: number }[][] } => {
   const facades = saved.filter(({ capture }) => capture.kind === 'facade').sort((a, b) => a.capture.index - b.capture.index);
   return { ids: facades.map(({ id }) => id), polygons: facades.map(({ capture }) => capture.polygon ?? []) };
@@ -161,17 +167,18 @@ export const useAnnotatorExportAsPdf = (params: Params) => {
 
     const savedCaptures = await captureAndSaveImages();
     const panImageIds = panImageIdsFromCaptures(savedCaptures);
+    const panAngles = panAnglesFromCaptures(savedCaptures);
     const facadeImages = facadeImagesFromCaptures(savedCaptures);
 
     const { savedPolygons, savedLines, panNames, edgeTypes } = roof3DStore.useRoof3DStore.getState();
     const userPolygonPans = savedPolygons.map((polygon, index) =>
-      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1), 0)
+      cityJsonMapper.userPolygonToPan(polygon, imageIdForCapture(savedCaptures, 'polygon', index + 1))
     );
-    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1), 0));
+    const userLinePans = savedLines.map((line, index) => cityJsonMapper.userLineToPan(line, imageIdForCapture(savedCaptures, 'line', index + 1)));
     const userPans = [...userPolygonPans, ...userLinePans];
 
     const exportAnnotation3D = shouldAdd3d
-      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, [], facadeImages.ids, facadeImages.polygons)
+      ? cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, panImageIds, panNames, edgeTypes, panAngles, facadeImages.ids, facadeImages.polygons)
       : undefined;
 
     exportAreaPictureAnnotation = await exportAnnotationMapper({

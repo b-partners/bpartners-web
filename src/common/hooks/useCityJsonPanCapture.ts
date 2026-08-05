@@ -237,7 +237,7 @@ const captureMesh = (
 const projectRingToCameraPlane = (ring: THREE.Vector3[], center: THREE.Vector3, right: THREE.Vector3, up: THREE.Vector3): { x: number; y: number }[] =>
   ring.map(point => {
     const delta = point.clone().sub(center);
-    return { x: +delta.dot(right).toFixed(2), y: +-delta.dot(up).toFixed(2) };
+    return { x: +delta.dot(right).toFixed(2), y: +delta.dot(up).toFixed(2) };
   });
 
 const rescaleRingToLengths = (points: { x: number; y: number }[], lengths: number[]): { x: number; y: number }[] => {
