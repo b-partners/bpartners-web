@@ -180,7 +180,8 @@ const captureMesh = (
   renderTarget: THREE.WebGLRenderTarget,
   width: number,
   height: number,
-  paddingScale = 1
+  paddingScale = 1,
+  outwardReference?: THREE.Vector3
 ): { canvas: HTMLCanvasElement; angle: number; center: THREE.Vector3; right: THREE.Vector3; up: THREE.Vector3 } => {
   if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
   const sphere = mesh.geometry.boundingSphere ?? new THREE.Sphere(new THREE.Vector3(), 1);
@@ -188,7 +189,12 @@ const captureMesh = (
   const radius = Math.max(sphere.radius, 0.5);
 
   const normal = computeMeshNormal(mesh);
-  if (normal.y < 0) normal.negate();
+  if (outwardReference) {
+    const outward = new THREE.Vector3(center.x - outwardReference.x, 0, center.z - outwardReference.z);
+    if (outward.lengthSq() > 1e-6 && normal.dot(outward) < 0) normal.negate();
+  } else if (normal.y < 0) {
+    normal.negate();
+  }
 
   const cameraDir = normal.clone().normalize();
   const minY = Math.sin(MIN_ELEVATION_RAD);
@@ -330,6 +336,7 @@ export const useCityJsonPanCapture = (
       const width = gl.domElement.width;
       const height = gl.domElement.height;
       const pixelRatio = gl.getPixelRatio();
+      const buildingCenter = new THREE.Box3().setFromObject(group).getCenter(new THREE.Vector3());
 
       const renderTarget = new THREE.WebGLRenderTarget(width, height, { samples: 4 });
       renderTarget.texture.colorSpace = THREE.SRGBColorSpace;
@@ -367,7 +374,7 @@ export const useCityJsonPanCapture = (
             await nextFrame();
             await nextFrame();
 
-            const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8);
+            const { canvas, angle, center, right, up } = captureMesh(mesh, scene, captureCamera, gl, renderTarget, width, height, 1.8, buildingCenter);
             const dataUrl = drawMeasureLabels(canvas, panMeasureLabels(mesh, cityJson), captureCamera, width, height, pixelRatio);
             const faceEdges = getFaceMeasure(mesh, cityJson).edges;
             const projected = projectRingToCameraPlane(
