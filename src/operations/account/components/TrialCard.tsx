@@ -41,7 +41,7 @@ export const TrialCard = () => {
             </Typography>
           </>
         ) : (
-          <Typography className='not-try'>Pas de période d’essai en cours.</Typography>
+          <Typography className='not-try'>{isFreeTrial ? "Pas de période d'essai restant" : 'Aucun abonnement en cours'}</Typography>
         )}
       </CardContent>
     </Card>

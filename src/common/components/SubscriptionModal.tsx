@@ -1,7 +1,7 @@
 import { useDialog } from '@/common/store/dialog';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, cache, getCached, userSubscriptionProvider } from '@/providers';
-import { SubscriptionPlan } from '@bpartners/typescript-client';
+import { SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -29,7 +29,9 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const whoami = getCached.whoami();
   const today = dayjs();
-  const remainingDays = whoami?.user?.subscription?.end ? dayjs(whoami?.user?.subscription?.end).diff(today, 'day') : null;
+  const subscription = whoami?.user?.subscription;
+  const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
+  const remainingDays = subscription?.end ? dayjs(subscription.end).diff(today, 'day') : null;
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
@@ -49,11 +51,23 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
         )}
         {remainingDays !== null && remainingDays > 0 && (
           <p>
-            Il vous reste{' '}
-            <span style={{ fontWeight: 'bold' }}>
-              {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-            </span>{' '}
-            d'essai. Aucun prélèvement ne sera effectué avant la fin de votre période d'essai, et vous pouvez annuler à tout moment.
+            {isCancelled ? (
+              <>
+                Votre abonnement est résilié. Vous conservez l'accès pendant encore{' '}
+                <span style={{ fontWeight: 'bold' }}>
+                  {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+                </span>
+                . Choisissez une nouvelle offre pour continuer sans interruption.
+              </>
+            ) : (
+              <>
+                Il vous reste{' '}
+                <span style={{ fontWeight: 'bold' }}>
+                  {remainingDays} jour{remainingDays > 1 ? 's' : ''}
+                </span>{' '}
+                d'essai. Aucun prélèvement ne sera effectué avant la fin de votre période d'essai, et vous pouvez annuler à tout moment.
+              </>
+            )}
           </p>
         )}
         <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingPlanId : undefined} />
