@@ -1,28 +1,43 @@
 import { useDialog } from '@/common/store/dialog';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
-import { authProvider, cache, getCached, userSubscriptionProvider } from '@/providers';
+import { authProvider, getCached, userSubscriptionProvider } from '@/providers';
 import { SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
+import { SubscriptionConsentStep } from './SubscriptionConsentStep';
+import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
+
+type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
 
 const mutationFn = async (subscriptionPlanIdentifier: string) => {
   const { redirectionUrl } = await userSubscriptionProvider.init(subscriptionPlanIdentifier);
-  cache.whoami(undefined);
-  cache.user(undefined);
-  Redirect.toURL(redirectionUrl);
   return redirectionUrl;
 };
 
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
-  const { isPending, mutate, variables: pendingPlanId, error: subscriptionInitError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
+  const [step, setStep] = useState<SubscriptionStep>('PLAN');
+  const [redirectionUrl, setRedirectionUrl] = useState<string>();
   const { close } = useDialog();
-
   const [searchParams] = useSearchParams();
+
+  const {
+    isPending,
+    mutate,
+    variables: pendingPlanId,
+    error: subscriptionInitError,
+  } = useMutation({
+    mutationKey: ['subscription', 'modal'],
+    mutationFn,
+    onSuccess: url => {
+      setRedirectionUrl(url);
+      setStep('CONSENT');
+    },
+  });
 
   const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
@@ -38,6 +53,18 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const onSelectPlan = (plan: SubscriptionPlan) => {
     if (plan.id) mutate(plan.id);
   };
+
+  const onConsent = () => setStep('REDIRECT');
+
+  const onBackToPlans = () => setStep('PLAN');
+
+  if (step === 'REDIRECT' && redirectionUrl) {
+    return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} />;
+  }
+
+  if (step === 'CONSENT') {
+    return <SubscriptionConsentStep onAccept={onConsent} onBack={onBackToPlans} isLoading={isPending} />;
+  }
 
   return (
     <>

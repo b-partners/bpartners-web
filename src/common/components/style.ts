@@ -30,3 +30,74 @@ export const SlashIconStyle: SxProps = {
     pointerEvents: 'none',
   },
 };
+
+export const SubscriptionConsentStyle: SxProps = {
+  minWidth: 420,
+  maxWidth: 520,
+  paddingTop: 1,
+  '& .consent-intro': {
+    marginBottom: 2,
+    fontSize: '0.95rem',
+  },
+  '& .consent-highlight': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.5,
+    padding: 2,
+    borderRadius: 2,
+    bgcolor: '#f7f5ef',
+    marginBottom: 2,
+  },
+  '& .consent-highlight-label': {
+    fontSize: '0.8rem',
+    color: '#6B6B6B',
+  },
+  '& .consent-highlight-value': {
+    fontWeight: 700,
+  },
+  '& .consent-cgu': {
+    fontSize: '0.85rem',
+    color: '#6B6B6B',
+  },
+  '& .consent-cgu a': {
+    color: '#2196F3',
+    fontWeight: 600,
+  },
+};
+
+export const SubscriptionRedirectStyle: SxProps = {
+  minWidth: 420,
+  paddingY: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  gap: 3,
+  '& .redirect-arrow': {
+    width: 76,
+    height: 76,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bgcolor: 'rgba(33, 150, 243, 0.12)',
+    color: '#2196F3',
+  },
+  '& .redirect-arrow svg': {
+    fontSize: 42,
+    animation: 'redirect-arrow-move 1.1s ease-in-out infinite',
+  },
+  '@keyframes redirect-arrow-move': {
+    '0%': { transform: 'translateX(-8px)', opacity: 0.35 },
+    '50%': { transform: 'translateX(8px)', opacity: 1 },
+    '100%': { transform: 'translateX(-8px)', opacity: 0.35 },
+  },
+  '& .redirect-title': {
+    fontWeight: 700,
+    fontSize: '1.05rem',
+  },
+  '& .redirect-subtitle': {
+    color: '#6B6B6B',
+    fontSize: '0.9rem',
+  },
+};
