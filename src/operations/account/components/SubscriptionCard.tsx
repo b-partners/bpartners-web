@@ -1,14 +1,18 @@
 import { SubscriptionModal } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
+import { profileProvider } from '@/providers';
 import { SubscriptionPlanDescription, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
-import { Box, Button, Card, CardContent, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import { useRecordContext } from 'react-admin';
+import { useEffect } from 'react';
+import { useRecordContext, useRefresh } from 'react-admin';
 import { SubscriptionInvoiceModal } from './SubscriptionInvoiceModal';
 import { subscriptionFeatures } from './subscriptionFeatures';
+
+const VALIDATION_POLL_INTERVAL_MS = 3000;
 
 const eurosFormatter = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 
@@ -35,9 +39,12 @@ export const SubscriptionCard = () => {
   const { value: isInvoiceModalOpen, handleOpen, handleClose } = useToggle();
   const { open: openDialog } = useDialog();
   const record = useRecordContext();
+  const refresh = useRefresh();
+  const userId = record?.user?.id as string | undefined;
   const subscription = record?.user?.subscription as UserSubscription | undefined;
   const plan = subscription?.plan;
   const hasActiveSubscription = !!plan && !INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription?.status);
+  const isValidating = !plan && subscription?.status === UserSubscriptionStatus.ACTIVE;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const subscriptionEnd = subscription?.end ? dayjs(subscription.end) : null;
   const remainingDays = subscriptionEnd ? subscriptionEnd.diff(dayjs(), 'day') : null;
@@ -45,6 +52,26 @@ export const SubscriptionCard = () => {
   const yearlyLabel = getYearlyLabel(plan);
 
   const openSubscriptionModal = () => openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
+
+  useEffect(() => {
+    if (!isValidating || !userId) return;
+    let cancelled = false;
+    const interval = setInterval(() => {
+      profileProvider
+        .getOne(userId)
+        .then(freshUser => {
+          if (!cancelled && (freshUser as { subscription?: UserSubscription })?.subscription?.plan) {
+            clearInterval(interval);
+            refresh();
+          }
+        })
+        .catch(() => undefined);
+    }, VALIDATION_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [isValidating, userId, refresh]);
 
   return (
     <Card className='card subscription-card'>
@@ -56,7 +83,12 @@ export const SubscriptionCard = () => {
           </Button>
         </Box>
 
-        {hasActiveSubscription ? (
+        {isValidating ? (
+          <Box className='subscription-validating'>
+            <CircularProgress size={22} />
+            <Typography className='subscription-validating-text'>Validation de votre abonnement en cours…</Typography>
+          </Box>
+        ) : hasActiveSubscription ? (
           <>
             <Box className='subscription-plan'>
               <Box className='subscription-plan-icon'>
