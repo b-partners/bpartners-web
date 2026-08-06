@@ -185,6 +185,25 @@ export const AccountStyle: SxProps = {
     lineHeight: 1.4,
     color: PALETTE_COLORS.stone,
   },
+  '& .subscription-empty': {
+    my: 5.2,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 2,
+  },
+  '& .subscription-empty-text': {
+    fontWeight: 'bold',
+    color: PALETTE_COLORS.stone,
+  },
+  '& .subscription-empty-note': {
+    fontSize: '13px',
+    color: PALETTE_COLORS.stone,
+  },
+  '& .subscription-empty-strong': {
+    fontWeight: 'bold',
+    color: PALETTE_COLORS.black,
+  },
   '& .subscription-price-row': {
     display: 'flex',
     alignItems: 'baseline',
