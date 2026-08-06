@@ -126,7 +126,7 @@ jobs:
 
       - run: |
           npm init -y
-          npm install -d prettier prettier-plugin-organize-imports
+          npm install -d prettier@3.2.5 prettier-plugin-organize-imports@3.2.4
 
       - run: npx prettier --config ".prettierrc.json" --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"
 
