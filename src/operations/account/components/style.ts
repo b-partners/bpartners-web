@@ -185,6 +185,16 @@ export const AccountStyle: SxProps = {
     lineHeight: 1.4,
     color: PALETTE_COLORS.stone,
   },
+  '& .subscription-validating': {
+    my: 5.2,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+  },
+  '& .subscription-validating-text': {
+    fontWeight: 'bold',
+    color: PALETTE_COLORS.stone,
+  },
   '& .subscription-empty': {
     my: 5.2,
     display: 'flex',
