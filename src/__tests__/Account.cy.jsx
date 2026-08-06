@@ -5,6 +5,7 @@ import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
@@ -250,6 +251,9 @@ describe(specTitle('Account'), () => {
 
   //OK
   it('Check full typography for Subscription', () => {
+    const subscribedUser = { ...whoami1.user, subscription: { status: 'ACTIVE', plan: { name: 'Abonnement BIRDIA', billingType: 'COMMITMENT' } } };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
@@ -262,12 +266,113 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.contains('Mon abonnement');
-    cy.contains('Pour 49 € par mois :');
+    cy.contains('Abonnement BIRDIA');
+    cy.contains('49 €');
     cy.contains(
       'Activez notre intelligence artificielle dédiée à l’analyse de toitures : mesure automatique, détection des matériaux (ardoise, tuile, zinc…), estimation des pentes, identification des dégâts et des réparations. Suivi facilité pour vos clients, 20 diagnostics inclus.'
     );
     cy.contains('Installer notre outil sur votre site internet et offrez à vos prospects la possibilité d’évaluer en toute autonomie leurs toitures.');
     cy.contains('Intégrez la communauté des couvreurs BIRDIA et recevez des chantiers autour de chez vous.');
+  });
+
+  it('Subscription card ACTIVE with plan shows plan details', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        plan: {
+          name: 'Pro',
+          description: 'Pour les PME en croissance.',
+          billingType: 'COMMITMENT',
+          priceInCentsWithoutVat: 9900,
+          features: ['Analyse IA toiture complète', 'Export PDF + emprise GeoJSON'],
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.get('.subscription-plan-name').should('contain', 'Pro');
+    cy.contains('Pour les PME en croissance.');
+    cy.contains('99 €');
+    cy.contains('HT · engagement annuel 12 mois');
+    cy.contains('Analyse IA toiture complète');
+    cy.contains('Export PDF + emprise GeoJSON');
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+    cy.contains('Vous n’avez pas d’abonnement actif.').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE without plan shows validating loader then plan after polling', () => {
+    const noPlanUser = { ...whoami1.user, subscription: { status: 'ACTIVE' } };
+    const withPlanUser = {
+      ...whoami1.user,
+      subscription: { status: 'ACTIVE', plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] } },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, noPlanUser).as('getUserNoPlan');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Validation de votre abonnement en cours');
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, withPlanUser).as('getUserWithPlan');
+
+    cy.get('.subscription-plan-name', { timeout: 10000 }).should('contain', 'Pro');
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+  });
+
+  it('Subscription card CANCELLED shows resiliation notice and opens plan modal', () => {
+    const end = new Date();
+    end.setDate(end.getDate() + 29);
+    const cancelledUser = { ...whoami1.user, subscription: { status: 'CANCELLED', start: new Date(), end } };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, cancelledUser);
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Votre abonnement est résilié.');
+    cy.contains('Vous conservez l’accès pendant encore');
+    cy.contains('Les analyses supplémentaires seront débitées le');
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+
+    cy.contains('Choisir un abonnement').click();
+    cy.contains("Choisissez l'offre qui vous convient");
+  });
+
+  it('Subscription card without active subscription shows empty state and opens plan modal', () => {
+    const inactiveUser = { ...whoami1.user, subscription: { status: 'INACTIVE' } };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, inactiveUser);
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Vous n’avez pas d’abonnement actif.');
+    cy.contains('Choisir un abonnement').click();
+    cy.contains("Choisissez l'offre qui vous convient");
   });
 
   it('Block Trial card INACTIVE', () => {
