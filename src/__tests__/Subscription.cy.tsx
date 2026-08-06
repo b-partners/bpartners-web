@@ -13,6 +13,25 @@ const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Dat
 const chosenPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
 const expectedPlanOrder = ["À l'usage", 'Essentiel', 'Pro', 'Expert'];
 
+const STRIPE_REDIRECTION_URL = 'https://checkout.stripe.com/c/pay/cs_test_123';
+const CUSTOM_REDIRECTION_URL = 'https://dashboard.bpartners.app/subscribe/confirm';
+
+const mountInvalidSubscription = () => {
+  cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
+
+  cy.stub(Redirect, 'toURL').as('toURL');
+
+  cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+  cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+  cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+  cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+
+  cy.mount(<App />);
+
+  cy.contains("Choisissez l'offre qui vous convient");
+  cy.wait('@getSubscriptionPlans');
+};
+
 const APP_BASE_URL = process.env.REACT_APP_URL || 'http://localhost:3000';
 const expectedSubscriptionBillingPayload = {
   failureUrl: new URL(`${APP_BASE_URL}?stripeStatus=error`).href,
@@ -66,6 +85,49 @@ describe('Test user subscription', () => {
 
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id);
+  });
+  it('Subscription flow: plan choice then consent then Stripe pre-redirect', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
+
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+    cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id);
+
+    cy.contains('Confirmation de votre abonnement');
+    cy.contains('12 mois');
+    cy.contains('conditions générales d’utilisation');
+
+    cy.get('@toURL').should('not.have.been.called');
+
+    cy.contains('Accepter').click();
+
+    cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
+    cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
+  });
+  it('Subscription flow: non-Stripe url shows registration animation before redirect', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
+
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+    cy.contains('Confirmation de votre abonnement');
+    cy.contains('Accepter').click();
+
+    cy.contains('Votre abonnement est en cours d’enregistrement');
+    cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', CUSTOM_REDIRECTION_URL);
+  });
+  it('Subscription flow: consent back returns to plan choice', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
+
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+    cy.contains('Confirmation de votre abonnement');
+    cy.contains('Retour').click();
+
+    cy.contains("Choisissez l'offre qui vous convient");
+    cy.get('@toURL').should('not.have.been.called');
   });
   it('Unpaid subscription', () => {
     cy.cognitoLogin({ whoami: { user: unpaidSubscriptionUser }, user: unpaidSubscriptionUser });
