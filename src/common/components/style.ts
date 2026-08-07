@@ -55,6 +55,14 @@ export const SubscriptionConsentStyle: SxProps = {
   '& .consent-highlight-value': {
     fontWeight: 700,
   },
+  '& .consent-auto-renewal': {
+    marginBottom: 1.5,
+    alignItems: 'flex-start',
+  },
+  '& .consent-auto-renewal .MuiFormControlLabel-label': {
+    fontSize: '0.85rem',
+    paddingTop: 0.75,
+  },
   '& .consent-cgu': {
     fontSize: '0.85rem',
     color: '#6B6B6B',
