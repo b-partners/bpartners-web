@@ -1,7 +1,7 @@
 import { useDialog } from '@/common/store/dialog';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, getCached, userSubscriptionProvider } from '@/providers';
-import { SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
+import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -22,6 +22,7 @@ const mutationFn = async (subscriptionPlanIdentifier: string) => {
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
   const [step, setStep] = useState<SubscriptionStep>('PLAN');
   const [redirectionUrl, setRedirectionUrl] = useState<string>();
+  const [selectedPlanId, setSelectedPlanId] = useState<string>();
   const { close } = useDialog();
   const [searchParams] = useSearchParams();
 
@@ -39,6 +40,12 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     },
   });
 
+  const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
+    mutationKey: ['subscription', 'commitment'],
+    mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlanId!, automaticRenewalStatus),
+    onSuccess: () => setStep('REDIRECT'),
+  });
+
   const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
@@ -51,10 +58,13 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   const onSelectPlan = (plan: SubscriptionPlan) => {
-    if (plan.id) mutate(plan.id);
+    if (plan.id) {
+      setSelectedPlanId(plan.id);
+      mutate(plan.id);
+    }
   };
 
-  const onConsent = () => setStep('REDIRECT');
+  const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);
 
   const onBackToPlans = () => setStep('PLAN');
 
@@ -63,7 +73,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   }
 
   if (step === 'CONSENT') {
-    return <SubscriptionConsentStep onAccept={onConsent} onBack={onBackToPlans} isLoading={isPending} />;
+    return <SubscriptionConsentStep onAccept={onConsent} onBack={onBackToPlans} isLoading={isSavingCommitment} />;
   }
 
   return (
