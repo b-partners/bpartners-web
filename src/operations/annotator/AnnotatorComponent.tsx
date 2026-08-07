@@ -100,6 +100,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
 
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
   const { fileId } = areaPictureDetails || {};
+  const imageCacheKey = `${fileId}|${isExtended}|${newZoomLevelAsNumber}|${layer?.id}|${shiftNb}|${areaPictureDetails?.shiftDirection}`;
 
   useEffect(() => {
     if (!fileId) return;
@@ -113,7 +114,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
     return () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [fileId]);
+  }, [imageCacheKey]);
 
   const polygonListShifted = useMemo(
     () =>
