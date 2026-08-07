@@ -90,6 +90,7 @@ describe('Test user subscription', () => {
     mountInvalidSubscription();
 
     cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
+    cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
 
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id);
@@ -100,19 +101,50 @@ describe('Test user subscription', () => {
 
     cy.get('@toURL').should('not.have.been.called');
 
-    cy.contains('Accepter').click();
+    cy.contains('button', 'Accepter').click();
+
+    cy.contains('Confirmez votre choix');
+    cy.contains('button', 'Confirmer').click();
+
+    cy.wait('@saveCommitment').then(({ request }) => {
+      expect(request.body[0]).to.include({
+        subscriptionPlanIdentifier: chosenPlan.id,
+        duration: 'TWELVE_MONTHS',
+        automaticRenewalStatus: 'DISABLED',
+      });
+      expect(request.body[0].commitmentStart).to.be.a('string');
+      expect(request.body[0].approvalDatetime).to.be.a('string');
+    });
 
     cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
+  });
+  it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
+    cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
+
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+    cy.contains('Confirmation de votre abonnement');
+    cy.contains('Renouveler automatiquement mon abonnement').click();
+    cy.contains('button', 'Accepter').click();
+    cy.contains('button', 'Confirmer').click();
+
+    cy.wait('@saveCommitment').then(({ request }) => {
+      expect(request.body[0].automaticRenewalStatus).to.equal('ENABLED');
+    });
   });
   it('Subscription flow: non-Stripe url shows registration animation before redirect', () => {
     mountInvalidSubscription();
 
     cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
+    cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
 
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.contains('Confirmation de votre abonnement');
-    cy.contains('Accepter').click();
+    cy.contains('button', 'Accepter').click();
+    cy.contains('button', 'Confirmer').click();
 
     cy.contains('Votre abonnement est en cours d’enregistrement');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', CUSTOM_REDIRECTION_URL);
