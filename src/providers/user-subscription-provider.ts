@@ -1,4 +1,4 @@
-import { SubscriptionInvoice, SubscriptionPlan } from '@bpartners/typescript-client';
+import { EnableStatus, SubscriptionInvoice, SubscriptionPlan, UserSubscriptionCommitmentDuration } from '@bpartners/typescript-client';
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
 
@@ -51,6 +51,20 @@ export const userSubscriptionProvider = {
       redirectionStatusUrls: await getSubscriptionRedirectionUrls(),
       ...(subscriptionPlanIdentifier ? { subscriptionPlanIdentifier } : { subscriptionType: 'ESSENTIAL' }),
     });
+    return data;
+  },
+  async saveCommitment(subscriptionPlanIdentifier: string, automaticRenewalStatus: EnableStatus) {
+    const { id } = await asyncGetUser();
+    const now = new Date();
+    const { data } = await userSubscriptionApi().saveUserSubscriptionCommitments(id, [
+      {
+        subscriptionPlanIdentifier,
+        duration: UserSubscriptionCommitmentDuration.TWELVE_MONTHS,
+        commitmentStart: now,
+        approvalDatetime: now,
+        automaticRenewalStatus,
+      },
+    ]);
     return data;
   },
   async cancelRenew() {
