@@ -1,4 +1,5 @@
 import App from '@/App';
+import { useDialog } from '@/common/store/dialog';
 import { userSubscriptionProvider } from '@/providers';
 import { User } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
@@ -39,6 +40,10 @@ const expectedSubscriptionBillingPayload = {
 };
 
 describe('Test user subscription', () => {
+  beforeEach(() => {
+    useDialog.getState().close();
+  });
+
   it('Free Trial', () => {
     cy.cognitoLogin({ whoami: { user: freeTrialSubscriptionUser }, user: freeTrialSubscriptionUser });
 
@@ -156,7 +161,7 @@ describe('Test user subscription', () => {
 
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.contains('Confirmation de votre abonnement');
-    cy.contains('Retour').click();
+    cy.get('.MuiDialogActions-root').contains('button', 'Retour').click();
 
     cy.contains("Choisissez l'offre qui vous convient");
     cy.get('@toURL').should('not.have.been.called');
