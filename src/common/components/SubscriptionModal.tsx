@@ -4,7 +4,6 @@ import { authProvider, getCached, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import dayjs from 'dayjs';
 import { FC, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
@@ -50,10 +49,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
   const whoami = getCached.whoami();
-  const today = dayjs();
   const subscription = whoami?.user?.subscription;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
-  const remainingDays = subscription?.end ? dayjs(subscription.end).diff(today, 'day') : null;
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
@@ -86,27 +83,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
             {errorMessage}
           </Alert>
         )}
-        {remainingDays !== null && remainingDays > 0 && (
-          <p>
-            {isCancelled ? (
-              <>
-                Votre abonnement est résilié. Vous conservez l'accès pendant encore{' '}
-                <span style={{ fontWeight: 'bold' }}>
-                  {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-                </span>
-                . Choisissez une nouvelle offre pour continuer sans interruption.
-              </>
-            ) : (
-              <>
-                Il vous reste{' '}
-                <span style={{ fontWeight: 'bold' }}>
-                  {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-                </span>{' '}
-                d'essai. Aucun prélèvement ne sera effectué avant la fin de votre période d'essai, et vous pouvez annuler à tout moment.
-              </>
-            )}
-          </p>
-        )}
+        {isCancelled && <p>Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.</p>}
         <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingPlanId : undefined} />
       </DialogContent>
       <DialogActions>

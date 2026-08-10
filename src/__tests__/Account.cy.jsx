@@ -338,6 +338,7 @@ describe(specTitle('Account'), () => {
     end.setDate(end.getDate() + 29);
     const cancelledUser = { ...whoami1.user, subscription: { status: 'CANCELLED', start: new Date(), end } };
 
+    cy.intercept('GET', '/whoami', { user: cancelledUser }).as('cancelledWhoami');
     cy.intercept('GET', `/users/${whoami1.user.id}`, cancelledUser);
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
@@ -348,13 +349,13 @@ describe(specTitle('Account'), () => {
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Votre abonnement est résilié.');
-    cy.contains('Vous conservez l’accès pendant encore');
+    cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
     cy.contains('Les analyses supplémentaires seront débitées le');
     cy.contains('Validation de votre abonnement en cours').should('not.exist');
 
     cy.contains('button', 'Choisir un abonnement').click();
     cy.contains("Choisissez l'offre qui vous convient");
+    cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
   });
 
   it('Subscription card without active subscription shows empty state and opens plan modal', () => {
@@ -373,6 +374,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Vous n’avez pas d’abonnement actif.');
     cy.contains('button', 'Choisir un abonnement').click();
     cy.contains("Choisissez l'offre qui vous convient");
+    cy.contains('Renouveler votre abonnement').should('not.exist');
   });
 
   it('Block Trial card INACTIVE', () => {

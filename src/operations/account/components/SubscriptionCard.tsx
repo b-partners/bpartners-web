@@ -47,7 +47,6 @@ export const SubscriptionCard = () => {
   const isValidating = !plan && subscription?.status === UserSubscriptionStatus.ACTIVE;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const subscriptionEnd = subscription?.end ? dayjs(subscription.end) : null;
-  const remainingDays = subscriptionEnd ? subscriptionEnd.diff(dayjs(), 'day') : null;
   const features = getFeatures(plan);
   const yearlyLabel = getYearlyLabel(plan);
 
@@ -126,20 +125,7 @@ export const SubscriptionCard = () => {
           <Box className='subscription-empty'>
             {isCancelled ? (
               <>
-                <Typography className='subscription-empty-text'>
-                  Votre abonnement est résilié.
-                  {remainingDays !== null && remainingDays > 0 && (
-                    <>
-                      {' '}
-                      Vous conservez l’accès pendant encore{' '}
-                      <Box component='span' className='subscription-empty-strong'>
-                        {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-                      </Box>
-                      .
-                    </>
-                  )}{' '}
-                  Choisissez une nouvelle offre pour continuer sans interruption.
-                </Typography>
+                <Typography className='subscription-empty-text'>Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.</Typography>
                 {subscriptionEnd && (
                   <Typography className='subscription-empty-note'>
                     Les analyses supplémentaires seront débitées le{' '}
