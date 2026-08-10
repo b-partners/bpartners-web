@@ -62,6 +62,7 @@ describe('Test user subscription', () => {
     cy.contains('588 € HT / an');
 
     cy.contains('Ancien plan').should('not.exist');
+    cy.contains('Renouveler votre abonnement').should('not.exist');
     cy.get('.plan-name').should('have.length', expectedPlanOrder.length);
     cy.get('.plan-name').each(($el, index) => {
       expect($el.text()).to.equal(expectedPlanOrder[index]);
