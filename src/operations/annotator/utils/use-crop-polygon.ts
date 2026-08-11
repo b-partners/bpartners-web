@@ -1,3 +1,4 @@
+import { getImageFromCache } from '@/common/utils';
 import { cache, DomainPolygonResultType } from '@/providers';
 const margin = 10;
 
@@ -87,6 +88,20 @@ export const fetchImageAsBase64 = async (imageUrl: string): Promise<string> => {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+};
+
+export const resolveAnalyseImageBase64 = async (detectionImageUrl?: string, detectionImageFileId?: string): Promise<string> => {
+  const fromPersistedDetectionImage = async () => {
+    const blob = detectionImageFileId ? await getImageFromCache(detectionImageFileId) : null;
+    return blob ? await fetchImageAsBase64(URL.createObjectURL(blob)) : '';
+  };
+  try {
+    const fromUrl = detectionImageUrl ? await fetchImageAsBase64(detectionImageUrl) : '';
+    if (fromUrl.startsWith('data:image')) return fromUrl;
+  } catch {
+    return await fromPersistedDetectionImage();
+  }
+  return await fromPersistedDetectionImage();
 };
 
 export const createImage = async (url: string): Promise<HTMLImageElement> =>
