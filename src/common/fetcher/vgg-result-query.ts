@@ -1,5 +1,5 @@
 import { getAnalyseImageFileId } from '@/constants';
-import { createImage, cropImage, fetchImageAsBase64, getCropRegion } from '@/operations/annotator/utils';
+import { createImage, cropImage, getCropRegion, resolveAnalyseImageBase64 } from '@/operations/annotator/utils';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import {
   annotatorProvider,
@@ -17,7 +17,7 @@ import { useUpdate } from 'react-admin';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
-import { base64ToFile, getImageFromCache, saveImageToCache } from '../utils';
+import { base64ToFile, saveImageToCache } from '../utils';
 import { saveCropRegionDraft } from './save-annotations';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
@@ -124,53 +124,41 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     // sort polygons in the expected order
     const obstacle = isThereAnObstacle(regions.slice());
 
-    const resolveImageFromCache = async () => {
-      const cachedFileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
-      const cachedBlob = cachedFileId ? await getImageFromCache(cachedFileId) : null;
-      return cachedBlob ? await fetchImageAsBase64(URL.createObjectURL(cachedBlob)) : '';
-    };
+    const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
+    const analyseImageFileId = fileId ? getAnalyseImageFileId(fileId) : undefined;
 
-    const resolveImageAsBase64 = async () => {
-      try {
-        const fromUrl = imageUrl ? await fetchImageAsBase64(imageUrl) : '';
-        if (fromUrl.startsWith('data:image')) return fromUrl;
-      } catch {
-        return await resolveImageFromCache();
-      }
-      return await resolveImageFromCache();
-    };
-
-    const imageAsBase64 = await resolveImageAsBase64();
+    const imageAsBase64 = await resolveAnalyseImageBase64(imageUrl, analyseImageFileId);
     const image = await createImage(imageAsBase64);
 
     const allPolygons = [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons];
 
-    const shouldCrop = regions.length > 0 && roofPolygon.points.length > 0;
+    const hasRoofOutline = roofPolygon.points.length > 0;
+    const shouldCrop = regions.length > 0 && hasRoofOutline;
     const cropRegion = shouldCrop ? getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height) : null;
     const croppedImage = shouldCrop && cropRegion ? cropImage(image as HTMLImageElement, cropRegion) : imageAsBase64;
-    setCropRegion(cropRegion);
-
-    const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
     const base64Image = shouldCrop ? croppedImage : imageAsBase64;
 
-    if (fileId && base64Image && base64Image.length > 0) {
-      const analyseImageFileId = getAnalyseImageFileId(fileId);
-      const fileType = FileType.AREA_PICTURE;
-      const fileMimeType = 'image/png';
-      const analyseImageFile = base64ToFile(base64Image, `${analyseImageFileId}.png`);
-      await new Promise(resolve =>
-        uploadFile(
-          'files',
-          {
-            data: { id: analyseImageFileId, fileAsArrayBuffer: analyseImageFile, fileId: analyseImageFileId, fileType, fileMimeType },
-            id: analyseImageFileId,
-          },
-          { onSettled: () => resolve(undefined) }
-        )
-      );
-      await saveImageToCache(analyseImageFileId, analyseImageFile);
-      setAnalyseImageUrl(URL.createObjectURL(analyseImageFile));
-      setAnalyseImageFileId(analyseImageFileId);
+    if (hasRoofOutline) {
+      setCropRegion(cropRegion);
+
+      if (analyseImageFileId && base64Image && base64Image.length > 0) {
+        const fileType = FileType.AREA_PICTURE;
+        const fileMimeType = 'image/png';
+        const analyseImageFile = base64ToFile(base64Image, `${analyseImageFileId}.png`);
+        await new Promise(resolve =>
+          uploadFile(
+            'files',
+            {
+              data: { id: analyseImageFileId, fileAsArrayBuffer: analyseImageFile, fileId: analyseImageFileId, fileType, fileMimeType },
+              id: analyseImageFileId,
+            },
+            { onSettled: () => resolve(undefined) }
+          )
+        );
+        await saveImageToCache(analyseImageFileId, analyseImageFile);
+        setAnalyseImageUrl(URL.createObjectURL(analyseImageFile));
+        setAnalyseImageFileId(analyseImageFileId);
+      }
     }
 
     const pictureId = areaPictureDetails?.id;
