@@ -17,7 +17,7 @@ import { useUpdate } from 'react-admin';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { v4 } from 'uuid';
 import { useAnnotatorComponentStore } from '../store';
-import { base64ToFile, saveImageToCache } from '../utils';
+import { base64ToFile, getImageFromCache, saveImageToCache } from '../utils';
 import { saveCropRegionDraft } from './save-annotations';
 
 const getRegions = (detectionResult: DetectionResultInVgg) => {
@@ -80,19 +80,26 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
       type: 'Feature',
     };
 
-    const pixelGeoJson = polygonMapper.toPixelGeoJson(
-      [feature],
-      imageTileInfoOrigin?.coordinates?.x,
-      imageTileInfoOrigin?.coordinates?.y,
-      imageTileInfoOrigin?.size?.width,
-      20
-    );
+    const resolveRoofPolygonPoints = async () => {
+      if (!roofPolygonInGeoPoint.length) return [];
+      try {
+        const pixelGeoJson = polygonMapper.toPixelGeoJson(
+          [feature],
+          imageTileInfoOrigin?.coordinates?.x,
+          imageTileInfoOrigin?.coordinates?.y,
+          imageTileInfoOrigin?.size?.width,
+          20
+        );
+        const pixelGeoJsonResult = await annotatorProvider.geoPointsToPoins(pixelGeoJson);
+        const { regions: pixelGeoJsonResultRegion } = (Object.values(pixelGeoJsonResult || {})?.[0] as any) || {};
+        const { shape_attributes: pixelGeoJsonResultShapeAttributes } = (Object.values(pixelGeoJsonResultRegion || {})?.[0] as any) || {};
+        return pixelGeoJsonResultShapeAttributes ? geoShapeAttributesToPoints(pixelGeoJsonResultShapeAttributes) : [];
+      } catch {
+        return [];
+      }
+    };
 
-    const pixelGeoJsonResult = await annotatorProvider.geoPointsToPoins(pixelGeoJson);
-
-    const { regions: pixelGeoJsonResultRegion } = Object.values(pixelGeoJsonResult)?.[0] as any;
-    const { shape_attributes: pixelGeoJsonResultShapeAttributes } = Object.values(pixelGeoJsonResultRegion)?.[0] as any;
-    const roofPolygonPoints = geoShapeAttributesToPoints(pixelGeoJsonResultShapeAttributes);
+    const roofPolygonPoints = await resolveRoofPolygonPoints();
 
     const roofPolygon: DomainPolygonResultType = {
       id: `${v4()}__${roofGlobalIdRef}`,
@@ -117,18 +124,32 @@ export const useGeojsonQueryResult = (keys: any[] = [], enabledParams = true) =>
     // sort polygons in the expected order
     const obstacle = isThereAnObstacle(regions.slice());
 
-    const imageAsBase64 = await fetchImageAsBase64(imageUrl);
+    const resolveImageFromCache = async () => {
+      const cachedFileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
+      const cachedBlob = cachedFileId ? await getImageFromCache(cachedFileId) : null;
+      return cachedBlob ? await fetchImageAsBase64(URL.createObjectURL(cachedBlob)) : '';
+    };
+
+    const resolveImageAsBase64 = async () => {
+      try {
+        const fromUrl = imageUrl ? await fetchImageAsBase64(imageUrl) : '';
+        if (fromUrl.startsWith('data:image')) return fromUrl;
+      } catch {
+        return await resolveImageFromCache();
+      }
+      return await resolveImageFromCache();
+    };
+
+    const imageAsBase64 = await resolveImageAsBase64();
     const image = await createImage(imageAsBase64);
 
     const allPolygons = [roofPolygon, ...usurePolygons, ...moisissurePolygons, ...humiditePolygons, ...othersPolygons];
-    const cropRegion = getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height);
-    const croppedImage = cropImage(image as HTMLImageElement, cropRegion);
 
-    // crop only the analyse image; polygons stay in original image space and are cropped at display time
-    const shouldCrop = regions.length > 0;
-    setCropRegion(shouldCrop ? cropRegion : null);
+    const shouldCrop = regions.length > 0 && roofPolygon.points.length > 0;
+    const cropRegion = shouldCrop ? getCropRegion([roofPolygon], (image as HTMLImageElement).width, (image as HTMLImageElement).height) : null;
+    const croppedImage = shouldCrop && cropRegion ? cropImage(image as HTMLImageElement, cropRegion) : imageAsBase64;
+    setCropRegion(cropRegion);
 
-    // save the roof analyse image under a dedicated fileId so the original area picture stays untouched for the 2D tab
     const fileId = areaPictureDetails?.fileId || UrlParams.get('fileId');
     const base64Image = shouldCrop ? croppedImage : imageAsBase64;
 
