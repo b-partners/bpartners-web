@@ -1,4 +1,4 @@
-import { cache, getDetectionResult } from '@/providers';
+import { cache, getDetectionById } from '@/providers';
 import { useQuery } from '@tanstack/react-query';
 import { useAnnotatorComponentStore } from '../store';
 
@@ -9,7 +9,7 @@ export const useRestoreRoofAnalyse = (roofAnalyseId?: string, enabled = false) =
     queryKey: ['restore-roof-analyse', roofAnalyseId],
     queryFn: async () => {
       cache.roofAnalyseId(roofAnalyseId as string);
-      const detection = await getDetectionResult();
+      const detection = await getDetectionById(roofAnalyseId as string);
       const vggFileUrl = detection?.geoJsonZone?.[0]?.properties?.vgg_file_url;
       const originalImageUrl = detection?.geoJsonZone?.[0]?.properties?.original_image_url;
       setAnalyseInformation({ geoJsonResultUrl: vggFileUrl, imageUrl: originalImageUrl });

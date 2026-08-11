@@ -7,14 +7,12 @@ const DETECTION_ID = 'roof-analyse-123';
 const VGG_URL = 'https://s3.example.com/detections/vgg-result.json';
 const ORIGINAL_IMAGE_URL = 'https://s3.example.com/detections/original.png';
 
-const detectionResult = [
-  {
-    creationDatetime: '2026-01-10T10:00:00.000Z',
-    geoJsonZone: [{ properties: { vgg_file_url: VGG_URL, original_image_url: ORIGINAL_IMAGE_URL } }],
-    roofDelimiter: { polygon: [] as number[][] },
-    imageTileInfoOrigin: { coordinates: { x: 0, y: 0 }, size: { width: 1024 } },
-  },
-];
+const detection = {
+  creationDatetime: '2026-01-10T10:00:00.000Z',
+  geoJsonZone: [{ properties: { vgg_file_url: VGG_URL, original_image_url: ORIGINAL_IMAGE_URL } }],
+  roofDelimiter: { polygon: [] as number[][] },
+  imageTileInfoOrigin: { coordinates: { x: 0, y: 0 }, size: { width: 1024 } },
+};
 
 interface HarnessProps {
   roofAnalyseId?: string;
@@ -24,7 +22,13 @@ interface HarnessProps {
 const Harness: FC<HarnessProps> = ({ roofAnalyseId, enabled }) => {
   useRestoreRoofAnalyse(roofAnalyseId, enabled);
   const geoJsonResultUrl = useAnnotatorComponentStore(state => state.geoJsonResultUrl);
-  return <div data-cy='geojson-url'>{geoJsonResultUrl || ''}</div>;
+  const imageUrl = useAnnotatorComponentStore(state => state.imageUrl);
+  return (
+    <div>
+      <div data-cy='geojson-url'>{geoJsonResultUrl || ''}</div>
+      <div data-cy='image-url'>{imageUrl || ''}</div>
+    </div>
+  );
 };
 
 const mountHarness = (props: HarnessProps) => {
@@ -45,17 +49,20 @@ describe('useRestoreRoofAnalyse — ré-hydratation des résultats de détection
     });
   });
 
-  it('récupère le VGG via GET /detections/{roofAnalyseId} quand aucune région n’est persistée', () => {
-    cy.intercept('GET', `**/detections/${DETECTION_ID}`, detectionResult).as('getDetection');
+  it('appelle GET /detections/{roofAnalyseId} et récupère le VGG + original_image_url', () => {
+    cy.intercept('GET', `**/detections/${DETECTION_ID}`, detection).as('getDetection');
 
     mountHarness({ roofAnalyseId: DETECTION_ID, enabled: true });
 
-    cy.wait('@getDetection');
+    cy.wait('@getDetection')
+      .its('request.url')
+      .should('match', new RegExp(`/detections/${DETECTION_ID}$`));
     cy.get('[data-cy=geojson-url]').should('have.text', VGG_URL);
+    cy.get('[data-cy=image-url]').should('have.text', ORIGINAL_IMAGE_URL);
   });
 
   it('ne déclenche pas GET /detections quand les régions sont déjà persistées (enabled=false)', () => {
-    cy.intercept('GET', `**/detections/${DETECTION_ID}`, detectionResult).as('getDetection');
+    cy.intercept('GET', `**/detections/${DETECTION_ID}`, detection).as('getDetection');
 
     mountHarness({ roofAnalyseId: DETECTION_ID, enabled: false });
 
@@ -65,7 +72,7 @@ describe('useRestoreRoofAnalyse — ré-hydratation des résultats de détection
   });
 
   it('ne déclenche pas GET /detections en l’absence de roofAnalyseId', () => {
-    cy.intercept('GET', '**/detections/**', detectionResult).as('getDetection');
+    cy.intercept('GET', '**/detections/**', detection).as('getDetection');
 
     mountHarness({ roofAnalyseId: undefined, enabled: true });
 
