@@ -1,9 +1,10 @@
 import { BPLoader, GlobaDialog } from '@/common/components';
-import { useRoofPolygonFetcher, useSaveAnnotations } from '@/common/fetcher';
+import { useRestoreRoofAnalyse, useRoofPolygonFetcher, useSaveAnnotations } from '@/common/fetcher';
 import { useCacheImage, useHeartBeat } from '@/common/hooks';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parseUrlParams, saveImageToCache } from '@/common/utils';
 import { getAnalyseImageFileId } from '@/constants';
+import { analyseGeneratedIdRef } from '@/operations/prospects/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, fileProvider } from '@/providers';
 import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
 import { ArrowBack, Replay, Save } from '@mui/icons-material';
@@ -69,6 +70,11 @@ export const Annotator = () => {
   }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
   const replaceAnnotations = annotatorStore.useAnnotatorStore(useShallow(params => params.replaceAnnotations));
+
+  const roofAnalyseId = annotations?.properties?.roofAnalyseId as string | undefined;
+  const isDraftResolved = !!areaPictureAnnotation?.annotations;
+  const hasPersistedAnalyseRegions = !!areaPictureAnnotation?.annotations?.some(annotation => (annotation.id || '').includes(analyseGeneratedIdRef));
+  useRestoreRoofAnalyse(roofAnalyseId, !!roofAnalyseId && isDraftResolved && !hasPersistedAnalyseRegions);
 
   useEffect(() => {
     if (areaPictureAnnotation?.annotations) {
