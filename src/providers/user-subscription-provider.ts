@@ -1,9 +1,26 @@
-import { EnableStatus, SubscriptionInvoice, SubscriptionPlan, UserSubscriptionCommitmentDuration } from '@bpartners/typescript-client';
+import {
+  CreateSubscriptionInitiation,
+  EnableStatus,
+  SubscriptionInvoice,
+  SubscriptionPlan,
+  UserSubscriptionCommitment,
+  UserSubscriptionCommitmentDuration,
+} from '@bpartners/typescript-client';
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
 
+export type SubscriptionBillingInterval = 'MONTHLY' | 'YEARLY';
+
+type SubscriptionInitiationPayload = CreateSubscriptionInitiation & { billingInterval: SubscriptionBillingInterval };
+
 export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
   const { data } = await userSubscriptionApi().getSubscriptionPlans();
+  return data || [];
+};
+
+export const getSubscriptionCommitments = async (): Promise<UserSubscriptionCommitment[]> => {
+  const { id } = await asyncGetUser();
+  const { data } = await userSubscriptionApi().getUserSubscriptionCommitments(id);
   return data || [];
 };
 
@@ -45,12 +62,14 @@ export const downloadSubscriptionInvoices = async (yearMonth: string) => {
 };
 
 export const userSubscriptionProvider = {
-  async init(subscriptionPlanIdentifier?: string) {
+  async init(subscriptionPlanIdentifier?: string, billingInterval: SubscriptionBillingInterval = 'MONTHLY') {
     const { id } = await asyncGetUser();
-    const { data } = await userSubscriptionApi().initiateUserSubscription(id, {
+    const payload: SubscriptionInitiationPayload = {
       redirectionStatusUrls: await getSubscriptionRedirectionUrls(),
+      billingInterval,
       ...(subscriptionPlanIdentifier ? { subscriptionPlanIdentifier } : { subscriptionType: 'ESSENTIAL' }),
-    });
+    };
+    const { data } = await userSubscriptionApi().initiateUserSubscription(id, payload);
     return data;
   },
   async saveCommitment(subscriptionPlanIdentifier: string, automaticRenewalStatus: EnableStatus) {
