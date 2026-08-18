@@ -1,6 +1,7 @@
 import { SubscriptionModal } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
+import { useGetOngoingSubscriptionCommitment } from '@/operations/account/queries';
 import { profileProvider } from '@/providers';
 import { SubscriptionPlanDescription, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -24,7 +25,11 @@ const getPriceCents = (plan?: SubscriptionPlanDescription) => plan?.priceInCents
 
 const getPriceSuffix = (plan?: SubscriptionPlanDescription) => (isUsageBased(plan) ? '/ analyse' : '/ mois');
 
-const getPriceHt = (plan?: SubscriptionPlanDescription) => (isUsageBased(plan) ? 'Prix HT · aucun abonnement' : 'HT · engagement annuel 12 mois');
+const getPriceHt = (plan: SubscriptionPlanDescription | undefined, hasCommitment: boolean, isCommitmentUnknown: boolean) => {
+  if (isUsageBased(plan)) return 'Prix HT · aucun abonnement';
+  if (isCommitmentUnknown) return 'Prix HT';
+  return hasCommitment ? 'HT · engagement annuel 12 mois' : 'Prix HT · payé en une fois';
+};
 
 const getYearlyLabel = (plan?: SubscriptionPlanDescription) => (isUsageBased(plan) ? '' : `${formatEuros(getPriceCents(plan) * 12)} HT / an`);
 
@@ -49,6 +54,7 @@ export const SubscriptionCard = () => {
   const subscriptionEnd = subscription?.end ? dayjs(subscription.end) : null;
   const features = getFeatures(plan);
   const yearlyLabel = getYearlyLabel(plan);
+  const { commitment, isCommitmentUnknown } = useGetOngoingSubscriptionCommitment(hasActiveSubscription && !isUsageBased(plan));
 
   const openSubscriptionModal = () => openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
 
@@ -107,7 +113,7 @@ export const SubscriptionCard = () => {
                 {getPriceSuffix(plan)}
               </Typography>
             </Box>
-            <Typography className='subscription-price-ht'>{getPriceHt(plan)}</Typography>
+            <Typography className='subscription-price-ht'>{getPriceHt(plan, !!commitment, isCommitmentUnknown)}</Typography>
             {yearlyLabel && <Typography className='subscription-price-yearly'>{yearlyLabel}</Typography>}
 
             <Box component='ul' className='subscription-features'>
