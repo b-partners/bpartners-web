@@ -1,5 +1,5 @@
 import { PALETTE_COLORS } from '@/common/config/theme';
-import { SxProps } from '@mui/material';
+import { alpha, SxProps } from '@mui/material';
 
 export const AccountStyle: SxProps = {
   width: '100%',
@@ -398,7 +398,52 @@ export const SubscriptionPlansStyle: SxProps = {
   gap: '12px',
   alignItems: 'stretch',
   width: '100%',
-  paddingTop: '14px',
+  paddingTop: '8px',
+
+  '& .plans-billing': {
+    gridColumn: '1 / -1',
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '4px',
+  },
+  '& .plans-billing-group': {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    bgcolor: PLAN_WHITE,
+    border: `1px solid ${PLAN_BORDER}`,
+    borderRadius: '999px',
+    padding: '3px',
+    boxShadow: '0 4px 14px rgba(43, 25, 8, 0.06)',
+  },
+  '& .plans-billing-option': {
+    border: 'none',
+    borderRadius: '999px !important',
+    textTransform: 'none',
+    fontSize: '11px',
+    fontWeight: 600,
+    lineHeight: 1.4,
+    color: PLAN_TEXT_MUTED,
+    padding: '4px 14px',
+    transition: 'all 0.2s',
+    '&:hover': { bgcolor: PLAN_ORANGE_TINT },
+    '&.Mui-selected': {
+      bgcolor: PLAN_ORANGE,
+      color: PLAN_WHITE,
+      boxShadow: `0 2px 8px ${alpha(PLAN_ORANGE, 0.32)}`,
+      '&:hover': { bgcolor: PLAN_ORANGE_DARK },
+    },
+  },
+  '& .plans-billing-badge': {
+    bgcolor: PLAN_ORANGE_TINT,
+    color: PLAN_ORANGE_DARK,
+    fontSize: '9px',
+    fontWeight: 700,
+    lineHeight: 1.7,
+    padding: '0 6px',
+    borderRadius: '999px',
+    marginLeft: '5px',
+  },
 
   '& .plans-state': {
     gridColumn: '1 / -1',
