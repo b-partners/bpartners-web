@@ -12,6 +12,7 @@ const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, star
 const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
 
 const chosenPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
+const usageBasedPlan = subscriptionPlans.find(({ id }) => id === 'plan-usage')!;
 const expectedPlanOrder = ["À l'usage", 'Essentiel', 'Pro', 'Expert'];
 
 const STRIPE_REDIRECTION_URL = 'https://checkout.stripe.com/c/pay/cs_test_123';
@@ -124,6 +125,38 @@ describe('Test user subscription', () => {
 
     cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
+  });
+  it('Subscription flow: yearly plan skips consent and redirects directly', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
+    cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
+
+    cy.get('[data-cy=billing-interval-yearly]').click();
+    cy.contains('Prix HT · payé en une fois');
+    cy.contains(`Choisir ${chosenPlan.name}`).click();
+
+    cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id, 'YEARLY');
+    cy.contains('Confirmation de votre abonnement').should('not.exist');
+    cy.get('@saveCommitment.all').should('have.length', 0);
+
+    cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
+    cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
+  });
+  it('Subscription flow: usage-based plan skips consent and stays monthly', () => {
+    mountInvalidSubscription();
+
+    cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
+    cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
+
+    cy.get('[data-cy=billing-interval-yearly]').click();
+    cy.contains('button', 'Acheter une analyse').click();
+
+    cy.get('@initSubscription').should('have.been.calledOnceWith', usageBasedPlan.id, 'MONTHLY');
+    cy.contains('Confirmation de votre abonnement').should('not.exist');
+    cy.get('@saveCommitment.all').should('have.length', 0);
+
+    cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
   });
   it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
     mountInvalidSubscription();

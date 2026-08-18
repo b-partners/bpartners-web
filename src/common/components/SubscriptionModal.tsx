@@ -1,6 +1,6 @@
 import { useDialog } from '@/common/store/dialog';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
-import { authProvider, getCached, userSubscriptionProvider } from '@/providers';
+import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
@@ -13,8 +13,18 @@ import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
 
 type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
 
-const mutationFn = async (subscriptionPlanIdentifier: string) => {
-  const { redirectionUrl } = await userSubscriptionProvider.init(subscriptionPlanIdentifier);
+interface SubscriptionInitVariables {
+  subscriptionPlanIdentifier: string;
+  billingInterval: SubscriptionBillingInterval;
+  isConsentRequired: boolean;
+}
+
+const isUsageBased = (plan: SubscriptionPlan) => plan.billingType === 'USAGE_BASED';
+
+const isConsentRequiredFor = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => billingInterval === 'MONTHLY' && !isUsageBased(plan);
+
+const mutationFn = async ({ subscriptionPlanIdentifier, billingInterval }: SubscriptionInitVariables) => {
+  const { redirectionUrl } = await userSubscriptionProvider.init(subscriptionPlanIdentifier, billingInterval);
   return redirectionUrl;
 };
 
@@ -28,14 +38,14 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const {
     isPending,
     mutate,
-    variables: pendingPlanId,
+    variables: pendingVariables,
     error: subscriptionInitError,
   } = useMutation({
     mutationKey: ['subscription', 'modal'],
     mutationFn,
-    onSuccess: url => {
+    onSuccess: (url, { isConsentRequired }) => {
       setRedirectionUrl(url);
-      setStep('CONSENT');
+      setStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
     },
   });
 
@@ -54,10 +64,10 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
-  const onSelectPlan = (plan: SubscriptionPlan) => {
+  const onSelectPlan = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => {
     if (plan.id) {
       setSelectedPlanId(plan.id);
-      mutate(plan.id);
+      mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
     }
   };
 
@@ -84,7 +94,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           </Alert>
         )}
         {isCancelled && <p>Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.</p>}
-        <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingPlanId : undefined} />
+        <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
       </DialogContent>
       <DialogActions>
         {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}

@@ -6,6 +6,7 @@ import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 describe(specTitle('Account'), () => {
@@ -255,6 +256,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
 
@@ -291,10 +293,12 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
+    cy.wait('@getCommitments');
 
     cy.get('.subscription-plan-name').should('contain', 'Pro');
     cy.contains('Pour les PME en croissance.');
@@ -304,6 +308,55 @@ describe(specTitle('Account'), () => {
     cy.contains('Export PDF + emprise GeoJSON');
     cy.contains('Validation de votre abonnement en cours').should('not.exist');
     cy.contains('Vous n’avez pas d’abonnement actif.').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE without commitment shows one-shot payment label', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, []).as('getCommitments');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getCommitments');
+
+    cy.contains('Prix HT · payé en une fois');
+    cy.contains('HT · engagement annuel 12 mois').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE keeps a neutral label when commitments cannot be fetched', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, { statusCode: 500, body: {} }).as('getCommitments');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+    cy.get('@getCommitments.all', { timeout: 20000 }).should('have.length', 4);
+
+    cy.get('.subscription-price-ht').should('have.text', 'Prix HT');
+    cy.contains('HT · engagement annuel 12 mois').should('not.exist');
+    cy.contains('Prix HT · payé en une fois').should('not.exist');
   });
 
   it('Subscription card ACTIVE without plan shows validating loader then plan after polling', () => {
@@ -320,6 +373,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
