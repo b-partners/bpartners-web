@@ -14,8 +14,8 @@ export type ExportAnnotationMapperArgs = {
   address: string;
   polygons: Polygon[];
   annotationInfos: AnnotationInfo[];
-  globalRateType: string;
-  globalRateValue: number;
+  globalRateType: string | null;
+  globalRateValue: number | null;
 };
 
 export const base64ToFile = (base64: string, filename: string): { file: File; type: string } => {
