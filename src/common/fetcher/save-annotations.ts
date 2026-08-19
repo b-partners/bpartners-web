@@ -118,10 +118,13 @@ export const useSaveAnnotations = () => {
       if (!requestBody) return;
 
       const currentThreeDGenerationId = annotatorStore.useAnnotatorStore.getState().threeDGenerationId;
-      const threeDGenerationIdChanged = currentThreeDGenerationId && currentThreeDGenerationId !== lastSavedThreeDGenerationIdRef.current;
+      const isFirstThreeDObservation = lastSavedThreeDGenerationIdRef.current === undefined;
+      const threeDGenerationIdChanged =
+        !isFirstThreeDObservation && !!currentThreeDGenerationId && currentThreeDGenerationId !== lastSavedThreeDGenerationIdRef.current;
+
+      if (currentThreeDGenerationId) lastSavedThreeDGenerationIdRef.current = currentThreeDGenerationId;
 
       if (threeDGenerationIdChanged) {
-        lastSavedThreeDGenerationIdRef.current = currentThreeDGenerationId;
         saveDraftAnnotation(requestBody, saveAnnotations);
       } else {
         saveDraftAnnotation(requestBody, debouncedSave);

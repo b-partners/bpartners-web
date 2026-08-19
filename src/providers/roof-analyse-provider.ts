@@ -143,6 +143,18 @@ export const getDetectionResult = async () => {
   return lastDetection;
 };
 
+export const getDetectionById = async (detectionId: string) => {
+  const apiKey = await getApiKey();
+  const data = await fetch(`${baseUrl}/detections/${detectionId}`, {
+    headers: { 'x-api-key': apiKey, 'content-type': 'application/json' },
+    method: 'GET',
+  });
+  const result = await data.json();
+  const detection = Array.isArray(result) ? [...result].sort((a, b) => +new Date(b.creationDatetime) - +new Date(a.creationDatetime))[0] : result;
+  if (!detection?.geoJsonZone?.[0]?.properties?.vgg_file_url) throw new Error('Not done');
+  return detection;
+};
+
 export const initiateRoofProperties = async () => {
   const apiKey = await getApiKey();
   const detectionId = annotatorStore.useAnnotatorStore.getState().roofAnalyseId || getCached.roofAnalyseId() || '';

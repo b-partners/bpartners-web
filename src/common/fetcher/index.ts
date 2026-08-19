@@ -9,6 +9,7 @@ export * from './polygon-marker-fetcher';
 export * from './polygon-measurement';
 export * from './prospect-fetcher';
 export * from './prospect-queries';
+export * from './restore-roof-analyse';
 export * from './retry-until-ready';
 export * from './roof-analyse-queries';
 export * from './roof-polygon-fetcher';

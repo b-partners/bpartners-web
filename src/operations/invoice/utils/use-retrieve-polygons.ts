@@ -103,8 +103,8 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       setAreaPictureAnnotationState(areaPictureAnnotationParam);
 
       annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
-      annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
       annotatorStore.useAnnotatorStore.getState().setRoofAnalyseId(roofAnalyseId);
+      annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
       restoreThreeDMapping(areaPictureAnnotationParam?.properties);
       return;
     }
@@ -141,8 +141,8 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
         setAreaPictureAnnotationState(areaPictureAnnotation);
 
         annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(!!threeDGenerationMode);
-        if (threeDGenerationId) annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
         annotatorStore.useAnnotatorStore.getState().setRoofAnalyseId(roofAnalyseId);
+        if (threeDGenerationId) annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(threeDGenerationId);
         restoreThreeDMapping(areaPictureAnnotation?.properties);
       }
     });
