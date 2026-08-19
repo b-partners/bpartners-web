@@ -134,7 +134,7 @@ export const Annotator = () => {
       </Stack>
       <Toolbar sx={annotatorBottomToolbarStyle}>
         <Stack direction='row'>
-          <DegradationLevelsStack globalRate={globalRate} />
+          <DegradationLevelsStack globalRate={globalRate ?? { value: 0, type: 'A' }} />
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
           <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />
