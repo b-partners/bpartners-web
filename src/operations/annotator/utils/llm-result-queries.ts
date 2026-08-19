@@ -18,7 +18,7 @@ export const useLlmResultQuery = () => {
     try {
       const globalRate = calculateGlobalRate();
       const result = await fetch(
-        `${baseUrl}?surfaceEnM2=${area}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(covering)}&moisissure=${moldRate || 0}&usure=${wearLevel || 0}&obstacles=${obstacle ? JSON.stringify(obstacle) : 'Non définie'}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${globalRate.value}&category=${globalRate?.type}&humidit%C3%A9=${humidityLevel || 0}&commentaireCouvreur=${comment || 'Pas de commentaire'}&x-api-key=${apiKey}`
+        `${baseUrl}?surfaceEnM2=${area}&revetement=${annotationCoveringMapper.fromAnalyseResultToDomain(covering)}&moisissure=${moldRate || 0}&usure=${wearLevel || 0}&obstacles=${obstacle ? JSON.stringify(obstacle) : 'Non définie'}&risqueFeu=false&fissureCassure=false&noteDegradationGlobale=${globalRate?.value}&category=${globalRate?.type}&humidit%C3%A9=${humidityLevel || 0}&commentaireCouvreur=${comment || 'Pas de commentaire'}&x-api-key=${apiKey}`
       );
 
       const _htmlResult = await result.text();

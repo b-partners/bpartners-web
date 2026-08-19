@@ -38,8 +38,8 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       polygons: polygonList,
       address,
       imageUrl: getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE'),
-      globalRateType: globalRate.type,
-      globalRateValue: globalRate.value,
+      globalRateType: globalRate?.type ?? null,
+      globalRateValue: globalRate?.value ?? null,
       conf: confRef.current,
     });
   };

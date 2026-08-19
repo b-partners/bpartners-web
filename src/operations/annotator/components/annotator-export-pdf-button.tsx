@@ -33,8 +33,8 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
       polygons: shiftedPolygonList,
       address: areaPictureDetails.address,
       imageUrl: getFileUrl(analyseImageFileId ?? areaPictureDetails.fileId, 'AREA_PICTURE'),
-      globalRateType: globalRate.type,
-      globalRateValue: globalRate.value,
+      globalRateType: globalRate?.type ?? null,
+      globalRateValue: globalRate?.value ?? null,
       conf,
     });
   };

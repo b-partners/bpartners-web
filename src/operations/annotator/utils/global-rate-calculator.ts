@@ -1,5 +1,4 @@
 import { annotatorStore, getAnnotationScreen } from '@/common/store';
-import { AnnotationInfo } from '../types';
 
 export const isAnalyseRoofAnnotation = (annotation: Parameters<typeof getAnnotationScreen>[0]) =>
   getAnnotationScreen(annotation) === 'roof-analyse' && annotation.annotationInfos?.labelType === 'roof';
@@ -18,8 +17,11 @@ export const getAnalyseRoofAnnotation = () => Object.values(annotatorStore.useAn
  * @param annotationInfo - The annotation data containing the rates
  * @returns The calculated global rate
  */
-export const calculateGlobalRate = (): { value: number; type: string } => {
-  const annotationInfo = getAnalyseRoofAnnotation()?.annotationInfos || ({} as AnnotationInfo);
+export const calculateGlobalRate = (): { value: number; type: string } | null => {
+  const analyseRoofAnnotation = getAnalyseRoofAnnotation();
+  if (!analyseRoofAnnotation) return null;
+
+  const annotationInfo = analyseRoofAnnotation.annotationInfos;
   const alpha = 0.4;
   const beta = 0.8;
   const gamma = 1.0;
