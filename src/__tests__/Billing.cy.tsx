@@ -6,7 +6,11 @@ import dayjs from 'dayjs';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance, visaPaymentMethods } from './mocks/responses';
 import { user1 } from './mocks/responses/security-api';
-import { autoRenewedSubscriptionCommitments, ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
+import {
+  autoRenewedSubscriptionCommitments,
+  expiredSubscriptionCommitments,
+  ongoingSubscriptionCommitments,
+} from './mocks/responses/subscription-commitments-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const STRIPE_REDIRECTION_URL = 'https://checkout.stripe.com/c/pay/cs_test_123';
@@ -179,6 +183,17 @@ describe('Billing modal', () => {
       .and('contain', 'Reconduit pour 12 mois à l’échéance')
       .and('contain', `Jusqu’au ${dayjs(autoRenewedSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')}`)
       .and('not.contain', 'sans reconduction');
+  });
+
+  it('drives the renewal block from the most recent commitment whatever the order returned', () => {
+    openBilling({ commitments: [...expiredSubscriptionCommitments, ...autoRenewedSubscriptionCommitments] });
+
+    cy.get('.billing-plan-meta')
+      .should('contain', 'Renouvellement')
+      .and('contain', 'Automatique')
+      .and('contain', `Jusqu’au ${dayjs(autoRenewedSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')}`)
+      .and('not.contain', 'sans reconduction')
+      .and('not.contain', `Jusqu’au ${dayjs(expiredSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')}`);
   });
 
   it('hides the upgrade action on an active subscription', () => {
