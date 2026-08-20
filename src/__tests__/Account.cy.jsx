@@ -6,7 +6,6 @@ import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
-import { ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 describe(specTitle('Account'), () => {
@@ -256,7 +255,6 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
 
@@ -279,6 +277,7 @@ describe(specTitle('Account'), () => {
       ...whoami1.user,
       subscription: {
         status: 'ACTIVE',
+        billingInterval: 'MONTHLY',
         plan: {
           name: 'Pro',
           description: 'Pour les PME en croissance.',
@@ -293,29 +292,31 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
-    cy.wait('@getCommitments');
 
     cy.get('.subscription-plan-name').should('contain', 'Pro');
     cy.contains('Pour les PME en croissance.');
     cy.contains('99 €');
     cy.contains('HT · engagement annuel 12 mois');
+    cy.get('.subscription-price-yearly')
+      .invoke('text')
+      .should('match', /^1\s188\s€ HT \/ an$/);
     cy.contains('Analyse IA toiture complète');
     cy.contains('Export PDF + emprise GeoJSON');
     cy.contains('Validation de votre abonnement en cours').should('not.exist');
     cy.contains('Vous n’avez pas d’abonnement actif.').should('not.exist');
   });
 
-  it('Subscription card ACTIVE without commitment shows one-shot payment label', () => {
+  it('Subscription card ACTIVE billed yearly shows the discounted annual price paid', () => {
     const subscribedUser = {
       ...whoami1.user,
       subscription: {
         status: 'ACTIVE',
-        plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+        billingInterval: 'YEARLY',
+        plan: { id: 'plan-pro', name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
       },
     };
 
@@ -323,18 +324,59 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, []).as('getCommitments');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
-    cy.wait('@getCommitments');
+    cy.wait('@getSubscriptionPlans');
 
-    cy.contains('Prix HT · payé en une fois');
+    cy.get('.subscription-price')
+      .invoke('text')
+      .should('match', /^1\s069\s€$/);
+    cy.get('.subscription-price-suffix').should('have.text', '/ an');
+    cy.get('.subscription-price-discount')
+      .invoke('text')
+      .should('match', /^au lieu de 1\s188\s€ \/ an$/);
+    cy.get('.subscription-price-reference')
+      .invoke('text')
+      .should('match', /^1\s188\s€ \/ an$/);
+    cy.get('.subscription-discount-badge').should('have.text', '-10 %');
+    cy.contains('Prix HT · payé en une fois · soit 89 € HT / mois');
     cy.contains('HT · engagement annuel 12 mois').should('not.exist');
+    cy.get('.subscription-price-yearly').should('not.exist');
   });
 
-  it('Subscription card ACTIVE keeps a neutral label when commitments cannot be fetched', () => {
+  it('Subscription card ACTIVE billed yearly hides the annual price when the plan is not resolved', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        billingInterval: 'YEARLY',
+        plan: { id: 'plan-unknown', name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getSubscriptionPlans');
+
+    cy.get('.subscription-price').should('have.text', '99 €');
+    cy.get('.subscription-price-suffix').should('have.text', '/ mois');
+    cy.get('.subscription-price-ht').should('have.text', 'Prix HT · payé en une fois');
+    cy.get('.subscription-price-discount').should('not.exist');
+    cy.get('.subscription-discount-badge').should('not.exist');
+    cy.get('.subscription-price-yearly').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE keeps a neutral label as long as nothing has been paid', () => {
     const subscribedUser = {
       ...whoami1.user,
       subscription: {
@@ -347,12 +389,10 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, { statusCode: 500, body: {} }).as('getCommitments');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
-    cy.get('@getCommitments.all', { timeout: 20000 }).should('have.length', 4);
 
     cy.get('.subscription-price-ht').should('have.text', 'Prix HT');
     cy.contains('HT · engagement annuel 12 mois').should('not.exist');
@@ -373,7 +413,6 @@ describe(specTitle('Account'), () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
-    cy.intercept('GET', `**/users/${whoami1.user.id}/subscriptionCommitments*`, ongoingSubscriptionCommitments).as('getCommitments');
 
     cy.mount(<App />);
     cy.get('[name="account"]').click();
@@ -509,6 +548,7 @@ describe(specTitle('Account'), () => {
         ...modifiedAccountHolders[0].user,
         subscription: {
           status: 'ACTIVE',
+          billingInterval: 'MONTHLY',
           start: subscriptionStart,
           end: '2022-01-31',
         },
@@ -535,6 +575,42 @@ describe(specTitle('Account'), () => {
 
     cy.contains('Période de votre abonnement');
     cy.contains(`Début de votre abonnement : ${new Date(subscriptionStart).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
-    cy.contains(`Fin de votre abonnement : ${commitmentEnd.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains(`Fin de votre engagement : ${commitmentEnd.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+  });
+
+  it('Block Trial card ACTIVE billed yearly shows the paid period end', () => {
+    const subscriptionStart = '2022-01-01';
+    const subscriptionEnd = '2023-01-01';
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          billingInterval: 'YEARLY',
+          start: subscriptionStart,
+          end: subscriptionEnd,
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.get('#closeWarning').click();
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Période de votre abonnement');
+    cy.contains(`Fin de votre abonnement : ${new Date(subscriptionEnd).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains('Fin de votre engagement').should('not.exist');
   });
 });

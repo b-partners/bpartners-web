@@ -1,10 +1,30 @@
-import { useGetOngoingSubscriptionCommitment } from '@/operations/account/queries';
+import { useGetOngoingSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
 import { EnableStatus, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import { Box, Button, Typography } from '@mui/material';
 import { FC } from 'react';
 import { BillingSection } from './BillingSection';
-import { formatDate, formatEuros, getBillingIntervalHint, getBillingIntervalLabel, getCommitmentEndLabel, hasActivePlan, isUsageBasedPlan } from './utils';
+import {
+  formatDate,
+  formatEuros,
+  getBillingIntervalHint,
+  getBillingIntervalLabel,
+  getCommitmentEndLabel,
+  getYearlyDiscountBadge,
+  getYearlyPricing,
+  getYearlyReferenceLabel,
+  hasActivePlan,
+  hasTwelveMonthCommitment,
+  isUsageBasedPlan,
+  isYearlyBilling,
+  YearlyPricing,
+} from './utils';
+
+const getAmountHint = (isUsageBased: boolean, yearlyPricing?: YearlyPricing) => {
+  if (isUsageBased) return 'HT / analyse';
+  if (!yearlyPricing) return 'HT / mois';
+  return `HT / an · soit ${formatEuros(yearlyPricing.monthlyEquivalentCents)} HT / mois`;
+};
 
 interface BillingSubscriptionSectionProps {
   subscription?: UserSubscription;
@@ -16,10 +36,16 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
   const isActive = hasActivePlan(subscription);
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const isUsageBased = isUsageBasedPlan(plan);
-  const { commitment, isCommitmentUnknown } = useGetOngoingSubscriptionCommitment(isActive && !isUsageBased);
+  const hasCommitment = hasTwelveMonthCommitment(subscription);
+  const { commitment } = useGetOngoingSubscriptionCommitment(isActive && hasCommitment);
+  const { plans } = useGetSubscriptionPlans(isActive && isYearlyBilling(subscription));
+  const yearlyPricing = getYearlyPricing(
+    subscription,
+    plans.find(({ id }) => id === plan?.id)
+  );
   const isAutomaticRenewal = commitment?.automaticRenewalStatus === EnableStatus.ENABLED;
-  const billingIntervalLabel = getBillingIntervalLabel(subscription, commitment, isCommitmentUnknown);
-  const billingIntervalHint = getBillingIntervalHint(subscription, commitment, isCommitmentUnknown);
+  const billingIntervalLabel = getBillingIntervalLabel(subscription);
+  const billingIntervalHint = getBillingIntervalHint(subscription);
 
   const getInactiveHint = () => {
     if (!isCancelled) return 'Souscrivez à une offre pour lancer vos analyses.';
@@ -30,7 +56,7 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
     if (isCancelled) return 'Aucun renouvellement, l’abonnement prend fin';
     if (isUsageBased) return 'Aucun renouvellement, facturé à chaque analyse';
     if (!subscription?.end) return 'Date de renouvellement indisponible';
-    if (!commitment) return 'Fin de la période payée';
+    if (!hasCommitment) return 'Fin de la période payée';
     return isAutomaticRenewal ? 'Reconduction automatique' : 'Sans reconduction automatique';
   };
 
@@ -45,15 +71,28 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
           <Box className='billing-plan-meta'>
             <Box>
               <Typography className='billing-label'>Montant</Typography>
-              <Typography className='billing-plan-price'>{formatEuros(plan?.priceInCentsWithoutVat)}</Typography>
-              <Typography className='billing-hint'>{isUsageBased ? 'HT / analyse' : 'HT / mois'}</Typography>
+              <Typography className='billing-plan-price'>{formatEuros(yearlyPricing ? yearlyPricing.annualCents : plan?.priceInCentsWithoutVat)}</Typography>
+              <Typography className='billing-hint'>{getAmountHint(isUsageBased, yearlyPricing)}</Typography>
+              {!!yearlyPricing?.discountPercent && (
+                <Box className='billing-price-discount-row'>
+                  <Typography className='billing-price-discount'>
+                    au lieu de{' '}
+                    <Box component='span' className='billing-price-reference'>
+                      {getYearlyReferenceLabel(yearlyPricing)}
+                    </Box>
+                  </Typography>
+                  <Box component='span' className='billing-discount-badge'>
+                    {getYearlyDiscountBadge(yearlyPricing)}
+                  </Box>
+                </Box>
+              )}
             </Box>
             <Box>
               <Typography className='billing-label'>Paiement</Typography>
               <Typography className='billing-value'>{billingIntervalLabel}</Typography>
               <Typography className='billing-hint'>{billingIntervalHint}</Typography>
             </Box>
-            {!!commitment && (
+            {hasCommitment && (
               <Box>
                 <Typography className='billing-label'>Engagement</Typography>
                 <Typography className='billing-value'>12 mois</Typography>

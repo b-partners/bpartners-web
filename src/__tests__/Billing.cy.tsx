@@ -1,7 +1,7 @@
 import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { isSubscriptionCancellationEnabled } from '@/operations/account/components/billing';
-import { User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
+import { BillingInterval, User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance, visaPaymentMethods } from './mocks/responses';
 import { user1 } from './mocks/responses/security-api';
@@ -20,13 +20,14 @@ const usageBasedPlan = subscriptionPlans.find(({ id }) => id === 'plan-usage')!;
 
 const cancelledUser: User = { ...user1, subscription: { status: 'CANCELLED', start: new Date('2026-01-01T00:00:00Z'), end: new Date('2026-04-01T00:00:00Z') } };
 
-const withPlan = (plan: (typeof subscriptionPlans)[number]): User => ({
+const withPlan = (plan: (typeof subscriptionPlans)[number], billingInterval?: BillingInterval): User => ({
   ...user1,
   subscription: {
     status: 'ACTIVE',
     start: new Date('2026-01-01T00:00:00Z'),
     end: new Date('2026-04-01T00:00:00Z'),
     plan,
+    billingInterval,
   },
 });
 
@@ -39,7 +40,7 @@ interface OpenBillingOptions {
 }
 
 const openBilling = ({
-  user = withPlan(proPlan),
+  user = withPlan(proPlan, 'MONTHLY'),
   commitments = ongoingSubscriptionCommitments,
   balance = creditBalance,
   packs = creditPacks,
@@ -178,16 +179,34 @@ describe('Billing modal', () => {
   });
 
   it('describes a subscription billed per analysis', () => {
-    openBilling({ user: withPlan(usageBasedPlan) });
+    openBilling({ user: withPlan(usageBasedPlan, 'MONTHLY') });
 
     cy.contains("À l'usage").should('be.visible');
     cy.get('.billing-plan-meta').should('contain', 'Paiement').and('contain', 'Facturé à chaque analyse').and('not.contain', 'Engagement');
   });
 
   it('shows a yearly payment without any commitment block', () => {
-    openBilling({ commitments: [] });
+    openBilling({ user: withPlan(proPlan, 'YEARLY'), commitments: [] });
 
     cy.get('.billing-plan-meta').should('contain', 'ANNUEL').and('contain', 'Payé en une fois pour l’année').and('not.contain', 'Engagement');
+    cy.get('.billing-plan-price')
+      .invoke('text')
+      .should('match', /^1\s069\s€$/);
+    cy.get('.billing-price-discount')
+      .invoke('text')
+      .should('match', /^au lieu de 1\s188\s€ \/ an$/);
+    cy.get('.billing-discount-badge').should('have.text', '-10 %');
+    cy.get('.billing-plan-meta').should('contain', 'HT / an · soit 89 € HT / mois');
+  });
+
+  it('keeps the periodicity neutral as long as no subscription has been paid', () => {
+    openBilling({ user: withPlan(proPlan), commitments: [] });
+
+    cy.get('.billing-plan-meta').should('contain', 'Périodicité définie au premier paiement').and('not.contain', 'Engagement');
+    cy.get('.billing-price-discount').should('not.exist');
+    cy.get('.billing-discount-badge').should('not.exist');
+    cy.get('.billing-plan-meta').should('contain', 'HT / mois');
+    cy.get('.billing-plan-meta').should('not.contain', 'MENSUEL').and('not.contain', 'ANNUEL');
   });
 
   (isSubscriptionCancellationEnabled() ? describe : describe.skip)('Résiliation', () => {

@@ -1,7 +1,7 @@
 import { SubscriptionModal } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
-import { useGetOngoingSubscriptionCommitment } from '@/operations/account/queries';
+import { useGetSubscriptionPlans } from '@/operations/account/queries';
 import { CREDIT_PURCHASE_STATUS_PARAM, profileProvider } from '@/providers';
 import { SubscriptionPlanDescription, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { useRecordContext, useRefresh } from 'react-admin';
 import { useSearchParams } from 'react-router-dom';
 import { BillingModal } from './billing';
+import { getYearlyDiscountBadge, getYearlyPricing, getYearlyReferenceLabel, hasTwelveMonthCommitment, isYearlyBilling, YearlyPricing } from './billing/utils';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
 const VALIDATION_POLL_INTERVAL_MS = 3000;
@@ -25,13 +26,16 @@ const getPriceCents = (plan?: SubscriptionPlanDescription) => plan?.priceInCents
 
 const getPriceSuffix = (plan?: SubscriptionPlanDescription) => (isUsageBased(plan) ? '/ analyse' : '/ mois');
 
-const getPriceHt = (plan: SubscriptionPlanDescription | undefined, hasCommitment: boolean, isCommitmentUnknown: boolean) => {
-  if (isUsageBased(plan)) return 'Prix HT · aucun abonnement';
-  if (isCommitmentUnknown) return 'Prix HT';
-  return hasCommitment ? 'HT · engagement annuel 12 mois' : 'Prix HT · payé en une fois';
+const getPriceHt = (subscription?: UserSubscription, yearlyPricing?: YearlyPricing) => {
+  if (isUsageBased(subscription?.plan)) return 'Prix HT · aucun abonnement';
+  if (!subscription?.billingInterval) return 'Prix HT';
+  if (hasTwelveMonthCommitment(subscription)) return 'HT · engagement annuel 12 mois';
+  if (!yearlyPricing) return 'Prix HT · payé en une fois';
+  return `Prix HT · payé en une fois · soit ${formatEuros(yearlyPricing.monthlyEquivalentCents)} HT / mois`;
 };
 
-const getYearlyLabel = (plan?: SubscriptionPlanDescription) => (isUsageBased(plan) ? '' : `${formatEuros(getPriceCents(plan) * 12)} HT / an`);
+const getYearlyLabel = (subscription?: UserSubscription) =>
+  hasTwelveMonthCommitment(subscription) ? `${formatEuros(getPriceCents(subscription?.plan) * 12)} HT / an` : '';
 
 const getFeatures = (plan?: SubscriptionPlanDescription) => {
   const features = plan?.features ?? [];
@@ -53,8 +57,12 @@ export const SubscriptionCard = () => {
   const isValidating = !plan && subscription?.status === UserSubscriptionStatus.ACTIVE;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const features = getFeatures(plan);
-  const yearlyLabel = getYearlyLabel(plan);
-  const { commitment, isCommitmentUnknown } = useGetOngoingSubscriptionCommitment(hasActiveSubscription && !isUsageBased(plan));
+  const { plans } = useGetSubscriptionPlans(hasActiveSubscription && isYearlyBilling(subscription));
+  const yearlyPricing = getYearlyPricing(
+    subscription,
+    plans.find(({ id }) => id === plan?.id)
+  );
+  const yearlyLabel = getYearlyLabel(subscription);
 
   const openSubscriptionModal = () => openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
 
@@ -111,13 +119,26 @@ export const SubscriptionCard = () => {
 
             <Box className='subscription-price-row'>
               <Typography component='span' className='subscription-price'>
-                {formatEuros(getPriceCents(plan))}
+                {formatEuros(yearlyPricing ? yearlyPricing.annualCents : getPriceCents(plan))}
               </Typography>
               <Typography component='span' className='subscription-price-suffix'>
-                {getPriceSuffix(plan)}
+                {yearlyPricing ? '/ an' : getPriceSuffix(plan)}
               </Typography>
+              {!!yearlyPricing?.discountPercent && (
+                <>
+                  <Typography component='span' className='subscription-price-discount'>
+                    au lieu de{' '}
+                    <Box component='span' className='subscription-price-reference'>
+                      {getYearlyReferenceLabel(yearlyPricing)}
+                    </Box>
+                  </Typography>
+                  <Box component='span' className='subscription-discount-badge'>
+                    {getYearlyDiscountBadge(yearlyPricing)}
+                  </Box>
+                </>
+              )}
             </Box>
-            <Typography className='subscription-price-ht'>{getPriceHt(plan, !!commitment, isCommitmentUnknown)}</Typography>
+            <Typography className='subscription-price-ht'>{getPriceHt(subscription, yearlyPricing)}</Typography>
             {yearlyLabel && <Typography className='subscription-price-yearly'>{yearlyLabel}</Typography>}
 
             <Box component='ul' className='subscription-features'>

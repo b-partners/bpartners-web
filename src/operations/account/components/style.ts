@@ -224,6 +224,27 @@ export const AccountStyle: SxProps = {
     fontWeight: 500,
     color: PALETTE_COLORS.stone,
   },
+  '& .subscription-discount-badge': {
+    fontSize: '11px',
+    fontWeight: 800,
+    letterSpacing: '0.02em',
+    color: PALETTE_COLORS.pine,
+    bgcolor: alpha(PALETTE_COLORS.pine, 0.08),
+    border: `1px solid ${alpha(PALETTE_COLORS.pine, 0.5)}`,
+    borderRadius: '999px',
+    px: 1,
+    py: 0.25,
+    lineHeight: 1.6,
+    whiteSpace: 'nowrap',
+  },
+  '& .subscription-price-discount': {
+    fontSize: '13px',
+    fontWeight: 400,
+    color: PALETTE_COLORS.stone,
+  },
+  '& .subscription-price-reference': {
+    fontWeight: 700,
+  },
   '& .subscription-price-ht': {
     fontSize: '11px',
     color: PALETTE_COLORS.stone,

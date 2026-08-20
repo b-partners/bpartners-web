@@ -10,6 +10,7 @@ const TEXT = PALETTE_COLORS.black;
 const MUTED = PALETTE_COLORS.stone;
 const BORDER = PALETTE_COLORS.linen;
 const DOTTED = PALETTE_COLORS.sand;
+const GREEN = PALETTE_COLORS.pine;
 
 export const BillingModalStyle: SxProps = {
   '& .MuiDialog-paper': {
@@ -164,6 +165,33 @@ export const BillingModalStyle: SxProps = {
     fontWeight: 800,
     color: ORANGE,
     lineHeight: 1.1,
+  },
+  '& .billing-price-discount-row': {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '6px',
+    flexWrap: 'wrap',
+  },
+  '& .billing-discount-badge': {
+    fontSize: '10px',
+    fontWeight: 800,
+    letterSpacing: '0.02em',
+    color: GREEN,
+    backgroundColor: alpha(GREEN, 0.08),
+    border: `1px solid ${alpha(GREEN, 0.5)}`,
+    borderRadius: '999px',
+    padding: '1px 7px',
+    lineHeight: 1.6,
+    whiteSpace: 'nowrap',
+  },
+  '& .billing-price-discount': {
+    fontSize: '11px',
+    fontWeight: 400,
+    color: MUTED,
+    marginTop: '2px',
+  },
+  '& .billing-price-reference': {
+    fontWeight: 700,
   },
 
   '& .billing-card': {

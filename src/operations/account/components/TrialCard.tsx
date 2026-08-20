@@ -1,10 +1,16 @@
 import { UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useRecordContext } from 'react-admin';
+import { hasTwelveMonthCommitment } from './billing/utils';
 
 const PARIS_TIME_ZONE = 'Europe/Paris';
 
-const formatParisDate = (date: Date) => date.toLocaleDateString('fr-FR', { timeZone: PARIS_TIME_ZONE });
+const toValidDate = (date?: Date | string) => {
+  const parsed = date ? new Date(date) : undefined;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : undefined;
+};
+
+const formatParisDate = (date?: Date) => (date ? date.toLocaleDateString('fr-FR', { timeZone: PARIS_TIME_ZONE }) : '—');
 
 const getSubscriptionCommitmentEndDate = (subscriptionStart: Date) => {
   const end = new Date(subscriptionStart);
@@ -20,11 +26,11 @@ export const TrialCard = () => {
   const isFreeTrial = subscription?.status === UserSubscriptionStatus.FREE_TRIAL;
   const isActive = subscription?.status === UserSubscriptionStatus.ACTIVE;
 
-  const subscriptionStart = new Date(subscription?.start);
-  const subscriptionTrialEnd = new Date(subscription?.end);
-  const subscriptionCommitmentEnd = getSubscriptionCommitmentEndDate(subscriptionStart);
+  const subscriptionStart = toValidDate(subscription?.start);
+  const subscriptionEnd = toValidDate(subscription?.end);
+  const hasCommitment = !isFreeTrial && hasTwelveMonthCommitment(subscription);
 
-  const periodEnd = isFreeTrial ? subscriptionTrialEnd : subscriptionCommitmentEnd;
+  const periodEnd = hasCommitment && subscriptionStart ? getSubscriptionCommitmentEndDate(subscriptionStart) : subscriptionEnd;
 
   return (
     <Card className='card card-trial'>
@@ -37,7 +43,7 @@ export const TrialCard = () => {
               {isFreeTrial ? 'Début de la période d’essai' : 'Début de votre abonnement'} : {formatParisDate(subscriptionStart)}
             </Typography>
             <Typography className='trial-end'>
-              {isFreeTrial ? 'Fin de la période d’essai' : 'Fin de votre abonnement'} : {formatParisDate(periodEnd)}
+              {isFreeTrial ? 'Fin de la période d’essai' : hasCommitment ? 'Fin de votre engagement' : 'Fin de votre abonnement'} : {formatParisDate(periodEnd)}
             </Typography>
           </>
         ) : (
