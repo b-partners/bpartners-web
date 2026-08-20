@@ -1,4 +1,6 @@
 import { useDialog } from '@/common/store/dialog';
+import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
+import { BillingModalStyle } from '@/operations/account/components/billing/style';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
@@ -12,6 +14,10 @@ import { SubscriptionConsentStep } from './SubscriptionConsentStep';
 import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
 
 type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
+
+const SUBSCRIPTION_DIALOG_PROPS = { maxWidth: 'lg', fullWidth: true } as const;
+
+const BILLING_DIALOG_PROPS = { ...SUBSCRIPTION_DIALOG_PROPS, sx: BillingModalStyle } as const;
 
 interface SubscriptionInitVariables {
   subscriptionPlanIdentifier: string;
@@ -32,7 +38,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const [step, setStep] = useState<SubscriptionStep>('PLAN');
   const [redirectionUrl, setRedirectionUrl] = useState<string>();
   const [selectedPlanId, setSelectedPlanId] = useState<string>();
-  const { close } = useDialog();
+  const { close, open: openDialog } = useDialog();
   const [searchParams] = useSearchParams();
 
   const {
@@ -64,11 +70,19 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
+  const openBillingCredits = () => {
+    const onCloseBilling = allowClose ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
+    openDialog(<BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits />, BILLING_DIALOG_PROPS, allowClose);
+  };
+
   const onSelectPlan = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => {
-    if (plan.id) {
-      setSelectedPlanId(plan.id);
-      mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
+    if (!plan.id) return;
+    if (isUsageBased(plan)) {
+      openBillingCredits();
+      return;
     }
+    setSelectedPlanId(plan.id);
+    mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
   };
 
   const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);

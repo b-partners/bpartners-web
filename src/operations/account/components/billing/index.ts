@@ -2,6 +2,7 @@ export * from './BillingCancellationSection';
 export * from './BillingCreditsSection';
 export * from './BillingInvoicesSection';
 export * from './BillingModal';
+export * from './BillingModalContent';
 export * from './BillingPaymentMethodSection';
 export * from './BillingSection';
 export * from './BillingSubscriptionSection';
