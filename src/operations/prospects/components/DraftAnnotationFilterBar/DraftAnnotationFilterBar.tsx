@@ -57,7 +57,7 @@ export const DraftAnnotationFilterBar = () => {
 
   return (
     <FlexBox sx={DraftAnnotationFilterBarStyle} className='draft-filter-bar'>
-      <Search />
+      <Search className='draft-filter-search-icon' />
       {chips.map(filter => (
         <FlexBox key={filter.key} className='draft-filter-chip' data-cy={`draft-filter-chip-${filter.key}`}>
           <span className='draft-filter-chip-label'>{`${filter.label} : ${filters[filter.key]}`}</span>
@@ -76,13 +76,12 @@ export const DraftAnnotationFilterBar = () => {
         onKeyDown={handleKeyDown}
       />
       {activeFilter?.type === 'date' && (
-        <IconButton data-cy='draft-filter-date-picker-button' size='small' onClick={() => inputRef.current?.showPicker?.()}>
-          <CalendarMonth fontSize='small' />
+        <IconButton data-cy='draft-filter-date-picker-button' onClick={() => inputRef.current?.showPicker?.()}>
+          <CalendarMonth />
         </IconButton>
       )}
       <IconButton
         data-cy='draft-filter-menu-button'
-        size='small'
         className='draft-filter-menu-button'
         onClick={(event: MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
       >
