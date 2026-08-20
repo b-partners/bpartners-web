@@ -2,7 +2,7 @@ import { SubscriptionModal } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { useGetOngoingSubscriptionCommitment } from '@/operations/account/queries';
-import { profileProvider } from '@/providers';
+import { CREDIT_PURCHASE_STATUS_PARAM, profileProvider } from '@/providers';
 import { SubscriptionPlanDescription, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
@@ -10,7 +10,8 @@ import { Box, Button, Card, CardContent, CircularProgress, Typography } from '@m
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useRecordContext, useRefresh } from 'react-admin';
-import { SubscriptionInvoiceModal } from './SubscriptionInvoiceModal';
+import { useSearchParams } from 'react-router-dom';
+import { BillingModal } from './billing';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
 const VALIDATION_POLL_INTERVAL_MS = 3000;
@@ -41,10 +42,11 @@ const getFeatures = (plan?: SubscriptionPlanDescription) => {
 const INACTIVE_SUBSCRIPTION_STATUSES: (UserSubscriptionStatus | undefined)[] = [UserSubscriptionStatus.EMPTY, UserSubscriptionStatus.CANCELLED];
 
 export const SubscriptionCard = () => {
-  const { value: isInvoiceModalOpen, handleOpen, handleClose } = useToggle();
+  const { value: isBillingModalOpen, handleOpen, handleClose } = useToggle();
   const { open: openDialog } = useDialog();
   const record = useRecordContext();
   const refresh = useRefresh();
+  const [searchParams] = useSearchParams();
   const userId = record?.user?.id as string | undefined;
   const subscription = record?.user?.subscription as UserSubscription | undefined;
   const plan = subscription?.plan;
@@ -57,6 +59,10 @@ export const SubscriptionCard = () => {
   const { commitment, isCommitmentUnknown } = useGetOngoingSubscriptionCommitment(hasActiveSubscription && !isUsageBased(plan));
 
   const openSubscriptionModal = () => openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
+
+  useEffect(() => {
+    if (searchParams.get(CREDIT_PURCHASE_STATUS_PARAM)) handleOpen();
+  }, [searchParams]);
 
   useEffect(() => {
     if (!isValidating || !userId) return;
@@ -83,8 +89,8 @@ export const SubscriptionCard = () => {
       <CardContent>
         <Box className='subscription-header'>
           <Typography className='subscription-title'>Mon abonnement</Typography>
-          <Button variant='contained' className='export-invoice-action' name='open-subscription-invoice-modal' onClick={handleOpen}>
-            Télécharger mes factures
+          <Button variant='contained' className='export-invoice-action' name='open-billing-modal' onClick={handleOpen}>
+            Accéder à la facturation
           </Button>
         </Box>
 
@@ -151,7 +157,7 @@ export const SubscriptionCard = () => {
           </Box>
         )}
 
-        <SubscriptionInvoiceModal open={isInvoiceModalOpen} onClose={handleClose} />
+        <BillingModal open={isBillingModalOpen} onClose={handleClose} subscription={subscription} />
       </CardContent>
     </Card>
   );
