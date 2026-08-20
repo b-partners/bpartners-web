@@ -10,17 +10,15 @@ const baseArgs = {
 };
 
 describe('exportAnnotationMapper — global rate passthrough', () => {
-  it('forwards a null globalRateType and globalRateValue when no roof analysis exists', () => {
-    cy.wrap(exportAnnotationMapper({ ...baseArgs, globalRateType: null, globalRateValue: null })).then(result => {
+  it('forwards a null globalRateType and globalRateValue when no roof analysis exists', () =>
+    exportAnnotationMapper({ ...baseArgs, globalRateType: null, globalRateValue: null }).then(result => {
       expect(result.globalRateType).to.be.null;
       expect(result.globalRateValue).to.be.null;
-    });
-  });
+    }));
 
-  it('forwards the computed globalRateType and globalRateValue unchanged when a roof analysis exists', () => {
-    cy.wrap(exportAnnotationMapper({ ...baseArgs, globalRateType: 'B', globalRateValue: 10 })).then(result => {
+  it('forwards the computed globalRateType and globalRateValue unchanged when a roof analysis exists', () =>
+    exportAnnotationMapper({ ...baseArgs, globalRateType: 'B', globalRateValue: 10 }).then(result => {
       expect(result.globalRateType).to.equal('B');
       expect(result.globalRateValue).to.equal(10);
-    });
-  });
+    }));
 });

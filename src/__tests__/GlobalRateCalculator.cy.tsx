@@ -5,7 +5,7 @@ const ROOF_POLYGON_ID = 'roof-analyse-1';
 
 const roofAnalyseAnnotation = (annotationInfos: { wearLevel?: number; moldRate?: number; humidityLevel?: number }) => ({
   isFirst: true,
-  polygon: { id: ROOF_POLYGON_ID, points: [] },
+  polygon: { id: ROOF_POLYGON_ID, points: [] as { x: number; y: number }[], fillColor: '', strokeColor: '' },
   annotationInfos: { labelType: 'roof' as const, polygonId: ROOF_POLYGON_ID, ...annotationInfos },
   screen: 'roof-analyse' as const,
 });
@@ -30,13 +30,13 @@ describe('calculateGlobalRate', () => {
     annotatorStore.useAnnotatorStore.getState().setAnnotations({
       '0': {
         isFirst: true,
-        polygon: { id: 'pan-1', points: [] },
+        polygon: { id: 'pan-1', points: [], fillColor: '', strokeColor: '' },
         annotationInfos: { labelType: 'pan', polygonId: 'pan-1' },
         screen: 'annotator',
       },
       '1': {
         isFirst: false,
-        polygon: { id: 'roof-annotator-1', points: [] },
+        polygon: { id: 'roof-annotator-1', points: [], fillColor: '', strokeColor: '' },
         annotationInfos: { labelType: 'roof', polygonId: 'roof-annotator-1' },
         screen: 'annotator',
       },
