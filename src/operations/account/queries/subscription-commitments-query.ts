@@ -3,22 +3,22 @@ import { UserSubscriptionCommitment } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
-const isOngoing = ({ commitmentEnd }: UserSubscriptionCommitment) => !commitmentEnd || dayjs(commitmentEnd).isAfter(dayjs());
+const toTimestamp = ({ approvalDatetime, commitmentStart, commitmentEnd }: UserSubscriptionCommitment) => {
+  const date = approvalDatetime ?? commitmentStart ?? commitmentEnd;
+  const timestamp = date ? dayjs(date).valueOf() : Number.NaN;
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
 
-const byMostRecentStart = (a: UserSubscriptionCommitment, b: UserSubscriptionCommitment) =>
-  dayjs(b.commitmentStart).valueOf() - dayjs(a.commitmentStart).valueOf();
+const byMostRecent = (a: UserSubscriptionCommitment, b: UserSubscriptionCommitment) => toTimestamp(b) - toTimestamp(a);
 
-const toOngoingCommitment = (commitments: UserSubscriptionCommitment[]) => [...commitments].filter(isOngoing).sort(byMostRecentStart)[0];
+const toLatestCommitment = (commitments: UserSubscriptionCommitment[]) => [...commitments].sort(byMostRecent)[0];
 
-export const useGetOngoingSubscriptionCommitment = (enabled = true) => {
-  const { data, isLoading, isError } = useQuery({
+export const useGetLatestSubscriptionCommitment = (enabled = true) => {
+  const { data } = useQuery({
     queryKey: ['SubscriptionCommitmentsQuery'],
     queryFn: getSubscriptionCommitments,
-    select: toOngoingCommitment,
+    select: toLatestCommitment,
     enabled,
   });
-  return {
-    commitment: data,
-    isCommitmentUnknown: enabled && (isLoading || isError),
-  };
+  return { commitment: data };
 };

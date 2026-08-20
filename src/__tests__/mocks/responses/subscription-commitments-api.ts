@@ -15,6 +15,17 @@ export const ongoingSubscriptionCommitments: UserSubscriptionCommitment[] = [
   },
 ];
 
+export const autoRenewedSubscriptionCommitments: UserSubscriptionCommitment[] = [
+  {
+    id: 'commitment-auto-renewed',
+    duration: UserSubscriptionCommitmentDuration.TWELVE_MONTHS,
+    commitmentStart: now,
+    commitmentEnd: addYears(now, 1),
+    approvalDatetime: now,
+    automaticRenewalStatus: EnableStatus.ENABLED,
+  },
+];
+
 export const expiredSubscriptionCommitments: UserSubscriptionCommitment[] = [
   {
     id: 'commitment-expired',
