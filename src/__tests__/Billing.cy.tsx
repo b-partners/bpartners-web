@@ -3,7 +3,7 @@ import { useDialog } from '@/common/store/dialog';
 import { isSubscriptionCancellationEnabled } from '@/operations/account/components/billing';
 import { User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
-import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance } from './mocks/responses';
+import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance, visaPaymentMethods } from './mocks/responses';
 import { user1 } from './mocks/responses/security-api';
 import { ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
@@ -35,6 +35,7 @@ interface OpenBillingOptions {
   commitments?: UserSubscriptionCommitment[];
   balance?: object;
   packs?: object;
+  paymentMethods?: object;
 }
 
 const openBilling = ({
@@ -42,6 +43,7 @@ const openBilling = ({
   commitments = ongoingSubscriptionCommitments,
   balance = creditBalance,
   packs = creditPacks,
+  paymentMethods = visaPaymentMethods,
 }: OpenBillingOptions = {}) => {
   cy.cognitoLogin({ whoami: { user }, user });
   cy.stub(Redirect, 'toURL').as('toURL');
@@ -53,6 +55,7 @@ const openBilling = ({
   cy.intercept('GET', `**/users/${user1.id}/subscriptionCommitments*`, commitments).as('getCommitments');
   cy.intercept('GET', `/users/${user1.id}/creditBalance`, balance).as('getCreditBalance');
   cy.intercept('GET', '**/creditPacks*', packs).as('getCreditPacks');
+  cy.intercept('GET', `/users/${user1.id}/paymentMethods*`, paymentMethods).as('getPaymentMethods');
 
   cy.mount(<App />);
   cy.get('[name="account"]').click();
@@ -95,7 +98,8 @@ describe('Billing modal', () => {
       .and('contain', 'Sans reconduction automatique');
 
     cy.contains('Moyen de paiement').should('be.visible');
-    cy.contains('Le détail de votre carte est géré par Stripe').should('be.visible');
+    cy.contains('Visa •••• 4242').should('be.visible');
+    cy.contains('Expire le 04/2028').should('be.visible');
 
     cy.contains("Crédits d'analyses").should('be.visible');
     cy.get('.billing-donut-value').should('have.text', '320');
@@ -244,16 +248,31 @@ describe('Billing modal', () => {
     });
   });
 
-  it('redirects to Stripe to update the payment method', () => {
-    cy.intercept('POST', `/users/${user1.id}/paymentMethods*`, { redirectionUrl: PAYMENT_METHOD_URL }).as('paymentMethodInsertion');
+  it('shows that no card is registered yet', () => {
+    openBilling({ paymentMethods: [] });
+
+    cy.contains('Aucun moyen de paiement').should('be.visible');
+    cy.contains('Enregistrez une carte pour souscrire et acheter des crédits.').should('be.visible');
+    cy.get('[name="billing-update-payment-method"]').should('be.visible').and('contain', 'Ajouter une carte');
+  });
+
+  it('warns when the payment method cannot be read', () => {
+    openBilling({ paymentMethods: { statusCode: 500, body: {} } });
+
+    cy.contains('Moyen de paiement indisponible').should('be.visible');
+    cy.get('[name="billing-update-payment-method"]').should('contain', 'Ajouter une carte');
+  });
+
+  it('replaces the registered card through Stripe', () => {
+    cy.intercept('PUT', `/users/${user1.id}/paymentMethods*`, { redirectionUrl: PAYMENT_METHOD_URL }).as('paymentMethodReplacement');
 
     openBilling();
-    cy.get('[name="billing-update-payment-method"]').click();
+    cy.get('[name="billing-update-payment-method"]').should('contain', 'Remplacer la carte').click();
 
-    cy.wait('@paymentMethodInsertion').then(({ request }) => {
+    cy.wait('@paymentMethodReplacement').then(({ request }) => {
       expect(request.body.successUrl).to.contain(`${APP_BASE_URL}/account/${user1.id}?stripePaymentStatus=done`);
     });
-    cy.contains('Vous allez être redirigé vers Stripe pour mettre à jour votre moyen de paiement').should('be.visible');
+    cy.contains('Vous allez être redirigé vers Stripe pour enregistrer votre moyen de paiement').should('be.visible');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', PAYMENT_METHOD_URL);
   });
 
@@ -377,23 +396,23 @@ describe('Billing modal', () => {
   });
 
   it('warns when the payment method page carries no redirection', () => {
-    cy.intercept('POST', `/users/${user1.id}/paymentMethods*`, {}).as('paymentMethodInsertion');
+    cy.intercept('PUT', `/users/${user1.id}/paymentMethods*`, {}).as('paymentMethodReplacement');
 
     openBilling();
     cy.get('[name="billing-update-payment-method"]').click();
 
-    cy.wait('@paymentMethodInsertion');
+    cy.wait('@paymentMethodReplacement');
     cy.contains('Impossible d’ouvrir la page de saisie de votre moyen de paiement pour le moment.').should('be.visible');
     cy.get('@toURL').should('not.have.been.called');
   });
 
   it('notifies when the payment method insertion fails', () => {
-    cy.intercept('POST', `/users/${user1.id}/paymentMethods*`, { statusCode: 500, body: {} }).as('paymentMethodInsertion');
+    cy.intercept('PUT', `/users/${user1.id}/paymentMethods*`, { statusCode: 500, body: {} }).as('paymentMethodReplacement');
 
     openBilling();
     cy.get('[name="billing-update-payment-method"]').click();
 
-    cy.wait('@paymentMethodInsertion');
+    cy.wait('@paymentMethodReplacement');
     cy.get('.MuiSnackbar-root').should('be.visible');
     cy.get('[name="billing-update-payment-method"]').should('be.enabled');
   });
