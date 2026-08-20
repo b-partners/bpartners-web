@@ -2,10 +2,11 @@ import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { isSubscriptionCancellationEnabled } from '@/operations/account/components/billing';
 import { BillingInterval, User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
+import dayjs from 'dayjs';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance, visaPaymentMethods } from './mocks/responses';
 import { user1 } from './mocks/responses/security-api';
-import { ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
+import { autoRenewedSubscriptionCommitments, ongoingSubscriptionCommitments } from './mocks/responses/subscription-commitments-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const STRIPE_REDIRECTION_URL = 'https://checkout.stripe.com/c/pay/cs_test_123';
@@ -94,9 +95,8 @@ describe('Billing modal', () => {
       .and('contain', 'Prélevé chaque début de mois')
       .and('contain', 'Engagement')
       .and('contain', '12 mois')
-      .and('contain', 'Renouvellement')
-      .and('contain', '01/04/2026')
-      .and('contain', 'Sans reconduction automatique');
+      .and('contain', `Jusqu’au ${dayjs(ongoingSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')} · sans reconduction`)
+      .and('not.contain', 'Renouvellement');
 
     cy.contains('Moyen de paiement').should('be.visible');
     cy.contains('Visa •••• 4242').should('be.visible');
@@ -170,6 +170,17 @@ describe('Billing modal', () => {
     cy.get('.billing-pack').should('not.exist');
   });
 
+  it('announces the automatic renewal without repeating the commitment date', () => {
+    openBilling({ commitments: autoRenewedSubscriptionCommitments });
+
+    cy.get('.billing-plan-meta')
+      .should('contain', 'Renouvellement')
+      .and('contain', 'Automatique')
+      .and('contain', 'Reconduit pour 12 mois à l’échéance')
+      .and('contain', `Jusqu’au ${dayjs(autoRenewedSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')}`)
+      .and('not.contain', 'sans reconduction');
+  });
+
   it('hides the upgrade action on an active subscription', () => {
     openBilling();
 
@@ -182,13 +193,21 @@ describe('Billing modal', () => {
     openBilling({ user: withPlan(usageBasedPlan, 'MONTHLY') });
 
     cy.contains("À l'usage").should('be.visible');
-    cy.get('.billing-plan-meta').should('contain', 'Paiement').and('contain', 'Facturé à chaque analyse').and('not.contain', 'Engagement');
+    cy.get('.billing-plan-meta')
+      .should('contain', 'Paiement')
+      .and('contain', 'Facturé à chaque analyse')
+      .and('not.contain', 'Engagement')
+      .and('not.contain', 'Renouvellement');
   });
 
   it('shows a yearly payment without any commitment block', () => {
     openBilling({ user: withPlan(proPlan, 'YEARLY'), commitments: [] });
 
-    cy.get('.billing-plan-meta').should('contain', 'ANNUEL').and('contain', 'Payé en une fois pour l’année').and('not.contain', 'Engagement');
+    cy.get('.billing-plan-meta')
+      .should('contain', 'ANNUEL')
+      .and('contain', 'Payé en une fois pour l’année')
+      .and('not.contain', 'Engagement')
+      .and('not.contain', 'Renouvellement');
     cy.get('.billing-plan-price')
       .invoke('text')
       .should('match', /^1\s069\s€$/);
@@ -202,7 +221,10 @@ describe('Billing modal', () => {
   it('keeps the periodicity neutral as long as no subscription has been paid', () => {
     openBilling({ user: withPlan(proPlan), commitments: [] });
 
-    cy.get('.billing-plan-meta').should('contain', 'Périodicité définie au premier paiement').and('not.contain', 'Engagement');
+    cy.get('.billing-plan-meta')
+      .should('contain', 'Périodicité définie au premier paiement')
+      .and('not.contain', 'Engagement')
+      .and('not.contain', 'Renouvellement');
     cy.get('.billing-price-discount').should('not.exist');
     cy.get('.billing-discount-badge').should('not.exist');
     cy.get('.billing-plan-meta').should('contain', 'HT / mois');

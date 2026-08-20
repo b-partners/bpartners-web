@@ -1,4 +1,4 @@
-import { useGetOngoingSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
+import { useGetLatestSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
 import { EnableStatus, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import { Box, Button, Typography } from '@mui/material';
@@ -37,7 +37,7 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const isUsageBased = isUsageBasedPlan(plan);
   const hasCommitment = hasTwelveMonthCommitment(subscription);
-  const { commitment } = useGetOngoingSubscriptionCommitment(isActive && hasCommitment);
+  const { commitment } = useGetLatestSubscriptionCommitment(isActive && hasCommitment);
   const { plans } = useGetSubscriptionPlans(isActive && isYearlyBilling(subscription));
   const yearlyPricing = getYearlyPricing(
     subscription,
@@ -50,14 +50,6 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
   const getInactiveHint = () => {
     if (!isCancelled) return 'Souscrivez à une offre pour lancer vos analyses.';
     return subscription?.end ? `A pris fin le ${formatDate(subscription.end)}` : 'Aucun renouvellement prévu.';
-  };
-
-  const getRenewalHint = () => {
-    if (isCancelled) return 'Aucun renouvellement, l’abonnement prend fin';
-    if (isUsageBased) return 'Aucun renouvellement, facturé à chaque analyse';
-    if (!subscription?.end) return 'Date de renouvellement indisponible';
-    if (!hasCommitment) return 'Fin de la période payée';
-    return isAutomaticRenewal ? 'Reconduction automatique' : 'Sans reconduction automatique';
   };
 
   return (
@@ -99,11 +91,13 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
                 <Typography className='billing-hint'>{getCommitmentEndLabel(commitment)}</Typography>
               </Box>
             )}
-            <Box>
-              <Typography className='billing-label'>Renouvellement</Typography>
-              <Typography className='billing-value'>{formatDate(subscription?.end) || '—'}</Typography>
-              <Typography className='billing-hint'>{getRenewalHint()}</Typography>
-            </Box>
+            {hasCommitment && isAutomaticRenewal && (
+              <Box>
+                <Typography className='billing-label'>Renouvellement</Typography>
+                <Typography className='billing-value'>Automatique</Typography>
+                <Typography className='billing-hint'>Reconduit pour 12 mois à l’échéance</Typography>
+              </Box>
+            )}
           </Box>
         </>
       ) : (

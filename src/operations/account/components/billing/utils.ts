@@ -2,6 +2,7 @@ import {
   BillingInterval,
   CreditPack,
   CreditPurchaseType,
+  EnableStatus,
   SubscriptionBillingType,
   SubscriptionCard,
   SubscriptionCardDisplayBrand,
@@ -100,8 +101,10 @@ export const getBillingIntervalHint = (subscription?: UserSubscription) => {
 };
 
 export const getCommitmentEndLabel = (commitment?: UserSubscriptionCommitment) => {
-  const end = formatDate(commitment?.commitmentEnd);
-  return end ? `Jusqu’au ${end}` : 'Engagement en cours';
+  if (!commitment) return 'Engagement en cours';
+  const end = formatDate(commitment.commitmentEnd);
+  const period = end ? `Jusqu’au ${end}` : 'Engagement en cours';
+  return commitment.automaticRenewalStatus === EnableStatus.ENABLED ? period : `${period} · sans reconduction`;
 };
 
 const isCustomPack = (pack: CreditPack) => pack.creditPurchaseType === CreditPurchaseType.CUSTOM;
