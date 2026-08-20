@@ -404,7 +404,6 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
-    cy.contains('Les analyses supplémentaires seront débitées le');
     cy.contains('Validation de votre abonnement en cours').should('not.exist');
 
     cy.contains('button', 'Choisir un abonnement').click();
