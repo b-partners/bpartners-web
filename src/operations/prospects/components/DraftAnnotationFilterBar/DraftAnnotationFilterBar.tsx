@@ -1,36 +1,100 @@
 import { FlexBox } from '@/common/components';
 import { useDraftAnnotationFilterStore } from '@/common/store';
+import { DraftAnnotationFilterKey } from '@/common/store/types';
 import { draftAnnotationFilters } from '@/operations/prospects/constants';
-import { CalendarMonth, Search } from '@mui/icons-material';
-import { debounce } from '@mui/material';
-import { ChangeEvent, useMemo } from 'react';
+import { CalendarMonth, Close, FilterList, Search } from '@mui/icons-material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useRef, useState } from 'react';
 import { DraftAnnotationFilterBarStyle } from './style';
 
-const debounceTimeMS = 500;
+const isoDate = (dayOffset: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + dayOffset);
+  return date.toISOString().slice(0, 10);
+};
+
+const defaultDateByKey: Partial<Record<DraftAnnotationFilterKey, string>> = {
+  creationFrom: isoDate(-1),
+  creationTo: isoDate(0),
+};
 
 export const DraftAnnotationFilterBar = () => {
   const { filters, setFilter } = useDraftAnnotationFilterStore();
+  const [activeKey, setActiveKey] = useState<DraftAnnotationFilterKey | null>(null);
+  const [draftValue, setDraftValue] = useState('');
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedSetters = useMemo(
-    () => Object.fromEntries(draftAnnotationFilters.map(filter => [filter.key, debounce((value: string) => setFilter(filter.key, value), debounceTimeMS)])),
-    [setFilter]
-  );
+  const activeFilter = useMemo(() => draftAnnotationFilters.find(filter => filter.key === activeKey), [activeKey]);
+  const chips = draftAnnotationFilters.filter(filter => filter.key !== activeKey && !!filters[filter.key]);
+
+  const openFilter = (key: DraftAnnotationFilterKey) => {
+    setActiveKey(key);
+    setDraftValue(filters[key] ?? defaultDateByKey[key] ?? '');
+    setMenuAnchor(null);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const commitDraft = () => {
+    if (activeKey && draftValue.trim()) setFilter(activeKey, draftValue.trim());
+    setActiveKey(null);
+    setDraftValue('');
+  };
+
+  const removeFilter = (key: DraftAnnotationFilterKey) => setFilter(key, '');
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commitDraft();
+      return;
+    }
+    if (event.key === 'Backspace' && draftValue === '') {
+      const lastChip = chips[chips.length - 1];
+      if (lastChip) removeFilter(lastChip.key);
+    }
+  };
 
   return (
-    <FlexBox sx={DraftAnnotationFilterBarStyle}>
-      {draftAnnotationFilters.map(filter => (
-        <FlexBox key={filter.key} className='draft-filter-item'>
-          {filter.type === 'date' ? <CalendarMonth /> : <Search />}
-          <input
-            type={filter.type === 'date' ? 'date' : 'text'}
-            data-cy={`draft-filter-${filter.key}`}
-            defaultValue={filters[filter.key] ?? ''}
-            placeholder={filter.type === 'text' ? filter.label : undefined}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => debouncedSetters[filter.key](event.target.value)}
-            className='draft-filter-input'
-          />
+    <FlexBox sx={DraftAnnotationFilterBarStyle} className='draft-filter-bar'>
+      <Search />
+      {chips.map(filter => (
+        <FlexBox key={filter.key} className='draft-filter-chip' data-cy={`draft-filter-chip-${filter.key}`}>
+          <span className='draft-filter-chip-label'>{`${filter.label} : ${filters[filter.key]}`}</span>
+          <Close className='draft-filter-chip-remove' data-cy={`draft-filter-chip-remove-${filter.key}`} onClick={() => removeFilter(filter.key)} />
         </FlexBox>
       ))}
+      <input
+        ref={inputRef}
+        type={activeFilter?.type === 'date' ? 'date' : 'text'}
+        data-cy='draft-filter-input'
+        className='draft-filter-input'
+        disabled={!activeKey}
+        placeholder={activeFilter?.type === 'text' ? activeFilter.placeholder : undefined}
+        value={draftValue}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => setDraftValue(event.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      {activeFilter?.type === 'date' && (
+        <IconButton data-cy='draft-filter-date-picker-button' size='small' onClick={() => inputRef.current?.showPicker?.()}>
+          <CalendarMonth fontSize='small' />
+        </IconButton>
+      )}
+      <IconButton
+        data-cy='draft-filter-menu-button'
+        size='small'
+        className='draft-filter-menu-button'
+        onClick={(event: MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
+      >
+        <FilterList />
+      </IconButton>
+      <Menu anchorEl={menuAnchor} open={!!menuAnchor} onClose={() => setMenuAnchor(null)}>
+        {draftAnnotationFilters.map(filter => (
+          <MenuItem key={filter.key} data-cy={`draft-filter-menu-item-${filter.key}`} onClick={() => openFilter(filter.key)}>
+            {filter.label}
+          </MenuItem>
+        ))}
+      </Menu>
     </FlexBox>
   );
 };
