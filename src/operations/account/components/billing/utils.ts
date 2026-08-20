@@ -2,6 +2,8 @@ import {
   CreditPack,
   CreditPurchaseType,
   SubscriptionBillingType,
+  SubscriptionCard,
+  SubscriptionCardDisplayBrand,
   SubscriptionPlan,
   SubscriptionPlanDescription,
   UserSubscription,
@@ -31,6 +33,20 @@ export const formatDate = (date?: Date | string | null) => (date ? dayjs(date).f
 export const isUsageBasedPlan = (plan?: AnyPlan) => plan?.billingType === SubscriptionBillingType.USAGE_BASED;
 
 export const getPlanAmount = (plan?: AnyPlan) => (isUsageBasedPlan(plan) ? 0 : plan?.priceInCentsWithoutVat ?? 0);
+
+const CARD_BRAND_LABELS: Partial<Record<SubscriptionCardDisplayBrand, string>> = {
+  AMERICAN_EXPRESS: 'American Express',
+  CARTES_BANCAIRES: 'Cartes Bancaires',
+  DINERS_CLUB: 'Diners Club',
+  MASTERCARD: 'Mastercard',
+  UNIONPAY: 'UnionPay',
+  VISA: 'Visa',
+};
+
+export const formatCardBrand = (brand?: SubscriptionCardDisplayBrand) => (brand && CARD_BRAND_LABELS[brand]) || 'Carte';
+
+export const formatCardExpiration = ({ expirationMonth, expirationYear }: SubscriptionCard) =>
+  expirationMonth && expirationYear ? `Expire le ${String(expirationMonth).padStart(2, '0')}/${expirationYear}` : 'Date d’expiration indisponible';
 
 export const isSubscriptionCancellationEnabled = () => process.env.REACT_APP_SUBSCRIPTION_CANCELLATION === 'true';
 
