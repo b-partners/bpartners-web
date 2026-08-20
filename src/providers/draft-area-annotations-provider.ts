@@ -12,12 +12,21 @@ interface DraftAreaPictureAnnotationFilter {
   sort?: unknown;
 }
 
+const toDayBoundaryInstant = (date: string, boundary: 'start' | 'end') => `${date}T${boundary === 'start' ? '00:00:00.000' : '23:59:59.999'}Z`;
+
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
-    const { areaPictureId, sort: _sort, ...searchFilters } = filter;
+    const { areaPictureId, sort: _sort, creationFrom, creationTo, ...restFilters } = filter;
     const { accountId } = getCached.userInfo();
     // @bpartners/typescript-client has no typed params for these filters yet; pass them as raw query params until the SDK is regenerated.
-    const params = _.omitBy(searchFilters, _.isNil);
+    const params = _.omitBy(
+      {
+        ...restFilters,
+        creationFrom: creationFrom ? toDayBoundaryInstant(creationFrom, 'start') : undefined,
+        creationTo: creationTo ? toDayBoundaryInstant(creationTo, 'end') : undefined,
+      },
+      _.isNil
+    );
 
     if (areaPictureId) {
       return areaPictureApi()
