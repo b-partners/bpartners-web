@@ -1,5 +1,6 @@
 import { getAppBaseUrl } from '@/common/utils';
 import {
+  BillingInterval,
   CreateSubscriptionInitiation,
   EnableStatus,
   SubscriptionInvoice,
@@ -11,7 +12,7 @@ import {
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
 
-export type SubscriptionBillingInterval = 'MONTHLY' | 'YEARLY';
+export type SubscriptionBillingInterval = BillingInterval;
 
 type SubscriptionInitiationPayload = CreateSubscriptionInitiation & { billingInterval: SubscriptionBillingInterval };
 
