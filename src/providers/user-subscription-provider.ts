@@ -5,6 +5,7 @@ import {
   SubscriptionPlan,
   UserSubscriptionCommitment,
   UserSubscriptionCommitmentDuration,
+  UserSubscriptionPaymentMethod,
 } from '@bpartners/typescript-client';
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
@@ -38,6 +39,13 @@ const getPaymentMethodRedirectionUrls = async () => {
     failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
     successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripePaymentStatus=done`).href,
   };
+};
+
+export const getDefaultPaymentMethod = async (): Promise<UserSubscriptionPaymentMethod | null> => {
+  const { id } = await asyncGetUser();
+  const { data } = await userSubscriptionApi().getUserPaymentMethods(id, true);
+  const paymentMethods: UserSubscriptionPaymentMethod[] = data || [];
+  return paymentMethods.find(({ card }) => !!card?.lastFourDigits) ?? null;
 };
 
 export const downloadSubscriptionInvoices = async (yearMonth: string) => {
@@ -101,6 +109,12 @@ export const userSubscriptionProvider = {
     const { id } = await asyncGetUser();
     const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
     const { data } = await userSubscriptionApi().initiatePaymentMethodInsertion(id, { failureUrl, successUrl });
+    return data;
+  },
+  async replacePaymentMethod() {
+    const { id } = await asyncGetUser();
+    const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
+    const { data } = await userSubscriptionApi().initiatePaymentMethodReplacement(id, { failureUrl, successUrl });
     return data;
   },
 };

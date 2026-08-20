@@ -11,6 +11,7 @@ export * from './invoice-export-api';
 export * from './invoice-relaunch-api';
 export * from './invoices-api';
 export * from './paying-api';
+export * from './payment-method-api';
 export * from './product-api';
 export * from './prospects-api';
 export * from './security-api';
