@@ -105,9 +105,9 @@ describe('DraftAnnotationFilterBar', () => {
     cy.get('[data-cy="draft-filter-menu-item-creationFrom"]').click();
 
     cy.get('[data-cy="draft-filter-input"]')
-      .should('have.attr', 'type', 'date')
+      .should('have.attr', 'type', 'datetime-local')
       .and(input => {
-        expect((input[0] as HTMLInputElement).value).to.match(/^\d{4}-\d{2}-\d{2}$/);
+        expect((input[0] as HTMLInputElement).value).to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
       });
     cy.get('[data-cy="draft-filter-date-picker-button"]').should('be.visible');
   });
@@ -121,7 +121,21 @@ describe('DraftAnnotationFilterBar', () => {
 
     cy.get('[data-cy="draft-filter-chip-creationFrom"]').should('be.visible');
     cy.wrap(null).should(() => {
-      expect(useDraftAnnotationFilterStore.getState().filters.creationFrom).to.match(/^\d{4}-\d{2}-\d{2}$/);
+      expect(useDraftAnnotationFilterStore.getState().filters.creationFrom).to.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
+    });
+  });
+
+  it('commits the current draft when the search button is clicked', () => {
+    cy.mount(<DraftAnnotationFilterBar />);
+
+    cy.get('[data-cy="draft-filter-menu-button"]').click();
+    cy.get('[data-cy="draft-filter-menu-item-prospectName"]').click();
+    cy.get('[data-cy="draft-filter-input"]').type('Jane Doe');
+    cy.get('[data-cy="draft-filter-search-button"]').click();
+
+    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('contain.text', 'Prospect : Jane Doe');
+    cy.wrap(null).should(() => {
+      expect(useDraftAnnotationFilterStore.getState().filters.prospectName).to.eq('Jane Doe');
     });
   });
 

@@ -12,7 +12,7 @@ interface DraftAreaPictureAnnotationFilter {
   sort?: unknown;
 }
 
-const toDayBoundaryInstant = (date: string, boundary: 'start' | 'end') => `${date}T${boundary === 'start' ? '00:00:00.000' : '23:59:59.999'}Z`;
+const toInstant = (dateTime: string) => `${dateTime}:00.000Z`;
 
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
@@ -22,8 +22,8 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
     const params = _.omitBy(
       {
         ...restFilters,
-        creationFrom: creationFrom ? toDayBoundaryInstant(creationFrom, 'start') : undefined,
-        creationTo: creationTo ? toDayBoundaryInstant(creationTo, 'end') : undefined,
+        creationFrom: creationFrom ? toInstant(creationFrom) : undefined,
+        creationTo: creationTo ? toInstant(creationTo) : undefined,
       },
       _.isNil
     );

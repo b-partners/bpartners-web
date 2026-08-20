@@ -45,4 +45,11 @@ export const DraftAnnotationFilterBarStyle: SxProps = {
   '& .draft-filter-menu-button': {
     ml: 'auto',
   },
+  '& .draft-filter-search-button': {
+    bgcolor: 'primary.main',
+    color: 'white',
+    '&:hover': {
+      bgcolor: 'primary.dark',
+    },
+  },
 };

@@ -6,14 +6,14 @@ describe('draftAreaPictureAnnotatorProvider.getList', () => {
     cy.stub(getCached, 'userInfo').returns({ accountId: 'account1' });
   });
 
-  it('sends creationFrom/creationTo as full ISO date-time instants, not bare dates', () => {
+  it('sends creationFrom/creationTo as full ISO date-time instants, not bare datetime-local values', () => {
     cy.intercept('GET', '**/annotations/drafts**', req => {
-      expect(req.query.creationFrom).to.eq('2026-08-18T00:00:00.000Z');
-      expect(req.query.creationTo).to.eq('2026-08-20T23:59:59.999Z');
+      expect(req.query.creationFrom).to.eq('2026-08-18T09:00:00.000Z');
+      expect(req.query.creationTo).to.eq('2026-08-20T17:30:00.000Z');
       req.reply([]);
     }).as('getDraftAnnotations');
 
-    draftAreaPictureAnnotatorProvider.getList(1, 10, { creationFrom: '2026-08-18', creationTo: '2026-08-20' });
+    draftAreaPictureAnnotatorProvider.getList(1, 10, { creationFrom: '2026-08-18T09:00', creationTo: '2026-08-20T17:30' });
 
     cy.wait('@getDraftAnnotations');
   });

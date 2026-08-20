@@ -7,15 +7,15 @@ import { IconButton, Menu, MenuItem } from '@mui/material';
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useRef, useState } from 'react';
 import { DraftAnnotationFilterBarStyle } from './style';
 
-const isoDate = (dayOffset: number) => {
+const isoDateTime = (dayOffset: number) => {
   const date = new Date();
   date.setDate(date.getDate() + dayOffset);
-  return date.toISOString().slice(0, 10);
+  return date.toISOString().slice(0, 16);
 };
 
 const defaultDateByKey: Partial<Record<DraftAnnotationFilterKey, string>> = {
-  creationFrom: isoDate(-1),
-  creationTo: isoDate(0),
+  creationFrom: isoDateTime(-1),
+  creationTo: isoDateTime(0),
 };
 
 export const DraftAnnotationFilterBar = () => {
@@ -66,7 +66,7 @@ export const DraftAnnotationFilterBar = () => {
       ))}
       <input
         ref={inputRef}
-        type={activeFilter?.type === 'date' ? 'date' : 'text'}
+        type={activeFilter?.type === 'date' ? 'datetime-local' : 'text'}
         data-cy='draft-filter-input'
         className='draft-filter-input'
         disabled={!activeKey}
@@ -86,6 +86,9 @@ export const DraftAnnotationFilterBar = () => {
         onClick={(event: MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
       >
         <FilterList />
+      </IconButton>
+      <IconButton data-cy='draft-filter-search-button' className='draft-filter-search-button' onClick={commitDraft}>
+        <Search />
       </IconButton>
       <Menu anchorEl={menuAnchor} open={!!menuAnchor} onClose={() => setMenuAnchor(null)}>
         {draftAnnotationFilters.map(filter => (
