@@ -60,7 +60,7 @@ describe('Test user subscription', () => {
     cy.wait('@getSubscriptionPlans');
     cy.contains('Le plus choisi');
     cy.contains(`Choisir ${chosenPlan.name}`);
-    cy.contains('588 € HT / an');
+    cy.contains('529 € HT / an');
 
     cy.contains('Ancien plan').should('not.exist');
     cy.contains('Renouveler votre abonnement').should('not.exist');
@@ -99,6 +99,7 @@ describe('Test user subscription', () => {
     cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
     cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
 
+    cy.get('[data-cy=billing-interval-monthly]').click();
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.get('@initSubscription').should('have.been.calledOnceWith', chosenPlan.id);
 
@@ -164,6 +165,7 @@ describe('Test user subscription', () => {
     cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
     cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
 
+    cy.get('[data-cy=billing-interval-monthly]').click();
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.contains('Confirmation de votre abonnement');
     cy.contains('Renouveler automatiquement mon abonnement').click();
@@ -180,6 +182,7 @@ describe('Test user subscription', () => {
     cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
     cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
 
+    cy.get('[data-cy=billing-interval-monthly]').click();
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.contains('Confirmation de votre abonnement');
     cy.contains('button', 'Accepter').click();
@@ -193,6 +196,7 @@ describe('Test user subscription', () => {
 
     cy.stub(userSubscriptionProvider, 'init').resolves({ redirectionUrl: CUSTOM_REDIRECTION_URL });
 
+    cy.get('[data-cy=billing-interval-monthly]').click();
     cy.contains(`Choisir ${chosenPlan.name}`).click();
     cy.contains('Confirmation de votre abonnement');
     cy.get('.MuiDialogActions-root').contains('button', 'Retour').click();
