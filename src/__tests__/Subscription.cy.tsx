@@ -4,6 +4,8 @@ import { userSubscriptionProvider } from '@/providers';
 import { User } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
+import { creditBalance, creditPacks } from './mocks/responses/credits-api';
+import { visaPaymentMethods } from './mocks/responses/payment-method-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
@@ -144,20 +146,27 @@ describe('Test user subscription', () => {
     cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
   });
-  it('Subscription flow: usage-based plan skips consent and stays monthly', () => {
+  it('Subscription flow: usage-based plan opens the credit purchase section', () => {
     mountInvalidSubscription();
 
     cy.stub(userSubscriptionProvider, 'init').as('initSubscription').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
     cy.intercept('POST', '**/subscriptionCommitments', req => req.reply({ statusCode: 200, body: req.body })).as('saveCommitment');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', '**/creditPacks*', creditPacks).as('getCreditPacks');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
 
     cy.get('[data-cy=billing-interval-yearly]').click();
     cy.contains('button', 'Acheter une analyse').click();
 
-    cy.get('@initSubscription').should('have.been.calledOnceWith', usageBasedPlan.id, 'MONTHLY');
-    cy.contains('Confirmation de votre abonnement').should('not.exist');
-    cy.get('@saveCommitment.all').should('have.length', 0);
+    cy.contains('Facturation').should('be.visible');
+    cy.contains("Crédits d'analyses").should('be.visible');
+    cy.wait('@getCreditPacks');
+    cy.get('.billing-pack').should('have.length', 4);
 
-    cy.contains('Vous allez être redirigé vers Stripe pour souscrire à l’abonnement');
+    cy.get('@initSubscription').should('not.have.been.calledWith', usageBasedPlan.id);
+    cy.get('@saveCommitment.all').should('have.length', 0);
+    cy.contains('Vous allez être redirigé vers Stripe').should('not.exist');
+    cy.contains("Choisissez l'offre qui vous convient").should('not.exist');
   });
   it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
     mountInvalidSubscription();

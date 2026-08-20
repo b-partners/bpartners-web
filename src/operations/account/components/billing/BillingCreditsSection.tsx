@@ -20,17 +20,22 @@ const POLL_INTERVAL_MS = 3000;
 
 const MAX_POLL_COUNT = 40;
 
+const CREDITS_SECTION_ID = 'billing-credits-section';
+
+const FOCUS_SCROLL_DELAY_MS = 300;
+
 const isPurchaseSettled = (purchase?: CreditPurchase) => !!purchase && purchase.status !== CreditPurchaseStatus.PENDING;
 
 interface BillingCreditsSectionProps {
   subscription?: UserSubscription;
   onRedirect: (redirectionUrl: string, title: string) => void;
+  focusPacks?: boolean;
 }
 
-export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscription, onRedirect }) => {
+export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscription, onRedirect, focusPacks = false }) => {
   const notify = useNotify();
   const queryClient = useQueryClient();
-  const { value: arePacksOpen, toggleValue: togglePacks } = useToggle();
+  const { value: arePacksOpen, toggleValue: togglePacks } = useToggle(focusPacks);
   const [candidate, setCandidate] = useState<CreditPurchaseCandidate>();
   const [searchParams, setSearchParams] = useSearchParams();
   const pollCount = useRef(0);
@@ -97,6 +102,12 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
     clearTrackedPurchase();
   }, [trackedPurchaseId, trackedStatus, trackedPurchase]);
 
+  useEffect(() => {
+    if (!focusPacks) return;
+    const timer = setTimeout(() => document.getElementById(CREDITS_SECTION_ID)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), FOCUS_SCROLL_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [focusPacks]);
+
   const onSelectPack = (pack: CreditPack, credits: number) => setCandidate({ purchaseId: uuid(), pack, credits });
 
   const onConfirmPurchase = () => {
@@ -115,7 +126,12 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
   const nextExpiration = balance?.expirations?.[0];
 
   return (
-    <BillingSection icon={<BoltRoundedIcon />} title="Crédits d'analyses" subtitle='Votre solde de crédits et vos achats de crédits supplémentaires.'>
+    <BillingSection
+      id={CREDITS_SECTION_ID}
+      icon={<BoltRoundedIcon />}
+      title="Crédits d'analyses"
+      subtitle='Votre solde de crédits et vos achats de crédits supplémentaires.'
+    >
       {isBalanceLoading ? (
         <Box className='billing-state'>
           <CircularProgress size={18} />
