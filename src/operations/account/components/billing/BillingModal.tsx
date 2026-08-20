@@ -4,6 +4,7 @@ import { UserSubscription } from '@bpartners/typescript-client';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, useState } from 'react';
+import { BillingCancellationSection } from './BillingCancellationSection';
 import { BillingCreditsSection } from './BillingCreditsSection';
 import { BillingInvoicesSection } from './BillingInvoicesSection';
 import { BillingPaymentMethodSection } from './BillingPaymentMethodSection';
@@ -47,6 +48,7 @@ export const BillingModal: FC<BillingModalProps> = ({ open, onClose, subscriptio
             <BillingPaymentMethodSection onRedirect={onRedirect} />
             <BillingCreditsSection subscription={subscription} onRedirect={onRedirect} />
             <BillingInvoicesSection />
+            <BillingCancellationSection subscription={subscription} />
           </DialogContent>
           <DialogActions className='billing-actions'>
             <Button onClick={onClose} name='billing-close' className='billing-close'>
