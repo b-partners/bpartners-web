@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { FC, ReactNode } from 'react';
 
 interface BillingSectionProps {
+  id?: string;
   icon: ReactNode;
   title: string;
   subtitle?: string;

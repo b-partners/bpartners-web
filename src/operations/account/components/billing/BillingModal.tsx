@@ -1,62 +1,22 @@
-import { SubscriptionModal, SubscriptionRedirectStep } from '@/common/components';
-import { useDialog } from '@/common/store/dialog';
 import { UserSubscription } from '@bpartners/typescript-client';
-import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Dialog } from '@mui/material';
 import { FC, useState } from 'react';
-import { BillingCancellationSection } from './BillingCancellationSection';
-import { BillingCreditsSection } from './BillingCreditsSection';
-import { BillingInvoicesSection } from './BillingInvoicesSection';
-import { BillingPaymentMethodSection } from './BillingPaymentMethodSection';
-import { BillingSubscriptionSection } from './BillingSubscriptionSection';
+import { BillingModalContent } from './BillingModalContent';
 import { BillingModalStyle } from './style';
-
-interface BillingRedirection {
-  redirectionUrl: string;
-  title: string;
-}
 
 interface BillingModalProps {
   open: boolean;
   onClose: () => void;
   subscription?: UserSubscription;
+  focusCredits?: boolean;
 }
 
-export const BillingModal: FC<BillingModalProps> = ({ open, onClose, subscription, ...rest }) => {
-  const [redirection, setRedirection] = useState<BillingRedirection>();
-  const { open: openDialog } = useDialog();
-
-  const onRedirect = (redirectionUrl: string, title: string) => setRedirection({ redirectionUrl, title });
-
-  const onUpgrade = () => {
-    onClose();
-    openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
-  };
+export const BillingModal: FC<BillingModalProps> = ({ open, onClose, subscription, focusCredits, ...rest }) => {
+  const [isRedirecting, setRedirecting] = useState(false);
 
   return (
-    <Dialog open={open} onClose={redirection ? undefined : onClose} maxWidth='lg' fullWidth sx={BillingModalStyle} {...rest}>
-      {redirection ? (
-        <SubscriptionRedirectStep redirectionUrl={redirection.redirectionUrl} title={redirection.title} />
-      ) : (
-        <>
-          <DialogTitle className='billing-title'>
-            <AccountBalanceWalletRoundedIcon className='billing-title-icon' />
-            Facturation
-          </DialogTitle>
-          <DialogContent className='billing-content'>
-            <BillingSubscriptionSection subscription={subscription} onUpgrade={onUpgrade} />
-            <BillingPaymentMethodSection onRedirect={onRedirect} />
-            <BillingCreditsSection subscription={subscription} onRedirect={onRedirect} />
-            <BillingInvoicesSection />
-            <BillingCancellationSection subscription={subscription} />
-          </DialogContent>
-          <DialogActions className='billing-actions'>
-            <Button onClick={onClose} name='billing-close' className='billing-close'>
-              Fermer
-            </Button>
-          </DialogActions>
-        </>
-      )}
+    <Dialog open={open} onClose={isRedirecting ? undefined : onClose} maxWidth='lg' fullWidth sx={BillingModalStyle} {...rest}>
+      <BillingModalContent onClose={onClose} subscription={subscription} focusCredits={focusCredits} onRedirecting={setRedirecting} />
     </Dialog>
   );
 };
