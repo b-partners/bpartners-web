@@ -1,4 +1,5 @@
 import { annotatorStore, useAnnotator3DStore, useAnnotatorComponentStore, useAnnotatorLoadingStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { useCreditRequirement } from '@/operations/account/components/billing';
 import { AutoAwesome, CropSquare, Roofing, ViewInAr } from '@mui/icons-material';
 import { Box, ButtonBase, CircularProgress } from '@mui/material';
 import { FC } from 'react';
@@ -30,13 +31,15 @@ export const ScreenSwitchTabs: FC<ScreenSwitchTabsProps> = ({ onBeforeSwitch }) 
   const hasRoof = Object.values(annotations).find(a => a.annotationInfos.labelType === 'roof');
   const hasPan = Object.values(annotations).find(a => a.annotationInfos.labelType === 'pan');
   const { is3DLoading, isAnalyseLoading } = useAnnotatorLoadingStore();
+  const { requireCredits } = useCreditRequirement();
   const notify = useNotify();
 
   const select3DGenerationMode = () => {
     if (screen === '3d-annotator') return setScreen('annotator');
 
     const cameFrom2D = screen === 'annotator';
-    const goTo3D = (mode: ThreeDGenerationMode) => {
+    const goTo3D = async (mode: ThreeDGenerationMode) => {
+      if (!(await requireCredits())) return;
       if (cameFrom2D && hasTwoDStateChangedSince(areaPictureDetails?.fileId, mode)) setShouldPromptRegenerate(true);
       return setScreen('3d-annotator', mode === 'pan' ? 'pan' : 'roof');
     };

@@ -2,6 +2,7 @@ import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { AccountHolder } from '@bpartners/typescript-client';
 import { account1, accountHolder1, accounts1, businessActivities } from './mocks/responses/account-api';
+import { creditBalance } from './mocks/responses/credits-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 const SIREN_MODAL_TITLE = 'Insérer votre SIREN pour effectuer des analyses';
@@ -41,6 +42,7 @@ describe('Siren', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccounts');
     cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', []).as('getDrafts');
     cy.intercept('GET', '/businessActivities?page=1&pageSize=100', businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
     interceptAccountHolder();
   });
 

@@ -30,9 +30,10 @@ interface BillingCreditsSectionProps {
   subscription?: UserSubscription;
   onRedirect: (redirectionUrl: string, title: string) => void;
   focusPacks?: boolean;
+  onCompleted?: () => void;
 }
 
-export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscription, onRedirect, focusPacks = false }) => {
+export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscription, onRedirect, focusPacks = false, onCompleted }) => {
   const notify = useNotify();
   const queryClient = useQueryClient();
   const { value: arePacksOpen, toggleValue: togglePacks } = useToggle(focusPacks);
@@ -58,6 +59,7 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
       type: 'success',
     });
     queryClient.invalidateQueries({ queryKey: CREDIT_BALANCE_QUERY_KEY });
+    onCompleted?.();
   };
 
   const { data: trackedPurchase } = useQuery({
