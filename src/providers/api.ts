@@ -3,6 +3,7 @@ import {
   AreaPictureApi,
   CalendarApi,
   CaptchaApi,
+  CreditsApi,
   CustomersApi,
   FilesApi,
   MailingApi,
@@ -30,3 +31,4 @@ export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAut
 export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.getCachedAuthConf());
 export const addressAutocompletionApi = () => new AddressAutocompletionApi(authProvider.getCachedAuthConf());
 export const captchaApi = () => new CaptchaApi(authProvider.getCachedAuthConf());
+export const creditsApi = () => new CreditsApi(authProvider.getCachedAuthConf());
