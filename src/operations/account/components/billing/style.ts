@@ -119,6 +119,14 @@ export const BillingModalStyle: SxProps = {
     '&:hover': { bgcolor: ORANGE, color: WHITE },
     '&.Mui-disabled': { bgcolor: 'transparent', borderColor: BORDER },
   },
+  '& .billing-action--danger': {
+    bgcolor: 'transparent',
+    color: 'error.main',
+    border: '2px solid',
+    borderColor: 'error.main',
+    '&:hover': { bgcolor: 'error.main', color: WHITE },
+    '&.Mui-disabled': { bgcolor: 'transparent', borderColor: BORDER },
+  },
 
   '& .billing-state': {
     display: 'flex',
@@ -530,5 +538,12 @@ export const BillingConfirmDialogStyle: SxProps = {
     bgcolor: ORANGE,
     color: WHITE,
     '&:hover': { bgcolor: ORANGE_DARK, boxShadow: 'none' },
+  },
+  '& .confirm-submit--danger': {
+    bgcolor: 'error.main',
+    '&:hover': { bgcolor: 'error.dark', boxShadow: 'none' },
+  },
+  '& .confirm-row-value--danger': {
+    color: 'error.main',
   },
 };
