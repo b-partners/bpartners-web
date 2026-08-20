@@ -1,4 +1,5 @@
 import {
+  BillingInterval,
   CreditPack,
   CreditPurchaseType,
   SubscriptionBillingType,
@@ -55,16 +56,47 @@ export const hasActivePlan = (subscription?: UserSubscription) => !!subscription
 export const isHighestPlan = (currentPlan: AnyPlan | undefined, plans: SubscriptionPlan[]) =>
   plans.length > 0 && getPlanAmount(currentPlan) >= Math.max(...plans.map(getPlanAmount));
 
-export const getBillingIntervalLabel = (subscription?: UserSubscription, commitment?: UserSubscriptionCommitment, isCommitmentUnknown = false) => {
-  if (isUsageBasedPlan(subscription?.plan)) return 'À l’analyse';
-  if (isCommitmentUnknown) return '—';
-  return commitment ? 'MENSUEL' : 'ANNUEL';
+export const isMonthlyBilling = (subscription?: UserSubscription) => subscription?.billingInterval === BillingInterval.MONTHLY;
+
+export const isYearlyBilling = (subscription?: UserSubscription) => subscription?.billingInterval === BillingInterval.YEARLY;
+
+export const hasTwelveMonthCommitment = (subscription?: UserSubscription) => !isUsageBasedPlan(subscription?.plan) && isMonthlyBilling(subscription);
+
+const roundToEuros = (cents: number) => Math.round(cents / 100) * 100;
+
+export interface YearlyPricing {
+  annualCents: number;
+  referenceCents: number;
+  monthlyEquivalentCents: number;
+  discountPercent: number;
+}
+
+export const getYearlyPricing = (subscription?: UserSubscription, plan?: SubscriptionPlan): YearlyPricing | undefined => {
+  const annualCents = plan?.annualPriceInCentsWithoutVat;
+  if (!annualCents || isUsageBasedPlan(subscription?.plan) || !isYearlyBilling(subscription)) return undefined;
+  const referenceCents = (subscription?.plan?.priceInCentsWithoutVat ?? plan?.priceInCentsWithoutVat ?? 0) * 12;
+  return {
+    annualCents,
+    referenceCents,
+    monthlyEquivalentCents: roundToEuros(annualCents / 12),
+    discountPercent: referenceCents > annualCents ? Math.round((1 - annualCents / referenceCents) * 100) : 0,
+  };
 };
 
-export const getBillingIntervalHint = (subscription?: UserSubscription, commitment?: UserSubscriptionCommitment, isCommitmentUnknown = false) => {
+export const getYearlyDiscountBadge = ({ discountPercent }: YearlyPricing) => `-${discountPercent} %`;
+
+export const getYearlyReferenceLabel = ({ referenceCents }: YearlyPricing) => `${formatEuros(referenceCents)} / an`;
+
+export const getBillingIntervalLabel = (subscription?: UserSubscription) => {
+  if (isUsageBasedPlan(subscription?.plan)) return 'À l’analyse';
+  if (!subscription?.billingInterval) return '—';
+  return isMonthlyBilling(subscription) ? 'MENSUEL' : 'ANNUEL';
+};
+
+export const getBillingIntervalHint = (subscription?: UserSubscription) => {
   if (isUsageBasedPlan(subscription?.plan)) return 'Facturé à chaque analyse';
-  if (isCommitmentUnknown) return 'Périodicité indisponible pour le moment';
-  return commitment ? 'Prélevé chaque début de mois' : 'Payé en une fois pour l’année';
+  if (!subscription?.billingInterval) return 'Périodicité définie au premier paiement';
+  return isMonthlyBilling(subscription) ? 'Prélevé chaque début de mois' : 'Payé en une fois pour l’année';
 };
 
 export const getCommitmentEndLabel = (commitment?: UserSubscriptionCommitment) => {
