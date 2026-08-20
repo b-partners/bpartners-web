@@ -1,3 +1,4 @@
+import { getAppBaseUrl } from '@/common/utils';
 import {
   CreateSubscriptionInitiation,
   EnableStatus,
@@ -28,16 +29,16 @@ export const getSubscriptionCommitments = async (): Promise<UserSubscriptionComm
 const getSubscriptionRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
   return {
-    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
-    successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripeStatus=done`).href,
+    failureUrl: new URL(`${getAppBaseUrl()}?stripeStatus=error`).href,
+    successUrl: new URL(`${getAppBaseUrl()}/account/${id}?stripeStatus=done`).href,
   };
 };
 
 const getPaymentMethodRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
   return {
-    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
-    successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripePaymentStatus=done`).href,
+    failureUrl: new URL(`${getAppBaseUrl()}?stripeStatus=error`).href,
+    successUrl: new URL(`${getAppBaseUrl()}/account/${id}?stripePaymentStatus=done`).href,
   };
 };
 

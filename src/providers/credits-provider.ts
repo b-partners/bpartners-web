@@ -1,3 +1,4 @@
+import { getAppBaseUrl } from '@/common/utils';
 import {
   CreateCreditPackPurchase,
   CreateCustomCreditPurchase,
@@ -24,7 +25,7 @@ export interface CreditPurchaseVariables {
 
 const getCreditPurchaseRedirectionUrls = async (userId: string, purchaseId: string): Promise<RedirectionStatusUrls> => {
   const toUrl = (status: string) =>
-    new URL(`${process.env.REACT_APP_URL}/account/${userId}?${CREDIT_PURCHASE_STATUS_PARAM}=${status}&${CREDIT_PURCHASE_ID_PARAM}=${purchaseId}`).href;
+    new URL(`${getAppBaseUrl()}/account/${userId}?${CREDIT_PURCHASE_STATUS_PARAM}=${status}&${CREDIT_PURCHASE_ID_PARAM}=${purchaseId}`).href;
   return { failureUrl: toUrl('error'), successUrl: toUrl('done') };
 };
 

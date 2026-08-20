@@ -1,3 +1,4 @@
+export * from './app-base-url';
 export * from './BpFrenchMessages';
 export * from './compress-image';
 export * from './cookies';
