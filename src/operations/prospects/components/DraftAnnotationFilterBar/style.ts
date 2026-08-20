@@ -41,6 +41,9 @@ export const DraftAnnotationFilterBarStyle: SxProps = {
     '&:disabled': {
       color: 'text.disabled',
     },
+    '&::-webkit-calendar-picker-indicator': {
+      display: 'none',
+    },
   },
   '& .draft-filter-menu-button': {
     ml: 'auto',

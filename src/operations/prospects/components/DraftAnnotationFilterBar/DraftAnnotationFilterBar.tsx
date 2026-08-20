@@ -3,9 +3,11 @@ import { useDraftAnnotationFilterStore } from '@/common/store';
 import { DraftAnnotationFilterKey } from '@/common/store/types';
 import { draftAnnotationFilters } from '@/operations/prospects/constants';
 import { CalendarMonth, Close, FilterList, Search } from '@mui/icons-material';
-import { IconButton, Menu, MenuItem } from '@mui/material';
-import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useRef, useState } from 'react';
+import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DraftAnnotationFilterBarStyle } from './style';
+
+const DEFAULT_FILTER_KEY: DraftAnnotationFilterKey = 'prospectName';
 
 const isoDateTime = (dayOffset: number) => {
   const date = new Date();
@@ -20,10 +22,14 @@ const defaultDateByKey: Partial<Record<DraftAnnotationFilterKey, string>> = {
 
 export const DraftAnnotationFilterBar = () => {
   const { filters, setFilter } = useDraftAnnotationFilterStore();
-  const [activeKey, setActiveKey] = useState<DraftAnnotationFilterKey | null>(null);
-  const [draftValue, setDraftValue] = useState('');
+  const [activeKey, setActiveKey] = useState<DraftAnnotationFilterKey | null>(DEFAULT_FILTER_KEY);
+  const [draftValue, setDraftValue] = useState(filters[DEFAULT_FILTER_KEY] ?? '');
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const activeFilter = useMemo(() => draftAnnotationFilters.find(filter => filter.key === activeKey), [activeKey]);
   const chips = draftAnnotationFilters.filter(filter => filter.key !== activeKey && !!filters[filter.key]);
@@ -61,7 +67,9 @@ export const DraftAnnotationFilterBar = () => {
       {chips.map(filter => (
         <FlexBox key={filter.key} className='draft-filter-chip' data-cy={`draft-filter-chip-${filter.key}`}>
           <span className='draft-filter-chip-label'>{`${filter.label} : ${filters[filter.key]}`}</span>
-          <Close className='draft-filter-chip-remove' data-cy={`draft-filter-chip-remove-${filter.key}`} onClick={() => removeFilter(filter.key)} />
+          <Tooltip title='Supprimer ce filtre'>
+            <Close className='draft-filter-chip-remove' data-cy={`draft-filter-chip-remove-${filter.key}`} onClick={() => removeFilter(filter.key)} />
+          </Tooltip>
         </FlexBox>
       ))}
       <input
@@ -76,20 +84,26 @@ export const DraftAnnotationFilterBar = () => {
         onKeyDown={handleKeyDown}
       />
       {activeFilter?.type === 'date' && (
-        <IconButton data-cy='draft-filter-date-picker-button' onClick={() => inputRef.current?.showPicker?.()}>
-          <CalendarMonth />
-        </IconButton>
+        <Tooltip title='Choisir une date et une heure'>
+          <IconButton data-cy='draft-filter-date-picker-button' onClick={() => inputRef.current?.showPicker?.()}>
+            <CalendarMonth />
+          </IconButton>
+        </Tooltip>
       )}
-      <IconButton
-        data-cy='draft-filter-menu-button'
-        className='draft-filter-menu-button'
-        onClick={(event: MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
-      >
-        <FilterList />
-      </IconButton>
-      <IconButton data-cy='draft-filter-search-button' className='draft-filter-search-button' onClick={commitDraft}>
-        <Search />
-      </IconButton>
+      <Tooltip title='Choisir un filtre'>
+        <IconButton
+          data-cy='draft-filter-menu-button'
+          className='draft-filter-menu-button'
+          onClick={(event: MouseEvent<HTMLElement>) => setMenuAnchor(event.currentTarget)}
+        >
+          <FilterList />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title='Rechercher'>
+        <IconButton data-cy='draft-filter-search-button' className='draft-filter-search-button' onClick={commitDraft}>
+          <Search />
+        </IconButton>
+      </Tooltip>
       <Menu anchorEl={menuAnchor} open={!!menuAnchor} onClose={() => setMenuAnchor(null)}>
         {draftAnnotationFilters.map(filter => (
           <MenuItem key={filter.key} data-cy={`draft-filter-menu-item-${filter.key}`} onClick={() => openFilter(filter.key)}>

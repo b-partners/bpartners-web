@@ -43,11 +43,14 @@ describe('DraftAnnotationFilterBar', () => {
     useDraftAnnotationFilterStore.getState().resetFilters();
   });
 
-  it('has no chip and a disabled input until a filter type is picked', () => {
+  it('defaults to an editable prospect-name input with no chips', () => {
     cy.mount(<DraftAnnotationFilterBar />);
 
     cy.get('[data-cy^="draft-filter-chip-"]').should('not.exist');
-    cy.get('[data-cy="draft-filter-input"]').should('be.disabled');
+    cy.get('[data-cy="draft-filter-input"]')
+      .should('not.be.disabled')
+      .and('have.attr', 'type', 'text')
+      .and('have.attr', 'placeholder', 'Rechercher un prospect');
   });
 
   it('lists every configured filter in the type menu', () => {
@@ -152,15 +155,26 @@ describe('DraftAnnotationFilterBar', () => {
   });
 
   it('removes a chip when its close icon is clicked', () => {
-    useDraftAnnotationFilterStore.getState().setFilter('prospectName', 'Jane');
+    useDraftAnnotationFilterStore.getState().setFilter('address', 'Paris');
     cy.mount(<DraftAnnotationFilterBar />);
 
-    cy.get('[data-cy="draft-filter-chip-remove-prospectName"]').click({ force: true });
+    cy.get('[data-cy="draft-filter-chip-remove-address"]').click({ force: true });
 
-    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('not.exist');
+    cy.get('[data-cy="draft-filter-chip-address"]').should('not.exist');
     cy.wrap(null).should(() => {
-      expect(useDraftAnnotationFilterStore.getState().filters.prospectName).to.be.undefined;
+      expect(useDraftAnnotationFilterStore.getState().filters.address).to.be.undefined;
     });
+  });
+
+  it('shows French tooltips on the action buttons', () => {
+    cy.mount(<DraftAnnotationFilterBar />);
+
+    cy.get('[data-cy="draft-filter-search-button"]').trigger('mouseover');
+    cy.contains('Rechercher').should('be.visible');
+    cy.get('[data-cy="draft-filter-search-button"]').trigger('mouseout');
+
+    cy.get('[data-cy="draft-filter-menu-button"]').trigger('mouseover');
+    cy.contains('Choisir un filtre').should('be.visible');
   });
 
   it('removes the last visible chip on Backspace once the input is empty', () => {
