@@ -206,14 +206,6 @@ export const AccountStyle: SxProps = {
     fontWeight: 'bold',
     color: PALETTE_COLORS.stone,
   },
-  '& .subscription-empty-note': {
-    fontSize: '13px',
-    color: PALETTE_COLORS.stone,
-  },
-  '& .subscription-empty-strong': {
-    fontWeight: 'bold',
-    color: PALETTE_COLORS.black,
-  },
   '& .subscription-price-row': {
     display: 'flex',
     alignItems: 'baseline',

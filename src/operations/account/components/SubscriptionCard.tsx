@@ -7,7 +7,6 @@ import { SubscriptionPlanDescription, UserSubscription, UserSubscriptionStatus }
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import { Box, Button, Card, CardContent, CircularProgress, Typography } from '@mui/material';
-import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useRecordContext, useRefresh } from 'react-admin';
 import { useSearchParams } from 'react-router-dom';
@@ -53,7 +52,6 @@ export const SubscriptionCard = () => {
   const hasActiveSubscription = !!plan && !INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription?.status);
   const isValidating = !plan && subscription?.status === UserSubscriptionStatus.ACTIVE;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
-  const subscriptionEnd = subscription?.end ? dayjs(subscription.end) : null;
   const features = getFeatures(plan);
   const yearlyLabel = getYearlyLabel(plan);
   const { commitment, isCommitmentUnknown } = useGetOngoingSubscriptionCommitment(hasActiveSubscription && !isUsageBased(plan));
@@ -138,15 +136,6 @@ export const SubscriptionCard = () => {
             {isCancelled ? (
               <>
                 <Typography className='subscription-empty-text'>Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.</Typography>
-                {subscriptionEnd && (
-                  <Typography className='subscription-empty-note'>
-                    Les analyses supplémentaires seront débitées le{' '}
-                    <Box component='span' className='subscription-empty-strong'>
-                      {subscriptionEnd.format('DD/MM/YYYY')}
-                    </Box>{' '}
-                    avec votre abonnement.
-                  </Typography>
-                )}
               </>
             ) : (
               <Typography className='subscription-empty-text'>Vous n’avez pas d’abonnement actif.</Typography>
