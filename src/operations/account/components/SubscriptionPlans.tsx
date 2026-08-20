@@ -131,7 +131,7 @@ interface SubscriptionPlansProps {
 
 export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pendingPlanId }) => {
   const { plans, isPlansLoading, isPlansError } = useGetSubscriptionPlans();
-  const [billingInterval, setBillingInterval] = useState<SubscriptionBillingInterval>('MONTHLY');
+  const [billingInterval, setBillingInterval] = useState<SubscriptionBillingInterval>('YEARLY');
 
   const onBillingIntervalChange = (_event: unknown, value: SubscriptionBillingInterval | null) => value && setBillingInterval(value);
 
