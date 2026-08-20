@@ -32,6 +32,8 @@ export const isUsageBasedPlan = (plan?: AnyPlan) => plan?.billingType === Subscr
 
 export const getPlanAmount = (plan?: AnyPlan) => (isUsageBasedPlan(plan) ? 0 : plan?.priceInCentsWithoutVat ?? 0);
 
+export const isSubscriptionCancellationEnabled = () => process.env.REACT_APP_SUBSCRIPTION_CANCELLATION === 'true';
+
 export const hasActivePlan = (subscription?: UserSubscription) => !!subscription?.plan && !INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription?.status);
 
 export const isHighestPlan = (currentPlan: AnyPlan | undefined, plans: SubscriptionPlan[]) =>
