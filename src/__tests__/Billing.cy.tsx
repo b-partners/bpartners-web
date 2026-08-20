@@ -17,6 +17,8 @@ const CREDIT_PURCHASES_URL = `/users/${user1.id}/creditPurchases/*`;
 const proPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
 const usageBasedPlan = subscriptionPlans.find(({ id }) => id === 'plan-usage')!;
 
+const cancelledUser: User = { ...user1, subscription: { status: 'CANCELLED', start: new Date('2026-01-01T00:00:00Z'), end: new Date('2026-04-01T00:00:00Z') } };
+
 const withPlan = (plan: (typeof subscriptionPlans)[number]): User => ({
   ...user1,
   subscription: {
@@ -55,6 +57,7 @@ const openBilling = ({
   cy.get('[name="account"]').click();
   cy.wait('@getAccountHolder1');
   cy.get('[name="open-billing-modal"]').click();
+  cy.wait('@getCreditBalance');
 };
 
 const trackStripeReturn = (status: string, purchaseId = 'purchase-9') =>
@@ -180,6 +183,60 @@ describe('Billing modal', () => {
     openBilling({ commitments: [] });
 
     cy.get('.billing-plan-meta').should('contain', 'ANNUEL').and('contain', 'Payé en une fois pour l’année').and('not.contain', 'Engagement');
+  });
+
+  it('cancels the subscription once the resiliation is confirmed', () => {
+    cy.intercept('POST', `/users/${user1.id}/subscriptionCancel`, { ...cancelledUser }).as('cancelSubscription');
+
+    openBilling();
+
+    cy.get('[name="billing-cancel-subscription"]')
+      .scrollIntoView()
+      .should('be.visible')
+      .and('contain', 'Résilier mon abonnement')
+      .and('have.css', 'color', 'rgb(211, 47, 47)');
+    cy.contains('Accès conservé jusqu’au 01/04/2026').should('be.visible');
+    cy.get('[name="billing-cancel-subscription"]').click();
+
+    cy.contains('Résilier votre abonnement ?').should('be.visible');
+    cy.contains('.confirm-row', 'Renouvellement').should('contain', 'Arrêté');
+    cy.contains('.confirm-row', 'Accès conservé jusqu’au').should('contain', '01/04/2026');
+    cy.get('[name="confirm-subscription-cancel"]').click();
+
+    cy.wait('@cancelSubscription');
+    cy.contains('Votre abonnement ne sera pas renouvelé.').should('be.visible');
+    cy.contains('Résilier votre abonnement ?').should('not.exist');
+  });
+
+  it('keeps the subscription when the resiliation is declined', () => {
+    cy.intercept('POST', `/users/${user1.id}/subscriptionCancel`, { statusCode: 500, body: {} }).as('cancelSubscription');
+
+    openBilling();
+    cy.get('[name="billing-cancel-subscription"]').click();
+    cy.get('[name="keep-subscription"]').click();
+
+    cy.contains('Résilier votre abonnement ?').should('not.exist');
+    cy.get('@cancelSubscription.all').should('have.length', 0);
+  });
+
+  it('notifies when the resiliation fails', () => {
+    cy.intercept('POST', `/users/${user1.id}/subscriptionCancel`, { statusCode: 500, body: { message: 'La résiliation a échoué.' } }).as('cancelSubscription');
+
+    openBilling();
+    cy.get('[name="billing-cancel-subscription"]').click();
+    cy.get('[name="confirm-subscription-cancel"]').click();
+
+    cy.wait('@cancelSubscription');
+    cy.contains('La résiliation a échoué.').should('be.visible');
+  });
+
+  it('hides the resiliation without an active subscription', () => {
+    openBilling({ user: cancelledUser });
+
+    cy.contains('Aucun abonnement actif').should('be.visible');
+    cy.get('[name="billing-cancel-subscription"]').should('not.exist');
+    cy.contains('Résilier mon abonnement').should('not.exist');
+    cy.get('[name="billing-choose-subscription"]').should('be.visible');
   });
 
   it('redirects to Stripe to update the payment method', () => {
