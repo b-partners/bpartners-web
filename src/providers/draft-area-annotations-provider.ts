@@ -1,20 +1,32 @@
+import _ from 'lodash';
 import { areaPictureApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { getCached } from './cache';
 
+interface DraftAreaPictureAnnotationFilter {
+  areaPictureId?: string;
+  prospectName?: string;
+  address?: string;
+  creationFrom?: string;
+  creationTo?: string;
+  sort?: unknown;
+}
+
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
-  getList: async (page: number, pageSize: number, filter: { areaPictureId?: string }) => {
-    const { areaPictureId } = filter;
+  getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
+    const { areaPictureId, sort: _sort, ...searchFilters } = filter;
     const { accountId } = getCached.userInfo();
+    // @bpartners/typescript-client has no typed params for these filters yet; pass them as raw query params until the SDK is regenerated.
+    const params = _.omitBy(searchFilters, _.isNil);
 
     if (areaPictureId) {
       return areaPictureApi()
-        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize)
+        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, { params })
         .then(response => response.data);
     }
 
     return areaPictureApi()
-      .getDraftAnnotationsByAccountId(accountId, page, pageSize)
+      .getDraftAnnotationsByAccountId(accountId, page, pageSize, { params })
       .then(response => response.data);
   },
   getOne: async (pictureId: string) => {
