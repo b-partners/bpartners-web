@@ -1,6 +1,7 @@
 export * from './account-api';
 export * from './annotator-api';
 export * from './area-pictures';
+export * from './credits-api';
 export * from './customer-api';
 export * from './draft-annotation-api';
 export * from './Evaluation-jobs-api';
