@@ -8,7 +8,7 @@ import { FC } from 'react';
 import { useNotify, useRefresh } from 'react-admin';
 import { BillingSection } from './BillingSection';
 import { SubscriptionCancelConfirmDialog } from './SubscriptionCancelConfirmDialog';
-import { formatDate, hasActivePlan } from './utils';
+import { formatDate, hasActivePlan, isSubscriptionCancellationEnabled } from './utils';
 
 interface BillingCancellationSectionProps {
   subscription?: UserSubscription;
@@ -33,7 +33,7 @@ export const BillingCancellationSection: FC<BillingCancellationSectionProps> = (
 
   const endDate = formatDate(subscription?.end);
 
-  if (!hasActivePlan(subscription)) return null;
+  if (!isSubscriptionCancellationEnabled() || !hasActivePlan(subscription)) return null;
 
   return (
     <BillingSection
