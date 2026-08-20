@@ -1,5 +1,6 @@
 import { CITY_JSON_QUERY_KEY_PREFIX } from '@/common/fetcher';
 import { annotatorStore, roof3DStore, useAnnotator3DStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { useCreditRequirement } from '@/operations/account/components/billing';
 import { cache, removeCache } from '@/providers';
 import { Dashboard, Refresh, Roofing } from '@mui/icons-material';
 import { Box, Button, ButtonBase, ButtonProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@mui/material';
@@ -11,6 +12,7 @@ import { regenerate3DModeSelectStyle } from './style';
 export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
   const { screen, setScreen } = useAnnotatorScreenSwitch();
   const { shouldPromptRegenerate, setShouldPromptRegenerate } = useAnnotator3DStore();
+  const { requireCredits } = useCreditRequirement();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [fromSegmentation, setFromSegmentation] = useState(annotatorStore.useAnnotatorStore.getState().threeDFromSegmentation ?? false);
@@ -29,7 +31,9 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
 
   if (screen !== '3d-annotator') return null;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    setOpen(false);
+    if (!(await requireCredits())) return;
     queryClient.cancelQueries({ queryKey: [CITY_JSON_QUERY_KEY_PREFIX] });
     annotatorStore.useAnnotatorStore.getState().setThreeDFromSegmentation(fromSegmentation);
     annotatorStore.useAnnotatorStore.getState().setThreeDGenerationId(undefined);
@@ -40,7 +44,6 @@ export const Annotator3DRegenerateButton: FC<ButtonProps> = props => {
     useAnnotator3DStore.getState().incrementRegenerateVersion();
     setScreen('annotator');
     setTimeout(() => setScreen('3d-annotator', fromSegmentation ? 'pan' : 'roof'), 100);
-    setOpen(false);
   };
 
   return (

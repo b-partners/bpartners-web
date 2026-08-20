@@ -1,5 +1,6 @@
 import { useRoofAnalyseQuery } from '@/common/fetcher';
 import { annotatorStore, getAnnotationScreen, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import { useCreditRequirement } from '@/operations/account/components/billing';
 import { clearPolygons, removeCache } from '@/providers';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -7,7 +8,7 @@ import { isAfterAnalyse } from './is-after-analyse';
 import { shiftPolygons } from './shift-polygons';
 
 export interface RoofAnalyseGeneration {
-  runAnalyse: () => void;
+  runAnalyse: () => Promise<void>;
   isAnalysing: boolean;
   isAlreadyAnalysed: boolean;
   isThereARoofPolygon: boolean;
@@ -16,6 +17,7 @@ export interface RoofAnalyseGeneration {
 
 export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const { screen } = useAnnotatorScreenSwitch();
+  const { requireCredits } = useCreditRequirement();
   const {
     areaPictureDetails,
     analyseImageUrl,
@@ -53,7 +55,8 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const is2DRoof = !!roof2dPolygon;
   const isAnalysing = !!analyseLoadingPolygon;
 
-  const runAnalyse = () => {
+  const runAnalyse = async () => {
+    if (!(await requireCredits())) return;
     const loadingPolygon = shiftPolygons(roofPolygons, areaPictureDetails, true)?.[0]?.points?.slice() ?? [];
     promoteAnalyseRoofToAnnotator();
     removeCache.roofDelimitation();

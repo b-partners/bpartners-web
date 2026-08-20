@@ -547,3 +547,18 @@ export const BillingConfirmDialogStyle: SxProps = {
     color: 'error.main',
   },
 };
+
+export const CreditsRequiredModalStyle: SxProps = {
+  ...(BillingModalStyle as Record<string, any>),
+
+  '& .credits-required-message': {
+    fontSize: '13px',
+    lineHeight: 1.5,
+    fontWeight: 500,
+    color: TEXT,
+    padding: '12px 14px',
+    borderRadius: '12px',
+    bgcolor: alpha(ORANGE, 0.08),
+    border: `1px solid ${alpha(ORANGE, 0.24)}`,
+  },
+};
