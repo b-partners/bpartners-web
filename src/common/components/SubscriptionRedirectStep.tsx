@@ -17,9 +17,10 @@ const isStripeUrl = (url: string) => {
 
 interface SubscriptionRedirectStepProps {
   redirectionUrl: string;
+  title?: string;
 }
 
-export const SubscriptionRedirectStep: FC<SubscriptionRedirectStepProps> = ({ redirectionUrl }) => {
+export const SubscriptionRedirectStep: FC<SubscriptionRedirectStepProps> = ({ redirectionUrl, title }) => {
   const stripe = isStripeUrl(redirectionUrl);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export const SubscriptionRedirectStep: FC<SubscriptionRedirectStepProps> = ({ re
           <ArrowForwardRoundedIcon />
         </Box>
         <Typography className='redirect-title'>
-          {stripe ? 'Vous allez être redirigé vers Stripe pour souscrire à l’abonnement' : 'Votre abonnement est en cours d’enregistrement'}
+          {title ?? (stripe ? 'Vous allez être redirigé vers Stripe pour souscrire à l’abonnement' : 'Votre abonnement est en cours d’enregistrement')}
         </Typography>
         <Typography className='redirect-subtitle'>Merci de patienter, vous allez être redirigé automatiquement.</Typography>
       </Box>
