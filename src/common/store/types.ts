@@ -25,6 +25,19 @@ interface BankDisconnectionAction {
 
 export type TBankDisconnectionStore = BankDisconnectionState & BankDisconnectionAction;
 
+export type DraftAnnotationFilterKey = 'prospectName' | 'address' | 'creationFrom' | 'creationTo';
+export type DraftAnnotationFilters = Partial<Record<DraftAnnotationFilterKey, string>>;
+
+interface DraftAnnotationFilterState {
+  filters: DraftAnnotationFilters;
+}
+interface DraftAnnotationFilterAction {
+  setFilter: (key: DraftAnnotationFilterKey, value: string) => void;
+  resetFilters: () => void;
+}
+
+export type TDraftAnnotationFilterStore = DraftAnnotationFilterState & DraftAnnotationFilterAction;
+
 interface ProspectSearchState {
   searchName: string;
 }

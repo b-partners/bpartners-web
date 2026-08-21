@@ -1,9 +1,10 @@
 import ListComponent from '@/common/components/ListComponent';
 import Pagination from '@/common/components/Pagination';
+import { useDraftAnnotationFilterStore } from '@/common/store';
 import { DraftAreaPictureAnnotation } from '@bpartners/typescript-client';
 import { Box, SxProps } from '@mui/material';
 import { Empty, List, useListContext } from 'react-admin';
-import { DraftAnnotationItem } from './components';
+import { DraftAnnotationFilterBar, DraftAnnotationItem } from './components';
 
 const DRAFT_ANNOTATION_ITEM_WRAPPER_SX: SxProps = {
   '.draft-annotation-list': {
@@ -18,19 +19,24 @@ const DRAFT_ANNOTATION_ITEM_WRAPPER_SX: SxProps = {
 };
 
 export const DraftAreaPictureAnnotations = () => {
+  const filters = useDraftAnnotationFilterStore(state => state.filters);
   return (
-    <List
-      component={ListComponent}
-      actions={false}
-      empty={<Empty resource='prospect avec brouillon' />}
-      resource='drafts-annotations'
-      pagination={<Pagination />}
-      queryOptions={{
-        refetchOnWindowFocus: false,
-      }}
-    >
-      <DraftAreaPictureAnnotationContent />
-    </List>
+    <>
+      <DraftAnnotationFilterBar />
+      <List
+        component={ListComponent}
+        actions={false}
+        empty={<Empty resource='prospect avec brouillon' />}
+        resource='drafts-annotations'
+        pagination={<Pagination />}
+        filter={filters}
+        queryOptions={{
+          refetchOnWindowFocus: false,
+        }}
+      >
+        <DraftAreaPictureAnnotationContent />
+      </List>
+    </>
   );
 };
 
