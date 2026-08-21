@@ -83,7 +83,7 @@ describe('DraftAnnotationFilterBar', () => {
     cy.get('[data-cy="draft-filter-menu-item-prospectName"]').click();
     cy.get('[data-cy="draft-filter-input"]').type('Jane Doe{enter}');
 
-    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('contain.text', 'Prospect : Jane Doe');
+    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('contain.text', 'Prospect').and('contain.text', 'Jane Doe');
     cy.get('[data-cy="draft-filter-input"]').should('have.value', '').and('be.disabled');
     cy.wrap(null).should(() => {
       expect(useDraftAnnotationFilterStore.getState().filters.prospectName).to.eq('Jane Doe');
@@ -136,7 +136,7 @@ describe('DraftAnnotationFilterBar', () => {
     cy.get('[data-cy="draft-filter-input"]').type('Jane Doe');
     cy.get('[data-cy="draft-filter-search-button"]').click();
 
-    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('contain.text', 'Prospect : Jane Doe');
+    cy.get('[data-cy="draft-filter-chip-prospectName"]').should('contain.text', 'Prospect').and('contain.text', 'Jane Doe');
     cy.wrap(null).should(() => {
       expect(useDraftAnnotationFilterStore.getState().filters.prospectName).to.eq('Jane Doe');
     });
@@ -146,7 +146,7 @@ describe('DraftAnnotationFilterBar', () => {
     useDraftAnnotationFilterStore.getState().setFilter('address', 'Paris');
     cy.mount(<DraftAnnotationFilterBar />);
 
-    cy.get('[data-cy="draft-filter-chip-address"]').should('contain.text', 'Adresse : Paris');
+    cy.get('[data-cy="draft-filter-chip-address"]').should('contain.text', 'Adresse').and('contain.text', 'Paris');
     cy.get('[data-cy="draft-filter-menu-button"]').click();
     cy.get('[data-cy="draft-filter-menu-item-address"]').click();
 

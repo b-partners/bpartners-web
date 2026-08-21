@@ -66,7 +66,10 @@ export const DraftAnnotationFilterBar = () => {
       <Search className='draft-filter-search-icon' />
       {chips.map(filter => (
         <FlexBox key={filter.key} className='draft-filter-chip' data-cy={`draft-filter-chip-${filter.key}`}>
-          <span className='draft-filter-chip-label'>{`${filter.label} : ${filters[filter.key]}`}</span>
+          <FlexBox className='draft-filter-chip-text'>
+            <span className='draft-filter-chip-type'>{filter.label}</span>
+            <span className='draft-filter-chip-value'>{filters[filter.key]}</span>
+          </FlexBox>
           <Tooltip title='Supprimer ce filtre'>
             <Close className='draft-filter-chip-remove' data-cy={`draft-filter-chip-remove-${filter.key}`} onClick={() => removeFilter(filter.key)} />
           </Tooltip>
