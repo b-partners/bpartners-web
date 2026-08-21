@@ -2,13 +2,17 @@ import { SxProps } from '@mui/material';
 
 export const DraftAnnotationFilterBarStyle: SxProps = {
   gap: 1.5,
+  rowGap: 1,
+  flexWrap: 'wrap',
   bgcolor: 'white',
   borderRadius: '14px',
   p: '16px',
   px: 3,
   mx: 'auto',
   mb: 3,
-  width: { xs: '100%', md: '640px' },
+  width: { xs: '100%', md: 'fit-content' },
+  minWidth: { md: '640px' },
+  maxWidth: '100%',
   '& .draft-filter-search-icon': {
     fontSize: '28px',
     color: 'text.secondary',
