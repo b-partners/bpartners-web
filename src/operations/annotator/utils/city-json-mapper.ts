@@ -3,7 +3,45 @@ import { CityJsonData, computeFaceArea, computeFaceEdges } from '@/lib/cityjson'
 import { ExportAreaPictureAnnotation3D, ExportAreaPictureAnnotation3DPan } from '@bpartners/typescript-client';
 import { CityJSON } from '../city-json-type';
 
-const toFootprintPoint = ([x, , z]: Vec3Tuple) => ({ x, y: z });
+const applyCityJsonTransform = (vertex: number[], transform?: CityJSON['transform']): number[] => {
+  if (!transform) return vertex;
+  const { scale, translate } = transform;
+  return [vertex[0] * scale[0] + translate[0], vertex[1] * scale[1] + translate[1], vertex[2] * scale[2] + translate[2]];
+};
+
+// Mirrors useCityJsonRenderer's centroid: that hook recenters every vertex around this
+// point (and swaps/mirrors the Y and Z axes) before handing geometry to three.js, so any
+// raycasted point must be recentered the same way to land back in CityJSON-native space.
+const computeCityJsonCenter = (cityJson: CityJSON): [number, number, number] => {
+  const realVertices = cityJson.vertices.map(vertex => applyCityJsonTransform(vertex, cityJson.transform));
+  const sum = realVertices.reduce((acc, [x, y, z]) => [acc[0] + x, acc[1] + y, acc[2] + z], [0, 0, 0]);
+  return [sum[0] / realVertices.length, sum[1] / realVertices.length, sum[2] / realVertices.length];
+};
+
+// boundaryMapper.toPan (below) builds auto-detected pans straight from raw cityJson.vertices
+// values, scaled by a flat 0.001 — it never reads cityJson.transform. So a manual point must
+// also be brought back down to that same raw*0.001 scale, not just the transform-applied
+// "real" one, or it'll sit orders of magnitude off from every auto-detected pan on any
+// diagram that draws them all together (e.g. the roof summary page).
+const toRawVertexUnits = (real: number, axisIndex: number, transform?: CityJSON['transform']): number => {
+  if (!transform) return real;
+  const { scale, translate } = transform;
+  return (real - translate[axisIndex]) / scale[axisIndex];
+};
+
+// Inverts useCityJsonRenderer's globalVertices transform
+// (`[x - center[0], z - center[2], -(y - center[1])]`) so a manually raycasted three.js
+// point maps back onto the same CityJSON-native plane and raw*0.001 scale that
+// auto-detected pans use.
+const toFootprintPoint = ([x, , z]: Vec3Tuple, center: [number, number, number] | null, transform?: CityJSON['transform']) => {
+  if (!center) return { x, y: z };
+  const realX = x + center[0];
+  const realY = center[1] - z;
+  return {
+    x: toRawVertexUnits(realX, 0, transform) * 0.001,
+    y: toRawVertexUnits(realY, 1, transform) * 0.001,
+  };
+};
 
 const toLengthMeasurement = (value: number) => ({ isInvisible: false, unit: 'm', value: +value.toFixed(2) });
 
@@ -311,20 +349,24 @@ export const cityJsonMapper = {
     return result;
   },
 
-  userPolygonToPan: (polygon: SavedPolygonMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+  userPolygonToPan: (polygon: SavedPolygonMeasure, cityJson?: CityJSON, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+    const center = cityJson ? computeCityJsonCenter(cityJson) : null;
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: polygon.name,
-      polygon: { points: closeRingWithoutSuperposition(polygon.points.map(toFootprintPoint)) },
+      polygon: {
+        points: closeRingWithoutSuperposition(polygon.points.map(point => toFootprintPoint(point, center, cityJson?.transform))),
+      },
       measurements: polygon.edges.map(edge => toLengthMeasurement(edge.distanceSlope)),
       infos: [{ label: 'Surface', value: `${+polygon.area.toFixed(2)}m²` }],
     };
     return imageUri ? { ...pan, imageUri } : pan;
   },
 
-  userLineToPan: (line: SavedLineMeasure, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+  userLineToPan: (line: SavedLineMeasure, cityJson?: CityJSON, imageUri?: string): ExportAreaPictureAnnotation3DPan => {
+    const center = cityJson ? computeCityJsonCenter(cityJson) : null;
     const pan: ExportAreaPictureAnnotation3DPan = {
       name: line.name,
-      polygon: { points: [line.pointA, line.pointB].map(toFootprintPoint) },
+      polygon: { points: [line.pointA, line.pointB].map(point => toFootprintPoint(point, center, cityJson?.transform)) },
       measurements: [toLengthMeasurement(line.distanceSlope)],
       infos: [
         { label: 'Distance', value: `${+line.distanceSlope.toFixed(2)}m` },

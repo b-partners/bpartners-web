@@ -40,7 +40,11 @@ const buildPansToiture3d = (): ExportAreaPictureAnnotation3DPan[] | undefined =>
   const { panNames, edgeTypes, savedPolygons, savedLines } = roof3DStore.useRoof3DStore.getState();
   const { pans } = cityJsonMapper.toExportAreaPictureAnnotation3D(cityJsonModel, [], panNames, edgeTypes);
 
-  return [...pans, ...savedPolygons.map(polygon => cityJsonMapper.userPolygonToPan(polygon)), ...savedLines.map(line => cityJsonMapper.userLineToPan(line))];
+  return [
+    ...pans,
+    ...savedPolygons.map(polygon => cityJsonMapper.userPolygonToPan(polygon, cityJsonModel)),
+    ...savedLines.map(line => cityJsonMapper.userLineToPan(line, cityJsonModel)),
+  ];
 };
 
 const buildGeometryFields = (): Pick<ToitureReportRequest, 'surfaceRampantM2' | 'penteDeg' | 'hauteurBatiment'> => {
