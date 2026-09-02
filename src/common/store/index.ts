@@ -1,3 +1,4 @@
+export * from './analyse-credit-popup-store';
 export * from './annotator-3d-store';
 export * from './annotator-component-form-item-store';
 export * from './annotator-component-store';
