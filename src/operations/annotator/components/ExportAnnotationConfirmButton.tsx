@@ -7,7 +7,7 @@ import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { DEFAULT_EXPORT_PDF_CONF, getAnalyseImageFileId } from '@/constants';
 import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import { FC, useRef } from 'react';
-import { calculateGlobalRate } from '../utils';
+import { useGlobalRateQuery } from '../utils';
 import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
 
 export interface ExportAnnotationConfirmButtonProps {
@@ -24,6 +24,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const confRef = useRef<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
   const annotationInfos = annotatorStore.useAnalyseAnnotatorInfoStore();
   const { polygonList } = annotatorStore.useAnalysePolygonStore();
+  const globalRate = useGlobalRateQuery();
 
   const exportPdfOnSuccess = () => {
     closeConfirm();
@@ -32,7 +33,6 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
   const { mutate: exportAsPdf, isPending: exportAsPdfPending } = useAnnotatorExportAsPdf({ onSuccess: exportPdfOnSuccess });
 
   const uploadImageOnSuccess = () => {
-    const globalRate = calculateGlobalRate();
     exportAsPdf({
       annotationInfos,
       polygons: polygonList,

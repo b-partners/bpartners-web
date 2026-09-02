@@ -17,7 +17,7 @@ import { FC } from 'react';
 import { useNotify, useRedirect } from 'react-admin';
 import { v4 } from 'uuid';
 import { analyseResultButtonsStyle } from '../style';
-import { calculateGlobalRate } from '../utils';
+import { useGlobalRateQuery } from '../utils';
 import { ExportAnnotationConfirmButton } from './ExportAnnotationConfirmButton';
 
 export interface AnalyseProperties {
@@ -61,7 +61,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
   const notify = useNotify();
   const { pictureId, imgUrl } = parseUrlParams();
   const { llm } = useAnnotatorComponentStore();
-  const globalRate = calculateGlobalRate();
+  const globalRate = useGlobalRateQuery();
   const annotatorsInfos = annotatorStore.useAnnotatorInfoStore();
   const { polygonList } = annotatorStore.usePolygonStore();
 

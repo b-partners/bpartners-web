@@ -200,6 +200,26 @@ export const sendPdfToMail = async (pdf: File) => {
   return await result.json();
 };
 
+export interface RoofOverallScore {
+  score: number;
+  category: 'A' | 'B' | 'C' | 'D' | 'E';
+}
+
+export const getRoofOverallScore = async (usureRate: number, moisissureRate: number, humiditeRate: number, signal?: AbortSignal) => {
+  const apiKey = await getApiKey();
+  const params = new URLSearchParams({ humiditeRate: `${humiditeRate}`, usureRate: `${usureRate}`, moisissureRate: `${moisissureRate}` });
+
+  const response = await fetch(`${baseUrl}/roof/overallScore?${params}`, {
+    method: 'GET',
+    signal,
+    headers: { 'x-api-key': apiKey || '' },
+  });
+
+  if (!response.ok) throw new Error('[RoofOverallScore] Status: FAILED — Unable to compute roof overall score.');
+
+  return (await response.json()) as RoofOverallScore;
+};
+
 export const sendRooferInformationsToMail = async (info: RooferInformations) => {
   const detectionId = getCached.roofAnalyseId();
   const apiKey = getCached.apiKey();

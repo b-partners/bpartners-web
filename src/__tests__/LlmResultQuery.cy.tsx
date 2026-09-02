@@ -84,6 +84,8 @@ describe('useLlmResultQuery — payload sent to the toiture-report LLM endpoint'
     roof3DStore.useRoof3DStore.getState().reset();
     seedAnnotation();
     seedAreaPictureDetails();
+    // Forces useGlobalRateQuery to fall back to the local formula so scoreDegradationVisible stays deterministic here.
+    cy.intercept('GET', '**/roof/overallScore**', { statusCode: 500, body: {} });
   });
 
   it('POSTs a JSON payload derived from the 2D annotation when no 3D model exists', () => {
