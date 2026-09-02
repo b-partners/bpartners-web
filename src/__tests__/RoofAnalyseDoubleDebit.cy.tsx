@@ -73,7 +73,10 @@ const interceptDetection = (delay = 0) => {
 describe('useRoofAnalyseGeneration — un seul débit de crédit par analyse', () => {
   beforeEach(() => {
     cy.clearAllLocalStorage();
-    cy.intercept('POST', '**/mercator**', mercatorResponse).as('pointsToGeoPoints');
+    cy.intercept('POST', '**', req => {
+      if (req.url.includes('/detections/')) return;
+      req.reply(mercatorResponse);
+    }).as('pointsToGeoPoints');
     cy.intercept('PUT', '**/city-jsons/*/process', {}).as('processCityJson');
     cy.then(() => {
       localStorage.setItem('bp_user_api_key', 'dummy');
