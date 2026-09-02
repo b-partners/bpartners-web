@@ -65,7 +65,7 @@ export const Annotator = () => {
         await fileProvider.update([{ fileId: analyseImageFileId, fileType: FileType.AREA_PICTURE, fileMimeType: blob.type || 'image/png', fileAsArrayBuffer }]);
         if (!analyseImageGenerated) await saveImageToCache(analyseImageFileId, blob);
       }
-      setAnalyseImageUrl(url);
+      setAnalyseImageUrl(analyseImageGenerated ? url : null);
     });
   }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);

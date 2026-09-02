@@ -31,7 +31,7 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
   const globalRate = calculateGlobalRate();
   const { analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
-  const analyseImageGenerated = !!analyseImageUrl || !!analyseImageFileId;
+  const analyseImageGenerated = !!analyseImageUrl || !!annotatorState.roofAnalyseId;
 
   return {
     ...annotatorMapper(annotationAttributeMapped, pictureId, annotationId, true),
