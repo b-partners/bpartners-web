@@ -2,7 +2,7 @@ import { annotatorProvider, cache, getCached, initializeRoofAnalyse, polygonMapp
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { ErrorMessageDialog } from '../components';
-import { useAnnotatorComponentStore } from '../store';
+import { useAnalyseCreditPopupStore, useAnnotatorComponentStore } from '../store';
 import { useDialog } from '../store/dialog';
 
 export const useInitRoofAnalyseQuery = (address: string, areaPictureDetails: AreaPictureDetails) => {
@@ -15,6 +15,7 @@ export const useRoofAnalyseQuery = (polygons: any[], areaPictureDetails: AreaPic
   const { setAnalyseInformation, setShouldGetHeightState, setRoofDelimiter, setImageTileInfoOrigin, setAnalyseLoadingPolygon } = useAnnotatorComponentStore();
 
   const onSuccess = (detectionResult: any) => {
+    useAnalyseCreditPopupStore.getState().arm();
     setAnalyseLoadingPolygon(null);
     const geoJsonResultUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.vgg_file_url;
     const imageUrl = detectionResult?.result?.geoJsonZone?.[0]?.properties?.original_image_url;
