@@ -57,7 +57,7 @@ export const useGlobalRateQuery = (): { value: number; type: string } | null => 
     placeholderData: localFallback,
   });
 
-  const globalRate = analyseRoofAnnotation ? (data ?? localFallback) : null;
+  const globalRate = analyseRoofAnnotation ? data ?? localFallback : null;
 
   useEffect(() => {
     if (globalRate) setGlobalRate(globalRate.value, globalRate.type);

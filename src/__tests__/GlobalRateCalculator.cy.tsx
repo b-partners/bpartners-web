@@ -29,6 +29,8 @@ describe('useGlobalRateQuery', () => {
   beforeEach(() => {
     annotatorStore.useAnnotatorStore.getState().reset();
     useAnnotatorComponentStore.getState().reset();
+    cy.clearAllLocalStorage();
+    cy.then(() => localStorage.setItem('bp_user_api_key', 'dummy'));
   });
 
   it('returns null when there is no annotation at all', () => {
