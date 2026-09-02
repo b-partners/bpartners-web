@@ -55,8 +55,14 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const is2DRoof = !!roof2dPolygon;
   const isAnalysing = !!analyseLoadingPolygon;
 
+  const isRunningRef = useRef(false);
+  const didAutoRun = useRef(false);
+
   const runAnalyse = async () => {
     if (!(await requireCredits())) return;
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    didAutoRun.current = true;
     const loadingPolygon = shiftPolygons(roofPolygons, areaPictureDetails, true)?.[0]?.points?.slice() ?? [];
     promoteAnalyseRoofToAnnotator();
     removeCache.roofDelimitation();
@@ -65,10 +71,13 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
     setAnalyseImageUrl(null);
     setAnalyseImageFileId(null);
     setAnalyseLoadingPolygon(loadingPolygon);
-    processDetection();
+    processDetection(undefined, {
+      onSettled: () => {
+        isRunningRef.current = false;
+      },
+    });
   };
 
-  const didAutoRun = useRef(false);
   useEffect(() => {
     if (didAutoRun.current) return;
     if (screen !== 'roof-analyse' || !is2DRoof || isAlreadyAnalysed || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect || isAnalysing) return;
