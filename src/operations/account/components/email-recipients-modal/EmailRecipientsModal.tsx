@@ -89,26 +89,20 @@ const EmailRecipientRow: FC<EmailRecipientRowProps> = ({ type, emails, onAdd, on
   );
 };
 
-interface EmailRecipientsModalProps {
-  defaultEmail?: string;
-}
-
-export const EmailRecipientsModal: FC<EmailRecipientsModalProps> = ({ defaultEmail }) => {
+export const EmailRecipientsModal = () => {
   const { close } = useDialog();
   const notify = useNotify();
   const { emailRecipients, isEmailRecipientsLoading, isEmailRecipientsError } = useGetEmailRecipients();
   const { configureEmailRecipients, isConfigureEmailRecipients } = useConfigureEmailRecipients();
   const [recipients, setRecipients] = useState<RecipientsState>(EMPTY_STATE);
 
-  const initialRecipients = useMemo(() => {
-    const fallback = defaultEmail && EMAIL_REGEX.test(defaultEmail) ? [defaultEmail] : [];
-    const configured = (emailRecipients?.recipients || []).reduce<RecipientsState>((acc, { type, emails }) => (type ? { ...acc, [type]: emails || [] } : acc), {
-      ...EMPTY_STATE,
-    });
-    return RECIPIENT_TYPES.reduce<RecipientsState>((acc, type) => ({ ...acc, [type]: configured[type].length > 0 ? configured[type] : fallback }), {
-      ...EMPTY_STATE,
-    });
-  }, [emailRecipients, defaultEmail]);
+  const initialRecipients = useMemo(
+    () =>
+      (emailRecipients?.recipients || []).reduce<RecipientsState>((acc, { type, emails }) => (type ? { ...acc, [type]: emails || [] } : acc), {
+        ...EMPTY_STATE,
+      }),
+    [emailRecipients]
+  );
 
   useEffect(() => {
     setRecipients(initialRecipients);
