@@ -1,6 +1,5 @@
 import { useAnalyseCreditPopupStore } from '@/common/store';
 import { formatCredits } from '@/operations/account/components/billing/utils';
-import { useGetCreditBalance } from '@/operations/account/queries';
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Box, IconButton, Typography } from '@mui/material';
@@ -15,7 +14,6 @@ interface AnalyseCreditPopupProps {
 
 export const AnalyseCreditPopup: FC<AnalyseCreditPopupProps> = ({ resultDisplayed }) => {
   const { armed, visible, credits, show, hide } = useAnalyseCreditPopupStore();
-  const { refetchBalance } = useGetCreditBalance(false);
   const [isClosing, setIsClosing] = useState(false);
   const hasTriggered = useRef(false);
 
@@ -24,8 +22,8 @@ export const AnalyseCreditPopup: FC<AnalyseCreditPopupProps> = ({ resultDisplaye
   useEffect(() => {
     if (!armed || !resultDisplayed || hasTriggered.current) return;
     hasTriggered.current = true;
-    refetchBalance().then(({ data }) => show(data?.spendableCredits));
-  }, [armed, resultDisplayed, refetchBalance, show]);
+    show();
+  }, [armed, resultDisplayed, show]);
 
   useEffect(() => {
     if (!resultDisplayed) hasTriggered.current = false;

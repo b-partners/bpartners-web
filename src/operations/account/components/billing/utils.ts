@@ -1,5 +1,6 @@
 import {
   BillingInterval,
+  CreditBalance,
   CreditPack,
   CreditPurchaseType,
   EnableStatus,
@@ -113,3 +114,24 @@ export const getPackTotalCents = (pack: CreditPack, credits: number, quantity: n
   isCustomPack(pack) ? credits * (pack.creditUnitPriceInCentsWithVat ?? 0) : (pack.priceInCentsWithVat ?? 0) * quantity;
 
 export const getPackCredits = (pack: CreditPack, credits: number, quantity: number) => (isCustomPack(pack) ? credits : (pack.credits ?? 0) * quantity);
+
+export const getEffectiveCreditBalance = (apiBalance?: CreditBalance, cachedBalance?: CreditBalance): CreditBalance | undefined => {
+  if (!cachedBalance) return apiBalance;
+  if (!apiBalance) return cachedBalance;
+  return (cachedBalance.spendableCredits ?? 0) <= (apiBalance.spendableCredits ?? 0) ? cachedBalance : apiBalance;
+};
+
+export const computeOptimisticBalance = (balance: CreditBalance, cost: number): CreditBalance => {
+  const debit = Math.max(0, cost);
+  const grantedDebit = Math.min(balance.grantedCredits ?? 0, debit);
+  const purchasedDebit = Math.min(balance.purchasedCredits ?? 0, debit - grantedDebit);
+  const spendableCredits = Math.max(0, (balance.spendableCredits ?? 0) - debit);
+  const creditCostPerAnalysis = balance.creditCostPerAnalysis ?? 0;
+  return {
+    ...balance,
+    grantedCredits: (balance.grantedCredits ?? 0) - grantedDebit,
+    purchasedCredits: (balance.purchasedCredits ?? 0) - purchasedDebit,
+    spendableCredits,
+    estimatedRemainingAnalyses: creditCostPerAnalysis > 0 ? Math.floor(spendableCredits / creditCostPerAnalysis) : balance.estimatedRemainingAnalyses,
+  };
+};
