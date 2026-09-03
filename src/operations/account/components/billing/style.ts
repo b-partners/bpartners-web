@@ -438,6 +438,60 @@ export const BillingModalStyle: SxProps = {
     '&.Mui-disabled': { bgcolor: alpha(ORANGE, 0.35), color: WHITE },
   },
 
+  '& .billing-detections': {
+    marginTop: '14px',
+    paddingTop: '12px',
+    borderTop: `1px dashed ${DOTTED}`,
+  },
+  '& .billing-detections-list': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginTop: '10px',
+  },
+  '& .billing-detection-line': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+    fontSize: '12px',
+    color: TEXT,
+  },
+  '& .billing-detection-main': {
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  '& .billing-detection-address': {
+    fontSize: '12px',
+    fontWeight: 600,
+    color: TEXT,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  '& .billing-detection-meta': {
+    fontSize: '11px',
+    color: MUTED,
+  },
+  '& .billing-detection-view': {
+    flexShrink: 0,
+    color: ORANGE_DARK,
+    padding: '4px',
+    '&:hover': { bgcolor: alpha(ORANGE, 0.1) },
+  },
+  '& .billing-detection-view svg': { fontSize: '18px' },
+  '& .billing-detections-more': {
+    marginTop: '4px',
+    textAlign: 'center',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: ORANGE,
+    cursor: 'pointer',
+    padding: '6px 0',
+    '&:hover': { textDecoration: 'underline' },
+  },
+
   '& .billing-invoice-period': {
     display: 'flex',
     alignItems: 'center',

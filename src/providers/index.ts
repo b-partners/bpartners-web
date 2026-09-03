@@ -11,6 +11,7 @@ export * from './cache';
 export * from './credits-provider';
 export * from './customer-provider';
 export * from './data-provider';
+export * from './detection-tracking-provider';
 export * from './feedback-provider';
 export * from './file-provider';
 export * from './geocode-provider';
