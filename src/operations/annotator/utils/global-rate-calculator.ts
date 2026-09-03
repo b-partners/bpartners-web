@@ -47,7 +47,7 @@ export const useGlobalRateQuery = (): { value: number; type: string } | null => 
     queryFn: async () => {
       try {
         const { score, category } = await getRoofOverallScore(wear, mold, humidity);
-        return { value: score, type: category };
+        return { value: parseFloat(score.toFixed(2)), type: category };
       } catch (error) {
         printError(error);
         return localFallback;
