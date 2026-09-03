@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { areaPictureApi } from './api';
 import { BpDataProviderType } from './bp-data-provider-type';
 import { getCached } from './cache';
@@ -14,30 +13,35 @@ interface DraftAreaPictureAnnotationFilter {
 
 const toInstant = (dateTime: string) => `${dateTime}:00.000Z`;
 
+// lite=true skips full annotation geometry in the response: the list cards only ever read areaPicture/prospect/creationDatetime.
+// @bpartners/typescript-client has no typed param for it yet, so it's passed as a raw query param until the SDK is regenerated.
+const LITE_OPTIONS = { params: { lite: true } };
+
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
-    const { areaPictureId, sort: _sort, creationFrom, creationTo, ...restFilters } = filter;
+    const { areaPictureId, prospectName, address, creationFrom, creationTo } = filter;
     const { accountId } = getCached.userInfo();
-    // @bpartners/typescript-client has no typed params for these filters yet; pass them as raw query params until the SDK is regenerated.
-    // lite=true skips full annotation geometry in the response: the list cards only ever read areaPicture/prospect/creationDatetime.
-    const params = _.omitBy(
-      {
-        ...restFilters,
-        creationFrom: creationFrom ? toInstant(creationFrom) : undefined,
-        creationTo: creationTo ? toInstant(creationTo) : undefined,
-        lite: true,
-      },
-      _.isNil
-    );
+    const fromInstant = creationFrom ? toInstant(creationFrom) : undefined;
+    const toInstantValue = creationTo ? toInstant(creationTo) : undefined;
 
     if (areaPictureId) {
       return areaPictureApi()
-        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, { params })
+        .getDraftAnnotationsByAccountIdAndAreaPictureId(
+          accountId,
+          areaPictureId,
+          page,
+          pageSize,
+          prospectName,
+          address,
+          fromInstant,
+          toInstantValue,
+          LITE_OPTIONS
+        )
         .then(response => response.data);
     }
 
     return areaPictureApi()
-      .getDraftAnnotationsByAccountId(accountId, page, pageSize, { params })
+      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, fromInstant, toInstantValue, LITE_OPTIONS)
       .then(response => response.data);
   },
   getOne: async (pictureId: string) => {
