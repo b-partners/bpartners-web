@@ -19,11 +19,13 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
     const { areaPictureId, sort: _sort, creationFrom, creationTo, ...restFilters } = filter;
     const { accountId } = getCached.userInfo();
     // @bpartners/typescript-client has no typed params for these filters yet; pass them as raw query params until the SDK is regenerated.
+    // lite=true skips full annotation geometry in the response: the list cards only ever read areaPicture/prospect/creationDatetime.
     const params = _.omitBy(
       {
         ...restFilters,
         creationFrom: creationFrom ? toInstant(creationFrom) : undefined,
         creationTo: creationTo ? toInstant(creationTo) : undefined,
+        lite: true,
       },
       _.isNil
     );
