@@ -19,29 +19,19 @@ const LITE_OPTIONS = { params: { lite: true } };
 
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
-    const { areaPictureId, prospectName, address, creationFrom, creationTo } = filter;
+    const { areaPictureId, sort: _sort, prospectName, address, creationFrom, creationTo } = filter;
     const { accountId } = getCached.userInfo();
-    const fromInstant = creationFrom ? new Date(toInstant(creationFrom)) : undefined;
-    const toInstantValue = creationTo ? new Date(toInstant(creationTo)) : undefined;
+    const from = creationFrom ? new Date(toInstant(creationFrom)) : undefined;
+    const to = creationTo ? new Date(toInstant(creationTo)) : undefined;
 
     if (areaPictureId) {
       return areaPictureApi()
-        .getDraftAnnotationsByAccountIdAndAreaPictureId(
-          accountId,
-          areaPictureId,
-          page,
-          pageSize,
-          prospectName,
-          address,
-          fromInstant,
-          toInstantValue,
-          LITE_OPTIONS
-        )
+        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, prospectName, address, from, to, LITE_OPTIONS)
         .then(response => response.data);
     }
 
     return areaPictureApi()
-      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, fromInstant, toInstantValue, LITE_OPTIONS)
+      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, from, to, LITE_OPTIONS)
       .then(response => response.data);
   },
   getOne: async (pictureId: string) => {

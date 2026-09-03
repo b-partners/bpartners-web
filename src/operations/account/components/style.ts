@@ -104,6 +104,22 @@ export const AccountStyle: SxProps = {
     fontSize: '1.3rem',
     width: '500px',
   },
+  '& .email-recipients-button': {
+    textTransform: 'none',
+    fontWeight: 600,
+    borderRadius: '12px',
+    whiteSpace: 'nowrap',
+    mt: 0.5,
+  },
+  '& .vat-field-edit': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 1,
+  },
+  '& .vat-field-edit .MuiFormControlLabel-root': {
+    marginRight: 0,
+  },
   '& .buton-edit': {
     position: 'relative',
     right: 0,
