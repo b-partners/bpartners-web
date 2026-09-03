@@ -53,7 +53,7 @@ const Harness = () => {
   const { runAnalyse } = useRoofAnalyseGeneration();
   return (
     <button data-cy='run-analyse' onClick={runAnalyse}>
-      Lancer l’analyse
+      Run analysis
     </button>
   );
 };
@@ -73,7 +73,7 @@ const interceptBalance = (balance: CreditBalance) => cy.intercept('GET', CREDIT_
 
 const optimisticSpendable = () => useOptimisticCreditBalanceStore.getState().balance?.spendableCredits;
 
-describe('useRoofAnalyseGeneration — garde optimiste sur le solde', () => {
+describe('useRoofAnalyseGeneration — optimistic balance guard', () => {
   beforeEach(() => {
     cy.cognitoLogin();
     cy.intercept('POST', '**', req => {
@@ -95,7 +95,7 @@ describe('useRoofAnalyseGeneration — garde optimiste sur le solde', () => {
 
   afterEach(() => useOptimisticCreditBalanceStore.getState().clear());
 
-  it('bloque une nouvelle analyse quand le cache optimiste est épuisé alors que l’API est encore périmée', () => {
+  it('blocks a new analysis when the optimistic cache is exhausted while the API is still stale', () => {
     useOptimisticCreditBalanceStore.getState().setBalance({ spendableCredits: 0, grantedCredits: 0, purchasedCredits: 0, creditCostPerAnalysis: 10 });
     interceptBalance({ spendableCredits: 10, grantedCredits: 10, purchasedCredits: 0, creditCostPerAnalysis: 10, estimatedRemainingAnalyses: 1 });
     interceptDetection();
@@ -106,10 +106,10 @@ describe('useRoofAnalyseGeneration — garde optimiste sur le solde', () => {
     cy.wait('@getCreditBalance');
     cy.wait(500);
     cy.get('@processDetection.all').should('have.length', 0);
-    cy.wrap(null).should(() => expect(optimisticSpendable(), 'le cache reste à zéro').to.eq(0));
+    cy.wrap(null).should(() => expect(optimisticSpendable(), 'the cache stays at zero').to.eq(0));
   });
 
-  it('autorise et enchaîne les débits depuis le cache tant que l’API n’est pas à jour', () => {
+  it('allows and chains debits from the cache while the API is not up to date', () => {
     interceptBalance({ spendableCredits: 20, grantedCredits: 20, purchasedCredits: 0, creditCostPerAnalysis: 10, estimatedRemainingAnalyses: 2 });
     interceptDetection();
 
@@ -117,12 +117,12 @@ describe('useRoofAnalyseGeneration — garde optimiste sur le solde', () => {
 
     cy.get('[data-cy=run-analyse]').click();
     cy.wait('@processDetection');
-    cy.wrap(null).should(() => expect(optimisticSpendable(), 'premier débit depuis l’API').to.eq(10));
+    cy.wrap(null).should(() => expect(optimisticSpendable(), 'first debit from the API').to.eq(10));
 
     cy.wait(300);
     cy.get('[data-cy=run-analyse]').click();
     cy.wait('@processDetection');
-    cy.wrap(null).should(() => expect(optimisticSpendable(), 'second débit chaîné depuis le cache, pas depuis l’API périmée').to.eq(0));
+    cy.wrap(null).should(() => expect(optimisticSpendable(), 'second debit chained from the cache, not from the stale API').to.eq(0));
 
     cy.get('@processDetection.all').should('have.length', 2);
   });
