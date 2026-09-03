@@ -9,8 +9,8 @@ const base: CreditBalance = {
   estimatedRemainingAnalyses: 32,
 };
 
-describe('computeOptimisticBalance — débit optimiste cohérent', () => {
-  it('débite le granted en priorité et garde granted + purchased = spendable', () => {
+describe('computeOptimisticBalance — coherent optimistic debit', () => {
+  it('debits granted first and keeps granted + purchased = spendable', () => {
     const next = computeOptimisticBalance(base, 10);
     expect(next.grantedCredits).to.eq(190);
     expect(next.purchasedCredits).to.eq(120);
@@ -19,7 +19,7 @@ describe('computeOptimisticBalance — débit optimiste cohérent', () => {
     expect(next.estimatedRemainingAnalyses).to.eq(31);
   });
 
-  it('reporte le reliquat sur le purchased quand le granted ne couvre pas le coût', () => {
+  it('carries the remainder over to purchased when granted does not cover the cost', () => {
     const next = computeOptimisticBalance({ ...base, grantedCredits: 4, spendableCredits: 124 }, 10);
     expect(next.grantedCredits).to.eq(0);
     expect(next.purchasedCredits).to.eq(114);
@@ -27,14 +27,14 @@ describe('computeOptimisticBalance — débit optimiste cohérent', () => {
     expect((next.grantedCredits ?? 0) + (next.purchasedCredits ?? 0)).to.eq(next.spendableCredits);
   });
 
-  it('débite uniquement le purchased quand il n’y a plus de granted', () => {
+  it('debits only purchased when there is no granted left', () => {
     const next = computeOptimisticBalance({ ...base, grantedCredits: 0, spendableCredits: 120 }, 10);
     expect(next.grantedCredits).to.eq(0);
     expect(next.purchasedCredits).to.eq(110);
     expect(next.spendableCredits).to.eq(110);
   });
 
-  it('ne descend jamais en dessous de zéro', () => {
+  it('never goes below zero', () => {
     const next = computeOptimisticBalance({ ...base, grantedCredits: 0, purchasedCredits: 3, spendableCredits: 3 }, 10);
     expect(next.grantedCredits).to.eq(0);
     expect(next.purchasedCredits).to.eq(0);
@@ -42,24 +42,24 @@ describe('computeOptimisticBalance — débit optimiste cohérent', () => {
   });
 });
 
-describe('getEffectiveCreditBalance — double vérification cache / API', () => {
-  it('retient le solde le plus faible quand le cache est en avance sur l’API encore périmée', () => {
+describe('getEffectiveCreditBalance — cache / API double check', () => {
+  it('keeps the lowest balance when the cache is ahead of the still-stale API', () => {
     const api = { ...base, spendableCredits: 10 };
     const cached = { ...base, spendableCredits: 0 };
     expect(getEffectiveCreditBalance(api, cached)?.spendableCredits).to.eq(0);
   });
 
-  it('retient l’API quand elle est déjà plus basse que le cache', () => {
+  it('keeps the API when it is already lower than the cache', () => {
     const api = { ...base, spendableCredits: 5 };
     const cached = { ...base, spendableCredits: 50 };
     expect(getEffectiveCreditBalance(api, cached)?.spendableCredits).to.eq(5);
   });
 
-  it('retombe sur l’API en l’absence de cache optimiste', () => {
+  it('falls back to the API when there is no optimistic cache', () => {
     expect(getEffectiveCreditBalance(base, undefined)).to.eq(base);
   });
 
-  it('retombe sur le cache quand l’API est indisponible', () => {
+  it('falls back to the cache when the API is unavailable', () => {
     expect(getEffectiveCreditBalance(undefined, base)).to.eq(base);
   });
 });

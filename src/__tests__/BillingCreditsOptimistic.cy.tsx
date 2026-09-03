@@ -56,7 +56,7 @@ const openBilling = (balance: CreditBalance) => {
   cy.wait('@getCreditBalance');
 };
 
-describe('BillingCreditsSection — solde optimiste et réconciliation', () => {
+describe('BillingCreditsSection — optimistic balance and reconciliation', () => {
   beforeEach(() => {
     useDialog.getState().close();
     useOptimisticCreditBalanceStore.getState().clear();
@@ -64,7 +64,7 @@ describe('BillingCreditsSection — solde optimiste et réconciliation', () => {
 
   afterEach(() => useOptimisticCreditBalanceStore.getState().clear());
 
-  it('affiche le solde optimiste cohérent et le conserve tant que l’API reste périmée', () => {
+  it('shows the coherent optimistic balance and keeps it while the API stays stale', () => {
     openBilling(STALE_API_BALANCE);
 
     cy.get('.billing-donut-value').should('have.text', '310');
@@ -74,14 +74,14 @@ describe('BillingCreditsSection — solde optimiste et réconciliation', () => {
 
     cy.wait(5500);
     cy.get('.billing-donut-value').should('have.text', '310');
-    cy.wrap(null).should(() => expect(useOptimisticCreditBalanceStore.getState().balance, 'le cache optimiste est conservé').to.not.be.undefined);
+    cy.wrap(null).should(() => expect(useOptimisticCreditBalanceStore.getState().balance, 'the optimistic cache is kept').to.not.be.undefined);
   });
 
-  it('bascule sur l’API et vide le cache dès que le solde retourné correspond', () => {
+  it('switches to the API and clears the cache as soon as the returned balance matches', () => {
     openBilling(UPDATED_API_BALANCE);
 
     cy.wrap(null, { timeout: 8000 }).should(
-      () => expect(useOptimisticCreditBalanceStore.getState().balance, 'le cache est vidé après correspondance').to.be.undefined
+      () => expect(useOptimisticCreditBalanceStore.getState().balance, 'the cache is cleared after a match').to.be.undefined
     );
 
     cy.get('.billing-donut-value').should('have.text', '310');
