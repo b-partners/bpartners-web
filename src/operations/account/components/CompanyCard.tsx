@@ -42,7 +42,7 @@ export const CompanyCard = () => {
     setEditMode(!editMode);
   };
 
-  const openEmailRecipientsModal = () => openDialog(<EmailRecipientsModal defaultEmail={(record as any)?.companyInfo?.email} />, {}, true);
+  const openEmailRecipientsModal = () => openDialog(<EmailRecipientsModal />, {}, true);
 
   const handleSubmit = accountForm.handleSubmit(async formData => {
     await updateBusinessJob(formData.businessActivities);
