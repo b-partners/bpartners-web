@@ -1,10 +1,11 @@
 import { BPButton, BpFormField } from '@/common/components';
 import { BpAutoComplete } from '@/common/components/BpAutoComplete';
 import { useAccountForm } from '@/common/form';
+import { useDialog } from '@/common/store/dialog';
 import { prettyPrintMoney, stringCutter, toMajors } from '@/common/utils';
 import { AccountHolder } from '@bpartners/typescript-client';
-import { Edit } from '@mui/icons-material';
-import { Box, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
+import { Edit, MarkEmailReadOutlined } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNotify, useRecordContext, useRefresh } from 'react-admin';
 import { FieldErrors, FormProvider } from 'react-hook-form';
@@ -12,6 +13,8 @@ import { useGetBusinessJob, useUpdateBusinessJob, useUpdateGlobalInformationFiel
 import { useAccountHolderProviderFieldsCompany } from '../queries/company-information-query';
 import { useUpdateFeedbackLink } from '../queries/feedback-query';
 import { businessActivitiesField, getCompanyFields, getInvalidFieldLabels } from './CompanyFields';
+import { EmailRecipientsModal } from './email-recipients-modal/EmailRecipientsModal';
+import { EmailRecipientsSummary } from './email-recipients-summary/EmailRecipientsSummary';
 import { SubjectToVatSwitch } from './SubjectToVatSwitch';
 
 const mapAccountHolder = (accountHolder: AccountHolder) => {
@@ -34,9 +37,12 @@ export const CompanyCard = () => {
   const { isaccountHolderProvider, accountHolderProvider } = useAccountHolderProviderFieldsCompany();
   const [editMode, setEditMode] = useState(false);
   const { isUpdateFeedbackLink, updateFeedbackLink } = useUpdateFeedbackLink();
+  const { open: openDialog } = useDialog();
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
+
+  const openEmailRecipientsModal = () => openDialog(<EmailRecipientsModal defaultEmail={(record as any)?.companyInfo?.email} />, {}, true);
 
   const handleSubmit = accountForm.handleSubmit(async formData => {
     await updateBusinessJob(formData.businessActivities);
@@ -97,8 +103,26 @@ export const CompanyCard = () => {
               </Grid>
             ))}
             <Grid item xs={12} sm={4}>
-              <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
-              {editMode ? <SubjectToVatSwitch /> : <Typography>{accountForm.getValues('companyInfo.isSubjectToVat' as any) ? 'Oui' : 'Non'}</Typography>}
+              <Box className={editMode ? 'vat-field vat-field-edit' : 'vat-field'}>
+                <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
+                {editMode ? <SubjectToVatSwitch /> : <Typography>{accountForm.getValues('companyInfo.isSubjectToVat' as any) ? 'Oui' : 'Non'}</Typography>}
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Emails de réception</Typography>
+              <EmailRecipientsSummary />
+              {editMode && (
+                <Button
+                  data-cy='email-recipients-button'
+                  className='email-recipients-button'
+                  variant='outlined'
+                  color='primary'
+                  startIcon={<MarkEmailReadOutlined />}
+                  onClick={openEmailRecipientsModal}
+                >
+                  Configurer
+                </Button>
+              )}
             </Grid>
           </Grid>
           {editMode && (
