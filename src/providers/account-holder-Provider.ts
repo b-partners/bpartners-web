@@ -4,6 +4,7 @@ import {
   BusinessActivity,
   CompanyBusinessActivity,
   CompanyInfo,
+  EmailRecipientsConfiguration,
   UpdateAccountHolder,
 } from '@bpartners/typescript-client';
 import { asyncGetAccountId, asyncGetUser, BpDataProviderType, cache, getCached, userAccountsApi } from '.';
@@ -57,4 +58,16 @@ export const updateFeedbackLink = async (feedbackLink: string) => {
 
   const { data: accountHolder } = await userAccountsApi().updateFeedbackConf(userId, accountHolderId, feedback);
   return cache.accountHolder(accountHolder);
+};
+
+export const getEmailRecipients = async (): Promise<EmailRecipientsConfiguration> => {
+  const { accountHolderId, userId } = getCached.userInfo();
+  const { data } = await userAccountsApi().getEmailRecipients(userId, accountHolderId);
+  return data;
+};
+
+export const configureEmailRecipients = async (configuration: EmailRecipientsConfiguration): Promise<EmailRecipientsConfiguration> => {
+  const { accountHolderId, userId } = getCached.userInfo();
+  const { data } = await userAccountsApi().configureEmailRecipients(userId, accountHolderId, configuration);
+  return data;
 };
