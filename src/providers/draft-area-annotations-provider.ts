@@ -21,8 +21,8 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
     const { areaPictureId, prospectName, address, creationFrom, creationTo } = filter;
     const { accountId } = getCached.userInfo();
-    const fromInstant = creationFrom ? toInstant(creationFrom) : undefined;
-    const toInstantValue = creationTo ? toInstant(creationTo) : undefined;
+    const fromInstant = creationFrom ? new Date(toInstant(creationFrom)) : undefined;
+    const toInstantValue = creationTo ? new Date(toInstant(creationTo)) : undefined;
 
     if (areaPictureId) {
       return areaPictureApi()
