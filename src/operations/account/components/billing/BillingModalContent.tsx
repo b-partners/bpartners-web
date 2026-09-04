@@ -3,7 +3,7 @@ import { SubscriptionRedirectStep } from '@/common/components/SubscriptionRedire
 import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { useGetCreditBalance } from '@/operations/account/queries';
-import { UserSubscription } from '@bpartners/typescript-client';
+import { UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, useState } from 'react';
@@ -66,7 +66,7 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
         <BillingSubscriptionSection subscription={subscription} onUpgrade={onUpgrade} />
         <BillingPaymentMethodSection onRedirect={onRedirect} />
         <BillingCreditsSection subscription={subscription} onRedirect={onRedirect} focusPacks={focusCredits} />
-        <BillingInvoicesSection />
+        {subscription?.status !== UserSubscriptionStatus.EMPTY && <BillingInvoicesSection />}
         <BillingCancellationSection subscription={subscription} />
       </DialogContent>
       <DialogActions className='billing-actions'>

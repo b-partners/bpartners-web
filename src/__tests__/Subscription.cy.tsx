@@ -168,6 +168,20 @@ describe('Test user subscription', () => {
     cy.contains('Vous allez être redirigé vers Stripe').should('not.exist');
     cy.contains("Choisissez l'offre qui vous convient").should('not.exist');
   });
+  it('Subscription flow: hides the invoices section while the subscription is EMPTY', () => {
+    mountInvalidSubscription();
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', '**/creditPacks*', creditPacks).as('getCreditPacks');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
+
+    cy.get('[data-cy=billing-interval-yearly]').click();
+    cy.contains('button', 'Acheter une analyse').click();
+
+    cy.contains('Facturation').should('be.visible');
+    cy.contains("Crédits d'analyses").should('be.visible');
+    cy.contains('Mes factures').should('not.exist');
+  });
   it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
     mountInvalidSubscription();
 
