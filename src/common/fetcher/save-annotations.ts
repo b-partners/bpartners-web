@@ -1,4 +1,3 @@
-import { calculateGlobalRate } from '@/operations/annotator/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { annotationsAttributeMapper, annotatorMapper, cache, clearPolygons, getCached } from '@/providers';
 import { UrlParams } from '@bpartners/annotator-component';
@@ -29,8 +28,7 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const annotationId = UrlParams.get('draftAnnotationId');
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
-  const globalRate = calculateGlobalRate();
-  const { analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
+  const { globalRate, analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
   const analyseImageGenerated = !!analyseImageUrl || !!annotatorState.roofAnalyseId;
 
   return {
