@@ -12,6 +12,7 @@ import { BillingCreditsSection } from './BillingCreditsSection';
 import { BillingInvoicesSection } from './BillingInvoicesSection';
 import { BillingPaymentMethodSection } from './BillingPaymentMethodSection';
 import { BillingSubscriptionSection } from './BillingSubscriptionSection';
+import { isSubscriptionMandatory } from './utils';
 
 interface BillingRedirection {
   redirectionUrl: string;
@@ -48,8 +49,9 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
   };
 
   const onUpgrade = () => {
+    const canClose = !isSubscriptionMandatory(subscription);
     onClose();
-    openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
+    openDialog(<SubscriptionModal allowClose={canClose} />, { maxWidth: 'lg', fullWidth: true }, canClose);
   };
 
   if (redirection) return <SubscriptionRedirectStep redirectionUrl={redirection.redirectionUrl} title={redirection.title} />;

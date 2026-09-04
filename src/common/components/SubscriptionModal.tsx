@@ -2,6 +2,7 @@ import { useDialog } from '@/common/store/dialog';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
+import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
@@ -67,15 +68,16 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const whoami = getCached.whoami();
   const subscription = whoami?.user?.subscription;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
+  const canClose = allowClose && !isSubscriptionMandatory(subscription);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   const openBillingCredits = () => {
-    const onCloseBilling = allowClose ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
+    const onCloseBilling = canClose ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
     openDialog(
-      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!allowClose} onLogout={onLogout} />,
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!canClose} onLogout={onLogout} />,
       BILLING_DIALOG_PROPS,
-      allowClose
+      canClose
     );
   };
 
@@ -115,8 +117,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
         <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
       </DialogContent>
       <DialogActions>
-        {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!allowClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
+        {canClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
+        {!canClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
       </DialogActions>
     </>
   );
