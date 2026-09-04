@@ -23,7 +23,7 @@ const CREDIT_PURCHASES_URL = `/users/${user1.id}/creditPurchases/*`;
 const proPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
 const usageBasedPlan = subscriptionPlans.find(({ id }) => id === 'plan-usage')!;
 
-const cancelledUser: User = { ...user1, subscription: { status: 'CANCELLED', start: new Date('2026-01-01T00:00:00Z'), end: new Date('2026-04-01T00:00:00Z') } };
+const cancelledUser: User = { ...user1, subscription: { status: 'CANCELLED', start: new Date('2026-01-01T00:00:00Z'), end: dayjs().add(1, 'year').toDate() } };
 
 const withPlan = (plan: (typeof subscriptionPlans)[number], billingInterval?: BillingInterval): User => ({
   ...user1,
