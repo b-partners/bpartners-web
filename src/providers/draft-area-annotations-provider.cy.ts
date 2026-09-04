@@ -30,4 +30,24 @@ describe('draftAreaPictureAnnotatorProvider.getList', () => {
 
     cy.wait('@getDraftAnnotations');
   });
+
+  it('always requests the lite variant for both the account-wide and area-picture-scoped list endpoints', () => {
+    cy.intercept('GET', '**/annotations/drafts**', req => {
+      expect(req.query.lite).to.eq('true');
+      req.reply([]);
+    }).as('getDraftAnnotations');
+
+    draftAreaPictureAnnotatorProvider.getList(1, 10, {});
+
+    cy.wait('@getDraftAnnotations').then(() => {
+      cy.intercept('GET', '**/areaPictures/*/annotations/drafts**', req => {
+        expect(req.query.lite).to.eq('true');
+        req.reply([]);
+      }).as('getDraftAnnotationsForAreaPicture');
+
+      draftAreaPictureAnnotatorProvider.getList(1, 10, { areaPictureId: 'area-picture-1' });
+
+      cy.wait('@getDraftAnnotationsForAreaPicture');
+    });
+  });
 });
