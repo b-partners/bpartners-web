@@ -1,8 +1,8 @@
 import { useDialog } from '@/common/store/dialog';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
-import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
+import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
