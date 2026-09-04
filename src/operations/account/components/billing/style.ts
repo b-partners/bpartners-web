@@ -505,8 +505,14 @@ export const BillingModalStyle: SxProps = {
   '& .billing-close': {
     borderRadius: '999px',
     textTransform: 'none',
-    fontWeight: 600,
-    color: PALETTE_COLORS.forest,
+    fontSize: '12px',
+    fontWeight: 700,
+    padding: '6px 16px',
+    boxShadow: 'none',
+    bgcolor: ORANGE,
+    color: WHITE,
+    '&:hover': { bgcolor: ORANGE_DARK, boxShadow: 'none' },
+    '&.Mui-disabled': { bgcolor: TINT, color: MUTED },
   },
 };
 
