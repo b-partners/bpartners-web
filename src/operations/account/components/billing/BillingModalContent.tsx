@@ -1,3 +1,4 @@
+import { BPButton } from '@/common/components/BPButton';
 import { SubscriptionModal } from '@/common/components/SubscriptionModal';
 import { SubscriptionRedirectStep } from '@/common/components/SubscriptionRedirectStep';
 import { useOptimisticCreditBalanceStore } from '@/common/store';
@@ -71,9 +72,7 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
       </DialogContent>
       <DialogActions className='billing-actions'>
         {mustBuyCredits ? (
-          <Button onClick={onLogout} name='billing-logout' className='billing-close'>
-            Se déconnecter
-          </Button>
+          <BPButton onClick={onLogout} name='billing-logout' label='Se déconnecter' />
         ) : (
           <Button onClick={enforceCredits ? close : onClose} name='billing-close' className='billing-close'>
             {enforceCredits ? 'Accéder à la plateforme' : 'Fermer'}
