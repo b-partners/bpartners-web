@@ -58,6 +58,9 @@ export const hasActivePlan = (subscription?: UserSubscription) => !!subscription
 export const isSubscriptionExpired = (subscription?: UserSubscription) =>
   subscription?.status === UserSubscriptionStatus.CANCELLED && !!subscription.end && dayjs(subscription.end).isBefore(dayjs());
 
+export const isSubscriptionMandatory = (subscription?: UserSubscription) =>
+  subscription?.status === UserSubscriptionStatus.EMPTY || isSubscriptionExpired(subscription);
+
 export const isHighestPlan = (currentPlan: AnyPlan | undefined, plans: SubscriptionPlan[]) =>
   plans.length > 0 && getPlanAmount(currentPlan) >= Math.max(...plans.map(getPlanAmount));
 
