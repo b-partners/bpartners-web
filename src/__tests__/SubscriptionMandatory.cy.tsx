@@ -4,6 +4,7 @@ import { User } from '@bpartners/typescript-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { MemoryRouter } from 'react-router-dom';
+import { creditBalance, emptyCreditBalance } from './mocks/responses/credits-api';
 import { user1 } from './mocks/responses/security-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
@@ -32,6 +33,7 @@ describe('SubscriptionModal — mandatory choice for expired subscriptions', () 
   beforeEach(() => {
     useDialog.getState().close();
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', '**/creditBalance*', emptyCreditBalance).as('getCreditBalance');
   });
 
   const assertMandatory = () => {
@@ -44,6 +46,16 @@ describe('SubscriptionModal — mandatory choice for expired subscriptions', () 
   it('forces logout on an EMPTY subscription even when opened as closeable', () => {
     cy.cognitoLogin({ whoami: { user: emptyUser }, user: emptyUser });
     assertMandatory();
+  });
+
+  it('lets an EMPTY subscription with spendable credits reach the platform instead of logging out', () => {
+    cy.intercept('GET', '**/creditBalance*', creditBalance).as('getCreditBalance');
+    cy.cognitoLogin({ whoami: { user: emptyUser }, user: emptyUser });
+    mountModal();
+    cy.wait('@getSubscriptionPlans');
+    cy.wait('@getCreditBalance');
+    cy.contains('button', 'Accéder à la plateforme').should('be.visible');
+    cy.contains('button', 'Se déconnecter').should('not.exist');
   });
 
   it('forces logout once a CANCELLED subscription has expired', () => {

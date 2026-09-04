@@ -58,6 +58,8 @@ export const hasActivePlan = (subscription?: UserSubscription) => !!subscription
 export const isSubscriptionExpired = (subscription?: UserSubscription) =>
   subscription?.status === UserSubscriptionStatus.CANCELLED && !!subscription.end && dayjs(subscription.end).isBefore(dayjs());
 
+export const hasSpendableCredits = (balance?: CreditBalance) => (balance?.spendableCredits ?? 0) > 0;
+
 export const isSubscriptionMandatory = (subscription?: UserSubscription) =>
   subscription?.status === UserSubscriptionStatus.EMPTY || isSubscriptionExpired(subscription);
 

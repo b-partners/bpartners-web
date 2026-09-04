@@ -49,7 +49,7 @@ export const SubscriptionCard = () => {
   const { open: openDialog } = useDialog();
   const record = useRecordContext();
   const refresh = useRefresh();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const userId = record?.user?.id as string | undefined;
   const subscription = record?.user?.subscription as UserSubscription | undefined;
   const plan = subscription?.plan;
@@ -67,7 +67,15 @@ export const SubscriptionCard = () => {
   const openSubscriptionModal = () => openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
 
   useEffect(() => {
-    if (searchParams.get(CREDIT_PURCHASE_STATUS_PARAM)) handleOpen();
+    const isStripeDone = searchParams.get('stripeStatus') === 'done' || searchParams.get('stripePaymentStatus') === 'done';
+    if (!searchParams.get(CREDIT_PURCHASE_STATUS_PARAM) && !isStripeDone) return;
+    handleOpen();
+    if (isStripeDone) {
+      const params = new URLSearchParams(searchParams);
+      params.delete('stripeStatus');
+      params.delete('stripePaymentStatus');
+      setSearchParams(params, { replace: true });
+    }
   }, [searchParams]);
 
   useEffect(() => {

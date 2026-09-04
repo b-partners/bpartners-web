@@ -1,7 +1,8 @@
 import { useDialog } from '@/common/store/dialog';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
-import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
+import { hasSpendableCredits, isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
+import { useGetCreditBalance } from '@/operations/account/queries';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
@@ -68,16 +69,19 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const whoami = getCached.whoami();
   const subscription = whoami?.user?.subscription;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
+  const { balance } = useGetCreditBalance();
+  const hasCredits = hasSpendableCredits(balance);
   const canClose = allowClose && !isSubscriptionMandatory(subscription);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   const openBillingCredits = () => {
-    const onCloseBilling = canClose ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
+    const canReachPlatform = canClose || hasCredits;
+    const onCloseBilling = canReachPlatform ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
     openDialog(
-      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!canClose} onLogout={onLogout} />,
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!canReachPlatform} onLogout={onLogout} />,
       BILLING_DIALOG_PROPS,
-      canClose
+      canReachPlatform
     );
   };
 
@@ -118,7 +122,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       </DialogContent>
       <DialogActions>
         {canClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!canClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
+        {!canClose && hasCredits && <BPButton onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />}
+        {!canClose && !hasCredits && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
       </DialogActions>
     </>
   );
