@@ -55,6 +55,9 @@ export const isSubscriptionCancellationEnabled = () => process.env.REACT_APP_SUB
 
 export const hasActivePlan = (subscription?: UserSubscription) => !!subscription?.plan && !INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription?.status);
 
+export const isSubscriptionExpired = (subscription?: UserSubscription) =>
+  subscription?.status === UserSubscriptionStatus.CANCELLED && !!subscription.end && dayjs(subscription.end).isBefore(dayjs());
+
 export const isHighestPlan = (currentPlan: AnyPlan | undefined, plans: SubscriptionPlan[]) =>
   plans.length > 0 && getPlanAmount(currentPlan) >= Math.max(...plans.map(getPlanAmount));
 

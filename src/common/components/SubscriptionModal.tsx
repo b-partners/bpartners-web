@@ -72,7 +72,11 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const openBillingCredits = () => {
     const onCloseBilling = allowClose ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
-    openDialog(<BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits />, BILLING_DIALOG_PROPS, allowClose);
+    openDialog(
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!allowClose} onLogout={onLogout} />,
+      BILLING_DIALOG_PROPS,
+      allowClose
+    );
   };
 
   const onSelectPlan = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => {
