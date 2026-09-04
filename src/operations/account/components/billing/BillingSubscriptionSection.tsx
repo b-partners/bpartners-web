@@ -1,11 +1,10 @@
 import { useGetLatestSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
-import { EnableStatus, UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
+import { EnableStatus, UserSubscription } from '@bpartners/typescript-client';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import { Box, Button, Typography } from '@mui/material';
 import { FC } from 'react';
 import { BillingSection } from './BillingSection';
 import {
-  formatDate,
   formatEuros,
   getBillingIntervalHint,
   getBillingIntervalLabel,
@@ -34,7 +33,6 @@ interface BillingSubscriptionSectionProps {
 export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = ({ subscription, onUpgrade }) => {
   const plan = subscription?.plan;
   const isActive = hasActivePlan(subscription);
-  const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const isUsageBased = isUsageBasedPlan(plan);
   const hasCommitment = hasTwelveMonthCommitment(subscription);
   const { commitment } = useGetLatestSubscriptionCommitment(isActive && hasCommitment);
@@ -46,11 +44,6 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
   const isAutomaticRenewal = commitment?.automaticRenewalStatus === EnableStatus.ENABLED;
   const billingIntervalLabel = getBillingIntervalLabel(subscription);
   const billingIntervalHint = getBillingIntervalHint(subscription);
-
-  const getInactiveHint = () => {
-    if (!isCancelled) return 'Souscrivez à une offre pour lancer vos analyses.';
-    return subscription?.end ? `A pris fin le ${formatDate(subscription.end)}` : 'Aucun renouvellement prévu.';
-  };
 
   return (
     <BillingSection icon={<WorkspacePremiumOutlinedIcon />} title='Mon abonnement' subtitle="L'offre active sur votre compte et son renouvellement.">
@@ -104,7 +97,7 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
         <Box className='billing-row'>
           <Box className='billing-row-main'>
             <Typography className='billing-value'>{'Aucun abonnement actif'}</Typography>
-            <Typography className='billing-hint'>{getInactiveHint()}</Typography>
+            <Typography className='billing-hint'>{'Souscrivez à une offre pour débloquer tous les accès.'}</Typography>
           </Box>
           <Button variant='contained' className='billing-action' name='billing-choose-subscription' onClick={onUpgrade}>
             Choisir un abonnement
