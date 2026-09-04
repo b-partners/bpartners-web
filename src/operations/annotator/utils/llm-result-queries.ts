@@ -5,7 +5,7 @@ import { ExportAreaPictureAnnotation3DPan } from '@bpartners/typescript-client';
 import { useQuery } from '@tanstack/react-query';
 import { useShallow } from 'zustand/react/shallow';
 import { cityJsonMapper, collectRoofBoundaries, collectWallBoundaries, findSurfaceGeometry } from './city-json-mapper';
-import { calculateGlobalRate, isAnalyseRoofAnnotation } from './global-rate-calculator';
+import { isAnalyseRoofAnnotation, useGlobalRateQuery } from './global-rate-calculator';
 
 const baseUrl = `${process.env.LLM_ANALYSE_RESULT}`;
 const apiKey = `${process.env.LLM_API_KEY}`;
@@ -67,10 +67,10 @@ export const useLlmResultQuery = () => {
   const { moldRate, wearLevel, humidityLevel, comment, covering, covering2, wear, area: _area, slope } = annotationInfos || {};
 
   const area = _area || polygon?.surface;
+  const globalRate = useGlobalRateQuery();
 
   const queryFn = async () => {
     try {
-      const globalRate = calculateGlobalRate();
       const { address, geoPositions } = useAnnotatorComponentStore.getState().areaPictureDetails || {};
       const geometryFields = buildGeometryFields();
 
