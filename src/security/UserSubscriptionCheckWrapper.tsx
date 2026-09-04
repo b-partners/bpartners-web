@@ -2,6 +2,7 @@ import { BPLoader, PaymentMethodRequiredModal, SubscriptionBillingModal, Subscri
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
+import { isSubscriptionExpired } from '@/operations/account/components/billing/utils';
 import { getBackWhoami } from '@/providers';
 import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { FC, PropsWithChildren, useLayoutEffect } from 'react';
@@ -18,7 +19,9 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
     async function checkSubscription() {
       try {
         const currentWhoami = await getBackWhoami();
-        switch (currentWhoami?.user?.subscription?.status) {
+        const subscription = currentWhoami?.user?.subscription;
+        const subscriptionStatus = isSubscriptionExpired(subscription) ? UserSubscriptionStatus.EMPTY : subscription?.status;
+        switch (subscriptionStatus) {
           case UserSubscriptionStatus.PAYMENT_METHOD_REQUIRED:
             redirect('/');
             openDialog(<PaymentMethodRequiredModal />, undefined, false);
