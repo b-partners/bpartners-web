@@ -24,6 +24,5 @@ export * from './SubscriptionBillingModal';
 export * from './SubscriptionConsentStep';
 export * from './SubscriptionModal';
 export * from './SubscriptionRedirectStep';
-export * from './SubscriptionSuccessModal';
 export * from './SupportDialog';
 export * from './UpdateBusinessModal';

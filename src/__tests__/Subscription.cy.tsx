@@ -4,7 +4,7 @@ import { userSubscriptionProvider } from '@/providers';
 import { User } from '@bpartners/typescript-client';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
-import { creditBalance, creditPacks } from './mocks/responses/credits-api';
+import { creditBalance, creditPacks, emptyCreditBalance } from './mocks/responses/credits-api';
 import { visaPaymentMethods } from './mocks/responses/payment-method-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
@@ -29,6 +29,7 @@ const mountInvalidSubscription = () => {
   cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
   cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
   cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+  cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
 
   cy.mount(<App />);
 
@@ -181,6 +182,23 @@ describe('Test user subscription', () => {
     cy.contains('Facturation').should('be.visible');
     cy.contains("Crédits d'analyses").should('be.visible');
     cy.contains('Mes factures').should('not.exist');
+  });
+  it('grants platform access to an EMPTY subscription that still has spendable credits', () => {
+    cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+
+    cy.mount(<App />);
+
+    cy.wait('@getCreditBalance');
+    cy.contains("Choisissez l'offre qui vous convient").should('not.exist');
+    cy.contains('button', 'Se déconnecter').should('not.exist');
   });
   it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
     mountInvalidSubscription();
