@@ -58,7 +58,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
           secondary={
             <>
               <Typography component='span' variant='body2' sx={{ color: 'text.primary', display: 'inline' }}>
-                {stringCutter(draftAnnotation.areaPicture.address, 35)}
+                {stringCutter(draftAnnotation.areaPicture.address || prospect.address, 35) || 'Adresse non renseignée'}
               </Typography>
               <br />
               {draftAnnotation?.areaPicture?.createdAt && formatDateTimeWithoutSec(draftAnnotation.areaPicture.createdAt as any)}
