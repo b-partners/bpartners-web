@@ -10,7 +10,6 @@ import { user1, whoami1 } from './mocks/responses/security-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
-const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
 const freeTrialSubscriptionUser: User = { ...user1, subscription: { end: new Date('01/07/2026'), start: new Date('01/01/2026'), status: 'FREE_TRIAL' } };
 
 const chosenPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
@@ -30,17 +29,12 @@ const mountInvalidSubscription = () => {
   cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
   cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
   cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
+  cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
 
   cy.mount(<App />);
 
   cy.contains("Choisissez l'offre qui vous convient");
   cy.wait('@getSubscriptionPlans');
-};
-
-const APP_BASE_URL = process.env.REACT_APP_URL || 'http://localhost:3000';
-const expectedSubscriptionBillingPayload = {
-  failureUrl: new URL(`${APP_BASE_URL}?stripeStatus=error`).href,
-  successUrl: new URL(`${APP_BASE_URL}/account/${unpaidSubscriptionUser.id}?stripePaymentStatus=done`).href,
 };
 
 describe('Test user subscription', () => {
@@ -57,6 +51,7 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
     cy.mount(<App />);
 
     cy.contains("Choisissez l'offre qui vous convient");
@@ -85,6 +80,7 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
 
     cy.mount(<App />);
 
@@ -183,7 +179,7 @@ describe('Test user subscription', () => {
     cy.contains("Crédits d'analyses").should('be.visible');
     cy.contains('Mes factures').should('not.exist');
   });
-  it('grants platform access to an EMPTY subscription that still has spendable credits', () => {
+  it('grants platform access to an EMPTY subscription that has a registered card', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
     cy.stub(Redirect, 'toURL').as('toURL');
@@ -192,11 +188,11 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
 
     cy.mount(<App />);
 
-    cy.wait('@getCreditBalance');
+    cy.wait('@getPaymentMethods');
     cy.contains("Choisissez l'offre qui vous convient").should('not.exist');
     cy.contains('button', 'Se déconnecter').should('not.exist');
   });
@@ -245,25 +241,15 @@ describe('Test user subscription', () => {
     cy.contains("Choisissez l'offre qui vous convient");
     cy.get('@toURL').should('not.have.been.called');
   });
-  it('Unpaid subscription', () => {
-    cy.cognitoLogin({ whoami: { user: unpaidSubscriptionUser }, user: unpaidSubscriptionUser });
+  it('Subscription flow: adds a card instead of forcing logout on a mandatory choice', () => {
+    mountInvalidSubscription();
 
-    cy.stub(Redirect, 'toURL').as('toURL');
+    cy.stub(userSubscriptionProvider, 'replacePaymentMethod').as('replacePaymentMethod').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
 
-    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.contains('button', 'Ajouter une carte').click();
+    cy.get('@replacePaymentMethod').should('have.been.calledOnce');
 
-    cy.mount(<App />);
-
-    cy.contains('Il vous reste des factures impayées.');
-    cy.contains('Pour continuer à utiliser l’application, veuillez régulariser votre situation.');
-
-    cy.intercept(`/users/${unpaidSubscriptionUser.id}/billingPortal`, ({ body, reply }) => {
-      expect(body).deep.equal(expectedSubscriptionBillingPayload);
-      reply({ statusCode: 200 });
-    }).as('initializeSubscription');
-
-    cy.dataCy('subscription-billing-btn').click();
+    cy.contains('Vous allez être redirigé vers Stripe');
+    cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
   });
 });

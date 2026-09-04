@@ -1,9 +1,9 @@
 import { useDialog } from '@/common/store/dialog';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
-import { hasSpendableCredits, isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
+import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
-import { useGetCreditBalance } from '@/operations/account/queries';
+import { useGetDefaultPaymentMethod } from '@/operations/account/queries';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
@@ -39,6 +39,7 @@ const mutationFn = async ({ subscriptionPlanIdentifier, billingInterval }: Subsc
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
   const [step, setStep] = useState<SubscriptionStep>('PLAN');
   const [redirectionUrl, setRedirectionUrl] = useState<string>();
+  const [redirectTitle, setRedirectTitle] = useState<string>();
   const [selectedPlanId, setSelectedPlanId] = useState<string>();
   const { close, open: openDialog } = useDialog();
   const [searchParams] = useSearchParams();
@@ -63,23 +64,34 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     onSuccess: () => setStep('REDIRECT'),
   });
 
+  const { isPending: isAddingCard, mutate: addCard } = useMutation({
+    mutationKey: ['billing', 'paymentMethod'],
+    mutationFn: () => userSubscriptionProvider.replacePaymentMethod(),
+    onSuccess: ({ redirectionUrl }) => {
+      if (!redirectionUrl) return;
+      setRedirectionUrl(redirectionUrl);
+      setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre moyen de paiement');
+      setStep('REDIRECT');
+    },
+  });
+
   const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
   const whoami = getCached.whoami();
   const subscription = whoami?.user?.subscription;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
-  const { balance } = useGetCreditBalance();
-  const hasCredits = hasSpendableCredits(balance);
+  const { paymentMethod } = useGetDefaultPaymentMethod();
+  const hasCard = !!paymentMethod?.card?.lastFourDigits;
   const canClose = allowClose && !isSubscriptionMandatory(subscription);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   const openBillingCredits = () => {
-    const canReachPlatform = canClose || hasCredits;
+    const canReachPlatform = canClose || hasCard;
     const onCloseBilling = canReachPlatform ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
     openDialog(
-      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforceCredits={!canReachPlatform} onLogout={onLogout} />,
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforcePaymentMethod={!canReachPlatform} onLogout={onLogout} />,
       BILLING_DIALOG_PROPS,
       canReachPlatform
     );
@@ -100,7 +112,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const onBackToPlans = () => setStep('PLAN');
 
   if (step === 'REDIRECT' && redirectionUrl) {
-    return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} />;
+    return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} title={redirectTitle} />;
   }
 
   if (step === 'CONSENT') {
@@ -122,8 +134,13 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       </DialogContent>
       <DialogActions>
         {canClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!canClose && hasCredits && <BPButton onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />}
-        {!canClose && !hasCredits && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
+        {!canClose && hasCard && <BPButton onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />}
+        {!canClose && !hasCard && (
+          <>
+            <BPButton onClick={() => addCard()} label='Ajouter une carte' isLoading={isAddingCard} />
+            <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />
+          </>
+        )}
       </DialogActions>
     </>
   );
