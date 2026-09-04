@@ -13,6 +13,10 @@ interface DraftAreaPictureAnnotationFilter {
 
 const toInstant = (dateTime: string) => `${dateTime}:00.000Z`;
 
+// lite=true skips full annotation geometry in the response: the list cards only ever read areaPicture/prospect/creationDatetime.
+// @bpartners/typescript-client has no typed param for it yet, so it's passed as a raw query param until the SDK is regenerated.
+const LITE_OPTIONS = { params: { lite: true } };
+
 export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
   getList: async (page: number, pageSize: number, filter: DraftAreaPictureAnnotationFilter) => {
     const { areaPictureId, sort: _sort, prospectName, address, creationFrom, creationTo } = filter;
@@ -22,12 +26,12 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
 
     if (areaPictureId) {
       return areaPictureApi()
-        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, prospectName, address, from, to)
+        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, prospectName, address, from, to, LITE_OPTIONS)
         .then(response => response.data);
     }
 
     return areaPictureApi()
-      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, from, to)
+      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, from, to, LITE_OPTIONS)
       .then(response => response.data);
   },
   getOne: async (pictureId: string) => {
