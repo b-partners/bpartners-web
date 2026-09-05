@@ -11,14 +11,16 @@ import { Menu } from './menu';
 export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
   useHeartBeat();
 
+  /* GlobaDialog stays outside AccountHolderHandlerWrapper so the blocking subscription dialog
+   keeps being rendered while the account holder query is still loading or retrying */
   return (
     <AppLocationContext>
       <AccountHolderHandlerWrapper>
         <RaLayout sx={{ bgcolor: '#F9FAFB0' }} {...layoutProps} appBar={AppBar} menu={Menu} error={BPErrorPage}>
           <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
         </RaLayout>
-        <GlobaDialog />
       </AccountHolderHandlerWrapper>
+      <GlobaDialog />
     </AppLocationContext>
   );
 };
