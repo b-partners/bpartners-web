@@ -4,6 +4,7 @@ import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
+import { creditBalance } from './mocks/responses/credits-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
@@ -433,6 +434,7 @@ describe(specTitle('Account'), () => {
 
     cy.intercept('GET', '/whoami', { user: cancelledUser }).as('cancelledWhoami');
     cy.intercept('GET', `/users/${whoami1.user.id}`, cancelledUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
@@ -446,7 +448,7 @@ describe(specTitle('Account'), () => {
     cy.contains('Validation de votre abonnement en cours').should('not.exist');
 
     cy.contains('button', 'Choisir un abonnement').click();
-    cy.contains("Choisissez l'offre qui vous convient");
+    cy.contains("Choisissez l'offre qui vous correspond le mieux.");
     cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
   });
 
@@ -465,7 +467,7 @@ describe(specTitle('Account'), () => {
 
     cy.contains('Vous n’avez pas d’abonnement actif.');
     cy.contains('button', 'Choisir un abonnement').click();
-    cy.contains("Choisissez l'offre qui vous convient");
+    cy.contains("Choisissez l'offre qui vous correspond le mieux.");
     cy.contains('Renouveler votre abonnement').should('not.exist');
   });
 
