@@ -90,19 +90,18 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const whoami = getCached.whoami();
   const subscription = whoami?.user?.subscription;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
-  const { paymentMethod } = useGetDefaultPaymentMethod();
+  const { paymentMethod, isPaymentMethodLoading } = useGetDefaultPaymentMethod();
   const hasCard = !!paymentMethod?.card?.lastFourDigits;
-  const canClose = allowClose && !isSubscriptionMandatory(subscription);
+  const canClose = allowClose && hasCard && !isSubscriptionMandatory(subscription);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
   const openBillingCredits = () => {
-    const canReachPlatform = canClose || hasCard;
-    const onCloseBilling = canReachPlatform ? close : () => openDialog(<SubscriptionModal />, SUBSCRIPTION_DIALOG_PROPS, false);
+    const onCloseBilling = hasCard ? close : () => openDialog(<SubscriptionModal allowClose={allowClose} />, SUBSCRIPTION_DIALOG_PROPS, false);
     openDialog(
-      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforcePaymentMethod={!canReachPlatform} onLogout={onLogout} />,
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforcePaymentMethod={!hasCard} onLogout={onLogout} />,
       BILLING_DIALOG_PROPS,
-      canReachPlatform
+      hasCard
     );
   };
 
@@ -155,16 +154,26 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
         <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
       </DialogContent>
       <DialogActions className='subscription-step-actions'>
-        {canClose && <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!canClose && hasCard && (
-          <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />
-        )}
-        {!canClose && !hasCard && (
+        {!isPaymentMethodLoading && (
           <>
-            <Button className='subscription-step-button subscription-step-button--ghost' onClick={onLogout} disabled={isPending}>
-              Se déconnecter
-            </Button>
-            <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => addCard()} label='Ajouter une carte' isLoading={isAddingCard} />
+            {canClose && <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Plus tard' isLoading={isPending} />}
+            {!canClose && hasCard && (
+              <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />
+            )}
+            {!hasCard && (
+              <>
+                <Button className='subscription-step-button subscription-step-button--ghost' onClick={onLogout} disabled={isPending}>
+                  Se déconnecter
+                </Button>
+                <BPButton
+                  className='subscription-step-button'
+                  style={AUTO_WIDTH}
+                  onClick={() => addCard()}
+                  label='Ajouter une carte'
+                  isLoading={isAddingCard}
+                />
+              </>
+            )}
           </>
         )}
       </DialogActions>
