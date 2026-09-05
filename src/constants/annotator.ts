@@ -50,6 +50,14 @@ export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
 export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;
 export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLATION, (value, index) => `${index + 1}. ${value}`);
 
+export const TOITURE_ETAT_APPARENT_TRANSLATION: Record<'A' | 'B' | 'C' | 'D' | 'E', string> = {
+  A: 'Toiture en bon état',
+  B: 'Entretien préventif',
+  C: 'Intervention nécessaire',
+  D: 'Réparation prioritaire',
+  E: 'Risque critique',
+} as const;
+
 export const MEASUREMENT_MAP_ON_EXTENDED_AREA = 9;
 export const MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 3;
 

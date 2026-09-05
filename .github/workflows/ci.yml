@@ -60,6 +60,7 @@ jobs:
           echo INSTATUS_DETECTION_COMPONENT_ID=${{secrets.INSTATUS_DETECTION_COMPONENT_ID}} >> .env
           echo IS_MONITORING_INSTATUS_DETECTION=false >> .env
           echo IS_MONITORING_INSTATUS_3D=false >> .env
+          echo REACT_APP_SUBSCRIPTION_CANCELLATION=true >> .env
 
           if ${{ github.ref_name == 'prod' }}; then
             echo REACT_APP_USERPOOL_ID=${{ env.PROD_USERPOOL_ID }} >> .env
@@ -126,7 +127,7 @@ jobs:
 
       - run: |
           npm init -y
-          npm install -d prettier prettier-plugin-organize-imports
+          npm install -d prettier@3.2.5 prettier-plugin-organize-imports@3.2.4
 
       - run: npx prettier --config ".prettierrc.json" --check "src/**/*.{js,ts,tsx}" "./**/*.{json,yml,yaml}"
 

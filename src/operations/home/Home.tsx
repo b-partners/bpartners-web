@@ -8,6 +8,7 @@ import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
 import { useDialog } from '@/common/store/dialog';
+import { useCreditRequirement } from '@/operations/account/components/billing';
 import { annotatorProvider } from '@/providers';
 import { FormEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -19,8 +20,10 @@ const AddressInput = () => {
   const form = useForm<{ address: string }>();
   const { open } = useDialog();
   const { requireSiren } = useSirenRequirement();
-  const handleCreate = () => {
+  const { requireCredits } = useCreditRequirement();
+  const handleCreate = async () => {
     if (!requireSiren(handleCreate)) return;
+    if (!(await requireCredits())) return;
     open(<GetImageDialog address={form.watch('address')} />, {}, false);
   };
   const handleSubmit = (event: FormEvent) => {

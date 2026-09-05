@@ -46,6 +46,7 @@ const defaultValue: State = {
   polygonToShowMeasurement: undefined,
   threeDFromSegmentation: false,
   threeDGenerationId: undefined,
+  roofAnalyseId: undefined,
 };
 
 interface Actions {

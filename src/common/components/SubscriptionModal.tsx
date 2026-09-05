@@ -1,84 +1,181 @@
 import { useDialog } from '@/common/store/dialog';
-import { authProvider, cache, getCached, userSubscriptionProvider } from '@/providers';
-import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
+import { BillingModalStyle } from '@/operations/account/components/billing/style';
+import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
+import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
+import { useGetDefaultPaymentMethod } from '@/operations/account/queries';
+import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
+import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
+import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
+import { Alert, AlertTitle, Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import dayjs from 'dayjs';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { formatDate, getFirstDebitDate, Redirect } from '../utils';
+import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
+import { SubscriptionFlowDialogStyle, SubscriptionPlansDialogStyle } from './style';
+import { SubscriptionConsentStep } from './SubscriptionConsentStep';
+import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
 
-const mutationFn = async () => {
-  const { redirectionUrl } = await userSubscriptionProvider.init();
-  cache.whoami(undefined);
-  cache.user(undefined);
-  Redirect.toURL(redirectionUrl);
+type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
+
+const SUBSCRIPTION_DIALOG_PROPS = { maxWidth: 'lg', fullWidth: true } as const;
+
+const AUTO_WIDTH = { width: 'auto' };
+
+const BILLING_DIALOG_PROPS = { ...SUBSCRIPTION_DIALOG_PROPS, sx: BillingModalStyle } as const;
+
+interface SubscriptionInitVariables {
+  subscriptionPlanIdentifier: string;
+  billingInterval: SubscriptionBillingInterval;
+  isConsentRequired: boolean;
+}
+
+const isUsageBased = (plan: SubscriptionPlan) => plan.billingType === 'USAGE_BASED';
+
+const isConsentRequiredFor = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => billingInterval === 'MONTHLY' && !isUsageBased(plan);
+
+const mutationFn = async ({ subscriptionPlanIdentifier, billingInterval }: SubscriptionInitVariables) => {
+  const { redirectionUrl } = await userSubscriptionProvider.init(subscriptionPlanIdentifier, billingInterval);
   return redirectionUrl;
 };
 
 export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = false }) => {
-  const { isPending, mutate, error: subscriptionInitError } = useMutation({ mutationKey: ['subscription', 'modal'], mutationFn });
-  const { close } = useDialog();
-
+  const [step, setStep] = useState<SubscriptionStep>('PLAN');
+  const [redirectionUrl, setRedirectionUrl] = useState<string>();
+  const [redirectTitle, setRedirectTitle] = useState<string>();
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>();
+  const { close, open: openDialog, setDialogProps } = useDialog();
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const isPlanStep = step === 'PLAN';
+    setDialogProps({ maxWidth: isPlanStep ? 'lg' : 'sm', sx: isPlanStep ? SubscriptionPlansDialogStyle : SubscriptionFlowDialogStyle });
+  }, [step, setDialogProps]);
+
+  const {
+    isPending,
+    mutate,
+    variables: pendingVariables,
+    error: subscriptionInitError,
+  } = useMutation({
+    mutationKey: ['subscription', 'modal'],
+    mutationFn,
+    onSuccess: (url, { isConsentRequired }) => {
+      setRedirectionUrl(url);
+      setStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
+    },
+  });
+
+  const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
+    mutationKey: ['subscription', 'commitment'],
+    mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlan!.id!, automaticRenewalStatus),
+    onSuccess: () => setStep('REDIRECT'),
+  });
+
+  const { isPending: isAddingCard, mutate: addCard } = useMutation({
+    mutationKey: ['billing', 'paymentMethod'],
+    mutationFn: () => userSubscriptionProvider.replacePaymentMethod(),
+    onSuccess: ({ redirectionUrl }) => {
+      if (!redirectionUrl) return;
+      setRedirectionUrl(redirectionUrl);
+      setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre moyen de paiement');
+      setStep('REDIRECT');
+    },
+  });
 
   const error = searchParams.get('stripeStatus') === 'error' || !!subscriptionInitError;
   const errorMessage = (subscriptionInitError as any)?.response?.data?.message;
 
   const whoami = getCached.whoami();
-  const today = dayjs();
-  const remainingDays = whoami?.user?.subscription?.end ? dayjs(whoami?.user?.subscription?.end).diff(today, 'day') : null;
-  const startDate = whoami?.user?.subscription?.start ? new Date(whoami.user.subscription.start) : null;
-  const endDate = whoami?.user?.subscription?.end ? new Date(whoami.user.subscription.end) : null;
-  const firstDebitDate = getFirstDebitDate(startDate, endDate);
+  const subscription = whoami?.user?.subscription;
+  const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
+  const { paymentMethod, isPaymentMethodLoading } = useGetDefaultPaymentMethod();
+  const hasCard = !!paymentMethod?.card?.lastFourDigits;
+  const canClose = allowClose && hasCard && !isSubscriptionMandatory(subscription);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
 
+  const openBillingCredits = () => {
+    const onCloseBilling = hasCard ? close : () => openDialog(<SubscriptionModal allowClose={allowClose} />, SUBSCRIPTION_DIALOG_PROPS, false);
+    openDialog(
+      <BillingModalContent onClose={onCloseBilling} subscription={subscription} focusCredits enforcePaymentMethod={!hasCard} onLogout={onLogout} />,
+      BILLING_DIALOG_PROPS,
+      hasCard
+    );
+  };
+
+  const onSelectPlan = (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => {
+    if (!plan.id) return;
+    if (isUsageBased(plan)) {
+      openBillingCredits();
+      return;
+    }
+    setSelectedPlan(plan);
+    mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
+  };
+
+  const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);
+
+  const onBackToPlans = () => setStep('PLAN');
+
+  if (step === 'REDIRECT' && redirectionUrl) {
+    return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} title={redirectTitle} />;
+  }
+
+  if (step === 'CONSENT') {
+    return <SubscriptionConsentStep plan={selectedPlan} onAccept={onConsent} onBack={onBackToPlans} isLoading={isSavingCommitment} />;
+  }
+
   return (
     <>
-      <DialogTitle>Effectuez votre abonnement en toute sérénité !</DialogTitle>
-      <DialogContent>
+      <DialogTitle className='subscription-step-title'>
+        <Box className='subscription-step-title-icon'>
+          <WorkspacePremiumRoundedIcon />
+        </Box>
+        <Box className='subscription-step-title-text'>
+          <Typography component='span' className='subscription-step-title-main'>
+            Choisissez l'offre qui vous correspond le mieux.
+          </Typography>
+          {isCancelled && (
+            <Typography component='span' className='subscription-step-title-hint'>
+              Renouvelez votre abonnement pour reprendre votre activité sur la plateforme.
+            </Typography>
+          )}
+        </Box>
+      </DialogTitle>
+      <DialogContent sx={{ pt: 1 }}>
         {error && (
-          <Alert severity='error' variant='filled'>
+          <Alert severity='error' variant='filled' sx={{ mb: 2 }}>
             <AlertTitle>Une erreur s'est produite.</AlertTitle>
             {errorMessage}
           </Alert>
         )}
-        <p>
-          Activez votre abonnement aujourd'hui pour <span style={{ fontWeight: 'bold' }}>49€ HT</span>, votre carte ne sera débitée qu'à compter du{' '}
-          <span style={{ fontWeight: 'bold' }}>{formatDate(firstDebitDate)}</span>.
-        </p>
-        {startDate && endDate && remainingDays && (
+        <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
+      </DialogContent>
+      <DialogActions className='subscription-step-actions'>
+        {!isPaymentMethodLoading && (
           <>
-            <ul>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Début de la période d'essai</span> : {formatDate(startDate)}
-              </li>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Fin de la période d'essai</span> : {formatDate(endDate)}
-              </li>
-              <li>
-                <span style={{ fontWeight: 'bold' }}>Nombre de jours restants</span> : {remainingDays} jour{remainingDays > 1 ? 's' : ''}
-              </li>
-            </ul>
-            <p>💡 Aucun prélèvement ne sera effectué avant la fin de votre période d'essai. Vous pouvez annuler à tout moment, sans engagement.</p>
+            {canClose && <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Plus tard' isLoading={isPending} />}
+            {!canClose && hasCard && (
+              <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />
+            )}
+            {!hasCard && (
+              <>
+                <Button className='subscription-step-button subscription-step-button--ghost' onClick={onLogout} disabled={isPending}>
+                  Se déconnecter
+                </Button>
+                <BPButton
+                  className='subscription-step-button'
+                  style={AUTO_WIDTH}
+                  onClick={() => addCard()}
+                  label='Ajouter une carte'
+                  isLoading={isAddingCard}
+                />
+              </>
+            )}
           </>
         )}
-        <p>
-          Si vous avez la moindre question, n’hésitez à nous appeler au{' '}
-          <a rel='noreferrer' href='tel:0668624836' target='_blank'>
-            06.68.62.48.36
-          </a>{' '}
-          ou par mail à{' '}
-          <a rel='noreferrer' href='mailto:contact@birdia.fr' target='_blank'>
-            contact@birdia.fr
-          </a>
-        </p>
-      </DialogContent>
-      <DialogActions>
-        {allowClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!allowClose && <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />}
-        <BPButton data-cy='subscribe-btn' onClick={() => mutate()} label="S'abonner" isLoading={isPending} />
       </DialogActions>
     </>
   );

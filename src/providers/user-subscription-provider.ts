@@ -1,21 +1,53 @@
-import { SubscriptionInvoice } from '@bpartners/typescript-client';
+import { getAppBaseUrl } from '@/common/utils';
+import {
+  BillingInterval,
+  CreateSubscriptionInitiation,
+  EnableStatus,
+  SubscriptionInvoice,
+  SubscriptionPlan,
+  UserSubscriptionCommitment,
+  UserSubscriptionCommitmentDuration,
+  UserSubscriptionPaymentMethod,
+} from '@bpartners/typescript-client';
 import { payingApi, userSubscriptionApi } from './api';
 import { asyncGetUser } from './asyncGetUserInfo';
+
+export type SubscriptionBillingInterval = BillingInterval;
+
+type SubscriptionInitiationPayload = CreateSubscriptionInitiation & { billingInterval: SubscriptionBillingInterval };
+
+export const getSubscriptionPlans = async (): Promise<SubscriptionPlan[]> => {
+  const { data } = await userSubscriptionApi().getSubscriptionPlans();
+  return data || [];
+};
+
+export const getSubscriptionCommitments = async (): Promise<UserSubscriptionCommitment[]> => {
+  const { id } = await asyncGetUser();
+  const { data } = await userSubscriptionApi().getUserSubscriptionCommitments(id);
+  return data || [];
+};
 
 const getSubscriptionRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
   return {
-    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
-    successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripeStatus=done`).href,
+    failureUrl: new URL(`${getAppBaseUrl()}?stripeStatus=error`).href,
+    successUrl: new URL(`${getAppBaseUrl()}/account/${id}?stripeStatus=done`).href,
   };
 };
 
 const getPaymentMethodRedirectionUrls = async () => {
   const { id } = await asyncGetUser();
   return {
-    failureUrl: new URL(`${process.env.REACT_APP_URL}?stripeStatus=error`).href,
-    successUrl: new URL(`${process.env.REACT_APP_URL}/account/${id}?stripePaymentStatus=done`).href,
+    failureUrl: new URL(`${getAppBaseUrl()}?stripeStatus=error`).href,
+    successUrl: new URL(`${getAppBaseUrl()}/account/${id}?stripePaymentStatus=done`).href,
   };
+};
+
+export const getDefaultPaymentMethod = async (): Promise<UserSubscriptionPaymentMethod | null> => {
+  const { id } = await asyncGetUser();
+  const { data } = await userSubscriptionApi().getUserPaymentMethods(id, true);
+  const paymentMethods: UserSubscriptionPaymentMethod[] = data || [];
+  return paymentMethods.find(({ card }) => !!card?.lastFourDigits) ?? null;
 };
 
 export const downloadSubscriptionInvoices = async (yearMonth: string) => {
@@ -40,12 +72,28 @@ export const downloadSubscriptionInvoices = async (yearMonth: string) => {
 };
 
 export const userSubscriptionProvider = {
-  async init() {
+  async init(subscriptionPlanIdentifier?: string, billingInterval: SubscriptionBillingInterval = 'MONTHLY') {
     const { id } = await asyncGetUser();
-    const { data } = await userSubscriptionApi().initiateUserSubscription(id, {
+    const payload: SubscriptionInitiationPayload = {
       redirectionStatusUrls: await getSubscriptionRedirectionUrls(),
-      subscriptionType: 'ESSENTIAL',
-    });
+      billingInterval,
+      ...(subscriptionPlanIdentifier ? { subscriptionPlanIdentifier } : { subscriptionType: 'ESSENTIAL' }),
+    };
+    const { data } = await userSubscriptionApi().initiateUserSubscription(id, payload);
+    return data;
+  },
+  async saveCommitment(subscriptionPlanIdentifier: string, automaticRenewalStatus: EnableStatus) {
+    const { id } = await asyncGetUser();
+    const now = new Date();
+    const { data } = await userSubscriptionApi().saveUserSubscriptionCommitments(id, [
+      {
+        subscriptionPlanIdentifier,
+        duration: UserSubscriptionCommitmentDuration.TWELVE_MONTHS,
+        commitmentStart: now,
+        approvalDatetime: now,
+        automaticRenewalStatus,
+      },
+    ]);
     return data;
   },
   async cancelRenew() {
@@ -63,6 +111,12 @@ export const userSubscriptionProvider = {
     const { id } = await asyncGetUser();
     const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
     const { data } = await userSubscriptionApi().initiatePaymentMethodInsertion(id, { failureUrl, successUrl });
+    return data;
+  },
+  async replacePaymentMethod() {
+    const { id } = await asyncGetUser();
+    const { failureUrl, successUrl } = await getPaymentMethodRedirectionUrls();
+    const { data } = await userSubscriptionApi().initiatePaymentMethodReplacement(id, { failureUrl, successUrl });
     return data;
   },
 };

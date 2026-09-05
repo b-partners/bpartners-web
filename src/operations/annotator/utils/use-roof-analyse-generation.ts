@@ -1,13 +1,24 @@
 import { useRoofAnalyseQuery } from '@/common/fetcher';
-import { annotatorStore, getAnnotationScreen, useAnnotatorComponentStore, useAnnotatorScreenSwitch } from '@/common/store';
+import {
+  annotatorStore,
+  getAnnotationScreen,
+  useAnalyseCreditPopupStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+  useOptimisticCreditBalanceStore,
+} from '@/common/store';
+import { computeOptimisticBalance, getEffectiveCreditBalance, useCreditRequirement } from '@/operations/account/components/billing';
+import { CREDIT_BALANCE_QUERY_KEY } from '@/operations/account/queries';
 import { clearPolygons, removeCache } from '@/providers';
+import { CreditBalance } from '@bpartners/typescript-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { isAfterAnalyse } from './is-after-analyse';
 import { shiftPolygons } from './shift-polygons';
 
 export interface RoofAnalyseGeneration {
-  runAnalyse: () => void;
+  runAnalyse: () => Promise<void>;
   isAnalysing: boolean;
   isAlreadyAnalysed: boolean;
   isThereARoofPolygon: boolean;
@@ -16,6 +27,10 @@ export interface RoofAnalyseGeneration {
 
 export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const { screen } = useAnnotatorScreenSwitch();
+  const { requireCredits } = useCreditRequirement();
+  const queryClient = useQueryClient();
+  const prepareCreditPopup = useAnalyseCreditPopupStore(params => params.prepare);
+  const setOptimisticBalance = useOptimisticCreditBalanceStore(params => params.setBalance);
   const {
     areaPictureDetails,
     analyseImageUrl,
@@ -53,7 +68,19 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const is2DRoof = !!roof2dPolygon;
   const isAnalysing = !!analyseLoadingPolygon;
 
-  const runAnalyse = () => {
+  const isRunningRef = useRef(false);
+  const didAutoRun = useRef(false);
+
+  const runAnalyse = async () => {
+    if (!(await requireCredits())) return;
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    didAutoRun.current = true;
+    const apiBalance = queryClient.getQueryData<CreditBalance>(CREDIT_BALANCE_QUERY_KEY);
+    const baseBalance = getEffectiveCreditBalance(apiBalance, useOptimisticCreditBalanceStore.getState().balance);
+    const optimisticBalance = baseBalance ? computeOptimisticBalance(baseBalance, baseBalance.creditCostPerAnalysis ?? 1) : undefined;
+    setOptimisticBalance(optimisticBalance);
+    prepareCreditPopup(optimisticBalance?.spendableCredits);
     const loadingPolygon = shiftPolygons(roofPolygons, areaPictureDetails, true)?.[0]?.points?.slice() ?? [];
     promoteAnalyseRoofToAnnotator();
     removeCache.roofDelimitation();
@@ -62,10 +89,13 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
     setAnalyseImageUrl(null);
     setAnalyseImageFileId(null);
     setAnalyseLoadingPolygon(loadingPolygon);
-    processDetection();
+    processDetection(undefined, {
+      onSettled: () => {
+        isRunningRef.current = false;
+      },
+    });
   };
 
-  const didAutoRun = useRef(false);
   useEffect(() => {
     if (didAutoRun.current) return;
     if (screen !== 'roof-analyse' || !is2DRoof || isAlreadyAnalysed || !isThereARoofPolygon || !isPrecisionLevelInCmCorrect || isAnalysing) return;

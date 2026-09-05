@@ -3,17 +3,19 @@ import {
   accountHolders1,
   accounts1,
   businessActivities,
+  creditBalance,
   subscriptionInvoiceMultiple,
   subscriptionInvoiceSingle,
   subscriptionInvoiceWithoutFile,
   whoami1,
 } from './mocks/responses';
+import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const FROZEN_DATE = '2026-03-15T10:00:00Z';
 
-const OPEN_BUTTON = '[name="open-subscription-invoice-modal"]';
-const YEAR_SELECT = '[name="subscription-invoice-year"]';
-const MONTH_CARD = '.subscription-invoice-month';
+const OPEN_BUTTON = '[name="open-billing-modal"]';
+const YEAR_SELECT = '[name="billing-invoice-year"]';
+const MONTH_CARD = '.billing-invoice-month';
 const YEAR_OPTION = '[role="listbox"] .MuiMenuItem-root';
 const SUBSCRIPTION_INVOICES_URL = `/users/${whoami1.user.id}/subscriptionInvoices*`;
 
@@ -44,12 +46,15 @@ describe('Subscription invoices', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', '/businessActivities?page=1&pageSize=100', businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
   });
 
   it('lists the twelve months and the years down to 2023', () => {
     openModal();
 
-    cy.contains('Factures de mes abonnements').should('be.visible');
+    cy.contains('Mes factures').should('be.visible');
+    cy.get(YEAR_SELECT).scrollIntoView();
     cy.contains('Période de :').should('be.visible');
 
     const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -64,8 +69,12 @@ describe('Subscription invoices', () => {
   it('offers the months up to the current one and blocks the coming ones', () => {
     openModal();
 
-    ['2026-01', '2026-02', '2026-03'].forEach(yearMonth => cy.get(download(yearMonth)).should('be.visible').and('contain', 'Télécharger').and('be.enabled'));
-    ['2026-04', '2026-12'].forEach(yearMonth => cy.get(unavailable(yearMonth)).should('be.visible').and('contain', 'Indisponible').and('be.disabled'));
+    ['2026-01', '2026-02', '2026-03'].forEach(yearMonth =>
+      cy.get(download(yearMonth)).scrollIntoView().should('be.visible').and('contain', 'Télécharger').and('be.enabled')
+    );
+    ['2026-04', '2026-12'].forEach(yearMonth =>
+      cy.get(unavailable(yearMonth)).scrollIntoView().should('be.visible').and('contain', 'Indisponible').and('be.disabled')
+    );
 
     cy.get(`${MONTH_CARD}.is-available`).should('have.length', 3);
     cy.get(`${MONTH_CARD}.is-unavailable`).should('have.length', 9);
@@ -161,8 +170,8 @@ describe('Subscription invoices', () => {
   it('closes the modal', () => {
     openModal();
 
-    cy.contains('Factures de mes abonnements').should('be.visible');
-    cy.get('[name="subscription-invoice-close"]').click();
-    cy.contains('Factures de mes abonnements').should('not.exist');
+    cy.contains('Mes factures').should('be.visible');
+    cy.get('[name="billing-close"]').click();
+    cy.contains('Mes factures').should('not.exist');
   });
 });

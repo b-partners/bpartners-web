@@ -10,7 +10,7 @@ import { ShiftDirection } from '@bpartners/typescript-client';
 import { Box, Stack, SxProps } from '@mui/material';
 import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
+import { AnalyseCreditPopup, Annotator3D, annotatorButtonsActions, LlmResult, ThreeDMeasureMode } from './components';
 import { RoofAnalysisDialog } from './components/loading';
 import { AnnotatorComponentProps } from './types';
 import {
@@ -156,6 +156,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
   if (isLoading) return <BPLoader message='Chargement des données...' />;
 
   const isAnalyseScreen = screen === 'roof-analyse';
+  const isAnalyseResultDisplayed = isAnalyseScreen && !isAnalysing && !isAnalyseResultLoading && !!geojsonResult?.image && !!geojsonResult?.properties;
   const isAnalysingOnScreen = isAnalyseScreen && isAnalysing;
   const showAnnotatorCanvas = !isAnalysingOnScreen && (screen === 'annotator' || (isAnalyseScreen && !isAnalyseResultLoading));
   const canvasImage = isAnalyseScreen ? analyseImageUrl || geojsonResult?.image || cachedImageUrl : cachedImageUrl;
@@ -185,6 +186,7 @@ export const AnnotatorComponent: FC<AnnotatorComponentProps> = props => {
           durationMs={ROOF_ANALYSE_PROGRESS_DURATION_MS}
           isLoading={isAnalyseScreen && (isAnalysing || isAnalyseResultLoading)}
         />
+        <AnalyseCreditPopup resultDisplayed={isAnalyseResultDisplayed} />
         {showAnnotatorCanvas && markerPosition && ((geocodeStatus === 'done' && geocode) || geocodeStatus === 'no-annotation') && (
           <AnnotatorCanvas
             markerPosition={!geojsonResult && (polygonListShifted || []).length === 0 && markerPosition}

@@ -27,7 +27,7 @@ import {
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
-import { calculateGlobalRate, useAnnotationInfosForm, useRoofAnalyseGeneration } from './utils';
+import { useAnnotationInfosForm, useGlobalRateQuery, useRoofAnalyseGeneration } from './utils';
 
 export const Annotator = () => {
   useHeartBeat();
@@ -65,7 +65,7 @@ export const Annotator = () => {
         await fileProvider.update([{ fileId: analyseImageFileId, fileType: FileType.AREA_PICTURE, fileMimeType: blob.type || 'image/png', fileAsArrayBuffer }]);
         if (!analyseImageGenerated) await saveImageToCache(analyseImageFileId, blob);
       }
-      setAnalyseImageUrl(url);
+      setAnalyseImageUrl(analyseImageGenerated ? url : null);
     });
   }, [fileId, analyseImageGenerated, setAnalyseImageUrl, setAnalyseImageFileId]);
   const { isAnnotationEmpty, areaPictureAnnotation } = useRetrievePolygons(annotations);
@@ -98,6 +98,7 @@ export const Annotator = () => {
 
   const { isSaveAnnotationsPending, triggerManualSave, lastSavingDate: lastSavedDate } = useSaveAnnotations();
   const roofAnalyseGeneration = useRoofAnalyseGeneration();
+  const globalRate = useGlobalRateQuery();
 
   const lastSavingDate = lastSavedDate ?? (annotations?.properties?.lastSavingDate as string | undefined);
 
@@ -111,8 +112,6 @@ export const Annotator = () => {
   const address = areaPicture?.address;
   const source = areaPicture?.actualLayer?.name;
   const gpsInfo = ` (GPS ${areaPicture?.geoPositions?.[0]?.latitude}, ${areaPicture?.geoPositions?.[0]?.longitude})`;
-
-  const globalRate = calculateGlobalRate();
 
   return (
     <FormProvider {...annotatorFormState}>
@@ -140,7 +139,7 @@ export const Annotator = () => {
       </Stack>
       <Toolbar sx={annotatorBottomToolbarStyle}>
         <Stack direction='row'>
-          <DegradationLevelsStack globalRate={globalRate} />
+          <DegradationLevelsStack globalRate={globalRate ?? { value: 0, type: 'A' }} />
         </Stack>
         <Stack className='bottom-toolbar-actions' direction='row' gap={1}>
           <SaveStatus isSaving={isSaveAnnotationsPending} lastSavingDate={lastSavingDate} />

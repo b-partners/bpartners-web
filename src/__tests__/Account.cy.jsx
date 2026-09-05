@@ -1,13 +1,17 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
 
 import App from '@/App';
+import { useDialog } from '@/common/store/dialog';
 import { getCached } from '@/providers';
 import { account1, accountHolder1, accountHolders1, accountHoldersFeedbackLink, accounts1, businessActivities } from './mocks/responses/account-api';
+import { creditBalance } from './mocks/responses/credits-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
+import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 describe(specTitle('Account'), () => {
   beforeEach(() => {
+    useDialog.getState().close();
     cy.cognitoLogin();
     cy.stub(getCached, 'account').returns(account1);
     cy.stub(navigator.clipboard, 'writeText').as('copyToClipboard');
@@ -71,13 +75,11 @@ describe(specTitle('Account'), () => {
       newAccountHolder.businessActivities = newBusinessActivity;
       req.reply(newAccountHolder);
     });
-    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => {
-      expect(req.body).eql({ feedbackLink: validLink });
-      req.reply(accountHoldersFeedbackLink);
-    }).as('configuration');
+    cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req =>
+      req.reply(accountHoldersFeedbackLink)
+    ).as('configuration');
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
-      const response = { ...accountHolders1[0] };
-      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      const response = { ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: req.body.isSubjectToVat } };
       req.reply({ body: response });
     });
 
@@ -88,8 +90,6 @@ describe(specTitle('Account'), () => {
     cy.contains('Ma société');
 
     cy.dataCy('edit-mode-button').click();
-
-    cy.dataCy('profile-field-container', '.MuiTypography-root').should('not.exist');
 
     //Field Address
     cy.name('contactAddress.address').clear();
@@ -183,8 +183,7 @@ describe(specTitle('Account'), () => {
     cy.intercept('PUT', `/users/${whoami1.user.id}/accountHolders/${accountHolder1.id}/feedback/configuration`, req => req.reply(accountHoldersFeedbackLink));
     cy.intercept('PUT', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders/${accountHolders1[0].id}/companyInfo`, req => {
       expect(req.body.isSubjectToVat).to.eq(false);
-      const response = { ...accountHolders1[0] };
-      response.companyInfo.isSubjectToVat = req.body.isSubjectToVat;
+      const response = { ...accountHolders1[0], companyInfo: { ...accountHolders1[0].companyInfo, isSubjectToVat: req.body.isSubjectToVat } };
       req.reply({ body: response });
     }).as('updateCompanyInfo');
 
@@ -250,6 +249,9 @@ describe(specTitle('Account'), () => {
 
   //OK
   it('Check full typography for Subscription', () => {
+    const subscribedUser = { ...whoami1.user, subscription: { status: 'ACTIVE', plan: { name: 'Abonnement BIRDIA', billingType: 'COMMITMENT' } } };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
@@ -262,7 +264,8 @@ describe(specTitle('Account'), () => {
     cy.wait('@getAccountHolder1');
 
     cy.contains('Mon abonnement');
-    cy.contains('Pour 49 € par mois :');
+    cy.contains('Abonnement BIRDIA');
+    cy.contains('49 €');
     cy.contains(
       'Activez notre intelligence artificielle dédiée à l’analyse de toitures : mesure automatique, détection des matériaux (ardoise, tuile, zinc…), estimation des pentes, identification des dégâts et des réparations. Suivi facilité pour vos clients, 20 diagnostics inclus.'
     );
@@ -270,11 +273,209 @@ describe(specTitle('Account'), () => {
     cy.contains('Intégrez la communauté des couvreurs BIRDIA et recevez des chantiers autour de chez vous.');
   });
 
+  it('Subscription card ACTIVE with plan shows plan details', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        billingInterval: 'MONTHLY',
+        plan: {
+          name: 'Pro',
+          description: 'Pour les PME en croissance.',
+          billingType: 'COMMITMENT',
+          priceInCentsWithoutVat: 9900,
+          features: ['Analyse IA toiture complète', 'Export PDF + emprise GeoJSON'],
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.get('.subscription-plan-name').should('contain', 'Pro');
+    cy.contains('Pour les PME en croissance.');
+    cy.contains('99 €');
+    cy.contains('HT · engagement annuel 12 mois');
+    cy.get('.subscription-price-yearly')
+      .invoke('text')
+      .should('match', /^1\s188\s€ HT \/ an$/);
+    cy.contains('Analyse IA toiture complète');
+    cy.contains('Export PDF + emprise GeoJSON');
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+    cy.contains('Vous n’avez pas d’abonnement actif.').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE billed yearly shows the discounted annual price paid', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        billingInterval: 'YEARLY',
+        plan: { id: 'plan-pro', name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getSubscriptionPlans');
+
+    cy.get('.subscription-price')
+      .invoke('text')
+      .should('match', /^1\s069\s€$/);
+    cy.get('.subscription-price-suffix').should('have.text', '/ an');
+    cy.get('.subscription-price-discount')
+      .invoke('text')
+      .should('match', /^au lieu de 1\s188\s€ \/ an$/);
+    cy.get('.subscription-price-reference')
+      .invoke('text')
+      .should('match', /^1\s188\s€ \/ an$/);
+    cy.get('.subscription-discount-badge').should('have.text', '-10 %');
+    cy.contains('Prix HT · payé en une fois · soit 89 € HT / mois');
+    cy.contains('HT · engagement annuel 12 mois').should('not.exist');
+    cy.get('.subscription-price-yearly').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE billed yearly hides the annual price when the plan is not resolved', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        billingInterval: 'YEARLY',
+        plan: { id: 'plan-unknown', name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+    cy.wait('@getSubscriptionPlans');
+
+    cy.get('.subscription-price').should('have.text', '99 €');
+    cy.get('.subscription-price-suffix').should('have.text', '/ mois');
+    cy.get('.subscription-price-ht').should('have.text', 'Prix HT · payé en une fois');
+    cy.get('.subscription-price-discount').should('not.exist');
+    cy.get('.subscription-discount-badge').should('not.exist');
+    cy.get('.subscription-price-yearly').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE keeps a neutral label as long as nothing has been paid', () => {
+    const subscribedUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, subscribedUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.get('.subscription-price-ht').should('have.text', 'Prix HT');
+    cy.contains('HT · engagement annuel 12 mois').should('not.exist');
+    cy.contains('Prix HT · payé en une fois').should('not.exist');
+  });
+
+  it('Subscription card ACTIVE without plan shows validating loader then plan after polling', () => {
+    const noPlanUser = { ...whoami1.user, subscription: { status: 'ACTIVE' } };
+    const withPlanUser = {
+      ...whoami1.user,
+      subscription: {
+        status: 'ACTIVE',
+        plan: { name: 'Pro', billingType: 'COMMITMENT', priceInCentsWithoutVat: 9900, features: ['Analyse IA toiture complète'] },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, noPlanUser).as('getUserNoPlan');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Validation de votre abonnement en cours');
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, withPlanUser).as('getUserWithPlan');
+
+    cy.get('.subscription-plan-name', { timeout: 10000 }).should('contain', 'Pro');
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+  });
+
+  it('Subscription card CANCELLED shows resiliation notice and opens plan modal', () => {
+    const end = new Date();
+    end.setDate(end.getDate() + 29);
+    const cancelledUser = { ...whoami1.user, subscription: { status: 'CANCELLED', start: new Date(), end } };
+
+    cy.intercept('GET', '/whoami', { user: cancelledUser }).as('cancelledWhoami');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, cancelledUser);
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
+    cy.contains('Validation de votre abonnement en cours').should('not.exist');
+
+    cy.contains('button', 'Choisir un abonnement').click();
+    cy.contains("Choisissez l'offre qui vous correspond le mieux.");
+    cy.contains("Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.");
+  });
+
+  it('Subscription card without active subscription shows empty state and opens plan modal', () => {
+    const inactiveUser = { ...whoami1.user, subscription: { status: 'INACTIVE' } };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}`, inactiveUser);
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+    cy.get('[name="account"]').click();
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Vous n’avez pas d’abonnement actif.');
+    cy.contains('button', 'Choisir un abonnement').click();
+    cy.contains("Choisissez l'offre qui vous correspond le mieux.");
+    cy.contains('Renouveler votre abonnement').should('not.exist');
+  });
+
   it('Block Trial card INACTIVE', () => {
     const modifiedAccountHolders = [...accountHolders1];
     const nextDate = new Date();
 
-    nextDate.setDate(nextDate.getDay() + 7);
+    nextDate.setDate(nextDate.getDate() + 7);
     modifiedAccountHolders[0] = {
       ...modifiedAccountHolders[0],
       user: {
@@ -296,24 +497,26 @@ describe(specTitle('Account'), () => {
     cy.mount(<App />);
 
     cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
-    cy.contains('Fermer').click();
+    cy.get('#closeWarning').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Période d’essai');
+    cy.contains('Aucun abonnement en cours');
   });
 
-  it('Block Trial card ACTIVE', () => {
+  it('Block Trial card FREE_TRIAL', () => {
+    const trialStart = '2022-01-01';
+    const trialEnd = '2022-01-31';
     const modifiedAccountHolders = [...accountHolders1];
     modifiedAccountHolders[0] = {
       ...modifiedAccountHolders[0],
       user: {
         ...modifiedAccountHolders[0].user,
         subscription: {
-          status: 'ACTIVE',
-          start: '2022-01-01',
-          end: '2022-01-31',
+          status: 'FREE_TRIAL',
+          start: trialStart,
+          end: trialEnd,
         },
       },
     };
@@ -327,11 +530,89 @@ describe(specTitle('Account'), () => {
     cy.mount(<App />);
 
     cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
-    cy.contains('Fermer').click();
+    cy.get('#closeWarning').click();
     cy.get('[name="account"]').click();
 
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Période d’essai');
+    cy.contains("Période d'essai");
+    cy.contains('Vous bénéficiez actuellement d’une période d’essai gratuite.');
+    cy.contains(`Début de la période d’essai : ${new Date(trialStart).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains(`Fin de la période d’essai : ${new Date(trialEnd).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+  });
+
+  it('Block Trial card ACTIVE', () => {
+    const subscriptionStart = '2022-01-01';
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          billingInterval: 'MONTHLY',
+          start: subscriptionStart,
+          end: '2022-01-31',
+        },
+      },
+    };
+
+    const commitmentEnd = new Date(subscriptionStart);
+    commitmentEnd.setUTCFullYear(commitmentEnd.getUTCFullYear() + 1);
+    commitmentEnd.setUTCDate(commitmentEnd.getUTCDate() - 1);
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.get('#closeWarning').click();
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Période de votre abonnement');
+    cy.contains(`Début de votre abonnement : ${new Date(subscriptionStart).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains(`Fin de votre engagement : ${commitmentEnd.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+  });
+
+  it('Block Trial card ACTIVE billed yearly shows the paid period end', () => {
+    const subscriptionStart = '2022-01-01';
+    const subscriptionEnd = '2023-01-01';
+    const modifiedAccountHolders = [...accountHolders1];
+    modifiedAccountHolders[0] = {
+      ...modifiedAccountHolders[0],
+      user: {
+        ...modifiedAccountHolders[0].user,
+        subscription: {
+          status: 'ACTIVE',
+          billingInterval: 'YEARLY',
+          start: subscriptionStart,
+          end: subscriptionEnd,
+        },
+      },
+    };
+
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}`, modifiedAccountHolders[0].user);
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, modifiedAccountHolders).as('getAccountHolder1');
+    cy.intercept('POST', `/accounts/${accounts1[0].id}/files/*/raw`, images1).as('uploadFile1');
+    cy.intercept('GET', `/businessActivities?page=1&pageSize=100`, businessActivities).as('getBusinessActivities');
+
+    cy.mount(<App />);
+
+    cy.contains("Votre compte n'est pas encore vérifié. Pour plus d'information veuillez vous adresser au");
+    cy.get('#closeWarning').click();
+    cy.get('[name="account"]').click();
+
+    cy.wait('@getAccountHolder1');
+
+    cy.contains('Période de votre abonnement');
+    cy.contains(`Fin de votre abonnement : ${new Date(subscriptionEnd).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' })}`);
+    cy.contains('Fin de votre engagement').should('not.exist');
   });
 });

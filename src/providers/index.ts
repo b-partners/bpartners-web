@@ -8,6 +8,7 @@ export * from './aws-config';
 export * from './bank-provider';
 export * from './bp-data-provider-type';
 export * from './cache';
+export * from './credits-provider';
 export * from './customer-provider';
 export * from './data-provider';
 export * from './feedback-provider';
