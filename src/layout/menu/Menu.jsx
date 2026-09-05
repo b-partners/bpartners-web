@@ -53,7 +53,7 @@ export const Menu = () => {
         <RaMenu.Item to='/customers' name='customers' primaryText='Mes clients' leftIcon={<People />} />
         <RaMenu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <RaMenu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
-        <RaMenu.Item to='/projects' name='projects' primaryText='Mes projects' leftIcon={<Assignment />} />
+        <RaMenu.Item to='/projects' name='projects' primaryText='Mes projets' leftIcon={<Assignment />} />
         <RaMenu.Item to={`/account/${accountId}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </RaMenu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
