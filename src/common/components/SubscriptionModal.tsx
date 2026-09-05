@@ -6,18 +6,22 @@ import { SubscriptionPlans } from '@/operations/account/components/SubscriptionP
 import { useGetDefaultPaymentMethod } from '@/operations/account/queries';
 import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
-import { Alert, AlertTitle, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
+import { Alert, AlertTitle, Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
+import { SubscriptionFlowDialogStyle, SubscriptionPlansDialogStyle } from './style';
 import { SubscriptionConsentStep } from './SubscriptionConsentStep';
 import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
 
 type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
 
 const SUBSCRIPTION_DIALOG_PROPS = { maxWidth: 'lg', fullWidth: true } as const;
+
+const AUTO_WIDTH = { width: 'auto' };
 
 const BILLING_DIALOG_PROPS = { ...SUBSCRIPTION_DIALOG_PROPS, sx: BillingModalStyle } as const;
 
@@ -40,9 +44,14 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const [step, setStep] = useState<SubscriptionStep>('PLAN');
   const [redirectionUrl, setRedirectionUrl] = useState<string>();
   const [redirectTitle, setRedirectTitle] = useState<string>();
-  const [selectedPlanId, setSelectedPlanId] = useState<string>();
-  const { close, open: openDialog } = useDialog();
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>();
+  const { close, open: openDialog, setDialogProps } = useDialog();
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const isPlanStep = step === 'PLAN';
+    setDialogProps({ maxWidth: isPlanStep ? 'lg' : 'sm', sx: isPlanStep ? SubscriptionPlansDialogStyle : SubscriptionFlowDialogStyle });
+  }, [step, setDialogProps]);
 
   const {
     isPending,
@@ -60,7 +69,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
     mutationKey: ['subscription', 'commitment'],
-    mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlanId!, automaticRenewalStatus),
+    mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlan!.id!, automaticRenewalStatus),
     onSuccess: () => setStep('REDIRECT'),
   });
 
@@ -103,7 +112,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       openBillingCredits();
       return;
     }
-    setSelectedPlanId(plan.id);
+    setSelectedPlan(plan);
     mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
   };
 
@@ -116,12 +125,26 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   }
 
   if (step === 'CONSENT') {
-    return <SubscriptionConsentStep onAccept={onConsent} onBack={onBackToPlans} isLoading={isSavingCommitment} />;
+    return <SubscriptionConsentStep plan={selectedPlan} onAccept={onConsent} onBack={onBackToPlans} isLoading={isSavingCommitment} />;
   }
 
   return (
     <>
-      <DialogTitle sx={{ py: 1.5 }}>Choisissez l'offre qui vous convient</DialogTitle>
+      <DialogTitle className='subscription-step-title'>
+        <Box className='subscription-step-title-icon'>
+          <WorkspacePremiumRoundedIcon />
+        </Box>
+        <Box className='subscription-step-title-text'>
+          <Typography component='span' className='subscription-step-title-main'>
+            Choisissez l'offre qui vous correspond le mieux.
+          </Typography>
+          {isCancelled && (
+            <Typography component='span' className='subscription-step-title-hint'>
+              Renouvelez votre abonnement pour reprendre votre activité sur la plateforme.
+            </Typography>
+          )}
+        </Box>
+      </DialogTitle>
       <DialogContent sx={{ pt: 1 }}>
         {error && (
           <Alert severity='error' variant='filled' sx={{ mb: 2 }}>
@@ -129,16 +152,19 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
             {errorMessage}
           </Alert>
         )}
-        {isCancelled && <p>Renouveler votre abonnement, choisissez l'offre qui vous correspond le mieux.</p>}
         <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
       </DialogContent>
-      <DialogActions>
-        {canClose && <BPButton onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-        {!canClose && hasCard && <BPButton onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />}
+      <DialogActions className='subscription-step-actions'>
+        {canClose && <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Plus tard' isLoading={isPending} />}
+        {!canClose && hasCard && (
+          <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />
+        )}
         {!canClose && !hasCard && (
           <>
-            <BPButton onClick={() => addCard()} label='Ajouter une carte' isLoading={isAddingCard} />
-            <BPButton onClick={onLogout} label='Se déconnecter' isLoading={isPending} />
+            <Button className='subscription-step-button subscription-step-button--ghost' onClick={onLogout} disabled={isPending}>
+              Se déconnecter
+            </Button>
+            <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => addCard()} label='Ajouter une carte' isLoading={isAddingCard} />
           </>
         )}
       </DialogActions>

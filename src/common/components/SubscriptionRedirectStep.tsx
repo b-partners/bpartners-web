@@ -1,6 +1,7 @@
 import { cache } from '@/providers';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import { Box, DialogContent, Typography } from '@mui/material';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import { Box, DialogContent, LinearProgress, Typography } from '@mui/material';
 import { FC, useEffect } from 'react';
 import { Redirect } from '../utils';
 import { SubscriptionRedirectStyle } from './style';
@@ -42,6 +43,13 @@ export const SubscriptionRedirectStep: FC<SubscriptionRedirectStepProps> = ({ re
           {title ?? (stripe ? 'Vous allez être redirigé vers Stripe pour souscrire à l’abonnement' : 'Votre abonnement est en cours d’enregistrement')}
         </Typography>
         <Typography className='redirect-subtitle'>Merci de patienter, vous allez être redirigé automatiquement.</Typography>
+        <LinearProgress className='redirect-progress' />
+        {stripe && (
+          <Typography className='redirect-secure'>
+            <LockRoundedIcon />
+            Paiement sécurisé par Stripe
+          </Typography>
+        )}
       </Box>
     </DialogContent>
   );
