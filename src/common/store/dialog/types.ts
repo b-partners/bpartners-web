@@ -13,6 +13,7 @@ interface DialogState {
 interface DialogAction {
   open: (content: ReactNode, dialogProps?: TDialogProps, backdropClose?: boolean) => void;
   close: () => void;
+  setDialogProps: (dialogProps: TDialogProps) => void;
 }
 
 export type TDialogStore = DialogState & DialogAction;
