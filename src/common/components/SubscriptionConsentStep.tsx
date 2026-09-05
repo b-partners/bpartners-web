@@ -5,7 +5,7 @@ import { FC, useState } from 'react';
 import { BPButton } from './BPButton';
 import { SubscriptionConsentStyle } from './style';
 
-const CGU_URL = '#';
+const CGU_URL = 'https://www.birdia.fr/conditions-generales-d-utilisation';
 
 interface SubscriptionConsentStepProps {
   onAccept: (automaticRenewalStatus: EnableStatus) => void;
