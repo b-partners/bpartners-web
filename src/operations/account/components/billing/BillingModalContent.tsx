@@ -5,13 +5,14 @@ import { useDialog } from '@/common/store/dialog';
 import { useGetDefaultPaymentMethod } from '@/operations/account/queries';
 import { UserSubscription, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
-import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FC, useState } from 'react';
 import { BillingCancellationSection } from './BillingCancellationSection';
 import { BillingCreditsSection } from './BillingCreditsSection';
 import { BillingInvoicesSection } from './BillingInvoicesSection';
 import { BillingPaymentMethodSection } from './BillingPaymentMethodSection';
 import { BillingSubscriptionSection } from './BillingSubscriptionSection';
+import { usePaymentMethodSync } from './use-payment-method-sync';
 import { isSubscriptionMandatory } from './utils';
 
 interface BillingRedirection {
@@ -39,8 +40,10 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
   const [redirection, setRedirection] = useState<BillingRedirection>();
   const { open: openDialog, close } = useDialog();
   const { paymentMethod } = useGetDefaultPaymentMethod(enforcePaymentMethod);
+  const paymentMethodSync = usePaymentMethodSync();
+  const isSyncingPaymentMethod = paymentMethodSync.status === 'PENDING';
   const hasCard = !!paymentMethod?.card?.lastFourDigits;
-  const mustAddCard = enforcePaymentMethod && !hasCard;
+  const mustAddCard = enforcePaymentMethod && !hasCard && !isSyncingPaymentMethod;
 
   const onRedirect = (redirectionUrl: string, title: string) => {
     setRedirection({ redirectionUrl, title });
@@ -63,13 +66,17 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
       </DialogTitle>
       <DialogContent className='billing-content'>
         <BillingSubscriptionSection subscription={subscription} onUpgrade={onUpgrade} />
-        <BillingPaymentMethodSection onRedirect={onRedirect} />
+        <BillingPaymentMethodSection onRedirect={onRedirect} sync={paymentMethodSync} />
         <BillingCreditsSection subscription={subscription} onRedirect={onRedirect} focusPacks={focusCredits} />
         {subscription?.status !== UserSubscriptionStatus.EMPTY && <BillingInvoicesSection />}
         <BillingCancellationSection subscription={subscription} />
       </DialogContent>
       <DialogActions className='billing-actions'>
-        {mustAddCard ? (
+        {enforcePaymentMethod && isSyncingPaymentMethod ? (
+          <Button disabled name='billing-payment-method-syncing' className='billing-close' startIcon={<CircularProgress size={14} color='inherit' />}>
+            Enregistrement de votre carte…
+          </Button>
+        ) : mustAddCard ? (
           <BPButton onClick={onLogout} name='billing-logout' label='Se déconnecter' />
         ) : (
           <Button onClick={enforcePaymentMethod ? close : onClose} name='billing-close' className='billing-close'>
