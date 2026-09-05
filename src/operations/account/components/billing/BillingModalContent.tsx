@@ -48,7 +48,7 @@ export const BillingModalContent: FC<BillingModalContentProps> = ({
   };
 
   const onUpgrade = () => {
-    const canClose = !isSubscriptionMandatory(subscription);
+    const canClose = !mustAddCard && !isSubscriptionMandatory(subscription);
     onClose();
     openDialog(<SubscriptionModal allowClose={canClose} />, { maxWidth: 'lg', fullWidth: true }, canClose);
   };

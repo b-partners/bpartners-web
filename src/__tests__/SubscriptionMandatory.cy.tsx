@@ -65,11 +65,18 @@ describe('SubscriptionModal — mandatory choice for expired subscriptions', () 
     assertMandatory();
   });
 
-  it('still lets the user postpone while a CANCELLED subscription is not expired yet', () => {
+  it('still lets the user postpone while a CANCELLED subscription is not expired yet and a card is registered', () => {
+    cy.intercept('GET', '**/paymentMethods*', visaPaymentMethods).as('getPaymentMethods');
     cy.cognitoLogin({ whoami: { user: activeCancelledUser }, user: activeCancelledUser });
     mountModal();
     cy.wait('@getSubscriptionPlans');
+    cy.wait('@getPaymentMethods');
     cy.contains('button', 'Plus tard').should('be.visible');
     cy.contains('button', 'Se déconnecter').should('not.exist');
+  });
+
+  it('offers to add a card or log out on a not-expired CANCELLED subscription without any payment method', () => {
+    cy.cognitoLogin({ whoami: { user: activeCancelledUser }, user: activeCancelledUser });
+    assertMandatory();
   });
 });
