@@ -12,4 +12,5 @@ export * from './CreditPurchaseConfirmDialog';
 export * from './CreditsRequiredModalContent';
 export * from './SubscriptionCancelConfirmDialog';
 export * from './use-credit-requirement';
+export * from './use-payment-method-sync';
 export * from './utils';
