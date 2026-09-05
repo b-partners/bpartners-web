@@ -2,10 +2,10 @@ import { SupportDialog } from '@/common/components';
 import { printError } from '@/common/utils';
 import { AccountCircle, Assignment, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Menu as RaMenu } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
-import { authProvider, getCached } from '../../providers';
+import { asyncGetAccountId, authProvider, getCached } from '../../providers';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -22,7 +22,15 @@ const LogoutButton = () => {
 
 export const Menu = () => {
   const [dialogState, setDialogState] = useState(false);
+  const [accountId, setAccountId] = useState(getCached.account()?.id || '');
   const toggleDialogState = () => setDialogState(e => !e);
+
+  useEffect(() => {
+    if (accountId) return;
+    asyncGetAccountId()
+      .then(id => setAccountId(id || ''))
+      .catch(printError);
+  }, [accountId]);
   const contactSupport = e => {
     e.preventDefault();
     toggleDialogState();
@@ -46,7 +54,7 @@ export const Menu = () => {
         <RaMenu.Item to='/products' name='products' primaryText='Mes produits' leftIcon={<Category />} />
         <RaMenu.Item to='/prospects' name='prospects' primaryText='Mes prospects' leftIcon={<ReceiptLong />} />
         <RaMenu.Item to='/projects' name='projects' primaryText='Mes projects' leftIcon={<Assignment />} />
-        <RaMenu.Item to={`/account/${getCached.account()?.id || ''}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
+        <RaMenu.Item to={`/account/${accountId}`} name='account' primaryText='Mon compte' leftIcon={<AccountCircle />} />
       </RaMenu>
       <Box sx={{ display: 'flex', alignItems: 'end' }}>
         <SupportDialog onToggle={toggleDialogState} open={dialogState} />
