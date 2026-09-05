@@ -51,6 +51,7 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
     cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
     cy.mount(<App />);
 
@@ -80,6 +81,7 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
     cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
 
     cy.mount(<App />);
@@ -179,7 +181,7 @@ describe('Test user subscription', () => {
     cy.contains("Crédits d'analyses").should('be.visible');
     cy.contains('Mes factures').should('not.exist');
   });
-  it('grants platform access to an EMPTY subscription that has a registered card', () => {
+  it('shows closeable plans and bootstraps account data for an EMPTY subscription without credits but with a registered card', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
     cy.stub(Redirect, 'toURL').as('toURL');
@@ -188,11 +190,35 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
     cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
 
     cy.mount(<App />);
 
     cy.wait('@getPaymentMethods');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
+    cy.contains("Choisissez l'offre qui vous convient").should('be.visible');
+    cy.contains('button', 'Accéder à la plateforme').should('be.visible');
+    cy.contains('button', 'Se déconnecter').should('not.exist');
+  });
+  it('grants platform access without plans for an EMPTY subscription that still has spendable credits', () => {
+    cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, []).as('getPaymentMethods');
+
+    cy.mount(<App />);
+
+    cy.wait('@getCreditBalance');
+    cy.wait('@getAccount1');
+    cy.wait('@getAccountHolder1');
     cy.contains("Choisissez l'offre qui vous convient").should('not.exist');
     cy.contains('button', 'Se déconnecter').should('not.exist');
   });
