@@ -23,7 +23,8 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (
 ) => {
   if (!roofAnalyseProperties) return undefined;
 
-  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2, roof_area_in_m2 } = roofAnalyseProperties || {};
+  const { humidite_rate, moisissure_rate, obstacle, usure_rate, revetement_1, revetement_2, roof_area_in_m2, mutation, fire_risk } =
+    roofAnalyseProperties || {};
 
   const roofAnalysePropertiesInfos: AnnotationInfo = {
     humidityLevel: humidite_rate,
@@ -41,6 +42,9 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (
     fillColor: '#00ff0000',
     strokeColor: '#00ff00',
     area: +(roof_area_in_m2 || 0)?.toFixed(2),
+    // ADEL mutation model isn't wired up yet (BPARTNERS-3013) — default to "Néant" until it returns a real value.
+    mutation: (mutation as AnnotationInfo['mutation']) || 'NONE',
+    fireRisk: fire_risk as AnnotationInfo['fireRisk'],
   };
   return roofAnalysePropertiesInfos;
 };

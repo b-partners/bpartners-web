@@ -17,6 +17,8 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
   fillColor: '',
   labelName: '',
   strokeColor: '',
+  mutation: '' as AnnotationInfo['mutation'],
+  fireRisk: '' as AnnotationInfo['fireRisk'],
 };
 
 const getLabelName = (polygon: Polygon, index: number) => {
@@ -68,6 +70,8 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
     wearness = null,
     moldRate = 0,
     obstacle = '',
+    mutation = '',
+    fireRisk = '',
   } = metadata;
   return {
     polygonId: annotationInstance.id,
@@ -83,5 +87,7 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
     labelName,
     strokeColor,
     humidityLevel,
+    mutation,
+    fireRisk,
   };
 };

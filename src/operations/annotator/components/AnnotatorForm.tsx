@@ -1,7 +1,13 @@
 import { SlopeAndHeightState } from '@/common/fetcher';
 import { annotatorStore, RoofAnalyseProperties } from '@/common/store';
 import { copyObject } from '@/common/utils';
-import { ANNOTATION_COVERING_CHOICES, ANNOTATION_LABELS_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
+import {
+  ANNOTATION_COVERING_CHOICES,
+  ANNOTATION_FIRE_RISK_CHOICES,
+  ANNOTATION_LABELS_CHOICES,
+  ANNOTATION_MUTATION_CHOICES,
+  ANNOTATION_WEAR_CHOICES,
+} from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps } from '@mui/material';
 import { ChangeEvent, FC, FocusEvent, useEffect, useMemo, useState } from 'react';
@@ -186,12 +192,27 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         ))}
       </TextField>
 
+      <TextField select label='Mutation' value={annotationInfos.mutation ?? ''} onChange={handleChange('mutation')} size='small'>
+        {ANNOTATION_MUTATION_CHOICES.map(({ name, id }) => (
+          <MenuItem key={`${id}-mutation`} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </TextField>
+
       <CustomTextField
         InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}
         label='Obstacle/Velux/PV'
         defaultValue={annotationInfos.obstacle}
         onBlur={handleChange('obstacle')}
       />
+      <TextField select label='Risque vegetation / feu' value={annotationInfos.fireRisk ?? ''} onChange={handleChange('fireRisk')} size='small'>
+        {ANNOTATION_FIRE_RISK_CHOICES.map(({ name, id }) => (
+          <MenuItem key={`${id}-fire-risk`} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </TextField>
       <CustomTextField
         label={polygonId.includes(roofGlobalIdRef) ? "Commentaire de l'expert" : 'Commentaire'}
         defaultValue={annotationInfos.comment}

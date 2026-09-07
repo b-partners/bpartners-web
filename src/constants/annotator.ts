@@ -50,6 +50,26 @@ export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
 export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;
 export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLATION, (value, index) => `${index + 1}. ${value}`);
 
+export const ANNOTATION_MUTATION_TRANSLATION = {
+  IMPROVEMENT: 'Réparation',
+  DETERIORATION: 'Dégradation',
+  RAS: 'Rien à signaler',
+  NONE: 'Néant',
+  BACKGROUND: 'Arrière-plan',
+  UNKNOWN: 'Inconnu',
+} as const;
+export type AnnotationMutationType = typeof ANNOTATION_MUTATION_TRANSLATION;
+export const ANNOTATION_MUTATION_CHOICES = toRaInputChoices(ANNOTATION_MUTATION_TRANSLATION);
+
+export const ANNOTATION_FIRE_RISK_TRANSLATION = {
+  NULL: 'Nul',
+  FAIBLE: 'Faible',
+  MODERE: 'Modéré',
+  ELEVE: 'Élevé',
+} as const;
+export type AnnotationFireRiskType = typeof ANNOTATION_FIRE_RISK_TRANSLATION;
+export const ANNOTATION_FIRE_RISK_CHOICES = toRaInputChoices(ANNOTATION_FIRE_RISK_TRANSLATION);
+
 export const TOITURE_ETAT_APPARENT_TRANSLATION: Record<'A' | 'B' | 'C' | 'D' | 'E', string> = {
   A: 'Toiture en bon état',
   B: 'Entretien préventif',
