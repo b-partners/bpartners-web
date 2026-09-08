@@ -10,4 +10,5 @@ export const PALETTE_COLORS = {
   neon_orange_dark: '#D8410F',
   stone: '#6B6B6B',
   sand: '#C9A87A',
+  grey: '#f5f7f9',
 };

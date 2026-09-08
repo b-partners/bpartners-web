@@ -48,7 +48,7 @@ const subscriptionDialogShell = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '20px 24px 10px',
+    padding: '14px 24px 6px',
   },
   '& .subscription-step-title-icon': {
     flexShrink: 0,
@@ -65,7 +65,7 @@ const subscriptionDialogShell = {
   '& .subscription-step-title-text': { display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 },
   '& .subscription-step-title-main': { fontSize: '15px', fontWeight: 700, lineHeight: 1.25, color: FOREST },
   '& .subscription-step-title-hint': { fontSize: '11px', fontWeight: 500, lineHeight: 1.35, color: MUTED },
-  '& .subscription-step-actions': { padding: '10px 24px 20px', gap: '10px' },
+  '& .subscription-step-actions': { padding: '6px 24px 14px', gap: '10px' },
   '& .subscription-step-button': {
     minWidth: '136px',
     borderRadius: '999px',

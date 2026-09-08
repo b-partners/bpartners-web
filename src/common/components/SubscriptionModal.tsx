@@ -144,7 +144,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
           )}
         </Box>
       </DialogTitle>
-      <DialogContent sx={{ pt: 1 }}>
+      <DialogContent sx={{ px: 2.5, pt: 0.5, pb: 0 }}>
         {error && (
           <Alert severity='error' variant='filled' sx={{ mb: 2 }}>
             <AlertTitle>Une erreur s'est produite.</AlertTitle>

@@ -311,6 +311,7 @@ const PLAN_ORANGE_SOFT = PALETTE_COLORS.peach;
 const PLAN_ORANGE_TINT = PALETTE_COLORS.cream;
 const PLAN_TEXT = PALETTE_COLORS.black;
 const PLAN_WHITE = PALETTE_COLORS.white;
+const PLAN_GREY_SOFT = PALETTE_COLORS.grey;
 const PLAN_BORDER = PALETTE_COLORS.linen;
 const PLAN_TEXT_MUTED = PALETTE_COLORS.stone;
 const PLAN_BORDER_DOTTED = PALETTE_COLORS.sand;
@@ -318,10 +319,10 @@ const PLAN_BORDER_DOTTED = PALETTE_COLORS.sand;
 export const SubscriptionPlansStyle: SxProps = {
   display: 'grid',
   gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-  gap: '12px',
+  gap: '10px',
   alignItems: 'stretch',
   width: '100%',
-  paddingTop: '8px',
+  paddingTop: '2px',
 
   '& .plans-billing': {
     gridColumn: '1 / -1',
@@ -384,12 +385,12 @@ export const SubscriptionPlansStyle: SxProps = {
     bgcolor: PLAN_WHITE,
     border: `1px solid ${PLAN_BORDER}`,
     borderRadius: '14px',
-    padding: '16px 14px 14px',
+    padding: '12px 12px 12px',
     boxShadow: '0 4px 14px rgba(43, 25, 8, 0.06)',
     transition: 'transform 0.2s, box-shadow 0.2s',
   },
   '& .plan-card:hover': {
-    transform: 'translateY(-4px)',
+    transform: 'translateY(-3px)',
     boxShadow: '0 10px 32px rgba(43, 25, 8, 0.09)',
   },
   '& .plan-card--featured': {
@@ -414,30 +415,34 @@ export const SubscriptionPlansStyle: SxProps = {
   },
 
   '& .plan-icon': {
-    width: '32px',
-    height: '32px',
-    borderRadius: '10px',
+    width: '28px',
+    height: '28px',
+    borderRadius: '9px',
     bgcolor: PLAN_ORANGE_SOFT,
     color: PLAN_ORANGE_DARK,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '8px',
+    marginBottom: '6px',
   },
-  '& .plan-icon svg': { fontSize: '18px' },
+  '& .plan-icon svg': { fontSize: '16px' },
 
   '& .plan-name': {
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 700,
     color: PLAN_TEXT,
-    marginBottom: '2px',
+    marginBottom: '1px',
   },
   '& .plan-subtitle': {
     fontSize: '11px',
-    lineHeight: 1.35,
+    lineHeight: 1.3,
     color: PLAN_TEXT_MUTED,
-    marginBottom: '10px',
-    minHeight: '30px',
+    marginBottom: '8px',
+    height: '29px',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
   },
 
   '& .plan-price-row': {
@@ -448,7 +453,7 @@ export const SubscriptionPlansStyle: SxProps = {
     marginBottom: '1px',
   },
   '& .plan-price': {
-    fontSize: '26px',
+    fontSize: '24px',
     fontWeight: 800,
     color: PLAN_ORANGE,
     letterSpacing: '-0.02em',
@@ -462,25 +467,56 @@ export const SubscriptionPlansStyle: SxProps = {
   '& .plan-price-ht': {
     fontSize: '10px',
     color: PLAN_TEXT_MUTED,
-    margin: '3px 0 6px',
+    margin: '2px 0 3px',
   },
   '& .plan-price-yearly': {
     fontSize: '11px',
     color: PLAN_TEXT_MUTED,
-    marginBottom: '10px',
-    minHeight: '15px',
+    marginBottom: '6px',
+    minHeight: '14px',
   },
   '& .plan-price-yearly strong': { color: PLAN_TEXT },
 
+  '& .plan-included': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '10px',
+    bgcolor: PLAN_GREY_SOFT,
+    borderRadius: '10px',
+    padding: '7px 11px',
+    margin: '8px 0',
+  },
+  '& .plan-included-num': {
+    fontSize: '18px',
+    fontWeight: 800,
+    lineHeight: 1,
+    color: PLAN_ORANGE_DARK,
+  },
+  '& .plan-included-label': {
+    fontSize: '10px',
+    fontWeight: 600,
+    lineHeight: 1.2,
+    letterSpacing: '0.03em',
+    textTransform: 'uppercase',
+    color: PLAN_TEXT_MUTED,
+    textAlign: 'right',
+  },
+
   '& .plan-cta': {
     width: '100%',
+    minHeight: '38px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     textTransform: 'none',
-    padding: '7px 14px',
+    padding: '6px 12px',
     borderRadius: '999px',
     fontSize: '12px',
     fontWeight: 700,
-    lineHeight: 1.25,
-    marginBottom: '12px',
+    lineHeight: 1.2,
+    marginBottom: '10px',
     boxShadow: 'none',
     bgcolor: PLAN_ORANGE,
     color: PLAN_WHITE,
@@ -494,23 +530,59 @@ export const SubscriptionPlansStyle: SxProps = {
   },
 
   '& .plan-features': {
-    listStyle: 'none',
     margin: 0,
     padding: '2px 0 0',
     borderTop: `1px dashed ${PLAN_BORDER_DOTTED}`,
+  },
+  '& .plan-inherits': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    bgcolor: PLAN_ORANGE_SOFT,
+    color: PLAN_ORANGE_DARK,
+    fontSize: '10px',
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    borderRadius: '8px',
+    padding: '5px 9px',
+    margin: '8px 0 2px',
+  },
+  '& .plan-inherits::before': {
+    content: '"+"',
+    fontSize: '14px',
+    fontWeight: 800,
+    lineHeight: 1,
+  },
+  '& .plan-feature-section + .plan-feature-section': {
+    borderTop: `1px dashed ${PLAN_BORDER_DOTTED}`,
+    marginTop: '5px',
+    paddingTop: '3px',
+  },
+  '& .plan-feature-list': {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+  },
+  '& .plan-feature-title': {
+    fontSize: '9px',
+    fontWeight: 800,
+    letterSpacing: '0.09em',
+    textTransform: 'uppercase',
+    color: PLAN_TEXT_MUTED,
+    padding: '7px 0 2px',
   },
   '& .plan-feature': {
     display: 'flex',
     gap: '8px',
     alignItems: 'flex-start',
     fontSize: '11px',
-    lineHeight: 1.35,
+    lineHeight: 1.3,
     color: PLAN_TEXT,
-    padding: '6px 0',
-    borderBottom: `1px dashed ${PLAN_BORDER_DOTTED}`,
+    padding: '3px 0',
   },
-  '& .plan-feature:last-of-type': { borderBottom: 'none' },
   '& .plan-feature--strong': { fontWeight: 700 },
+  '& .plan-feature--excluded': { color: PLAN_TEXT_MUTED },
   '& .plan-feature-check': {
     flexShrink: 0,
     width: '16px',
@@ -522,6 +594,10 @@ export const SubscriptionPlansStyle: SxProps = {
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: '1px',
+  },
+  '& .plan-feature--excluded .plan-feature-check': {
+    bgcolor: 'transparent',
+    color: PLAN_BORDER_DOTTED,
   },
   '& .plan-feature-check svg': { fontSize: '11px' },
 };

@@ -1,9 +1,10 @@
 import { useGetSubscriptionPlans } from '@/operations/account/queries';
 import { SubscriptionBillingInterval } from '@/providers';
-import { SubscriptionPlan } from '@bpartners/typescript-client';
+import { SubscriptionPlan, SubscriptionPlanFeatureStyle } from '@bpartners/typescript-client';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import { Box, Button, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
@@ -47,11 +48,16 @@ const getMainPriceCents = (plan: SubscriptionPlan, billingInterval: Subscription
   return plan.priceInCentsWithoutVat;
 };
 
+const getIncludedAnalyses = (plan: SubscriptionPlan) => plan.includedCreditsPerBillingPeriod ?? 0;
+
 const getCtaLabel = (plan: SubscriptionPlan) => {
   if (plan.isMostChosen && plan.trialPeriodDays) return `Essayer ${plan.trialPeriodDays} jours sans engagement`;
   if (isUsageBased(plan)) return 'Acheter une analyse';
   return `Choisir ${plan.name ?? ''}`.trim();
 };
+
+const renderInlineText = (text: string) =>
+  text.split(/\*\*(.+?)\*\*/g).map((chunk, chunkIndex) => (chunkIndex % 2 === 1 ? <strong key={chunkIndex}>{chunk}</strong> : chunk));
 
 interface SubscriptionPlanCardProps {
   plan: SubscriptionPlan;
@@ -100,6 +106,15 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, bill
         )}
       </Typography>
 
+      <Box className='plan-included'>
+        <Typography component='span' className='plan-included-num'>
+          {isUsageBased(plan) ? 1 : getIncludedAnalyses(plan)}
+        </Typography>
+        <Typography component='span' className='plan-included-label'>
+          {isUsageBased(plan) ? 'analyse à l’unité' : 'analyses toiture incluses / mois'}
+        </Typography>
+      </Box>
+
       <Button
         className={`plan-cta${featured ? '' : ' plan-cta--outline'}`}
         variant={featured ? 'contained' : 'outlined'}
@@ -110,13 +125,30 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, bill
         {getCtaLabel(plan)}
       </Button>
 
-      <Box component='ul' className='plan-features'>
-        {(plan.features ?? []).map((feature, featureIndex) => (
-          <Box component='li' key={featureIndex} className={`plan-feature${featureIndex === 0 ? ' plan-feature--strong' : ''}`}>
-            <Box component='span' className='plan-feature-check'>
-              <CheckRoundedIcon />
+      <Box className='plan-features'>
+        {plan.inheritedFromPlanName && <Box className='plan-inherits'>{`Tout ${plan.inheritedFromPlanName}`}</Box>}
+        {(plan.featureSections ?? []).map((section, sectionIndex) => (
+          <Box key={sectionIndex} className='plan-feature-section'>
+            {section.title && <Typography className='plan-feature-title'>{section.title}</Typography>}
+            <Box component='ul' className='plan-feature-list'>
+              {(section.items ?? []).map((item, itemIndex) => {
+                const excluded = item.style === SubscriptionPlanFeatureStyle.EXCLUDED;
+                return (
+                  <Box
+                    component='li'
+                    key={itemIndex}
+                    className={`plan-feature${item.style === SubscriptionPlanFeatureStyle.HIGHLIGHTED ? ' plan-feature--strong' : ''}${excluded ? ' plan-feature--excluded' : ''}`}
+                  >
+                    <Box component='span' className='plan-feature-check'>
+                      {excluded ? <CloseRoundedIcon /> : <CheckRoundedIcon />}
+                    </Box>
+                    <Box component='span' className='plan-feature-text'>
+                      {renderInlineText(item.text ?? '')}
+                    </Box>
+                  </Box>
+                );
+              })}
             </Box>
-            {feature}
           </Box>
         ))}
       </Box>
