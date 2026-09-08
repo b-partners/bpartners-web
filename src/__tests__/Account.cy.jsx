@@ -284,7 +284,7 @@ describe(specTitle('Account'), () => {
           description: 'Pour les PME en croissance.',
           billingType: 'COMMITMENT',
           priceInCentsWithoutVat: 9900,
-          features: ['Analyse IA toiture complète', 'Export PDF + emprise GeoJSON'],
+          featureSections: [{ items: [{ text: 'Analyse IA toiture complète' }, { text: 'Export PDF + emprise GeoJSON' }] }],
         },
       },
     };

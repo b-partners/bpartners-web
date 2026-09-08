@@ -11,13 +11,26 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     vatPercent: 2000,
     overageUnitPriceInCents: 300,
     freeUsageThreshold: 60,
+    includedCreditsPerBillingPeriod: 60,
     annualDiscountPercent: 10,
     annualPriceInCentsWithoutVat: 214900,
     annualPriceInCentsWithVat: 257880,
     isMostChosen: false,
     isDeprecated: false,
     displayPosition: 4,
-    features: ['60 analyses incluses / mois', '3 € HT / analyse supplémentaire', 'Utilisateurs illimités', 'Accès API & notifications automatiques'],
+    inheritedFromPlanName: 'Pro',
+    featureSections: [
+      {
+        items: [
+          { text: '**Communauté BIRDIA** — +5 chantiers / mois', style: 'HIGHLIGHTED' },
+          { text: '3 € HT / analyse supplémentaire' },
+          { text: 'Accès API & webhooks' },
+          { text: 'Monitoring annuel — re-scan automatique' },
+          { text: 'Multi-agences / multi-marques' },
+          { text: 'Support dédié 4 h ouvrées' },
+        ],
+      },
+    ],
   },
   {
     id: 'plan-legacy',
@@ -30,7 +43,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     isMostChosen: false,
     isDeprecated: true,
     displayPosition: 2,
-    features: ['Fonctionnalités héritées'],
+    featureSections: [{ items: [{ text: 'Fonctionnalités héritées' }] }],
   },
   {
     id: 'plan-usage',
@@ -41,10 +54,24 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     priceInCentsWithVat: 0,
     vatPercent: 2000,
     overageUnitPriceInCents: 1000,
+    includedCreditsPerBillingPeriod: 0,
     isMostChosen: false,
     isDeprecated: false,
     displayPosition: 1,
-    features: ["Paiement à l'analyse, sans engagement", 'Analyse IA toiture complète', 'Export PDF + emprise GeoJSON', 'Assistance par courriel'],
+    featureSections: [
+      {
+        title: 'Métrés inclus',
+        items: [
+          { text: 'Métrés 2D — surface, pente, périmètre', style: 'HIGHLIGHTED' },
+          { text: 'Métrés détaillés — faîtage, rives, égouts, noues', style: 'HIGHLIGHTED' },
+          { text: 'Maquette 3D des pans (visualisation)', style: 'HIGHLIGHTED' },
+          { text: 'Export CAO / BIM (DXF, IFC)', style: 'HIGHLIGHTED' },
+        ],
+      },
+      {
+        items: [{ text: 'Export PDF + emprise GeoJSON' }, { text: 'Support email' }, { text: 'Marque blanche / co-branding', style: 'EXCLUDED' }],
+      },
+    ],
   },
   {
     id: 'plan-pro',
@@ -56,13 +83,25 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     vatPercent: 2000,
     overageUnitPriceInCents: 400,
     freeUsageThreshold: 25,
+    includedCreditsPerBillingPeriod: 25,
     annualDiscountPercent: 10,
     annualPriceInCentsWithoutVat: 106900,
     annualPriceInCentsWithVat: 128280,
     isMostChosen: false,
     isDeprecated: false,
     displayPosition: 3,
-    features: ['25 analyses incluses / mois', '4 € HT / analyse supplémentaire', '3 utilisateurs inclus', 'Module de génération de devis'],
+    inheritedFromPlanName: 'Essentiel',
+    featureSections: [
+      {
+        items: [
+          { text: '**Communauté BIRDIA** — +2 chantiers / mois', style: 'HIGHLIGHTED' },
+          { text: "**Outil d'aide aux appels d'offres** publics ou grands groupes", style: 'HIGHLIGHTED' },
+          { text: '4 € HT / analyse supplémentaire' },
+          { text: 'Module devis automatisé' },
+          { text: 'Support prioritaire' },
+        ],
+      },
+    ],
   },
   {
     id: 'plan-essential',
@@ -74,6 +113,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     vatPercent: 2000,
     overageUnitPriceInCents: 500,
     freeUsageThreshold: 10,
+    includedCreditsPerBillingPeriod: 10,
     trialPeriodDays: 7,
     annualDiscountPercent: 10,
     annualPriceInCentsWithoutVat: 52900,
@@ -81,11 +121,23 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     isMostChosen: true,
     isDeprecated: false,
     displayPosition: 2,
-    features: [
-      '10 analyses incluses / mois',
-      '5 € HT / analyse supplémentaire',
-      'Module de génération de prospects sur votre site',
-      'Assistance 7j/7 par courriel',
+    featureSections: [
+      {
+        title: 'Métrés inclus',
+        items: [
+          { text: 'Métrés 2D — surface, pente, périmètre', style: 'HIGHLIGHTED' },
+          { text: 'Métrés détaillés — faîtage, rives, égouts, noues', style: 'HIGHLIGHTED' },
+          { text: 'Maquette 3D des pans (visualisation)', style: 'HIGHLIGHTED' },
+        ],
+      },
+      {
+        items: [
+          { text: '5 € HT / analyse supplémentaire' },
+          { text: 'Marque blanche / co-branding du rapport' },
+          { text: 'Bouton sur votre site pour génération de prospects' },
+          { text: 'Assistance 7j/7 par courriel' },
+        ],
+      },
     ],
   },
 ];

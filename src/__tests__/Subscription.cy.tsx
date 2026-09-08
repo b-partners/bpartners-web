@@ -1,6 +1,7 @@
 import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { formatEuros } from '@/operations/account/components/billing/utils';
+import { getPlanFeatureLines } from '@/operations/account/components/plan-features';
 import { userSubscriptionProvider } from '@/providers';
 import { User } from '@bpartners/typescript-client';
 import dayjs from 'dayjs';
@@ -164,7 +165,7 @@ describe('Test user subscription', () => {
     cy.get('.consent-recap-plan-name').should('have.text', chosenPlan.name).and('have.css', 'text-transform', 'uppercase');
     cy.get('.consent-recap-plan-amount').should('have.text', formatEuros(chosenPlan.priceInCentsWithoutVat));
     cy.get('.consent-recap-plan-vat').should('contain', formatEuros(chosenPlan.priceInCentsWithVat)).and('contain', 'TTC / mois');
-    cy.get('.consent-recap-feature').should('have.length', chosenPlan.features?.length);
+    cy.get('.consent-recap-feature').should('have.length', getPlanFeatureLines(chosenPlan).length);
     cy.get('.consent-recap-row').first().should('contain', formatMonth(0)).and('contain', formatMonth(11));
     cy.get('.consent-recap-row').last().should('contain', 'Désactivé');
   });
