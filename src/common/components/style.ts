@@ -94,6 +94,50 @@ export const SubscriptionPlansDialogStyle: SxProps = {
   ...subscriptionDialogShell,
 };
 
+export const SubscriptionPlanActionsStyle: SxProps = {
+  minHeight: '60px',
+  padding: '6px 24px 14px',
+  gap: '10px',
+};
+
+export const SubscriptionPlanTitleStyle: SxProps = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '14px 24px 6px',
+  '& .subscription-step-title-icon': {
+    flexShrink: 0,
+    width: '36px',
+    height: '36px',
+    borderRadius: '11px',
+    bgcolor: PALETTE_COLORS.peach,
+    color: ORANGE_DARK,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  '& .subscription-step-title-icon svg': { fontSize: '20px' },
+  '& .subscription-step-title-text': { display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', minWidth: 0, minHeight: '38px' },
+  '& .subscription-step-title-main': { fontSize: '15px', fontWeight: 700, lineHeight: 1.25, color: FOREST },
+  '& .subscription-step-title-hint': { fontSize: '11px', fontWeight: 500, lineHeight: 1.35, color: MUTED },
+  '& .subscription-compare-toggle': {
+    marginLeft: 'auto',
+    flexShrink: 0,
+    textTransform: 'none',
+    fontSize: '12px',
+    fontWeight: 700,
+    lineHeight: 1.2,
+    color: ORANGE,
+    bgcolor: 'transparent',
+    border: `2px solid ${ORANGE}`,
+    borderRadius: '999px',
+    padding: '5px 14px',
+    boxShadow: 'none',
+    whiteSpace: 'nowrap',
+    '&:hover': { bgcolor: ORANGE, color: WHITE, boxShadow: 'none' },
+  },
+};
+
 export const SubscriptionFlowDialogStyle: SxProps = {
   '& .MuiDialog-paper': { borderRadius: '16px', bgcolor: WHITE, maxWidth: '560px', height: SUBSCRIPTION_FLOW_HEIGHT },
   ...subscriptionDialogShell,
