@@ -12,6 +12,7 @@ import { useRecordContext, useRefresh } from 'react-admin';
 import { useSearchParams } from 'react-router-dom';
 import { BillingModal } from './billing';
 import { getYearlyDiscountBadge, getYearlyPricing, getYearlyReferenceLabel, hasTwelveMonthCommitment, isYearlyBilling, YearlyPricing } from './billing/utils';
+import { getPlanFeatureLines } from './plan-features';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
 const VALIDATION_POLL_INTERVAL_MS = 3000;
@@ -38,7 +39,7 @@ const getYearlyLabel = (subscription?: UserSubscription) =>
   hasTwelveMonthCommitment(subscription) ? `${formatEuros(getPriceCents(subscription?.plan) * 12)} HT / an` : '';
 
 const getFeatures = (plan?: SubscriptionPlanDescription) => {
-  const features = plan?.features ?? [];
+  const features = getPlanFeatureLines(plan);
   return features.length > 0 ? features : subscriptionFeatures.map(({ text }) => text);
 };
 

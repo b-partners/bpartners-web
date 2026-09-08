@@ -1,4 +1,5 @@
 import { formatEuros } from '@/operations/account/components/billing/utils';
+import { getPlanFeatureLines } from '@/operations/account/components/plan-features';
 import { EnableStatus, SubscriptionPlan } from '@bpartners/typescript-client';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
@@ -28,6 +29,7 @@ interface SubscriptionConsentStepProps {
 export const SubscriptionConsentStep: FC<SubscriptionConsentStepProps> = ({ plan, onAccept, onBack, isLoading = false }) => {
   const [autoRenewal, setAutoRenewal] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const featureLines = getPlanFeatureLines(plan);
   const startMonth = formatMonth(dayjs());
   const endMonth = formatMonth(dayjs().add(COMMITMENT_MONTHS - 1, 'month'));
 
@@ -66,9 +68,9 @@ export const SubscriptionConsentStep: FC<SubscriptionConsentStepProps> = ({ plan
                         <Typography className='consent-recap-plan-vat'>{`Soit ${formatEuros(plan.priceInCentsWithVat)} TTC / mois`}</Typography>
                       )}
                     </Box>
-                    {!!plan.features?.length && (
+                    {!!featureLines.length && (
                       <Box component='ul' className='consent-recap-features'>
-                        {plan.features.map(feature => (
+                        {featureLines.map(feature => (
                           <Box component='li' key={feature} className='consent-recap-feature'>
                             <CheckRoundedIcon />
                             {feature}
