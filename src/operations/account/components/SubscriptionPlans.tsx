@@ -8,7 +8,8 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import { Box, Button, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC, useLayoutEffect, useRef, useState } from 'react';
+import { SubscriptionComparison } from './SubscriptionComparison';
 import { SubscriptionPlansStyle } from './style';
 
 const PLAN_ICONS = [AccessTimeRoundedIcon, ArrowCircleLeftOutlinedIcon, TrendingUpRoundedIcon, ShieldOutlinedIcon];
@@ -159,50 +160,74 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, bill
 interface SubscriptionPlansProps {
   onSelectPlan?: (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => void;
   pendingPlanId?: string;
+  isComparing?: boolean;
 }
 
-export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pendingPlanId }) => {
+export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pendingPlanId, isComparing = false }) => {
   const { plans, isPlansLoading, isPlansError } = useGetSubscriptionPlans();
   const [billingInterval, setBillingInterval] = useState<SubscriptionBillingInterval>('YEARLY');
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [reservedHeight, setReservedHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const height = contentRef.current?.scrollHeight ?? 0;
+    if (height > 0) setReservedHeight(previous => Math.max(previous, height));
+  }, [isComparing, billingInterval, plans]);
 
   const onBillingIntervalChange = (_event: unknown, value: SubscriptionBillingInterval | null) => value && setBillingInterval(value);
 
   const onSelect = (plan: SubscriptionPlan) => onSelectPlan?.(plan, getPlanBillingInterval(plan, billingInterval));
 
-  return (
-    <Box sx={SubscriptionPlansStyle}>
-      {!isPlansLoading && (
-        <Box className='plans-billing'>
-          <ToggleButtonGroup className='plans-billing-group' exclusive size='small' value={billingInterval} onChange={onBillingIntervalChange}>
-            <ToggleButton className='plans-billing-option' value='MONTHLY' data-cy='billing-interval-monthly'>
-              Mensuel
-            </ToggleButton>
-            <ToggleButton className='plans-billing-option' value='YEARLY' data-cy='billing-interval-yearly'>
-              Annuel
-              <Box component='span' className='plans-billing-badge'>{`−${DEFAULT_ANNUAL_DISCOUNT_PERCENT} %`}</Box>
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      )}
-      {isPlansLoading ? (
+  if (isPlansLoading) {
+    return (
+      <Box sx={SubscriptionPlansStyle}>
         <Box className='plans-state'>
           <CircularProgress />
         </Box>
-      ) : isPlansError ? (
+      </Box>
+    );
+  }
+
+  if (isPlansError) {
+    return (
+      <Box sx={SubscriptionPlansStyle}>
         <Typography className='plans-state'>Impossible de charger les offres pour le moment.</Typography>
-      ) : (
-        plans.map((plan, index) => (
-          <SubscriptionPlanCard
-            key={plan.id ?? index}
-            plan={plan}
-            index={index}
-            billingInterval={billingInterval}
-            onSelect={onSelect}
-            isPending={!!pendingPlanId && pendingPlanId === plan.id}
-            disabled={!!pendingPlanId}
-          />
-        ))
-      )}
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={SubscriptionPlansStyle} style={reservedHeight ? { minHeight: `${reservedHeight}px` } : undefined}>
+      <Box className='plans-content' ref={contentRef}>
+        {isComparing ? (
+          <SubscriptionComparison plans={plans} />
+        ) : (
+          <>
+            <Box className='plans-billing'>
+              <ToggleButtonGroup className='plans-billing-group' exclusive size='small' value={billingInterval} onChange={onBillingIntervalChange}>
+                <ToggleButton className='plans-billing-option' value='MONTHLY' data-cy='billing-interval-monthly'>
+                  Mensuel
+                </ToggleButton>
+                <ToggleButton className='plans-billing-option' value='YEARLY' data-cy='billing-interval-yearly'>
+                  Annuel
+                  <Box component='span' className='plans-billing-badge'>{`−${DEFAULT_ANNUAL_DISCOUNT_PERCENT} %`}</Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+            {plans.map((plan, index) => (
+              <SubscriptionPlanCard
+                key={plan.id ?? index}
+                plan={plan}
+                index={index}
+                billingInterval={billingInterval}
+                onSelect={onSelect}
+                isPending={!!pendingPlanId && pendingPlanId === plan.id}
+                disabled={!!pendingPlanId}
+              />
+            ))}
+          </>
+        )}
+      </Box>
     </Box>
   );
 };

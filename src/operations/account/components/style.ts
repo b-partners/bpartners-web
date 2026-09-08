@@ -311,18 +311,26 @@ const PLAN_ORANGE_SOFT = PALETTE_COLORS.peach;
 const PLAN_ORANGE_TINT = PALETTE_COLORS.cream;
 const PLAN_TEXT = PALETTE_COLORS.black;
 const PLAN_WHITE = PALETTE_COLORS.white;
+const PLAN_FOREST = PALETTE_COLORS.forest;
 const PLAN_GREY_SOFT = PALETTE_COLORS.grey;
 const PLAN_BORDER = PALETTE_COLORS.linen;
 const PLAN_TEXT_MUTED = PALETTE_COLORS.stone;
 const PLAN_BORDER_DOTTED = PALETTE_COLORS.sand;
 
 export const SubscriptionPlansStyle: SxProps = {
-  display: 'grid',
-  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-  gap: '10px',
-  alignItems: 'stretch',
   width: '100%',
   paddingTop: '2px',
+  display: 'flex',
+  flexDirection: 'column',
+
+  '& .plans-content': {
+    flex: 1,
+    display: 'grid',
+    gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+    gap: '10px',
+    alignItems: 'stretch',
+    alignContent: 'end',
+  },
 
   '& .plans-billing': {
     gridColumn: '1 / -1',
@@ -600,4 +608,58 @@ export const SubscriptionPlansStyle: SxProps = {
     color: PLAN_BORDER_DOTTED,
   },
   '& .plan-feature-check svg': { fontSize: '11px' },
+};
+
+export const SubscriptionComparisonStyle: SxProps = {
+  gridColumn: '1 / -1',
+  justifySelf: 'center',
+  width: '100%',
+  maxWidth: '1000px',
+  margin: '0 auto',
+  minWidth: 0,
+  '& .comparison-scroll': {
+    width: '100%',
+    minWidth: 0,
+    overflowX: 'auto',
+    borderRadius: '12px',
+    border: `1px solid ${PLAN_BORDER}`,
+  },
+  '& .comparison-table': {
+    width: '100%',
+    minWidth: '560px',
+    borderCollapse: 'collapse',
+    tableLayout: 'fixed',
+  },
+  '& .comparison-th': {
+    bgcolor: PLAN_FOREST,
+    color: PLAN_WHITE,
+    fontSize: '11px',
+    fontWeight: 700,
+    textAlign: 'center',
+    padding: '6px 10px',
+    whiteSpace: 'nowrap',
+  },
+  '& .comparison-th--label': { textAlign: 'left', width: '34%' },
+  '& .comparison-th--highlight': { bgcolor: PLAN_ORANGE },
+  '& .comparison-td': {
+    fontSize: '11px',
+    lineHeight: 1.25,
+    textAlign: 'center',
+    padding: '4px 10px',
+    color: PLAN_TEXT,
+    borderBottom: `1px solid ${PLAN_BORDER_DOTTED}`,
+  },
+  '& .comparison-td--label': { textAlign: 'left', fontWeight: 600 },
+  '& .comparison-group-cell': {
+    bgcolor: PLAN_GREY_SOFT,
+    color: PLAN_TEXT_MUTED,
+    fontSize: '9px',
+    fontWeight: 800,
+    letterSpacing: '0.07em',
+    textTransform: 'uppercase',
+    textAlign: 'left',
+    padding: '4px 10px',
+  },
+  '& .comparison-check': { color: PLAN_ORANGE, fontSize: '15px', verticalAlign: 'middle' },
+  '& .comparison-dash': { color: PLAN_BORDER, fontWeight: 700 },
 };
