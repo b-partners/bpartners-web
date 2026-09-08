@@ -33,12 +33,23 @@ export const draftAreaPictureAnnotatorProvider: BpDataProviderType = {
 
     if (areaPictureId) {
       return areaPictureApi()
-        .getDraftAnnotationsByAccountIdAndAreaPictureId(accountId, areaPictureId, page, pageSize, prospectName, address, undefined, undefined, options)
+        .getDraftAnnotationsByAccountIdAndAreaPictureId(
+          accountId,
+          areaPictureId,
+          page,
+          pageSize,
+          prospectName,
+          address,
+          undefined,
+          undefined,
+          undefined,
+          options
+        )
         .then(response => response.data);
     }
 
     return areaPictureApi()
-      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, undefined, undefined, options)
+      .getDraftAnnotationsByAccountId(accountId, page, pageSize, prospectName, address, undefined, undefined, undefined, options)
       .then(response => response.data);
   },
   getOne: async (pictureId: string) => {
