@@ -33,6 +33,7 @@ describe('SubscriptionModal — mandatory choice for expired subscriptions', () 
   beforeEach(() => {
     useDialog.getState().close();
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', '**/subscriptionTrialEligibility*', []).as('getTrialEligibility');
     cy.intercept('GET', '**/paymentMethods*', []).as('getPaymentMethods');
   });
 

@@ -5,6 +5,8 @@ import {
   EnableStatus,
   SubscriptionInvoice,
   SubscriptionPlan,
+  SubscriptionTrial,
+  SubscriptionTrialEligibility,
   UserSubscriptionCommitment,
   UserSubscriptionCommitmentDuration,
   UserSubscriptionPaymentMethod,
@@ -80,6 +82,16 @@ export const userSubscriptionProvider = {
       ...(subscriptionPlanIdentifier ? { subscriptionPlanIdentifier } : { subscriptionType: 'ESSENTIAL' }),
     };
     const { data } = await userSubscriptionApi().initiateUserSubscription(id, payload);
+    return data;
+  },
+  async getTrialEligibility(): Promise<SubscriptionTrialEligibility[]> {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().getUserSubscriptionTrialEligibility(id);
+    return data || [];
+  },
+  async startTrial(subscriptionPlanIdentifier: string): Promise<SubscriptionTrial> {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().startUserSubscriptionTrial(id, { subscriptionPlanIdentifier });
     return data;
   },
   async saveCommitment(subscriptionPlanIdentifier: string, automaticRenewalStatus: EnableStatus) {

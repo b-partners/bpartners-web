@@ -191,10 +191,29 @@ export const AccountStyle: SxProps = {
     flexShrink: 0,
     '& svg': { fontSize: '22px' },
   },
+  '& .subscription-plan-name-row': {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 1,
+  },
   '& .subscription-plan-name': {
     fontSize: '18px',
     fontWeight: 700,
     color: PALETTE_COLORS.black,
+  },
+  '& .subscription-trial-badge': {
+    display: 'inline-flex',
+    alignItems: 'center',
+    bgcolor: PALETTE_COLORS.forest,
+    color: PALETTE_COLORS.white,
+    fontSize: '10px',
+    fontWeight: 700,
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase',
+    padding: '3px 10px',
+    borderRadius: '999px',
+    whiteSpace: 'nowrap',
   },
   '& .subscription-plan-subtitle': {
     fontSize: '12px',
@@ -405,12 +424,23 @@ export const SubscriptionPlansStyle: SxProps = {
     border: `2px solid ${PLAN_ORANGE}`,
     bgcolor: PLAN_ORANGE_TINT,
   },
+  '& .plan-card--trial': {
+    borderColor: PLAN_FOREST,
+  },
 
-  '& .plan-badge': {
+  '& .plan-badges': {
     position: 'absolute',
     top: '-10px',
     left: '50%',
     transform: 'translateX(-50%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    flexWrap: 'nowrap',
+    whiteSpace: 'nowrap',
+  },
+  '& .plan-badge': {
     bgcolor: PLAN_ORANGE,
     color: PLAN_WHITE,
     fontSize: '10px',
@@ -420,6 +450,9 @@ export const SubscriptionPlansStyle: SxProps = {
     padding: '4px 12px',
     borderRadius: '999px',
     whiteSpace: 'nowrap',
+  },
+  '& .plan-badge--trial': {
+    bgcolor: PLAN_FOREST,
   },
 
   '& .plan-icon': {
@@ -535,6 +568,21 @@ export const SubscriptionPlansStyle: SxProps = {
     color: PLAN_ORANGE,
     border: `2px solid ${PLAN_ORANGE}`,
     '&:hover': { bgcolor: PLAN_ORANGE, color: PLAN_WHITE },
+  },
+  '& .plan-trial-cta': {
+    bgcolor: 'transparent',
+    color: PLAN_FOREST,
+    border: `2px solid ${PLAN_FOREST}`,
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease',
+    '&:hover': {
+      bgcolor: PLAN_FOREST,
+      color: PLAN_WHITE,
+      transform: 'translateY(-2px) scale(1.03)',
+      boxShadow: `0 8px 20px ${PLAN_FOREST}55`,
+    },
+    '&:active': {
+      transform: 'translateY(0) scale(0.99)',
+    },
   },
 
   '& .plan-features': {

@@ -15,6 +15,7 @@ describe(specTitle('Account'), () => {
     cy.cognitoLogin();
     cy.stub(getCached, 'account').returns(account1);
     cy.stub(navigator.clipboard, 'writeText').as('copyToClipboard');
+    cy.intercept('GET', '**/subscriptionTrialEligibility*', []).as('getTrialEligibility');
   });
 
   //OK

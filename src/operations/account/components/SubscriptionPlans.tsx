@@ -1,6 +1,6 @@
-import { useGetSubscriptionPlans } from '@/operations/account/queries';
-import { SubscriptionBillingInterval } from '@/providers';
-import { SubscriptionPlan, SubscriptionPlanFeatureStyle } from '@bpartners/typescript-client';
+import { useGetSubscriptionPlans, useGetTrialEligibility } from '@/operations/account/queries';
+import { getCached, SubscriptionBillingInterval } from '@/providers';
+import { SubscriptionPlan, SubscriptionPlanFeatureStyle, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -52,10 +52,11 @@ const getMainPriceCents = (plan: SubscriptionPlan, billingInterval: Subscription
 const getIncludedAnalyses = (plan: SubscriptionPlan) => plan.includedCreditsPerBillingPeriod ?? 0;
 
 const getCtaLabel = (plan: SubscriptionPlan) => {
-  if (plan.isMostChosen && plan.trialPeriodDays) return `Essayer ${plan.trialPeriodDays} jours sans engagement`;
   if (isUsageBased(plan)) return 'Acheter une analyse';
   return `Choisir ${plan.name ?? ''}`.trim();
 };
+
+const getTrialCtaLabel = (plan: SubscriptionPlan) => `Essayer ${plan.trialPeriodDays} jours gratuitement`;
 
 const renderInlineText = (text: string) =>
   text.split(/\*\*(.+?)\*\*/g).map((chunk, chunkIndex) => (chunkIndex % 2 === 1 ? <strong key={chunkIndex}>{chunk}</strong> : chunk));
@@ -65,20 +66,41 @@ interface SubscriptionPlanCardProps {
   index: number;
   billingInterval: SubscriptionBillingInterval;
   onSelect?: (plan: SubscriptionPlan) => void;
+  onStartTrial?: (plan: SubscriptionPlan) => void;
   isPending?: boolean;
+  isTrialPending?: boolean;
+  trialEligible?: boolean;
+  isTrialActive?: boolean;
   disabled?: boolean;
 }
 
-const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, billingInterval, onSelect, isPending = false, disabled = false }) => {
+const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({
+  plan,
+  index,
+  billingInterval,
+  onSelect,
+  onStartTrial,
+  isPending = false,
+  isTrialPending = false,
+  trialEligible = false,
+  isTrialActive = false,
+  disabled = false,
+}) => {
   const featured = !!plan.isMostChosen;
+  const showTrial = trialEligible && !!plan.trialPeriodDays && !isTrialActive;
   const PlanIcon = PLAN_ICONS[index % PLAN_ICONS.length];
   const isYearly = getPlanBillingInterval(plan, billingInterval) === 'YEARLY';
   const fullYearlyCents = getFullYearlyCents(plan);
   const discountedYearlyCents = applyDiscount(plan, fullYearlyCents);
 
   return (
-    <Box className={`plan-card${featured ? ' plan-card--featured' : ''}`}>
-      {featured && <Box className='plan-badge'>Le plus choisi</Box>}
+    <Box className={`plan-card${featured ? ' plan-card--featured' : ''}${isTrialActive ? ' plan-card--trial' : ''}`}>
+      {(featured || isTrialActive) && (
+        <Box className='plan-badges'>
+          {featured && <Box className='plan-badge'>Le plus choisi</Box>}
+          {isTrialActive && <Box className='plan-badge plan-badge--trial'>Essai en cours</Box>}
+        </Box>
+      )}
       <Box className='plan-icon'>
         <PlanIcon />
       </Box>
@@ -116,15 +138,28 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, bill
         </Typography>
       </Box>
 
-      <Button
-        className={`plan-cta${featured ? '' : ' plan-cta--outline'}`}
-        variant={featured ? 'contained' : 'outlined'}
-        onClick={() => onSelect?.(plan)}
-        disabled={disabled || isPending}
-        startIcon={isPending ? <CircularProgress size={16} color='inherit' /> : undefined}
-      >
-        {getCtaLabel(plan)}
-      </Button>
+      {showTrial ? (
+        <Button
+          className='plan-cta plan-trial-cta'
+          variant='contained'
+          onClick={() => onStartTrial?.(plan)}
+          disabled={disabled || isTrialPending}
+          startIcon={isTrialPending ? <CircularProgress size={16} color='inherit' /> : undefined}
+          data-cy={`start-trial-${plan.id}`}
+        >
+          {getTrialCtaLabel(plan)}
+        </Button>
+      ) : (
+        <Button
+          className={`plan-cta${featured ? '' : ' plan-cta--outline'}`}
+          variant={featured ? 'contained' : 'outlined'}
+          onClick={() => onSelect?.(plan)}
+          disabled={disabled || isPending}
+          startIcon={isPending ? <CircularProgress size={16} color='inherit' /> : undefined}
+        >
+          {getCtaLabel(plan)}
+        </Button>
+      )}
 
       <Box className='plan-features'>
         {plan.inheritedFromPlanName && <Box className='plan-inherits'>{`Tout ${plan.inheritedFromPlanName}`}</Box>}
@@ -159,12 +194,17 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({ plan, index, bill
 
 interface SubscriptionPlansProps {
   onSelectPlan?: (plan: SubscriptionPlan, billingInterval: SubscriptionBillingInterval) => void;
+  onStartTrial?: (plan: SubscriptionPlan) => void;
   pendingPlanId?: string;
+  pendingTrialPlanId?: string;
   isComparing?: boolean;
 }
 
-export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pendingPlanId, isComparing = false }) => {
+export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, onStartTrial, pendingPlanId, pendingTrialPlanId, isComparing = false }) => {
   const { plans, isPlansLoading, isPlansError } = useGetSubscriptionPlans();
+  const { eligibleTrialPlanIds } = useGetTrialEligibility();
+  const subscription = getCached.whoami()?.user?.subscription;
+  const activeTrialPlanId = subscription?.status === UserSubscriptionStatus.FREE_TRIAL ? subscription?.plan?.id : undefined;
   const [billingInterval, setBillingInterval] = useState<SubscriptionBillingInterval>('YEARLY');
   const contentRef = useRef<HTMLDivElement>(null);
   const [reservedHeight, setReservedHeight] = useState(0);
@@ -172,7 +212,7 @@ export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pe
   useLayoutEffect(() => {
     const height = contentRef.current?.scrollHeight ?? 0;
     if (height > 0) setReservedHeight(previous => Math.max(previous, height));
-  }, [isComparing, billingInterval, plans]);
+  }, [isComparing, billingInterval, plans, eligibleTrialPlanIds, activeTrialPlanId]);
 
   const onBillingIntervalChange = (_event: unknown, value: SubscriptionBillingInterval | null) => value && setBillingInterval(value);
 
@@ -221,8 +261,12 @@ export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, pe
                 index={index}
                 billingInterval={billingInterval}
                 onSelect={onSelect}
+                onStartTrial={onStartTrial}
                 isPending={!!pendingPlanId && pendingPlanId === plan.id}
-                disabled={!!pendingPlanId}
+                isTrialPending={!!pendingTrialPlanId && pendingTrialPlanId === plan.id}
+                trialEligible={eligibleTrialPlanIds.has(plan.id)}
+                isTrialActive={!!activeTrialPlanId && activeTrialPlanId === plan.id}
+                disabled={!!pendingPlanId || !!pendingTrialPlanId}
               />
             ))}
           </>
