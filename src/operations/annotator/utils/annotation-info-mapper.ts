@@ -61,7 +61,11 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
   // geo-jobs already returns mutation/fireRisk in this metadata payload, but the generated
   // @bpartners/typescript-client type doesn't declare them yet (its OpenAPI spec needs updating
   // and the client republishing) - widen the type locally until that's done.
-  const { metadata = {}, labelName = '', labelType = '' } = annotationInstance as typeof annotationInstance & {
+  const {
+    metadata = {},
+    labelName = '',
+    labelType = '',
+  } = annotationInstance as typeof annotationInstance & {
     metadata?: typeof annotationInstance.metadata & { mutation?: string; fireRisk?: string };
   };
   const {
@@ -92,7 +96,7 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
     labelName,
     strokeColor,
     humidityLevel,
-    mutation,
-    fireRisk,
+    mutation: mutation as AnnotationInfo['mutation'],
+    fireRisk: fireRisk as AnnotationInfo['fireRisk'],
   };
 };
