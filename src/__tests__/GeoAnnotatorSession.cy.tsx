@@ -24,7 +24,7 @@ describe('Annotator — session lon/lat de la librairie', () => {
       actualLayer: { id: 'paris', name: 'PARIS', year: 2025, precisionLevelInCm: 5 },
       availableLayers: [],
     }).as('wmsLayers');
-    cy.intercept('GET', 'https://geoserver.birdia.fr/**', { statusCode: 200, body: '' }).as('wmsTile');
+    cy.intercept('GET', 'https://geoserver.birdia.fr/**', { fixture: 'test-annotator-image.jpeg' }).as('wmsTile');
 
     cy.intercept('PUT', '/accounts/**/areaPictures/**', {}).as('saveRecord');
     cy.intercept('GET', '/accounts/**/areaPictures/**', {}).as('readRecord');
@@ -36,5 +36,16 @@ describe('Annotator — session lon/lat de la librairie', () => {
     cy.wait('@geocode');
     cy.wait('@wmsLayers').its('request.url').should('include', 'lat=48.8552353').and('include', 'lon=2.3595545');
     cy.get('.leaflet-container', { timeout: 30000 }).should('exist');
+    cy.wait('@wmsTile').its('request.url').should('include', 'token=');
+  });
+
+  it('signale une imagerie refusée au lieu d’afficher une carte vide', () => {
+    // Another position, so the refused GetMap can never be answered from the previous test's image cache.
+    cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 5.3698, latitude: 43.2965 }).as('geocode');
+    cy.intercept('GET', 'https://geoserver.birdia.fr/**', { statusCode: 401, body: '' }).as('refusedTile');
+
+    openSession(`?flow=geo&address=${encodeURIComponent('1 rue de la République, Marseille')}`);
+
+    cy.contains("L'imagerie a refusé le jeton de session", { timeout: 30000 }).should('exist');
   });
 });
