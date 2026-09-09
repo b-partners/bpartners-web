@@ -40,7 +40,7 @@ npm run prettier:check  # Check formatting
 - **State**: Zustand stores + @tanstack/react-query
 - **Forms**: React Hook Form + Zod validation
 - **Auth**: AWS Cognito (OAuth 2.0) + Google reCAPTCHA v3
-- **3D**: Three.js + React Three Fiber (CityJSON support in `src/lib/cityjson/`)
+- **Roof annotator**: `@bpartners/roof-analyser` (external library, mounted by `src/operations/annotator/`)
 - **Testing**: Cypress 13 (component tests + E2E)
 - **Build**: Vite 5 + TypeScript 5
 
@@ -61,7 +61,6 @@ src/
 │   └── store/         # Zustand stores (dialog, invoice)
 ├── security/          # Auth pages and wrappers (BpAdmin, LoginPage, SignInForm)
 ├── layout/            # AppBar and sidebar menu
-├── lib/cityjson/      # 3D CityJSON rendering
 ├── bp-theme.js        # MUI theme with BPartners color palette
 ├── App.tsx            # Route definitions
 └── main.tsx           # Entry point (Sentry + reCAPTCHA init)

@@ -1,14 +1,5 @@
-import {
-  annotatorStore,
-  roof3DStore,
-  useAnnotator3DStore,
-  useAnnotatorComponentFormItemStore,
-  useAnnotatorComponentStore,
-  useAnnotatorScreenSwitch,
-} from '@/common/store';
-import { formatDateTimeWithoutSec, getFileUrl, stringCutter } from '@/common/utils';
-import { clearPolygons, clearRoofDelimiter } from '@/providers';
-import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
+import { formatDateTimeWithoutSec, stringCutter } from '@/common/utils';
+import { DraftAreaPictureAnnotation, Prospect } from '@bpartners/typescript-client';
 import { Public } from '@mui/icons-material';
 import { Avatar, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from '@mui/material';
 import { FC } from 'react';
@@ -22,27 +13,10 @@ interface ProjectListItemProps {
 export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) => {
   const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
   const navigate = useNavigate();
-  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
-  const annotatorComponentStore = useAnnotatorComponentStore();
-  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
-  const { setScreen } = useAnnotatorScreenSwitch();
-  const { reset: reset3DStore } = useAnnotator3DStore();
 
   const navigateToAnnotation = () => {
-    const { fileId, id: pictureId } = draftAnnotation.areaPicture;
-    const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-    clearPolygons();
-    clearRoofDelimiter();
-    resetAnnotations();
-    reset3DStore();
-    annotatorComponentStore.reset();
-    annotatorStore.useAnnotatorStore.getState().reset();
-    setAnnotatorSidebarAccordionItem(0);
-    setScreen('annotator');
-    roof3DStore.useRoof3DStore.getState().reset();
-    navigate(
-      `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
-    );
+    const { id: pictureId, address } = draftAnnotation.areaPicture;
+    navigate(`/projects/${pictureId}?address=${encodeURIComponent(address || prospect.address || '')}&draftAnnotationId=${draftAnnotation.id}`);
   };
 
   return (

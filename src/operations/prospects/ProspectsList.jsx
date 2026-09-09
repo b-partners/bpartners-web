@@ -7,15 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidV4, v4 } from 'uuid';
 
 import TabPanel from '@/common/components/TabPanel';
-import {
-  annotatorStore,
-  ProspectContextProvider,
-  roof3DStore,
-  useAnnotator3DStore,
-  useAnnotatorComponentFormItemStore,
-  useAnnotatorComponentStore,
-  useAnnotatorScreenSwitch,
-} from '@/common/store';
+import { ProspectContextProvider } from '@/common/store';
 import { ProspectFilterInput, ProspectFormDialog, Prospects } from './components';
 import ProspectsAdministration from './ProspectsAdministration';
 import ProspectsConfiguration from './ProspectsConfiguration';
@@ -31,7 +23,7 @@ import { annotatorProvider } from '@/providers/annotator-provider';
 import { Add } from '@mui/icons-material';
 import { prospectInfoResolver } from '../../common/resolvers/prospect-info-validator';
 import { copyObject, getFileUrl, handleSubmit } from '../../common/utils';
-import { clearPolygons, clearRoofDelimiter, getCached, prospectingProvider } from '../../providers';
+import { getCached, prospectingProvider } from '../../providers';
 
 const BP_USER_CACHE_NAME = 'bp_user';
 export const ProspectDialogProvider = ({ ComponentChild, address }) => {
@@ -44,21 +36,12 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
 
   const form = useForm({ mode: 'blur', defaultValues: { status: 'TO_CONTACT', address }, resolver: prospectInfoResolver });
   const { open: openDialog, close: closeDialog } = useDialog();
-  const annotatorComponentStore = useAnnotatorComponentStore();
-  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
-  const { setScreen } = useAnnotatorScreenSwitch();
-  const { reset } = useAnnotator3DStore();
-  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
-  const { reset: reset3DStore } = useAnnotator3DStore();
   useEffect(() => {
     form.setValue('address', address);
   }, [address]);
 
   const saveOrUpdateProspectSubmit = (toggleDialog, isCreating, event) => {
     const doSubmit = form.handleSubmit(async rhfData => {
-      setScreen('annotator');
-      reset();
-      reset3DStore();
       startLoading();
 
       const prospect = copyObject(rhfData);
@@ -68,9 +51,6 @@ export const ProspectDialogProvider = ({ ComponentChild, address }) => {
       if (isCreating) notify('notify.searchImagePending');
 
       const fetch = async () => {
-        clearPolygons();
-        clearRoofDelimiter();
-
         prospect.id = uuidV4();
         prospect.invoiceID = prospect?.invoice?.id;
         prospect.invoice = undefined;
@@ -158,12 +138,5 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
   );
 };
 
-const ProspectsList = () => {
-  useEffect(() => {
-    clearPolygons();
-    clearRoofDelimiter();
-  }, []);
-
-  return <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
-};
+const ProspectsList = () => <ProspectDialogProvider ComponentChild={ProspectsListContent} />;
 export default ProspectsList;

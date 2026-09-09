@@ -1,6 +1,4 @@
-import { AnnotationInfo, AnnotationsInfo, NumberAsString, PolygonsForm } from '@/operations/annotator';
-import { Polygon } from '@bpartners/annotator-component';
-import { Account, AccountHolder, Point, User, Whoami } from '@bpartners/typescript-client';
+import { Account, AccountHolder, User, Whoami } from '@bpartners/typescript-client';
 
 const whoamiItem = 'bp_whoami';
 const accessTokenItem = 'bp_access_token';
@@ -12,24 +10,10 @@ const userItem = 'bp_user';
 const invoiceConfirmedListSwitchItem = 'bp_invoiceConfirmedListSwitch';
 const timeZoneItem = 'bp_time_zone';
 const calendarSyncItem = 'bp_calendar_sync_item';
-const polygonsItem = 'bp_polygons_item';
-const annotationsInfoItem = 'bp_annotations_info_item';
-const initialMarkerItem = 'bp_annotations_initial_marker';
 const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
-const roofAnalyseIdItem = 'bp_roof_analyse_id';
-const cityJSONRequestIdItem = 'bp_city_json_request_id';
-const llmResultItem = 'bp_llm_result_item';
-const isRoofPropertiesRequestDoneItem = 'bp_is_roof_properties_request_done_item';
-const isAreaPictureImageUpdatedItem = 'bp_is_area_picture_image_updated_item';
 const loadingRedirectionItems = 'bp_loading_params_item';
-const defaultRoofDelimiterItem = 'bp_default_roof_delimiter_item';
-const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
-const currentImageSize = 'birdia_image_size';
-const annotationToSave = 'birdia_annotation_to_save';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
-export const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
-export const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -47,17 +31,9 @@ const getCachedObject = <T>(key: string): T => {
   return JSON.parse(valueAsString);
 };
 
-type TInitialMarkerInfo = {
-  markerPosition: Point;
-  imageSize: number;
-};
-
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
-  },
-  defaultRoofDelimiter(defaultRoofDelimiter: Polygon) {
-    return cacheObject<Polygon>(defaultRoofDelimiterItem, defaultRoofDelimiter);
   },
   loadingRedirection(params: string) {
     return localStorage.setItem(loadingRedirectionItems, params);
@@ -87,52 +63,13 @@ export const cache = {
   calendarSync: (value: boolean = false) => {
     return localStorage.setItem(calendarSyncItem, JSON.stringify(value));
   },
-  polygons: (polygons: Polygon[]) => {
-    return cacheObject(polygonsItem, polygons);
-  },
-  annotationsInfo: (info: AnnotationInfo[]) => {
-    return cacheObject(annotationsInfoItem, info);
-  },
   bankReconnectionTime: (date: string) => {
     localStorage.setItem(bankReconnectionTime, date);
     return date;
   },
-  initialMarker(areaPictureId: string, markerPosition: Point, imageSize: number) {
-    const data = { markerPosition, imageSize };
-    return cacheObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`, data);
-  },
-  roofDelimiterLongLatItem(roofDelimiterLongLat: number[][]) {
-    localStorage.setItem(roofDelimiterLongLatItem, JSON.stringify(roofDelimiterLongLat));
-  },
   apiKey(apiKey: string) {
     localStorage.setItem(apiKeyItem, apiKey);
     return apiKey;
-  },
-  roofAnalyseId(roofAnalyseId: string) {
-    localStorage.setItem(roofAnalyseIdItem, roofAnalyseId);
-    return roofAnalyseId;
-  },
-  cityJSONRequestId(cityJSONRequestId: string) {
-    localStorage.setItem(cityJSONRequestIdItem, cityJSONRequestId);
-    return cityJSONRequestId;
-  },
-  llmResult(llmResult: string) {
-    localStorage.setItem(llmResultItem, llmResult);
-    return llmResult;
-  },
-  isRoofPropertiesRequestDone(value: boolean) {
-    localStorage.setItem(isRoofPropertiesRequestDoneItem, JSON.stringify(value));
-    return value;
-  },
-  isAreaPictureImageUpdated(value: boolean) {
-    localStorage.setItem(isAreaPictureImageUpdatedItem, JSON.stringify(value));
-    return value;
-  },
-  currentImageSize(imageSize: number) {
-    localStorage.setItem(currentImageSize, JSON.stringify(imageSize));
-  },
-  annotationToSave(annotation: any) {
-    localStorage.setItem(annotationToSave, JSON.stringify(annotation || {}));
   },
   annotatorTutorialSeen(value: boolean) {
     localStorage.setItem(annotatorTutorialSeenItem, JSON.stringify(value));
@@ -144,9 +81,6 @@ export const getCached = {
   whoami(): Whoami {
     return getCachedObject<Whoami>(whoamiItem);
   },
-  defaultRoofDelimiter(): Polygon {
-    return getCachedObject<Polygon>(defaultRoofDelimiterItem);
-  },
   token() {
     const accessToken = localStorage.getItem(accessTokenItem);
     const refreshToken = localStorage.getItem(refreshTokenItem);
@@ -154,10 +88,6 @@ export const getCached = {
   },
   unapprovedFiles() {
     return +localStorage.getItem(unapprovedFiles);
-  },
-  roofDelimiterLongLatItem() {
-    const rdLLIAsString = localStorage.getItem(roofDelimiterLongLatItem);
-    return rdLLIAsString !== 'undefined' ? (JSON.parse(rdLLIAsString) as number[][]) : undefined;
   },
   account() {
     return getCachedObject<Account>(accountItem);
@@ -167,11 +97,6 @@ export const getCached = {
   },
   user() {
     return getCachedObject<User>(userItem);
-  },
-  currentImageSize() {
-    const imageSizeString = localStorage.getItem(currentImageSize);
-    if (!imageSizeString) return null;
-    return +imageSizeString;
   },
   userInfo() {
     const { id: accountId } = this.account() || { id: null };
@@ -188,54 +113,14 @@ export const getCached = {
   calendarSync(): boolean {
     return JSON.parse(localStorage.getItem(calendarSyncItem)) || false;
   },
-  polygons: () => {
-    const polygons = getCachedObject<PolygonsForm>(polygonsItem);
-    if (!polygons) return null;
-    const polygonsArray: Polygon[] = [];
-    Object.keys(polygons).forEach(index => polygonsArray.push(polygons[index as NumberAsString]));
-    return polygonsArray;
-  },
-  annotationsInfo: () => {
-    return getCachedObject<AnnotationsInfo>(annotationsInfoItem);
-  },
-  annotationsInfoList: () => {
-    const annotationInfos = getCachedObject<AnnotationsInfo>(annotationsInfoItem);
-    if (annotationInfos) {
-      return Object.values(annotationInfos) as AnnotationInfo[];
-    }
-    return [];
-  },
   bankReconnectionTime: () => {
     return localStorage.getItem(bankReconnectionTime);
-  },
-  initialMarker(areaPictureId: string) {
-    return getCachedObject<TInitialMarkerInfo>(`${initialMarkerItem}_${areaPictureId}`);
   },
   apiKey() {
     return localStorage.getItem(apiKeyItem);
   },
-  roofAnalyseId() {
-    return localStorage.getItem(roofAnalyseIdItem);
-  },
-  cityJSONRequestId() {
-    return localStorage.getItem(cityJSONRequestIdItem);
-  },
-  llmResult() {
-    return localStorage.getItem(llmResultItem);
-  },
-  isRoofPropertiesRequestDone() {
-    const value = localStorage.getItem(isRoofPropertiesRequestDoneItem);
-    return JSON.parse(value || 'false');
-  },
-  isAreaPictureImageUpdated() {
-    const value = localStorage.getItem(isAreaPictureImageUpdatedItem);
-    return JSON.parse(value || 'false');
-  },
   loadingRedirection() {
     return localStorage.getItem(loadingRedirectionItems);
-  },
-  annotationToSave() {
-    return localStorage.getItem(annotationToSave);
   },
   annotatorTutorialSeen(): boolean {
     return JSON.parse(localStorage.getItem(annotatorTutorialSeenItem) || 'false');
@@ -245,42 +130,4 @@ export const getCached = {
 export const clearCache = () => {
   localStorage.clear();
   sessionStorage.clear();
-};
-
-export const clearPolygons = (removeRoofAnalyseId = true) => {
-  cache.polygons(null);
-  cache.annotationsInfo(null);
-  localStorage.removeItem(llmResultItem);
-  localStorage.removeItem(cityJSONRequestIdItem);
-
-  if (removeRoofAnalyseId) {
-    localStorage.removeItem(roofAnalyseIdItem);
-    localStorage.removeItem(cityJSONRequestIdItem);
-  }
-
-  localStorage.removeItem(isAreaPictureImageUpdatedItem);
-  localStorage.removeItem(isRoofPropertiesRequestDoneItem);
-};
-
-export const clearRoofDelimiter = () => {
-  localStorage.removeItem(cityJSONRequestIdItem);
-  localStorage.removeItem(defaultRoofDelimiterItem);
-  localStorage.removeItem(roofDelimiterLongLatItem);
-  localStorage.removeItem(currentImageSize);
-};
-
-export const removeCache = {
-  cityJSONRequestId() {
-    localStorage.removeItem(cityJSONRequestIdItem);
-  },
-  roofDelimitation() {
-    localStorage.removeItem(defaultRoofDelimiterItem);
-    localStorage.removeItem(cityJSONRequestIdItem);
-    localStorage.removeItem(roofDelimiterLongLatItem);
-    localStorage.removeItem(ANALYSE_VIEW_STORAGE_KEY);
-    localStorage.removeItem(ANNOTATOR_VIEW_STORAGE_KEY);
-  },
-  whoami() {
-    localStorage.removeItem(whoamiItem);
-  },
 };

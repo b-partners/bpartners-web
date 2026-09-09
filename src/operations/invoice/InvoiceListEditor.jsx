@@ -3,17 +3,14 @@ import { Box, Card, CardContent, CardHeader } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useReducer, useState } from 'react';
 import { useStore } from 'react-admin';
-import { AnnotationInfoShow } from '../annotator/components';
-import { InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
+import { AnnotationInfoShow, InvoiceConfirmedPayedTabPanel, InvoiceTabPanel, InvoiceTabs, InvoiceToolContextProvider, InvoiceView } from './components';
 
 import { printError } from '@/common/utils';
 import { getInvoicesSummary } from '@/providers';
-import { AnnotatorComponent } from '../annotator';
-import { isRoofPolygon } from '../annotator/utils';
 import InvoiceForm from './InvoiceForm';
 import InvoicePdfDocument, { ContextCancelButton } from './InvoicePdfDocument';
-import { useRetrievePolygons } from './utils/use-retrieve-polygons';
-import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, PDF_EDITION_WIDTH, viewScreenState } from './utils/utils';
+import { useInvoiceAnnotation } from './utils/use-invoice-annotation';
+import { getReceiptUrl, InvoiceActionType, invoiceListInitialState, viewScreenState } from './utils/utils';
 
 const useStyle = makeStyles(() => ({
   card: { border: 'none' },
@@ -33,26 +30,17 @@ const invoiceListReducer = (state, { type, payload }) => {
   }
 };
 
-const AnnotatorComponentShow = () => {
-  const { polygons, isAnnotationEmpty, annotations } = useRetrievePolygons();
+const AnnotationInfosShow = () => {
+  const { annotation, isAnnotationEmpty } = useInvoiceAnnotation();
 
   if (isAnnotationEmpty) return null;
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
       <Box sx={{ width: '333px' }}>
-        {annotations?.annotations.map((annotation, index) => (
-          <AnnotationInfoShow areaPictureAnnotationInstance={annotation} key={index} />
+        {annotation?.annotations.map((annotationInstance, index) => (
+          <AnnotationInfoShow areaPictureAnnotationInstance={annotationInstance} key={index} />
         ))}
-      </Box>
-      <Box width={PDF_EDITION_WIDTH}>
-        <AnnotatorComponent
-          width={PDF_EDITION_WIDTH}
-          boxWrapperSx={{ height: 'auto !important' }}
-          allowAnnotation={false}
-          polygons={polygons.filter(e => !isRoofPolygon(e))}
-          allowSelect={false}
-        />
       </Box>
     </Box>
   );
@@ -125,7 +113,7 @@ const InvoiceListEditor = () => {
         </InvoiceView>
         <InvoiceView type={['preview']}>
           <InvoicePdfDocument selectedInvoice={selectedInvoice} url={url}>
-            <AnnotatorComponentShow />
+            <AnnotationInfosShow />
           </InvoicePdfDocument>
         </InvoiceView>
       </Box>
