@@ -36,14 +36,16 @@ const resolverFetch = async (path: string) => {
   return response.json();
 };
 
-// GeoServer validates the Cognito id token on every GetMap, so it has to be a live one: the cached copy
-// is only refreshed on login/whoami and is already expired an hour into a session.
-const freshIdToken = async () => {
+// The token GeoServer signs every GetMap with: the one this app caches under `bp_access_token` at login.
+// A live session is read back only when the cache is empty.
+const imageryToken = async () => {
+  const cachedToken = getCached.token().accessToken;
+  if (cachedToken) return cachedToken;
   try {
     const session = await awsAuth.fetchAuthSession();
-    return session?.tokens?.idToken?.toString() || getCached.token().accessToken;
+    return session?.tokens?.idToken?.toString() ?? '';
   } catch {
-    return getCached.token().accessToken;
+    return '';
   }
 };
 
@@ -56,27 +58,25 @@ const toMercator = ({ latitude, longitude }: GeoPoint) => ({
   y: (Math.log(Math.tan(((90 + latitude) * Math.PI) / 360)) / (Math.PI / 180)) * (MERCATOR_HALF_WORLD / 180),
 });
 
+// Built off the very layer the map tiles from — same url, same wmsParams, same token — so the probe can
+// never be refused (or accepted) on terms the real imagery is not asked on.
+const probeUrl = (layer: L.TileLayer.WMS, position: GeoPoint) => {
+  const { x, y } = toMercator(position);
+  const params = new URLSearchParams({
+    ...Object.fromEntries(Object.entries(layer.wmsParams).map(([key, value]) => [key, String(value)])),
+    srs: 'EPSG:3857',
+    bbox: `${x - PROBE_HALF_SIZE_M},${y - PROBE_HALF_SIZE_M},${x + PROBE_HALF_SIZE_M},${y + PROBE_HALF_SIZE_M}`,
+    width: '64',
+    height: '64',
+  });
+  return `${(layer as unknown as { _url: string })._url}?${params.toString()}`;
+};
+
 // The map loads its imagery as a plain <img>, so a refused GetMap is a silent blank map rather than an
 // error. One probe on the same terms turns that into something the screen can say out loud. It fails
 // open: only an actual load error counts as a refusal.
-const isImageryReadable = (wmsBaseUrl: string, layer: string, position: GeoPoint, token: string): Promise<boolean> => {
-  if (!layer) return Promise.resolve(true);
-  const { x, y } = toMercator(position);
-  const params = new URLSearchParams({
-    SERVICE: 'WMS',
-    VERSION: '1.1.1',
-    REQUEST: 'GetMap',
-    LAYERS: layer,
-    STYLES: '',
-    SRS: 'EPSG:3857',
-    BBOX: `${x - PROBE_HALF_SIZE_M},${y - PROBE_HALF_SIZE_M},${x + PROBE_HALF_SIZE_M},${y + PROBE_HALF_SIZE_M}`,
-    WIDTH: '64',
-    HEIGHT: '64',
-    FORMAT: 'image/jpeg',
-    token,
-  });
-
-  return new Promise(resolve => {
+const isImageryReadable = (layer: L.TileLayer.WMS, position: GeoPoint): Promise<boolean> =>
+  new Promise(resolve => {
     const image = new Image();
     const timeout = setTimeout(() => resolve(true), PROBE_TIMEOUT_MS);
     const settle = (isReadable: boolean) => {
@@ -85,12 +85,11 @@ const isImageryReadable = (wmsBaseUrl: string, layer: string, position: GeoPoint
     };
     image.onload = () => settle(true);
     image.onerror = () => settle(false);
-    image.src = `${wmsBaseUrl}?${params.toString()}`;
+    image.src = probeUrl(layer, position);
   });
-};
 
 export const resolveWmsLayers = async (latitude: number, longitude: number): Promise<WmsLayerOption[]> => {
-  const accessToken = await freshIdToken();
+  const accessToken = await imageryToken();
   if (!accessToken) throw new Error("Aucun jeton de session pour l'imagerie — reconnectez-vous.");
 
   const { wmsBaseUrl, availableLayers, actualLayer }: AreaPictureMapLayerAvailability = await resolverFetch(
@@ -115,11 +114,14 @@ export const resolveWmsLayers = async (latitude: number, longitude: number): Pro
       } as L.WMSOptions),
   });
 
-  const layers = [actualLayer, ...(availableLayers ?? [])].filter((layer, index, all) => all.findIndex(other => other.name === layer.name) === index);
-  if (!(await isImageryReadable(wmsBaseUrl, layers[0]?.name, { latitude, longitude }, accessToken))) {
+  const layers = [actualLayer, ...(availableLayers ?? [])]
+    .filter((layer, index, all) => all.findIndex(other => other.name === layer.name) === index)
+    .map(buildLayer);
+
+  if (layers[0] && !(await isImageryReadable(layers[0].create(), { latitude, longitude }))) {
     throw new Error("L'imagerie a refusé le jeton de session : le GeoServer n'accepte pas ce compte. Reconnectez-vous, ou vérifiez l'environnement du .env.");
   }
-  return layers.map(buildLayer);
+  return layers;
 };
 
 export const geocodeAddress = async (address: string): Promise<GeoPoint> => {
