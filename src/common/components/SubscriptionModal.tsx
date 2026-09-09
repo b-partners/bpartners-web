@@ -1,10 +1,11 @@
 import { useDialog } from '@/common/store/dialog';
+import { getAppBaseUrl } from '@/common/utils';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
 import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
 import { useGetDefaultPaymentMethod, useGetSubscriptionPlans } from '@/operations/account/queries';
-import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
+import { authProvider, cache, getCached, profileProvider, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
 import { Alert, AlertTitle, Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
@@ -70,6 +71,23 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     },
   });
 
+  const {
+    isPending: isStartingTrial,
+    mutate: startTrial,
+    variables: startingTrialPlanId,
+  } = useMutation({
+    mutationKey: ['subscription', 'trial'],
+    mutationFn: (subscriptionPlanIdentifier: string) => userSubscriptionProvider.startTrial(subscriptionPlanIdentifier),
+    onSuccess: async () => {
+      const cachedWhoami = getCached.whoami();
+      const userId = cachedWhoami?.user?.id;
+      if (!userId) return;
+      const freshUser = await profileProvider.getOne(userId).catch(() => undefined);
+      if (freshUser) cache.whoami({ ...cachedWhoami, user: freshUser });
+      Redirect.toURL(`${getAppBaseUrl()}/account/${userId}?trialStarted=done`);
+    },
+  });
+
   const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
     mutationKey: ['subscription', 'commitment'],
     mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlan!.id!, automaticRenewalStatus),
@@ -117,6 +135,8 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     setSelectedPlan(plan);
     mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
   };
+
+  const onStartTrial = (plan: SubscriptionPlan) => plan.id && startTrial(plan.id);
 
   const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);
 
@@ -172,7 +192,9 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
         )}
         <SubscriptionPlans
           onSelectPlan={onSelectPlan}
+          onStartTrial={onStartTrial}
           pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined}
+          pendingTrialPlanId={isStartingTrial ? startingTrialPlanId : undefined}
           isComparing={isComparing}
         />
       </DialogContent>
