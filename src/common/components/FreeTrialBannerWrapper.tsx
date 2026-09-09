@@ -1,4 +1,6 @@
 import { BPButton, FlexBox, SubscriptionModal } from '@/common/components';
+import { useOptimisticCreditBalanceStore } from '@/common/store';
+import { useGetCreditBalance } from '@/operations/account/queries';
 import { whoami } from '@/providers';
 import { Whoami } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
@@ -17,6 +19,9 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
   const today = dayjs();
   const isFreeTrialSubscription = whoamiValue?.user?.subscription?.status === 'FREE_TRIAL';
   const remainingDays = dayjs(whoamiValue?.user?.subscription?.end).diff(today, 'day');
+  const { balance } = useGetCreditBalance(isFreeTrialSubscription);
+  const optimisticBalance = useOptimisticCreditBalanceStore(state => state.balance);
+  const remainingAnalyses = (optimisticBalance ?? balance)?.estimatedRemainingAnalyses ?? 0;
 
   const handleDoSubscription = () => {
     openDialog(<SubscriptionModal allowClose />, { maxWidth: 'lg', fullWidth: true }, true);
@@ -35,7 +40,8 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
             fontSize: '1rem',
           }}
         >
-          Il vous reste {remainingDays} jour{remainingDays > 1 ? 's' : ''} d'essai !
+          Il vous reste {remainingDays} jour{remainingDays > 1 ? 's' : ''} d'essai et {remainingAnalyses} analyse{remainingAnalyses > 1 ? 's' : ''} toiture
+          {remainingAnalyses > 1 ? 's' : ''}.
         </Typography>
         <FlexBox sx={{ gap: 2 }}>
           <Typography
@@ -47,7 +53,7 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
           >
             Débloquer toutes les fonctionnalités IA pour les couvreurs
           </Typography>
-          <BPButton onClick={handleDoSubscription} sx={{ maxWidth: '50px' }} label="S'abonner" />
+          <BPButton onClick={handleDoSubscription} style={{ width: 'auto' }} sx={{ whiteSpace: 'nowrap', flexShrink: 0 }} label="S'abonner" />
         </FlexBox>
       </FlexBox>
       {children}
