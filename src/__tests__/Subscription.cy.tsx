@@ -420,6 +420,7 @@ describe('Test user subscription', () => {
     cy.contains('Démarrez votre essai gratuit');
     cy.contains('Aucun débit ne sera effectué pendant toute la durée de votre essai.');
     cy.contains('si vous décidez de continuer');
+    cy.contains(`Bénéficiez de ${trialPlan.trialAnalysisGranted} analyses offertes`);
     cy.get('@startTrial').should('not.have.been.called');
 
     cy.contains('button', 'Ajouter ma carte').click();

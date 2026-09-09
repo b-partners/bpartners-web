@@ -167,6 +167,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     freeUsageThreshold: 10,
     includedCreditsPerBillingPeriod: 10,
     trialPeriodDays: 7,
+    trialAnalysisGranted: 2,
     annualDiscountPercent: 10,
     annualPriceInCentsWithoutVat: 52900,
     annualPriceInCentsWithVat: 63480,
