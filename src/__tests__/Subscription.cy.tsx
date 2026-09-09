@@ -397,12 +397,12 @@ describe('Test user subscription', () => {
     cy.contains('button', `Choisir ${trialPlan.name}`).should('not.exist');
     cy.contains('button', `Choisir ${chosenPlan.name}`).should('be.visible');
   });
-  it('Trial: starting a trial skips consent and Stripe, then redirects to the account trial view', () => {
+  it('Trial without a card: the intermediate step requires adding a card before the trial starts', () => {
     cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
 
     cy.stub(Redirect, 'toURL').as('toURL');
-    cy.stub(userSubscriptionProvider, 'startTrial').as('startTrial').resolves({ subscriptionPlanIdentifier: trialPlan.id });
-    cy.stub(profileProvider, 'getOne').as('getOne').resolves(trialOnEssentialUser);
+    cy.stub(userSubscriptionProvider, 'startTrial').as('startTrial');
+    cy.stub(userSubscriptionProvider, 'initiateTrialPaymentMethod').as('initiateTrialPaymentMethod').resolves({ redirectionUrl: STRIPE_REDIRECTION_URL });
 
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', '**/subscriptionTrialEligibility*', eligibleForEssentialTrial).as('getTrialEligibility');
@@ -417,10 +417,69 @@ describe('Test user subscription', () => {
 
     cy.get(`[data-cy=start-trial-${trialPlan.id}]`).click();
 
+    cy.contains('Démarrez votre essai gratuit');
+    cy.contains('Aucun débit ne sera effectué pendant toute la durée de votre essai.');
+    cy.contains('si vous décidez de continuer');
+    cy.get('@startTrial').should('not.have.been.called');
+
+    cy.contains('button', 'Ajouter ma carte').click();
+
+    cy.get('@initiateTrialPaymentMethod').should('have.been.calledOnce');
+    cy.get('@startTrial').should('not.have.been.called');
+    cy.then(() => expect(window.localStorage.getItem('bp_pending_trial_plan')).to.equal(trialPlan.id));
+
+    cy.contains('Vous allez être redirigé vers Stripe pour enregistrer votre carte');
+    cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWith', STRIPE_REDIRECTION_URL);
+  });
+  it('Trial with a card: the intermediate step starts the trial and redirects to the account trial view', () => {
+    cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+    cy.stub(userSubscriptionProvider, 'startTrial').as('startTrial').resolves({ subscriptionPlanIdentifier: trialPlan.id });
+    cy.stub(profileProvider, 'getOne').as('getOne').resolves(trialOnEssentialUser);
+
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', '**/subscriptionTrialEligibility*', eligibleForEssentialTrial).as('getTrialEligibility');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
+
+    cy.mount(<App />);
+    cy.wait('@getTrialEligibility');
+
+    cy.get(`[data-cy=start-trial-${trialPlan.id}]`).click();
+
+    cy.contains('Démarrez votre essai gratuit');
+    cy.contains('si vous décidez de continuer');
+    cy.contains('button', 'Démarrer mon essai gratuit').click();
+
     cy.get('@startTrial').should('have.been.calledOnceWith', trialPlan.id);
     cy.contains('Confirmation de votre abonnement').should('not.exist');
     cy.contains('Vous allez être redirigé vers Stripe').should('not.exist');
     cy.get('@toURL', { timeout: 8000 }).should('have.been.calledWithMatch', `/account/${whoami1.user.id}?trialStarted=done`);
+  });
+  it('Trial resume: a pending trial auto-starts once the card is registered on the next load', () => {
+    cy.cognitoLogin({ whoami: { user: invalidSubscriptionUser }, user: invalidSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+    cy.stub(userSubscriptionProvider, 'startTrial').as('startTrial').resolves({ subscriptionPlanIdentifier: trialPlan.id });
+
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', '**/subscriptionTrialEligibility*', []).as('getTrialEligibility');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
+
+    cy.then(() => window.localStorage.setItem('bp_pending_trial_plan', trialPlan.id));
+
+    cy.mount(<App />);
+
+    cy.get('@startTrial').should('have.been.calledOnceWith', trialPlan.id);
+    cy.then(() => expect(window.localStorage.getItem('bp_pending_trial_plan')).to.be.null);
   });
   it('Trial: an active trial marks the plan with a badge alongside "Le plus choisi" and still allows subscribing', () => {
     cy.cognitoLogin({ whoami: { user: trialOnEssentialUser }, user: trialOnEssentialUser });
