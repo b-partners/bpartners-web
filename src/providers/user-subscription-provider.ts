@@ -94,6 +94,13 @@ export const userSubscriptionProvider = {
     const { data } = await userSubscriptionApi().startUserSubscriptionTrial(id, { subscriptionPlanIdentifier });
     return data;
   },
+  async initiateTrialPaymentMethod() {
+    const { id } = await asyncGetUser();
+    const failureUrl = new URL(`${getAppBaseUrl()}?stripeStatus=error`).href;
+    const successUrl = new URL(`${getAppBaseUrl()}/account/${id}?trialCard=done`).href;
+    const { data } = await userSubscriptionApi().initiatePaymentMethodReplacement(id, { failureUrl, successUrl });
+    return data;
+  },
   async saveCommitment(subscriptionPlanIdentifier: string, automaticRenewalStatus: EnableStatus) {
     const { id } = await asyncGetUser();
     const now = new Date();

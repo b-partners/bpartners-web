@@ -10,15 +10,16 @@ import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartne
 import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
 import { Alert, AlertTitle, Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { FC, useEffect, useState } from 'react';
+import { FC, useLayoutEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
 import { SubscriptionFlowDialogStyle, SubscriptionPlanActionsStyle, SubscriptionPlansDialogStyle, SubscriptionPlanTitleStyle } from './style';
 import { SubscriptionConsentStep } from './SubscriptionConsentStep';
 import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
+import { SubscriptionTrialStep } from './SubscriptionTrialStep';
 
-type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
+type SubscriptionStep = 'PLAN' | 'TRIAL' | 'CONSENT' | 'REDIRECT';
 
 const SUBSCRIPTION_DIALOG_PROPS = { maxWidth: 'lg', fullWidth: true } as const;
 
@@ -52,10 +53,19 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const { plans } = useGetSubscriptionPlans();
   const canCompare = plans.some(plan => plan.comparisonEntries?.length);
 
-  useEffect(() => {
-    const isPlanStep = step === 'PLAN';
+  const applyStepDialogProps = (nextStep: SubscriptionStep) => {
+    const isPlanStep = nextStep === 'PLAN';
     setDialogProps({ maxWidth: isPlanStep ? 'lg' : 'sm', sx: isPlanStep ? SubscriptionPlansDialogStyle : SubscriptionFlowDialogStyle });
-  }, [step, setDialogProps]);
+  };
+
+  const goToStep = (nextStep: SubscriptionStep) => {
+    applyStepDialogProps(nextStep);
+    setStep(nextStep);
+  };
+
+  useLayoutEffect(() => {
+    setDialogProps({ maxWidth: 'lg', sx: SubscriptionPlansDialogStyle });
+  }, [setDialogProps]);
 
   const {
     isPending,
@@ -67,7 +77,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     mutationFn,
     onSuccess: (url, { isConsentRequired }) => {
       setRedirectionUrl(url);
-      setStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
+      goToStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
     },
   });
 
@@ -88,10 +98,21 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     },
   });
 
+  const { isPending: isAddingTrialCard, mutate: addTrialCard } = useMutation({
+    mutationKey: ['subscription', 'trial', 'card'],
+    mutationFn: () => userSubscriptionProvider.initiateTrialPaymentMethod(),
+    onSuccess: ({ redirectionUrl }) => {
+      if (!redirectionUrl) return;
+      setRedirectionUrl(redirectionUrl);
+      setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre carte. Aucun débit ne sera effectué pendant votre essai.');
+      goToStep('REDIRECT');
+    },
+  });
+
   const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
     mutationKey: ['subscription', 'commitment'],
     mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlan!.id!, automaticRenewalStatus),
-    onSuccess: () => setStep('REDIRECT'),
+    onSuccess: () => goToStep('REDIRECT'),
   });
 
   const { isPending: isAddingCard, mutate: addCard } = useMutation({
@@ -101,7 +122,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       if (!redirectionUrl) return;
       setRedirectionUrl(redirectionUrl);
       setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre moyen de paiement');
-      setStep('REDIRECT');
+      goToStep('REDIRECT');
     },
   });
 
@@ -136,14 +157,38 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
   };
 
-  const onStartTrial = (plan: SubscriptionPlan) => plan.id && startTrial(plan.id);
+  const onStartTrial = (plan: SubscriptionPlan) => {
+    if (!plan.id) return;
+    setSelectedPlan(plan);
+    goToStep('TRIAL');
+  };
+
+  const onConfirmTrial = () => selectedPlan?.id && startTrial(selectedPlan.id);
+
+  const onAddTrialCard = () => {
+    if (selectedPlan?.id) cache.pendingTrialPlan(selectedPlan.id);
+    addTrialCard();
+  };
 
   const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);
 
-  const onBackToPlans = () => setStep('PLAN');
+  const onBackToPlans = () => goToStep('PLAN');
 
   if (step === 'REDIRECT' && redirectionUrl) {
     return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} title={redirectTitle} />;
+  }
+
+  if (step === 'TRIAL') {
+    return (
+      <SubscriptionTrialStep
+        plan={selectedPlan}
+        hasCard={hasCard}
+        onConfirm={onConfirmTrial}
+        onAddCard={onAddTrialCard}
+        onBack={onBackToPlans}
+        isLoading={isStartingTrial || isAddingTrialCard}
+      />
+    );
   }
 
   if (step === 'CONSENT') {

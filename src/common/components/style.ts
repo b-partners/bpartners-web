@@ -269,6 +269,28 @@ export const SubscriptionConsentStyle: SxProps = {
   '& .consent-recap-feature svg': { fontSize: '14px', color: ORANGE, flexShrink: 0, marginTop: '1px' },
 };
 
+export const SubscriptionTrialStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '14px',
+  marginTop: '24px',
+  '& .trial-highlight': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 14px',
+    borderRadius: '12px',
+    bgcolor: alpha(FOREST, 0.08),
+    border: `1px solid ${alpha(FOREST, 0.25)}`,
+    color: FOREST,
+  },
+  '& .trial-highlight svg': { fontSize: 26, flexShrink: 0 },
+  '& .trial-highlight-text': { fontSize: '13px', fontWeight: 700, lineHeight: 1.35 },
+  '& .trial-points': { listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' },
+  '& .trial-point': { display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', lineHeight: 1.4, color: FOREST },
+  '& .trial-point svg': { fontSize: 18, color: ORANGE, flexShrink: 0, marginTop: '1px' },
+};
+
 export const SubscriptionRedirectStyle: SxProps = {
   width: '100%',
   height: '100%',
