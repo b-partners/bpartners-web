@@ -1,6 +1,7 @@
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
 import { BpAutoCompleteBackend, BpFormField, ProgressBar } from '@/common/components';
+import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '@/common/components/loading-animations';
 import { useMutateProspect } from '@/common/fetcher';
 import { useDialog } from '@/common/store/dialog';
 import { wait } from '@/common/utils';
@@ -10,7 +11,6 @@ import { stagger, useAnimate } from 'motion/react';
 import { FC, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidV4 } from 'uuid';
-import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '../annotator/components/loading';
 import { getImageDialogStyle } from './style';
 
 interface GetImageDialogProps {

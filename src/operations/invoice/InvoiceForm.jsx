@@ -7,8 +7,7 @@ import { CreateInDialogButton } from '@react-admin/ra-form-layout';
 import { useEffect, useState } from 'react';
 import { SimpleForm, useNotify, useRefresh } from 'react-admin';
 import { FormProvider, useForm } from 'react-hook-form';
-import { AnnotationInfoShow } from '../annotator/components';
-import { ClientSelection, ProductSelection } from './components';
+import { AnnotationInfoShow, ClientSelection, ProductSelection } from './components';
 
 import BpTextAdornment from '@/common/components/BpTextAdornment';
 import { useToggle } from '@/common/hooks';
@@ -17,7 +16,6 @@ import { handleSubmit, printError } from '@/common/utils';
 import { customerProvider, invoiceProvider } from '@/providers';
 import useGetAccountHolder from '../../common/hooks/use-get-account-holder';
 import { prettyPrintMinors, UrlParams } from '../../common/utils';
-import { AnnotatorComponent } from '../annotator';
 import CustomerTypeRadioGroup from '../customers/components/CustomerTypeRadioGroup';
 import FormCustomer from '../customers/components/FormCustomer';
 import CheckboxForm from './components/CheckboxForm';
@@ -25,7 +23,7 @@ import InvoiceAccordion from './components/InvoiceAccordion';
 import PaymentRegulationsForm from './components/PaymentRegulationsForm';
 import { validateDIPAllowed, validateDPPercent } from './utils';
 import { invoiceMapper } from './utils/invoice-utils';
-import { useRetrievePolygons } from './utils/use-retrieve-polygons';
+import { useInvoiceAnnotation } from './utils/use-invoice-annotation';
 
 import { AUTOCOMPLETE_LIST_LENGTH } from '@/constants';
 import { DEFAULT_TEXT_FIELD_WIDTH, INVOICE_EDITION } from './style';
@@ -56,7 +54,7 @@ const InvoiceForm = props => {
   const paymentRegulationsError = validatePaymentRegulation(paymentRegulationType, paymentRegulations);
   const { returnToListByStatus } = useInvoiceToolContext();
   const { value: isOpenCreateInDialogButton, toggleValue: toggle } = useToggle(true);
-  const { polygons, annotations, isAnnotationEmpty } = useRetrievePolygons();
+  const { annotation, isAnnotationEmpty } = useInvoiceAnnotation();
 
   const updateInvoiceForm = _newInvoice => {
     const actualInvoice = form.watch();
@@ -101,7 +99,7 @@ const InvoiceForm = props => {
       }
       onPending(InvoiceActionType.START_PENDING);
       const submittedAt = new Date();
-      !isAnnotationEmpty && form.setValue('idAreaPicture', annotations.idAreaPicture);
+      !isAnnotationEmpty && form.setValue('idAreaPicture', annotation.idAreaPicture);
       retryOnError(
         () =>
           invoiceProvider
@@ -164,8 +162,8 @@ const InvoiceForm = props => {
         <form style={INVOICE_EDITION.FORM} onSubmit={handleSubmit(onSubmit)}>
           {!isAnnotationEmpty && (
             <InvoiceAccordion width='333px' label="Informations d'annotation" index={0} isExpanded={openedAccordion} onExpand={openAccordion}>
-              {annotations?.annotations.map((annotation, i) => (
-                <AnnotationInfoShow areaPictureAnnotationInstance={annotation} key={i} />
+              {annotation?.annotations.map((annotationInstance, i) => (
+                <AnnotationInfoShow areaPictureAnnotationInstance={annotationInstance} key={i} />
               ))}
             </InvoiceAccordion>
           )}
@@ -251,7 +249,6 @@ const InvoiceForm = props => {
         </form>
       </FormProvider>
       <div>
-        {!isAnnotationEmpty && <AnnotatorComponent isInvoiceForm width={PDF_EDITION_WIDTH} allowAnnotation={false} polygons={polygons} allowSelect={false} />}
         <PdfViewer width={PDF_EDITION_WIDTH} url={documentUrl} filename={selectedInvoiceRef} isPending={nbPendingInvoiceCrupdate > 0}>
           <IconButton id='form-refresh-preview' onClick={handleSubmit(onSubmit)} size='small' title='Rafraîchir'>
             <RefreshIcon />

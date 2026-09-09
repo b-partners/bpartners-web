@@ -120,7 +120,7 @@ export const Home = () => {
             </Grid>
             <Grid item xs={12} md={4} minHeight={'400px'}>
               <Grid item xs={12} minHeight={'100px'}>
-                <Paper className='block-box block-white' mb={2}>
+                <Paper className='block-box block-white'>
                   <IconButton
                     style={{ color: PALETTE_COLORS.black }}
                     onClick={() => (window.location.pathname = '/prospects')}
