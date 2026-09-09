@@ -50,13 +50,15 @@ export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
 export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;
 export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLATION, (value, index) => `${index + 1}. ${value}`);
 
+// Keys match geo-jobs' MutationType @JsonProperty wire values (app.bpartners.geojobs.service
+// .area.mutation.model.MutationType), not the Java enum constant names - only RAS coincides.
 export const ANNOTATION_MUTATION_TRANSLATION = {
-  IMPROVEMENT: 'Réparation',
-  DETERIORATION: 'Dégradation',
+  improvement: 'Réparation',
+  deterioration: 'Dégradation',
   RAS: 'Rien à signaler',
-  NONE: 'Néant',
-  BACKGROUND: 'Arrière-plan',
-  UNKNOWN: 'Inconnu',
+  none: 'Néant',
+  background: 'Arrière-plan',
+  unknown: 'Inconnu',
 } as const;
 export type AnnotationMutationType = typeof ANNOTATION_MUTATION_TRANSLATION;
 export const ANNOTATION_MUTATION_CHOICES = toRaInputChoices(ANNOTATION_MUTATION_TRANSLATION);

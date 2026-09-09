@@ -42,8 +42,10 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (
     fillColor: '#00ff0000',
     strokeColor: '#00ff00',
     area: +(roof_area_in_m2 || 0)?.toFixed(2),
-    // ADEL mutation model isn't wired up yet (BPARTNERS-3013) — default to "Néant" until it returns a real value.
-    mutation: (mutation as AnnotationInfo['mutation']) || 'NONE',
+    // The mutation property is only present when geo-jobs could actually resolve two
+    // distinct-date images for this roof (see b-partners/geo-jobs#853) - default to "Néant"
+    // otherwise, per BPARTNERS-3527.
+    mutation: (mutation as AnnotationInfo['mutation']) || 'none',
     fireRisk: fire_risk as AnnotationInfo['fireRisk'],
   };
   return roofAnalysePropertiesInfos;
