@@ -4,8 +4,9 @@ export const AnnotatorStyle: SxProps = {
   height: '100vh',
   width: '100%',
   overflow: 'hidden',
-  '& .annotator-roof-analyser': {
-    height: '100%',
-    width: '100%',
+  '& .annotator-error': {
+    p: 3,
+    textAlign: 'center',
+    color: 'error.main',
   },
 };

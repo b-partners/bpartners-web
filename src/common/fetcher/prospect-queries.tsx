@@ -1,14 +1,14 @@
 import { useStepProgress } from '@/common/hooks';
 import { wait } from '@/common/utils';
-import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
+import { Prospect } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useCreate, useNotify, useUpdate } from 'react-admin';
+import { useCreate, useNotify } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
 import { useDialog } from '../store/dialog';
 
-const PROSPECT_STEPS = 3;
-const PROSPECT_PROGRESS_DURATION_MS = 19000;
+const PROSPECT_STEPS = 2;
+const PROSPECT_PROGRESS_DURATION_MS = 6000;
 
 const onError = (error: any) => {
   let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
@@ -37,8 +37,7 @@ const onError = (error: any) => {
 export const useMutateProspect = () => {
   const notify = useNotify();
   const navigate = useNavigate();
-  const [create, { isPending: isAreaPictureDetailsPending }] = useCreate();
-  const [saveDraftAnnotations, { isPending: isDraftAnnotationsPending }] = useUpdate('drafts-annotations');
+  const [create, { isPending }] = useCreate();
   const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
 
   const handleError = (error: any) => {
@@ -46,49 +45,17 @@ export const useMutateProspect = () => {
     onError(error);
   };
 
+  // The annotator owns its own record: the session id names it, and the library creates the area picture
+  // and the draft annotation behind it. Only the prospect is created here.
   const onProspectSuccess = (prospect: Prospect) => {
     advance();
     notify(`resources.prospects.creation.success`, { type: 'success' });
-    const fileId = uuidV4();
-    const pictureId = uuidV4();
-    const draftAnnotationId = uuidV4();
-
-    const areaPictureDetailsToCreate = {
-      id: pictureId,
-      address: prospect.address,
-      fileId,
-      filename: `Layer ${prospect.address}`,
-      prospectId: prospect.id,
-      zoomLevel: ZoomLevel.BUILDING,
-      isExtended: true,
-    };
-
-    const onDraftAnnotationSuccess = () => {
-      complete();
-      wait(800).then(() => {
-        navigate(`/projects/${pictureId}?address=${encodeURIComponent(prospect.address || '')}&draftAnnotationId=${draftAnnotationId}`);
-        useDialog.getState().close();
-      });
-    };
-
-    const onAreaPictureDetailsSuccess = () => {
-      advance();
-      const requestBody: AreaPictureAnnotation = {
-        id: draftAnnotationId,
-        annotations: [],
-        idAreaPicture: pictureId,
-        properties: {},
-        isDraft: true,
-      };
-
-      saveDraftAnnotations(
-        'drafts-annotations',
-        { data: requestBody, meta: { pictureId, annotationId: draftAnnotationId }, id: draftAnnotationId },
-        { onError: handleError, onSuccess: onDraftAnnotationSuccess }
-      );
-    };
-
-    create('area-picture-details', { data: areaPictureDetailsToCreate }, { onError: handleError, onSuccess: onAreaPictureDetailsSuccess });
+    const sessionId = uuidV4();
+    complete();
+    wait(800).then(() => {
+      navigate(`/projects/${sessionId}?flow=geo&address=${encodeURIComponent(prospect.address || '')}`);
+      useDialog.getState().close();
+    });
   };
 
   const mutate = (prospect: Prospect) => {
@@ -96,5 +63,5 @@ export const useMutateProspect = () => {
     create('prospects', { data: prospect }, { onError: handleError, onSuccess: onProspectSuccess });
   };
 
-  return { mutate, isPending: isAreaPictureDetailsPending || isDraftAnnotationsPending, progress };
+  return { mutate, isPending, progress };
 };

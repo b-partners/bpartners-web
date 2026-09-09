@@ -24,16 +24,14 @@ export type DraftAnnotationItemProps = {
 
 export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotation }) => {
   const navigate = useNavigate();
-  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
+  const prospectId = draftAnnotation.areaPicture?.prospectId;
+  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: prospectId }, { enabled: !!prospectId });
 
-  const navigateToAnnotation = () => {
-    const { id: pictureId, address } = draftAnnotation.areaPicture;
-    navigate(`/projects/${pictureId}?address=${encodeURIComponent(address || prospect.address || '')}&draftAnnotationId=${draftAnnotation.id}`);
-  };
+  const navigateToAnnotation = () => navigate(`/projects/${draftAnnotation.areaPicture?.id}`);
 
   const getLoadingValue = useCallback(
     (value: string) => {
-      return isLoading ? 'Chargement...' : value;
+      return prospectId && isLoading ? 'Chargement...' : value;
     },
     [isLoading]
   );
