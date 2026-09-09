@@ -5,7 +5,7 @@ import { printError } from '@/common/utils';
 import { hasSpendableCredits, isSubscriptionExpired } from '@/operations/account/components/billing/utils';
 import { accountHolderProvider, getBackWhoami, getCreditBalance, getDefaultPaymentMethod } from '@/providers';
 import { UserSubscriptionStatus } from '@bpartners/typescript-client';
-import { FC, PropsWithChildren, useLayoutEffect } from 'react';
+import { FC, PropsWithChildren, useLayoutEffect, useRef } from 'react';
 import { useRedirect } from 'react-admin';
 
 const hasRegisteredCard = async () => {
@@ -19,8 +19,14 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
   const { open: openDialog } = useDialog();
   const { isLoading, stopLoading } = useLoadingHandler(true);
   const redirect = useRedirect();
+  const hasSubscriptionBeenChecked = useRef(false);
 
+  /* the check runs once and for all: it owns the blocking subscription dialog, so replaying it would
+   reopen that dialog over whatever the user reached after closing it */
   useLayoutEffect(() => {
+    if (hasSubscriptionBeenChecked.current) return;
+    hasSubscriptionBeenChecked.current = true;
+
     async function checkSubscription() {
       try {
         const currentWhoami = await getBackWhoami();
@@ -47,7 +53,7 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
     }
 
     checkSubscription();
-  }, [isLoading]);
+  }, []);
 
   return isLoading ? <BPLoader message="Chargement des données d' authentification" /> : children;
 };
