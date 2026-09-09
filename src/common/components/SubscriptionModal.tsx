@@ -1,23 +1,25 @@
 import { useDialog } from '@/common/store/dialog';
+import { getAppBaseUrl } from '@/common/utils';
 import { BillingModalContent } from '@/operations/account/components/billing/BillingModalContent';
 import { BillingModalStyle } from '@/operations/account/components/billing/style';
 import { isSubscriptionMandatory } from '@/operations/account/components/billing/utils';
 import { SubscriptionPlans } from '@/operations/account/components/SubscriptionPlans';
-import { useGetDefaultPaymentMethod } from '@/operations/account/queries';
-import { authProvider, getCached, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
+import { useGetDefaultPaymentMethod, useGetSubscriptionPlans } from '@/operations/account/queries';
+import { authProvider, cache, getCached, profileProvider, SubscriptionBillingInterval, userSubscriptionProvider } from '@/providers';
 import { EnableStatus, SubscriptionPlan, UserSubscriptionStatus } from '@bpartners/typescript-client';
 import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
 import { Alert, AlertTitle, Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
-import { FC, useEffect, useState } from 'react';
+import { FC, useLayoutEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Redirect } from '../utils';
 import { BPButton } from './BPButton';
-import { SubscriptionFlowDialogStyle, SubscriptionPlansDialogStyle } from './style';
+import { SubscriptionFlowDialogStyle, SubscriptionPlanActionsStyle, SubscriptionPlansDialogStyle, SubscriptionPlanTitleStyle } from './style';
 import { SubscriptionConsentStep } from './SubscriptionConsentStep';
 import { SubscriptionRedirectStep } from './SubscriptionRedirectStep';
+import { SubscriptionTrialStep } from './SubscriptionTrialStep';
 
-type SubscriptionStep = 'PLAN' | 'CONSENT' | 'REDIRECT';
+type SubscriptionStep = 'PLAN' | 'TRIAL' | 'CONSENT' | 'REDIRECT';
 
 const SUBSCRIPTION_DIALOG_PROPS = { maxWidth: 'lg', fullWidth: true } as const;
 
@@ -45,13 +47,25 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
   const [redirectionUrl, setRedirectionUrl] = useState<string>();
   const [redirectTitle, setRedirectTitle] = useState<string>();
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>();
+  const [isComparing, setIsComparing] = useState(false);
   const { close, open: openDialog, setDialogProps } = useDialog();
   const [searchParams] = useSearchParams();
+  const { plans } = useGetSubscriptionPlans();
+  const canCompare = plans.some(plan => plan.comparisonEntries?.length);
 
-  useEffect(() => {
-    const isPlanStep = step === 'PLAN';
+  const applyStepDialogProps = (nextStep: SubscriptionStep) => {
+    const isPlanStep = nextStep === 'PLAN';
     setDialogProps({ maxWidth: isPlanStep ? 'lg' : 'sm', sx: isPlanStep ? SubscriptionPlansDialogStyle : SubscriptionFlowDialogStyle });
-  }, [step, setDialogProps]);
+  };
+
+  const goToStep = (nextStep: SubscriptionStep) => {
+    applyStepDialogProps(nextStep);
+    setStep(nextStep);
+  };
+
+  useLayoutEffect(() => {
+    setDialogProps({ maxWidth: 'lg', sx: SubscriptionPlansDialogStyle });
+  }, [setDialogProps]);
 
   const {
     isPending,
@@ -63,14 +77,42 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     mutationFn,
     onSuccess: (url, { isConsentRequired }) => {
       setRedirectionUrl(url);
-      setStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
+      goToStep(isConsentRequired ? 'CONSENT' : 'REDIRECT');
+    },
+  });
+
+  const {
+    isPending: isStartingTrial,
+    mutate: startTrial,
+    variables: startingTrialPlanId,
+  } = useMutation({
+    mutationKey: ['subscription', 'trial'],
+    mutationFn: (subscriptionPlanIdentifier: string) => userSubscriptionProvider.startTrial(subscriptionPlanIdentifier),
+    onSuccess: async () => {
+      const cachedWhoami = getCached.whoami();
+      const userId = cachedWhoami?.user?.id;
+      if (!userId) return;
+      const freshUser = await profileProvider.getOne(userId).catch(() => undefined);
+      if (freshUser) cache.whoami({ ...cachedWhoami, user: freshUser });
+      Redirect.toURL(`${getAppBaseUrl()}/account/${userId}?trialStarted=done`);
+    },
+  });
+
+  const { isPending: isAddingTrialCard, mutate: addTrialCard } = useMutation({
+    mutationKey: ['subscription', 'trial', 'card'],
+    mutationFn: () => userSubscriptionProvider.initiateTrialPaymentMethod(),
+    onSuccess: ({ redirectionUrl }) => {
+      if (!redirectionUrl) return;
+      setRedirectionUrl(redirectionUrl);
+      setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre carte. Aucun débit ne sera effectué pendant votre essai.');
+      goToStep('REDIRECT');
     },
   });
 
   const { isPending: isSavingCommitment, mutate: saveCommitment } = useMutation({
     mutationKey: ['subscription', 'commitment'],
     mutationFn: (automaticRenewalStatus: EnableStatus) => userSubscriptionProvider.saveCommitment(selectedPlan!.id!, automaticRenewalStatus),
-    onSuccess: () => setStep('REDIRECT'),
+    onSuccess: () => goToStep('REDIRECT'),
   });
 
   const { isPending: isAddingCard, mutate: addCard } = useMutation({
@@ -80,7 +122,7 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
       if (!redirectionUrl) return;
       setRedirectionUrl(redirectionUrl);
       setRedirectTitle('Vous allez être redirigé vers Stripe pour enregistrer votre moyen de paiement');
-      setStep('REDIRECT');
+      goToStep('REDIRECT');
     },
   });
 
@@ -115,12 +157,38 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
     mutate({ subscriptionPlanIdentifier: plan.id, billingInterval, isConsentRequired: isConsentRequiredFor(plan, billingInterval) });
   };
 
+  const onStartTrial = (plan: SubscriptionPlan) => {
+    if (!plan.id) return;
+    setSelectedPlan(plan);
+    goToStep('TRIAL');
+  };
+
+  const onConfirmTrial = () => selectedPlan?.id && startTrial(selectedPlan.id);
+
+  const onAddTrialCard = () => {
+    if (selectedPlan?.id) cache.pendingTrialPlan(selectedPlan.id);
+    addTrialCard();
+  };
+
   const onConsent = (automaticRenewalStatus: EnableStatus) => saveCommitment(automaticRenewalStatus);
 
-  const onBackToPlans = () => setStep('PLAN');
+  const onBackToPlans = () => goToStep('PLAN');
 
   if (step === 'REDIRECT' && redirectionUrl) {
     return <SubscriptionRedirectStep redirectionUrl={redirectionUrl} title={redirectTitle} />;
+  }
+
+  if (step === 'TRIAL') {
+    return (
+      <SubscriptionTrialStep
+        plan={selectedPlan}
+        hasCard={hasCard}
+        onConfirm={onConfirmTrial}
+        onAddCard={onAddTrialCard}
+        onBack={onBackToPlans}
+        isLoading={isStartingTrial || isAddingTrialCard}
+      />
+    );
   }
 
   if (step === 'CONSENT') {
@@ -129,35 +197,57 @@ export const SubscriptionModal: FC<{ allowClose?: boolean }> = ({ allowClose = f
 
   return (
     <>
-      <DialogTitle className='subscription-step-title'>
+      <DialogTitle className='subscription-step-title' sx={SubscriptionPlanTitleStyle}>
         <Box className='subscription-step-title-icon'>
           <WorkspacePremiumRoundedIcon />
         </Box>
         <Box className='subscription-step-title-text'>
           <Typography component='span' className='subscription-step-title-main'>
-            Choisissez l'offre qui vous correspond le mieux.
+            {isComparing ? 'Comparatif détaillé' : "Choisissez l'offre qui vous correspond le mieux."}
           </Typography>
-          {isCancelled && (
+          {isComparing ? (
             <Typography component='span' className='subscription-step-title-hint'>
-              Renouvelez votre abonnement pour reprendre votre activité sur la plateforme.
+              Tous les métrés et fonctionnalités en un coup d'œil.
             </Typography>
+          ) : (
+            isCancelled && (
+              <Typography component='span' className='subscription-step-title-hint'>
+                Renouvelez votre abonnement pour reprendre votre activité sur la plateforme.
+              </Typography>
+            )
           )}
         </Box>
+        {canCompare && (
+          <Button
+            className='subscription-compare-toggle'
+            variant='outlined'
+            onClick={() => setIsComparing(comparing => !comparing)}
+            data-cy='compare-plans-toggle'
+          >
+            {isComparing ? 'Souscrire à une offre' : 'Comparer les offres'}
+          </Button>
+        )}
       </DialogTitle>
-      <DialogContent sx={{ pt: 1 }}>
+      <DialogContent sx={{ px: 2.5, pt: 0.5, pb: 0 }}>
         {error && (
           <Alert severity='error' variant='filled' sx={{ mb: 2 }}>
             <AlertTitle>Une erreur s'est produite.</AlertTitle>
             {errorMessage}
           </Alert>
         )}
-        <SubscriptionPlans onSelectPlan={onSelectPlan} pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined} />
+        <SubscriptionPlans
+          onSelectPlan={onSelectPlan}
+          onStartTrial={onStartTrial}
+          pendingPlanId={isPending ? pendingVariables?.subscriptionPlanIdentifier : undefined}
+          pendingTrialPlanId={isStartingTrial ? startingTrialPlanId : undefined}
+          isComparing={isComparing}
+        />
       </DialogContent>
-      <DialogActions className='subscription-step-actions'>
+      <DialogActions className='subscription-step-actions' sx={SubscriptionPlanActionsStyle}>
         {!isPaymentMethodLoading && (
           <>
             {canClose && <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Plus tard' isLoading={isPending} />}
-            {!canClose && hasCard && (
+            {!canClose && hasCard && !isComparing && (
               <BPButton className='subscription-step-button' style={AUTO_WIDTH} onClick={() => close()} label='Accéder à la plateforme' isLoading={isPending} />
             )}
             {!hasCard && (

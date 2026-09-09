@@ -48,7 +48,7 @@ const subscriptionDialogShell = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '20px 24px 10px',
+    padding: '14px 24px 6px',
   },
   '& .subscription-step-title-icon': {
     flexShrink: 0,
@@ -65,7 +65,7 @@ const subscriptionDialogShell = {
   '& .subscription-step-title-text': { display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 },
   '& .subscription-step-title-main': { fontSize: '15px', fontWeight: 700, lineHeight: 1.25, color: FOREST },
   '& .subscription-step-title-hint': { fontSize: '11px', fontWeight: 500, lineHeight: 1.35, color: MUTED },
-  '& .subscription-step-actions': { padding: '10px 24px 20px', gap: '10px' },
+  '& .subscription-step-actions': { padding: '6px 24px 14px', gap: '10px' },
   '& .subscription-step-button': {
     minWidth: '136px',
     borderRadius: '999px',
@@ -92,6 +92,50 @@ const subscriptionDialogShell = {
 export const SubscriptionPlansDialogStyle: SxProps = {
   '& .MuiDialog-paper': { borderRadius: '16px', bgcolor: WHITE },
   ...subscriptionDialogShell,
+};
+
+export const SubscriptionPlanActionsStyle: SxProps = {
+  minHeight: '60px',
+  padding: '6px 24px 14px',
+  gap: '10px',
+};
+
+export const SubscriptionPlanTitleStyle: SxProps = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '14px 24px 6px',
+  '& .subscription-step-title-icon': {
+    flexShrink: 0,
+    width: '36px',
+    height: '36px',
+    borderRadius: '11px',
+    bgcolor: PALETTE_COLORS.peach,
+    color: ORANGE_DARK,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  '& .subscription-step-title-icon svg': { fontSize: '20px' },
+  '& .subscription-step-title-text': { display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', minWidth: 0, minHeight: '38px' },
+  '& .subscription-step-title-main': { fontSize: '15px', fontWeight: 700, lineHeight: 1.25, color: FOREST },
+  '& .subscription-step-title-hint': { fontSize: '11px', fontWeight: 500, lineHeight: 1.35, color: MUTED },
+  '& .subscription-compare-toggle': {
+    marginLeft: 'auto',
+    flexShrink: 0,
+    textTransform: 'none',
+    fontSize: '12px',
+    fontWeight: 700,
+    lineHeight: 1.2,
+    color: ORANGE,
+    bgcolor: 'transparent',
+    border: `2px solid ${ORANGE}`,
+    borderRadius: '999px',
+    padding: '5px 14px',
+    boxShadow: 'none',
+    whiteSpace: 'nowrap',
+    '&:hover': { bgcolor: ORANGE, color: WHITE, boxShadow: 'none' },
+  },
 };
 
 export const SubscriptionFlowDialogStyle: SxProps = {
@@ -223,6 +267,28 @@ export const SubscriptionConsentStyle: SxProps = {
     textAlign: 'left',
   },
   '& .consent-recap-feature svg': { fontSize: '14px', color: ORANGE, flexShrink: 0, marginTop: '1px' },
+};
+
+export const SubscriptionTrialStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '14px',
+  marginTop: '24px',
+  '& .trial-highlight': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 14px',
+    borderRadius: '12px',
+    bgcolor: alpha(FOREST, 0.08),
+    border: `1px solid ${alpha(FOREST, 0.25)}`,
+    color: FOREST,
+  },
+  '& .trial-highlight svg': { fontSize: 26, flexShrink: 0 },
+  '& .trial-highlight-text': { fontSize: '13px', fontWeight: 700, lineHeight: 1.35 },
+  '& .trial-points': { listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' },
+  '& .trial-point': { display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', lineHeight: 1.4, color: FOREST },
+  '& .trial-point svg': { fontSize: 18, color: ORANGE, flexShrink: 0, marginTop: '1px' },
 };
 
 export const SubscriptionRedirectStyle: SxProps = {

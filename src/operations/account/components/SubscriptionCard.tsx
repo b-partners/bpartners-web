@@ -12,6 +12,7 @@ import { useRecordContext, useRefresh } from 'react-admin';
 import { useSearchParams } from 'react-router-dom';
 import { BillingModal } from './billing';
 import { getYearlyDiscountBadge, getYearlyPricing, getYearlyReferenceLabel, hasTwelveMonthCommitment, isYearlyBilling, YearlyPricing } from './billing/utils';
+import { getPlanFeatureLines } from './plan-features';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
 const VALIDATION_POLL_INTERVAL_MS = 3000;
@@ -38,7 +39,7 @@ const getYearlyLabel = (subscription?: UserSubscription) =>
   hasTwelveMonthCommitment(subscription) ? `${formatEuros(getPriceCents(subscription?.plan) * 12)} HT / an` : '';
 
 const getFeatures = (plan?: SubscriptionPlanDescription) => {
-  const features = plan?.features ?? [];
+  const features = getPlanFeatureLines(plan);
   return features.length > 0 ? features : subscriptionFeatures.map(({ text }) => text);
 };
 
@@ -54,6 +55,7 @@ export const SubscriptionCard = () => {
   const subscription = record?.user?.subscription as UserSubscription | undefined;
   const plan = subscription?.plan;
   const hasActiveSubscription = !!plan && !INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription?.status);
+  const isFreeTrial = subscription?.status === UserSubscriptionStatus.FREE_TRIAL;
   const isValidating = !plan && subscription?.status === UserSubscriptionStatus.ACTIVE;
   const isCancelled = subscription?.status === UserSubscriptionStatus.CANCELLED;
   const features = getFeatures(plan);
@@ -120,8 +122,15 @@ export const SubscriptionCard = () => {
                 <WorkspacePremiumOutlinedIcon />
               </Box>
               <Box className='subscription-plan-info'>
-                <Typography className='subscription-plan-name'>{plan?.name ?? 'Abonnement BIRDIA'}</Typography>
-                {plan?.description && <Typography className='subscription-plan-subtitle'>{plan.description}</Typography>}
+                <Box className='subscription-plan-name-row'>
+                  <Typography className='subscription-plan-name'>{plan?.name ?? 'Abonnement BIRDIA'}</Typography>
+                  {isFreeTrial && <Box className='subscription-trial-badge'>Période d’essai</Box>}
+                </Box>
+                {isFreeTrial ? (
+                  <Typography className='subscription-plan-subtitle'>Vous testez actuellement cette offre gratuitement.</Typography>
+                ) : (
+                  plan?.description && <Typography className='subscription-plan-subtitle'>{plan.description}</Typography>
+                )}
               </Box>
             </Box>
 

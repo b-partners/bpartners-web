@@ -3,7 +3,7 @@ import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
 import { hasSpendableCredits, isSubscriptionExpired } from '@/operations/account/components/billing/utils';
-import { accountHolderProvider, getBackWhoami, getCreditBalance, getDefaultPaymentMethod } from '@/providers';
+import { accountHolderProvider, cache, getBackWhoami, getCached, getCreditBalance, getDefaultPaymentMethod, userSubscriptionProvider } from '@/providers';
 import { UserSubscriptionStatus } from '@bpartners/typescript-client';
 import { FC, PropsWithChildren, useLayoutEffect, useRef } from 'react';
 import { useRedirect } from 'react-admin';
@@ -42,6 +42,19 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
         }
 
         const hasCard = await hasRegisteredCard();
+
+        const pendingTrialPlanId = getCached.pendingTrialPlan();
+        if (pendingTrialPlanId && hasCard) {
+          cache.pendingTrialPlan(undefined);
+          await userSubscriptionProvider.startTrial(pendingTrialPlanId).catch(printError);
+          cache.whoami(undefined);
+          cache.user(undefined);
+          await getBackWhoami().catch(() => undefined);
+          await bootstrapAccountCache();
+          redirect('/');
+          return;
+        }
+
         if (hasCard) await bootstrapAccountCache();
         redirect('/');
         openDialog(<SubscriptionModal />, { maxWidth: 'lg', fullWidth: true }, hasCard);

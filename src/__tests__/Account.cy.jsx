@@ -15,6 +15,7 @@ describe(specTitle('Account'), () => {
     cy.cognitoLogin();
     cy.stub(getCached, 'account').returns(account1);
     cy.stub(navigator.clipboard, 'writeText').as('copyToClipboard');
+    cy.intercept('GET', '**/subscriptionTrialEligibility*', []).as('getTrialEligibility');
   });
 
   //OK
@@ -284,7 +285,7 @@ describe(specTitle('Account'), () => {
           description: 'Pour les PME en croissance.',
           billingType: 'COMMITMENT',
           priceInCentsWithoutVat: 9900,
-          features: ['Analyse IA toiture complète', 'Export PDF + emprise GeoJSON'],
+          featureSections: [{ items: [{ text: 'Analyse IA toiture complète' }, { text: 'Export PDF + emprise GeoJSON' }] }],
         },
       },
     };

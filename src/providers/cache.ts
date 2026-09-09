@@ -28,6 +28,7 @@ const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
 const annotationToSave = 'birdia_annotation_to_save';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
+const pendingTrialPlanItem = 'bp_pending_trial_plan';
 export const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
 export const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
 
@@ -55,6 +56,10 @@ type TInitialMarkerInfo = {
 export const cache = {
   whoami(whoami: Whoami) {
     return cacheObject<Whoami>(whoamiItem, whoami);
+  },
+  pendingTrialPlan(planId?: string) {
+    if (planId) return localStorage.setItem(pendingTrialPlanItem, planId);
+    return localStorage.removeItem(pendingTrialPlanItem);
   },
   defaultRoofDelimiter(defaultRoofDelimiter: Polygon) {
     return cacheObject<Polygon>(defaultRoofDelimiterItem, defaultRoofDelimiter);
@@ -143,6 +148,9 @@ export const cache = {
 export const getCached = {
   whoami(): Whoami {
     return getCachedObject<Whoami>(whoamiItem);
+  },
+  pendingTrialPlan() {
+    return localStorage.getItem(pendingTrialPlanItem) || undefined;
   },
   defaultRoofDelimiter(): Polygon {
     return getCachedObject<Polygon>(defaultRoofDelimiterItem);
