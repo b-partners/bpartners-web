@@ -15,4 +15,5 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
   llmApiKey: readEnv(process.env.LLM_API_KEY),
   geojsonBaseUrl: readEnv(process.env.REACT_APP_GEOJSON_BASEURL),
+  wmsBaseUrl: readEnv(process.env.REACT_APP_WMS_BASE_URL),
 };
