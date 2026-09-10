@@ -55,7 +55,7 @@ const SignInForm = () => {
 
   return (
     <FormProvider {...formState}>
-      {windowWidth <= 1000 ? (
+      {windowWidth <= 600 ? (
         <DownloadAppBanner />
       ) : (
         <form style={LOGIN_FORM} onSubmit={handleSubmit(login)}>
