@@ -15,10 +15,10 @@ const baseProperties = (overrides: Partial<RoofAnalyseProperties> = {}): RoofAna
 });
 
 describe('createAnnotationInfoFromRoofAnalyseProperties — mutation', () => {
-  it('defaults mutation to "none" when the backend did not return one', () => {
+  it('defaults mutation to "unknown" when the backend did not return one', () => {
     const info = createAnnotationInfoFromRoofAnalyseProperties('polygon-1', baseProperties(), 0, 0);
 
-    expect(info?.mutation).to.eq('none');
+    expect(info?.mutation).to.eq('unknown');
   });
 
   it('passes through the backend mutation value when present', () => {
