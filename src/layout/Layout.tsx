@@ -7,6 +7,7 @@ import { FC } from 'react';
 import { LayoutProps, Layout as RaLayout } from 'react-admin';
 import { AppBar } from './appbar';
 import { Menu } from './menu';
+import { AppSidebar } from './sidebar/AppSidebar';
 
 export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
   useHeartBeat();
@@ -16,7 +17,7 @@ export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
   return (
     <AppLocationContext>
       <AccountHolderHandlerWrapper>
-        <RaLayout sx={{ bgcolor: '#F9FAFB0' }} {...layoutProps} appBar={AppBar} menu={Menu} error={BPErrorPage}>
+        <RaLayout sx={{ bgcolor: '#F9FAFB0' }} {...layoutProps} appBar={AppBar} menu={Menu} sidebar={AppSidebar} error={BPErrorPage}>
           <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
         </RaLayout>
       </AccountHolderHandlerWrapper>

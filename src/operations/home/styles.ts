@@ -67,14 +67,14 @@ export const home_style: SxProps = {
     '& > .MuiPaper-root.latest-addresses': {
       flexGrow: 1,
       borderRadius: 2,
-      minWidth: 500,
+      minWidth: { xs: '100%', md: 500 },
       border: 'none',
       position: 'relative',
     },
     '& > .MuiPaper-root': {
-      height: 300,
+      height: { xs: 'auto', md: 300 },
       flexGrow: 1,
-      minWidth: 350,
+      minWidth: { xs: '100%', md: 350 },
       position: 'relative',
       p: 0,
       m: 0,

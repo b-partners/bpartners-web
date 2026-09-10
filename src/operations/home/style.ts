@@ -92,6 +92,12 @@ export const HomeStyle: SxProps = {
     justifyContent: 'space-between',
     p: 2,
     borderRadius: 2,
+    '@media (max-width:1024px)': {
+      flexDirection: 'column',
+      justifyContent: 'center',
+      gap: 0.5,
+      p: 1,
+    },
   },
   '& .block-white': {
     backgroundColor: PALETTE_COLORS.white,
@@ -112,10 +118,12 @@ export const HomeStyle: SxProps = {
   '& .divider-black': {
     backgroundColor: PALETTE_COLORS.black,
     margin: '0 12px',
+    '@media (max-width:1024px)': { display: 'none' },
   },
   '& .divider-white': {
     backgroundColor: PALETTE_COLORS.white,
     margin: '0 12px',
+    '@media (max-width:1024px)': { display: 'none' },
   },
   '& .block-title': {
     fontWeight: 'bold',

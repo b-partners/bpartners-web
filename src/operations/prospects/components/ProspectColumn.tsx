@@ -30,7 +30,7 @@ export const ProspectColumn: FC<ProspectColumnProps> = ({ title, status }) => {
   const { nextPage, prevPage, prospects, hasNextPage, page, isLoading } = useProspectFetcher(status);
   const color = getColor(status);
   return (
-    <Grid item xs={4}>
+    <Grid item xs={12} md={4}>
       <Stack spacing={3}>
         <Box
           sx={{

@@ -3,7 +3,7 @@ import { printError } from '@/common/utils';
 import { AccountCircle, Assignment, Category, ContactSupport, Handshake, Home as HomeIcon, Lock, People, Receipt, ReceiptLong } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { Menu as RaMenu } from 'react-admin';
+import { Menu as RaMenu, useSidebarState } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { asyncGetAccountId, authProvider, getCached } from '../../providers';
 
@@ -23,6 +23,7 @@ const LogoutButton = () => {
 export const Menu = () => {
   const [dialogState, setDialogState] = useState(false);
   const [accountId, setAccountId] = useState(getCached.account()?.id || '');
+  const [open] = useSidebarState();
   const toggleDialogState = () => setDialogState(e => !e);
 
   useEffect(() => {
@@ -42,9 +43,23 @@ export const Menu = () => {
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'column',
-        height: '95%',
+        height: 'calc(100% - 68px)',
         position: 'fixed',
         top: 60,
+        width: open ? 'auto' : 55,
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': { display: 'none' },
+        '& .MuiMenuItem-root': { fontSize: open ? '0.8125rem' : 0 },
+        '@media (max-width:1024px)': {
+          position: 'static',
+          top: 0,
+          height: '100%',
+          width: 'auto',
+          overflow: 'visible',
+          '& .MuiMenuItem-root': { fontSize: '0.8125rem' },
+        },
       }}
     >
       <RaMenu>

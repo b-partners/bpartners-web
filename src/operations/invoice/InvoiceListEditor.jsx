@@ -39,8 +39,20 @@ const AnnotatorComponentShow = () => {
   if (isAnnotationEmpty) return null;
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'start', gap: 2, justifyContent: 'center', width: '100%', mt: 2 }}>
-      <Box sx={{ width: '333px' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        alignItems: 'start',
+        gap: 2,
+        justifyContent: 'center',
+        width: '100%',
+        maxWidth: '100%',
+        overflowX: 'auto',
+        mt: 2,
+      }}
+    >
+      <Box sx={{ width: { xs: '100%', md: '333px' } }}>
         {annotations?.annotations.map((annotation, index) => (
           <AnnotationInfoShow areaPictureAnnotationInstance={annotation} key={index} />
         ))}

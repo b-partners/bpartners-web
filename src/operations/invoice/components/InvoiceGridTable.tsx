@@ -1,5 +1,6 @@
 import { RaMoneyField } from '@/common/components';
 import { useAreaPictureFetcher } from '@/common/fetcher';
+import { useIsTablet } from '@/common/hooks';
 import useGetAccountHolder from '@/common/hooks/use-get-account-holder';
 import { useInvoiceToolContext } from '@/common/store/invoice';
 import { formatDate } from '@/common/utils';
@@ -22,6 +23,7 @@ export const InvoiceGridTable: FC<InvoiceGridTableProps> = props => {
 
   const { mutate: areaPictureFetcher, isPending: areaPictureFetcherLoading } = useAreaPictureFetcher(crupdateInvoice);
   const { companyInfo } = useGetAccountHolder();
+  const isTablet = useIsTablet();
 
   const nameRenderer = ({ customer }: Invoice) => <Typography>{`${customer?.firstName} ${customer?.lastName}`}</Typography>;
 
@@ -55,7 +57,7 @@ export const InvoiceGridTable: FC<InvoiceGridTableProps> = props => {
   }
 
   return (
-    <Datagrid rowClick={editInvoice}>
+    <Datagrid rowClick={editInvoice} sx={isTablet ? { display: 'block', overflowX: 'auto', width: '100%' } : undefined}>
       <TextField source='ref' label='Référence' />
       <TextField source='title' label='Titre' />
       <FunctionField render={nameRenderer} label='Client' />

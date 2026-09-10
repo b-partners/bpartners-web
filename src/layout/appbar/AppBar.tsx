@@ -1,5 +1,6 @@
 import { ShortWarning } from '@/common/components/BPBetaTestWarning';
 import BPDialog from '@/common/components/BPDialog';
+import { useCollapseSidebarOnTablet } from '@/common/hooks';
 import { printError, Redirect } from '@/common/utils';
 import { authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
 import { Menu } from '@mui/icons-material';
@@ -70,6 +71,7 @@ export const AppBar = () => {
   };
 
   const [open, setOpen] = useSidebarState();
+  useCollapseSidebarOnTablet();
 
   return (
     <>
