@@ -34,8 +34,8 @@ export const areaPictureAnnotationToPolygonAndAreaPictureInfo = (areaPictureAnno
       // Annotations saved before mutation/fireRisk existed have neither key in their metadata -
       // default both to "Inconnu" rather than undefined, so reopening one shows that instead of
       // a blank field with just the floating label.
-      mutation: annotation.metadata.mutation || 'unknown',
-      fireRisk: annotation.metadata.fireRisk || 'UNKNOWN',
+      mutation: (annotation.metadata.mutation as AnnotationInfo['mutation']) || 'unknown',
+      fireRisk: (annotation.metadata.fireRisk as AnnotationInfo['fireRisk']) || 'UNKNOWN',
     };
 
     polygons.push(polygon);
