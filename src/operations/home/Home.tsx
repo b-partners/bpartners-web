@@ -127,9 +127,7 @@ export const Home = () => {
                     data-cy='title-prospects'
                     data-path='/prospects'
                   >
-                    <Typography className='block-title' fontWeight='bold' fontSize='1.5rem'>
-                      Prospects
-                    </Typography>
+                    <Typography className='block-title'>Prospects</Typography>
                   </IconButton>
                   <Divider orientation='vertical' flexItem className='divider-black' />
                   <IconButton
@@ -151,9 +149,7 @@ export const Home = () => {
                       data-cy='title-customers'
                       data-path='/customers'
                     >
-                      <Typography className='block-title' fontWeight='bold' fontSize='1.5rem'>
-                        Clients
-                      </Typography>
+                      <Typography className='block-title'>Clients</Typography>
                     </IconButton>
                     <Divider orientation='vertical' flexItem className='divider-white' />
                     <IconButton
@@ -174,9 +170,7 @@ export const Home = () => {
                       data-cy='title-products'
                       data-path='/products'
                     >
-                      <Typography className='block-title' fontWeight='bold' fontSize='1.5rem'>
-                        Produits
-                      </Typography>
+                      <Typography className='block-title'>Produits</Typography>
                     </IconButton>
                     <Divider orientation='vertical' flexItem className='divider-white' />
                     <IconButton
@@ -197,9 +191,7 @@ export const Home = () => {
                       data-cy='title-invoices-1'
                       data-path='/invoices'
                     >
-                      <Typography className='block-title' fontWeight='bold' fontSize='1.5rem'>
-                        Devis
-                      </Typography>
+                      <Typography className='block-title'>Devis</Typography>
                     </IconButton>
                     <Divider orientation='vertical' flexItem className='divider-white' />
                     <IconButton
@@ -220,9 +212,7 @@ export const Home = () => {
                       data-cy='title-invoices-2'
                       data-path='/invoices'
                     >
-                      <Typography className='block-title' fontWeight='bold' fontSize='1.5rem'>
-                        Factures
-                      </Typography>
+                      <Typography className='block-title'>Factures</Typography>
                     </IconButton>
                     <Divider orientation='vertical' flexItem className='divider-white' />
                     <IconButton

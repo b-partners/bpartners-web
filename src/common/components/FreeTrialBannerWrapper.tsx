@@ -30,20 +30,31 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
   return isFreeTrialSubscription ? (
     <Box sx={{ width: '100%', height: '100%' }}>
       {' '}
-      <FlexBox sx={{ mb: 1, bgcolor: '#f5f25dF0', px: 4, transform: 'translateY(-4px)', justifyContent: 'space-between', width: '100%' }}>
+      <FlexBox
+        sx={{
+          mb: 1,
+          bgcolor: '#f5f25dF0',
+          px: { xs: 2, md: 4 },
+          py: { xs: 1, md: 0 },
+          transform: 'translateY(-4px)',
+          justifyContent: 'space-between',
+          gap: 1,
+          flexWrap: 'wrap',
+          width: '100%',
+        }}
+      >
         {' '}
         <Typography
           sx={{
             color: '#f71b31',
             fontWeight: 'bold',
-            position: 'sticky',
             fontSize: '1rem',
           }}
         >
           Il vous reste {remainingDays} jour{remainingDays > 1 ? 's' : ''} d'essai et {remainingAnalyses} analyse{remainingAnalyses > 1 ? 's' : ''} toiture
           {remainingAnalyses > 1 ? 's' : ''}.
         </Typography>
-        <FlexBox sx={{ gap: 2 }}>
+        <FlexBox sx={{ gap: 2, flexWrap: 'wrap' }}>
           <Typography
             sx={{
               color: '#f71b31',
