@@ -32,4 +32,10 @@ describe('createAnnotationInfoFromRoofAnalyseProperties — mutation', () => {
 
     expect(info?.fireRisk).to.eq('ELEVE');
   });
+
+  it('defaults fire risk to "UNKNOWN" when the backend did not return one', () => {
+    const info = createAnnotationInfoFromRoofAnalyseProperties('polygon-1', baseProperties(), 0, 0);
+
+    expect(info?.fireRisk).to.eq('UNKNOWN');
+  });
 });

@@ -68,6 +68,10 @@ export const ANNOTATION_FIRE_RISK_TRANSLATION = {
   FAIBLE: 'Faible',
   MODERE: 'Modéré',
   ELEVE: 'Élevé',
+  // UI-only sentinel - geo-jobs never returns this; used when fire_risk is absent (old
+  // annotations, or the vegetation assessment couldn't be computed) so the field shows
+  // "Inconnu" instead of falling back to the floating label with nothing selected.
+  UNKNOWN: 'Inconnu',
 } as const;
 export type AnnotationFireRiskType = typeof ANNOTATION_FIRE_RISK_TRANSLATION;
 export const ANNOTATION_FIRE_RISK_CHOICES = toRaInputChoices(ANNOTATION_FIRE_RISK_TRANSLATION);

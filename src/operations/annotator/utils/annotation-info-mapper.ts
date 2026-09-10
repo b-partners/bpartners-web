@@ -17,8 +17,8 @@ const DEFAULT_ANNOTATION_INFO: AnnotationInfo = {
   fillColor: '',
   labelName: '',
   strokeColor: '',
-  mutation: '' as AnnotationInfo['mutation'],
-  fireRisk: '' as AnnotationInfo['fireRisk'],
+  mutation: 'unknown' as AnnotationInfo['mutation'],
+  fireRisk: 'UNKNOWN' as AnnotationInfo['fireRisk'],
 };
 
 const getLabelName = (polygon: Polygon, index: number) => {
@@ -79,8 +79,11 @@ export const mapAreaAnnotationInstanceToAnnotationInfo = (annotationInstance: Ar
     wearness = null,
     moldRate = 0,
     obstacle = '',
-    mutation = '',
-    fireRisk = '',
+    // Annotations saved before mutation/fireRisk existed have neither key in their metadata -
+    // default both to "Inconnu" rather than an empty string, so reopening one shows that instead
+    // of a blank field with just the floating label.
+    mutation = 'unknown',
+    fireRisk = 'UNKNOWN',
   } = metadata;
   return {
     polygonId: annotationInstance.id,

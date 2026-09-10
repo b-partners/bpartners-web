@@ -42,11 +42,10 @@ export const createAnnotationInfoFromRoofAnalyseProperties = (
     fillColor: '#00ff0000',
     strokeColor: '#00ff00',
     area: +(roof_area_in_m2 || 0)?.toFixed(2),
-    // The mutation property is only present when geo-jobs could actually resolve two
-    // distinct-date images for this roof (see b-partners/geo-jobs#853) - default to "Inconnu"
-    // otherwise, per BPARTNERS-3527.
+    // mutation/fire_risk are only present when geo-jobs could actually compute them (see
+    // b-partners/geo-jobs#853/#842) - default both to "Inconnu" otherwise, per BPARTNERS-3527.
     mutation: (mutation as AnnotationInfo['mutation']) || 'unknown',
-    fireRisk: fire_risk as AnnotationInfo['fireRisk'],
+    fireRisk: (fire_risk as AnnotationInfo['fireRisk']) || 'UNKNOWN',
   };
   return roofAnalysePropertiesInfos;
 };

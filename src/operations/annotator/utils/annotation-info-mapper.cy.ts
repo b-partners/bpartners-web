@@ -17,10 +17,10 @@ describe('mapAreaAnnotationInstanceToAnnotationInfo — mutation/fireRisk', () =
     expect(info.fireRisk).to.eq('ELEVE');
   });
 
-  it('defaults mutation and fireRisk to empty string when metadata omits them', () => {
+  it('defaults mutation and fireRisk to "Inconnu" when metadata omits them (e.g. annotations saved before these fields existed)', () => {
     const info = mapAreaAnnotationInstanceToAnnotationInfo(buildInstance({}));
 
-    expect(info.mutation).to.eq('');
-    expect(info.fireRisk).to.eq('');
+    expect(info.mutation).to.eq('unknown');
+    expect(info.fireRisk).to.eq('UNKNOWN');
   });
 });
