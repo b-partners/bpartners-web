@@ -125,14 +125,18 @@ export const BP_THEME = {
         root: {
           paddingLeft: 2,
           marginTop: '1.5rem',
-          '&. RaLayout-content': {
-            marginTop: '2rem',
+          '& .RaLayout-content': {
             zIndex: 1,
-            width: '98%',
-            padding: '1%',
+            '@media (max-width:1024px)': {
+              marginTop: '2rem',
+              width: '100%',
+              padding: '1%',
+            },
           },
-          '&. RaLayout-contentWithSidebar': {
-            overflowY: importantCSS('scroll'),
+          '& .RaLayout-contentWithSidebar': {
+            '@media (max-width:1024px)': {
+              overflowY: importantCSS('scroll'),
+            },
           },
         },
       },

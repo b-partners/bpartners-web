@@ -2,7 +2,9 @@ import { RaMoneyField } from '@/common/components';
 import ArchiveBulkAction from '@/common/components/ArchiveBulkAction';
 import { BPImport } from '@/common/components/BPImport';
 import { RaPercentageField } from '@/common/components/Field/RaPercentageField';
-import { Datagrid, FunctionField, List, TextInput, useListContext } from 'react-admin';
+import { useIsTablet } from '@/common/hooks';
+import { prettyPrintMinors } from '@/common/utils';
+import { Datagrid, FunctionField, List, SimpleList, TextInput, useListContext } from 'react-admin';
 import BPListActions from '../../common/components/BPListActions';
 import { EmptyList } from '../../common/components/EmptyList';
 import ListComponent from '../../common/components/ListComponent';
@@ -39,6 +41,16 @@ const Product = () => {
   const { isLoading } = useListContext();
   const { companyInfo } = useGetAccountHolder();
   const isSubjectToVat = !!companyInfo?.isSubjectToVat;
+  const isTablet = useIsTablet();
+  if (isLoading) return false;
+  if (isTablet)
+    return (
+      <SimpleList
+        linkType='edit'
+        primaryText={record => record.description}
+        secondaryText={record => (isSubjectToVat ? `${prettyPrintMinors(record.unitPriceWithVat)} TTC` : `${prettyPrintMinors(record.unitPrice)} HT`)}
+      />
+    );
   return (
     !isLoading && (
       <Datagrid rowClick='edit' empty={<EmptyList />}>

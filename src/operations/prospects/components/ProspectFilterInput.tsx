@@ -10,7 +10,7 @@ export const ProspectFilterInput: FC = () => {
   const { setSearchName, searchName } = useProspectSearchStore();
   const handleChange = useMemo(() => debounce((event: ChangeEvent<HTMLInputElement>) => setSearchName(event.target.value), debounceTimeMS), []);
   return (
-    <FlexBox sx={{ gap: 1, bgcolor: 'white', borderRadius: '8px', p: '10px', px: 2 }}>
+    <FlexBox sx={{ gap: 1, bgcolor: 'white', borderRadius: '8px', p: '10px', px: 2, width: { xs: '100%', md: 372 }, maxWidth: '100%' }}>
       <Search />
       <input
         type='text'
@@ -18,7 +18,7 @@ export const ProspectFilterInput: FC = () => {
         defaultValue={searchName}
         placeholder='Rechercher un prospect'
         onChange={handleChange}
-        style={{ width: '300px', fontSize: '16px', outline: 'none', border: 'none' }}
+        style={{ width: '100%', minWidth: 0, fontSize: '16px', outline: 'none', border: 'none' }}
       />
     </FlexBox>
   );
