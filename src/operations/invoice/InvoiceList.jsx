@@ -63,8 +63,8 @@ const InvoiceList = props => {
         pagination={<Pagination />}
         perPage={pageSize}
         actions={
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, width: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               <InvoiceSearchBar />
               <InvoiceExportButton />
             </Box>

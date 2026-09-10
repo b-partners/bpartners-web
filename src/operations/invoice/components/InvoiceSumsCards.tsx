@@ -40,6 +40,7 @@ const InvoiceSumsCards = () => {
       sx={{
         display: 'flex',
         justifyContent: 'space-evenly',
+        flexWrap: 'wrap',
       }}
     >
       {cards?.map((card, k) => (

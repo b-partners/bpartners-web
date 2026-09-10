@@ -45,6 +45,11 @@ export const Menu = () => {
         height: '95%',
         position: 'fixed',
         top: 60,
+        '@media (max-width:1024px)': {
+          position: 'static',
+          top: 0,
+          height: '100%',
+        },
       }}
     >
       <RaMenu>

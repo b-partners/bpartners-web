@@ -21,8 +21,9 @@ export const AccountStyle: SxProps = {
   },
   '& .card-user': {
     display: 'flex',
-    flexDirection: 'row',
-    gap: 5,
+    flexDirection: { xs: 'column', md: 'row' },
+    flexWrap: 'wrap',
+    gap: { xs: 2, md: 5 },
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -38,7 +39,7 @@ export const AccountStyle: SxProps = {
     height: 150,
   },
   '& .container-typo-user': {
-    ml: 7,
+    ml: { xs: 0, md: 7 },
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -63,8 +64,10 @@ export const AccountStyle: SxProps = {
     my: 1,
     mb: 3,
     mx: 'auto',
+    px: 3,
     fontSize: '1.3rem',
-    width: '400px',
+    width: { xs: 'fit-content', md: '400px' },
+    maxWidth: '100%',
   },
   '& .trial-desciption': {
     fontStyle: 'italic',
@@ -88,6 +91,8 @@ export const AccountStyle: SxProps = {
   },
   '& .company-header': {
     display: 'flex',
+    flexWrap: 'wrap',
+    gap: 2,
     justifyContent: 'space-between',
     alignItems: 'center',
     mb: 4,
@@ -101,8 +106,10 @@ export const AccountStyle: SxProps = {
     py: 1,
     mb: 6,
     mx: 'auto',
+    px: 3,
     fontSize: '1.3rem',
-    width: '500px',
+    width: { xs: 'fit-content', md: '500px' },
+    maxWidth: '100%',
   },
   '& .email-recipients-button': {
     textTransform: 'none',

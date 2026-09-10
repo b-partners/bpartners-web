@@ -16,9 +16,10 @@ const BpLoginPageLayout = ({ children }) => {
       <img src='/logo.png' style={{ position: 'absolute', top: '3%', left: '3%', width: '150px' }} alt='Bienvenue sur BIRDIA !' />
       <Box sx={{ ...FLEX_CENTER, flexShrink: 0, flexGrow: 1 }}>{children}</Box>
       <Box
-        width={{ md: '60%', sm: '0%', xs: '0%' }}
         sx={{
           ...FLEX_CENTER,
+          width: '60%',
+          '@media (max-width:1024px)': { display: 'none' },
           height: '110vh',
           backgroundImage: `url(${BpBackgroundImage})`,
           backgroundSize: 'cover',
