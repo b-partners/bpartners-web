@@ -9,10 +9,11 @@ import {
   ANNOTATION_WEAR_CHOICES,
 } from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps } from '@mui/material';
+import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
 import { ChangeEvent, FC, FocusEvent, useEffect, useMemo, useState } from 'react';
 import { AnnotationInfo } from '../types';
 import { FreeAutocompleteInput } from './free-autocomplete-input';
+import { mutationImageCaptionStyle } from './style';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
@@ -42,6 +43,10 @@ interface AnnotatorFormProps {
 }
 const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPending, roofAnalyseProperties }) => {
   const { annotationInfos, updateAnnotationInfo, isFirst } = annotatorStore.useOneAnnotationStore(polygonId);
+
+  const isRoofAnalysePolygon = isFirst && polygonId.includes(roofGlobalIdRef);
+  const { mutation_older_image_date, mutation_older_image_url, mutation_recent_image_date, mutation_recent_image_url } = roofAnalyseProperties || {};
+  const hasMutationImages = isRoofAnalysePolygon && (mutation_older_image_date || mutation_recent_image_date);
 
   const handleChange: HandleChange = (key, transform) => event => {
     const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
@@ -199,6 +204,26 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
           </MenuItem>
         ))}
       </TextField>
+      {hasMutationImages && (
+        <Typography sx={mutationImageCaptionStyle}>
+          Comparé{' '}
+          {mutation_older_image_url ? (
+            <a className='mutation-caption-link' href={mutation_older_image_url} target='_blank' rel='noreferrer'>
+              {mutation_older_image_date}
+            </a>
+          ) : (
+            mutation_older_image_date
+          )}
+          {' → '}
+          {mutation_recent_image_url ? (
+            <a className='mutation-caption-link' href={mutation_recent_image_url} target='_blank' rel='noreferrer'>
+              {mutation_recent_image_date}
+            </a>
+          ) : (
+            mutation_recent_image_date
+          )}
+        </Typography>
+      )}
 
       <CustomTextField
         InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}

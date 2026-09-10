@@ -37,6 +37,10 @@ export interface Properties {
   roof_height_in_meters: number;
   mutation?: string;
   fire_risk?: string;
+  mutation_recent_image_url?: string;
+  mutation_recent_image_date?: number;
+  mutation_older_image_url?: string;
+  mutation_older_image_date?: number;
 }
 
 export interface Region {
