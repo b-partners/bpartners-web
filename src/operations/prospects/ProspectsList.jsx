@@ -121,7 +121,7 @@ const ProspectsListContent = ({ bpUser, saveOrUpdateProspectSubmit }) => {
       </Tabs>
 
       <TabPanel value={tabIndex} index={0} sx={{ mt: 1 }}>
-        <FlexBox sx={{ justifyContent: 'end', gap: 2, mb: 1 }}>
+        <FlexBox sx={{ justifyContent: 'end', gap: 2, mb: 1, flexWrap: 'wrap' }}>
           <ProspectFilterInput variant='outlined' style={{ width: '400px' }} />
           <BPButton
             sx={{
