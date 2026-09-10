@@ -1,5 +1,6 @@
+import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotationInstance } from '@bpartners/typescript-client';
-import { mapAreaAnnotationInstanceToAnnotationInfo } from './annotation-info-mapper';
+import { createDefaultAnnotationInfo, mapAreaAnnotationInstanceToAnnotationInfo } from './annotation-info-mapper';
 
 const buildInstance = (metadata: Record<string, unknown>): AreaPictureAnnotationInstance =>
   ({
@@ -19,6 +20,17 @@ describe('mapAreaAnnotationInstanceToAnnotationInfo — mutation/fireRisk', () =
 
   it('defaults mutation and fireRisk to "Inconnu" when metadata omits them (e.g. annotations saved before these fields existed)', () => {
     const info = mapAreaAnnotationInstanceToAnnotationInfo(buildInstance({}));
+
+    expect(info.mutation).to.eq('unknown');
+    expect(info.fireRisk).to.eq('UNKNOWN');
+  });
+});
+
+describe('createDefaultAnnotationInfo — mutation/fireRisk', () => {
+  it('defaults a brand-new manually-drawn polygon to "Inconnu" for both fields', () => {
+    const polygon = { id: 'polygon-1', points: [] } as unknown as Polygon;
+
+    const info = createDefaultAnnotationInfo(polygon, 0);
 
     expect(info.mutation).to.eq('unknown');
     expect(info.fireRisk).to.eq('UNKNOWN');

@@ -46,7 +46,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
 
   const isRoofAnalysePolygon = isFirst && polygonId.includes(roofGlobalIdRef);
   const { mutation_older_image_date, mutation_older_image_url, mutation_recent_image_date, mutation_recent_image_url } = roofAnalyseProperties || {};
-  const hasMutationImages = isRoofAnalysePolygon && (mutation_older_image_date || mutation_recent_image_date);
+  const hasMutationImages = isRoofAnalysePolygon && (mutation_older_image_date != null || mutation_recent_image_date != null);
 
   const handleChange: HandleChange = (key, transform) => event => {
     const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
@@ -197,7 +197,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         ))}
       </TextField>
 
-      <TextField select label='Mutation' value={annotationInfos.mutation ?? ''} onChange={handleChange('mutation')} size='small'>
+      <TextField data-testid='mutation' select label='Mutation' value={annotationInfos.mutation ?? ''} onChange={handleChange('mutation')} size='small'>
         {ANNOTATION_MUTATION_CHOICES.map(({ name, id }) => (
           <MenuItem key={`${id}-mutation`} value={id}>
             {name}
@@ -205,7 +205,7 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         ))}
       </TextField>
       {hasMutationImages && (
-        <Typography sx={mutationImageCaptionStyle}>
+        <Typography data-testid='mutation-image-caption' sx={mutationImageCaptionStyle}>
           Comparé{' '}
           {mutation_older_image_url ? (
             <a className='mutation-caption-link' href={mutation_older_image_url} target='_blank' rel='noreferrer'>
@@ -231,7 +231,14 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         defaultValue={annotationInfos.obstacle}
         onBlur={handleChange('obstacle')}
       />
-      <TextField select label='Risque vegetation / feu' value={annotationInfos.fireRisk ?? ''} onChange={handleChange('fireRisk')} size='small'>
+      <TextField
+        data-testid='fire-risk'
+        select
+        label='Risque vegetation / feu'
+        value={annotationInfos.fireRisk ?? ''}
+        onChange={handleChange('fireRisk')}
+        size='small'
+      >
         {ANNOTATION_FIRE_RISK_CHOICES.map(({ name, id }) => (
           <MenuItem key={`${id}-fire-risk`} value={id}>
             {name}
