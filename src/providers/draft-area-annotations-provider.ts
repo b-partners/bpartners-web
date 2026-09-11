@@ -19,7 +19,7 @@ const toInstant = (dateTime: string) => `${dateTime}:00.000Z`;
 // so we pre-format them as ISO strings and pass them alongside lite until the SDK serialization is fixed.
 const buildOptions = (creationFrom?: string, creationTo?: string) => ({
   params: {
-    lite: true,
+    lite: false,
     ...(creationFrom && { creationFrom: toInstant(creationFrom) }),
     ...(creationTo && { creationTo: toInstant(creationTo) }),
   },
