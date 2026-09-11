@@ -31,7 +31,9 @@ Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLay
 
 The library owns saving. A lon/lat session is written continuously into **one annotation record addressed
 by a single session id** — `geoRecordIds(sessionId)` derives the area picture, annotation and file ids from
-it with uuid v5, so the id is the whole handle on the record. No prospect is created for it.
+it with uuid v5, so the id is the whole handle on the record. For a new project the app opens that record
+itself, right after creating the prospect (see below), so the area picture carries the `prospectId`; the
+library adopts an existing record as it stands and only creates one when there is none (0.4.1+).
 
 Two ways in, and the route param means a different thing in each:
 
@@ -39,6 +41,7 @@ Two ways in, and the route param means a different thing in each:
 |---|---|---|---|
 | New project (address given) | `/projects/<new uuid>?flow=geo&address=…` | the **session id**, minted by `useMutateProspect` | `sessionId` + `latitude`/`longitude` (geocoded here) + `address` + both resolvers |
 | Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + both resolvers — the record supplies the position and the address |
+| Opened, never saved (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the draft only carries `properties.geoSessionId` (set at prospect creation, replaced by the library's first save): the page geocodes the area picture's address and passes it like a new project |
 | Legacy draft (no `geoSession`) | `/projects/<areaPictureId>` | the **area picture id** | falls back to the address flow: `areaPictureId` + `idAnnotations`, so pre-migration drafts still open |
 
 Never reintroduce a local save path — auto-save, analyse results, 3D mapping and the PDF export all live
@@ -46,13 +49,14 @@ inside the library.
 
 ## Entering the screen
 
-- `src/common/fetcher/prospect-queries.tsx` (`useMutateProspect`): creates **only the prospect**, mints a
-  session id and navigates with `flow=geo`. It no longer creates an area picture or a draft annotation —
-  the library creates those under the session-derived ids.
+- `src/common/fetcher/prospect-queries.tsx` (`useMutateProspect`): creates the prospect, mints a session id,
+  then opens its record under `geoRecordIds(sessionId)` — the area picture (with `prospectId`,
+  `downloadImage: false`), then a draft annotation with default values (`annotations: []`,
+  `properties: { geoSessionId }`) — and navigates with `flow=geo`, handing the library the session id.
 - `src/operations/home/project-list-item.tsx` and
   `src/operations/prospects/components/DraftAnnotationItem.tsx`: navigate with the draft's area picture id
-  and let the page resolve the session. Geo records carry no `prospectId`, so both guard their prospect
-  lookup with `enabled: !!prospectId`.
+  and let the page resolve the session. Geo records created before the app opened them itself carry no
+  `prospectId`, so both guard their prospect lookup with `enabled: !!prospectId`.
 
 ## Imagery
 
@@ -87,8 +91,9 @@ neither yields a layer.
 
 ## What the app still owns
 
-- Prospect creation (CRM). Geo records are **not** linked to a prospect — the library creates the area
-  picture itself, without a `prospectId`.
+- Prospect creation (CRM), and opening the new project's record right after it, linked to the prospect.
+  The library never re-declares an existing area picture (its PUT is a full replace on the backend, which
+  would drop the `prospectId`).
 - The drafts list (`src/operations/prospects/DraftAreaPictureAnnotations.tsx`) and its filters.
 - The invoice-side read-only annotation info panel:
   `src/operations/invoice/components/AnnotationInfoShow.tsx` +

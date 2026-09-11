@@ -4,7 +4,7 @@ import { RoofAnnotator } from '@bpartners/roof-analyser';
 import { Box, Typography } from '@mui/material';
 import { useGetOne } from 'react-admin';
 import { useNavigate, useParams } from 'react-router-dom';
-import { readGeoSessionId } from './geo-session';
+import { hasSavedGeoSession, readGeoSessionId } from './geo-session';
 import { ROOF_ANALYSER_CONFIG } from './roof-analyser-config';
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
@@ -25,9 +25,11 @@ export const Annotator = () => {
   const address = readParam(addressParam);
   const isNewSession = flow === 'geo';
   const { data: draftAnnotation, isLoading: isDraftLoading } = useGetOne('drafts-annotations', { id: projectId }, { enabled: !isNewSession && !!projectId });
-  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(isNewSession ? address : undefined);
-
   const sessionId = isNewSession ? projectId : readGeoSessionId(draftAnnotation);
+  const sessionAddress = address ?? draftAnnotation?.areaPicture?.address;
+  const needsPosition = isNewSession || (!!sessionId && !hasSavedGeoSession(draftAnnotation));
+  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined);
+  const isLocating = isGeocoding || (needsPosition && !!sessionAddress && !position);
 
   const error = credentialsError
     ? `La clé API du compte n'a pas pu être récupérée : ${credentialsError.message}`
@@ -41,7 +43,7 @@ export const Annotator = () => {
     );
   }
 
-  if (!apiKey || isGeocoding || (!isNewSession && isDraftLoading)) {
+  if (!apiKey || isLocating || (!isNewSession && isDraftLoading)) {
     return <BPLoader message='Chargement des données...' />;
   }
 
@@ -60,17 +62,12 @@ export const Annotator = () => {
         <RoofAnnotator
           {...config}
           sessionId={sessionId}
-          {...(position ? { latitude: position.latitude, longitude: position.longitude, address } : {})}
+          {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
           resolveWmsLayers={resolveWmsLayers}
           resolveActiveWmsLayer={resolveActiveWmsLayer}
         />
       ) : (
-        <RoofAnnotator
-          {...config}
-          areaPictureId={projectId}
-          idAnnotations={draftAnnotation?.draftId}
-          address={address ?? draftAnnotation?.areaPicture?.address}
-        />
+        <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} address={sessionAddress} />
       )}
     </Box>
   );

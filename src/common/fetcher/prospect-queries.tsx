@@ -1,14 +1,15 @@
 import { useStepProgress } from '@/common/hooks';
 import { wait } from '@/common/utils';
-import { Prospect } from '@bpartners/typescript-client';
+import { geoRecordIds } from '@bpartners/roof-analyser';
+import { AreaPictureAnnotation, Prospect, ZoomLevel } from '@bpartners/typescript-client';
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useCreate, useNotify } from 'react-admin';
+import { useCreate, useNotify, useUpdate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import { v4 as uuidV4 } from 'uuid';
 import { useDialog } from '../store/dialog';
 
-const PROSPECT_STEPS = 2;
-const PROSPECT_PROGRESS_DURATION_MS = 6000;
+const PROSPECT_STEPS = 3;
+const PROSPECT_PROGRESS_DURATION_MS = 10000;
 
 const onError = (error: any) => {
   let errorMessage = "Une erreur s'est produite, veuillez réessayer.";
@@ -34,10 +35,16 @@ const onError = (error: any) => {
   );
 };
 
+/**
+ * Creates the prospect, then opens its analyse before the annotator mounts: an area picture linked to the
+ * prospect, then a draft annotation with default values, both under the ids the library derives from the
+ * session id. The library is handed that id, adopts the record as it stands and saves the session into it.
+ */
 export const useMutateProspect = () => {
   const notify = useNotify();
   const navigate = useNavigate();
-  const [create, { isPending }] = useCreate();
+  const [create, { isPending: isCreatePending }] = useCreate();
+  const [saveDraftAnnotation, { isPending: isDraftAnnotationPending }] = useUpdate('drafts-annotations');
   const { progress, start, advance, complete, reset: resetProgress } = useStepProgress(PROSPECT_STEPS, undefined, PROSPECT_PROGRESS_DURATION_MS);
 
   const handleError = (error: any) => {
@@ -45,17 +52,48 @@ export const useMutateProspect = () => {
     onError(error);
   };
 
-  // The annotator owns its own record: the session id names it, and the library creates the area picture
-  // and the draft annotation behind it. Only the prospect is created here.
   const onProspectSuccess = (prospect: Prospect) => {
     advance();
     notify(`resources.prospects.creation.success`, { type: 'success' });
     const sessionId = uuidV4();
-    complete();
-    wait(800).then(() => {
-      navigate(`/projects/${sessionId}?flow=geo&address=${encodeURIComponent(prospect.address || '')}`);
-      useDialog.getState().close();
-    });
+    const { areaPictureId, annotationId, fileId } = geoRecordIds(sessionId);
+
+    const onDraftAnnotationSuccess = () => {
+      complete();
+      wait(800).then(() => {
+        navigate(`/projects/${sessionId}?flow=geo&address=${encodeURIComponent(prospect.address || '')}`);
+        useDialog.getState().close();
+      });
+    };
+
+    const onAreaPictureSuccess = () => {
+      advance();
+      const draftAnnotation: AreaPictureAnnotation = {
+        id: annotationId,
+        idAreaPicture: areaPictureId,
+        creationDatetime: new Date(),
+        annotations: [],
+        properties: { geoSessionId: sessionId },
+        isDraft: true,
+      };
+      saveDraftAnnotation(
+        'drafts-annotations',
+        { id: annotationId, data: draftAnnotation, meta: { pictureId: areaPictureId, annotationId } },
+        { onError: handleError, onSuccess: onDraftAnnotationSuccess }
+      );
+    };
+
+    const areaPicture = {
+      id: areaPictureId,
+      address: prospect.address,
+      fileId,
+      filename: `Layer ${prospect.address}`,
+      prospectId: prospect.id,
+      zoomLevel: ZoomLevel.BUILDING,
+      isExtended: true,
+      downloadImage: false,
+    };
+    create('area-picture-details', { data: areaPicture }, { onError: handleError, onSuccess: onAreaPictureSuccess });
   };
 
   const mutate = (prospect: Prospect) => {
@@ -63,5 +101,5 @@ export const useMutateProspect = () => {
     create('prospects', { data: prospect }, { onError: handleError, onSuccess: onProspectSuccess });
   };
 
-  return { mutate, isPending, progress };
+  return { mutate, isPending: isCreatePending || isDraftAnnotationPending, progress };
 };
