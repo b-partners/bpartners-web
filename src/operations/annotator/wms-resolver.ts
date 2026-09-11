@@ -9,10 +9,13 @@ interface AreaPictureMapLayer {
   precisionLevelInCm?: number;
 }
 
-interface AreaPictureMapLayerAvailability {
-  wmsBaseUrl: string;
-  availableLayers: AreaPictureMapLayer[];
-  actualLayer: AreaPictureMapLayer;
+interface MapLayerReachability {
+  layer: AreaPictureMapLayer;
+  reachable: boolean;
+}
+
+interface MapLayersReachability {
+  layers: MapLayerReachability[];
 }
 
 const readEnv = (value?: string) => {
@@ -22,6 +25,14 @@ const readEnv = (value?: string) => {
 
 const WMS_RESOLVER = readEnv(process.env.REACT_APP_WMS_RESOLVER);
 const WMS_RESOLVER_API_KEY = readEnv(process.env.REACT_APP_WMS_RESOLVER_API_KEY);
+
+/**
+ * Where tiles are fetched from — never the `wmsBaseUrl` the MapLayer endpoints hand back. The library
+ * reads every cell through `fetch` + `createImageBitmap`, which needs a same-origin, CORS-clean url, and
+ * the GeoServer sends no CORS headers. `/wms-proxy` is the Vite dev server's own proxy (vite.config.ts);
+ * any deployed build must point this at a same-origin proxy of its own.
+ */
+const WMS_TILE_BASE_URL = readEnv(process.env.REACT_APP_WMS_TILE_BASE_URL) ?? '/wms-proxy';
 
 const resolverKeyOrThrow = () => {
   if (!WMS_RESOLVER) throw new Error("L'imagerie n'est pas configurée — REACT_APP_WMS_RESOLVER est absent du .env.");
@@ -36,6 +47,8 @@ const resolverFetch = async (path: string) => {
   return response.json();
 };
 
+const mapLayersPath = (path: string, latitude: number, longitude: number) => `${path}?lat=${latitude}&lon=${longitude}`;
+
 // The token GeoServer signs every GetMap with: the one this app caches under `bp_access_token` at login.
 // A live session is read back only when the cache is empty.
 const imageryToken = async () => {
@@ -49,17 +62,41 @@ const imageryToken = async () => {
   }
 };
 
+const tokenOrThrow = async () => {
+  const token = await imageryToken();
+  if (!token) throw new Error("Aucun jeton de session pour l'imagerie — reconnectez-vous.");
+  return token;
+};
+
+const buildLayer = ({ name, year, precisionLevelInCm }: AreaPictureMapLayer, token: string, reachable?: boolean): WmsLayerOption => ({
+  name,
+  year,
+  precisionLevelInCm,
+  reachable,
+  create: () =>
+    L.tileLayer.wms(WMS_TILE_BASE_URL, {
+      layers: name,
+      format: 'image/jpeg',
+      transparent: true,
+      version: '1.1.1',
+      token,
+      attribution: 'GeoServer WMS',
+      tileSize: 1024,
+      maxZoom: 24,
+      maxNativeZoom: 21,
+    } as L.WMSOptions),
+});
+
 const MERCATOR_HALF_WORLD = 20037508.34;
 const PROBE_HALF_SIZE_M = 64;
-const PROBE_TIMEOUT_MS = 8000;
 
 const toMercator = ({ latitude, longitude }: GeoPoint) => ({
   x: (longitude * MERCATOR_HALF_WORLD) / 180,
   y: (Math.log(Math.tan(((90 + latitude) * Math.PI) / 360)) / (Math.PI / 180)) * (MERCATOR_HALF_WORLD / 180),
 });
 
-// Built off the very layer the map tiles from — same url, same wmsParams, same token — so the probe can
-// never be refused (or accepted) on terms the real imagery is not asked on.
+// Built off the very layer the map fetches its cells from — same url, same wmsParams, same token — and
+// read the same way, with `fetch`, so the probe cannot disagree with the real imagery.
 const probeUrl = (layer: L.TileLayer.WMS, position: GeoPoint) => {
   const { x, y } = toMercator(position);
   const params = new URLSearchParams({
@@ -72,56 +109,65 @@ const probeUrl = (layer: L.TileLayer.WMS, position: GeoPoint) => {
   return `${(layer as unknown as { _url: string })._url}?${params.toString()}`;
 };
 
-// The map loads its imagery as a plain <img>, so a refused GetMap is a silent blank map rather than an
-// error. One probe on the same terms turns that into something the screen can say out loud. It fails
-// open: only an actual load error counts as a refusal.
-const isImageryReadable = (layer: L.TileLayer.WMS, position: GeoPoint): Promise<boolean> =>
-  new Promise(resolve => {
-    const image = new Image();
-    const timeout = setTimeout(() => resolve(true), PROBE_TIMEOUT_MS);
-    const settle = (isReadable: boolean) => {
-      clearTimeout(timeout);
-      resolve(isReadable);
-    };
-    image.onload = () => settle(true);
-    image.onerror = () => settle(false);
-    image.src = probeUrl(layer, position);
-  });
-
-export const resolveWmsLayers = async (latitude: number, longitude: number): Promise<WmsLayerOption[]> => {
-  const accessToken = await imageryToken();
-  if (!accessToken) throw new Error("Aucun jeton de session pour l'imagerie — reconnectez-vous.");
-
-  const { wmsBaseUrl, availableLayers, actualLayer }: AreaPictureMapLayerAvailability = await resolverFetch(
-    `/areaPictureMapLayers/availability?lat=${latitude}&lon=${longitude}`
-  );
-
-  const buildLayer = ({ name, year, precisionLevelInCm }: AreaPictureMapLayer): WmsLayerOption => ({
-    name,
-    year,
-    precisionLevelInCm,
-    create: () =>
-      L.tileLayer.wms(wmsBaseUrl, {
-        layers: name,
-        format: 'image/jpeg',
-        transparent: true,
-        version: '1.1.1',
-        token: accessToken,
-        attribution: 'GeoServer WMS',
-        tileSize: 1024,
-        maxZoom: 24,
-        maxNativeZoom: 21,
-      } as L.WMSOptions),
-  });
-
-  const layers = [actualLayer, ...(availableLayers ?? [])]
-    .filter((layer, index, all) => all.findIndex(other => other.name === layer.name) === index)
-    .map(buildLayer);
-
-  if (layers[0] && !(await isImageryReadable(layers[0].create(), { latitude, longitude }))) {
-    throw new Error("L'imagerie a refusé le jeton de session : le GeoServer n'accepte pas ce compte. Reconnectez-vous, ou vérifiez l'environnement du .env.");
+// A content type is checked as well as the status: a deployed build with no proxy behind
+// REACT_APP_WMS_TILE_BASE_URL answers 200 with its own index.html.
+const assertImageryReadable = async (layer: WmsLayerOption, position: GeoPoint) => {
+  const response = await fetch(probeUrl(layer.create(), position));
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!response.ok || !contentType.startsWith('image/')) {
+    throw new Error(`L'imagerie n'a pas pu être chargée (HTTP ${response.status}) — vérifiez le proxy WMS (REACT_APP_WMS_TILE_BASE_URL).`);
   }
-  return layers;
+};
+
+const imageryChecks = new Map<string, Promise<void>>();
+
+/**
+ * One check per position, shared by both resolvers. The library opens the map on whichever of them
+ * yields a layer and reports an error only when both fail, so a refusal has to fail them together — and
+ * sharing the pending check keeps that to a single request. A failed check is forgotten, so the next
+ * visit tries again.
+ */
+const checkImagery = (layer: WmsLayerOption, position: GeoPoint, token: string) => {
+  const key = `${WMS_TILE_BASE_URL}|${token}|${position.latitude},${position.longitude}`;
+  const pending = imageryChecks.get(key);
+  if (pending) return pending;
+  const checking = assertImageryReadable(layer, position).catch(error => {
+    imageryChecks.delete(key);
+    throw error;
+  });
+  imageryChecks.set(key, checking);
+  return checking;
+};
+
+/**
+ * The single layer the map opens on, off `/map/layers/actual` — the fast half of the pair: the library
+ * waits on this before it shows the map at all. Reachable by construction, so `reachable` is left unset.
+ * The endpoint wraps the layer as `{ wmsBaseUrl, layer }`; a bare layer is accepted too.
+ */
+export const resolveActiveWmsLayer = async (latitude: number, longitude: number): Promise<WmsLayerOption> => {
+  const token = await tokenOrThrow();
+  const body: { layer?: AreaPictureMapLayer } & Partial<AreaPictureMapLayer> = await resolverFetch(mapLayersPath('/map/layers/actual', latitude, longitude));
+  const layer = body.layer ?? (body as AreaPictureMapLayer);
+  if (!layer?.name) throw new Error('Aucune couche aérienne ne couvre cette position.');
+
+  const option = buildLayer(layer, token);
+  await checkImagery(option, { latitude, longitude }, token);
+  return option;
+};
+
+/**
+ * Every candidate layer, off `/map/layers` — the slower half: each candidate is probed for reachability
+ * server-side and only feeds the layer switcher, unreachable ones included (offered disabled there). The
+ * layer the library would fall back on is checked the same way as the active one.
+ */
+export const resolveWmsLayers = async (latitude: number, longitude: number): Promise<WmsLayerOption[]> => {
+  const token = await tokenOrThrow();
+  const { layers }: MapLayersReachability = await resolverFetch(mapLayersPath('/map/layers', latitude, longitude));
+  const options = (layers ?? []).map(({ layer, reachable }) => buildLayer(layer, token, reachable));
+
+  const fallback = options.find(option => option.reachable !== false) ?? options[0];
+  if (fallback) await checkImagery(fallback, { latitude, longitude }, token);
+  return options;
 };
 
 export const geocodeAddress = async (address: string): Promise<GeoPoint> => {
