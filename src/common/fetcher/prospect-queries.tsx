@@ -52,7 +52,7 @@ export const useMutateProspect = () => {
     onError(error);
   };
 
-  const onProspectSuccess = (prospect: Prospect) => {
+  const onProspectSuccess = (prospect: Prospect, prospectId: string) => {
     advance();
     notify(`resources.prospects.creation.success`, { type: 'success' });
     const sessionId = uuidV4();
@@ -88,7 +88,7 @@ export const useMutateProspect = () => {
       address: prospect.address,
       fileId,
       filename: `Layer ${prospect.address}`,
-      prospectId: prospect.id,
+      prospectId,
       zoomLevel: ZoomLevel.BUILDING,
       isExtended: true,
       downloadImage: false,
@@ -97,8 +97,13 @@ export const useMutateProspect = () => {
   };
 
   const mutate = (prospect: Prospect) => {
+    const prospectId = prospect.id ?? uuidV4();
     start();
-    create('prospects', { data: prospect }, { onError: handleError, onSuccess: onProspectSuccess });
+    create(
+      'prospects',
+      { data: { ...prospect, id: prospectId } },
+      { onError: handleError, onSuccess: created => onProspectSuccess(created, created?.id ?? prospectId) }
+    );
   };
 
   return { mutate, isPending: isCreatePending || isDraftAnnotationPending, progress };
