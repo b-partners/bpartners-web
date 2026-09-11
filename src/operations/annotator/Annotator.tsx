@@ -9,7 +9,7 @@ import { ROOF_ANALYSER_CONFIG } from './roof-analyser-config';
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
-import { resolveWmsLayers } from './wms-resolver';
+import { resolveActiveWmsLayer, resolveWmsLayers } from './wms-resolver';
 
 const readParam = (value?: string) => {
   const trimmed = (value ?? '').trim();
@@ -62,6 +62,7 @@ export const Annotator = () => {
           sessionId={sessionId}
           {...(position ? { latitude: position.latitude, longitude: position.longitude, address } : {})}
           resolveWmsLayers={resolveWmsLayers}
+          resolveActiveWmsLayer={resolveActiveWmsLayer}
         />
       ) : (
         <RoofAnnotator

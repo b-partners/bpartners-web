@@ -19,7 +19,7 @@ kept only as a fallback for legacy drafts — see below.
 | File | Role |
 |---|---|
 | `src/operations/annotator/Annotator.tsx` | The `/projects/:projectId` screen: picks the flow, resolves credentials, renders `<RoofAnnotator>` |
-| `src/operations/annotator/wms-resolver.ts` | `resolveWmsLayers` + `geocodeAddress` against the GeoData resolver lambda (`REACT_APP_WMS_RESOLVER`, `x-api-key`) |
+| `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` + `geocodeAddress` against the GeoData resolver lambda (`REACT_APP_WMS_RESOLVER`, `x-api-key`) |
 | `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto |
 | `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
 | `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig` |
@@ -37,8 +37,8 @@ Two ways in, and the route param means a different thing in each:
 
 | Entry | URL | `projectId` is | Props passed |
 |---|---|---|---|
-| New project (address given) | `/projects/<new uuid>?flow=geo&address=…` | the **session id**, minted by `useMutateProspect` | `sessionId` + `latitude`/`longitude` (geocoded here) + `address` + `resolveWmsLayers` |
-| Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + `resolveWmsLayers` — the record supplies the position and the address |
+| New project (address given) | `/projects/<new uuid>?flow=geo&address=…` | the **session id**, minted by `useMutateProspect` | `sessionId` + `latitude`/`longitude` (geocoded here) + `address` + both resolvers |
+| Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + both resolvers — the record supplies the position and the address |
 | Legacy draft (no `geoSession`) | `/projects/<areaPictureId>` | the **area picture id** | falls back to the address flow: `areaPictureId` + `idAnnotations`, so pre-migration drafts still open |
 
 Never reintroduce a local save path — auto-save, analyse results, 3D mapping and the PDF export all live
@@ -56,13 +56,34 @@ inside the library.
 
 ## Imagery
 
-`resolveWmsLayers` is the integrator's job, not the library's. It calls
-`GET {REACT_APP_WMS_RESOLVER}/areaPictureMapLayers/availability?lat=&lon=` with an `x-api-key`
-(`REACT_APP_WMS_RESOLVER_API_KEY`, falling back to the account's own key), then builds one
-`L.tileLayer.wms` per layer, signed with the Cognito id token from `getCached.token().accessToken` —
-Leaflet forwards the unknown `token` option onto every GetMap request. Addresses are geocoded through the
-same lambda's `/geocode`. `REACT_APP_WMS_BASE_URL` only overrides the GeoServer the 3D texture is read
-from; point it at an https origin, since the library's built-in default is plain http.
+Two resolvers, both the integrator's job, both required by `RoofAnnotator` in the lon/lat flow (0.3.0+):
+
+- `resolveActiveWmsLayer` — `GET {REACT_APP_WMS_RESOLVER}/map/layers/actual?lat=&lon=`. The fast half: the
+  library waits on it before showing the map. The live endpoint wraps the layer as `{ wmsBaseUrl, layer }`
+  (the library playground's own parser reads a bare layer — both are accepted).
+- `resolveWmsLayers` — `GET {REACT_APP_WMS_RESOLVER}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }] }`.
+  The slow half: only feeds the layer switcher; unreachable candidates are shown disabled.
+
+Both authenticate with `x-api-key` (`REACT_APP_WMS_RESOLVER_API_KEY`, falling back to the account's key).
+Addresses are geocoded through the same lambda's `/geocode`.
+
+**Tiles never go to the `wmsBaseUrl` the endpoints return.** The library reads each cell with
+`fetch` + `createImageBitmap`, which needs a same-origin, CORS-clean url, and the GeoServer sends no CORS
+headers. Tiles are built against `REACT_APP_WMS_TILE_BASE_URL`, default `/wms-proxy` — the Vite dev
+server's proxy (vite.config.ts) to `GEOSERVER_ORIGIN`, default `http://35.181.83.111`, which serves
+tiles with no token. `https://geoserver.birdia.fr` 401s every token tried, prod id and access tokens
+included. **A deployed build has no `/wms-proxy`**: it needs a same-origin https proxy and
+`REACT_APP_WMS_TILE_BASE_URL` pointed at it.
+
+Each tile still carries `token=` = `bp_access_token` (`getCached.token()`), falling back to a live Amplify
+session only when the cache is empty.
+
+A refused cell is a blank square with nothing said, so both resolvers await **one shared probe per
+position** (`checkImagery`): it fetches one cell exactly as the library does and throws
+`L'imagerie n'a pas pu être chargée (HTTP …)` on a non-2xx or non-image answer — the latter catches a
+deployment serving its own `index.html` for a missing proxy. It has to fail both resolvers: the library
+opens the map on `/actual` **or**, failing that, on the `/layers` list, and reports an error only when
+neither yields a layer.
 
 ## What the app still owns
 
