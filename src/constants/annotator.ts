@@ -50,6 +50,32 @@ export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
 export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;
 export const ANNOTATION_WEAR_CHOICES = toRaInputChoices(ANNOTATION_WEAR_TRANSLATION, (value, index) => `${index + 1}. ${value}`);
 
+// Keys match geo-jobs' MutationType @JsonProperty wire values (app.bpartners.geojobs.service
+// .area.mutation.model.MutationType), not the Java enum constant names - only RAS coincides.
+export const ANNOTATION_MUTATION_TRANSLATION = {
+  improvement: 'Réparation',
+  deterioration: 'Dégradation',
+  RAS: 'Rien à signaler',
+  none: 'Néant',
+  background: 'Arrière-plan',
+  unknown: 'Inconnu',
+} as const;
+export type AnnotationMutationType = typeof ANNOTATION_MUTATION_TRANSLATION;
+export const ANNOTATION_MUTATION_CHOICES = toRaInputChoices(ANNOTATION_MUTATION_TRANSLATION);
+
+export const ANNOTATION_FIRE_RISK_TRANSLATION = {
+  NULL: 'Nul',
+  FAIBLE: 'Faible',
+  MODERE: 'Modéré',
+  ELEVE: 'Élevé',
+  // UI-only sentinel - geo-jobs never returns this; used when fire_risk is absent (old
+  // annotations, or the vegetation assessment couldn't be computed) so the field shows
+  // "Inconnu" instead of falling back to the floating label with nothing selected.
+  UNKNOWN: 'Inconnu',
+} as const;
+export type AnnotationFireRiskType = typeof ANNOTATION_FIRE_RISK_TRANSLATION;
+export const ANNOTATION_FIRE_RISK_CHOICES = toRaInputChoices(ANNOTATION_FIRE_RISK_TRANSLATION);
+
 export const TOITURE_ETAT_APPARENT_TRANSLATION: Record<'A' | 'B' | 'C' | 'D' | 'E', string> = {
   A: 'Toiture en bon état',
   B: 'Entretien préventif',
