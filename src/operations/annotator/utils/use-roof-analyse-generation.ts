@@ -9,7 +9,7 @@ import {
 } from '@/common/store';
 import { computeOptimisticBalance, getEffectiveCreditBalance, useCreditRequirement } from '@/operations/account/components/billing';
 import { CREDIT_BALANCE_QUERY_KEY } from '@/operations/account/queries';
-import { clearPolygons, removeCache } from '@/providers';
+import { clearPolygons, detectionExistsForZoneName, removeCache } from '@/providers';
 import { CreditBalance } from '@bpartners/typescript-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
@@ -72,15 +72,16 @@ export const useRoofAnalyseGeneration = (): RoofAnalyseGeneration => {
   const didAutoRun = useRef(false);
 
   const runAnalyse = async () => {
-    if (!(await requireCredits())) return;
+    const willDebit = !(await detectionExistsForZoneName(`${areaPictureDetails?.address ?? ''}`));
+    if (willDebit && !(await requireCredits())) return;
     if (isRunningRef.current) return;
     isRunningRef.current = true;
     didAutoRun.current = true;
     const apiBalance = queryClient.getQueryData<CreditBalance>(CREDIT_BALANCE_QUERY_KEY);
     const baseBalance = getEffectiveCreditBalance(apiBalance, useOptimisticCreditBalanceStore.getState().balance);
-    const optimisticBalance = baseBalance ? computeOptimisticBalance(baseBalance, baseBalance.creditCostPerAnalysis ?? 1) : undefined;
-    setOptimisticBalance(optimisticBalance);
-    prepareCreditPopup(optimisticBalance?.spendableCredits);
+    const optimisticBalance = willDebit && baseBalance ? computeOptimisticBalance(baseBalance, baseBalance.creditCostPerAnalysis ?? 1) : undefined;
+    if (willDebit) setOptimisticBalance(optimisticBalance);
+    prepareCreditPopup(optimisticBalance?.spendableCredits, willDebit);
     const loadingPolygon = shiftPolygons(roofPolygons, areaPictureDetails, true)?.[0]?.points?.slice() ?? [];
     promoteAnalyseRoofToAnnotator();
     removeCache.roofDelimitation();

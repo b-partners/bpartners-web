@@ -1,4 +1,10 @@
-import { annotatorStore, useAnnotatorComponentStore, useAnnotatorScreenSwitch, useOptimisticCreditBalanceStore } from '@/common/store';
+import {
+  annotatorStore,
+  useAnalyseCreditPopupStore,
+  useAnnotatorComponentStore,
+  useAnnotatorScreenSwitch,
+  useOptimisticCreditBalanceStore,
+} from '@/common/store';
 import { useRoofAnalyseGeneration } from '@/operations/annotator/utils';
 import { CreditBalance } from '@bpartners/typescript-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -69,6 +75,9 @@ const mountHarness = () => {
 
 const interceptDetection = () => cy.intercept('POST', '**/detections/*/sync', detectionResponse).as('processDetection');
 
+const interceptDetectionsByZone = (exists: boolean) =>
+  cy.intercept({ method: 'GET', url: /\/detections\?/ }, exists ? [detectionResponse] : []).as('detectionsByZone');
+
 const interceptBalance = (balance: CreditBalance) => cy.intercept('GET', CREDIT_BALANCE_URL, balance).as('getCreditBalance');
 
 const optimisticSpendable = () => useOptimisticCreditBalanceStore.getState().balance?.spendableCredits;
@@ -81,11 +90,13 @@ describe('useRoofAnalyseGeneration — optimistic balance guard', () => {
       req.reply(mercatorResponse);
     }).as('pointsToGeoPoints');
     cy.intercept('PUT', '**/city-jsons/*/process', {}).as('processCityJson');
+    interceptDetectionsByZone(false);
     cy.then(() => {
       localStorage.setItem('bp_user_api_key', 'dummy');
       useAnnotatorComponentStore.getState().reset();
       annotatorStore.useAnnotatorStore.getState().reset();
       useOptimisticCreditBalanceStore.getState().clear();
+      useAnalyseCreditPopupStore.setState({ armed: false, visible: false, credits: undefined, willDebit: true });
       useAnnotatorScreenSwitch.getState().setScreen('roof-analyse');
       useAnnotatorComponentStore.getState().setAreaPictureDetails(areaPictureDetails);
       useAnnotatorComponentStore.getState().setAnalyseImageUrl('blob:analyse-image');
@@ -117,7 +128,10 @@ describe('useRoofAnalyseGeneration — optimistic balance guard', () => {
 
     cy.get('[data-cy=run-analyse]').click();
     cy.wait('@processDetection');
-    cy.wrap(null).should(() => expect(optimisticSpendable(), 'first debit from the API').to.eq(10));
+    cy.wrap(null).should(() => {
+      expect(optimisticSpendable(), 'first debit from the API').to.eq(10);
+      expect(useAnalyseCreditPopupStore.getState().armed, 'banner armed on a real debit').to.eq(true);
+    });
 
     cy.wait(300);
     cy.get('[data-cy=run-analyse]').click();
@@ -125,5 +139,34 @@ describe('useRoofAnalyseGeneration — optimistic balance guard', () => {
     cy.wrap(null).should(() => expect(optimisticSpendable(), 'second debit chained from the cache, not from the stale API').to.eq(0));
 
     cy.get('@processDetection.all').should('have.length', 2);
+  });
+
+  it('ne débite pas le cache et n’arme pas la bannière quand une détection existe déjà pour la même adresse', () => {
+    interceptDetectionsByZone(true);
+    interceptDetection();
+
+    mountHarness();
+    cy.get('[data-cy=run-analyse]').click();
+
+    cy.wait('@processDetection');
+    cy.get('@processDetection.all').should('have.length', 1);
+    cy.wrap(null).should(() => {
+      expect(optimisticSpendable(), 'aucun débit optimiste sur une même adresse').to.eq(undefined);
+      expect(useAnalyseCreditPopupStore.getState().armed, 'bannière non armée sur une même adresse').to.eq(false);
+    });
+  });
+
+  it('autorise la ré-analyse d’une même adresse même quand le crédit optimiste est épuisé (garde bypassé)', () => {
+    useOptimisticCreditBalanceStore.getState().setBalance({ spendableCredits: 0, grantedCredits: 0, purchasedCredits: 0, creditCostPerAnalysis: 10 });
+    interceptDetectionsByZone(true);
+    interceptBalance({ spendableCredits: 0, grantedCredits: 0, purchasedCredits: 0, creditCostPerAnalysis: 10, estimatedRemainingAnalyses: 0 });
+    interceptDetection();
+
+    mountHarness();
+    cy.get('[data-cy=run-analyse]').click();
+
+    cy.wait('@processDetection');
+    cy.get('@processDetection.all').should('have.length', 1);
+    cy.wrap(null).should(() => expect(optimisticSpendable(), 'le cache reste inchangé à zéro').to.eq(0));
   });
 });
