@@ -22,7 +22,7 @@ kept only as a fallback for legacy drafts — see below.
 | `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` + `geocodeAddress` against the GeoData resolver lambda (`REACT_APP_WMS_RESOLVER`, `x-api-key`) |
 | `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto |
 | `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
-| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig` |
+| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default) |
 | `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves `apiKey` (`getApiKey`) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
 
 Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLayout`).
