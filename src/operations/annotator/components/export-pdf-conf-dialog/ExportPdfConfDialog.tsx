@@ -1,5 +1,7 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
+import { cache, getCached } from '@/providers';
 import { CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import {
   AddCircleOutlineOutlined,
@@ -99,8 +101,9 @@ interface ExportPdfConfDialogProps {
 
 export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
   const { close, setDialogProps } = useDialog();
+  const areaPictureId = useAnnotatorComponentStore(state => state.areaPictureDetails?.id);
   const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
-  const [customPages, setCustomPages] = useState<CustomPageDraft[]>([]);
+  const [customPages, setCustomPages] = useState<CustomPageDraft[]>(() => getCached.exportCustomPages<CustomPageDraft>(areaPictureId));
   const [editedIndex, setEditedIndex] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [hasOpenedEditor, setHasOpenedEditor] = useState(false);
@@ -109,6 +112,10 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   useEffect(() => {
     if (!isEditing && hasOpenedEditor) pagesGroupRef.current?.scrollIntoView({ block: 'nearest' });
   }, [isEditing, hasOpenedEditor, customPages.length]);
+
+  useEffect(() => {
+    cache.exportCustomPages(areaPictureId, customPages);
+  }, [areaPictureId, customPages]);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;

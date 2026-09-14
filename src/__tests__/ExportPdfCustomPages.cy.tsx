@@ -10,7 +10,10 @@ const addBlock = (label: string) => {
 };
 
 describe('Supplementary pages in the PDF export dialog', () => {
-  beforeEach(() => cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onConfirm')} />));
+  beforeEach(() => {
+    cy.clearLocalStorage();
+    cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onConfirm')} />);
+  });
 
   it('exports without custom pages when none are added', () => {
     cy.get('[data-testid="export-pdf-conf-confirm"]').click();
@@ -72,6 +75,28 @@ describe('Supplementary pages in the PDF export dialog', () => {
     cy.get('@onConfirm')
       .its('firstCall.args.0.customPages')
       .should('deep.equal', [{ pageTitle: 'Reportage photo', sections: [{ type: 'IMAGE', priority: 'MEDIUM', url, caption: '' }] }]);
+  });
+
+  it('restores the pages when the export dialog is reopened', () => {
+    cy.get('[data-testid="add-custom-page"]').click();
+    cy.get(`[placeholder="${TITLE_PLACEHOLDER}"]`).type('Observations de chantier');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).type('Echafaudage requis sur le pan Nord.');
+    cy.get('[data-testid="custom-page-save"]').click();
+
+    cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onReopened')} />);
+
+    cy.contains('.page-row', 'Observations de chantier').should('exist');
+
+    cy.get('[data-testid="export-pdf-conf-confirm"]').click();
+    cy.get('@onReopened')
+      .its('firstCall.args.0.customPages')
+      .should('deep.equal', [
+        {
+          pageTitle: 'Observations de chantier',
+          sections: [{ type: 'TEXT', priority: 'MEDIUM', text: 'Echafaudage requis sur le pan Nord.' }],
+        },
+      ]);
   });
 
   it('removes a page from the list', () => {
