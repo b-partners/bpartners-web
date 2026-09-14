@@ -1,6 +1,7 @@
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
 import { ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
+import { CustomPage } from '@bpartners/typescript-client';
 import {
   ArchitectureOutlined,
   AssessmentOutlined,
@@ -12,10 +13,14 @@ import {
   SquareFootOutlined,
   StraightenOutlined,
   ViewInArOutlined,
+  AddCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
 } from '@mui/icons-material';
-import { Box, Button, ButtonBase, Switch, Typography } from '@mui/material';
+import { Box, Button, ButtonBase, Switch, Typography, TextField, Dialog, Stack, Tooltip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { FC, ReactNode, useState } from 'react';
 import { ExportPdfConfDialogStyle } from './style';
+import { CustomPageEditorDialog, CustomPageEditorDialogStyle } from './index';
 
 type ConfKey = keyof ExportAreaPictureAnnotationConf;
 
@@ -63,12 +68,17 @@ const ConfRow: FC<ConfRowProps> = ({ confKey, checked, onToggle }) => (
 );
 
 interface ExportPdfConfDialogProps {
-  onConfirm: (conf: ExportAreaPictureAnnotationConf) => void;
+  onConfirm: (payload: { conf: ExportAreaPictureAnnotationConf; customPages: CustomPage[] }) => void;
+  initialCustomPages?: CustomPage[];
 }
 
-export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
+export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm, initialCustomPages = [] }) => {
   const { close } = useDialog();
   const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
+  const [customPages, setCustomPages] = useState<CustomPage[]>(initialCustomPages);
+  const [editPageIndex, setEditPageIndex] = useState<number | null>(null);
+  const [openCustomPageEditor, setOpenCustomPageEditor] = useState<boolean>(false);
+  const [editingPage, setEditingPage] = useState<CustomPage | null>(null);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;
@@ -77,8 +87,47 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
 
   const toggleAll = () => setConf(ALL_KEYS.reduce<ExportAreaPictureAnnotationConf>((acc, key) => ({ ...acc, [key]: !allSelected }), {}));
 
+  const handleAddCustomPage = () => {
+    setEditingPage(null);
+    setOpenCustomPageEditor(true);
+  };
+
+  const handleEditCustomPage = (index: number) => {
+    setEditingPage(customPages[index]);
+    setEditPageIndex(index);
+    setOpenCustomPageEditor(true);
+  };
+
+  const handleDeleteCustomPage = (index: number) => {
+    setCustomPages(customPages.filter((_, i) => i !== index));
+  };
+
+  const handleCustomPageSave = (customPage: CustomPage) => {
+    if (editPageIndex !== null) {
+      // Update existing page
+      const newPages = [...customPages];
+      newPages[editPageIndex] = customPage;
+      setCustomPages(newPages);
+    } else {
+      // Add new page
+      setCustomPages([...customPages, customPage]);
+    }
+    setOpenCustomPageEditor(false);
+    setEditPageIndex(null);
+    setEditingPage(null);
+  };
+
+  const handleCustomPageClose = () => {
+    setOpenCustomPageEditor(false);
+    setEditPageIndex(null);
+    setEditingPage(null);
+  };
+
   const handleConfirm = () => {
-    onConfirm(conf);
+    onConfirm({
+      conf,
+      customPages,
+    });
     close();
   };
 
@@ -114,6 +163,50 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
             </Box>
           </Box>
         ))}
+        {/* Supplementary pages group */}
+        <Box key='supplementary-pages'>
+          <Typography className='group-title'>Pages supplementaires</Typography>
+          <Box className='group-rows'>
+            {customPages.map((page, index) => (
+              <Box key={index} sx={{ border: '1px solid', borderRadius: 2, p: 1, mb: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant='body1' fontWeight={600}>
+                    {page.pageTitle || 'Sans titre'}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Tooltip title='Modifier la page'>
+                      <ButtonBase
+                        size='small'
+                        onClick={() => handleEditCustomPage(index)}
+                      >
+                        <EditOutlined />
+                      </ButtonBase>
+                    </Tooltip>
+                    <Tooltip title='Supprimer la page'>
+                      <ButtonBase
+                        size='small'
+                        onClick={() => handleDeleteCustomPage(index)}
+                      >
+                        <DeleteOutlined />
+                      </ButtonBase>
+                    </Tooltip>
+                  </Box>
+                </Box>
+                <Box sx={{ mt: 1, fontSize: 12, color: '#6b7280' }}>
+                  {page.sections.length} section{page.sections.length !== 1 ? 's' : ''}
+                </Box>
+              </Box>
+            ))}
+            <Button
+              variant='outlined'
+              size='small'
+              startIcon={<AddCircleOutlined />}
+              onClick={handleAddCustomPage}
+            >
+              Ajouter une page supplementaire
+            </Button>
+          </Box>
+        </Box>
       </Box>
 
       <Box className='dialog-footer'>
@@ -131,6 +224,20 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
           Exporter le PDF
         </Button>
       </Box>
+
+      {/* Custom page editor dialog */}
+      <Dialog
+        open={openCustomPageEditor}
+        onClose={handleCustomPageClose}
+        aria-labelledby='custom-page-editor-title'
+        sx={CustomPageEditorDialogStyle}
+      >
+        <CustomPageEditorDialog
+          onSave={handleCustomPageSave}
+          onClose={handleCustomPageClose}
+          initialData={editingPage}
+        />
+      </Dialog>
     </Box>
   );
 };

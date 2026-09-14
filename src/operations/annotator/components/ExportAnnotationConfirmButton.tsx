@@ -6,6 +6,7 @@ import { useDialog } from '@/common/store/dialog';
 import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { DEFAULT_EXPORT_PDF_CONF, getAnalyseImageFileId } from '@/constants';
 import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
+import { CustomPage } from '@bpartners/typescript-client';
 import { FC, useRef } from 'react';
 import { useGlobalRateQuery } from '../utils';
 import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
@@ -41,6 +42,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       globalRateType: globalRate?.type ?? null,
       globalRateValue: globalRate?.value ?? null,
       conf: confRef.current,
+      customPages: [],
     });
   };
 
@@ -48,16 +50,25 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
 
   const isLoading = exportAsPdfPending || uploadIsPending;
 
-  const runExport = (conf: ExportAreaPictureAnnotationConf) => {
-    confRef.current = conf;
+  const runExport = (payload: { conf: ExportAreaPictureAnnotationConf; customPages: CustomPage[] }) => {
+    confRef.current = payload.conf;
     closeConfirm();
     if (isCropped) {
       return uploadImage({ file: image, id: areaPictureDetails.fileId });
     }
-    uploadImageOnSuccess();
+    uploadImageOnSuccess({
+      annotationInfos,
+      polygons: polygonList,
+      address,
+      imageUrl: getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE'),
+      globalRateType: globalRate?.type ?? null,
+      globalRateValue: globalRate?.value ?? null,
+      conf: payload.conf,
+      customPages: payload.customPages,
+    });
   };
 
-  const doAnnotationExport = () => open(<ExportPdfConfDialog onConfirm={runExport} />);
+  const doAnnotationExport = () => open(<ExportPdfConfDialog onConfirm={runExport} initialCustomPages={[]} />);
 
   return (
     <BPButton
