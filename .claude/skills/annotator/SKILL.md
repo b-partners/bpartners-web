@@ -32,15 +32,17 @@ Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLay
 The library owns saving. A lon/lat session is written continuously into **one annotation record addressed
 by a single session id** — `geoRecordIds(sessionId)` derives the area picture, annotation and file ids from
 it with uuid v5, so the id is the whole handle on the record. For a new project the app opens that record
-itself, right after creating the prospect (see below), so the area picture carries the `prospectId`; the
-library adopts an existing record as it stands and only creates one when there is none (0.4.1+).
+itself, right after creating the prospect (see below), so the area picture carries the `prospectId`. Since
+0.6.0 the library **never creates** a prospect or an area picture in either flow: `sessionId` is required
+with a position, and `areaPictureId` defaults to `geoRecordIds(sessionId).areaPictureId` (the app passes the
+draft's own id explicitly when reopening from a list). `address` is only read by the lon/lat flow.
 
 Two ways in, and the route param means a different thing in each:
 
 | Entry | URL | `projectId` is | Props passed |
 |---|---|---|---|
 | New project (address given) | `/projects/<new uuid>?flow=geo&address=…` | the **session id**, minted by `useMutateProspect` | `sessionId` + `latitude`/`longitude` (geocoded here) + `address` + both resolvers |
-| Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + both resolvers — the record supplies the position and the address |
+| Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + `areaPictureId` + both resolvers — the record supplies the position and the address |
 | Opened, never saved (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the draft only carries `properties.geoSessionId` (set at prospect creation, replaced by the library's first save): the page geocodes the area picture's address and passes it like a new project |
 | Legacy draft (no `geoSession`) | `/projects/<areaPictureId>` | the **area picture id** | falls back to the address flow: `areaPictureId` + `idAnnotations`, so pre-migration drafts still open |
 
