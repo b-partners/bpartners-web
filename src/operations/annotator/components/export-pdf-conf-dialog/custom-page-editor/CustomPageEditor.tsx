@@ -11,7 +11,6 @@ import {
   isLeafSection,
   LEAF_SECTION_TYPES,
   LeafSectionDraft,
-  LeafSectionType,
   SECTION_PRIORITIES,
   SECTION_PRIORITY_LABELS,
   SECTION_TYPE_LABELS,
@@ -148,7 +147,7 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
     setIsUrlOpen(false);
   };
 
-  const onUrlKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const onUrlKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (event.key === 'Enter') commitUrl();
     if (event.key === 'Escape') setIsUrlOpen(false);
   };
@@ -180,7 +179,7 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
   return (
     <Box className='block-image'>
       <ButtonBase className='image-frame' onClick={openUrl} aria-label="Remplacer l'image">
-        <Box component='img' className='image-preview' src={section.url} alt={section.caption || 'Illustration de la page'} />
+        <img className='image-preview' src={section.url} alt={section.caption || 'Illustration de la page'} />
       </ButtonBase>
       <InputBase
         className='image-caption'
