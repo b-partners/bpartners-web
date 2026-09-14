@@ -1,26 +1,25 @@
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
-import { ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
-import { CustomPage } from '@bpartners/typescript-client';
+import { CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import {
+  AddCircleOutlineOutlined,
   ArchitectureOutlined,
   AssessmentOutlined,
   AutoAwesomeOutlined,
+  DeleteOutlineOutlined,
   DescriptionOutlined,
   Download,
+  EditOutlined,
   LayersOutlined,
   PictureAsPdfOutlined,
   SquareFootOutlined,
   StraightenOutlined,
   ViewInArOutlined,
-  AddCircleOutlined,
-  EditOutlined,
-  DeleteOutlined,
 } from '@mui/icons-material';
-import { Box, Button, ButtonBase, Switch, Typography, TextField, Dialog, Stack, Tooltip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Button, ButtonBase, IconButton, Switch, Tooltip, Typography } from '@mui/material';
 import { FC, ReactNode, useState } from 'react';
+import { CustomPageDraft, CustomPageEditor, toCustomPage } from './custom-page-editor';
 import { ExportPdfConfDialogStyle } from './style';
-import { CustomPageEditorDialog, CustomPageEditorDialogStyle } from './index';
 
 type ConfKey = keyof ExportAreaPictureAnnotationConf;
 
@@ -67,18 +66,43 @@ const ConfRow: FC<ConfRowProps> = ({ confKey, checked, onToggle }) => (
   </ButtonBase>
 );
 
-interface ExportPdfConfDialogProps {
-  onConfirm: (payload: { conf: ExportAreaPictureAnnotationConf; customPages: CustomPage[] }) => void;
-  initialCustomPages?: CustomPage[];
+interface CustomPageRowProps {
+  page: CustomPageDraft;
+  onEdit: () => void;
+  onRemove: () => void;
 }
 
-export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm, initialCustomPages = [] }) => {
+const CustomPageRow: FC<CustomPageRowProps> = ({ page, onEdit, onRemove }) => (
+  <Box className='page-row'>
+    <Box className='page-row-text'>
+      <Typography className='page-row-label'>{page.pageTitle}</Typography>
+      <Typography className='page-row-desc'>
+        {page.sections.length} section{page.sections.length > 1 ? 's' : ''}
+      </Typography>
+    </Box>
+    <Tooltip title='Modifier la page'>
+      <IconButton className='page-row-action' size='small' onClick={onEdit} aria-label={`Modifier ${page.pageTitle}`}>
+        <EditOutlined fontSize='small' />
+      </IconButton>
+    </Tooltip>
+    <Tooltip title='Supprimer la page'>
+      <IconButton className='page-row-action' size='small' onClick={onRemove} aria-label={`Supprimer ${page.pageTitle}`}>
+        <DeleteOutlineOutlined fontSize='small' />
+      </IconButton>
+    </Tooltip>
+  </Box>
+);
+
+interface ExportPdfConfDialogProps {
+  onConfirm: (payload: { conf: ExportAreaPictureAnnotationConf; customPages: CustomPage[] }) => void;
+}
+
+export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
   const { close } = useDialog();
   const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
-  const [customPages, setCustomPages] = useState<CustomPage[]>(initialCustomPages);
-  const [editPageIndex, setEditPageIndex] = useState<number | null>(null);
-  const [openCustomPageEditor, setOpenCustomPageEditor] = useState<boolean>(false);
-  const [editingPage, setEditingPage] = useState<CustomPage | null>(null);
+  const [customPages, setCustomPages] = useState<CustomPageDraft[]>([]);
+  const [editedIndex, setEditedIndex] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;
@@ -87,49 +111,35 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm, i
 
   const toggleAll = () => setConf(ALL_KEYS.reduce<ExportAreaPictureAnnotationConf>((acc, key) => ({ ...acc, [key]: !allSelected }), {}));
 
-  const handleAddCustomPage = () => {
-    setEditingPage(null);
-    setOpenCustomPageEditor(true);
+  const openPageEditor = (index: number | null) => {
+    setEditedIndex(index);
+    setIsEditing(true);
   };
 
-  const handleEditCustomPage = (index: number) => {
-    setEditingPage(customPages[index]);
-    setEditPageIndex(index);
-    setOpenCustomPageEditor(true);
+  const closePageEditor = () => setIsEditing(false);
+
+  const savePage = (page: CustomPageDraft) => {
+    setCustomPages(prev => (editedIndex === null ? [...prev, page] : prev.map((item, index) => (index === editedIndex ? page : item))));
+    setIsEditing(false);
   };
 
-  const handleDeleteCustomPage = (index: number) => {
-    setCustomPages(customPages.filter((_, i) => i !== index));
-  };
-
-  const handleCustomPageSave = (customPage: CustomPage) => {
-    if (editPageIndex !== null) {
-      // Update existing page
-      const newPages = [...customPages];
-      newPages[editPageIndex] = customPage;
-      setCustomPages(newPages);
-    } else {
-      // Add new page
-      setCustomPages([...customPages, customPage]);
-    }
-    setOpenCustomPageEditor(false);
-    setEditPageIndex(null);
-    setEditingPage(null);
-  };
-
-  const handleCustomPageClose = () => {
-    setOpenCustomPageEditor(false);
-    setEditPageIndex(null);
-    setEditingPage(null);
-  };
+  const removePage = (index: number) => setCustomPages(prev => prev.filter((_, i) => i !== index));
 
   const handleConfirm = () => {
-    onConfirm({
-      conf,
-      customPages,
-    });
+    onConfirm({ conf, customPages: customPages.map(toCustomPage) });
     close();
   };
+
+  if (isEditing) {
+    return (
+      <CustomPageEditor
+        key={editedIndex ?? 'new'}
+        initialPage={editedIndex === null ? undefined : customPages[editedIndex]}
+        onCancel={closePageEditor}
+        onSave={savePage}
+      />
+    );
+  }
 
   return (
     <Box sx={ExportPdfConfDialogStyle}>
@@ -163,47 +173,21 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm, i
             </Box>
           </Box>
         ))}
-        {/* Supplementary pages group */}
-        <Box key='supplementary-pages'>
-          <Typography className='group-title'>Pages supplementaires</Typography>
+        <Box>
+          <Typography className='group-title'>Pages supplémentaires</Typography>
           <Box className='group-rows'>
             {customPages.map((page, index) => (
-              <Box key={index} sx={{ border: '1px solid', borderRadius: 2, p: 1, mb: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant='body1' fontWeight={600}>
-                    {page.pageTitle || 'Sans titre'}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Tooltip title='Modifier la page'>
-                      <ButtonBase
-                        size='small'
-                        onClick={() => handleEditCustomPage(index)}
-                      >
-                        <EditOutlined />
-                      </ButtonBase>
-                    </Tooltip>
-                    <Tooltip title='Supprimer la page'>
-                      <ButtonBase
-                        size='small'
-                        onClick={() => handleDeleteCustomPage(index)}
-                      >
-                        <DeleteOutlined />
-                      </ButtonBase>
-                    </Tooltip>
-                  </Box>
-                </Box>
-                <Box sx={{ mt: 1, fontSize: 12, color: '#6b7280' }}>
-                  {page.sections.length} section{page.sections.length !== 1 ? 's' : ''}
-                </Box>
-              </Box>
+              <CustomPageRow key={page.id} page={page} onEdit={() => openPageEditor(index)} onRemove={() => removePage(index)} />
             ))}
             <Button
+              className='add-page'
               variant='outlined'
               size='small'
-              startIcon={<AddCircleOutlined />}
-              onClick={handleAddCustomPage}
+              startIcon={<AddCircleOutlineOutlined />}
+              onClick={() => openPageEditor(null)}
+              data-testid='add-custom-page'
             >
-              Ajouter une page supplementaire
+              Ajouter une page
             </Button>
           </Box>
         </Box>
@@ -224,20 +208,6 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm, i
           Exporter le PDF
         </Button>
       </Box>
-
-      {/* Custom page editor dialog */}
-      <Dialog
-        open={openCustomPageEditor}
-        onClose={handleCustomPageClose}
-        aria-labelledby='custom-page-editor-title'
-        sx={CustomPageEditorDialogStyle}
-      >
-        <CustomPageEditorDialog
-          onSave={handleCustomPageSave}
-          onClose={handleCustomPageClose}
-          initialData={editingPage}
-        />
-      </Dialog>
     </Box>
   );
 };

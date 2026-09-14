@@ -9,8 +9,7 @@ import {
   shiftPolygons,
 } from '@/operations/annotator/utils';
 import { areaPictureApi, fileProvider, getCached } from '@/providers';
-import { ExportAreaPictureAnnotation, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
-import { CustomPage } from '@/operations/annotator/types-custom-pages';
+import { CustomPage, ExportAreaPictureAnnotation, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
 import { useMutation } from '@tanstack/react-query';
 import { useNotify } from 'react-admin';
 import { v4 } from 'uuid';

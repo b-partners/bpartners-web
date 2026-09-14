@@ -2,8 +2,7 @@ import { useAnnotatorExportAsPdf } from '@/common/fetcher';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { getFileUrl } from '@/common/utils';
-import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
-import { CustomPage } from '@bpartners/typescript-client';
+import { AreaPictureDetails, CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import { Download } from '@mui/icons-material';
 import { Button, ButtonProps, CircularProgress } from '@mui/material';
 import { FC } from 'react';
@@ -41,7 +40,7 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
     });
   };
 
-  const handleExport = () => open(<ExportPdfConfDialog onConfirm={runExport} initialCustomPages={[]} />);
+  const handleExport = () => open(<ExportPdfConfDialog onConfirm={runExport} />);
 
   return (
     <Button
