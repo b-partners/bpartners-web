@@ -5,6 +5,14 @@ const readEnv = (value?: string) => {
   return trimmed.length > 0 ? trimmed : undefined;
 };
 
+const readNumberEnv = (value?: string) => {
+  const trimmed = readEnv(value);
+  const parsed = trimmed === undefined ? NaN : Number(trimmed);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+};
+
+export const ROOF_MODEL_MARGIN_M = readNumberEnv(process.env.REACT_APP_ROOF_MODEL_MARGIN_M);
+
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
   converterApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL),
