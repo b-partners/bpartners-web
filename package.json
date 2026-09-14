@@ -86,7 +86,7 @@
   },
   "scripts": {
     "start": "rm -rf ./node_modules/.vite && vite",
-    "build": "tsc -b && vite build",
+    "build": "./node_modules/typescript/bin/tsc -b && vite build",
     "lint": "eslint ./src",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=\"--max_old_space_size=8192\"  cypress run --component ",

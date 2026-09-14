@@ -334,7 +334,7 @@ const SectionEditorForm: React.FC<{
       {section.type === SectionType.IMAGE && (
         <>
           <TextField
-            label='URL de l\'image'
+            label="URL de l'image"
             value={internalState.url ?? section.url}
             onChange={(e) => {
               setInternalState({ ...internalState, url: e.target.value });
