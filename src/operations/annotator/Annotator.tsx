@@ -62,12 +62,13 @@ export const Annotator = () => {
         <RoofAnnotator
           {...config}
           sessionId={sessionId}
+          {...(isNewSession ? {} : { areaPictureId: projectId })}
           {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
           resolveWmsLayers={resolveWmsLayers}
           resolveActiveWmsLayer={resolveActiveWmsLayer}
         />
       ) : (
-        <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} address={sessionAddress} />
+        <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />
       )}
     </Box>
   );
