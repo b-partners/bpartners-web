@@ -94,6 +94,9 @@ export const createSection = (type: SectionType): SectionDraft => {
 
 export const createCustomPage = (): CustomPageDraft => ({ id: v4(), pageTitle: '', sections: [] });
 
+export const isLeafSection = (section: SectionDraft): section is LeafSectionDraft =>
+  section.type === 'TEXT' || section.type === 'IMAGE' || section.type === 'TABLE';
+
 const isLeafSectionValid = (section: LeafSectionDraft): boolean => {
   if (section.type === 'TEXT') return section.text.trim().length > 0;
   if (section.type === 'IMAGE') return section.url.trim().length > 0;

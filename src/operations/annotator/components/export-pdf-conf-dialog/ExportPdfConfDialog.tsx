@@ -98,7 +98,7 @@ interface ExportPdfConfDialogProps {
 }
 
 export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
-  const { close } = useDialog();
+  const { close, setDialogProps } = useDialog();
   const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
   const [customPages, setCustomPages] = useState<CustomPageDraft[]>([]);
   const [editedIndex, setEditedIndex] = useState<number | null>(null);
@@ -112,15 +112,19 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   const toggleAll = () => setConf(ALL_KEYS.reduce<ExportAreaPictureAnnotationConf>((acc, key) => ({ ...acc, [key]: !allSelected }), {}));
 
   const openPageEditor = (index: number | null) => {
+    setDialogProps({ maxWidth: 'md', fullWidth: true });
     setEditedIndex(index);
     setIsEditing(true);
   };
 
-  const closePageEditor = () => setIsEditing(false);
+  const closePageEditor = () => {
+    setDialogProps({ maxWidth: 'sm', fullWidth: false });
+    setIsEditing(false);
+  };
 
   const savePage = (page: CustomPageDraft) => {
     setCustomPages(prev => (editedIndex === null ? [...prev, page] : prev.map((item, index) => (index === editedIndex ? page : item))));
-    setIsEditing(false);
+    closePageEditor();
   };
 
   const removePage = (index: number) => setCustomPages(prev => prev.filter((_, i) => i !== index));
