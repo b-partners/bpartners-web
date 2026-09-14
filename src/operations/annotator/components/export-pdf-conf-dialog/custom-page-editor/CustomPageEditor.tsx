@@ -75,20 +75,34 @@ const TableContent: FC<TableContentProps> = ({ tableData, onChange }) => {
 
   return (
     <Box>
-      <Box className='table-sheet' style={{ gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))` }}>
-        {headers.map((header, index) => (
-          <Box key={`header-${index}`} className='table-cell table-head'>
-            <InputBase placeholder={`Colonne ${index + 1}`} value={header} onChange={event => updateHeader(index, event.target.value)} fullWidth multiline />
-          </Box>
-        ))}
-        {rows.map((row, rowIndex) =>
-          row.map((cell, cellIndex) => (
-            <Box key={`cell-${rowIndex}-${cellIndex}`} className='table-cell'>
-              <InputBase value={cell} onChange={event => updateCell(rowIndex, cellIndex, event.target.value)} fullWidth multiline />
-            </Box>
-          ))
-        )}
-      </Box>
+      <table className='render-table'>
+        <thead>
+          <tr>
+            {headers.map((header, index) => (
+              <th key={`header-${index}`}>
+                <InputBase
+                  placeholder={`Colonne ${index + 1}`}
+                  value={header}
+                  onChange={event => updateHeader(index, event.target.value)}
+                  fullWidth
+                  multiline
+                />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={`row-${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td key={`cell-${cellIndex}`}>
+                  <InputBase value={cell} onChange={event => updateCell(rowIndex, cellIndex, event.target.value)} fullWidth multiline />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <Box className='table-controls'>
         <ButtonBase className='table-control' onClick={() => onChange({ headers: [...headers, ''], rows: rows.map(row => [...row, '']) })}>
           Ajouter une colonne
@@ -120,10 +134,12 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
   const [urlDraft, setUrlDraft] = useState('');
   const [isUrlOpen, setIsUrlOpen] = useState(false);
 
+  const priorityClass = `prio-${section.priority.toLowerCase()}`;
+
   if (section.type === 'TEXT') {
     return (
       <InputBase
-        className='block-text'
+        className={`block-text ${priorityClass}`}
         placeholder='Saisissez votre texte…'
         value={section.text}
         onChange={event => onChange({ ...section, text: event.target.value })}
@@ -154,30 +170,32 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
 
   if (isUrlOpen || !section.url) {
     return (
-      <Box className='image-drop'>
-        {isUrlOpen ? (
-          <InputBase
-            className='image-url'
-            placeholder="Collez l'URL de l'image puis appuyez sur Entrée"
-            value={urlDraft}
-            onChange={event => setUrlDraft(event.target.value)}
-            onBlur={commitUrl}
-            onKeyDown={onUrlKeyDown}
-            autoFocus
-            fullWidth
-          />
-        ) : (
-          <ButtonBase className='image-drop-target' onClick={openUrl} aria-label='Ajouter une image'>
-            <AddOutlined />
-            <Typography className='image-drop-label'>Ajouter une image</Typography>
-          </ButtonBase>
-        )}
+      <Box className={`block-image ${priorityClass}`}>
+        <Box className='image-drop'>
+          {isUrlOpen ? (
+            <InputBase
+              className='image-url'
+              placeholder="Collez l'URL de l'image puis appuyez sur Entrée"
+              value={urlDraft}
+              onChange={event => setUrlDraft(event.target.value)}
+              onBlur={commitUrl}
+              onKeyDown={onUrlKeyDown}
+              autoFocus
+              fullWidth
+            />
+          ) : (
+            <ButtonBase className='image-drop-target' onClick={openUrl} aria-label='Ajouter une image'>
+              <AddOutlined />
+              <Typography className='image-drop-label'>Ajouter une image</Typography>
+            </ButtonBase>
+          )}
+        </Box>
       </Box>
     );
   }
 
   return (
-    <Box className='block-image'>
+    <Box className={`block-image ${priorityClass}`}>
       <ButtonBase className='image-frame' onClick={openUrl} aria-label="Remplacer l'image">
         <img className='image-preview' src={section.url} alt={section.caption || 'Illustration de la page'} />
       </ButtonBase>
@@ -211,7 +229,7 @@ const ColumnsContent: FC<ColumnsContentProps> = ({ section, onChange }) => {
         ];
 
   return (
-    <Box className='block-columns' style={{ gridTemplateColumns: `repeat(${panes.length}, minmax(0, 1fr))` }}>
+    <Box className='block-columns' style={{ gridTemplateColumns: panes.length === 2 ? '49% 49%' : '32% 32% 32%' }}>
       {panes.map(pane => (
         <Box key={pane.title} className='column'>
           <Box className='column-toolbar'>
@@ -239,7 +257,7 @@ interface SectionBlockProps {
 }
 
 const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove }) => (
-  <Box className={`block prio-${section.priority.toLowerCase()}`}>
+  <Box className='block'>
     <Box className='block-toolbar'>
       <BlockMenu
         ariaLabel={`Options du bloc ${SECTION_TYPE_LABELS[section.type]}`}
