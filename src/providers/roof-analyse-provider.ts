@@ -143,6 +143,23 @@ export const getDetectionResult = async () => {
   return lastDetection;
 };
 
+export const detectionExistsForZoneName = async (zoneName: string): Promise<boolean> => {
+  if (!zoneName) return false;
+  try {
+    const apiKey = await getApiKey();
+    const params = new URLSearchParams({ zoneName });
+    const data = await fetch(`${baseUrl}/detections?${params}`, {
+      headers: { 'x-api-key': apiKey || '', 'content-type': 'application/json' },
+      method: 'GET',
+    });
+    if (!data.ok) return false;
+    const result = await data.json();
+    return Array.isArray(result) ? result.length > 0 : !!result;
+  } catch {
+    return false;
+  }
+};
+
 export const getDetectionById = async (detectionId: string) => {
   const apiKey = await getApiKey();
   const data = await fetch(`${baseUrl}/detections/${detectionId}`, {

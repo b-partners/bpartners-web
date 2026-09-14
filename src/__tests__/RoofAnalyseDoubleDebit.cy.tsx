@@ -70,6 +70,9 @@ const interceptDetection = (delay = 0) => {
   cy.intercept('POST', '**/detections/*/sync', req => req.reply({ delay, body: detectionResponse })).as('processDetection');
 };
 
+const interceptDetectionsByZone = (exists: boolean) =>
+  cy.intercept({ method: 'GET', url: /\/detections\?/ }, exists ? [detectionResponse] : []).as('detectionsByZone');
+
 describe('useRoofAnalyseGeneration — un seul débit de crédit par analyse', () => {
   beforeEach(() => {
     cy.clearAllLocalStorage();
@@ -78,6 +81,7 @@ describe('useRoofAnalyseGeneration — un seul débit de crédit par analyse', (
       req.reply(mercatorResponse);
     }).as('pointsToGeoPoints');
     cy.intercept('PUT', '**/city-jsons/*/process', {}).as('processCityJson');
+    interceptDetectionsByZone(false);
     cy.then(() => {
       localStorage.setItem('bp_user_api_key', 'dummy');
       useAnnotatorComponentStore.getState().reset();
