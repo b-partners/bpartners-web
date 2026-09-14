@@ -17,7 +17,7 @@ import {
   ViewInArOutlined,
 } from '@mui/icons-material';
 import { Box, Button, ButtonBase, IconButton, Switch, Tooltip, Typography } from '@mui/material';
-import { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { CustomPageDraft, CustomPageEditor, toCustomPage } from './custom-page-editor';
 import { ExportPdfConfDialogStyle } from './style';
 
@@ -103,6 +103,12 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   const [customPages, setCustomPages] = useState<CustomPageDraft[]>([]);
   const [editedIndex, setEditedIndex] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasOpenedEditor, setHasOpenedEditor] = useState(false);
+  const pagesGroupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isEditing && hasOpenedEditor) pagesGroupRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [isEditing, hasOpenedEditor, customPages.length]);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;
@@ -114,6 +120,7 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   const openPageEditor = (index: number | null) => {
     setDialogProps({ maxWidth: 'md', fullWidth: true });
     setEditedIndex(index);
+    setHasOpenedEditor(true);
     setIsEditing(true);
   };
 
@@ -177,7 +184,7 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
             </Box>
           </Box>
         ))}
-        <Box>
+        <Box ref={pagesGroupRef}>
           <Typography className='group-title'>Pages supplémentaires</Typography>
           <Box className='group-rows'>
             {customPages.map((page, index) => (

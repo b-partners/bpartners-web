@@ -39,8 +39,7 @@ describe('Supplementary pages in the PDF export dialog', () => {
     cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).type('Echafaudage requis sur le pan Nord.');
     cy.get('[data-testid="custom-page-save"]').click();
 
-    cy.contains('Observations de chantier').should('be.visible');
-    cy.contains('1 section').should('be.visible');
+    cy.contains('.page-row', 'Observations de chantier').scrollIntoView().should('be.visible').and('contain.text', '1 section');
 
     cy.get('[data-testid="export-pdf-conf-confirm"]').click();
 
