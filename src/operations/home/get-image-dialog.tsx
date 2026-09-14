@@ -5,6 +5,7 @@ import { EarthSatellites, LoadingSteps, ScreenShotAnimation } from '@/common/com
 import { useMutateProspect } from '@/common/fetcher';
 import { useDialog } from '@/common/store/dialog';
 import { wait } from '@/common/utils';
+import { useCreditRequirement } from '@/operations/account/components/billing';
 import { annotatorProvider, getCached } from '@/providers';
 import { ProspectStatus } from '@bpartners/typescript-client';
 import { stagger, useAnimate } from 'motion/react';
@@ -28,6 +29,9 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
   const form = useForm<FormType>({ defaultValues: { address: props.address } });
   const [scope, animate] = useAnimate();
   const [satellites, setSatellites] = useState({ show: false, end: false, screnShot: false });
+  const [isCheckingCredits, setIsCheckingCredits] = useState(false);
+  const { requireCredits } = useCreditRequirement();
+  const isBusy = isPending || isCheckingCredits;
 
   const startLoading = async () => {
     await animate('.input-anime', { transform: 'translateX(100%)', opacity: 0, display: 'none' }, { duration: 0.5, delay: stagger(0.2, { from: 'last' }) });
@@ -38,7 +42,11 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
     setSatellites({ end: false, show: false, screnShot: true });
   };
 
-  const createProspect = form.handleSubmit(data => {
+  const createProspect = form.handleSubmit(async data => {
+    setIsCheckingCredits(true);
+    const hasCredits = await requireCredits();
+    setIsCheckingCredits(false);
+    if (!hasCredits) return;
     startLoading();
     mutate({ ...data, id: uuidV4(), status: ProspectStatus.TO_CONTACT, email: data.email || getCached.accountHolder()?.companyInfo?.email });
   });
@@ -79,10 +87,10 @@ export const GetImageDialog: FC<GetImageDialogProps> = props => {
         </FormProvider>
       </DialogContent>
       <DialogActions>
-        <Button disabled={isPending} onClick={close}>
+        <Button disabled={isBusy} onClick={close}>
           Annuler
         </Button>
-        <Button onClick={createProspect} disabled={isPending} startIcon={isPending && <CircularProgress color='inherit' size={18} />}>
+        <Button onClick={createProspect} disabled={isBusy} startIcon={isBusy && <CircularProgress color='inherit' size={18} />}>
           Générer l'image
         </Button>
       </DialogActions>
