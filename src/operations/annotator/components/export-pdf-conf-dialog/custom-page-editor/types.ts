@@ -1,4 +1,3 @@
-import { CustomPage } from '@bpartners/typescript-client';
 import { v4 } from 'uuid';
 
 export const SECTION_PRIORITIES = ['IMPORTANT', 'MEDIUM', 'SMALL'] as const;
@@ -18,6 +17,7 @@ export interface ImageSectionDraft {
   priority: SectionPriority;
   url: string;
   caption: string;
+  fileId?: string;
 }
 
 export interface TableDataDraft {
@@ -113,5 +113,3 @@ export const isSectionValid = (section: SectionDraft): boolean => {
 
 export const isCustomPageValid = ({ pageTitle, sections }: CustomPageDraft): boolean =>
   pageTitle.trim().length > 0 && sections.length > 0 && sections.every(isSectionValid);
-
-export const toCustomPage = ({ pageTitle, sections }: CustomPageDraft): CustomPage => ({ pageTitle: pageTitle.trim(), sections });

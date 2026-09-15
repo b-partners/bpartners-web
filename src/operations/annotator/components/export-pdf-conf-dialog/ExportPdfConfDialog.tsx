@@ -1,8 +1,8 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
-import { cache, FileApi, getCached } from '@/providers';
-import { CustomPage, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
+import { cache, getCached } from '@/providers';
+import { CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import {
   AddCircleOutlineOutlined,
   ArchitectureOutlined,
@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 import { Box, Button, ButtonBase, IconButton, Switch, Tooltip, Typography } from '@mui/material';
 import { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { CustomPageDraft, CustomPageEditor, toCustomPage } from './custom-page-editor';
+import { CustomPageDraft, CustomPageEditor, toCustomPage, uploadPageImages } from './custom-page-editor';
 import { ExportPdfConfDialogStyle } from './style';
 
 type ConfKey = keyof ExportAreaPictureAnnotationConf;
@@ -102,10 +102,16 @@ interface ExportPdfConfDialogProps {
 export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
   const { close, setDialogProps } = useDialog();
   const areaPictureId = useAnnotatorComponentStore(state => state.areaPictureDetails?.id);
+  const setExportPdfConf = useAnnotatorComponentStore(state => state.setExportPdfConf);
+  const setExportCustomPages = useAnnotatorComponentStore(state => state.setExportCustomPages);
   const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(
-    () => getCached.exportPdfConf<ExportAreaPictureAnnotationConf>(areaPictureId) ?? DEFAULT_EXPORT_PDF_CONF
+    () =>
+      useAnnotatorComponentStore.getState().exportPdfConf ?? getCached.exportPdfConf<ExportAreaPictureAnnotationConf>(areaPictureId) ?? DEFAULT_EXPORT_PDF_CONF
   );
-  const [customPages, setCustomPages] = useState<CustomPageDraft[]>(() => getCached.exportCustomPages<CustomPageDraft>(areaPictureId));
+  const [customPages, setCustomPages] = useState<CustomPageDraft[]>(
+    () => useAnnotatorComponentStore.getState().exportCustomPages ?? getCached.exportCustomPages<CustomPageDraft>(areaPictureId)
+  );
+  const [isSavingPage, setIsSavingPage] = useState(false);
   const [editedIndex, setEditedIndex] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [hasOpenedEditor, setHasOpenedEditor] = useState(false);
@@ -116,12 +122,14 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   }, [isEditing, hasOpenedEditor, customPages.length]);
 
   useEffect(() => {
+    setExportCustomPages(customPages);
     cache.exportCustomPages(areaPictureId, customPages);
-  }, [areaPictureId, customPages]);
+  }, [areaPictureId, customPages, setExportCustomPages]);
 
   useEffect(() => {
+    setExportPdfConf(conf);
     cache.exportPdfConf(areaPictureId, conf);
-  }, [areaPictureId, conf]);
+  }, [areaPictureId, conf, setExportPdfConf]);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;
@@ -142,56 +150,18 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
     setIsEditing(false);
   };
 
-  const savePage = (page: CustomPageDraft) => {
-    setCustomPages(prev => (editedIndex === null ? [...prev, page] : prev.map((item, index) => (index === editedIndex ? page : item))));
+  const savePage = async (page: CustomPageDraft) => {
+    setIsSavingPage(true);
+    const savedPage = await uploadPageImages(page).catch(() => page);
+    setCustomPages(prev => (editedIndex === null ? [...prev, savedPage] : prev.map((item, index) => (index === editedIndex ? savedPage : item))));
+    setIsSavingPage(false);
     closePageEditor();
   };
 
   const removePage = (index: number) => setCustomPages(prev => prev.filter((_, i) => i !== index));
 
-  const uploadImageSections = async (pages: CustomPageDraft[]): Promise<CustomPage[]> => {
-    if (!areaPictureId) return pages.map(toCustomPage);
-
-    const { accountId } = getCached.userInfo();
-
-    const uploadedPages = await Promise.all(
-      pages.map(async page => ({
-        ...page,
-        sections: await Promise.all(
-          page.sections.map(async section => {
-            if (section.type !== 'IMAGE' || !section.url) return section;
-            if (/^https?:\/\//i.test(section.url)) return section;
-
-            const fileId = `custom-page-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-            let file: File;
-
-            if (section.url.startsWith('data:')) {
-              const [meta, data] = section.url.split(',');
-              const mime = meta.match(/:(.*?);/)?.[1] || 'image/png';
-              const bytes = Uint8Array.from(atob(data), char => char.charCodeAt(0));
-              file = new File([bytes], `${fileId}.${mime.split('/')[1] || 'png'}`, { type: mime });
-            } else {
-              const response = await fetch(section.url);
-              const blob = await response.blob();
-              file = new File([blob], `${fileId}.${(blob.type || 'image/png').split('/')[1] || 'png'}`, { type: blob.type || 'image/png' });
-            }
-
-            await FileApi().uploadFile(accountId, fileId, file, FileType.AREA_PICTURE, { headers: { 'Content-Type': file.type || 'image/png' } });
-            return {
-              ...section,
-              url: `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${fileId}/raw?accessToken=${getCached.token().accessToken}&fileType=${FileType.AREA_PICTURE}`,
-            };
-          })
-        ),
-      }))
-    );
-
-    return uploadedPages.map(({ pageTitle, sections }) => ({ pageTitle: pageTitle.trim(), sections }));
-  };
-
-  const handleConfirm = async () => {
-    const customPagesForExport = await uploadImageSections(customPages);
-    onConfirm({ conf, customPages: customPagesForExport });
+  const handleConfirm = () => {
+    onConfirm({ conf, customPages: customPages.map(toCustomPage) });
     close();
   };
 
@@ -202,6 +172,7 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
         initialPage={editedIndex === null ? undefined : customPages[editedIndex]}
         onCancel={closePageEditor}
         onSave={savePage}
+        isSaving={isSavingPage}
       />
     );
   }

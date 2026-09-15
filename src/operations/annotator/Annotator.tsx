@@ -6,7 +6,7 @@ import { copyObject, downloadAndCacheImage, getFileUrl, getImageFromCache, parse
 import { getAnalyseImageFileId } from '@/constants';
 import { analyseGeneratedIdRef } from '@/operations/prospects/constants';
 import { areaPictureAnnotationToPolygonAndAreaPictureInfo, fileProvider } from '@/providers';
-import { AreaPictureDetails, FileType } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
 import { ArrowBack, Replay, Save } from '@mui/icons-material';
 import { AppBar, Button, Divider, IconButton, ListItemText, Skeleton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
@@ -25,6 +25,7 @@ import {
   ScreenSwitchTabs,
 } from './components';
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
+import type { CustomPageDraft } from './components/export-pdf-conf-dialog/custom-page-editor/types';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
 import { useAnnotationInfosForm, useGlobalRateQuery, useRoofAnalyseGeneration } from './utils';
@@ -32,7 +33,7 @@ import { useAnnotationInfosForm, useGlobalRateQuery, useRoofAnalyseGeneration } 
 export const Annotator = () => {
   useHeartBeat();
   const { projectId } = useParams();
-  const { setAreaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId } = useAnnotatorComponentStore();
+  const { setAreaPictureDetails, setAnalyseImageUrl, setAnalyseImageFileId, setExportPdfConf, setExportCustomPages } = useAnnotatorComponentStore();
   const { data: annotations, isLoading } = useGetOne(
     'drafts-annotations',
     { id: projectId },
@@ -52,6 +53,14 @@ export const Annotator = () => {
     if (!fileId) return;
     cacheImage(fileId, 'AREA_PICTURE');
   }, [fileId, cacheImage]);
+
+  const persistedExportPdfConf = annotations?.properties?.exportPdfConf as ExportAreaPictureAnnotationConf | undefined;
+  const persistedExportCustomPages = annotations?.properties?.exportCustomPages as CustomPageDraft[] | undefined;
+
+  useEffect(() => {
+    if (persistedExportPdfConf) setExportPdfConf(persistedExportPdfConf);
+    if (persistedExportCustomPages) setExportCustomPages(persistedExportCustomPages);
+  }, [persistedExportPdfConf, persistedExportCustomPages, setExportPdfConf, setExportCustomPages]);
 
   useEffect(() => {
     if (!fileId) return;

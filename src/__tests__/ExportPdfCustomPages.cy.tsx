@@ -1,3 +1,4 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { ExportPdfConfDialog } from '@/operations/annotator/components/export-pdf-conf-dialog';
 
 const TITLE_PLACEHOLDER = 'Titre de la page';
@@ -12,6 +13,7 @@ const addBlock = (label: string) => {
 describe('Supplementary pages in the PDF export dialog', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
+    useAnnotatorComponentStore.getState().reset();
     cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onConfirm')} />);
   });
 
@@ -107,6 +109,23 @@ describe('Supplementary pages in the PDF export dialog', () => {
 
     cy.contains('.dialog-count', '7 sur 8').should('exist');
     cy.contains('.conf-row', 'Page de titre').should('have.attr', 'aria-checked', 'false');
+  });
+
+  it('publishes the pages and the conf to the annotator store so the draft can persist them', () => {
+    cy.contains('.conf-row', 'Page de titre').click();
+
+    cy.get('[data-testid="add-custom-page"]').click();
+    cy.get(`[placeholder="${TITLE_PLACEHOLDER}"]`).type('Observations de chantier');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).type('Echafaudage requis sur le pan Nord.');
+    cy.get('[data-testid="custom-page-save"]').click();
+
+    cy.wrap(null).should(() => {
+      const { exportCustomPages, exportPdfConf } = useAnnotatorComponentStore.getState();
+      expect(exportCustomPages).to.have.length(1);
+      expect(exportCustomPages?.[0].pageTitle).to.equal('Observations de chantier');
+      expect(exportPdfConf?.showTitlePage).to.equal(false);
+    });
   });
 
   it('removes a page from the list', () => {

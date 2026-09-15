@@ -1,5 +1,5 @@
 import { AddOutlined, ArrowBackOutlined, MoreVertOutlined } from '@mui/icons-material';
-import { Box, Button, ButtonBase, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
 import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
 import { CustomPageEditorStyle } from './style';
 import {
@@ -297,9 +297,10 @@ interface CustomPageEditorProps {
   initialPage?: CustomPageDraft;
   onCancel: () => void;
   onSave: (page: CustomPageDraft) => void;
+  isSaving?: boolean;
 }
 
-export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCancel, onSave }) => {
+export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCancel, onSave, isSaving }) => {
   const [page, setPage] = useState<CustomPageDraft>(() => initialPage ?? createCustomPage());
   const [paletteAnchor, setPaletteAnchor] = useState<HTMLElement | null>(null);
 
@@ -330,7 +331,8 @@ export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCan
           variant='contained'
           color='primary'
           onClick={() => onSave(page)}
-          disabled={!isCustomPageValid(page)}
+          disabled={!isCustomPageValid(page) || isSaving}
+          startIcon={isSaving ? <CircularProgress size={14} color='inherit' /> : undefined}
           data-testid='custom-page-save'
         >
           Enregistrer
