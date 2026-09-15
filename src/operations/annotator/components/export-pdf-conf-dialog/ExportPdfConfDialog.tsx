@@ -102,7 +102,9 @@ interface ExportPdfConfDialogProps {
 export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
   const { close, setDialogProps } = useDialog();
   const areaPictureId = useAnnotatorComponentStore(state => state.areaPictureDetails?.id);
-  const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(() => getCached.exportPdfConf<ExportAreaPictureAnnotationConf>(areaPictureId) ?? DEFAULT_EXPORT_PDF_CONF);
+  const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(
+    () => getCached.exportPdfConf<ExportAreaPictureAnnotationConf>(areaPictureId) ?? DEFAULT_EXPORT_PDF_CONF
+  );
   const [customPages, setCustomPages] = useState<CustomPageDraft[]>(() => getCached.exportCustomPages<CustomPageDraft>(areaPictureId));
   const [editedIndex, setEditedIndex] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -118,7 +120,7 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
   }, [areaPictureId, customPages]);
 
   useEffect(() => {
-    if (areaPictureId) cache.exportPdfConf(areaPictureId, conf);
+    cache.exportPdfConf(areaPictureId, conf);
   }, [areaPictureId, conf]);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
@@ -175,7 +177,10 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
             }
 
             await FileApi().uploadFile(accountId, fileId, file, FileType.AREA_PICTURE, { headers: { 'Content-Type': file.type || 'image/png' } });
-            return { ...section, url: `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${fileId}/raw?accessToken=${getCached.token().accessToken}&fileType=${FileType.AREA_PICTURE}` };
+            return {
+              ...section,
+              url: `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${fileId}/raw?accessToken=${getCached.token().accessToken}&fileType=${FileType.AREA_PICTURE}`,
+            };
           })
         ),
       }))

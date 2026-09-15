@@ -159,11 +159,13 @@ export const getCached = {
   },
   exportCustomPages<T>(areaPictureId: string): T[] {
     const cached = getCachedObject<{ areaPictureId: string; customPages: T[] }>(exportCustomPagesItem);
-    return cached?.areaPictureId === areaPictureId ? cached.customPages ?? [] : [];
+    if (!cached || cached.areaPictureId !== areaPictureId) return [];
+    return cached.customPages ?? [];
   },
   exportPdfConf<T>(areaPictureId: string): T | undefined {
     const cached = getCachedObject<{ areaPictureId: string; conf: T }>(exportPdfConfItem);
-    return cached?.areaPictureId === areaPictureId ? cached.conf : undefined;
+    if (!cached || cached.areaPictureId !== areaPictureId) return undefined;
+    return cached.conf;
   },
   pendingTrialPlan() {
     return localStorage.getItem(pendingTrialPlanItem) || undefined;
