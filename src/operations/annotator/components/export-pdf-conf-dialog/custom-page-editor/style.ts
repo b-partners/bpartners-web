@@ -139,12 +139,12 @@ export const CustomPageEditorStyle: SxProps = {
   '& .block-text.prio-important': {
     fontSize: 15,
     fontWeight: 700,
-    color: '#d32f2f',
+    color: '#080707',
   },
   '& .block-text.prio-medium': {
     fontSize: 12.6,
     fontWeight: 600,
-    color: '#f57c00',
+    color: '#6b6b6b',
   },
   '& .block-text.prio-small': {
     fontSize: 10.8,
