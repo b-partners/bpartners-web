@@ -1,6 +1,6 @@
 import { AddOutlined, ArrowBackOutlined, MoreVertOutlined } from '@mui/icons-material';
 import { Box, Button, ButtonBase, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
-import { FC, KeyboardEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
 import { CustomPageEditorStyle } from './style';
 import {
   createCustomPage,
@@ -133,8 +133,19 @@ interface LeafContentProps {
 const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
   const [urlDraft, setUrlDraft] = useState('');
   const [isUrlOpen, setIsUrlOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const priorityClass = `prio-${section.priority.toLowerCase()}`;
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    onChange({ ...section, url: previewUrl });
+    setIsUrlOpen(false);
+    event.target.value = '';
+  };
 
   if (section.type === 'TEXT') {
     return (
@@ -184,10 +195,16 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
               fullWidth
             />
           ) : (
-            <ButtonBase className='image-drop-target' onClick={openUrl} aria-label='Ajouter une image'>
-              <AddOutlined />
-              <Typography className='image-drop-label'>Ajouter une image</Typography>
-            </ButtonBase>
+            <Box className='image-drop-target'>
+              <input ref={fileInputRef} type='file' accept='image/*' hidden onChange={handleFileChange} />
+              <ButtonBase className='image-choice' onClick={() => fileInputRef.current?.click()} aria-label='Téléverser une image'>
+                <AddOutlined />
+                <Typography className='image-drop-label'>Téléverser une image</Typography>
+              </ButtonBase>
+              <ButtonBase className='image-choice' onClick={openUrl} aria-label='Ajouter une image par URL'>
+                <Typography className='image-drop-label'>Coller un lien</Typography>
+              </ButtonBase>
+            </Box>
           )}
         </Box>
       </Box>

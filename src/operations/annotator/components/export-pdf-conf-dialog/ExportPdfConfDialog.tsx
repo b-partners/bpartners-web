@@ -1,8 +1,8 @@
 import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
-import { cache, getCached } from '@/providers';
-import { CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
+import { cache, FileApi, getCached } from '@/providers';
+import { CustomPage, ExportAreaPictureAnnotationConf, FileType } from '@bpartners/typescript-client';
 import {
   AddCircleOutlineOutlined,
   ArchitectureOutlined,
@@ -147,8 +147,46 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
 
   const removePage = (index: number) => setCustomPages(prev => prev.filter((_, i) => i !== index));
 
-  const handleConfirm = () => {
-    onConfirm({ conf, customPages: customPages.map(toCustomPage) });
+  const uploadImageSections = async (pages: CustomPageDraft[]): Promise<CustomPage[]> => {
+    if (!areaPictureId) return pages.map(toCustomPage);
+
+    const { accountId } = getCached.userInfo();
+
+    const uploadedPages = await Promise.all(
+      pages.map(async page => ({
+        ...page,
+        sections: await Promise.all(
+          page.sections.map(async section => {
+            if (section.type !== 'IMAGE' || !section.url) return section;
+            if (/^https?:\/\//i.test(section.url)) return section;
+
+            const fileId = `custom-page-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            let file: File;
+
+            if (section.url.startsWith('data:')) {
+              const [meta, data] = section.url.split(',');
+              const mime = meta.match(/:(.*?);/)?.[1] || 'image/png';
+              const bytes = Uint8Array.from(atob(data), char => char.charCodeAt(0));
+              file = new File([bytes], `${fileId}.${mime.split('/')[1] || 'png'}`, { type: mime });
+            } else {
+              const response = await fetch(section.url);
+              const blob = await response.blob();
+              file = new File([blob], `${fileId}.${(blob.type || 'image/png').split('/')[1] || 'png'}`, { type: blob.type || 'image/png' });
+            }
+
+            await FileApi().uploadFile(accountId, fileId, file, FileType.AREA_PICTURE, { headers: { 'Content-Type': file.type || 'image/png' } });
+            return { ...section, url: `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${fileId}/raw?accessToken=${getCached.token().accessToken}&fileType=${FileType.AREA_PICTURE}` };
+          })
+        ),
+      }))
+    );
+
+    return uploadedPages.map(({ pageTitle, sections }) => ({ pageTitle: pageTitle.trim(), sections }));
+  };
+
+  const handleConfirm = async () => {
+    const customPagesForExport = await uploadImageSections(customPages);
+    onConfirm({ conf, customPages: customPagesForExport });
     close();
   };
 
