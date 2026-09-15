@@ -28,6 +28,8 @@ const roofDelimiterLongLatItem = 'bp_roof_delimiter_long_lat_item';
 const currentImageSize = 'birdia_image_size';
 const annotationToSave = 'birdia_annotation_to_save';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
+const exportCustomPagesItem = 'bp_export_custom_pages_item';
+const exportPdfConfItem = 'bp_export_pdf_conf_item';
 const pendingTrialPlanItem = 'bp_pending_trial_plan';
 export const ANALYSE_VIEW_STORAGE_KEY = 'annotator-view:analyse';
 export const ANNOTATOR_VIEW_STORAGE_KEY = 'annotator-view:2d';
@@ -95,6 +97,12 @@ export const cache = {
   polygons: (polygons: Polygon[]) => {
     return cacheObject(polygonsItem, polygons);
   },
+  exportCustomPages: <T>(areaPictureId: string, customPages: T[]) => {
+    return cacheObject(exportCustomPagesItem, { areaPictureId, customPages });
+  },
+  exportPdfConf: <T>(areaPictureId: string, conf: T) => {
+    return cacheObject(exportPdfConfItem, { areaPictureId, conf });
+  },
   annotationsInfo: (info: AnnotationInfo[]) => {
     return cacheObject(annotationsInfoItem, info);
   },
@@ -148,6 +156,16 @@ export const cache = {
 export const getCached = {
   whoami(): Whoami {
     return getCachedObject<Whoami>(whoamiItem);
+  },
+  exportCustomPages<T>(areaPictureId: string): T[] {
+    const cached = getCachedObject<{ areaPictureId: string; customPages: T[] }>(exportCustomPagesItem);
+    if (!cached || cached.areaPictureId !== areaPictureId) return [];
+    return cached.customPages ?? [];
+  },
+  exportPdfConf<T>(areaPictureId: string): T | undefined {
+    const cached = getCachedObject<{ areaPictureId: string; conf: T }>(exportPdfConfItem);
+    if (!cached || cached.areaPictureId !== areaPictureId) return undefined;
+    return cached.conf;
   },
   pendingTrialPlan() {
     return localStorage.getItem(pendingTrialPlanItem) || undefined;

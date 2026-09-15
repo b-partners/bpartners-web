@@ -1,0 +1,381 @@
+import { AddOutlined, ArrowBackOutlined, MoreVertOutlined } from '@mui/icons-material';
+import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
+import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
+import { CustomPageEditorStyle } from './style';
+import {
+  createCustomPage,
+  createLeafSection,
+  createSection,
+  CustomPageDraft,
+  isCustomPageValid,
+  isLeafSection,
+  LEAF_SECTION_TYPES,
+  LeafSectionDraft,
+  SECTION_PRIORITIES,
+  SECTION_PRIORITY_LABELS,
+  SECTION_TYPE_LABELS,
+  SECTION_TYPES,
+  SectionDraft,
+  SectionType,
+  SplitSectionDraft,
+  TableDataDraft,
+  ThreeSplitSectionDraft,
+} from './types';
+
+interface BlockAction {
+  key: string;
+  label: string;
+  selected?: boolean;
+  onSelect: () => void;
+}
+
+interface BlockMenuProps {
+  ariaLabel: string;
+  actions: BlockAction[];
+}
+
+const BlockMenu: FC<BlockMenuProps> = ({ ariaLabel, actions }) => {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+
+  const closeMenu = () => setAnchor(null);
+
+  const select = (action: BlockAction) => {
+    action.onSelect();
+    closeMenu();
+  };
+
+  return (
+    <>
+      <IconButton className='block-menu' size='small' aria-label={ariaLabel} onClick={(event: MouseEvent<HTMLButtonElement>) => setAnchor(event.currentTarget)}>
+        <MoreVertOutlined fontSize='small' />
+      </IconButton>
+      <Menu anchorEl={anchor} open={!!anchor} onClose={closeMenu}>
+        {actions.map(action => (
+          <MenuItem key={action.key} selected={action.selected} onClick={() => select(action)}>
+            {action.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+};
+
+interface TableContentProps {
+  tableData: TableDataDraft;
+  onChange: (tableData: TableDataDraft) => void;
+}
+
+const TableContent: FC<TableContentProps> = ({ tableData, onChange }) => {
+  const { headers, rows } = tableData;
+
+  const updateHeader = (index: number, value: string) => onChange({ ...tableData, headers: headers.map((header, i) => (i === index ? value : header)) });
+
+  const updateCell = (rowIndex: number, cellIndex: number, value: string) =>
+    onChange({ ...tableData, rows: rows.map((row, i) => (i === rowIndex ? row.map((cell, j) => (j === cellIndex ? value : cell)) : row)) });
+
+  return (
+    <Box>
+      <table className='render-table'>
+        <thead>
+          <tr>
+            {headers.map((header, index) => (
+              <th key={`header-${index}`}>
+                <InputBase
+                  placeholder={`Colonne ${index + 1}`}
+                  value={header}
+                  onChange={event => updateHeader(index, event.target.value)}
+                  fullWidth
+                  multiline
+                />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={`row-${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td key={`cell-${cellIndex}`}>
+                  <InputBase value={cell} onChange={event => updateCell(rowIndex, cellIndex, event.target.value)} fullWidth multiline />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Box className='table-controls'>
+        <ButtonBase className='table-control' onClick={() => onChange({ headers: [...headers, ''], rows: rows.map(row => [...row, '']) })}>
+          Ajouter une colonne
+        </ButtonBase>
+        <ButtonBase
+          className='table-control'
+          disabled={headers.length <= 1}
+          onClick={() => onChange({ headers: headers.slice(0, -1), rows: rows.map(row => row.slice(0, -1)) })}
+        >
+          Retirer une colonne
+        </ButtonBase>
+        <ButtonBase className='table-control' onClick={() => onChange({ ...tableData, rows: [...rows, headers.map(() => '')] })}>
+          Ajouter une ligne
+        </ButtonBase>
+        <ButtonBase className='table-control' disabled={rows.length <= 1} onClick={() => onChange({ ...tableData, rows: rows.slice(0, -1) })}>
+          Retirer une ligne
+        </ButtonBase>
+      </Box>
+    </Box>
+  );
+};
+
+interface LeafContentProps {
+  section: LeafSectionDraft;
+  onChange: (section: LeafSectionDraft) => void;
+}
+
+const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
+  const [urlDraft, setUrlDraft] = useState('');
+  const [isUrlOpen, setIsUrlOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const priorityClass = `prio-${section.priority.toLowerCase()}`;
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || section.type !== 'IMAGE') return;
+
+    const previewUrl = URL.createObjectURL(file);
+    onChange({ ...section, url: previewUrl });
+    setIsUrlOpen(false);
+    event.target.value = '';
+  };
+
+  if (section.type === 'TEXT') {
+    return (
+      <InputBase
+        className={`block-text ${priorityClass}`}
+        placeholder='Saisissez votre texte…'
+        value={section.text}
+        onChange={event => onChange({ ...section, text: event.target.value })}
+        fullWidth
+        multiline
+      />
+    );
+  }
+
+  if (section.type === 'TABLE') {
+    return <TableContent tableData={section.tableData} onChange={tableData => onChange({ ...section, tableData })} />;
+  }
+
+  const openUrl = () => {
+    setUrlDraft(section.url);
+    setIsUrlOpen(true);
+  };
+
+  const commitUrl = () => {
+    onChange({ ...section, url: urlDraft.trim() });
+    setIsUrlOpen(false);
+  };
+
+  const onUrlKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (event.key === 'Enter') commitUrl();
+    if (event.key === 'Escape') setIsUrlOpen(false);
+  };
+
+  if (isUrlOpen || !section.url) {
+    return (
+      <Box className={`block-image ${priorityClass}`}>
+        <Box className='image-drop'>
+          {isUrlOpen ? (
+            <InputBase
+              className='image-url'
+              placeholder="Collez l'URL de l'image puis appuyez sur Entrée"
+              value={urlDraft}
+              onChange={event => setUrlDraft(event.target.value)}
+              onBlur={commitUrl}
+              onKeyDown={onUrlKeyDown}
+              autoFocus
+              fullWidth
+            />
+          ) : (
+            <Box className='image-drop-target'>
+              <input ref={fileInputRef} type='file' accept='image/*' hidden onChange={handleFileChange} />
+              <ButtonBase className='image-choice' onClick={() => fileInputRef.current?.click()} aria-label='Téléverser une image'>
+                <AddOutlined />
+                <Typography className='image-drop-label'>Téléverser une image</Typography>
+              </ButtonBase>
+              <ButtonBase className='image-choice' onClick={openUrl} aria-label='Ajouter une image par URL'>
+                <Typography className='image-drop-label'>Coller un lien</Typography>
+              </ButtonBase>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box className={`block-image ${priorityClass}`}>
+      <ButtonBase className='image-frame' onClick={openUrl} aria-label="Remplacer l'image">
+        <img className='image-preview' src={section.url} alt={section.caption || 'Illustration de la page'} />
+      </ButtonBase>
+      <InputBase
+        className='image-caption'
+        placeholder='Légende (facultatif)'
+        value={section.caption}
+        onChange={event => onChange({ ...section, caption: event.target.value })}
+        fullWidth
+      />
+    </Box>
+  );
+};
+
+interface ColumnsContentProps {
+  section: SplitSectionDraft | ThreeSplitSectionDraft;
+  onChange: (section: SectionDraft) => void;
+}
+
+const ColumnsContent: FC<ColumnsContentProps> = ({ section, onChange }) => {
+  const panes =
+    section.type === 'SPLIT_SECTION'
+      ? [
+          { title: 'Gauche', leaf: section.leftSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, leftSection: leaf }) },
+          { title: 'Droite', leaf: section.rightSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, rightSection: leaf }) },
+        ]
+      : [
+          { title: 'Gauche', leaf: section.leftSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, leftSection: leaf }) },
+          { title: 'Milieu', leaf: section.middleSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, middleSection: leaf }) },
+          { title: 'Droite', leaf: section.rightSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, rightSection: leaf }) },
+        ];
+
+  return (
+    <Box className='block-columns' style={{ gridTemplateColumns: panes.length === 2 ? '49% 49%' : '32% 32% 32%' }}>
+      {panes.map(pane => (
+        <Box key={pane.title} className='column'>
+          <Box className='column-toolbar'>
+            <BlockMenu
+              ariaLabel={`Type du bloc ${pane.title}`}
+              actions={LEAF_SECTION_TYPES.map(type => ({
+                key: type,
+                label: SECTION_TYPE_LABELS[type],
+                selected: pane.leaf.type === type,
+                onSelect: () => pane.set(createLeafSection(type)),
+              }))}
+            />
+          </Box>
+          <LeafContent section={pane.leaf} onChange={pane.set} />
+        </Box>
+      ))}
+    </Box>
+  );
+};
+
+interface SectionBlockProps {
+  section: SectionDraft;
+  onChange: (section: SectionDraft) => void;
+  onRemove: () => void;
+}
+
+const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove }) => (
+  <Box className='block'>
+    <Box className='block-toolbar'>
+      <BlockMenu
+        ariaLabel={`Options du bloc ${SECTION_TYPE_LABELS[section.type]}`}
+        actions={[
+          ...SECTION_PRIORITIES.map(priority => ({
+            key: priority,
+            label: SECTION_PRIORITY_LABELS[priority],
+            selected: section.priority === priority,
+            onSelect: () => onChange({ ...section, priority }),
+          })),
+          { key: 'remove', label: 'Supprimer le bloc', onSelect: onRemove },
+        ]}
+      />
+    </Box>
+    {isLeafSection(section) ? <LeafContent section={section} onChange={onChange} /> : <ColumnsContent section={section} onChange={onChange} />}
+  </Box>
+);
+
+interface CustomPageEditorProps {
+  initialPage?: CustomPageDraft;
+  onCancel: () => void;
+  onSave: (page: CustomPageDraft) => void;
+  isSaving?: boolean;
+}
+
+export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCancel, onSave, isSaving }) => {
+  const [page, setPage] = useState<CustomPageDraft>(() => initialPage ?? createCustomPage());
+  const [paletteAnchor, setPaletteAnchor] = useState<HTMLElement | null>(null);
+
+  const closePalette = () => setPaletteAnchor(null);
+
+  const addSection = (type: SectionType) => {
+    setPage(current => ({ ...current, sections: [...current.sections, createSection(type)] }));
+    closePalette();
+  };
+
+  const updateSection = (index: number, section: SectionDraft) =>
+    setPage(current => ({ ...current, sections: current.sections.map((item, i) => (i === index ? section : item)) }));
+
+  const removeSection = (index: number) => setPage(current => ({ ...current, sections: current.sections.filter((_, i) => i !== index) }));
+
+  return (
+    <Box sx={CustomPageEditorStyle}>
+      <Box className='editor-bar'>
+        <IconButton className='editor-back' onClick={onCancel} aria-label='Revenir au contenu du rapport'>
+          <ArrowBackOutlined />
+        </IconButton>
+        <Typography className='editor-heading'>Page supplémentaire</Typography>
+        <Button className='bar-btn' variant='text' color='inherit' onClick={onCancel}>
+          Annuler
+        </Button>
+        <Button
+          className='bar-btn'
+          variant='contained'
+          color='primary'
+          onClick={() => onSave(page)}
+          disabled={!isCustomPageValid(page) || isSaving}
+          startIcon={isSaving ? <CircularProgress size={14} color='inherit' /> : undefined}
+          data-testid='custom-page-save'
+        >
+          Enregistrer
+        </Button>
+      </Box>
+
+      <Box className='editor-canvas'>
+        <Box className='page-sheet'>
+          <InputBase
+            className='page-title'
+            placeholder='Titre de la page'
+            value={page.pageTitle}
+            onChange={event => setPage(current => ({ ...current, pageTitle: event.target.value }))}
+            autoFocus
+            fullWidth
+            multiline
+          />
+
+          {page.sections.length === 0 && <Typography className='page-hint'>Cette page est vide. Ajoutez un bloc pour commencer à la remplir.</Typography>}
+
+          <Box className='blocks'>
+            {page.sections.map((section, index) => (
+              <SectionBlock key={index} section={section} onChange={updated => updateSection(index, updated)} onRemove={() => removeSection(index)} />
+            ))}
+          </Box>
+
+          <ButtonBase
+            className='add-block'
+            onClick={(event: MouseEvent<HTMLButtonElement>) => setPaletteAnchor(event.currentTarget)}
+            data-testid='add-custom-page-block'
+          >
+            <AddOutlined fontSize='small' />
+            Ajouter un bloc
+          </ButtonBase>
+          <Menu anchorEl={paletteAnchor} open={!!paletteAnchor} onClose={closePalette}>
+            {SECTION_TYPES.map(type => (
+              <MenuItem key={type} onClick={() => addSection(type)}>
+                {SECTION_TYPE_LABELS[type]}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
