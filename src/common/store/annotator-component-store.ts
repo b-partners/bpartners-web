@@ -20,6 +20,12 @@ export interface RoofAnalyseProperties {
   revetement_1: AnnotationCoveringFromAnalyse;
   revetement_2: AnnotationCoveringFromAnalyse | null;
   roof_area_in_m2: number;
+  mutation?: string;
+  fire_risk?: string;
+  mutation_recent_image_url?: string;
+  mutation_recent_image_date?: number;
+  mutation_older_image_url?: string;
+  mutation_older_image_date?: number;
 }
 
 interface Action {

@@ -1,4 +1,10 @@
-import { ANNOTATION_LABELS_TRANSLATION, ANNOTATION_WEAR_TRANSLATION, coveringTypeMap } from '@/constants';
+import {
+  ANNOTATION_FIRE_RISK_TRANSLATION,
+  ANNOTATION_LABELS_TRANSLATION,
+  ANNOTATION_MUTATION_TRANSLATION,
+  ANNOTATION_WEAR_TRANSLATION,
+  coveringTypeMap,
+} from '@/constants';
 import { roofGlobalIdRef } from '@/operations/prospects/constants';
 import { AnnotationInfo } from '../types';
 
@@ -32,7 +38,9 @@ export const translateAnnotationInfo = (info: AnnotationInfo & { area: number },
       formatInfo({ label: "Taux d'usure", value: info?.wearLevel, unit: '%' }),
       formatInfo({ label: 'Taux de moisissure', value: info?.moldRate, unit: '%' }),
       formatInfo({ label: "Taux d'humidité", value: info?.humidityLevel, unit: '%' }),
+      formatInfo({ label: 'Mutation', value: info?.mutation, translator: ANNOTATION_MUTATION_TRANSLATION }),
       formatInfo({ label: 'Obstacle', value: info?.obstacle }),
+      formatInfo({ label: 'Risque vegetation / feu', value: info?.fireRisk, translator: ANNOTATION_FIRE_RISK_TRANSLATION }),
       formatInfo({ label: 'Commentaire', value: info?.comment })
     );
   }

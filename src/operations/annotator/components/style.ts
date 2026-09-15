@@ -181,6 +181,15 @@ export const annotatorFormItem: SxProps = {
   },
 };
 
+export const mutationImageCaptionStyle: SxProps = {
+  fontSize: '12px',
+  color: 'text.secondary',
+  '& .mutation-caption-link': {
+    color: 'inherit',
+    fontWeight: 600,
+  },
+};
+
 export const saveAnnotationsButtonStyle: SxProps = {
   width: {
     xs: '90%',

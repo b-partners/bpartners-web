@@ -35,6 +35,12 @@ export interface Properties {
   roof_slope_data_status: SlopeAndHeightStatus;
   roof_slope_in_degrees: number;
   roof_height_in_meters: number;
+  mutation?: string;
+  fire_risk?: string;
+  mutation_recent_image_url?: string;
+  mutation_recent_image_date?: number;
+  mutation_older_image_url?: string;
+  mutation_older_image_date?: number;
 }
 
 export interface Region {

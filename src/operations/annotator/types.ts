@@ -1,4 +1,4 @@
-import { AnnotationCoveringType, AnnotationLabelsType, AnnotationWearType } from '@/constants';
+import { AnnotationCoveringType, AnnotationFireRiskType, AnnotationLabelsType, AnnotationMutationType, AnnotationWearType } from '@/constants';
 import { Polygon, ScaleCallbacks } from '@bpartners/annotator-component';
 import { SxProps } from '@mui/material';
 
@@ -19,6 +19,8 @@ export interface AnnotationInfo {
   humidityLevel?: number;
   height?: number;
   area?: number;
+  mutation?: keyof AnnotationMutationType;
+  fireRisk?: keyof AnnotationFireRiskType;
 }
 
 export type PolygonsForm = Record<`${number}`, Polygon>;

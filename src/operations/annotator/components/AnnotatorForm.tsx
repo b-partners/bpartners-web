@@ -1,12 +1,19 @@
 import { SlopeAndHeightState } from '@/common/fetcher';
 import { annotatorStore, RoofAnalyseProperties } from '@/common/store';
 import { copyObject } from '@/common/utils';
-import { ANNOTATION_COVERING_CHOICES, ANNOTATION_LABELS_CHOICES, ANNOTATION_WEAR_CHOICES } from '@/constants';
+import {
+  ANNOTATION_COVERING_CHOICES,
+  ANNOTATION_FIRE_RISK_CHOICES,
+  ANNOTATION_LABELS_CHOICES,
+  ANNOTATION_MUTATION_CHOICES,
+  ANNOTATION_WEAR_CHOICES,
+} from '@/constants';
 import { detectionResultColors, roofGlobalIdRef } from '@/operations/prospects/constants';
-import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps } from '@mui/material';
+import { Box, CircularProgress, MenuItem, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
 import { ChangeEvent, FC, FocusEvent, useEffect, useMemo, useState } from 'react';
 import { AnnotationInfo } from '../types';
 import { FreeAutocompleteInput } from './free-autocomplete-input';
+import { mutationImageCaptionStyle } from './style';
 
 const FormColorBox: FC<{ type: keyof typeof detectionResultColors }> = ({ type }) => (
   <Box sx={{ width: '30px', height: '25px', background: detectionResultColors[type], mr: 1, borderRadius: '5px', border: '1px solid black' }} />
@@ -36,6 +43,10 @@ interface AnnotatorFormProps {
 }
 const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPending, roofAnalyseProperties }) => {
   const { annotationInfos, updateAnnotationInfo, isFirst } = annotatorStore.useOneAnnotationStore(polygonId);
+
+  const isRoofAnalysePolygon = isFirst && polygonId.includes(roofGlobalIdRef);
+  const { mutation_older_image_date, mutation_older_image_url, mutation_recent_image_date, mutation_recent_image_url } = roofAnalyseProperties || {};
+  const hasMutationImages = isRoofAnalysePolygon && (mutation_older_image_date != null || mutation_recent_image_date != null);
 
   const handleChange: HandleChange = (key, transform) => event => {
     const currentAnnotationInfo: AnnotationInfo = copyObject(annotationInfos);
@@ -186,12 +197,54 @@ const AnnotatorForm: FC<AnnotatorFormProps> = ({ polygonId, isSlopeAndHeightPend
         ))}
       </TextField>
 
+      <TextField data-testid='mutation' select label='Mutation' value={annotationInfos.mutation ?? ''} onChange={handleChange('mutation')} size='small'>
+        {ANNOTATION_MUTATION_CHOICES.map(({ name, id }) => (
+          <MenuItem key={`${id}-mutation`} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </TextField>
+      {hasMutationImages && (
+        <Typography data-testid='mutation-image-caption' sx={mutationImageCaptionStyle}>
+          Comparé{' '}
+          {mutation_older_image_url ? (
+            <a className='mutation-caption-link' href={mutation_older_image_url} target='_blank' rel='noreferrer'>
+              {mutation_older_image_date}
+            </a>
+          ) : (
+            mutation_older_image_date
+          )}
+          {' → '}
+          {mutation_recent_image_url ? (
+            <a className='mutation-caption-link' href={mutation_recent_image_url} target='_blank' rel='noreferrer'>
+              {mutation_recent_image_date}
+            </a>
+          ) : (
+            mutation_recent_image_date
+          )}
+        </Typography>
+      )}
+
       <CustomTextField
         InputProps={{ startAdornment: <FormColorBox type='OBSTACLE' /> }}
         label='Obstacle/Velux/PV'
         defaultValue={annotationInfos.obstacle}
         onBlur={handleChange('obstacle')}
       />
+      <TextField
+        data-testid='fire-risk'
+        select
+        label='Risque vegetation / feu'
+        value={annotationInfos.fireRisk ?? ''}
+        onChange={handleChange('fireRisk')}
+        size='small'
+      >
+        {ANNOTATION_FIRE_RISK_CHOICES.map(({ name, id }) => (
+          <MenuItem key={`${id}-fire-risk`} value={id}>
+            {name}
+          </MenuItem>
+        ))}
+      </TextField>
       <CustomTextField
         label={polygonId.includes(roofGlobalIdRef) ? "Commentaire de l'expert" : 'Commentaire'}
         defaultValue={annotationInfos.comment}
