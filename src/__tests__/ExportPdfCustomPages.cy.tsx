@@ -64,7 +64,7 @@ describe('Supplementary pages in the PDF export dialog', () => {
     cy.get(`[placeholder="${TITLE_PLACEHOLDER}"]`).type('Reportage photo');
     addBlock('Image');
 
-    cy.get('[aria-label="Ajouter une image"]').should('be.visible').click();
+    cy.get('[aria-label="Ajouter une image par URL"]').should('be.visible').click();
     cy.get(`[placeholder="${URL_PLACEHOLDER}"]`).type(`${url}{enter}`);
 
     cy.get('.image-preview').should('have.attr', 'src', url);
