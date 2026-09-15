@@ -32,7 +32,7 @@ describe('Draft persistence of the pdf export selection', () => {
   });
 
   it('writes the selection into the draft properties when it changes', () => {
-    cy.intercept('PUT', '**/annotations/**', { statusCode: 200, body: {} }).as('saveDraft');
+    cy.stub(dataProvider, 'update').as('update').resolves({ data: {} });
 
     cy.then(() => useAnnotatorComponentStore.getState().setAreaPictureDetails({ id: PICTURE_ID, fileId: 'mock-file-id1' } as AreaPictureDetails));
 
@@ -50,8 +50,9 @@ describe('Draft persistence of the pdf export selection', () => {
 
     cy.tick(10000);
 
-    cy.wait('@saveDraft')
-      .its('request.body.properties')
+    cy.get('@update').should('have.been.calledWith', 'drafts-annotations');
+    cy.get('@update')
+      .its('firstCall.args.1.data.properties')
       .should(properties => {
         expect(properties.exportPdfConf).to.deep.equal(CONF);
         expect(properties.exportCustomPages).to.have.length(1);
@@ -59,8 +60,8 @@ describe('Draft persistence of the pdf export selection', () => {
       });
   });
 
-  it('leaves the selection out of the properties while nothing has been selected', () => {
-    cy.intercept('PUT', '**/annotations/**', { statusCode: 200, body: {} }).as('saveDraft');
+  it('does not save when a store change leaves the selection untouched', () => {
+    cy.stub(dataProvider, 'update').as('update').resolves({ data: {} });
 
     cy.then(() => useAnnotatorComponentStore.getState().setAreaPictureDetails({ id: PICTURE_ID, fileId: 'mock-file-id1' } as AreaPictureDetails));
 
@@ -74,7 +75,7 @@ describe('Draft persistence of the pdf export selection', () => {
     cy.then(() => useAnnotatorComponentStore.getState().setRoofSlope(30));
     cy.tick(10000);
 
-    cy.get('@saveDraft.all').should('have.length', 0);
+    cy.get('@update').should('not.have.been.called');
   });
 
   it('restores the selection carried by the draft properties', () => {
