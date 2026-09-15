@@ -15,6 +15,7 @@ import { BillingSection } from './BillingSection';
 import { CreditBalanceDonut } from './CreditBalanceDonut';
 import { CreditPackCard } from './CreditPackCard';
 import { CreditPurchaseCandidate, CreditPurchaseConfirmDialog } from './CreditPurchaseConfirmDialog';
+import { DetectionTrackingHistory } from './DetectionTrackingHistory';
 import { formatCredits, formatDate, hasActivePlan } from './utils';
 
 const POLL_INTERVAL_MS = 3000;
@@ -243,6 +244,8 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
             ))}
           </Box>
         ))}
+
+      <DetectionTrackingHistory />
 
       <CreditPurchaseConfirmDialog purchase={candidate} isPending={isPurchasePending} onCancel={() => setCandidate(undefined)} onConfirm={onConfirmPurchase} />
     </BillingSection>
