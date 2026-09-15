@@ -11,7 +11,21 @@ const readNumberEnv = (value?: string) => {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
 };
 
+const readBooleanEnv = (value?: string) => {
+  const trimmed = readEnv(value)?.toLowerCase();
+  return trimmed === 'true' || trimmed === 'false' ? trimmed === 'true' : undefined;
+};
+
+const definedOnly = <T extends object>(values: T) => Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined)) as Partial<T>;
+
 export const ROOF_MODEL_MARGIN_M = readNumberEnv(process.env.REACT_APP_ROOF_MODEL_MARGIN_M);
+
+export const ROOF_MODEL_OPTIONS = definedOnly({
+  roofModelMarginM: ROOF_MODEL_MARGIN_M,
+  roofSnapToleranceM: readNumberEnv(process.env.REACT_APP_ROOF_SNAP_TOLERANCE_M),
+  roofSimplifyToleranceM: readNumberEnv(process.env.REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M),
+  roofNearVertexBlockEnabled: readBooleanEnv(process.env.REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED),
+});
 
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
