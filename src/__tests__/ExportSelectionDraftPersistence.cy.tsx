@@ -4,7 +4,7 @@ import { useRestoreExportSelection } from '@/operations/annotator/utils';
 import { cache, dataProvider } from '@/providers';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { FC } from 'react';
-import { AdminContext } from 'react-admin';
+import { AdminContext, DataProvider } from 'react-admin';
 import { account1 } from './mocks/responses/account-api';
 
 const PICTURE_ID = 'mock-area-picture-id1';
@@ -12,7 +12,7 @@ const PICTURE_ID = 'mock-area-picture-id1';
 const CONF = { showTitlePage: false, showAnnotationPages: true };
 const PAGES = [{ id: 'page-1', pageTitle: 'Observations de chantier', sections: [{ type: 'TEXT', priority: 'MEDIUM', text: 'Echafaudage.' }] }];
 
-const SaveHarness = () => {
+const SaveHarness: FC = () => {
   useSaveAnnotations();
   return null;
 };
@@ -38,7 +38,7 @@ describe('Draft persistence of the pdf export selection', () => {
 
     cy.clock();
     cy.mount(
-      <AdminContext dataProvider={dataProvider}>
+      <AdminContext dataProvider={dataProvider as DataProvider}>
         <SaveHarness />
       </AdminContext>
     );
@@ -66,7 +66,7 @@ describe('Draft persistence of the pdf export selection', () => {
 
     cy.clock();
     cy.mount(
-      <AdminContext dataProvider={dataProvider}>
+      <AdminContext dataProvider={dataProvider as DataProvider}>
         <SaveHarness />
       </AdminContext>
     );
