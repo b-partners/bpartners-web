@@ -20,6 +20,11 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
+const getExportSelection = () => {
+  const { exportPdfConf, exportCustomPages } = useAnnotatorComponentStore.getState();
+  return JSON.stringify({ exportPdfConf, exportCustomPages });
+};
+
 const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
   const annotatorState = annotatorStore.useAnnotatorStore.getState();
   const annotationsInfos = Object.values(annotatorState.annotations).map(a => a.annotationInfos);
@@ -170,6 +175,26 @@ export const useSaveAnnotations = () => {
     roof3DStore.useRoof3DStore.getState().savedLines,
     roof3DStore.useRoof3DStore.getState().savedPolygons,
   ]);
+
+  // Auto-save draft when the pdf export selection changes (included pages, supplementary pages)
+  useEffect(() => {
+    if (!areaPictureDetails) return () => {};
+    let prev = getExportSelection();
+
+    return useAnnotatorComponentStore.subscribe(() => {
+      const current = getExportSelection();
+      if (current === prev) return;
+      prev = current;
+
+      const pictureId = areaPictureDetails?.id;
+      if (!pictureId) return;
+
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, llm);
+      if (!requestBody) return;
+
+      saveDraftAnnotation(requestBody, debouncedSave, false);
+    });
+  }, [!!areaPictureDetails, slopeAndHeightState?.height, llm]);
 
   const triggerManualSave = useMemo(
     () => () => {
