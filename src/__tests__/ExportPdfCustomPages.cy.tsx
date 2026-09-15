@@ -99,6 +99,16 @@ describe('Supplementary pages in the PDF export dialog', () => {
       ]);
   });
 
+  it('restores the selected export pages when the dialog is reopened', () => {
+    cy.contains('.conf-row', 'Page de titre').click();
+    cy.contains('.dialog-count', '7 sur 8').should('exist');
+
+    cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onReopened')} />);
+
+    cy.contains('.dialog-count', '7 sur 8').should('exist');
+    cy.contains('.conf-row', 'Page de titre').should('have.attr', 'aria-checked', 'false');
+  });
+
   it('removes a page from the list', () => {
     cy.get('[data-testid="add-custom-page"]').click();
     cy.get(`[placeholder="${TITLE_PLACEHOLDER}"]`).type('Page a supprimer');
