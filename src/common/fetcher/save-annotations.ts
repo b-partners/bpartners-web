@@ -20,12 +20,12 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
-const getExportSelection = () => {
+export const getExportSelection = () => {
   const { exportPdfConf, exportCustomPages } = useAnnotatorComponentStore.getState();
   return JSON.stringify({ exportPdfConf, exportCustomPages });
 };
 
-const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
+export const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
   const annotatorState = annotatorStore.useAnnotatorStore.getState();
   const annotationsInfos = Object.values(annotatorState.annotations).map(a => a.annotationInfos);
   const polygonList = Object.values(annotatorState.annotations).map(a => a.polygon);

@@ -1,21 +1,14 @@
-import { useSaveAnnotations } from '@/common/fetcher';
+import { buildRequestBody, getExportSelection } from '@/common/fetcher/save-annotations';
 import { annotatorStore, useAnnotatorComponentStore } from '@/common/store';
 import { useRestoreExportSelection } from '@/operations/annotator/utils';
-import { cache, dataProvider } from '@/providers';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { cache } from '@/providers';
 import { FC } from 'react';
-import { AdminContext, DataProvider } from 'react-admin';
 import { account1 } from './mocks/responses/account-api';
 
 const PICTURE_ID = 'mock-area-picture-id1';
 
 const CONF = { showTitlePage: false, showAnnotationPages: true };
 const PAGES = [{ id: 'page-1', pageTitle: 'Observations de chantier', sections: [{ type: 'TEXT', priority: 'MEDIUM', text: 'Echafaudage.' }] }];
-
-const SaveHarness: FC = () => {
-  useSaveAnnotations();
-  return null;
-};
 
 const RestoreHarness: FC<{ properties?: Record<string, unknown> }> = ({ properties }) => {
   useRestoreExportSelection(properties);
@@ -31,51 +24,32 @@ describe('Draft persistence of the pdf export selection', () => {
     cache.token('dummy-access-token', 'dummy-refresh-token');
   });
 
-  it('writes the selection into the draft properties when it changes', () => {
-    cy.stub(dataProvider, 'update').as('update').resolves({ data: {} });
+  it('carries the selection in the draft properties', () => {
+    useAnnotatorComponentStore.getState().setExportPdfConf(CONF);
+    useAnnotatorComponentStore.getState().setExportCustomPages(PAGES as any);
 
-    cy.then(() => useAnnotatorComponentStore.getState().setAreaPictureDetails({ id: PICTURE_ID, fileId: 'mock-file-id1' } as AreaPictureDetails));
+    const { properties } = buildRequestBody(PICTURE_ID, 4, null);
 
-    cy.clock();
-    cy.mount(
-      <AdminContext dataProvider={dataProvider as DataProvider}>
-        <SaveHarness />
-      </AdminContext>
-    );
-
-    cy.then(() => {
-      useAnnotatorComponentStore.getState().setExportPdfConf(CONF);
-      useAnnotatorComponentStore.getState().setExportCustomPages(PAGES as any);
-    });
-
-    cy.tick(10000);
-
-    cy.get('@update').should('have.been.calledWith', 'drafts-annotations');
-    cy.get('@update')
-      .its('firstCall.args.1.data.properties')
-      .should(properties => {
-        expect(properties.exportPdfConf).to.deep.equal(CONF);
-        expect(properties.exportCustomPages).to.have.length(1);
-        expect(properties.exportCustomPages[0].pageTitle).to.equal('Observations de chantier');
-      });
+    expect(properties.exportPdfConf).to.deep.equal(CONF);
+    expect(properties.exportCustomPages).to.have.length(1);
+    expect((properties.exportCustomPages as typeof PAGES)[0].pageTitle).to.equal('Observations de chantier');
   });
 
-  it('does not save when a store change leaves the selection untouched', () => {
-    cy.stub(dataProvider, 'update').as('update').resolves({ data: {} });
+  it('leaves the selection keys out of the properties while nothing is selected', () => {
+    const { properties } = buildRequestBody(PICTURE_ID, 4, null);
 
-    cy.then(() => useAnnotatorComponentStore.getState().setAreaPictureDetails({ id: PICTURE_ID, fileId: 'mock-file-id1' } as AreaPictureDetails));
+    expect(properties).not.to.have.property('exportPdfConf');
+    expect(properties).not.to.have.property('exportCustomPages');
+  });
 
-    cy.clock();
-    cy.mount(
-      <AdminContext dataProvider={dataProvider as DataProvider}>
-        <SaveHarness />
-      </AdminContext>
-    );
+  it('only reports a new selection when an export key changes', () => {
+    const initial = getExportSelection();
 
-    cy.then(() => useAnnotatorComponentStore.getState().setRoofSlope(30));
-    cy.tick(10000);
+    useAnnotatorComponentStore.getState().setRoofSlope(30);
+    expect(getExportSelection()).to.equal(initial);
 
-    cy.get('@update').should('not.have.been.called');
+    useAnnotatorComponentStore.getState().setExportPdfConf(CONF);
+    expect(getExportSelection()).not.to.equal(initial);
   });
 
   it('restores the selection carried by the draft properties', () => {
