@@ -137,9 +137,9 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
 
   const priorityClass = `prio-${section.priority.toLowerCase()}`;
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || section.type !== 'IMAGE') return;
 
     const previewUrl = URL.createObjectURL(file);
     onChange({ ...section, url: previewUrl });
