@@ -9,7 +9,7 @@ import { BP_COLOR } from '../bp-theme';
 import { BpFormField } from '../common/components';
 import { handleSubmit, Redirect } from '../common/utils';
 import CompletePasswordPage from './CompletePasswordPage';
-import DownloadAppBanner from './DownloadAppBanner';
+import { UseLargerScreenBanner } from './UseLargerScreenBanner/UseLargerScreenBanner';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON, TRANSPARENT_BUTTON_STYLE } from './style';
 
 const SignInForm = () => {
@@ -56,7 +56,7 @@ const SignInForm = () => {
   return (
     <FormProvider {...formState}>
       {windowWidth <= 600 ? (
-        <DownloadAppBanner />
+        <UseLargerScreenBanner />
       ) : (
         <form style={LOGIN_FORM} onSubmit={handleSubmit(login)}>
           <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BIRDIA !' />
