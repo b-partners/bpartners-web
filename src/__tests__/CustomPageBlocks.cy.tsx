@@ -136,6 +136,36 @@ describe('Blocks of a supplementary page', () => {
     cy.get('[data-testid="custom-page-save"]').should('be.disabled');
   });
 
+  it('reorders blocks with the move up and down buttons', () => {
+    openPage('Ordre des blocs');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(0).type('Premier');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(1).type('Second');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(2).type('Troisieme');
+
+    cy.get('[aria-label="Monter le bloc"]').first().should('be.disabled');
+    cy.get('[aria-label="Descendre le bloc"]').last().should('be.disabled');
+
+    cy.get('.block').eq(2).find('[aria-label="Monter le bloc"]').click();
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(1).should('have.value', 'Troisieme');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(2).should('have.value', 'Second');
+
+    cy.get('.block').eq(0).find('[aria-label="Descendre le bloc"]').click();
+
+    cy.get('[data-testid="custom-page-save"]').click();
+    confirmExport();
+
+    cy.get('@onConfirm')
+      .its('firstCall.args.0.customPages.0.sections')
+      .should('deep.equal', [
+        { type: 'TEXT', priority: 'MEDIUM', text: 'Troisieme' },
+        { type: 'TEXT', priority: 'MEDIUM', text: 'Premier' },
+        { type: 'TEXT', priority: 'MEDIUM', text: 'Second' },
+      ]);
+  });
+
   it('keeps the caption typed under an image', () => {
     const url = 'https://storage.test/photo.jpg';
 

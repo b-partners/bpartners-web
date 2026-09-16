@@ -128,6 +128,26 @@ export const CustomPageEditorStyle: SxProps = {
     border: '1px solid rgba(0, 0, 0, 0.12)',
     '&:hover': { color: PALETTE_COLORS.black, bgcolor: PALETTE_COLORS.white },
   },
+  '& .block-move-controls': {
+    position: 'absolute',
+    top: '50%',
+    left: -34,
+    transform: 'translateY(-50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    opacity: 0,
+    transition: 'opacity 0.15s ease',
+    zIndex: 1,
+  },
+  '& .block:hover .block-move-controls, & .block:focus-within .block-move-controls': { opacity: 1 },
+  '& .block-move': {
+    color: '#9ca3af',
+    bgcolor: PALETTE_COLORS.white,
+    border: '1px solid rgba(0, 0, 0, 0.12)',
+    '&:hover': { color: PALETTE_COLORS.black, bgcolor: PALETTE_COLORS.white },
+    '&.Mui-disabled': { color: 'rgba(0, 0, 0, 0.26)', bgcolor: 'rgba(0, 0, 0, 0.04)' },
+  },
 
   '& .block-text': {
     display: 'block',

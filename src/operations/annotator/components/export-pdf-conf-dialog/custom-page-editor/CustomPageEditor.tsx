@@ -1,4 +1,4 @@
-import { AddOutlined, ArrowBackOutlined, MoreVertOutlined } from '@mui/icons-material';
+import { AddOutlined, ArrowBackOutlined, ArrowDownwardOutlined, ArrowUpwardOutlined, MoreVertOutlined } from '@mui/icons-material';
 import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
 import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
 import { CustomPageEditorStyle } from './style';
@@ -271,10 +271,22 @@ interface SectionBlockProps {
   section: SectionDraft;
   onChange: (section: SectionDraft) => void;
   onRemove: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 }
 
-const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove }) => (
+const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove, onMoveUp, onMoveDown, canMoveUp, canMoveDown }) => (
   <Box className='block'>
+    <Box className='block-move-controls'>
+      <IconButton className='block-move' size='small' aria-label='Monter le bloc' disabled={!canMoveUp} onClick={onMoveUp}>
+        <ArrowUpwardOutlined fontSize='small' />
+      </IconButton>
+      <IconButton className='block-move' size='small' aria-label='Descendre le bloc' disabled={!canMoveDown} onClick={onMoveDown}>
+        <ArrowDownwardOutlined fontSize='small' />
+      </IconButton>
+    </Box>
     <Box className='block-toolbar'>
       <BlockMenu
         ariaLabel={`Options du bloc ${SECTION_TYPE_LABELS[section.type]}`}
@@ -316,6 +328,16 @@ export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCan
 
   const removeSection = (index: number) => setPage(current => ({ ...current, sections: current.sections.filter((_, i) => i !== index) }));
 
+  const moveSection = (index: number, direction: 'up' | 'down') =>
+    setPage(current => {
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= current.sections.length) return current;
+
+      const sections = [...current.sections];
+      [sections[index], sections[targetIndex]] = [sections[targetIndex], sections[index]];
+      return { ...current, sections };
+    });
+
   return (
     <Box sx={CustomPageEditorStyle}>
       <Box className='editor-bar'>
@@ -355,7 +377,16 @@ export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCan
 
           <Box className='blocks'>
             {page.sections.map((section, index) => (
-              <SectionBlock key={index} section={section} onChange={updated => updateSection(index, updated)} onRemove={() => removeSection(index)} />
+              <SectionBlock
+                key={index}
+                section={section}
+                onChange={updated => updateSection(index, updated)}
+                onRemove={() => removeSection(index)}
+                onMoveUp={() => moveSection(index, 'up')}
+                onMoveDown={() => moveSection(index, 'down')}
+                canMoveUp={index > 0}
+                canMoveDown={index < page.sections.length - 1}
+              />
             ))}
           </Box>
 
