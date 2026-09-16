@@ -216,4 +216,67 @@ describe('Blocks of a supplementary page', () => {
         expect(section.url).to.include('accessToken=dummy-access-token');
       });
   });
+
+  it('rebuilds the uploaded image url with a fresh token when the page is reopened later', () => {
+    cy.intercept('POST', '/accounts/*/files/*/raw*', { statusCode: 200, body: {} }).as('uploadPageImage');
+
+    cy.then(() => {
+      cache.account(account1);
+      cache.token('dummy-access-token', 'dummy-refresh-token');
+    });
+
+    openPage('Photo de chantier');
+    addBlock('Image');
+
+    cy.get('input[type=file]').selectFile(
+      { contents: Cypress.Buffer.from(PNG_BASE64, 'base64'), fileName: 'toiture.png', mimeType: 'image/png' },
+      { force: true }
+    );
+
+    cy.get('[data-testid="custom-page-save"]').click();
+    cy.wait('@uploadPageImage');
+
+    cy.then(() => cache.token('fresh-access-token', 'dummy-refresh-token'));
+
+    cy.get('[aria-label="Modifier Photo de chantier"]').click();
+
+    cy.get('.image-preview')
+      .should('have.attr', 'src')
+      .and('include', 'accessToken=fresh-access-token');
+  });
+
+  it('drops the file reference when an uploaded image is replaced with a pasted url', () => {
+    const newUrl = 'https://storage.test/nouvelle-photo.jpg';
+
+    cy.intercept('POST', '/accounts/*/files/*/raw*', { statusCode: 200, body: {} }).as('uploadPageImage');
+
+    cy.then(() => {
+      cache.account(account1);
+      cache.token('dummy-access-token', 'dummy-refresh-token');
+    });
+
+    openPage('Photo de chantier');
+    addBlock('Image');
+
+    cy.get('input[type=file]').selectFile(
+      { contents: Cypress.Buffer.from(PNG_BASE64, 'base64'), fileName: 'toiture.png', mimeType: 'image/png' },
+      { force: true }
+    );
+
+    cy.get('[data-testid="custom-page-save"]').click();
+    cy.wait('@uploadPageImage');
+
+    cy.get('[aria-label="Modifier Photo de chantier"]').click();
+    cy.get('[aria-label="Remplacer l\'image"]').click();
+    cy.get(`[placeholder="${URL_PLACEHOLDER}"]`).clear().type(`${newUrl}{enter}`);
+
+    cy.get('.image-preview').should('have.attr', 'src', newUrl);
+
+    cy.get('[data-testid="custom-page-save"]').click();
+    confirmExport();
+
+    cy.get('@onConfirm')
+      .its('firstCall.args.0.customPages.0.sections.0')
+      .should('deep.equal', { type: 'IMAGE', priority: 'MEDIUM', url: newUrl, caption: '' });
+  });
 });

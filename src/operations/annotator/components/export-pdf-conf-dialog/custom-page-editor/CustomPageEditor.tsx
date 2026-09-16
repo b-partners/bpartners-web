@@ -1,3 +1,5 @@
+import { getFileUrl } from '@/common/utils';
+import { FileType } from '@bpartners/typescript-client';
 import { AddOutlined, ArrowBackOutlined, ArrowDownwardOutlined, ArrowUpwardOutlined, MoreVertOutlined } from '@mui/icons-material';
 import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
 import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
@@ -142,7 +144,7 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
     if (!file || section.type !== 'IMAGE') return;
 
     const previewUrl = URL.createObjectURL(file);
-    onChange({ ...section, url: previewUrl });
+    onChange({ ...section, url: previewUrl, fileId: undefined });
     setIsUrlOpen(false);
     event.target.value = '';
   };
@@ -170,7 +172,8 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
   };
 
   const commitUrl = () => {
-    onChange({ ...section, url: urlDraft.trim() });
+    const url = urlDraft.trim();
+    onChange({ ...section, url, fileId: url === section.url ? section.fileId : undefined });
     setIsUrlOpen(false);
   };
 
@@ -214,7 +217,11 @@ const LeafContent: FC<LeafContentProps> = ({ section, onChange }) => {
   return (
     <Box className={`block-image ${priorityClass}`}>
       <ButtonBase className='image-frame' onClick={openUrl} aria-label="Remplacer l'image">
-        <img className='image-preview' src={section.url} alt={section.caption || 'Illustration de la page'} />
+        <img
+          className='image-preview'
+          src={section.fileId ? getFileUrl(section.fileId, FileType.AREA_PICTURE) : section.url}
+          alt={section.caption || 'Illustration de la page'}
+        />
       </ButtonBase>
       <InputBase
         className='image-caption'
