@@ -205,6 +205,25 @@ describe('Blocks of a supplementary page', () => {
       ]);
   });
 
+  it('reorders blocks by dragging the drag handle', () => {
+    openPage('Ordre des blocs (drag)');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(0).type('Premier');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(1).type('Second');
+    addBlock('Texte');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(2).type('Troisieme');
+
+    const dataTransfer = new DataTransfer();
+    cy.get('[aria-label="Déplacer le bloc"]').eq(2).trigger('dragstart', { dataTransfer });
+    cy.get('.block').eq(0).trigger('dragover', { dataTransfer }).trigger('drop', { dataTransfer });
+    cy.get('[aria-label="Déplacer le bloc"]').eq(2).trigger('dragend');
+
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(0).should('have.value', 'Troisieme');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(1).should('have.value', 'Premier');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(2).should('have.value', 'Second');
+  });
+
   it('keeps the caption typed under an image', () => {
     const url = 'https://storage.test/photo.jpg';
 

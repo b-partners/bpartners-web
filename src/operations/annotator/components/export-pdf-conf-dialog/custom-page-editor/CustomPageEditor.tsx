@@ -6,11 +6,12 @@ import {
   ArrowDownwardOutlined,
   ArrowUpwardOutlined,
   DeleteOutlineOutlined,
+  DragIndicatorOutlined,
   FlagOutlined,
   MoreVertOutlined,
 } from '@mui/icons-material';
 import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
-import { ChangeEvent, FC, KeyboardEvent, MouseEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, FC, KeyboardEvent, MouseEvent, ReactNode, useRef, useState } from 'react';
 import { CustomPageEditorStyle } from './style';
 import {
   createCustomPage,
@@ -333,36 +334,93 @@ interface SectionBlockProps {
   onMoveDown: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+  onDragOver: () => void;
+  onDrop: () => void;
+  isDragging: boolean;
+  isDropTarget: boolean;
 }
 
-const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove, onMoveUp, onMoveDown, canMoveUp, canMoveDown }) => (
-  <Box className='block'>
-    <Box className='block-move-controls'>
-      <IconButton className='block-move' size='small' aria-label='Monter le bloc' disabled={!canMoveUp} onClick={onMoveUp}>
-        <ArrowUpwardOutlined fontSize='small' />
-      </IconButton>
-      <IconButton className='block-move' size='small' aria-label='Descendre le bloc' disabled={!canMoveDown} onClick={onMoveDown}>
-        <ArrowDownwardOutlined fontSize='small' />
-      </IconButton>
+const SectionBlock: FC<SectionBlockProps> = ({
+  section,
+  onChange,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+  isDragging,
+  isDropTarget,
+}) => {
+  const blockRef = useRef<HTMLDivElement>(null);
+
+  const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', '');
+    if (blockRef.current) event.dataTransfer.setDragImage(blockRef.current, 20, 20);
+    onDragStart();
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    onDragOver();
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    onDrop();
+  };
+
+  return (
+    <Box
+      ref={blockRef}
+      className={`block ${isDragging ? 'block-dragging' : ''} ${isDropTarget ? 'block-drop-target' : ''}`}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <Box className='block-move-controls'>
+        <Box
+          className='block-drag-handle'
+          draggable
+          onDragStart={handleDragStart}
+          onDragEnd={onDragEnd}
+          role='button'
+          aria-label='Déplacer le bloc'
+        >
+          <DragIndicatorOutlined fontSize='small' />
+        </Box>
+        <IconButton className='block-move' size='small' aria-label='Monter le bloc' disabled={!canMoveUp} onClick={onMoveUp}>
+          <ArrowUpwardOutlined fontSize='small' />
+        </IconButton>
+        <IconButton className='block-move' size='small' aria-label='Descendre le bloc' disabled={!canMoveDown} onClick={onMoveDown}>
+          <ArrowDownwardOutlined fontSize='small' />
+        </IconButton>
+      </Box>
+      <Box className='block-toolbar'>
+        <BlockMenu
+          ariaLabel={`Niveau d'importance du bloc ${SECTION_TYPE_LABELS[section.type]}`}
+          icon={<FlagOutlined fontSize='small' />}
+          actions={SECTION_PRIORITIES.map(priority => ({
+            key: priority,
+            label: SECTION_PRIORITY_LABELS[priority],
+            selected: section.priority === priority,
+            onSelect: () => onChange({ ...section, priority }),
+          }))}
+        />
+        <IconButton className='block-menu' size='small' aria-label='Supprimer le bloc' onClick={onRemove}>
+          <DeleteOutlineOutlined fontSize='small' />
+        </IconButton>
+      </Box>
+      {isLeafSection(section) ? <LeafContent section={section} onChange={onChange} /> : <ColumnsContent section={section} onChange={onChange} />}
     </Box>
-    <Box className='block-toolbar'>
-      <BlockMenu
-        ariaLabel={`Niveau d'importance du bloc ${SECTION_TYPE_LABELS[section.type]}`}
-        icon={<FlagOutlined fontSize='small' />}
-        actions={SECTION_PRIORITIES.map(priority => ({
-          key: priority,
-          label: SECTION_PRIORITY_LABELS[priority],
-          selected: section.priority === priority,
-          onSelect: () => onChange({ ...section, priority }),
-        }))}
-      />
-      <IconButton className='block-menu' size='small' aria-label='Supprimer le bloc' onClick={onRemove}>
-        <DeleteOutlineOutlined fontSize='small' />
-      </IconButton>
-    </Box>
-    {isLeafSection(section) ? <LeafContent section={section} onChange={onChange} /> : <ColumnsContent section={section} onChange={onChange} />}
-  </Box>
-);
+  );
+};
 
 interface CustomPageEditorProps {
   initialPage?: CustomPageDraft;
@@ -374,6 +432,8 @@ interface CustomPageEditorProps {
 export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCancel, onSave, isSaving }) => {
   const [page, setPage] = useState<CustomPageDraft>(() => initialPage ?? createCustomPage());
   const [paletteAnchor, setPaletteAnchor] = useState<HTMLElement | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const closePalette = () => setPaletteAnchor(null);
 
@@ -387,15 +447,25 @@ export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCan
 
   const removeSection = (index: number) => setPage(current => ({ ...current, sections: current.sections.filter((_, i) => i !== index) }));
 
-  const moveSection = (index: number, direction: 'up' | 'down') =>
+  const reorderSections = (fromIndex: number, toIndex: number) =>
     setPage(current => {
-      const targetIndex = direction === 'up' ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= current.sections.length) return current;
+      if (fromIndex === toIndex || toIndex < 0 || toIndex >= current.sections.length) return current;
 
       const sections = [...current.sections];
-      [sections[index], sections[targetIndex]] = [sections[targetIndex], sections[index]];
+      const [moved] = sections.splice(fromIndex, 1);
+      sections.splice(toIndex, 0, moved);
       return { ...current, sections };
     });
+
+  const endDrag = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (index: number) => {
+    if (draggedIndex !== null) reorderSections(draggedIndex, index);
+    endDrag();
+  };
 
   return (
     <Box sx={CustomPageEditorStyle}>
@@ -441,10 +511,16 @@ export const CustomPageEditor: FC<CustomPageEditorProps> = ({ initialPage, onCan
                 section={section}
                 onChange={updated => updateSection(index, updated)}
                 onRemove={() => removeSection(index)}
-                onMoveUp={() => moveSection(index, 'up')}
-                onMoveDown={() => moveSection(index, 'down')}
+                onMoveUp={() => reorderSections(index, index - 1)}
+                onMoveDown={() => reorderSections(index, index + 1)}
                 canMoveUp={index > 0}
                 canMoveDown={index < page.sections.length - 1}
+                onDragStart={() => setDraggedIndex(index)}
+                onDragEnd={endDrag}
+                onDragOver={() => draggedIndex !== null && draggedIndex !== index && setDragOverIndex(index)}
+                onDrop={() => handleDrop(index)}
+                isDragging={draggedIndex === index}
+                isDropTarget={dragOverIndex === index}
               />
             ))}
           </Box>
