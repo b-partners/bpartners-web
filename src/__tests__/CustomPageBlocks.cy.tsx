@@ -298,9 +298,7 @@ describe('Blocks of a supplementary page', () => {
 
     cy.get('[aria-label="Modifier Photo de chantier"]').click();
 
-    cy.get('.image-preview')
-      .should('have.attr', 'src')
-      .and('include', 'accessToken=fresh-access-token');
+    cy.get('.image-preview').should('have.attr', 'src').and('include', 'accessToken=fresh-access-token');
   });
 
   it('drops the file reference when an uploaded image is replaced with a pasted url', () => {
@@ -333,8 +331,6 @@ describe('Blocks of a supplementary page', () => {
     cy.get('[data-testid="custom-page-save"]').click();
     confirmExport();
 
-    cy.get('@onConfirm')
-      .its('firstCall.args.0.customPages.0.sections.0')
-      .should('deep.equal', { type: 'IMAGE', priority: 'MEDIUM', url: newUrl, caption: '' });
+    cy.get('@onConfirm').its('firstCall.args.0.customPages.0.sections.0').should('deep.equal', { type: 'IMAGE', priority: 'MEDIUM', url: newUrl, caption: '' });
   });
 });

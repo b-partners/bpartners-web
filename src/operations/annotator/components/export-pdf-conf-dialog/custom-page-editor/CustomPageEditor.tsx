@@ -385,14 +385,7 @@ const SectionBlock: FC<SectionBlockProps> = ({
       onDrop={handleDrop}
     >
       <Box className='block-move-controls'>
-        <Box
-          className='block-drag-handle'
-          draggable
-          onDragStart={handleDragStart}
-          onDragEnd={onDragEnd}
-          role='button'
-          aria-label='Déplacer le bloc'
-        >
+        <Box className='block-drag-handle' draggable onDragStart={handleDragStart} onDragEnd={onDragEnd} role='button' aria-label='Déplacer le bloc'>
           <DragIndicatorOutlined fontSize='small' />
         </Box>
         <IconButton className='block-move' size='small' aria-label='Monter le bloc' disabled={!canMoveUp} onClick={onMoveUp}>
