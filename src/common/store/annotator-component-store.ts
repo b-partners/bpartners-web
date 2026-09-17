@@ -1,6 +1,7 @@
+import type { CustomPageDraft } from '@/operations/annotator/components/export-pdf-conf-dialog/custom-page-editor/types';
 import type { CropRegion } from '@/operations/annotator/utils/image-and-polygon-cropper';
 import { AnnotationCoveringFromAnalyse } from '@/providers';
-import { AreaPictureDetails } from '@bpartners/typescript-client';
+import { AreaPictureDetails, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import { create } from 'zustand';
 import { SlopeAndHeightState } from '../fetcher';
 import { copyObject } from '../utils';
@@ -42,6 +43,8 @@ interface Action {
   setCropRegion: (cropRegion: CropRegion | null) => void;
   setIsEditable: (isEditable: boolean) => void;
   toggleIsEditable: () => void;
+  setExportPdfConf: (exportPdfConf: ExportAreaPictureAnnotationConf | null) => void;
+  setExportCustomPages: (exportCustomPages: CustomPageDraft[] | null) => void;
 }
 
 interface State {
@@ -68,6 +71,8 @@ interface State {
   analyseLoadingPolygon: { x: number; y: number }[] | null;
   cropRegion: CropRegion | null;
   isEditable: boolean;
+  exportPdfConf: ExportAreaPictureAnnotationConf | null;
+  exportCustomPages: CustomPageDraft[] | null;
 }
 
 const defaultState: any = {
@@ -86,6 +91,8 @@ const defaultState: any = {
   analyseLoadingPolygon: null,
   cropRegion: null,
   isEditable: false,
+  exportPdfConf: null,
+  exportCustomPages: null,
 };
 
 export const useAnnotatorComponentStore = create<Action & State>(set => ({
@@ -109,4 +116,6 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   setCropRegion: cropRegion => set({ cropRegion }),
   setIsEditable: isEditable => set({ isEditable }),
   toggleIsEditable: () => set(state => ({ isEditable: !state.isEditable })),
+  setExportPdfConf: exportPdfConf => set({ exportPdfConf }),
+  setExportCustomPages: exportCustomPages => set({ exportCustomPages }),
 }));
