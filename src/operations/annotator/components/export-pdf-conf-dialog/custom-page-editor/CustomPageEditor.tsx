@@ -1,8 +1,16 @@
 import { getFileUrl } from '@/common/utils';
 import { FileType } from '@bpartners/typescript-client';
-import { AddOutlined, ArrowBackOutlined, ArrowDownwardOutlined, ArrowUpwardOutlined, MoreVertOutlined } from '@mui/icons-material';
+import {
+  AddOutlined,
+  ArrowBackOutlined,
+  ArrowDownwardOutlined,
+  ArrowUpwardOutlined,
+  DeleteOutlineOutlined,
+  FlagOutlined,
+  MoreVertOutlined,
+} from '@mui/icons-material';
 import { Box, Button, ButtonBase, CircularProgress, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
-import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, MouseEvent, ReactNode, useRef, useState } from 'react';
 import { CustomPageEditorStyle } from './style';
 import {
   createCustomPage,
@@ -34,9 +42,10 @@ interface BlockAction {
 interface BlockMenuProps {
   ariaLabel: string;
   actions: BlockAction[];
+  icon?: ReactNode;
 }
 
-const BlockMenu: FC<BlockMenuProps> = ({ ariaLabel, actions }) => {
+const BlockMenu: FC<BlockMenuProps> = ({ ariaLabel, actions, icon = <MoreVertOutlined fontSize='small' /> }) => {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
   const closeMenu = () => setAnchor(null);
@@ -49,7 +58,7 @@ const BlockMenu: FC<BlockMenuProps> = ({ ariaLabel, actions }) => {
   return (
     <>
       <IconButton className='block-menu' size='small' aria-label={ariaLabel} onClick={(event: MouseEvent<HTMLButtonElement>) => setAnchor(event.currentTarget)}>
-        <MoreVertOutlined fontSize='small' />
+        {icon}
       </IconButton>
       <Menu anchorEl={anchor} open={!!anchor} onClose={closeMenu}>
         {actions.map(action => (
@@ -252,24 +261,66 @@ const ColumnsContent: FC<ColumnsContentProps> = ({ section, onChange }) => {
           { title: 'Droite', leaf: section.rightSection, set: (leaf: LeafSectionDraft) => onChange({ ...section, rightSection: leaf }) },
         ];
 
+  const addColumn = () =>
+    onChange({
+      type: 'THREE_SPLIT_SECTION',
+      priority: section.priority,
+      leftSection: section.leftSection,
+      middleSection: createLeafSection('TEXT'),
+      rightSection: section.rightSection,
+    });
+
+  const removeColumn = () => {
+    if (section.type !== 'THREE_SPLIT_SECTION') return;
+    onChange({ type: 'SPLIT_SECTION', priority: section.priority, leftSection: section.leftSection, rightSection: section.rightSection });
+  };
+
   return (
-    <Box className='block-columns' style={{ gridTemplateColumns: panes.length === 2 ? '49% 49%' : '32% 32% 32%' }}>
-      {panes.map(pane => (
-        <Box key={pane.title} className='column'>
-          <Box className='column-toolbar'>
-            <BlockMenu
-              ariaLabel={`Type du bloc ${pane.title}`}
-              actions={LEAF_SECTION_TYPES.map(type => ({
-                key: type,
-                label: SECTION_TYPE_LABELS[type],
-                selected: pane.leaf.type === type,
-                onSelect: () => pane.set(createLeafSection(type)),
-              }))}
-            />
+    <Box>
+      <Box className='block-columns' style={{ gridTemplateColumns: panes.length === 2 ? '49% 49%' : '32% 32% 32%' }}>
+        {panes.map(pane => (
+          <Box key={pane.title} className='column'>
+            <Box className='column-toolbar'>
+              <BlockMenu
+                ariaLabel={`Type du bloc ${pane.title}`}
+                actions={LEAF_SECTION_TYPES.map(type => ({
+                  key: type,
+                  label: SECTION_TYPE_LABELS[type],
+                  selected: pane.leaf.type === type,
+                  onSelect: () => pane.set(createLeafSection(type)),
+                }))}
+              />
+              <BlockMenu
+                ariaLabel={`Niveau d'importance du bloc ${pane.title}`}
+                icon={<FlagOutlined fontSize='small' />}
+                actions={SECTION_PRIORITIES.map(priority => ({
+                  key: priority,
+                  label: SECTION_PRIORITY_LABELS[priority],
+                  selected: pane.leaf.priority === priority,
+                  onSelect: () => pane.set({ ...pane.leaf, priority }),
+                }))}
+              />
+              <IconButton
+                className='block-menu'
+                size='small'
+                aria-label={`Vider le bloc ${pane.title}`}
+                onClick={() => pane.set({ ...createLeafSection(pane.leaf.type), priority: pane.leaf.priority })}
+              >
+                <DeleteOutlineOutlined fontSize='small' />
+              </IconButton>
+            </Box>
+            <LeafContent section={pane.leaf} onChange={pane.set} />
           </Box>
-          <LeafContent section={pane.leaf} onChange={pane.set} />
-        </Box>
-      ))}
+        ))}
+      </Box>
+      <Box className='column-count-controls'>
+        <ButtonBase className='table-control' disabled={panes.length >= 3} onClick={addColumn}>
+          Ajouter une colonne
+        </ButtonBase>
+        <ButtonBase className='table-control' disabled={panes.length <= 2} onClick={removeColumn}>
+          Retirer une colonne
+        </ButtonBase>
+      </Box>
     </Box>
   );
 };
@@ -296,17 +347,18 @@ const SectionBlock: FC<SectionBlockProps> = ({ section, onChange, onRemove, onMo
     </Box>
     <Box className='block-toolbar'>
       <BlockMenu
-        ariaLabel={`Options du bloc ${SECTION_TYPE_LABELS[section.type]}`}
-        actions={[
-          ...SECTION_PRIORITIES.map(priority => ({
-            key: priority,
-            label: SECTION_PRIORITY_LABELS[priority],
-            selected: section.priority === priority,
-            onSelect: () => onChange({ ...section, priority }),
-          })),
-          { key: 'remove', label: 'Supprimer le bloc', onSelect: onRemove },
-        ]}
+        ariaLabel={`Niveau d'importance du bloc ${SECTION_TYPE_LABELS[section.type]}`}
+        icon={<FlagOutlined fontSize='small' />}
+        actions={SECTION_PRIORITIES.map(priority => ({
+          key: priority,
+          label: SECTION_PRIORITY_LABELS[priority],
+          selected: section.priority === priority,
+          onSelect: () => onChange({ ...section, priority }),
+        }))}
       />
+      <IconButton className='block-menu' size='small' aria-label='Supprimer le bloc' onClick={onRemove}>
+        <DeleteOutlineOutlined fontSize='small' />
+      </IconButton>
     </Box>
     {isLeafSection(section) ? <LeafContent section={section} onChange={onChange} /> : <ColumnsContent section={section} onChange={onChange} />}
   </Box>

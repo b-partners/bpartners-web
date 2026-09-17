@@ -121,7 +121,7 @@ describe('Blocks of a supplementary page', () => {
     addBlock('Texte');
     cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).type('Echafaudage requis.');
 
-    cy.get('[aria-label="Options du bloc Texte"]').click();
+    cy.get(`[aria-label="Niveau d'importance du bloc Texte"]`).click();
     cy.contains('li', 'Important').click();
     cy.get('.block-text').should('have.class', 'prio-important');
 
@@ -129,11 +129,39 @@ describe('Blocks of a supplementary page', () => {
     cy.contains('.page-row', 'Observations').should('exist');
 
     cy.get('[aria-label="Modifier Observations"]').click();
-    cy.get('[aria-label="Options du bloc Texte"]').click();
-    cy.contains('li', 'Supprimer le bloc').click();
+    cy.get('[aria-label="Supprimer le bloc"]').click();
 
     cy.get('.block-text').should('not.exist');
     cy.get('[data-testid="custom-page-save"]').should('be.disabled');
+  });
+
+  it('sets a priority on a column pane and clears it back to empty', () => {
+    openPage('Comparatif');
+    addBlock('Deux colonnes');
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(0).type('Avant travaux');
+
+    cy.get(`[aria-label="Niveau d'importance du bloc Gauche"]`).click();
+    cy.contains('li', 'Important').click();
+    cy.get('.block-columns .column').eq(0).find('.block-text').should('have.class', 'prio-important');
+
+    cy.get('[aria-label="Vider le bloc Gauche"]').click();
+    cy.get(`[placeholder="${TEXT_PLACEHOLDER}"]`).eq(0).should('have.value', '');
+    cy.get('.block-columns .column').eq(0).find('.block-text').should('have.class', 'prio-important');
+  });
+
+  it('changes a two-column block into a three-column block and back', () => {
+    openPage('Comparatif');
+    addBlock('Deux colonnes');
+
+    cy.get('.block-columns .column').should('have.length', 2);
+    cy.contains('.column-count-controls .table-control', 'Retirer une colonne').should('be.disabled');
+
+    cy.contains('.column-count-controls .table-control', 'Ajouter une colonne').click();
+    cy.get('.block-columns .column').should('have.length', 3);
+    cy.contains('.column-count-controls .table-control', 'Ajouter une colonne').should('be.disabled');
+
+    cy.contains('.column-count-controls .table-control', 'Retirer une colonne').click();
+    cy.get('.block-columns .column').should('have.length', 2);
   });
 
   it('reorders blocks with the move up and down buttons', () => {
