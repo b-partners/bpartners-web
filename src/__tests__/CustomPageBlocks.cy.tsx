@@ -164,6 +164,17 @@ describe('Blocks of a supplementary page', () => {
     cy.get('.block-columns .column').should('have.length', 2);
   });
 
+  it('deletes a whole two-column block', () => {
+    openPage('Comparatif');
+    addBlock('Deux colonnes');
+    cy.get('.block-columns').should('exist');
+
+    cy.get('[aria-label="Supprimer le bloc"]').click();
+
+    cy.get('.block-columns').should('not.exist');
+    cy.get('[data-testid="custom-page-save"]').should('be.disabled');
+  });
+
   it('reorders blocks with the move up and down buttons', () => {
     openPage('Ordre des blocs');
     addBlock('Texte');

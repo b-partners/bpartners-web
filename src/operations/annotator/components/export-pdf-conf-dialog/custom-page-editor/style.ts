@@ -115,7 +115,7 @@ export const CustomPageEditorStyle: SxProps = {
   },
   '& .block-toolbar': {
     position: 'absolute',
-    top: -6,
+    top: -40,
     right: -6,
     display: 'flex',
     gap: '4px',
