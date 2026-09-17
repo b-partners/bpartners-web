@@ -106,6 +106,7 @@ export const CustomPageEditorStyle: SxProps = {
   },
   '& .block': {
     position: 'relative',
+    zIndex: 0,
     width: '100%',
     mb: '25px',
     outline: '1px solid transparent',
@@ -113,6 +114,7 @@ export const CustomPageEditorStyle: SxProps = {
     transition: 'outline-color 0.15s ease, opacity 0.15s ease',
     '&:hover': { outlineColor: 'rgba(0, 0, 0, 0.12)' },
   },
+  '& .block:hover, & .block:focus-within': { zIndex: 1 },
   '& .block-dragging': { opacity: 0.4 },
   '& .block-drop-target': { outlineColor: ACCENT, outlineStyle: 'dashed' },
   '& .block-toolbar': {
