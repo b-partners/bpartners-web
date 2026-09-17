@@ -108,6 +108,7 @@ export const CustomPageEditorStyle: SxProps = {
     position: 'relative',
     zIndex: 0,
     width: '100%',
+    minHeight: 112,
     mb: '25px',
     outline: '1px solid transparent',
     outlineOffset: 4,
