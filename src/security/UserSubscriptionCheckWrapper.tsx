@@ -1,4 +1,4 @@
-import { BPLoader, SubscriptionModal } from '@/common/components';
+import { BPLoader, SubscriptionModal, SubscriptionUnpaidModal } from '@/common/components';
 import { useLoadingHandler } from '@/common/hooks';
 import { useDialog } from '@/common/store/dialog';
 import { printError } from '@/common/utils';
@@ -34,6 +34,12 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
         const subscriptionStatus = isSubscriptionExpired(subscription) ? UserSubscriptionStatus.EMPTY : subscription?.status;
         const isActive = subscriptionStatus === UserSubscriptionStatus.ACTIVE;
         if (isActive || !subscriptionStatus) return;
+
+        if (subscriptionStatus === UserSubscriptionStatus.UNPAID) {
+          redirect('/');
+          openDialog(<SubscriptionUnpaidModal />, undefined, false);
+          return;
+        }
 
         const balance = await getCreditBalance().catch(() => undefined);
         if (hasSpendableCredits(balance)) {
