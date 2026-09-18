@@ -10,7 +10,12 @@ import { SubscriptionUnpaidModalStyle } from './style';
 const SUPPORT_EMAIL = 'contact@birdia.fr';
 
 export const SubscriptionUnpaidModal = () => {
-  const { data: unpaidInvoices = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['UnpaidSubscriptionInvoicesQuery'], queryFn: getUnpaidSubscriptionInvoices });
+  const {
+    data: unpaidInvoices = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({ queryKey: ['UnpaidSubscriptionInvoicesQuery'], queryFn: getUnpaidSubscriptionInvoices });
   const hadUnpaid = useRef(false);
 
   useEffect(() => {

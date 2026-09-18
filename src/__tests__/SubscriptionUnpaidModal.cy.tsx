@@ -37,7 +37,9 @@ describe('SubscriptionUnpaidModal', () => {
     cy.get(ITEM).should('have.length', 2);
     cy.get(ITEM).eq(0).should('contain', 'Facture pour la période de 01/08/2026 au 31/08/2026').and('contain', '58,80 €');
     cy.get(ITEM).eq(1).should('contain', 'Abonnement Essentiel — Février 2026').and('contain', '49,90 €');
-    cy.get(PAY_BUTTON).should('have.length', 2).each($button => cy.wrap($button).should('contain', 'Régler'));
+    cy.get(PAY_BUTTON)
+      .should('have.length', 2)
+      .each($button => cy.wrap($button).should('contain', 'Régler'));
   });
 
   it('shows the payment deadline (toPayAt) in the due column, not the creation date', () => {
@@ -47,8 +49,14 @@ describe('SubscriptionUnpaidModal', () => {
     cy.wait('@getUnpaidInvoices');
 
     const { toPayAt, createdAt } = unpaidSubscriptionInvoices[0].invoice!;
-    cy.get(ITEM).eq(0).find('.unpaid-cell-due').should('have.text', formatDate(new Date(toPayAt!)));
-    cy.get(ITEM).eq(0).find('.unpaid-cell-due').should('not.contain', formatDate(new Date(createdAt!)));
+    cy.get(ITEM)
+      .eq(0)
+      .find('.unpaid-cell-due')
+      .should('have.text', formatDate(new Date(toPayAt!)));
+    cy.get(ITEM)
+      .eq(0)
+      .find('.unpaid-cell-due')
+      .should('not.contain', formatDate(new Date(createdAt!)));
   });
 
   it('falls back to a dash in the due column when the invoice has no deadline', () => {
