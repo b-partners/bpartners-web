@@ -38,6 +38,8 @@ const CUSTOM_REDIRECTION_URL = 'https://dashboard.bpartners.app/subscribe/confir
 
 const cancelledSubscriptionUser: User = { ...user1, subscription: { end: dayjs().add(29, 'day').toDate(), start: new Date(), status: 'CANCELLED' } };
 
+const unpaidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'UNPAID' } };
+
 const formatMonth = (monthsFromNow: number) => dayjs().add(monthsFromNow, 'month').locale('fr').format('MMMM YYYY');
 
 const goToConsentStep = () => {
@@ -320,6 +322,26 @@ describe('Test user subscription', () => {
     cy.wait('@getAccountHolder1');
     cy.contains("Choisissez l'offre qui vous correspond le mieux.").should('not.exist');
     cy.contains('button', 'Se déconnecter').should('not.exist');
+  });
+  it('shows the blocking unpaid modal for an UNPAID subscription even with credits and a registered card', () => {
+    cy.cognitoLogin({ whoami: { user: unpaidSubscriptionUser }, user: unpaidSubscriptionUser });
+
+    cy.stub(Redirect, 'toURL').as('toURL');
+
+    cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
+    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, [{ ...accounts1[0] }]).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
+    cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
+
+    cy.mount(<App />);
+
+    cy.contains('Paiement en échec').should('be.visible');
+    cy.contains('de vos abonnements précédents').should('be.visible');
+    cy.get('a[href="mailto:contact@birdia.fr"]').should('contain.text', 'contact@birdia.fr');
+    cy.contains('button', 'Se déconnecter').should('be.visible');
+    cy.contains("Choisissez l'offre qui vous correspond le mieux.").should('not.exist');
   });
   it('Subscription flow: auto-renewal checkbox is sent as ENABLED when checked', () => {
     mountInvalidSubscription();

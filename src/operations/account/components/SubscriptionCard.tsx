@@ -11,7 +11,15 @@ import { useEffect } from 'react';
 import { useRecordContext, useRefresh } from 'react-admin';
 import { useSearchParams } from 'react-router-dom';
 import { BillingModal } from './billing';
-import { getYearlyDiscountBadge, getYearlyPricing, getYearlyReferenceLabel, hasTwelveMonthCommitment, isYearlyBilling, YearlyPricing } from './billing/utils';
+import {
+  getYearlyDiscountBadge,
+  getYearlyPricing,
+  getYearlyReferenceLabel,
+  hasTwelveMonthCommitment,
+  INACTIVE_SUBSCRIPTION_STATUSES,
+  isYearlyBilling,
+  YearlyPricing,
+} from './billing/utils';
 import { getPlanFeatureLines } from './plan-features';
 import { subscriptionFeatures } from './subscriptionFeatures';
 
@@ -42,8 +50,6 @@ const getFeatures = (plan?: SubscriptionPlanDescription) => {
   const features = getPlanFeatureLines(plan);
   return features.length > 0 ? features : subscriptionFeatures.map(({ text }) => text);
 };
-
-const INACTIVE_SUBSCRIPTION_STATUSES: (UserSubscriptionStatus | undefined)[] = [UserSubscriptionStatus.EMPTY, UserSubscriptionStatus.CANCELLED];
 
 export const SubscriptionCard = () => {
   const { value: isBillingModalOpen, handleOpen, handleClose } = useToggle();

@@ -345,3 +345,28 @@ export const SubscriptionRedirectStyle: SxProps = {
   },
   '& .redirect-secure svg': { fontSize: '14px', color: PALETTE_COLORS.pine },
 };
+
+export const SubscriptionUnpaidModalStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '16px',
+  textAlign: 'center',
+  px: 3,
+  py: 3,
+  '& .unpaid-icon': {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '56px',
+    height: '56px',
+    borderRadius: '50%',
+    bgcolor: alpha(ORANGE, 0.12),
+    color: ORANGE_DARK,
+  },
+  '& .unpaid-icon svg': { fontSize: '30px' },
+  '& .unpaid-title': { fontSize: '18px', fontWeight: 700, color: TEXT },
+  '& .unpaid-text': { fontSize: '14px', color: MUTED, maxWidth: '420px', lineHeight: 1.6 },
+  '& .unpaid-mail': { color: ORANGE_DARK, fontWeight: 600, textDecoration: 'none' },
+  '& .unpaid-logout': { width: 'auto', marginTop: '8px' },
+};

@@ -22,5 +22,6 @@ export * from './slash-icon';
 export * from './SubscriptionConsentStep';
 export * from './SubscriptionModal';
 export * from './SubscriptionRedirectStep';
+export * from './SubscriptionUnpaidModal';
 export * from './SupportDialog';
 export * from './UpdateBusinessModal';
