@@ -398,4 +398,13 @@ export const SubscriptionUnpaidModalStyle: SxProps = {
     whiteSpace: 'nowrap',
     '&:hover': { bgcolor: ORANGE_DARK, boxShadow: 'none' },
   },
+  '& .unpaid-refresh': {
+    textTransform: 'none',
+    fontWeight: 600,
+    width: 'auto',
+    color: ORANGE_DARK,
+    borderColor: ORANGE,
+    borderRadius: '8px',
+    '&:hover': { borderColor: ORANGE_DARK, bgcolor: alpha(ORANGE, 0.06) },
+  },
 };

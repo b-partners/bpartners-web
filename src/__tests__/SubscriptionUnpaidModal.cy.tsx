@@ -11,7 +11,7 @@ const ITEM = '.unpaid-table tbody tr';
 const PAY_BUTTON = '.unpaid-item-pay';
 
 const mountModal = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } } });
   cy.mount(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
@@ -58,6 +58,25 @@ describe('SubscriptionUnpaidModal', () => {
     cy.wait('@getUnpaidInvoices');
 
     cy.get(ITEM).eq(0).find('.unpaid-cell-due').should('have.text', '—');
+  });
+
+  it('refreshes on demand and reloads to unblock the account once every invoice is paid', () => {
+    let call = 0;
+    cy.intercept('GET', SUBSCRIPTION_INVOICES_URL, req => {
+      call += 1;
+      req.reply(call === 1 ? unpaidSubscriptionInvoices : []);
+    }).as('getUnpaidInvoices');
+    cy.stub(Redirect, 'reload').as('reload');
+
+    mountModal();
+    cy.wait('@getUnpaidInvoices');
+    cy.get(ITEM).should('have.length', 2);
+
+    cy.contains('button', "J'ai payé — Actualiser").click();
+    cy.wait('@getUnpaidInvoices');
+
+    cy.get(ITEM).should('not.exist');
+    cy.get('@reload').should('have.been.called');
   });
 
   it('opens the Stripe payment url in a new tab when clicking Régler', () => {

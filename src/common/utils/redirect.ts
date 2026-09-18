@@ -5,6 +5,9 @@ export class Redirect {
   public static toURL(newLocation: string) {
     return window.location.replace(newLocation);
   }
+  public static reload() {
+    return window.location.reload();
+  }
   public static toMail(email: string) {
     return this.toURL(`mailto:${email}`);
   }
