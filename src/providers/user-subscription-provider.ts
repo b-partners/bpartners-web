@@ -3,6 +3,7 @@ import {
   BillingInterval,
   CreateSubscriptionInitiation,
   EnableStatus,
+  PaymentStatus,
   SubscriptionInvoice,
   SubscriptionPlan,
   SubscriptionTrial,
@@ -50,6 +51,13 @@ export const getDefaultPaymentMethod = async (): Promise<UserSubscriptionPayment
   const { data } = await userSubscriptionApi().getUserPaymentMethods(id, true);
   const paymentMethods: UserSubscriptionPaymentMethod[] = data || [];
   return paymentMethods.find(({ card }) => !!card?.lastFourDigits) ?? null;
+};
+
+export const getUnpaidSubscriptionInvoices = async (): Promise<SubscriptionInvoice[]> => {
+  const { id } = await asyncGetUser();
+  const { data } = await payingApi().getUserSubscriptionInvoices(id, undefined, [PaymentStatus.UNPAID]);
+  const subscriptionInvoices: SubscriptionInvoice[] = data || [];
+  return subscriptionInvoices.filter(({ paymentStatus, paymentUrl }) => paymentStatus === PaymentStatus.UNPAID && !!paymentUrl);
 };
 
 export const downloadSubscriptionInvoices = async (yearMonth: string) => {

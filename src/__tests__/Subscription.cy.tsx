@@ -11,6 +11,7 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { creditBalance, creditPacks, emptyCreditBalance } from './mocks/responses/credits-api';
 import { visaPaymentMethods } from './mocks/responses/payment-method-api';
 import { user1, whoami1 } from './mocks/responses/security-api';
+import { unpaidSubscriptionInvoices } from './mocks/responses/subscription-invoice-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const invalidSubscriptionUser: User = { ...user1, subscription: { end: null, start: null, status: 'EMPTY' } };
@@ -323,7 +324,7 @@ describe('Test user subscription', () => {
     cy.contains("Choisissez l'offre qui vous correspond le mieux.").should('not.exist');
     cy.contains('button', 'Se déconnecter').should('not.exist');
   });
-  it('shows the blocking unpaid modal for an UNPAID subscription even with credits and a registered card', () => {
+  it('shows the blocking unpaid modal listing the unpaid invoices for an UNPAID subscription even with credits and a registered card', () => {
     cy.cognitoLogin({ whoami: { user: unpaidSubscriptionUser }, user: unpaidSubscriptionUser });
 
     cy.stub(Redirect, 'toURL').as('toURL');
@@ -334,11 +335,18 @@ describe('Test user subscription', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
     cy.intercept('GET', `/users/${whoami1.user.id}/paymentMethods*`, visaPaymentMethods).as('getPaymentMethods');
+    cy.intercept('GET', `/users/${whoami1.user.id}/subscriptionInvoices*`, unpaidSubscriptionInvoices).as('getUnpaidInvoices');
 
     cy.mount(<App />);
 
     cy.contains('Paiement en échec').should('be.visible');
-    cy.contains('de vos abonnements précédents').should('be.visible');
+    cy.wait('@getUnpaidInvoices').its('request.query.paymentStatuses').should('eq', 'UNPAID');
+
+    cy.contains('.unpaid-table th', 'Échéance').should('be.visible');
+    cy.get('.unpaid-table tbody tr').should('have.length', 2);
+    cy.contains('.unpaid-table tbody tr', 'Facture pour la période de 01/08/2026 au 31/08/2026').should('contain', '58,80 €');
+    cy.get('.unpaid-item-pay').should('have.length', 2).and('contain', 'Régler');
+
     cy.get('a[href="mailto:contact@birdia.fr"]').should('contain.text', 'contact@birdia.fr');
     cy.contains('button', 'Se déconnecter').should('be.visible');
     cy.contains("Choisissez l'offre qui vous correspond le mieux.").should('not.exist');
