@@ -21,7 +21,11 @@ const unitEurosFormatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigit
 
 const creditsFormatter = new Intl.NumberFormat('fr-FR');
 
-export const INACTIVE_SUBSCRIPTION_STATUSES: (UserSubscriptionStatus | undefined)[] = [UserSubscriptionStatus.EMPTY, UserSubscriptionStatus.CANCELLED];
+export const INACTIVE_SUBSCRIPTION_STATUSES: (UserSubscriptionStatus | undefined)[] = [
+  UserSubscriptionStatus.EMPTY,
+  UserSubscriptionStatus.CANCELLED,
+  UserSubscriptionStatus.UNPAID,
+];
 
 export type AnyPlan = SubscriptionPlan | SubscriptionPlanDescription;
 
