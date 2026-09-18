@@ -1,7 +1,8 @@
-import { authProvider, getUnpaidSubscriptionInvoices } from '@/providers';
+import { authProvider, cache, getUnpaidSubscriptionInvoices } from '@/providers';
 import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerrorredRounded';
 import { Box, Button, CircularProgress, Link, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { formatDate, prettyPrintMinors, Redirect } from '../utils';
 import { BPButton } from './BPButton';
 import { SubscriptionUnpaidModalStyle } from './style';
@@ -9,7 +10,19 @@ import { SubscriptionUnpaidModalStyle } from './style';
 const SUPPORT_EMAIL = 'contact@birdia.fr';
 
 export const SubscriptionUnpaidModal = () => {
-  const { data: unpaidInvoices = [], isLoading } = useQuery({ queryKey: ['UnpaidSubscriptionInvoicesQuery'], queryFn: getUnpaidSubscriptionInvoices });
+  const { data: unpaidInvoices = [], isLoading, isFetching, refetch } = useQuery({ queryKey: ['UnpaidSubscriptionInvoicesQuery'], queryFn: getUnpaidSubscriptionInvoices });
+  const hadUnpaid = useRef(false);
+
+  useEffect(() => {
+    if (isFetching) return;
+    if (unpaidInvoices.length > 0) {
+      hadUnpaid.current = true;
+    } else if (hadUnpaid.current) {
+      hadUnpaid.current = false;
+      cache.whoami(undefined);
+      Redirect.reload();
+    }
+  }, [unpaidInvoices, isFetching]);
 
   const onLogout = () => authProvider.logout().then(() => Redirect.toURL(`${location.hostname}/login`));
   const onPay = (paymentUrl: string) => window.open(paymentUrl, '_blank', 'noopener,noreferrer');
@@ -28,34 +41,45 @@ export const SubscriptionUnpaidModal = () => {
         <CircularProgress className='unpaid-loader' size={24} />
       ) : (
         unpaidInvoices.length > 0 && (
-          <TableContainer className='unpaid-table-container'>
-            <Table className='unpaid-table' size='small'>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Échéance</TableCell>
-                  <TableCell align='right'>Montant</TableCell>
-                  <TableCell align='right' />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {unpaidInvoices.map(({ invoice, paymentUrl }) => (
-                  <TableRow key={invoice?.id ?? paymentUrl}>
-                    <TableCell className='unpaid-cell-desc'>{invoice?.title || invoice?.ref || "Facture d'abonnement"}</TableCell>
-                    <TableCell className='unpaid-cell-due'>{invoice?.toPayAt ? formatDate(new Date(invoice.toPayAt)) : '—'}</TableCell>
-                    <TableCell className='unpaid-cell-amount' align='right'>
-                      {invoice?.totalPriceWithVat != null ? prettyPrintMinors(invoice.totalPriceWithVat) : '—'}
-                    </TableCell>
-                    <TableCell align='right'>
-                      <Button className='unpaid-item-pay' variant='contained' disableElevation onClick={() => paymentUrl && onPay(paymentUrl)}>
-                        Régler
-                      </Button>
-                    </TableCell>
+          <>
+            <TableContainer className='unpaid-table-container'>
+              <Table className='unpaid-table' size='small'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Échéance</TableCell>
+                    <TableCell align='right'>Montant</TableCell>
+                    <TableCell align='right' />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {unpaidInvoices.map(({ invoice, paymentUrl }) => (
+                    <TableRow key={invoice?.id ?? paymentUrl}>
+                      <TableCell className='unpaid-cell-desc'>{invoice?.title || invoice?.ref || "Facture d'abonnement"}</TableCell>
+                      <TableCell className='unpaid-cell-due'>{invoice?.toPayAt ? formatDate(new Date(invoice.toPayAt)) : '—'}</TableCell>
+                      <TableCell className='unpaid-cell-amount' align='right'>
+                        {invoice?.totalPriceWithVat != null ? prettyPrintMinors(invoice.totalPriceWithVat) : '—'}
+                      </TableCell>
+                      <TableCell align='right'>
+                        <Button className='unpaid-item-pay' variant='contained' disableElevation onClick={() => paymentUrl && onPay(paymentUrl)}>
+                          Régler
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Button
+              className='unpaid-refresh'
+              variant='outlined'
+              disabled={isFetching}
+              startIcon={isFetching ? <CircularProgress color='inherit' size={14} /> : undefined}
+              onClick={() => refetch()}
+            >
+              J'ai payé — Actualiser
+            </Button>
+          </>
         )
       )}
 
