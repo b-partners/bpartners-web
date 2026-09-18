@@ -161,7 +161,7 @@ describe(specTitle('Products'), () => {
 
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
     cy.contains('Édition de produit');
-    cy.intercept('GET', '/accounts/mock-account-id1/products/product-0-id', getProducts(1, 1)[0]);
+    cy.intercept('GET', '/accounts/mock-account-id1/products/product-0-id', { ...getProducts(1, 1)[0], id: 'product-0-id' });
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
       const editedProduct = [
         {

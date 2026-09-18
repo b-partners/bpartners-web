@@ -20,7 +20,12 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
-const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
+export const getExportSelection = () => {
+  const { exportPdfConf, exportCustomPages } = useAnnotatorComponentStore.getState();
+  return JSON.stringify({ exportPdfConf, exportCustomPages });
+};
+
+export const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: any): AreaPictureAnnotation | null => {
   const annotatorState = annotatorStore.useAnnotatorStore.getState();
   const annotationsInfos = Object.values(annotatorState.annotations).map(a => a.annotationInfos);
   const polygonList = Object.values(annotatorState.annotations).map(a => a.polygon);
@@ -28,7 +33,8 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
   const annotationId = UrlParams.get('draftAnnotationId');
   const annotationAttributeMapped = annotationsAttributeMapper(polygonList, annotationsInfos, pictureId, annotationId);
   const roofDelimiterLongLat = getCached.roofDelimiterLongLatItem();
-  const { globalRate, analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion } = useAnnotatorComponentStore.getState();
+  const { globalRate, analyseImageUrl, analyseImageFileId, imageTileInfoOrigin, cropRegion, exportPdfConf, exportCustomPages } =
+    useAnnotatorComponentStore.getState();
   const analyseImageGenerated = !!analyseImageUrl || !!annotatorState.roofAnalyseId;
 
   return {
@@ -48,6 +54,8 @@ const buildRequestBody = (pictureId: string, roofHeightInMeters: number, llm: an
       cropRegion,
       threeDMapping: getThreeDMapping(),
       lastSavingDate: new Date().toISOString(),
+      ...(exportPdfConf && { exportPdfConf }),
+      ...(exportCustomPages && { exportCustomPages }),
     },
   };
 };
@@ -167,6 +175,26 @@ export const useSaveAnnotations = () => {
     roof3DStore.useRoof3DStore.getState().savedLines,
     roof3DStore.useRoof3DStore.getState().savedPolygons,
   ]);
+
+  // Auto-save draft when the pdf export selection changes (included pages, supplementary pages)
+  useEffect(() => {
+    if (!areaPictureDetails) return () => {};
+    let prev = getExportSelection();
+
+    return useAnnotatorComponentStore.subscribe(() => {
+      const current = getExportSelection();
+      if (current === prev) return;
+      prev = current;
+
+      const pictureId = areaPictureDetails?.id;
+      if (!pictureId) return;
+
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, llm);
+      if (!requestBody) return;
+
+      saveDraftAnnotation(requestBody, debouncedSave, false);
+    });
+  }, [!!areaPictureDetails, slopeAndHeightState?.height, llm]);
 
   const triggerManualSave = useMemo(
     () => () => {

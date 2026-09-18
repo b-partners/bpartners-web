@@ -27,7 +27,7 @@ import {
 import { Annotator3DRegenerateButton } from './components/3d-renderer/annotator-3d-regenerate-button';
 import { SideBar } from './SideBar';
 import { annotatorAppBarStyle, annotatorBottomToolbarStyle, annotatorDisclaimerStyle } from './style';
-import { useAnnotationInfosForm, useGlobalRateQuery, useRoofAnalyseGeneration } from './utils';
+import { useAnnotationInfosForm, useGlobalRateQuery, useRestoreExportSelection, useRoofAnalyseGeneration } from './utils';
 
 export const Annotator = () => {
   useHeartBeat();
@@ -52,6 +52,8 @@ export const Annotator = () => {
     if (!fileId) return;
     cacheImage(fileId, 'AREA_PICTURE');
   }, [fileId, cacheImage]);
+
+  useRestoreExportSelection(annotations?.properties);
 
   useEffect(() => {
     if (!fileId) return;

@@ -1,20 +1,26 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { DEFAULT_EXPORT_PDF_CONF, EXPORT_PDF_CONF_OPTIONS } from '@/constants';
-import { ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
+import { cache, getCached } from '@/providers';
+import { CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import {
+  AddCircleOutlineOutlined,
   ArchitectureOutlined,
   AssessmentOutlined,
   AutoAwesomeOutlined,
+  DeleteOutlineOutlined,
   DescriptionOutlined,
   Download,
+  EditOutlined,
   LayersOutlined,
   PictureAsPdfOutlined,
   SquareFootOutlined,
   StraightenOutlined,
   ViewInArOutlined,
 } from '@mui/icons-material';
-import { Box, Button, ButtonBase, Switch, Typography } from '@mui/material';
-import { FC, ReactNode, useState } from 'react';
+import { Box, Button, ButtonBase, IconButton, Switch, Tooltip, Typography } from '@mui/material';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { CustomPageDraft, CustomPageEditor, toCustomPage, uploadPageImages } from './custom-page-editor';
 import { ExportPdfConfDialogStyle } from './style';
 
 type ConfKey = keyof ExportAreaPictureAnnotationConf;
@@ -62,13 +68,68 @@ const ConfRow: FC<ConfRowProps> = ({ confKey, checked, onToggle }) => (
   </ButtonBase>
 );
 
+interface CustomPageRowProps {
+  page: CustomPageDraft;
+  onEdit: () => void;
+  onRemove: () => void;
+}
+
+const CustomPageRow: FC<CustomPageRowProps> = ({ page, onEdit, onRemove }) => (
+  <Box className='page-row'>
+    <Box className='page-row-text'>
+      <Typography className='page-row-label'>{page.pageTitle}</Typography>
+      <Typography className='page-row-desc'>
+        {page.sections.length} section{page.sections.length > 1 ? 's' : ''}
+      </Typography>
+    </Box>
+    <Tooltip title='Modifier la page'>
+      <IconButton className='page-row-action' size='small' onClick={onEdit} aria-label={`Modifier ${page.pageTitle}`}>
+        <EditOutlined fontSize='small' />
+      </IconButton>
+    </Tooltip>
+    <Tooltip title='Supprimer la page'>
+      <IconButton className='page-row-action' size='small' onClick={onRemove} aria-label={`Supprimer ${page.pageTitle}`}>
+        <DeleteOutlineOutlined fontSize='small' />
+      </IconButton>
+    </Tooltip>
+  </Box>
+);
+
 interface ExportPdfConfDialogProps {
-  onConfirm: (conf: ExportAreaPictureAnnotationConf) => void;
+  onConfirm: (payload: { conf: ExportAreaPictureAnnotationConf; customPages: CustomPage[] }) => void;
 }
 
 export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm }) => {
-  const { close } = useDialog();
-  const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(DEFAULT_EXPORT_PDF_CONF);
+  const { close, setDialogProps } = useDialog();
+  const areaPictureId = useAnnotatorComponentStore(state => state.areaPictureDetails?.id);
+  const setExportPdfConf = useAnnotatorComponentStore(state => state.setExportPdfConf);
+  const setExportCustomPages = useAnnotatorComponentStore(state => state.setExportCustomPages);
+  const [conf, setConf] = useState<ExportAreaPictureAnnotationConf>(
+    () =>
+      useAnnotatorComponentStore.getState().exportPdfConf ?? getCached.exportPdfConf<ExportAreaPictureAnnotationConf>(areaPictureId) ?? DEFAULT_EXPORT_PDF_CONF
+  );
+  const [customPages, setCustomPages] = useState<CustomPageDraft[]>(
+    () => useAnnotatorComponentStore.getState().exportCustomPages ?? getCached.exportCustomPages<CustomPageDraft>(areaPictureId)
+  );
+  const [isSavingPage, setIsSavingPage] = useState(false);
+  const [editedIndex, setEditedIndex] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasOpenedEditor, setHasOpenedEditor] = useState(false);
+  const pagesGroupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isEditing && hasOpenedEditor) pagesGroupRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [isEditing, hasOpenedEditor, customPages.length]);
+
+  useEffect(() => {
+    setExportCustomPages(customPages);
+    cache.exportCustomPages(areaPictureId, customPages);
+  }, [areaPictureId, customPages, setExportCustomPages]);
+
+  useEffect(() => {
+    setExportPdfConf(conf);
+    cache.exportPdfConf(areaPictureId, conf);
+  }, [areaPictureId, conf, setExportPdfConf]);
 
   const selectedCount = ALL_KEYS.filter(key => conf[key]).length;
   const allSelected = selectedCount === ALL_KEYS.length;
@@ -77,10 +138,44 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
 
   const toggleAll = () => setConf(ALL_KEYS.reduce<ExportAreaPictureAnnotationConf>((acc, key) => ({ ...acc, [key]: !allSelected }), {}));
 
+  const openPageEditor = (index: number | null) => {
+    setDialogProps({ maxWidth: 'md', fullWidth: true });
+    setEditedIndex(index);
+    setHasOpenedEditor(true);
+    setIsEditing(true);
+  };
+
+  const closePageEditor = () => {
+    setDialogProps({ maxWidth: 'sm', fullWidth: false });
+    setIsEditing(false);
+  };
+
+  const savePage = async (page: CustomPageDraft) => {
+    setIsSavingPage(true);
+    const savedPage = await uploadPageImages(page).catch(() => page);
+    setCustomPages(prev => (editedIndex === null ? [...prev, savedPage] : prev.map((item, index) => (index === editedIndex ? savedPage : item))));
+    setIsSavingPage(false);
+    closePageEditor();
+  };
+
+  const removePage = (index: number) => setCustomPages(prev => prev.filter((_, i) => i !== index));
+
   const handleConfirm = () => {
-    onConfirm(conf);
+    onConfirm({ conf, customPages: customPages.map(toCustomPage) });
     close();
   };
+
+  if (isEditing) {
+    return (
+      <CustomPageEditor
+        key={editedIndex ?? 'new'}
+        initialPage={editedIndex === null ? undefined : customPages[editedIndex]}
+        onCancel={closePageEditor}
+        onSave={savePage}
+        isSaving={isSavingPage}
+      />
+    );
+  }
 
   return (
     <Box sx={ExportPdfConfDialogStyle}>
@@ -114,6 +209,24 @@ export const ExportPdfConfDialog: FC<ExportPdfConfDialogProps> = ({ onConfirm })
             </Box>
           </Box>
         ))}
+        <Box ref={pagesGroupRef}>
+          <Typography className='group-title'>Pages supplémentaires</Typography>
+          <Box className='group-rows'>
+            {customPages.map((page, index) => (
+              <CustomPageRow key={page.id} page={page} onEdit={() => openPageEditor(index)} onRemove={() => removePage(index)} />
+            ))}
+            <Button
+              className='add-page'
+              variant='outlined'
+              size='small'
+              startIcon={<AddCircleOutlineOutlined />}
+              onClick={() => openPageEditor(null)}
+              data-testid='add-custom-page'
+            >
+              Ajouter une page
+            </Button>
+          </Box>
+        </Box>
       </Box>
 
       <Box className='dialog-footer'>
