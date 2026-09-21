@@ -7,7 +7,7 @@ import { getFileUrl, useWrappedSearchParams } from '@/common/utils';
 import { DEFAULT_EXPORT_PDF_CONF, getAnalyseImageFileId } from '@/constants';
 import { AreaPictureDetails, CustomPage, ExportAreaPictureAnnotationConf } from '@bpartners/typescript-client';
 import { FC, useRef } from 'react';
-import { useGlobalRateQuery } from '../utils';
+import { getExportableGlobalRate, useGlobalRateQuery } from '../utils';
 import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
 
 export interface ExportAnnotationConfirmButtonProps {
@@ -39,8 +39,7 @@ export const ExportAnnotationConfirmButton: FC<ExportAnnotationConfirmButtonProp
       polygons: polygonList,
       address,
       imageUrl: getFileUrl(getAnalyseImageFileId(areaPictureDetails.fileId), 'AREA_PICTURE'),
-      globalRateType: globalRate?.type ?? null,
-      globalRateValue: globalRate?.value ?? null,
+      ...getExportableGlobalRate(globalRate),
       conf: confRef.current,
       customPages: customPagesRef.current,
     });

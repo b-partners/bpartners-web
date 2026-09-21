@@ -6,7 +6,7 @@ import { AreaPictureDetails, CustomPage, ExportAreaPictureAnnotationConf } from 
 import { Download } from '@mui/icons-material';
 import { Button, ButtonProps, CircularProgress } from '@mui/material';
 import { FC } from 'react';
-import { isAfterAnalyse, shiftPolygons, useGlobalRateQuery } from '../utils';
+import { getExportableGlobalRate, isAfterAnalyse, shiftPolygons, useGlobalRateQuery } from '../utils';
 import { ExportPdfConfDialog } from './export-pdf-conf-dialog/ExportPdfConfDialog';
 
 interface AnnotatorExportPdfButtonProps extends ButtonProps {
@@ -33,8 +33,7 @@ export const AnnotatorExportPdfButton: FC<AnnotatorExportPdfButtonProps> = ({ ar
       polygons: shiftedPolygonList,
       address: areaPictureDetails.address,
       imageUrl: getFileUrl(analyseImageFileId ?? areaPictureDetails.fileId, 'AREA_PICTURE'),
-      globalRateType: globalRate?.type ?? null,
-      globalRateValue: globalRate?.value ?? null,
+      ...getExportableGlobalRate(globalRate),
       conf: payload.conf,
       customPages: payload.customPages,
     });

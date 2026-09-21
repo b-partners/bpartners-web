@@ -33,6 +33,9 @@ export const computeLocalGlobalRate = (wear: number, mold: number, humidity: num
   return { value: value < 0 ? 0 : value > 100 ? 100 : value, type };
 };
 
+export const getExportableGlobalRate = (globalRate: { value: number; type: string } | null) =>
+  globalRate && globalRate.value > 0 ? { globalRateType: globalRate.type, globalRateValue: globalRate.value } : { globalRateType: null, globalRateValue: null };
+
 export const useGlobalRateQuery = (): { value: number; type: string } | null => {
   const analyseRoofAnnotation = annotatorStore.useAnnotatorStore(useShallow(state => Object.values(state.annotations).find(isAnalyseRoofAnnotation)));
   const setGlobalRate = useAnnotatorComponentStore(state => state.setGlobalRate);
