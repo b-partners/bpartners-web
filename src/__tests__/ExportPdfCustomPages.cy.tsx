@@ -103,11 +103,11 @@ describe('Supplementary pages in the PDF export dialog', () => {
 
   it('restores the selected export pages when the dialog is reopened', () => {
     cy.contains('.conf-row', 'Page de titre').click();
-    cy.contains('.dialog-count', '7 sur 8').should('exist');
+    cy.contains('.dialog-count', '8 sur 9').should('exist');
 
     cy.mount(<ExportPdfConfDialog onConfirm={cy.stub().as('onReopened')} />);
 
-    cy.contains('.dialog-count', '7 sur 8').should('exist');
+    cy.contains('.dialog-count', '8 sur 9').should('exist');
     cy.contains('.conf-row', 'Page de titre').should('have.attr', 'aria-checked', 'false');
   });
 

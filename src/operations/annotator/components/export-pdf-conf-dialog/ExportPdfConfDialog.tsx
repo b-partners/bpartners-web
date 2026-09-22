@@ -12,6 +12,7 @@ import {
   DescriptionOutlined,
   Download,
   EditOutlined,
+  HealthAndSafetyOutlined,
   LayersOutlined,
   PictureAsPdfOutlined,
   SquareFootOutlined,
@@ -34,13 +35,14 @@ const OPTION_META: Record<ConfKey, { icon: ReactNode; description: string }> = {
   showPitchSummary: { icon: <ArchitectureOutlined />, description: 'Détail des pentes par pan de toiture.' },
   showAreaSummary: { icon: <SquareFootOutlined />, description: 'Surfaces calculées par zone.' },
   showOverallSummary: { icon: <AssessmentOutlined />, description: "Synthèse générale de l'analyse." },
+  showDegradationSummary: { icon: <HealthAndSafetyOutlined />, description: 'Carte de la note de dégradation apparente de la toiture.' },
 };
 
 const LABEL_BY_KEY = EXPORT_PDF_CONF_OPTIONS.reduce<Record<string, string>>((acc, { key, label }) => ({ ...acc, [key]: label }), {});
 
 const GROUPS: { title: string; keys: ConfKey[] }[] = [
   { title: 'Pages', keys: ['showTitlePage', 'showAnnotationPages', 'showAnnotation3dPages', 'showLlmSummary'] },
-  { title: 'Résumés', keys: ['showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary'] },
+  { title: 'Résumés', keys: ['showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary', 'showDegradationSummary'] },
 ];
 
 const ALL_KEYS = EXPORT_PDF_CONF_OPTIONS.map(({ key }) => key);
