@@ -42,7 +42,7 @@ const LABEL_BY_KEY = EXPORT_PDF_CONF_OPTIONS.reduce<Record<string, string>>((acc
 
 const GROUPS: { title: string; keys: ConfKey[] }[] = [
   { title: 'Pages', keys: ['showTitlePage', 'showAnnotationPages', 'showAnnotation3dPages', 'showLlmSummary'] },
-  { title: 'Résumés', keys: ['showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary', 'showDegradationSummary'] },
+  { title: 'Résumés', keys: ['showDegradationSummary', 'showMeasurementSummary', 'showPitchSummary', 'showAreaSummary', 'showOverallSummary'] },
 ];
 
 const ALL_KEYS = EXPORT_PDF_CONF_OPTIONS.map(({ key }) => key);
