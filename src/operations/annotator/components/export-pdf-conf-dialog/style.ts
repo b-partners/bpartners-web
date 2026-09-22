@@ -143,6 +143,48 @@ export const ExportPdfConfDialogStyle: SxProps = {
     pointerEvents: 'none',
   },
 
+  '& .page-row': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1.25,
+    p: 1,
+    borderRadius: '10px',
+    border: '1px solid rgba(0, 0, 0, 0.1)',
+  },
+  '& .page-row-text': {
+    flex: 1,
+    minWidth: 0,
+  },
+  '& .page-row-label': {
+    fontSize: 14,
+    fontWeight: 600,
+    color: PALETTE_COLORS.black,
+    lineHeight: 1.3,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  '& .page-row-desc': {
+    fontSize: 12,
+    color: '#6b7280',
+    lineHeight: 1.35,
+    mt: 0.25,
+  },
+  '& .page-row-action': {
+    flexShrink: 0,
+    color: '#9ca3af',
+    '&:hover': { color: ACCENT },
+  },
+  '& .add-page': {
+    alignSelf: 'flex-start',
+    mt: 0.25,
+    textTransform: 'none',
+    fontWeight: 600,
+    color: ACCENT,
+    borderColor: 'rgba(255, 82, 27, 0.4)',
+    '&:hover': { borderColor: ACCENT, bgcolor: 'rgba(255, 82, 27, 0.06)' },
+  },
+
   '& .dialog-footer': {
     display: 'flex',
     alignItems: 'center',

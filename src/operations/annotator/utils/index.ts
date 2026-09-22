@@ -22,4 +22,5 @@ export * from './shift-polygons';
 export * from './style';
 export * from './three-d-generation-snapshot';
 export * from './use-crop-polygon';
+export * from './use-restore-export-selection';
 export * from './use-roof-analyse-generation';
