@@ -70,6 +70,7 @@ export const DEFAULT_EXPORT_PDF_CONF: Required<ExportAreaPictureAnnotationConf> 
   showAreaSummary: true,
   showOverallSummary: true,
   showLlmSummary: true,
+  showDegradationSummary: true,
 };
 
 export const EXPORT_PDF_CONF_OPTIONS: { key: keyof ExportAreaPictureAnnotationConf; label: string }[] = [
@@ -81,4 +82,5 @@ export const EXPORT_PDF_CONF_OPTIONS: { key: keyof ExportAreaPictureAnnotationCo
   { key: 'showAreaSummary', label: 'Résumé des surfaces' },
   { key: 'showOverallSummary', label: 'Résumé global' },
   { key: 'showLlmSummary', label: "Rapport de l'analyse IA" },
+  { key: 'showDegradationSummary', label: 'Note de dégradation' },
 ];
