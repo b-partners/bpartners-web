@@ -64,25 +64,31 @@ inside the library.
 
 Two resolvers, both the integrator's job, both required by `RoofAnnotator` in the lon/lat flow (0.3.0+):
 
-- `resolveActiveWmsLayer` — `GET {REACT_APP_WMS_RESOLVER}/map/layers/actual?lat=&lon=`. The fast half: the
-  library waits on it before showing the map. The live endpoint wraps the layer as `{ wmsBaseUrl, layer }`
-  (the library playground's own parser reads a bare layer — both are accepted).
-- `resolveWmsLayers` — `GET {REACT_APP_WMS_RESOLVER}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }] }`.
-  The slow half: only feeds the layer switcher; unreachable candidates are shown disabled.
+Both resolve off **the BPartners API itself** (`REACT_APP_BPARTNERS_API_URL`), on the signed-in Cognito
+token as `Authorization: Bearer` — `bp_access_token` (`getCached.token()`), falling back to a live Amplify
+session only when the cache is empty. This mirrors the library playground's own `dev/wms-resolver.ts`,
+which is the reference implementation.
 
-Both authenticate with `x-api-key` (`REACT_APP_WMS_RESOLVER_API_KEY`, falling back to the account's key).
-Addresses are geocoded through the same lambda's `/geocode`.
+- `resolveActiveWmsLayer` — `GET {apiUrl}/map/layers/actual?lat=&lon=` → `{ layer, secureLinkToken }`. The
+  fast half: the library waits on it before showing the map. A bare layer is accepted too.
+- `resolveWmsLayers` — `GET {apiUrl}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }], secureLinkToken }`.
+  The slow half: only feeds the layer switcher; unreachable candidates are shown disabled. One
+  `secureLinkToken` covers every candidate — they all answer off the same GeoServer.
 
-**Tiles never go to the `wmsBaseUrl` the endpoints return.** The library reads each cell with
-`fetch` + `createImageBitmap`, which needs a same-origin, CORS-clean url, and the GeoServer sends no CORS
-headers. Tiles are built against `REACT_APP_WMS_TILE_BASE_URL`, default `/wms-proxy` — the Vite dev
-server's proxy (vite.config.ts) to `GEOSERVER_ORIGIN`, default `http://35.181.83.111`, which serves
-tiles with no token. `https://geoserver.birdia.fr` 401s every token tried, prod id and access tokens
-included. **A deployed build has no `/wms-proxy`**: it needs a same-origin https proxy and
+**No session token ever reaches the GeoServer.** Each answer carries a `secureLinkToken` (the nginx
+`secure_link`) and every cell is signed with it: `token=` its `value`, `expires=` its
+`expiresAtEpochSecond`. It replaced the Cognito token the cells used to carry.
+
+**Tiles never go to a `wmsBaseUrl` the endpoints return.** The secure link answers for authentication, not
+for CORS: the library reads each cell with `fetch` + `createImageBitmap`, which needs a same-origin url,
+and the GeoServer sends no CORS headers. Tiles are built against `REACT_APP_WMS_TILE_BASE_URL`, default
+`/wms-proxy` — the Vite dev server's proxy (vite.config.ts) to `GEOSERVER_ORIGIN`, default
+`http://35.181.83.111`. **A deployed build has no `/wms-proxy`**: it needs a same-origin https proxy and
 `REACT_APP_WMS_TILE_BASE_URL` pointed at it.
 
-Each tile still carries `token=` = `bp_access_token` (`getCached.token()`), falling back to a live Amplify
-session only when the cache is empty.
+Addresses are still geocoded off the GeoData lambda, `GET {REACT_APP_GEODATA_API_URL}/geocode`, on an
+`x-api-key` (`REACT_APP_GEODATA_API_KEY`, falling back to the account's key). The former
+`REACT_APP_WMS_RESOLVER` / `REACT_APP_WMS_RESOLVER_API_KEY` are still read as a fallback for both.
 
 A refused cell is a blank square with nothing said, so both resolvers await **one shared probe per
 position** (`checkImagery`): it fetches one cell exactly as the library does and throws
