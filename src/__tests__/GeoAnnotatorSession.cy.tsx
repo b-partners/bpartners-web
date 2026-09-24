@@ -4,6 +4,7 @@ import { accountHolders1, accounts1, whoami1 } from './mocks/responses';
 const SESSION_ID = '7c1b2f5e-9a3d-4c8e-9f21-6d4a8b0e5c33';
 const ADDRESS = '10 rue de Rivoli, Paris';
 const PARIS_LAYER = { id: 'paris', name: 'PARIS', year: 2025, precisionLevelInCm: 5 };
+const SECURE_LINK_TOKEN = { value: 'secure-link-value', expiresAtEpochSecond: 4102444800 };
 
 const openSession = (search: string) => {
   cy.window().then(window => window.history.pushState({}, '', `/projects/${SESSION_ID}${search}`));
@@ -20,9 +21,9 @@ describe('Annotator — session lon/lat de la librairie', () => {
     cy.intercept('GET', '/api/keys', [{ id: 'api-key', apiKey: 'dummy-api-key' }]).as('apiKey');
 
     cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 2.3595545, latitude: 48.8552353 }).as('geocode');
-    cy.intercept('GET', '**/map/layers/actual?*', { wmsBaseUrl: 'https://geoserver.birdia.fr/geoserver/cite/wms', layer: PARIS_LAYER }).as('activeLayer');
+    cy.intercept('GET', '**/map/layers/actual?*', { layer: PARIS_LAYER, secureLinkToken: SECURE_LINK_TOKEN }).as('activeLayer');
     cy.intercept('GET', '**/map/layers?*', {
-      wmsBaseUrl: 'https://geoserver.birdia.fr/geoserver/cite/wms',
+      secureLinkToken: SECURE_LINK_TOKEN,
       layers: [
         { layer: PARIS_LAYER, reachable: true },
         { layer: { id: 'ssd', name: 'Seine-Saint-Denis-Paris', year: 2023, precisionLevelInCm: 5 }, reachable: false },
@@ -38,9 +39,16 @@ describe('Annotator — session lon/lat de la librairie', () => {
     openSession(`?flow=geo&address=${encodeURIComponent(ADDRESS)}`);
 
     cy.wait('@geocode');
-    cy.wait('@activeLayer').its('request.url').should('include', 'lat=48.8552353').and('include', 'lon=2.3595545');
+    cy.wait('@activeLayer').then(({ request }) => {
+      expect(request.url).to.include('lat=48.8552353').and.to.include('lon=2.3595545');
+      expect(request.headers.authorization).to.match(/^Bearer .+/);
+    });
     cy.get('.leaflet-container', { timeout: 30000 }).should('exist');
-    cy.wait('@wmsTile').its('request.url').should('include', 'layers=PARIS').and('include', 'token=');
+    cy.wait('@wmsTile')
+      .its('request.url')
+      .should('include', 'layers=PARIS')
+      .and('include', 'token=secure-link-value')
+      .and('include', `expires=${SECURE_LINK_TOKEN.expiresAtEpochSecond}`);
     cy.wait('@allLayers');
   });
 
