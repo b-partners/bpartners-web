@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useGetOne } from 'react-admin';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hasSavedGeoSession, readGeoSessionId } from './geo-session';
-import { ROOF_ANALYSER_CONFIG, ROOF_MODEL_OPTIONS } from './roof-analyser-config';
+import { GEO_SESSION_OPTIONS, ROOF_ANALYSER_CONFIG, ROOF_MODEL_OPTIONS } from './roof-analyser-config';
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
@@ -67,6 +67,7 @@ export const Annotator = () => {
           resolveWmsLayers={resolveWmsLayers}
           resolveActiveWmsLayer={resolveActiveWmsLayer}
           {...ROOF_MODEL_OPTIONS}
+          {...GEO_SESSION_OPTIONS}
         />
       ) : (
         <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />

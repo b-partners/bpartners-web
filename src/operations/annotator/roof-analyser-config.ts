@@ -27,6 +27,15 @@ export const ROOF_MODEL_OPTIONS = definedOnly({
   roofNearVertexBlockEnabled: readBooleanEnv(process.env.REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED),
 });
 
+/**
+ * lon/lat flow only (0.12.0+): once the analysis or the 3D generation has run, the emprise they answer for
+ * stops being retraceable, so `disableSwitchBack` closes the 2D tab for good — and drops the 3D screen's own
+ * way back to the map with it. Blank keeps the library's default, which leaves every tab reachable.
+ */
+export const GEO_SESSION_OPTIONS = definedOnly({
+  disableSwitchBack: readBooleanEnv(process.env.REACT_APP_ROOF_DISABLE_SWITCH_BACK),
+});
+
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
   converterApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL),
