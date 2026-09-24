@@ -104,7 +104,7 @@ export const CompanyCard = () => {
             ))}
             <Grid item xs={12} sm={4}>
               <Box className={editMode ? 'vat-field vat-field-edit' : 'vat-field'}>
-                <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Micro-entreprise exonérée de TVA</Typography>
+                <Typography sx={{ fontWeight: 'bold', fontSize: '1,3rem' }}>Entreprise assujettie à la TVA</Typography>
                 {editMode ? <SubjectToVatSwitch /> : <Typography>{accountForm.getValues('companyInfo.isSubjectToVat' as any) ? 'Oui' : 'Non'}</Typography>}
               </Box>
             </Grid>

@@ -192,7 +192,7 @@ describe(specTitle('Account'), () => {
     cy.get('[name="account"]').click();
     cy.wait('@getAccountHolder1');
 
-    cy.contains('Micro-entreprise exonérée de TVA');
+    cy.contains('Entreprise assujettie à la TVA');
     cy.contains('Oui');
 
     cy.dataCy('edit-mode-button').click();
