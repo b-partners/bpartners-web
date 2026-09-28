@@ -43,7 +43,7 @@ export const buildRequestBody = (pictureId: string, roofHeightInMeters: number, 
       global_rate_type: globalRate?.type,
       global_rate_value: globalRate?.value,
       roofHeight: roofHeightInMeters || annotationsInfos[0]?.height,
-      llm: getCached.llmResult() || llm,
+      llm: llm || getCached.llmResult(),
       roofDelimiter: roofDelimiterLongLat,
       threeDGenerationMode: annotatorState.threeDFromSegmentation,
       threeDGenerationId: annotatorState.threeDGenerationId,
@@ -195,6 +195,26 @@ export const useSaveAnnotations = () => {
       saveDraftAnnotation(requestBody, debouncedSave, false);
     });
   }, [!!areaPictureDetails, slopeAndHeightState?.height, llm]);
+
+  // Auto-save draft when a freshly generated llm report lands, so it is restored from the draft instead of re-requested
+  useEffect(() => {
+    if (!areaPictureDetails) return () => {};
+    let prev = useAnnotatorComponentStore.getState().llm;
+
+    return useAnnotatorComponentStore.subscribe(() => {
+      const current = useAnnotatorComponentStore.getState().llm;
+      if (current === prev || !current) return;
+      prev = current;
+
+      const pictureId = areaPictureDetails?.id;
+      if (!pictureId) return;
+
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, current);
+      if (!requestBody) return;
+
+      saveDraftAnnotation(requestBody, debouncedSave, false);
+    });
+  }, [!!areaPictureDetails, slopeAndHeightState?.height]);
 
   const triggerManualSave = useMemo(
     () => () => {

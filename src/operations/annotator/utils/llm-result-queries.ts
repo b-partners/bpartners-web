@@ -7,6 +7,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { cityJsonMapper, collectRoofBoundaries, collectWallBoundaries, findSurfaceGeometry } from './city-json-mapper';
 import { isAnalyseRoofAnnotation, useGlobalRateQuery } from './global-rate-calculator';
 
+export const LLM_RESULT_QUERY_KEY = 'llm-result';
+
 const baseUrl = `${process.env.LLM_ANALYSE_RESULT}`;
 const apiKey = `${process.env.LLM_API_KEY}`;
 
@@ -69,6 +71,10 @@ export const useLlmResultQuery = () => {
   const area = _area || polygon?.surface;
   const globalRate = useGlobalRateQuery();
 
+  const setLlm = useAnnotatorComponentStore(state => state.setLlm);
+  const pictureId = useAnnotatorComponentStore(state => state.areaPictureDetails?.id);
+  const cachedLlm = useAnnotatorComponentStore(state => state.llm) || undefined;
+
   const queryFn = async () => {
     try {
       const { address, geoPositions } = useAnnotatorComponentStore.getState().areaPictureDetails || {};
@@ -100,8 +106,9 @@ export const useLlmResultQuery = () => {
       });
 
       const _htmlResult = await result.text();
-      const htmlResult = _htmlResult.split('</head>')[1];
-      cache.llmResult(htmlResult || '');
+      const htmlResult = _htmlResult.split('</head>')[1] || '';
+      cache.llmResult(htmlResult);
+      setLlm(htmlResult);
       return htmlResult;
     } catch (error) {
       console.log(error);
@@ -110,7 +117,14 @@ export const useLlmResultQuery = () => {
 
   return useQuery({
     queryFn,
-    queryKey: [JSON.stringify({ moldRate, wearLevel, humidityLevel, comment, area, covering, covering2, wear, slope })],
-    enabled: !!annotationInfos && Object.values(annotationInfos || {}).length > 0,
+    queryKey: [LLM_RESULT_QUERY_KEY, pictureId],
+    initialData: cachedLlm,
+    enabled: !cachedLlm && !!annotationInfos && Object.values(annotationInfos || {}).length > 0,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
   });
 };

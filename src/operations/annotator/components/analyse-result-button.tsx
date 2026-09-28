@@ -84,7 +84,7 @@ export const AnalyseResultButton: FC<AnalyseResultButtonProps> = ({
             global_rate_type: analyseProperties?.global_rate_type || globalRate?.type,
             global_rate_value: analyseProperties?.global_rate_value || globalRate?.value,
             roofHeight: analyseProperties?.roof_height_in_meters || annotatorsInfos[0].height,
-            llm: getCached.llmResult() || llm,
+            llm: llm || getCached.llmResult(),
             roofDelimiter: roofDelimiterLongLat,
           },
         };
