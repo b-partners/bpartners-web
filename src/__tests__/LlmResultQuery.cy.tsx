@@ -3,6 +3,7 @@ import { CityJSON } from '@/operations/annotator/city-json-type';
 import { LlmResult } from '@/operations/annotator/components/llm-result';
 import { AreaPictureDetails } from '@bpartners/typescript-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 const ANNOTATION_ID = 'roof-1';
 
@@ -132,5 +133,102 @@ describe('useLlmResultQuery — payload sent to the toiture-report LLM endpoint'
     mountHarness();
 
     cy.wait('@postLlmResult3d');
+  });
+});
+
+const TabSwitchHarness = () => {
+  const [onLlmScreen, setOnLlmScreen] = useState(true);
+  return (
+    <>
+      <button data-cy='toggle-screen' onClick={() => setOnLlmScreen(current => !current)}>
+        toggle
+      </button>
+      {onLlmScreen && <LlmResult width='100%' height='100%' />}
+    </>
+  );
+};
+
+const mountTabSwitchHarness = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  cy.mount(
+    <QueryClientProvider client={queryClient}>
+      <TabSwitchHarness />
+    </QueryClientProvider>
+  );
+};
+
+describe('useLlmResultQuery — mise en cache du rapport généré', () => {
+  beforeEach(() => {
+    annotatorStore.useAnnotatorStore.getState().reset();
+    useAnnotatorComponentStore.getState().reset();
+    useAnnotator3DStore.getState().reset();
+    roof3DStore.useRoof3DStore.getState().reset();
+    cy.clearAllLocalStorage();
+    seedAnnotation();
+    seedAreaPictureDetails();
+    cy.intercept('GET', '**/roof/overallScore**', { statusCode: 500, body: {} });
+  });
+
+  it('ne renvoie aucune requête pour un draft enregistré avant llmKey', () => {
+    useAnnotatorComponentStore.getState().setLlm('<body>rapport du draft</body>');
+    cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, cy.spy().as('llmRequest'));
+
+    mountHarness();
+
+    cy.contains('rapport du draft').should('be.visible');
+    cy.get('@llmRequest').should('not.have.been.called');
+  });
+
+  it('ne régénère pas le rapport quand on quitte puis revient sur l’onglet llm', () => {
+    let callCount = 0;
+    cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, req => {
+      callCount += 1;
+      req.reply({ headers: { 'content-type': 'text/html' }, body: `<html><head></head><body>rapport ${callCount}</body></html>` });
+    }).as('postLlmResult');
+
+    mountTabSwitchHarness();
+
+    cy.wait('@postLlmResult');
+    cy.contains('rapport 1').should('be.visible');
+
+    cy.get('[data-cy=toggle-screen]').click();
+    cy.contains('rapport 1').should('not.exist');
+    cy.get('[data-cy=toggle-screen]').click();
+
+    cy.contains('rapport 1').should('be.visible');
+    cy.then(() => expect(callCount).to.eq(1));
+  });
+
+  it('régénère le rapport quand une information utilisée par le llm change', () => {
+    let callCount = 0;
+    cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, req => {
+      callCount += 1;
+      req.reply({ headers: { 'content-type': 'text/html' }, body: `<html><head></head><body>rapport ${callCount}</body></html>` });
+    }).as('postLlmResult');
+
+    mountHarness();
+
+    cy.wait('@postLlmResult');
+    cy.contains('rapport 1').should('be.visible');
+
+    cy.then(() => {
+      const { annotations, updateAnnotationInfo } = annotatorStore.useAnnotatorStore.getState();
+      updateAnnotationInfo({ ...annotations[ANNOTATION_ID].annotationInfos, wearLevel: 80 });
+    });
+
+    cy.wait('@postLlmResult');
+    cy.contains('rapport 2').should('be.visible');
+  });
+
+  it('stocke le rapport généré dans le store pour qu’il parte dans le draft', () => {
+    cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, {
+      headers: { 'content-type': 'text/html' },
+      body: '<html><head></head><body>rapport persisté</body></html>',
+    }).as('postLlmResult');
+
+    mountHarness();
+
+    cy.wait('@postLlmResult');
+    cy.then(() => expect(useAnnotatorComponentStore.getState().llm).to.contain('rapport persisté'));
   });
 });

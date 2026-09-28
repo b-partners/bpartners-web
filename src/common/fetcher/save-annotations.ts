@@ -20,6 +20,11 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
+export const getLlmSignature = () => {
+  const { llm, llmKey } = useAnnotatorComponentStore.getState();
+  return JSON.stringify({ llm, llmKey });
+};
+
 export const getExportSelection = () => {
   const { exportPdfConf, exportCustomPages } = useAnnotatorComponentStore.getState();
   return JSON.stringify({ exportPdfConf, exportCustomPages });
@@ -43,7 +48,8 @@ export const buildRequestBody = (pictureId: string, roofHeightInMeters: number, 
       global_rate_type: globalRate?.type,
       global_rate_value: globalRate?.value,
       roofHeight: roofHeightInMeters || annotationsInfos[0]?.height,
-      llm: getCached.llmResult() || llm,
+      llm: llm || getCached.llmResult(),
+      llmKey: useAnnotatorComponentStore.getState().llmKey,
       roofDelimiter: roofDelimiterLongLat,
       threeDGenerationMode: annotatorState.threeDFromSegmentation,
       threeDGenerationId: annotatorState.threeDGenerationId,
@@ -71,6 +77,30 @@ export const saveCropRegionDraft = (pictureId: string, save: (...args: any[]) =>
   const requestBody = buildRequestBody(pictureId, roofHeightInMeters as number, llm);
   if (!requestBody) return;
   saveDraftAnnotation(requestBody, save, false);
+};
+
+export const subscribeLlmDraftSave = (
+  areaPictureDetails: AreaPictureDetails | null,
+  roofHeightInMeters: number | undefined,
+  save: (...args: any[]) => void
+) => {
+  if (!areaPictureDetails) return () => {};
+  let previousSignature = getLlmSignature();
+
+  return useAnnotatorComponentStore.subscribe(() => {
+    const currentSignature = getLlmSignature();
+    const { llm } = useAnnotatorComponentStore.getState();
+    if (currentSignature === previousSignature || !llm) return;
+    previousSignature = currentSignature;
+
+    const pictureId = areaPictureDetails?.id;
+    if (!pictureId) return;
+
+    const requestBody = buildRequestBody(pictureId, roofHeightInMeters as number, llm);
+    if (!requestBody) return;
+
+    saveDraftAnnotation(requestBody, save, false);
+  });
 };
 
 export const useSaveAnnotations = () => {
@@ -195,6 +225,9 @@ export const useSaveAnnotations = () => {
       saveDraftAnnotation(requestBody, debouncedSave, false);
     });
   }, [!!areaPictureDetails, slopeAndHeightState?.height, llm]);
+
+  // Auto-save draft when a freshly generated llm report lands, so it is restored from the draft instead of re-requested
+  useEffect(() => subscribeLlmDraftSave(areaPictureDetails, slopeAndHeightState?.height, debouncedSave), [!!areaPictureDetails, slopeAndHeightState?.height]);
 
   const triggerManualSave = useMemo(
     () => () => {
