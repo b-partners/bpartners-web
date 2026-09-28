@@ -20,6 +20,11 @@ const getThreeDMapping = () =>
     savedLines: roof3DStore.useRoof3DStore.getState().savedLines,
   });
 
+const getLlmSignature = () => {
+  const { llm, llmKey } = useAnnotatorComponentStore.getState();
+  return JSON.stringify({ llm, llmKey });
+};
+
 export const getExportSelection = () => {
   const { exportPdfConf, exportCustomPages } = useAnnotatorComponentStore.getState();
   return JSON.stringify({ exportPdfConf, exportCustomPages });
@@ -44,6 +49,7 @@ export const buildRequestBody = (pictureId: string, roofHeightInMeters: number, 
       global_rate_value: globalRate?.value,
       roofHeight: roofHeightInMeters || annotationsInfos[0]?.height,
       llm: llm || getCached.llmResult(),
+      llmKey: useAnnotatorComponentStore.getState().llmKey,
       roofDelimiter: roofDelimiterLongLat,
       threeDGenerationMode: annotatorState.threeDFromSegmentation,
       threeDGenerationId: annotatorState.threeDGenerationId,
@@ -199,17 +205,17 @@ export const useSaveAnnotations = () => {
   // Auto-save draft when a freshly generated llm report lands, so it is restored from the draft instead of re-requested
   useEffect(() => {
     if (!areaPictureDetails) return () => {};
-    let prev = useAnnotatorComponentStore.getState().llm;
+    let prev = getLlmSignature();
 
     return useAnnotatorComponentStore.subscribe(() => {
-      const current = useAnnotatorComponentStore.getState().llm;
-      if (current === prev || !current) return;
+      const current = getLlmSignature();
+      if (current === prev || !useAnnotatorComponentStore.getState().llm) return;
       prev = current;
 
       const pictureId = areaPictureDetails?.id;
       if (!pictureId) return;
 
-      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, current);
+      const requestBody = buildRequestBody(pictureId, slopeAndHeightState?.height, useAnnotatorComponentStore.getState().llm);
       if (!requestBody) return;
 
       saveDraftAnnotation(requestBody, debouncedSave, false);

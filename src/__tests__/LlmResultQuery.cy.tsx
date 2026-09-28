@@ -169,7 +169,7 @@ describe('useLlmResultQuery — mise en cache du rapport généré', () => {
     cy.intercept('GET', '**/roof/overallScore**', { statusCode: 500, body: {} });
   });
 
-  it('ne renvoie aucune requête quand le rapport est déjà présent dans le draft', () => {
+  it('ne renvoie aucune requête pour un draft enregistré avant llmKey', () => {
     useAnnotatorComponentStore.getState().setLlm('<body>rapport du draft</body>');
     cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, cy.spy().as('llmRequest'));
 
@@ -197,6 +197,27 @@ describe('useLlmResultQuery — mise en cache du rapport généré', () => {
 
     cy.contains('rapport 1').should('be.visible');
     cy.then(() => expect(callCount).to.eq(1));
+  });
+
+  it('régénère le rapport quand une information utilisée par le llm change', () => {
+    let callCount = 0;
+    cy.intercept('POST', `${process.env.LLM_ANALYSE_RESULT}**`, req => {
+      callCount += 1;
+      req.reply({ headers: { 'content-type': 'text/html' }, body: `<html><head></head><body>rapport ${callCount}</body></html>` });
+    }).as('postLlmResult');
+
+    mountHarness();
+
+    cy.wait('@postLlmResult');
+    cy.contains('rapport 1').should('be.visible');
+
+    cy.then(() => {
+      const { annotations, updateAnnotationInfo } = annotatorStore.useAnnotatorStore.getState();
+      updateAnnotationInfo({ ...annotations[ANNOTATION_ID].annotationInfos, wearLevel: 80 });
+    });
+
+    cy.wait('@postLlmResult');
+    cy.contains('rapport 2').should('be.visible');
   });
 
   it('stocke le rapport généré dans le store pour qu’il parte dans le draft', () => {
