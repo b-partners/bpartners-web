@@ -25,6 +25,8 @@ import { subscriptionFeatures } from './subscriptionFeatures';
 
 const VALIDATION_POLL_INTERVAL_MS = 3000;
 
+const MAX_VALIDATION_POLL_COUNT = 60;
+
 const eurosFormatter = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 
 const formatEuros = (cents: number) => `${eurosFormatter.format(cents / 100)} €`;
@@ -89,7 +91,10 @@ export const SubscriptionCard = () => {
   useEffect(() => {
     if (!isValidating || !userId) return;
     let cancelled = false;
+    let attempts = 0;
     const interval = setInterval(() => {
+      attempts += 1;
+      if (attempts >= MAX_VALIDATION_POLL_COUNT) clearInterval(interval);
       profileProvider
         .getOne(userId)
         .then(freshUser => {
