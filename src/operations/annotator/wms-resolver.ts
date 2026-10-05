@@ -1,4 +1,4 @@
-import { awsAuth, getCached } from '@/providers';
+import { awsAuth, getApiKey, getCached } from '@/providers';
 import { GeoPoint, WmsLayerOption } from '@bpartners/roof-analyser';
 import L from 'leaflet';
 
@@ -201,16 +201,16 @@ export const resolveWmsLayers = async (latitude: number, longitude: number): Pro
   return options;
 };
 
-const geodataKeyOrThrow = () => {
+const geodataKeyOrThrow = async () => {
   if (!GEODATA_API_URL) throw new Error("Le géocodage n'est pas configuré — REACT_APP_GEODATA_API_URL est absent du .env.");
-  const geodataKey = GEODATA_API_KEY || getCached.apiKey();
+  const geodataKey = GEODATA_API_KEY || (await getApiKey().catch(() => undefined));
   if (!geodataKey) throw new Error('Aucune clé API — reconnectez-vous.');
   return geodataKey;
 };
 
 /** Still the GeoData lambda, on an `x-api-key` — turns the address into the position the lon/lat flow needs. */
 export const geocodeAddress = async (address: string): Promise<GeoPoint> => {
-  const response = await fetch(`${GEODATA_API_URL}/geocode?address=${encodeURIComponent(address)}`, { headers: { 'x-api-key': geodataKeyOrThrow() } });
+  const response = await fetch(`${GEODATA_API_URL}/geocode?address=${encodeURIComponent(address)}`, { headers: { 'x-api-key': await geodataKeyOrThrow() } });
   if (!response.ok) throw new Error(`${response.status} — ${(await response.text()).slice(0, 200)}`);
   const { longitude, latitude }: GeoPoint & { longitude: number } = await response.json();
   if (typeof latitude !== 'number' || typeof longitude !== 'number') throw new Error(`Aucune géoposition renvoyée pour « ${address} »`);
