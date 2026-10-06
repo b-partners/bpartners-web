@@ -44,13 +44,6 @@ const readEnv = (value?: string) => {
 const API_URL = readEnv(process.env.REACT_APP_BPARTNERS_API_URL);
 
 /**
- * The GeoData lambda, now the address geocoder and nothing else — the layer lookup moved onto the
- * BPartners API. The old `REACT_APP_WMS_RESOLVER*` names are still read so a deployed env keeps working.
- */
-const GEODATA_API_URL = readEnv(process.env.REACT_APP_GEODATA_API_URL) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER);
-const GEODATA_API_KEY = readEnv(process.env.REACT_APP_GEODATA_API_KEY) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER_API_KEY);
-
-/**
  * Where tiles are fetched from — never the `wmsBaseUrl` the MapLayer endpoints hand back. The secure link
  * answers for authentication, not for CORS: the library still reads every cell through `fetch` +
  * `createImageBitmap`, which needs a same-origin url, and the GeoServer sends no CORS headers.
@@ -199,20 +192,4 @@ export const resolveWmsLayers = async (latitude: number, longitude: number): Pro
   const fallback = options.find(option => option.reachable !== false) ?? options[0];
   if (fallback) await checkImagery(fallback, { latitude, longitude }, secureLink.value);
   return options;
-};
-
-const geodataKeyOrThrow = () => {
-  if (!GEODATA_API_URL) throw new Error("Le géocodage n'est pas configuré — REACT_APP_GEODATA_API_URL est absent du .env.");
-  const geodataKey = GEODATA_API_KEY || getCached.apiKey();
-  if (!geodataKey) throw new Error('Aucune clé API — reconnectez-vous.');
-  return geodataKey;
-};
-
-/** Still the GeoData lambda, on an `x-api-key` — turns the address into the position the lon/lat flow needs. */
-export const geocodeAddress = async (address: string): Promise<GeoPoint> => {
-  const response = await fetch(`${GEODATA_API_URL}/geocode?address=${encodeURIComponent(address)}`, { headers: { 'x-api-key': geodataKeyOrThrow() } });
-  if (!response.ok) throw new Error(`${response.status} — ${(await response.text()).slice(0, 200)}`);
-  const { longitude, latitude }: GeoPoint & { longitude: number } = await response.json();
-  if (typeof latitude !== 'number' || typeof longitude !== 'number') throw new Error(`Aucune géoposition renvoyée pour « ${address} »`);
-  return { latitude, longitude };
 };
