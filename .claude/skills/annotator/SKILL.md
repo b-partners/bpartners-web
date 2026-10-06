@@ -19,10 +19,10 @@ kept only as a fallback for legacy drafts — see below.
 | File | Role |
 |---|---|
 | `src/operations/annotator/Annotator.tsx` | The `/projects/:projectId` screen: picks the flow, resolves credentials, renders `<RoofAnnotator>` |
-| `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` + `geocodeAddress` against the GeoData resolver lambda (`REACT_APP_WMS_RESOLVER`, `x-api-key`) |
-| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto |
+| `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` off the BPartners API, signed with the secure link token |
+| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress` (0.14.6+) — handed the config by hand, since nothing is mounted yet, and waiting on the api key |
 | `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
-| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`) |
+| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.14.6+: `REACT_APP_GEODATA_API_URL` / `REACT_APP_GEODATA_API_KEY` → `geocodeApiUrl` / `geocodeApiKey`, which is what the library's geocoder reads; blank sends it to the production geodata lambda it defaults to, with `apiKey` as its key |
 | `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves `apiKey` (`getApiKey`) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
 
 Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLayout`).
@@ -32,10 +32,19 @@ Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLay
 The library owns saving. A lon/lat session is written continuously into **one annotation record addressed
 by a single session id** — `geoRecordIds(sessionId)` derives the area picture, annotation and file ids from
 it with uuid v5, so the id is the whole handle on the record. For a new project the app opens that record
-itself, right after creating the prospect (see below), so the area picture carries the `prospectId`. Since
-0.6.0 the library **never creates** a prospect or an area picture in either flow: `sessionId` is required
-with a position, and `areaPictureId` defaults to `geoRecordIds(sessionId).areaPictureId` (the app passes the
-draft's own id explicitly when reopening from a list). `address` is only read by the lon/lat flow.
+itself, right after creating the prospect (see below), so the area picture carries the `prospectId`.
+`areaPictureId` defaults to `geoRecordIds(sessionId).areaPictureId` (the app passes the draft's own id
+explicitly when reopening from a list).
+
+**0.14.6 turned that contract around.** The library can now open a visit from an address alone:
+`<RoofAnnotator address=… />` routes to `GeoAddressRoofAnnotator`, whose `createRoofSession` geocodes,
+creates the prospect, the area picture and the draft annotation, and hands the minted id up through
+`onSessionIdChange`; `areaPictureId` / `annotationId` / `idAnnotations` are `@deprecated` there. **This
+app does not use that path** — it keeps creating the prospect itself (its CRM form, its error dialog, its
+step progress) and always passes `sessionId`. The branch is picked in this order: `address || position`
+→ `GeoAddressRoofAnnotator`, unless `sessionId` comes with a position → `GeoRoofAnnotator`; `sessionId`
+alone → `GeoSessionRoofAnnotator`; `areaPictureId` alone → the legacy address flow. The app only ever
+passes `address` together with a position and a `sessionId`, so it still lands on `GeoRoofAnnotator`.
 
 Two ways in, and the route param means a different thing in each:
 
@@ -62,7 +71,11 @@ inside the library.
 
 ## Imagery
 
-Two resolvers, both the integrator's job, both required by `RoofAnnotator` in the lon/lat flow (0.3.0+):
+Two resolvers, this app's own. **Optional since 0.14.6**: left out, the library resolves the imagery
+itself with `createImagerySource()` — the same `/map/layers*` endpoints, signed with `x-api-key` plus a
+Bearer read from the config's `accessToken` (no longer deprecated), and `tileBaseUrl` for the proxy. The
+app keeps its own pair for the one thing the library's has not got: the shared `checkImagery` probe and
+its French error when the WMS proxy is missing.
 
 Both resolve off **the BPartners API itself** (`REACT_APP_BPARTNERS_API_URL`), on the signed-in Cognito
 token as `Authorization: Bearer` — `bp_access_token` (`getCached.token()`), falling back to a live Amplify
@@ -106,6 +119,22 @@ neither yields a layer.
 - The invoice-side read-only annotation info panel:
   `src/operations/invoice/components/AnnotationInfoShow.tsx` +
   `src/operations/invoice/utils/annotation-info.ts` + `use-invoice-annotation.ts`.
+
+## Library features that need no wiring here
+
+Added in 0.14.4–0.14.6 and self-contained — the app renders `<RoofAnnotator>` and gets them:
+
+- **Custom report pages** — `CustomPageEditor` in the export dialog writes extra pages, uploads their
+  pictures as attachments through the BPartners API itself (`uploadPageImages`) and keeps them on the
+  session, so the couvreur's automatic export carries them too.
+- **User-written edge types** on the 3D model (name and colour), kept across regenerations as
+  `GeoRoof3DSnapshot.customEdgeTypes`.
+- A PDF-in-progress notice in the roofer footer, a texture-loading pill on the model, and the position
+  pinned on the pan photo while nothing is drawn.
+
+Exported and unused: `searchAddresses` (BPartners `POST /address/autocomplete`, one `searchId` per field
+so a lookup is billed once rather than per keystroke) would fit the prospect form's address input, and
+`createRoofSession` duplicates what `useMutateProspect` does today.
 
 ## Changing annotator behaviour
 

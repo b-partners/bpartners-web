@@ -18,6 +18,16 @@ const readBooleanEnv = (value?: string) => {
 
 const definedOnly = <T extends object>(values: T) => Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined)) as Partial<T>;
 
+/**
+ * The GeoData lambda, which the library geocodes against itself since 0.14.6 (`geocodeApiUrl` /
+ * `geocodeApiKey`) — the same service this app's own `geocodeAddress` calls, handed over so an address
+ * the library resolves on its own resolves against our env rather than its hardcoded production default.
+ * The former `REACT_APP_WMS_RESOLVER*` names are still read as a fallback. A blank key is the signed-in
+ * account's own, the library falling back on `apiKey`.
+ */
+const GEODATA_API_URL = readEnv(process.env.REACT_APP_GEODATA_API_URL) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER);
+const GEODATA_API_KEY = readEnv(process.env.REACT_APP_GEODATA_API_KEY) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER_API_KEY);
+
 export const ROOF_MODEL_MARGIN_M = readNumberEnv(process.env.REACT_APP_ROOF_MODEL_MARGIN_M);
 
 export const ROOF_MODEL_OPTIONS = definedOnly({
@@ -43,6 +53,8 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   geoMercatorApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL),
   geoPixelApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_PIXEL_API_URL),
   detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
+  geocodeApiUrl: GEODATA_API_URL,
+  geocodeApiKey: GEODATA_API_KEY,
   llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
   llmApiKey: readEnv(process.env.LLM_API_KEY),
   geojsonBaseUrl: readEnv(process.env.REACT_APP_GEOJSON_BASEURL),
