@@ -28,7 +28,7 @@ export const Annotator = () => {
   const sessionId = isNewSession ? projectId : readGeoSessionId(draftAnnotation);
   const sessionAddress = address ?? draftAnnotation?.areaPicture?.address;
   const needsPosition = isNewSession || (!!sessionId && !hasSavedGeoSession(draftAnnotation));
-  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined);
+  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, apiKey);
   const isLocating = isGeocoding || (needsPosition && !!sessionAddress && !position);
 
   const error = credentialsError
