@@ -18,10 +18,10 @@ export const SignUpForm = () => {
   const navigate = useNavigate();
   const { value: isLoading, handleOpen: startLoading, handleClose: stopLoading } = useToggle();
   const { value: isModalOpen, handleOpen: handleOpenModal, handleClose: handleCloseModal } = useToggle();
-  const form = useForm({ mode: 'all' });
+  const { promoCode } = useWrappedSearchParams(['promoCode']);
+  const form = useForm({ mode: 'all', defaultValues: { promoCode: promoCode || '' } });
   const { useGoogleReCaptcha, verifyRecaptchaToken } = recaptchaProvider;
   const { executeRecaptcha } = useGoogleReCaptcha();
-  const { promoCode } = useWrappedSearchParams(['promoCode']);
 
   const handleCloseModalWithRedirect = () => {
     handleCloseModal();
@@ -37,11 +37,11 @@ export const SignUpForm = () => {
       if (!recaptchaData) throw new Error();
       // captcha check
 
-      if (promoCode && !(await isPromoCodeValid(promoCode))) {
+      if (data.promoCode && !(await isPromoCodeValid(data.promoCode))) {
         notify('Promo code invalide', { type: 'warning' });
       }
 
-      await onboarding([{ ...data, promoCode }]);
+      await onboarding([data]);
       handleOpenModal();
     } catch {
       notify('messages.global.error', { type: 'error' });
@@ -65,6 +65,7 @@ export const SignUpForm = () => {
             <BpFormField label='Adresse mail' name='email' form={form} />
             <BpFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
             <BpFormField label='Nom de la société' name='companyName' form={form} />
+            <BpFormField label='Code promo' name='promoCode' shouldValidate={false} form={form} />
             <Button disabled={isLoading} id='login' type='submit' sx={{ ...LOGIN_FORM_BUTTON, marginTop: 3 }}>
               S'inscrire
             </Button>
