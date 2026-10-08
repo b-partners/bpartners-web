@@ -1,6 +1,7 @@
 import { getCurrentAccount } from '@/common/utils';
 import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Account, UpdateAccountIdentity } from '@bpartners/typescript-client';
+import axios from 'axios';
 import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
@@ -36,6 +37,15 @@ export const initiateAccountValidation = async (): Promise<any> => {
 };
 
 export const onboarding = async (resources: any[]) => await onboardingApi().onboardUsers(resources);
+
+export const isPromoCodeValid = async (code: string): Promise<boolean> => {
+  try {
+    await axios.get(`${process.env.REACT_APP_BPARTNERS_API_URL}/promoCodes/${code}`);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 export const getAccountLogoUrl = () => {
   const { accessToken } = getCached.token();

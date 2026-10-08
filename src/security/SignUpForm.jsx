@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 import { BpFormField } from '@/common/components';
 import { useToggle } from '@/common/hooks';
-import { handleSubmit } from '@/common/utils';
+import { handleSubmit, useWrappedSearchParams } from '@/common/utils';
 import { phoneValidator } from '@/operations/account/utils';
 import { recaptchaProvider } from '@/providers';
-import { onboarding } from '@/providers/account-provider';
+import { isPromoCodeValid, onboarding } from '@/providers/account-provider';
 import { BP_COLOR } from '../bp-theme';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
@@ -21,6 +21,7 @@ export const SignUpForm = () => {
   const form = useForm({ mode: 'all' });
   const { useGoogleReCaptcha, verifyRecaptchaToken } = recaptchaProvider;
   const { executeRecaptcha } = useGoogleReCaptcha();
+  const { promoCode } = useWrappedSearchParams(['promoCode']);
 
   const handleCloseModalWithRedirect = () => {
     handleCloseModal();
@@ -36,7 +37,11 @@ export const SignUpForm = () => {
       if (!recaptchaData) throw new Error();
       // captcha check
 
-      await onboarding([data]);
+      if (promoCode && !(await isPromoCodeValid(promoCode))) {
+        notify('Promo code invalide', { type: 'warning' });
+      }
+
+      await onboarding([{ ...data, promoCode }]);
       handleOpenModal();
     } catch {
       notify('messages.global.error', { type: 'error' });
