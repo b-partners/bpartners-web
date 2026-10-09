@@ -13,6 +13,14 @@ import { BP_COLOR } from '../bp-theme';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 
+const RECAPTCHA_TIMEOUT_MS = 10000;
+
+// react-google-recaptcha-v3's promise never settles when the challenge is blocked
+// (ad blocker, privacy extension, bot detection) instead of rejecting, so without
+// a timeout the submit button hangs forever with no feedback.
+const withTimeout = (promise, ms) =>
+  Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+
 export const SignUpForm = () => {
   const notify = useNotify();
   const navigate = useNavigate();
@@ -35,8 +43,8 @@ export const SignUpForm = () => {
         // captcha check
         let recaptchaData;
         try {
-          const token = await executeRecaptcha('dashboard_sign_up_submit');
-          recaptchaData = await verifyRecaptchaToken(token);
+          const token = await withTimeout(executeRecaptcha('dashboard_sign_up_submit'), RECAPTCHA_TIMEOUT_MS);
+          recaptchaData = await withTimeout(verifyRecaptchaToken(token), RECAPTCHA_TIMEOUT_MS);
         } catch {
           recaptchaData = null;
         }
