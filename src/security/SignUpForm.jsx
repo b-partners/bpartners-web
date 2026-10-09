@@ -1,5 +1,5 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useNotify } from 'react-admin';
+import { Alert, Box, Button, Snackbar, Typography } from '@mui/material';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,11 @@ const withTimeout = (promise, ms) =>
   Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
 
 export const SignUpForm = () => {
-  const notify = useNotify();
+  // react-admin's useNotify() is a no-op here: /sign-up renders outside <Admin>,
+  // which is what mounts the <Notification> snackbar renderer. A local Snackbar
+  // guarantees feedback actually renders on this page.
+  const [toast, setToast] = useState(null);
+  const notify = (message, { type = 'info' } = {}) => setToast({ message, severity: type === 'error' ? 'error' : type });
   const navigate = useNavigate();
   const { value: isLoading, handleOpen: startLoading, handleClose: stopLoading } = useToggle();
   const { value: isModalOpen, handleOpen: handleOpenModal, handleClose: handleCloseModal } = useToggle();
@@ -61,7 +65,7 @@ export const SignUpForm = () => {
         await onboarding([data]);
         handleOpenModal();
       } catch {
-        notify('messages.global.error', { type: 'error' });
+        notify("Une erreur s'est produite.", { type: 'error' });
       } finally {
         stopLoading();
       }
@@ -73,6 +77,13 @@ export const SignUpForm = () => {
 
   return (
     <>
+      <Snackbar open={!!toast} autoHideDuration={6000} onClose={() => setToast(null)}>
+        {toast && (
+          <Alert severity={toast.severity} onClose={() => setToast(null)} sx={{ width: '100%' }}>
+            {toast.message}
+          </Alert>
+        )}
+      </Snackbar>
       <DialogSuccessSignUp isOpen={isModalOpen} onClose={handleCloseModalWithRedirect} />
       <Box sx={{ ...LOGIN_FORM, alignItems: 'center' }}>
         <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BIRDIA !' />
