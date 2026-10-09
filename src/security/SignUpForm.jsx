@@ -1,24 +1,37 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useNotify } from 'react-admin';
+import { Alert, Box, Button, Snackbar, Typography } from '@mui/material';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import { BpFormField } from '@/common/components';
 import { useToggle } from '@/common/hooks';
-import { handleSubmit } from '@/common/utils';
+import { handleSubmit, useWrappedSearchParams } from '@/common/utils';
 import { phoneValidator } from '@/operations/account/utils';
 import { recaptchaProvider } from '@/providers';
-import { onboarding } from '@/providers/account-provider';
+import { isPromoCodeValid, onboarding } from '@/providers/account-provider';
 import { BP_COLOR } from '../bp-theme';
 import { DialogSuccessSignUp } from './DialogSuccessSignUp';
 import { LOGIN_FORM, LOGIN_FORM_BUTTON } from './style';
 
+const RECAPTCHA_TIMEOUT_MS = 10000;
+
+// react-google-recaptcha-v3's promise never settles when the challenge is blocked
+// (ad blocker, privacy extension, bot detection) instead of rejecting, so without
+// a timeout the submit button hangs forever with no feedback.
+const withTimeout = (promise, ms) =>
+  Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+
 export const SignUpForm = () => {
-  const notify = useNotify();
+  // react-admin's useNotify() is a no-op here: /sign-up renders outside <Admin>,
+  // which is what mounts the <Notification> snackbar renderer. A local Snackbar
+  // guarantees feedback actually renders on this page.
+  const [toast, setToast] = useState(null);
+  const notify = (message, { type = 'info' } = {}) => setToast({ message, severity: type === 'error' ? 'error' : type });
   const navigate = useNavigate();
   const { value: isLoading, handleOpen: startLoading, handleClose: stopLoading } = useToggle();
   const { value: isModalOpen, handleOpen: handleOpenModal, handleClose: handleCloseModal } = useToggle();
-  const form = useForm({ mode: 'all' });
+  const { promoCode } = useWrappedSearchParams(['promoCode']);
+  const form = useForm({ mode: 'all', defaultValues: { promoCode: promoCode || '' } });
   const { useGoogleReCaptcha, verifyRecaptchaToken } = recaptchaProvider;
   const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -27,26 +40,50 @@ export const SignUpForm = () => {
     navigate('/login');
   };
 
-  const onSubmit = form.handleSubmit(async data => {
-    try {
-      startLoading();
-      // captcha check
-      const token = await executeRecaptcha('dashboard_sign_up_submit');
-      const recaptchaData = await verifyRecaptchaToken(token);
-      if (!recaptchaData) throw new Error();
-      // captcha check
+  const onSubmit = form.handleSubmit(
+    async data => {
+      try {
+        startLoading();
+        // captcha check
+        let recaptchaData;
+        try {
+          const token = await withTimeout(executeRecaptcha('dashboard_sign_up_submit'), RECAPTCHA_TIMEOUT_MS);
+          recaptchaData = await withTimeout(verifyRecaptchaToken(token), RECAPTCHA_TIMEOUT_MS);
+        } catch {
+          recaptchaData = null;
+        }
+        if (!recaptchaData) {
+          notify('Échec de la vérification anti-robot, veuillez réessayer', { type: 'error' });
+          return;
+        }
+        // captcha check
 
-      await onboarding([data]);
-      handleOpenModal();
-    } catch {
-      notify('messages.global.error', { type: 'error' });
-    } finally {
-      stopLoading();
+        if (data.promoCode && !(await isPromoCodeValid(data.promoCode))) {
+          notify('Promo code invalide', { type: 'warning' });
+        }
+
+        await onboarding([data]);
+        handleOpenModal();
+      } catch {
+        notify("Une erreur s'est produite.", { type: 'error' });
+      } finally {
+        stopLoading();
+      }
+    },
+    () => {
+      notify('Veuillez remplir tous les champs requis', { type: 'error' });
     }
-  });
+  );
 
   return (
     <>
+      <Snackbar open={!!toast} autoHideDuration={6000} onClose={() => setToast(null)}>
+        {toast && (
+          <Alert severity={toast.severity} onClose={() => setToast(null)} sx={{ width: '100%' }}>
+            {toast.message}
+          </Alert>
+        )}
+      </Snackbar>
       <DialogSuccessSignUp isOpen={isModalOpen} onClose={handleCloseModalWithRedirect} />
       <Box sx={{ ...LOGIN_FORM, alignItems: 'center' }}>
         <img src='/laborer.webp' width={50} height={50} alt='Bienvenue sur BIRDIA !' />
@@ -60,6 +97,7 @@ export const SignUpForm = () => {
             <BpFormField label='Adresse mail' name='email' form={form} />
             <BpFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
             <BpFormField label='Nom de la société' name='companyName' form={form} />
+            <BpFormField label='Code promo' name='promoCode' shouldValidate={false} form={form} />
             <Button disabled={isLoading} id='login' type='submit' sx={{ ...LOGIN_FORM_BUTTON, marginTop: 3 }}>
               S'inscrire
             </Button>
