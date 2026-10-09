@@ -28,27 +28,40 @@ export const SignUpForm = () => {
     navigate('/login');
   };
 
-  const onSubmit = form.handleSubmit(async data => {
-    try {
-      startLoading();
-      // captcha check
-      const token = await executeRecaptcha('dashboard_sign_up_submit');
-      const recaptchaData = await verifyRecaptchaToken(token);
-      if (!recaptchaData) throw new Error();
-      // captcha check
+  const onSubmit = form.handleSubmit(
+    async data => {
+      try {
+        startLoading();
+        // captcha check
+        let recaptchaData;
+        try {
+          const token = await executeRecaptcha('dashboard_sign_up_submit');
+          recaptchaData = await verifyRecaptchaToken(token);
+        } catch {
+          recaptchaData = null;
+        }
+        if (!recaptchaData) {
+          notify('Échec de la vérification anti-robot, veuillez réessayer', { type: 'error' });
+          return;
+        }
+        // captcha check
 
-      if (data.promoCode && !(await isPromoCodeValid(data.promoCode))) {
-        notify('Promo code invalide', { type: 'warning' });
+        if (data.promoCode && !(await isPromoCodeValid(data.promoCode))) {
+          notify('Promo code invalide', { type: 'warning' });
+        }
+
+        await onboarding([data]);
+        handleOpenModal();
+      } catch {
+        notify('messages.global.error', { type: 'error' });
+      } finally {
+        stopLoading();
       }
-
-      await onboarding([data]);
-      handleOpenModal();
-    } catch {
-      notify('messages.global.error', { type: 'error' });
-    } finally {
-      stopLoading();
+    },
+    () => {
+      notify('Veuillez remplir tous les champs requis', { type: 'error' });
     }
-  });
+  );
 
   return (
     <>
