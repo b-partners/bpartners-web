@@ -64,8 +64,8 @@ export const SignUpForm = () => {
 
         await onboarding([data]);
         handleOpenModal();
-      } catch {
-        notify("Une erreur s'est produite.", { type: 'error' });
+      } catch (error) {
+        notify(error?.response?.data?.message ?? error?.message ?? "Une erreur s'est produite.", { type: 'error' });
       } finally {
         stopLoading();
       }
