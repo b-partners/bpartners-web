@@ -81,7 +81,7 @@ describe(specTitle('Login'), () => {
     });
     cy.contains("Conditions générales d'utilisation").click();
     cy.get('@windowOpen').should('be.calledOnce');
-    cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
+    cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://www.birdia.fr/cgu');
   });
 });
 

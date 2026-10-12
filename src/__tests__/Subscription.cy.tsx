@@ -137,7 +137,7 @@ describe('Test user subscription', () => {
 
     cy.contains('Confirmation de votre abonnement');
     cy.contains('12 mois');
-    cy.contains('conditions générales d’utilisation').should('have.attr', 'href', 'https://www.birdia.fr/conditions-generales-d-utilisation');
+    cy.contains('conditions générales d’utilisation').should('have.attr', 'href', 'https://www.birdia.fr/cgu');
 
     cy.get('@toURL').should('not.have.been.called');
 
