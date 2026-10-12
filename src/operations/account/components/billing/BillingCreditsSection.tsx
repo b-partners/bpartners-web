@@ -19,11 +19,11 @@ import { formatCredits, formatDate, hasActivePlan } from './utils';
 
 const POLL_INTERVAL_MS = 3000;
 
-const MAX_POLL_COUNT = 40;
+const MAX_POLL_COUNT = 60;
 
 const RECONCILE_INTERVAL_MS = 5000;
 
-const MAX_RECONCILE_ATTEMPTS = 19;
+const MAX_RECONCILE_ATTEMPTS = 36;
 
 const CREDITS_SECTION_ID = 'billing-credits-section';
 

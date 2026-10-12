@@ -7,7 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export const PAYMENT_METHOD_SYNC_INTERVAL_MS = 3000;
 
-export const MAX_PAYMENT_METHOD_SYNC_ATTEMPTS = 15;
+export const MAX_PAYMENT_METHOD_SYNC_ATTEMPTS = 60;
 
 export type PaymentMethodSyncStatus = 'IDLE' | 'PENDING' | 'SYNCED' | 'TIMEOUT';
 

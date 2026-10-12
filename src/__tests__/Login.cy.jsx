@@ -150,6 +150,19 @@ describe(specTitle('SignUp promo code'), () => {
     cy.contains('Échec de la vérification anti-robot, veuillez réessayer');
   });
 
+  it('shows the API error message when the submit fails', () => {
+    cy.intercept('POST', '**/onboarding', { statusCode: 400, body: { message: 'Email already used' } }).as('onboard');
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    fillRequiredFields();
+    cy.get("[type='submit']").click();
+    cy.wait('@onboard');
+    cy.contains('Email already used');
+  });
+
   it('shows a toast when required fields are missing on submit', () => {
     cy.mount(
       <MemoryRouter initialEntries={['/sign-up']}>
