@@ -74,13 +74,13 @@ export const DEFAULT_EXPORT_PDF_CONF: Required<ExportAreaPictureAnnotationConf> 
 };
 
 export const EXPORT_PDF_CONF_OPTIONS: { key: keyof ExportAreaPictureAnnotationConf; label: string }[] = [
-  { key: 'showTitlePage', label: 'Page de titre' },
-  { key: 'showAnnotationPages', label: "Pages d'annotation 2D" },
-  { key: 'showAnnotation3dPages', label: "Pages d'annotation 3D" },
+  { key: 'showTitlePage', label: 'Logo - votre marque' },
+  { key: 'showAnnotationPages', label: 'Vue 2D à plat' },
+  { key: 'showAnnotation3dPages', label: 'Maquette 3D' },
   { key: 'showMeasurementSummary', label: 'Résumé des mesures' },
   { key: 'showPitchSummary', label: 'Résumé des pentes' },
   { key: 'showAreaSummary', label: 'Résumé des surfaces' },
   { key: 'showOverallSummary', label: 'Résumé global' },
-  { key: 'showLlmSummary', label: "Rapport de l'analyse IA" },
+  { key: 'showLlmSummary', label: 'Rapport explicatif IA' },
   { key: 'showDegradationSummary', label: 'Note de dégradation' },
 ];

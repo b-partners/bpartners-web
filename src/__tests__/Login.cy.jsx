@@ -1,9 +1,11 @@
 import specTitle from 'cypress-sonarqube-reporter/specTitle';
+import { MemoryRouter } from 'react-router-dom';
 
 import LoginSuccessPage from '../security/LoginSuccessPage';
 
 import App from '@/App';
 import { recaptchaProvider } from '@/providers';
+import { SignUpForm } from '@/security/SignUpForm';
 import { Redirect } from '../common/utils';
 
 describe(specTitle('Login'), () => {
@@ -80,5 +82,81 @@ describe(specTitle('Login'), () => {
     cy.contains("Conditions générales d'utilisation").click();
     cy.get('@windowOpen').should('be.calledOnce');
     cy.get('@windowOpen').invoke('getCall', 0).should('have.been.calledWithMatch', 'https://legal.bpartners.app');
+  });
+});
+
+describe(specTitle('SignUp promo code'), () => {
+  beforeEach(() => {
+    cy.stub(recaptchaProvider, 'useGoogleReCaptcha').returns({ executeRecaptcha: () => Promise.resolve('mock-recaptcha-token'), valide: false });
+    cy.intercept('GET', '**/captcha/token**', { body: true }).as('validateCaptcha');
+  });
+
+  const fillRequiredFields = () => {
+    cy.get("[name='lastName']").type('Doe');
+    cy.get("[name='firstName']").type('John');
+    cy.get("[name='email']").type('john.doe@gmail.com');
+    cy.get("[name='phoneNumber']").type('123456789');
+    cy.get("[name='companyName']").type('Numer');
+  };
+
+  it('prefills the Code promo field from the URL query param', () => {
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up?promoCode=SUMMER2026']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    cy.get("[name='promoCode']").should('have.value', 'SUMMER2026');
+  });
+
+  it('warns on an invalid promo code but still completes signup', () => {
+    cy.intercept('GET', '**/promoCodes/BADCODE', { statusCode: 404, body: {} }).as('checkPromoCode');
+    cy.intercept('POST', '**/onboarding', []).as('onboard');
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    fillRequiredFields();
+    cy.get("[name='promoCode']").type('BADCODE');
+    cy.get("[type='submit']").click();
+    cy.wait('@checkPromoCode');
+    cy.contains('Promo code invalide');
+    cy.wait('@onboard');
+  });
+
+  it('shows no promo-code warning and completes signup when no code is given', () => {
+    cy.intercept('POST', '**/onboarding', []).as('onboard');
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    fillRequiredFields();
+    cy.get("[type='submit']").click();
+    cy.wait('@onboard');
+    cy.contains('Promo code invalide').should('not.exist');
+  });
+
+  it('shows a dedicated toast when the captcha check fails', () => {
+    recaptchaProvider.useGoogleReCaptcha.restore();
+    cy.stub(recaptchaProvider, 'useGoogleReCaptcha').returns({ executeRecaptcha: () => Promise.reject(new Error('captcha blocked')), valide: false });
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    fillRequiredFields();
+    cy.get("[type='submit']").click();
+    cy.contains('Échec de la vérification anti-robot, veuillez réessayer');
+  });
+
+  it('shows a toast when required fields are missing on submit', () => {
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    cy.get("[type='submit']").click();
+    cy.contains('Veuillez remplir tous les champs requis');
   });
 });
