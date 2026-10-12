@@ -11,7 +11,7 @@ import { FC, useState } from 'react';
 import { BPButton } from './BPButton';
 import { SubscriptionConsentStyle } from './style';
 
-const CGU_URL = 'https://www.birdia.fr/conditions-generales-d-utilisation';
+const CGU_URL = 'https://www.birdia.fr/cgu';
 
 const AUTO_WIDTH = { width: 'auto' };
 

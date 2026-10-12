@@ -99,7 +99,7 @@ const SignInForm = () => {
             </Typography>
           </Button>
           <Divider />
-          <ExternalLinkButton url='https://legal.bpartners.app/' id='passwordReset'>
+          <ExternalLinkButton url='https://www.birdia.fr/cgu' id='passwordReset'>
             <Typography variant='h7' gutterBottom>
               Conditions générales d'utilisation
             </Typography>
