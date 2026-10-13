@@ -19,17 +19,28 @@ describe('Credit requirement', () => {
     cy.intercept('GET', '**/creditPacks*', creditPacks).as('getCreditPacks');
   });
 
-  it('blocks passing to analyse and offers the credit packs when the balance is empty', () => {
-    cy.mount(<App />);
-    cy.wait('@getAccountHolder');
-
+  const openGetImageDialogAndGenerate = () => {
     cy.getByName('home').click();
     cy.dataCy('add-address').click().type(ADDRESS);
     cy.dataCy('button-analyze').click();
+    cy.contains(GET_IMAGE_DIALOG_TITLE);
+    cy.get('[name="name"]').type('Prospect');
+    cy.contains("Générer l'image").click();
+  };
+
+  it('blocks the image generation and offers the credit packs when the balance is empty', () => {
+    cy.intercept({ method: /^(PUT|POST)$/, url: '**/prospects*' }, cy.spy().as('createProspect'));
+    cy.intercept({ method: /^(PUT|POST)$/, url: '**/areaPictures/**' }, cy.spy().as('createAreaPicture'));
+    cy.mount(<App />);
+    cy.wait('@getAccountHolder');
+
+    openGetImageDialogAndGenerate();
     cy.wait('@getCreditBalance');
 
     cy.contains(CREDITS_REQUIRED_MODAL_TITLE);
     cy.contains(GET_IMAGE_DIALOG_TITLE).should('not.exist');
+    cy.get('@createProspect').should('not.have.been.called');
+    cy.get('@createAreaPicture').should('not.have.been.called');
 
     cy.wait('@getCreditPacks');
     cy.contains('100 crédits, soit environ 10 analyses.');
@@ -39,9 +50,7 @@ describe('Credit requirement', () => {
     cy.mount(<App />);
     cy.wait('@getAccountHolder');
 
-    cy.getByName('home').click();
-    cy.dataCy('add-address').click().type(ADDRESS);
-    cy.dataCy('button-analyze').click();
+    openGetImageDialogAndGenerate();
     cy.contains(CREDITS_REQUIRED_MODAL_TITLE);
 
     cy.getByName('credits-required-not-now').click();

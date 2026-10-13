@@ -1,3 +1,4 @@
+export * from './AnnotationInfoShow';
 export * from './CheckboxForm';
 export * from './ClientSelection';
 export * from './EmptyInvoiceList';

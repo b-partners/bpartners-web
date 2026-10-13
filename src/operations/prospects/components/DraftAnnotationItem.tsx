@@ -4,17 +4,8 @@ import { useNavigate } from 'react-router';
 
 import { BP_COLOR } from '@/bp-theme';
 import { BPButton, FlexBox } from '@/common/components';
-import {
-  annotatorStore,
-  roof3DStore,
-  useAnnotator3DStore,
-  useAnnotatorComponentFormItemStore,
-  useAnnotatorComponentStore,
-  useAnnotatorScreenSwitch,
-} from '@/common/store';
-import { formatDateTime, getFileUrl } from '@/common/utils';
-import { clearPolygons, clearRoofDelimiter } from '@/providers';
-import { DraftAreaPictureAnnotation, FileType, Prospect, ZoomLevel } from '@bpartners/typescript-client';
+import { formatDateTime } from '@/common/utils';
+import { DraftAreaPictureAnnotation, Prospect } from '@bpartners/typescript-client';
 import { CheckCircleOutlined, Comment, LocalPhoneOutlined, LocationOnOutlined, MailOutline, Star, Update } from '@mui/icons-material';
 import { Box, Paper, SxProps, Typography } from '@mui/material';
 import { parseRatingValue } from '../utils';
@@ -33,33 +24,14 @@ export type DraftAnnotationItemProps = {
 
 export const DraftAnnotationItem: FC<DraftAnnotationItemProps> = ({ draftAnnotation }) => {
   const navigate = useNavigate();
-  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: draftAnnotation.areaPicture?.prospectId });
-  const resetAnnotations = annotatorStore.useAnnotatorStore(params => params.resetAnnotations);
-  const annotatorComponentStore = useAnnotatorComponentStore();
-  const { setAnnotatorSidebarAccordionItem: setAnnotatorSidebarAccordionItem } = useAnnotatorComponentFormItemStore();
-  const { setScreen } = useAnnotatorScreenSwitch();
-  const { reset: reset3DStore } = useAnnotator3DStore();
+  const prospectId = draftAnnotation.areaPicture?.prospectId;
+  const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: prospectId }, { enabled: !!prospectId });
 
-  const navigateToAnnotation = () => {
-    const { fileId, id: pictureId } = draftAnnotation.areaPicture;
-    const fileUrl = getFileUrl(fileId, FileType.AREA_PICTURE);
-    clearPolygons();
-    clearRoofDelimiter();
-    resetAnnotations();
-    reset3DStore();
-    annotatorComponentStore.reset();
-    annotatorStore.useAnnotatorStore.getState().reset();
-    roof3DStore.useRoof3DStore.getState().reset();
-    setAnnotatorSidebarAccordionItem(0);
-    setScreen('annotator');
-    navigate(
-      `/projects/${pictureId}?imgUrl=${encodeURIComponent(fileUrl)}&address=${prospect.address}&zoomLevel=${draftAnnotation.areaPicture.zoomLevel || ZoomLevel.HOUSES_0}&pictureId=${pictureId}&useDrafts=true&draftAnnotationId=${draftAnnotation.id}`
-    );
-  };
+  const navigateToAnnotation = () => navigate(`/projects/${draftAnnotation.areaPicture?.id}`);
 
   const getLoadingValue = useCallback(
     (value: string) => {
-      return isLoading ? 'Chargement...' : value;
+      return prospectId && isLoading ? 'Chargement...' : value;
     },
     [isLoading]
   );

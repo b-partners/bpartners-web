@@ -8,7 +8,6 @@ import { useGetList } from 'react-admin';
 import imageAnalyse from '/home/home-banner.webp';
 
 import { useDialog } from '@/common/store/dialog';
-import { useCreditRequirement } from '@/operations/account/components/billing';
 import { annotatorProvider } from '@/providers';
 import { FormEvent } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -20,10 +19,8 @@ const AddressInput = () => {
   const form = useForm<{ address: string }>();
   const { open } = useDialog();
   const { requireSiren } = useSirenRequirement();
-  const { requireCredits } = useCreditRequirement();
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!requireSiren(handleCreate)) return;
-    if (!(await requireCredits())) return;
     open(<GetImageDialog address={form.watch('address')} />, {}, false);
   };
   const handleSubmit = (event: FormEvent) => {
@@ -120,7 +117,7 @@ export const Home = () => {
             </Grid>
             <Grid item xs={12} md={4} minHeight={'400px'}>
               <Grid item xs={12} minHeight={'100px'}>
-                <Paper className='block-box block-white' mb={2}>
+                <Paper className='block-box block-white'>
                   <IconButton
                     style={{ color: PALETTE_COLORS.black }}
                     onClick={() => (window.location.pathname = '/prospects')}
