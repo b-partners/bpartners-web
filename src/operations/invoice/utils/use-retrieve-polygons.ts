@@ -62,6 +62,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
         global_rate_value,
         roofHeight,
         llm,
+        llmKey,
         roofDelimiter,
         imageTileInfoOrigin,
         cropRegion,
@@ -75,7 +76,7 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
       else if (areaPictureAnnotationParam?.annotations?.find(annotation => annotation?.id?.includes(analyseGeneratedIdRef))) {
         heightStatus = 'UNAVAILABLE';
       }
-      setLlm(llm);
+      setLlm(llm, llmKey);
       setGlobalRate(global_rate_value, global_rate_type);
       setSlopeAndHeightState({
         height: roofHeight,
@@ -118,13 +119,14 @@ export const useRetrievePolygons = (areaPictureAnnotationParam?: AreaPictureAnno
           global_rate_value,
           roofHeight,
           llm,
+          llmKey,
           imageTileInfoOrigin,
           cropRegion,
           threeDGenerationMode,
           threeDGenerationId,
           roofAnalyseId,
         } = areaPictureAnnotation?.properties || {};
-        setLlm(llm);
+        setLlm(llm, llmKey);
         setImageTileInfoOrigin?.(imageTileInfoOrigin);
         setCropRegion(cropRegion ?? null);
         setGlobalRate(global_rate_value, global_rate_type);

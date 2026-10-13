@@ -30,7 +30,7 @@ interface Action {
   setShouldGetHeightState: (value: boolean) => void;
   setAnalyseInformation: (value: AnalyseInformation) => void;
   setSlopeAndHeightState: (value: SlopeAndHeightState) => void;
-  setLlm: (value: string) => void;
+  setLlm: (value: string, llmKey?: string) => void;
   setGlobalRate: (value: number, type: string) => void;
   setAreaPictureDetails: (areaPictureDetails: AreaPictureDetails) => void;
   reset(): void;
@@ -61,6 +61,7 @@ interface State {
   };
   imageTileInfoOrigin?: any;
   llm: string | null;
+  llmKey: string | null;
   globalRate: {
     type: string;
     value: number;
@@ -85,6 +86,7 @@ const defaultState: any = {
   shouldGetHeightState: false,
   isSlopeAndHeightPending: false,
   llm: null,
+  llmKey: null,
   globalRate: null,
   analyseImageUrl: null,
   analyseImageFileId: null,
@@ -99,7 +101,7 @@ export const useAnnotatorComponentStore = create<Action & State>(set => ({
   ...copyObject(defaultState),
   setThereIsRoofPolygon: thereIsRoofPolygon => set({ thereIsRoofPolygon }),
   setSlopeAndHeightState: value => set({ slopeAndHeightState: value }),
-  setLlm: value => set({ llm: value }),
+  setLlm: (value, llmKey) => set({ llm: value, llmKey: llmKey ?? null }),
   setIsSlopeAndHeightPending: value => set({ isSlopeAndHeightPending: value }),
   setShouldGetHeightState: value => set({ shouldGetHeightState: value }),
   setAnalyseInformation: ({ geoJsonResultUrl, imageUrl }) => set({ geoJsonResultUrl, imageUrl }),

@@ -1,3 +1,4 @@
+import { useAnnotatorComponentStore } from '@/common/store';
 import { emptyToNull, getFileUrl } from '@/common/utils';
 import { analyseGeneratedIdRef, roofGlobalIdRef } from '@/operations/prospects/constants';
 import { getCached, saveOrUpdateLanding } from '@/providers';
@@ -84,7 +85,7 @@ export const exportAnnotationMapper = async (props: ExportAnnotationMapperArgs):
     address,
     globalRateType,
     globalRateValue,
-    llm: getCached.llmResult(),
+    llm: useAnnotatorComponentStore.getState().llm || getCached.llmResult(),
     annotations: !roofAnnotation ? annotations : [roofAnnotation, ...annotations.filter(a => !a.polygon.id.includes(roofGlobalIdRef))],
   };
 };
