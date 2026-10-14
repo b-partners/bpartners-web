@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bpartners/roof-analyser": "https://npm-bpartners-imagery-app-205205101409.d.codeartifact.eu-west-3.amazonaws.com/npm/annotator-imagery-store/@bpartners/roof-analyser/-/roof-analyser-0.15.3.tgz",
+    "@bpartners/roof-analyser": "^0.15.4",
     "@bpartners/typescript-client": "^0.98.0",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",
