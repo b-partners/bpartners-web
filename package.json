@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bpartners/roof-analyser": "^0.15.6",
+    "@bpartners/roof-analyser": "^0.15.7",
     "@bpartners/typescript-client": "^0.98.0",
     "@hookform/resolvers": "3.9.1",
     "@mui/icons-material": "5.16.7",
