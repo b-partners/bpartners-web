@@ -8,6 +8,9 @@ import {
   SubscriptionPlan,
   SubscriptionTrial,
   SubscriptionTrialEligibility,
+  SubscriptionUpgrade,
+  SubscriptionUpgradeStatus,
+  UpdateSubscriptionUpgradeStatus,
   UserSubscriptionCommitment,
   UserSubscriptionCommitmentDuration,
   UserSubscriptionPaymentMethod,
@@ -91,6 +94,28 @@ export const userSubscriptionProvider = {
     };
     const { data } = await userSubscriptionApi().initiateUserSubscription(id, payload);
     return data;
+  },
+  async startUpgrade(subscriptionPlanIdentifier: string, billingInterval: SubscriptionBillingInterval): Promise<SubscriptionUpgrade> {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().upgradeUserSubscription(id, { subscriptionPlanIdentifier, billingInterval });
+    return data;
+  },
+  async confirmUpgrade(upgradeId: string): Promise<SubscriptionUpgrade> {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().updateUserSubscriptionUpgrade(id, upgradeId, { status: UpdateSubscriptionUpgradeStatus.CONFIRMED });
+    return data;
+  },
+  async abandonUpgrade(upgradeId: string): Promise<SubscriptionUpgrade> {
+    const { id } = await asyncGetUser();
+    const { data } = await userSubscriptionApi().updateUserSubscriptionUpgrade(id, upgradeId, { status: UpdateSubscriptionUpgradeStatus.ABANDONED });
+    return data;
+  },
+  async getInProgressUpgrade(): Promise<SubscriptionUpgrade | undefined> {
+    const { id } = await asyncGetUser();
+    const inProgressStatuses = [SubscriptionUpgradeStatus.PROCESSING, SubscriptionUpgradeStatus.AWAITING_PAYMENT];
+    const responses = await Promise.all(inProgressStatuses.map(status => userSubscriptionApi().getUserSubscriptionUpgrades(id, status)));
+    const upgrades: SubscriptionUpgrade[] = responses.flatMap(({ data }: { data?: SubscriptionUpgrade[] }) => data || []);
+    return upgrades[0];
   },
   async getTrialEligibility(): Promise<SubscriptionTrialEligibility[]> {
     const { id } = await asyncGetUser();

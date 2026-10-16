@@ -1,7 +1,7 @@
 import App from '@/App';
 import { useDialog } from '@/common/store/dialog';
 import { isSubscriptionCancellationEnabled } from '@/operations/account/components/billing';
-import { BillingInterval, User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
+import { BillingInterval, SubscriptionUpgrade, User, UserSubscriptionCommitment } from '@bpartners/typescript-client';
 import dayjs from 'dayjs';
 import { Redirect } from '../common/utils';
 import { accountHolders1, accounts1, businessActivities, creditBalance, creditPacks, emptyCreditBalance, visaPaymentMethods } from './mocks/responses';
@@ -22,6 +22,17 @@ const CREDIT_PURCHASES_URL = `/users/${user1.id}/creditPurchases/*`;
 
 const proPlan = subscriptionPlans.find(({ id }) => id === 'plan-pro')!;
 const usageBasedPlan = subscriptionPlans.find(({ id }) => id === 'plan-usage')!;
+const expertPlan = subscriptionPlans.find(({ id }) => id === 'plan-expert')!;
+
+const awaitingPaymentUpgrade: SubscriptionUpgrade = {
+  id: 'upgrade-1',
+  fromSubscriptionPlanIdentifier: proPlan.id,
+  toSubscriptionPlanIdentifier: expertPlan.id,
+  fromBillingInterval: 'MONTHLY',
+  toBillingInterval: 'MONTHLY',
+  status: 'AWAITING_PAYMENT',
+  paymentUrl: 'https://checkout.stripe.com/c/pay/cs_test_upgrade',
+};
 
 const cancelledUser: User = { ...user1, subscription: { status: 'CANCELLED', start: new Date('2026-01-01T00:00:00Z'), end: dayjs().add(1, 'year').toDate() } };
 
@@ -42,6 +53,7 @@ interface OpenBillingOptions {
   balance?: object;
   packs?: object;
   paymentMethods?: object;
+  inProgressUpgrades?: SubscriptionUpgrade[];
 }
 
 const openBilling = ({
@@ -50,6 +62,7 @@ const openBilling = ({
   balance = creditBalance,
   packs = creditPacks,
   paymentMethods = visaPaymentMethods,
+  inProgressUpgrades = [],
 }: OpenBillingOptions = {}) => {
   cy.cognitoLogin({ whoami: { user }, user });
   cy.stub(Redirect, 'toURL').as('toURL');
@@ -62,6 +75,7 @@ const openBilling = ({
   cy.intercept('GET', `/users/${user1.id}/creditBalance`, balance).as('getCreditBalance');
   cy.intercept('GET', '**/creditPacks*', packs).as('getCreditPacks');
   cy.intercept('GET', `/users/${user1.id}/paymentMethods*`, paymentMethods).as('getPaymentMethods');
+  cy.intercept('GET', `/users/${user1.id}/subscriptionUpgrade*`, inProgressUpgrades).as('getSubscriptionUpgrades');
 
   cy.mount(<App />);
   cy.get('[name="account"]').click();
@@ -196,12 +210,34 @@ describe('Billing modal', () => {
       .and('not.contain', `Jusqu’au ${dayjs(expiredSubscriptionCommitments[0].commitmentEnd).format('DD/MM/YYYY')}`);
   });
 
-  it('hides the upgrade action on an active subscription', () => {
+  it('offers to change the plan when a higher plan is available', () => {
     openBilling();
 
     cy.contains('Mon abonnement').should('be.visible');
+    cy.get('[name="billing-upgrade-subscription"]').should('be.visible').and('not.be.disabled').and('contain', 'Changer d’offre');
+    cy.contains('Passez à une offre supérieure').should('be.visible');
+  });
+
+  it('disables the plan change on the highest plan', () => {
+    openBilling({ user: withPlan(expertPlan, 'YEARLY'), commitments: [] });
+
+    cy.get('[name="billing-upgrade-subscription"]').should('be.disabled');
+    cy.contains('Vous bénéficiez déjà de l’offre la plus élevée.').should('be.visible');
+  });
+
+  it('lets the customer follow an upgrade already in progress instead of starting a new one', () => {
+    openBilling({ inProgressUpgrades: [awaitingPaymentUpgrade] });
+    cy.wait('@getSubscriptionUpgrades');
+
+    cy.get('[name="billing-upgrade-subscription"]').should('not.be.disabled').and('contain', 'Suivre mon changement d’offre');
+    cy.contains('Un changement d’offre est déjà en cours').should('be.visible');
+  });
+
+  it('does not offer a plan change on a subscription billed per analysis', () => {
+    openBilling({ user: withPlan(usageBasedPlan, 'MONTHLY') });
+
+    cy.contains("À l'usage").should('be.visible');
     cy.get('[name="billing-upgrade-subscription"]').should('not.exist');
-    cy.contains('Faire évoluer mon offre').should('not.exist');
   });
 
   it('describes a subscription billed per analysis', () => {

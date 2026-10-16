@@ -9,8 +9,9 @@ import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import { Box, Button, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { FC, useLayoutEffect, useRef, useState } from 'react';
-import { SubscriptionComparison } from './SubscriptionComparison';
+import { getPlanUpgradeAvailability, isUpgradeMode, isYearlyBilling, PlanUpgradeAvailability } from './billing/utils';
 import { SubscriptionPlansStyle } from './style';
+import { SubscriptionComparison } from './SubscriptionComparison';
 
 const PLAN_ICONS = [AccessTimeRoundedIcon, ArrowCircleLeftOutlinedIcon, TrendingUpRoundedIcon, ShieldOutlinedIcon];
 
@@ -56,6 +57,12 @@ const getCtaLabel = (plan: SubscriptionPlan) => {
   return `Choisir ${plan.name ?? ''}`.trim();
 };
 
+const getUpgradeCtaLabel = (plan: SubscriptionPlan, availability: PlanUpgradeAvailability, isSamePlan: boolean) => {
+  if (availability === 'CURRENT') return 'Offre actuelle';
+  if (availability === 'FORBIDDEN') return 'Non disponible';
+  return isSamePlan ? 'Passer en annuel' : `Passer à ${plan.name ?? ''}`.trim();
+};
+
 const getTrialCtaLabel = (plan: SubscriptionPlan) => `Essayer ${plan.trialPeriodDays} jours gratuitement`;
 
 const renderInlineText = (text: string) =>
@@ -72,6 +79,8 @@ interface SubscriptionPlanCardProps {
   trialEligible?: boolean;
   isTrialActive?: boolean;
   disabled?: boolean;
+  upgradeAvailability?: PlanUpgradeAvailability;
+  isCurrentPlan?: boolean;
 }
 
 const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({
@@ -85,19 +94,25 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({
   trialEligible = false,
   isTrialActive = false,
   disabled = false,
+  upgradeAvailability,
+  isCurrentPlan = false,
 }) => {
   const featured = !!plan.isMostChosen;
-  const showTrial = trialEligible && !!plan.trialPeriodDays && !isTrialActive;
+  const isUpgradeBlocked = !!upgradeAvailability && upgradeAvailability !== 'ALLOWED';
+  const showTrial = trialEligible && !!plan.trialPeriodDays && !isTrialActive && !upgradeAvailability;
   const PlanIcon = PLAN_ICONS[index % PLAN_ICONS.length];
   const isYearly = getPlanBillingInterval(plan, billingInterval) === 'YEARLY';
   const fullYearlyCents = getFullYearlyCents(plan);
   const discountedYearlyCents = applyDiscount(plan, fullYearlyCents);
 
   return (
-    <Box className={`plan-card${featured ? ' plan-card--featured' : ''}${isTrialActive ? ' plan-card--trial' : ''}`}>
-      {(featured || isTrialActive) && (
+    <Box
+      className={`plan-card${featured ? ' plan-card--featured' : ''}${isTrialActive ? ' plan-card--trial' : ''}${isUpgradeBlocked ? ' plan-card--unavailable' : ''}`}
+    >
+      {(featured || isTrialActive || upgradeAvailability === 'CURRENT') && (
         <Box className='plan-badges'>
           {featured && <Box className='plan-badge'>Le plus choisi</Box>}
+          {upgradeAvailability === 'CURRENT' && <Box className='plan-badge plan-badge--trial'>Votre offre</Box>}
           {isTrialActive && <Box className='plan-badge plan-badge--trial'>Essai en cours</Box>}
         </Box>
       )}
@@ -154,10 +169,11 @@ const SubscriptionPlanCard: FC<SubscriptionPlanCardProps> = ({
           className={`plan-cta${featured ? '' : ' plan-cta--outline'}`}
           variant={featured ? 'contained' : 'outlined'}
           onClick={() => onSelect?.(plan)}
-          disabled={disabled || isPending}
+          disabled={disabled || isPending || isUpgradeBlocked}
           startIcon={isPending ? <CircularProgress size={16} color='inherit' /> : undefined}
+          data-cy={upgradeAvailability ? `upgrade-${plan.id}` : undefined}
         >
-          {getCtaLabel(plan)}
+          {upgradeAvailability ? getUpgradeCtaLabel(plan, upgradeAvailability, isCurrentPlan) : getCtaLabel(plan)}
         </Button>
       )}
 
@@ -201,9 +217,11 @@ interface SubscriptionPlansProps {
 }
 
 export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, onStartTrial, pendingPlanId, pendingTrialPlanId, isComparing = false }) => {
-  const { plans, isPlansLoading, isPlansError } = useGetSubscriptionPlans();
+  const { plans, allPlans, isPlansLoading, isPlansError } = useGetSubscriptionPlans();
   const { eligibleTrialPlanIds } = useGetTrialEligibility();
   const subscription = getCached.whoami()?.user?.subscription;
+  const isUpgrade = isUpgradeMode(subscription);
+  const isBillingIntervalLocked = isUpgrade && isYearlyBilling(subscription);
   const activeTrialPlanId = subscription?.status === UserSubscriptionStatus.FREE_TRIAL ? subscription?.plan?.id : undefined;
   const [billingInterval, setBillingInterval] = useState<SubscriptionBillingInterval>('YEARLY');
   const contentRef = useRef<HTMLDivElement>(null);
@@ -215,6 +233,9 @@ export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, on
   }, [isComparing, billingInterval, plans, eligibleTrialPlanIds, activeTrialPlanId]);
 
   const onBillingIntervalChange = (_event: unknown, value: SubscriptionBillingInterval | null) => value && setBillingInterval(value);
+
+  const getUpgradeAvailability = (plan: SubscriptionPlan) =>
+    isUpgrade && !isUsageBased(plan) ? getPlanUpgradeAvailability(subscription, allPlans, plan, billingInterval) : undefined;
 
   const onSelect = (plan: SubscriptionPlan) => onSelectPlan?.(plan, getPlanBillingInterval(plan, billingInterval));
 
@@ -245,7 +266,7 @@ export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, on
           <>
             <Box className='plans-billing'>
               <ToggleButtonGroup className='plans-billing-group' exclusive size='small' value={billingInterval} onChange={onBillingIntervalChange}>
-                <ToggleButton className='plans-billing-option' value='MONTHLY' data-cy='billing-interval-monthly'>
+                <ToggleButton className='plans-billing-option' value='MONTHLY' data-cy='billing-interval-monthly' disabled={isBillingIntervalLocked}>
                   Mensuel
                 </ToggleButton>
                 <ToggleButton className='plans-billing-option' value='YEARLY' data-cy='billing-interval-yearly'>
@@ -267,6 +288,8 @@ export const SubscriptionPlans: FC<SubscriptionPlansProps> = ({ onSelectPlan, on
                 trialEligible={eligibleTrialPlanIds.has(plan.id)}
                 isTrialActive={!!activeTrialPlanId && activeTrialPlanId === plan.id}
                 disabled={!!pendingPlanId || !!pendingTrialPlanId}
+                upgradeAvailability={getUpgradeAvailability(plan)}
+                isCurrentPlan={plan.id === subscription?.plan?.id}
               />
             ))}
           </>

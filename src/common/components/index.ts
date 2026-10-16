@@ -23,5 +23,6 @@ export * from './SubscriptionConsentStep';
 export * from './SubscriptionModal';
 export * from './SubscriptionRedirectStep';
 export * from './SubscriptionUnpaidModal';
+export * from './SubscriptionUpgradeStep';
 export * from './SupportDialog';
 export * from './UpdateBusinessModal';

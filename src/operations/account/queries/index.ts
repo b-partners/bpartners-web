@@ -7,3 +7,4 @@ export * from './payment-method-query';
 export * from './subscription-commitments-query';
 export * from './subscription-plans-query';
 export * from './subscription-trial-query';
+export * from './subscription-upgrade-query';
