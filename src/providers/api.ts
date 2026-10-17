@@ -5,6 +5,7 @@ import {
   CaptchaApi,
   CreditsApi,
   CustomersApi,
+  DetectionTrackingApi,
   FilesApi,
   MailingApi,
   OnboardingApi,
@@ -32,3 +33,4 @@ export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.ge
 export const addressAutocompletionApi = () => new AddressAutocompletionApi(authProvider.getCachedAuthConf());
 export const captchaApi = () => new CaptchaApi(authProvider.getCachedAuthConf());
 export const creditsApi = () => new CreditsApi(authProvider.getCachedAuthConf());
+export const detectionTrackingApi = () => new DetectionTrackingApi(authProvider.getCachedAuthConf());
