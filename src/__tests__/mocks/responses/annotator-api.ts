@@ -1,4 +1,3 @@
-import { Polygon } from '@bpartners/annotator-component';
 import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 
 interface Label {
@@ -10,7 +9,7 @@ export interface VerifyAdress {
   Latitude: number;
 }
 
-export const annotations: Polygon[] = [];
+export const annotations: unknown[] = [];
 
 export const invoiceAnnotations: AreaPictureAnnotation[] = [
   {

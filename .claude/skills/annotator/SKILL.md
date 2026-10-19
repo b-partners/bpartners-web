@@ -1,280 +1,145 @@
 ---
 name: annotator
-description: Expert agent for the Annotator feature — the 2D/3D roof annotation, analysis, and measurement module. Use when the user asks about, wants to modify, update, debug, or extend any annotator-related code (annotations, polygons, area pictures, roof analysis, CityJSON 3D, measurement tools, LLM results, or annotator sidebar/forms).
+description: Expert agent for the Annotator feature — the roof annotation, analysis and measurement screen, now provided by the @bpartners/roof-analyser library. Use when the user asks about, wants to modify, update, debug, or extend anything annotator-related (annotations, polygons, area pictures, roof analysis, CityJSON 3D, measurement tools, LLM results, WMS imagery, or annotator sidebar/forms).
 ---
 
 # Annotator Feature Skill
 
-Deep knowledge base for the Annotator module. Use this skill to make precise changes without breaking the tightly coupled annotation pipeline.
+The annotator is **no longer implemented in this repository**. It ships as the `@bpartners/roof-analyser`
+npm package (source: `/Users/macbook/Documents/work/roof-analyser`, published to the CodeArtifact
+`annotator-imagery-store` registry). This repo only mounts it.
 
-## Feature Overview
+The library has two independent flows. **This app uses the lon/lat session flow**: a Leaflet map on WMS
+imagery where the roof outline is drawn straight on the photo, with no prospect attached to the record.
+Its other flow (the address flow, which is the old pixel-space annotator canvas vendored verbatim) is
+kept only as a fallback for legacy drafts — see below.
 
-The Annotator is a full-page tool for drawing 2D polygon annotations on aerial/satellite images, running AI-powered roof analysis, and visualizing results in 3D via CityJSON. It supports measurement, export, and multi-surface classification.
+## What lives here
 
-## Architecture Map
-
-### Entry Points & Routing
-
-| Route | Component | Layout |
-|---|---|---|
-| `/annotator` | `Annotator.tsx` | Full page, no sidebar |
-| `/projects/:projectId` | `Annotator.tsx` | Full page, no sidebar |
-| `/projects` | `DraftAreaPictureAnnotations` | List view |
-
-Routes are defined in `src/security/BpAdmin.tsx`.
-
-### Core Components (src/operations/annotator/)
-
-```
-Annotator.tsx                          # Router/entry: fetches area picture, loads polygons, orchestrates sub-components
-├── AnnotatorComponent.tsx             # Canvas wrapper: renders @bpartners/annotator-component + 3D mode
-│   ├── <AnnotatorCanvas>             # External lib: polygon drawing/editing on image
-│   └── <Annotator3D>                 # 3D CityJSON viewer (React Three Fiber)
-├── SideBar.tsx                        # Right panel: annotation form list
-│   ├── AnnotatorFormItem             # Manual annotation form per polygon
-│   └── AnnotatorFormResultItem       # AI analysis result form per polygon
-├── ScreenSwitchTabs                   # Toggle: annotator | 3d-annotator | llm | roof-analyse
-├── SaveStatus                         # Auto-save indicator
-└── AddressTopBar / ImageOptionTopBar  # Top bars for address & image layers
-```
-
-### 3D Renderer (src/operations/annotator/components/3d-renderer/)
-
-```
-annotator-3d.tsx                       # <Canvas> from R3F, loads CityJSON
-├── city-scene.tsx                     # Renders CityJSON meshes
-├── annotator-3d-raycaster.tsx         # Mouse picking / surface selection
-├── annotator-3d-infos.tsx             # Info panel overlay
-├── point-measure-line.tsx             # Point-to-point measurement
-├── polygon-measure-line.tsx           # Perimeter measurement
-├── face-measure-labels.tsx            # Labels on 3D faces
-├── 3d-select-dialog.tsx               # Surface selection modal
-├── roof-surfaces-list.tsx             # Detected roof surfaces list
-├── annotator-3d-save-button.tsx       # Save 3D annotations
-├── annotator-3d-save-image.tsx        # Export 3D as image
-├── annotator-3d-switch-button.tsx     # Toggle 2D/3D
-├── annotator-3d-regenerate-button.tsx # Regenerate CityJSON
-└── annotator-3d-error.tsx             # Error boundary for 3D
-```
-
-### Loading Animations (src/operations/annotator/components/loading/)
-
-```
-llm-loading.tsx        # LLM analysis spinner
-roof-analyse.tsx       # Roof analysis animation
-earth-loading.tsx      # Globe loading
-house-animation.tsx    # House 3D animation
-step-loading.tsx       # Multi-step progress
-3d-animation.tsx       # Animation framework
-3d-geometry.ts         # Three.js geometry helpers
-3d-particles.ts        # Particle system
-3d-textures.ts         # Texture management
-3d-easing.tsx          # Easing functions
-3d-constants.ts        # Animation constants
-```
-
-### Sub-components (src/operations/annotator/components/)
-
-```
-AnnotatorForm.tsx                      # Form for single annotation
-AnnotatorActionButtons.tsx             # Back, save, reset buttons
-AnnotatorResetConfirmationDialog.tsx   # Reset confirmation modal
-AnnotationInfoShow.tsx                 # Read-only annotation details
-ExportAnnotationConfirmButton.tsx      # Export button
-RefocusImageButton.tsx                 # Reset image focus
-save-annotations-button.tsx            # Save trigger
-analyse-result-button.tsx              # Show analysis results
-llm-result.tsx                         # LLM result display
-llm-switch-button.tsx                  # Toggle LLM mode
-annotator-form-item.tsx                # Individual annotation form
-annotator-form-result-item.tsx         # Analysis result form item
-annotator-measurement-2d.tsx           # 2D measurement display
-annotation-item-label-type-select.tsx  # Label type selector
-annotation-slope-height-alert.tsx      # Slope/height alert
-address-top-bar.tsx                    # Address display bar
-image-option-top-bar.tsx               # Image layer toggle
-annotator-shift-buttons.tsx            # Shift image position
-disclaimer.tsx                         # Legal disclaimer
-free-autocomplete-input.tsx            # Autocomplete input field
-```
-
-## State Management — Zustand Stores (src/common/store/)
-
-### annotator-store.ts — Central annotation state
-- `useAnnotatorStore`: Full state (annotations record, polygonToShowMeasurement, threeDFromSegmentation, threeDGenerationId, roofAnalyseId)
-- `usePolygonStore`: Polygon list getter/setter
-- `useOneAnnotatorStore`: Single annotation data
-- `useAnnotatorInfoStore`: All annotation info list
-- `useOneAnnotationStore`: Single annotation with update methods
-
-State shape: `annotations: Record<id, { polygon, annotationInfos, isFirst }>`
-
-### annotator-component-store.ts — Component-level state
-- `useAnnotatorComponentStore`: roofSlope, imageUrl, geoJsonResultUrl, areaPictureDetails, slopeAndHeightState, llm, globalRate, roofAnalyseProperties, roofDelimiter, imageTileInfoOrigin
-
-### annotator-3d-store.ts — 3D mode state
-- `useAnnotator3DStore`: selectedObject, selectedObjectInfo, shouldSelectSurface, cityJsonModel, imageUrl (File), regenerateVersion
-
-### annotator-switch-store.ts — Screen mode
-- `useAnnotatorScreenSwitch`: screen ('llm' | 'annotator' | '3d-annotator' | 'roof-analyse'), threeDMode ('pan' | 'roof')
-
-### annotator-component-form-item-store.ts — Form item state
-- `useAnnotatorComponentFormItemStore`: annotatorSidebarAccordionItem (number)
-
-## Data Fetching — React Query (src/common/fetcher/)
-
-| Hook | File | Purpose |
-|---|---|---|
-| `useAnnotatorImageUploadQuery` | annotator-image-query.ts | Upload image as base64 |
-| `useAnnotatorExportPdf` | annotator-export-pdf.ts | Export annotations as PDF |
-| `useSaveAnnotations` | save-annotations.ts | Save annotations mutation |
-| `useAreaPictureDetailsFetcher` | area-picture-details-fetcher.ts | Fetch area picture details |
-| `usePolygonMarkerFetcher` | polygon-marker-fetcher.ts | Get marker position |
-| `useCitJSONProcessQuery` | city-json-fetcher.ts | Convert roof polygon → CityJSON |
-| `usePolygonMeasurement` | polygon-measurement.ts | Polygon measurement data |
-| `usePolygonAreaQueries` | polygon-area-queries.ts | Calculate polygon area |
-| `useInitRoofAnalyseQuery` | roof-analyse-queries.tsx | Init roof analysis |
-| `useRoofAnalyseQuery` | roof-analyse-queries.tsx | Run roof analysis mutation |
-| `useSlopeAndHeightQuery` | slope-and-height-queries.ts | Slope & height calculation |
-| `useVggResultQuery` | vgg-result-query.ts | VGG segmentation results |
-| `useGeojsonQueryResult` | (in annotator utils) | GeoJSON analysis results |
-
-## Providers (src/providers/)
-
-| Provider | Purpose |
+| File | Role |
 |---|---|
-| `annotator-provider.ts` | API wrapper: getPictureFormAddress, getAreaPictureById, annotatePicture, pointsToGeoPoints, geoPointsToPoins |
-| `area-picture-provider.ts` | Area picture CRUD |
-| `polygon-converter-provider.ts` | Polygon format conversion |
-| `draft-area-annotations-provider.ts` | Draft annotations CRUD |
-| `city-json-provider.ts` | CityJSON generation API |
+| `src/operations/annotator/Annotator.tsx` | The `/projects/:projectId` screen: picks the flow, resolves credentials, renders `<RoofAnnotator>` |
+| `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` off the BPartners API, signed with the secure link token |
+| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress` (0.14.6+) — handed the config by hand, since nothing is mounted yet, and waiting on the api key |
+| `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
+| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.14.6+: `REACT_APP_GEODATA_API_URL` / `REACT_APP_GEODATA_API_KEY` → `geocodeApiUrl` / `geocodeApiKey`, which is what the library's geocoder reads; blank sends it to the production geodata lambda it defaults to, with `apiKey` as its key |
+| `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves `apiKey` (`getApiKey`) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
 
-## Mappers (src/providers/mappers/)
+Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLayout`).
 
-| Mapper | Purpose |
-|---|---|
-| `annotator-mapper.ts` | API response → annotation format |
-| `area-picture-annotation-mapper.ts` | API response → Polygon + AnnotationInfo (`areaPictureAnnotationToPolygonAndAreaPictureInfo`) |
-| `polygon-mapper.ts` | Pixel ↔ GeoJSON coordinate mapping |
-| `geojson-mapper.ts` | GeoJSON format conversion |
-| `roof-analyse-mapper.ts` | Roof analysis result mapping |
+## Session identity
 
-## Utilities (src/operations/annotator/utils/)
+The library owns saving. A lon/lat session is written continuously into **one annotation record addressed
+by a single session id** — `geoRecordIds(sessionId)` derives the area picture, annotation and file ids from
+it with uuid v5, so the id is the whole handle on the record. For a new project the app opens that record
+itself, right after creating the prospect (see below), so the area picture carries the `prospectId`.
+`areaPictureId` defaults to `geoRecordIds(sessionId).areaPictureId` (the app passes the draft's own id
+explicitly when reopening from a list).
 
-| Utility | Purpose |
-|---|---|
-| `annotation-colors.ts` | Color mapping for annotation types |
-| `annotation-info-mapper.ts` | Map API response to UI info format |
-| `annotation-info-translator.ts` | Translate annotation field labels |
-| `annotations-info-form.ts` | Form schema for annotations |
-| `city-json-mapper.ts` | CityJSON → exportable format |
-| `create-roof-polygon.ts` | Generate default roof polygon |
-| `export-annotation-mapper.ts` | Map annotations for export |
-| `get-areapicture-shift-for-zoom.ts` | Calculate image shift by zoom level |
-| `global-rate-calculator.ts` | Calculate overall roof rating |
-| `image-utilities.ts` | Image processing helpers |
-| `is-after-analyse.ts` | Check if analysis completed |
-| `is-roof-polygon.ts` | Identify roof polygons |
-| `llm-result-queries.ts` | LLM result query hooks |
-| `measurement-mapper.ts` | Map measurements for display |
-| `refresh-image-url.ts` | Update image URL |
-| `segment-utilities.ts` | Polygon & segment calculations |
-| `shift-polygons.ts` | Adjust polygon positions after zoom/shift |
-| `use-crop-polygon.ts` | Crop polygon hook |
-| `constants.ts` | Zoom & shift constants |
+**0.14.6 turned that contract around.** The library can now open a visit from an address alone:
+`<RoofAnnotator address=… />` routes to `GeoAddressRoofAnnotator`, whose `createRoofSession` geocodes,
+creates the prospect, the area picture and the draft annotation, and hands the minted id up through
+`onSessionIdChange`; `areaPictureId` / `annotationId` / `idAnnotations` are `@deprecated` there. **This
+app does not use that path** — it keeps creating the prospect itself (its CRM form, its error dialog, its
+step progress) and always passes `sessionId`. The branch is picked in this order: `address || position`
+→ `GeoAddressRoofAnnotator`, unless `sessionId` comes with a position → `GeoRoofAnnotator`; `sessionId`
+alone → `GeoSessionRoofAnnotator`; `areaPictureId` alone → the legacy address flow. The app only ever
+passes `address` together with a position and a `sessionId`, so it still lands on `GeoRoofAnnotator`.
 
-## CityJSON Library (src/lib/cityjson/)
+Two ways in, and the route param means a different thing in each:
 
-| File | Purpose |
-|---|---|
-| `types.ts` | CityJSON TypeScript type definitions |
-| `hooks/useCityJsonRenderer.ts` | Three.js renderer for CityJSON |
-| `hooks/useCityJsonMeasure.ts` | Measurement in 3D space |
-| `hooks/useCityJsonPointMeasure.ts` | Point-to-point measurement |
-| `hooks/useCityJsonPolygonMeasure.ts` | Polygon perimeter measurement |
-| `hooks/useCityJsonHighlight.ts` | Highlight roof surfaces |
+| Entry | URL | `projectId` is | Props passed |
+|---|---|---|---|
+| New project (address given) | `/projects/<new uuid>?flow=geo&address=…` | the **session id**, minted by `useMutateProspect` | `sessionId` + `latitude`/`longitude` (geocoded here) + `address` + both resolvers |
+| Saved project (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the page reads the draft, pulls `sessionId` out of `properties.geoSession`, passes `sessionId` + `areaPictureId` + both resolvers — the record supplies the position and the address |
+| Opened, never saved (from a list) | `/projects/<areaPictureId>` | the **area picture id** of the draft | the draft only carries `properties.geoSessionId` (set at prospect creation, replaced by the library's first save): the page geocodes the area picture's address and passes it like a new project |
+| Legacy draft (no `geoSession`) | `/projects/<areaPictureId>` | the **area picture id** | falls back to the address flow: `areaPictureId` + `idAnnotations`, so pre-migration drafts still open |
 
-## Roof Edge Classification (src/lib/roof-mapping/)
+Never reintroduce a local save path — auto-save, analyse results, 3D mapping and the PDF export all live
+inside the library.
 
-| File | Purpose |
-|---|---|
-| `classify-roof-edges.ts` | Classify edges from CityJSON data |
-| `types.ts` | Edge type definitions |
+## Entering the screen
 
-## Key Types (src/operations/annotator/types.ts)
+- `src/common/fetcher/prospect-queries.tsx` (`useMutateProspect`): creates the prospect, mints a session id,
+  then opens its record under `geoRecordIds(sessionId)` — the area picture (with `prospectId`,
+  `downloadImage: false`), then a draft annotation with default values (`annotations: []`,
+  `properties: { geoSessionId }`) — and navigates with `flow=geo`, handing the library the session id.
+- `src/operations/home/project-list-item.tsx` and
+  `src/operations/prospects/components/DraftAnnotationItem.tsx`: navigate with the draft's area picture id
+  and let the page resolve the session. Geo records created before the app opened them itself carry no
+  `prospectId`, so both guard their prospect lookup with `enabled: !!prospectId`.
 
-```ts
-interface AnnotationInfo {
-  polygonId?: string;
-  labelType?: 'roof' | 'velux' | 'pan';
-  covering?: AnnotationCoveringType;
-  covering2?: AnnotationCoveringType;
-  slope?: number;
-  wearLevel?: number;
-  obstacle?: string;
-  comment?: string;
-  wear?: Wearness;
-  moldRate?: number;
-  fillColor?: string;
-  strokeColor?: string;
-  labelName?: string;
-  humidityLevel?: number;
-  height?: number;
-  area?: number;
-}
+## Imagery
 
-type PolygonsForm = Record<`${number}`, Polygon>;
-type AnnotationsInfo = Record<`${number}`, AnnotationInfo>;
-```
+Two resolvers, this app's own. **Optional since 0.14.6**: left out, the library resolves the imagery
+itself with `createImagerySource()` — the same `/map/layers*` endpoints, signed with `x-api-key` plus a
+Bearer read from the config's `accessToken` (no longer deprecated), and `tileBaseUrl` for the proxy. The
+app keeps its own pair for the one thing the library's has not got: the shared `checkImagery` probe and
+its French error when the WMS proxy is missing.
 
-## Constants (src/constants/annotator.ts)
+Both resolve off **the BPartners API itself** (`REACT_APP_BPARTNERS_API_URL`), on the signed-in Cognito
+token as `Authorization: Bearer` — `bp_access_token` (`getCached.token()`), falling back to a live Amplify
+session only when the cache is empty. This mirrors the library playground's own `dev/wms-resolver.ts`,
+which is the reference implementation.
 
-- `ANNOTATION_LABELS_TRANSLATION`: roof, velux, pan
-- `coveringTypeMap`: 10+ roof material types (ardoise, bitume, bac acier, etc.)
-- `ANNOTATION_WEAR_TRANSLATION`: LOW, PARTIAL, ADVANCED, EXTREME
-- `MEASUREMENT_MAP_ON_EXTENDED_AREA = 9`
-- `MEASUREMENT_MAP_ON_EXTENDED_LENGTH = 3`
+- `resolveActiveWmsLayer` — `GET {apiUrl}/map/layers/actual?lat=&lon=` → `{ layer, secureLinkToken }`. The
+  fast half: the library waits on it before showing the map. A bare layer is accepted too.
+- `resolveWmsLayers` — `GET {apiUrl}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }], secureLinkToken }`.
+  The slow half: only feeds the layer switcher; unreachable candidates are shown disabled. One
+  `secureLinkToken` covers every candidate — they all answer off the same GeoServer.
 
-## External Dependencies
+**No session token ever reaches the GeoServer.** Each answer carries a `secureLinkToken` (the nginx
+`secure_link`) and every cell is signed with it: `token=` its `value`, `expires=` its
+`expiresAtEpochSecond`. It replaced the Cognito token the cells used to carry.
 
-- `@bpartners/annotator-component` — External canvas library (AnnotatorCanvas)
-- `@bpartners/typescript-client` — API client types
-- `@react-three/fiber` — React wrapper for Three.js
-- `@react-three/drei` — Three.js helpers
-- `three` — 3D engine
-- `zustand` — State management
-- `@tanstack/react-query` — Data fetching & caching
-- `react-hook-form` — Form state management
-- `zod` — Schema validation
+**Tiles never go to a `wmsBaseUrl` the endpoints return.** The secure link answers for authentication, not
+for CORS: the library reads each cell with `fetch` + `createImageBitmap`, which needs a same-origin url,
+and the GeoServer sends no CORS headers. Tiles are built against `REACT_APP_WMS_TILE_BASE_URL`, default
+`/wms-proxy` — the Vite dev server's proxy (vite.config.ts) to `GEOSERVER_ORIGIN`, default
+`http://35.181.83.111`. **A deployed build has no `/wms-proxy`**: it needs a same-origin https proxy and
+`REACT_APP_WMS_TILE_BASE_URL` pointed at it.
 
-## API Endpoints
+Addresses are still geocoded off the GeoData lambda, `GET {REACT_APP_GEODATA_API_URL}/geocode`, on an
+`x-api-key` (`REACT_APP_GEODATA_API_KEY`, falling back to the account's key). The former
+`REACT_APP_WMS_RESOLVER` / `REACT_APP_WMS_RESOLVER_API_KEY` are still read as a fallback for both.
 
-- `GET /users/{userId}/accounts/{accountId}/areaPictures` — List area pictures
-- `GET /accounts/{accountId}/areaPictures/{pictureId}` — Get picture details
-- `POST /accounts/{accountId}/areaPictures/{pictureId}/annotations` — Create annotation
-- `PUT /accounts/{accountId}/areaPictures/{pictureId}/annotations/{annotationId}` — Update annotation
-- `GET /accounts/{accountId}/areaPictures/{pictureId}/annotations` — List annotations
-- `POST /accounts/{accountId}/areaPictures/convert` — Convert coordinates
-- `POST {GEO_MERCATOR_URL}` — External: pixel → geo coordinate conversion
-- `POST {CITYJSON_API}` — External: generate CityJSON 3D model
+A refused cell is a blank square with nothing said, so both resolvers await **one shared probe per
+position** (`checkImagery`): it fetches one cell exactly as the library does and throws
+`L'imagerie n'a pas pu être chargée (HTTP …)` on a non-2xx or non-image answer — the latter catches a
+deployment serving its own `index.html` for a missing proxy. It has to fail both resolvers: the library
+opens the map on `/actual` **or**, failing that, on the `/layers` list, and reports an error only when
+neither yields a layer.
 
-## Tests
+## What the app still owns
 
-| Test File | Coverage |
-|---|---|
-| `src/__tests__/Annotator.cy.jsx` | Main annotator component |
-| `src/__tests__/InvoiceAnnotation.cy.tsx` | Annotation in invoice context |
-| `src/__tests__/DraftAnnotations.cy.tsx` | Draft annotations management |
-| `src/__tests__/ExportAnnotationInfos.cy.tsx` | Export functionality |
-| `src/__tests__/mocks/responses/annotator-api.ts` | Mock data |
+- Prospect creation (CRM), and opening the new project's record right after it, linked to the prospect.
+  The library never re-declares an existing area picture (its PUT is a full replace on the backend, which
+  would drop the `prospectId`).
+- The drafts list (`src/operations/prospects/DraftAreaPictureAnnotations.tsx`) and its filters.
+- The invoice-side read-only annotation info panel:
+  `src/operations/invoice/components/AnnotationInfoShow.tsx` +
+  `src/operations/invoice/utils/annotation-info.ts` + `use-invoice-annotation.ts`.
 
-## Modification Guidelines
+## Library features that need no wiring here
 
-1. **Read before edit**: Always read the target file and its direct imports before making changes.
-2. **Store updates**: When adding state, follow the existing Zustand pattern in `annotator-store.ts` — use `create` with `set`/`get`, export individual selector hooks.
-3. **New fetchers**: Place in `src/common/fetcher/`, follow the `useXxxQuery` / `useXxxMutation` naming convention, register in the fetcher `index.ts`.
-4. **New components**: Follow the `react-component` skill template (Name.tsx + style.ts). Place under `src/operations/annotator/components/`.
-5. **Mapper changes**: Mappers in `src/providers/mappers/` transform API ↔ UI data. Changing a mapper affects all consumers — trace usages first.
-6. **3D changes**: The 3D pipeline flows: API → CityJSON provider → useCitJSONProcessQuery → annotator-3d.tsx → city-scene.tsx. Changes to CityJSON types affect the entire 3D stack.
-7. **Polygon operations**: Polygons flow through annotator-store → polygon-mapper → annotator-provider. Coordinate systems differ between pixel space and geo space.
-8. **Screen modes**: Controlled by `useAnnotatorScreenSwitch`. Values: 'llm' | 'annotator' | '3d-annotator' | 'roof-analyse'. Adding a new mode requires updating ScreenSwitchTabs.
+Added in 0.14.4–0.14.6 and self-contained — the app renders `<RoofAnnotator>` and gets them:
+
+- **Custom report pages** — `CustomPageEditor` in the export dialog writes extra pages, uploads their
+  pictures as attachments through the BPartners API itself (`uploadPageImages`) and keeps them on the
+  session, so the couvreur's automatic export carries them too.
+- **User-written edge types** on the 3D model (name and colour), kept across regenerations as
+  `GeoRoof3DSnapshot.customEdgeTypes`.
+- A PDF-in-progress notice in the roofer footer, a texture-loading pill on the model, and the position
+  pinned on the pan photo while nothing is drawn.
+
+Exported and unused: `searchAddresses` (BPartners `POST /address/autocomplete`, one `searchId` per field
+so a lookup is billed once rather than per keystroke) would fit the prospect form's address input, and
+`createRoofSession` duplicates what `useMutateProspect` does today.
+
+## Changing annotator behaviour
+
+Edit the library, not this repo. Rebuild it there, publish (the
+**Publish Library to CodeArtifact** workflow), then bump `@bpartners/roof-analyser` here.
+The library's own `README.md` documents both flows and every prop.
+`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the resolver and asserts the
+Leaflet map mounts on the geocoded position.
