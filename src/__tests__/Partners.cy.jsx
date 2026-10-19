@@ -3,6 +3,7 @@ import specTitle from 'cypress-sonarqube-reporter/specTitle';
 import App from '@/App';
 
 import { Redirect } from '@/common/utils';
+import { partners } from '@/operations/partners/partners';
 import { account1, accountHolders1, accounts1, businessActivities } from './mocks/responses/account-api';
 import { images1 } from './mocks/responses/file-api';
 import { whoami1 } from './mocks/responses/security-api';
@@ -33,6 +34,10 @@ describe(specTitle('Account'), () => {
     cy.contains("Besoin d'une assurance adaptée");
     cy.contains("Découvrez l'assurance");
     cy.contains('À votre activité professionnelle ?');
-    cy.get(':nth-child(1) > .css-fevtbh > .MuiButtonBase-root').click();
+
+    // the cards open their partner in a new tab: clicking them would take the runner off to bred.fr
+    partners.forEach(({ buttonLabel, redirectionLink }) => {
+      cy.contains('a', buttonLabel).should('have.attr', 'href', redirectionLink).and('have.attr', 'target', '_blank');
+    });
   });
 });

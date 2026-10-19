@@ -141,5 +141,7 @@ so a lookup is billed once rather than per keystroke) would fit the prospect for
 Edit the library, not this repo. Rebuild it there, publish (the
 **Publish Library to CodeArtifact** workflow), then bump `@bpartners/roof-analyser` here.
 The library's own `README.md` documents both flows and every prop.
-`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the resolver and asserts the
-Leaflet map mounts on the geocoded position.
+`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the resolver and asserts the map
+stage (`.geo-pans-stage`) mounts on the geocoded position, on the cells of `REACT_APP_WMS_TILE_BASE_URL`.
+The lon/lat flow no longer draws on Leaflet, and a refused cell is reported by the library's own error
+panel (`.geo-error-title`) — `checkImagery`'s French message never reaches the screen.

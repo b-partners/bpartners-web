@@ -34,6 +34,18 @@ describe(specTitle('Invoice'), () => {
       cy.intercept('GET', `/accounts/mock-account-id1/files/*/raw?accessToken=accessToken1&fileType=INVOICE`, document);
     });
 
+    const savedInvoices = [];
+    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
+      savedInvoices.push(req.body);
+      req.reply({
+        body: { ...req.body, paymentRegulations: restInvoiceRegulation },
+        updatedAt: new Date(),
+      });
+    }).as('crupdateInvoice');
+
+    // every edit is saved by a debounce, so a save never lines up one to one with the edit that triggered it
+    const expectSaved = (message, predicate) => cy.wrap(null, { timeout: 20000 }).should(() => expect(savedInvoices.some(predicate), message).to.be.true);
+
     cy.mount(<App />);
     cy.get('[name="invoice"]').click();
     cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').click();
@@ -55,21 +67,11 @@ describe(specTitle('Invoice'), () => {
     cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
     cy.get('input[name="globalDiscount"]').clear().type(globalDiscount_percentValue);
 
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      const newInvoice = req.body;
-      expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
-
-      newInvoice.paymentRegulations = restInvoiceRegulation;
-
-      req.reply({
-        body: { ...newInvoice },
-        updatedAt: new Date(),
-      });
-    }).as('crupdateInvoicePaymentRegulation');
-
     cy.get('input[name="delayInPaymentAllowed"]').clear();
     cy.contains('Ce champ est requis');
     cy.get('input[name="delayInPaymentAllowed"]').type(delayInPaymentAllowed).blur();
+
+    expectSaved('the title and the reference are saved', invoice => invoice.title === newTitle && invoice.ref === newRef);
 
     cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
     cy.get('[data-testid="invoice-Acompte-accordion"]').click();
@@ -85,22 +87,16 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('input[name="maturityDate"]').should('have.value', '2023-04-15');
     cy.get('#form-regulation-save-id').click();
-    cy.wait('@crupdateInvoicePaymentRegulation');
+
+    expectSaved(
+      'the instalment payment is saved with its delay and its penalty',
+      invoice =>
+        invoice.paymentType === InvoicePaymentTypeEnum.IN_INSTALMENT &&
+        +invoice.delayInPaymentAllowed === delayInPaymentAllowed &&
+        invoice.delayPenaltyPercent === parseInt(delayPenaltyPercent) * 100
+    );
+
     const paymentComment = 'This is a long comment for testing comment view';
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      const newInvoice = req.body;
-      expect(+req.body.delayInPaymentAllowed).to.deep.eq(delayInPaymentAllowed);
-      expect(req.body.delayPenaltyPercent).to.deep.eq(parseInt(delayPenaltyPercent) * 100);
-      expect(newInvoice.paymentType).to.be.equal(InvoicePaymentTypeEnum.IN_INSTALMENT);
-
-      newInvoice.paymentRegulations = restInvoiceRegulation;
-
-      req.reply({
-        body: { ...newInvoice },
-        updatedAt: new Date(),
-      });
-    }).as('paymentRegulation1');
-
     cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > .MuiButtonBase-root > [data-testid="EditIcon"] > path').click();
     cy.get('[name=percent]').clear().type(20);
     cy.get('input[name="comment"]').type(paymentComment);
@@ -108,52 +104,22 @@ describe(specTitle('Invoice'), () => {
     cy.contains('This is a long comment ...');
     cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root > .MuiBox-root > :nth-child(1) > [data-testid="ExpandMoreIcon"]').click();
 
-    cy.wait('@paymentRegulation1');
     cy.contains('Commentaire : ');
     cy.contains('This is a long comment for testing comment view');
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      const newInvoice = req.body;
-
-      newInvoice.paymentRegulations = restInvoiceRegulation;
-
-      req.reply({
-        body: { ...newInvoice },
-        updatedAt: new Date(),
-      });
-    }).as('paymentRegulation2');
 
     cy.get('#form-create-regulation-id').click();
     cy.get('[name=percent]').clear().type(20);
     cy.get('input[name="comment"]').type(paymentComment);
     cy.get('#form-regulation-save-id').click();
 
-    cy.wait('@paymentRegulation2');
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      // check if there is 1 month between all dates
-      const newInvoice = req.body;
-      const expectedDate = ['2023-03-15', '2023-04-15', '2023-05-15', '2023-06-15'];
-      const paymentRegulationsDates = [...req.body.paymentRegulations]
+    // check if there is 1 month between all dates
+    const expectedDate = ['2023-03-15', '2023-04-15', '2023-05-15', '2023-06-15'];
+    expectSaved('every instalment is one month apart', invoice => {
+      const maturityDates = [...(invoice.paymentRegulations || [])]
         .map(e => e.maturityDate)
         .sort((date1, date2) => new Date(date1).getTime() - new Date(date2).getTime());
-      expect(paymentRegulationsDates).to.deep.eq(expectedDate);
-
-      req.reply({
-        body: { ...newInvoice },
-        updatedAt: new Date(),
-      });
-    }).as('paymentRegulation3');
-
-    cy.get('#form-save-id');
-    cy.wait('@paymentRegulation3');
-
-    cy.intercept('PUT', `/accounts/${accounts1[0].id}/invoices/*`, req => {
-      req.reply({
-        body: req.body,
-        updatedAt: new Date(),
-      });
-    }).as('paymentRegulation4');
+      return Cypress._.isEqual(maturityDates, expectedDate);
+    });
 
     cy.get('[data-testid="invoice-Informations générales-accordion"]').click();
 
@@ -161,14 +127,9 @@ describe(specTitle('Invoice'), () => {
 
     cy.get('[data-testid="globalDiscount-checkbox-id"]').click();
 
-    cy.wait('@paymentRegulation4').then(res => {
-      const newInvoice = res.request.body;
-      const expectedInvoice = res.request.body;
-      expectedInvoice.globalDiscount = null;
-      expectedInvoice.delayInPaymentAllowed = null;
-      expectedInvoice.delayPenaltyPercent = null;
-
-      expect(newInvoice).to.deep.eq(expectedInvoice);
-    });
+    expectSaved(
+      'unchecking the delay and the discount clears them',
+      invoice => invoice.globalDiscount === null && invoice.delayInPaymentAllowed === null && invoice.delayPenaltyPercent === null
+    );
   });
 });

@@ -129,6 +129,9 @@ describe(specTitle('Invoice'), () => {
     cy.wait('@whoami');
     cy.wait('@getAccount1');
     cy.wait('@getAccountHolder2');
+    // the list has to be on screen, otherwise there is nothing for the TTC assertions to miss
+    cy.get('.MuiTableBody-root > :nth-child(1) > .column-ref').should('be.visible');
+    cy.contains('Prix HT').should('be.visible');
     // shouldn't show TTC price
     cy.contains(/TTC/gi).should('not.exist');
 
