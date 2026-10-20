@@ -54,10 +54,22 @@ const returnFromStripe = () =>
 
 const attemptLabel = (attempt: number) => `Tentative ${attempt} sur ${MAX_PAYMENT_METHOD_SYNC_ATTEMPTS}`;
 
-const advanceOneAttempt = () => {
-  cy.tick(PAYMENT_METHOD_SYNC_INTERVAL_MS);
-  cy.wait('@getPaymentMethods');
+// the next poll is only scheduled once the previous answer has been read, so a tick can land before its
+// timer exists: keep ticking until the reads are in rather than pairing one tick with one request
+const POLL_SETTLE_MS = 50;
+const advanceUntilRead = (reads: number, maxTicks = 10) => {
+  const advance = (remainingTicks: number) => {
+    if (remainingTicks === 0 || paymentMethodCalls >= reads) return;
+    cy.tick(PAYMENT_METHOD_SYNC_INTERVAL_MS);
+    cy.wait(POLL_SETTLE_MS);
+    cy.then(() => advance(remainingTicks - 1));
+  };
+  cy.then(() => advance(maxTicks));
 };
+
+// the initial read comes on top of every attempt
+const advanceToAttempt = (attempt: number) => advanceUntilRead(attempt + 1);
+const advanceUntilAttemptsAreSpent = () => advanceUntilRead(MAX_PAYMENT_METHOD_SYNC_ATTEMPTS + 1, MAX_PAYMENT_METHOD_SYNC_ATTEMPTS * 3);
 
 const expectCalls = (expected: number, message: string) => cy.wrap(null).should(() => expect(paymentMethodCalls, message).to.eq(expected));
 
@@ -82,10 +94,10 @@ describe('Payment method sync after a credit purchase', () => {
     cy.contains('Paiement effectué, 500 crédits ont été ajoutés à votre solde.').should('be.visible');
     cy.location('search').should('eq', '');
 
-    advanceOneAttempt();
+    advanceToAttempt(2);
     cy.contains(attemptLabel(2)).should('be.visible');
 
-    advanceOneAttempt();
+    advanceToAttempt(3);
     cy.contains('Visa •••• 4242').should('be.visible');
     cy.contains('Carte enregistrée automatiquement après votre achat de crédits.').should('be.visible');
     cy.get('#billing-payment-method-sync').should('not.exist');
@@ -121,11 +133,10 @@ describe('Payment method sync after a credit purchase', () => {
     cy.get('#billing-payment-method-sync').should('be.visible');
     cy.contains(attemptLabel(1)).should('be.visible');
 
-    Cypress._.times(MAX_PAYMENT_METHOD_SYNC_ATTEMPTS - 1, index => {
-      advanceOneAttempt();
-      const attempt = index + 2;
-      if (attempt < MAX_PAYMENT_METHOD_SYNC_ATTEMPTS) cy.contains(attemptLabel(attempt)).should('be.visible');
-    });
+    advanceToAttempt(2);
+    cy.contains(attemptLabel(2)).should('be.visible');
+
+    advanceUntilAttemptsAreSpent();
 
     cy.contains('Nous n’avons pas pu récupérer votre carte automatiquement, ajoutez-la manuellement.').should('be.visible');
     cy.get('#billing-payment-method-sync').should('not.exist');

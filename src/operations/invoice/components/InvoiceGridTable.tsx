@@ -61,7 +61,11 @@ export const InvoiceGridTable: FC<InvoiceGridTableProps> = props => {
       <TextField source='ref' label='Référence' />
       <TextField source='title' label='Titre' />
       <FunctionField render={nameRenderer} label='Client' />
-      <RaMoneyField render={data => (companyInfo?.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)} label='Prix TTC' variant='body2' />
+      <RaMoneyField
+        render={data => (companyInfo?.isSubjectToVat ? data.totalPriceWithVat : data.totalPriceWithoutVat)}
+        label={companyInfo?.isSubjectToVat ? 'Prix TTC' : 'Prix HT'}
+        variant='body2'
+      />
       <FunctionField render={data => <Typography variant='body2'>{getInvoiceStatusInFr(data.status)}</Typography>} label='Statut' />
       <FunctionField render={record => formatDate(new Date(record.sendingDate))} label="Date d'émission" />
       <FunctionField render={data => <InvoiceListActionsButtonsRenderer record={data} viewPdf={viewPdf} />} label='' />
