@@ -20,6 +20,15 @@ export const createProduct = (n: number) => {
 
 export const products: Product[] = createProduct(17);
 
+/**
+ * `products` is a module-level array that setProduct writes into, so a spec that edits a product
+ * leaves the next one reading the edited value. Specs that mutate it call this from beforeEach; the
+ * array is refilled rather than replaced, because the other specs import the binding directly.
+ */
+export const resetProducts = () => {
+  products.splice(0, products.length, ...createProduct(17));
+};
+
 export const getProducts = (page: number, perPage: number) => products.slice(page * perPage, page * perPage + perPage);
 export const setProduct = (product: Product, index?: number) => {
   if (index !== undefined) {

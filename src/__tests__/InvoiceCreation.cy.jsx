@@ -7,11 +7,13 @@ import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1, customers2 } from './mocks/responses/customer-api';
 import { invoiceRelaunch1, invoiceRelaunch2 } from './mocks/responses/invoice-relaunch-api';
 import { createInvoices, getInvoices } from './mocks/responses/invoices-api';
-import { products, setProduct } from './mocks/responses/product-api';
+import { products, resetProducts, setProduct } from './mocks/responses/product-api';
 import { whoami1 } from './mocks/responses/security-api';
 
 describe(specTitle('Invoice creation'), () => {
   beforeEach(() => {
+    resetProducts();
+
     cy.cognitoLogin();
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');

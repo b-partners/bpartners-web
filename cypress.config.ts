@@ -30,7 +30,7 @@ const readTimings = (): Timing[] => {
   if (!fs.existsSync(TIMINGS_FILE)) return [];
   try {
     const parsed = JSON.parse(fs.readFileSync(TIMINGS_FILE, 'utf-8'));
-    return Array.isArray(parsed) ? parsed : (parsed.timings ?? []);
+    return Array.isArray(parsed) ? parsed : parsed.timings ?? [];
   } catch {
     return [];
   }
@@ -53,14 +53,58 @@ const writeTimings = (timings: Timing[]) => {
   fs.writeFileSync(TIMINGS_FILE, JSON.stringify(report, null, 2));
 };
 
-const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
-const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
-const BASE_URL = `https://api.instatus.com/v1/${INSTATUS_PAGE_ID}`;
-const IS_3D_MONITORING = process.env.IS_MONITORING_INSTATUS_3D;
+const DOWNLOADS_DIR = path.resolve('cypress/downloads');
 
-const instatusHeaders = {
-  Authorization: `Bearer ${INSTATUS_API_KEY}`,
-  'Content-Type': 'application/json',
+/** How much of the report's own words are carried back, which is plenty to tell its sections apart. */
+const PDF_TEXT_BUDGET = 20_000;
+
+interface PdfSummary {
+  name: string;
+  bytes: number;
+  /** The two marks a whole PDF sits between: its header, and the trailer a finished write ends on. */
+  isPdf: boolean;
+  hasEof: boolean;
+  pages: number;
+  text: string;
+}
+
+/**
+ * The newest downloaded report whose name carries `match`, read the way a reader would read it: the
+ * file is parsed, so the page count is the document's own and the text is what is printed on it.
+ */
+const inspectPdfDownload = async ({ match, since = 0 }: { match: string; since?: number }): Promise<PdfSummary | null> => {
+  if (!fs.existsSync(DOWNLOADS_DIR)) return null;
+  const [newest] = fs
+    .readdirSync(DOWNLOADS_DIR)
+    .filter(name => name.endsWith('.pdf') && name.includes(match))
+    .map(name => ({ name, file: path.join(DOWNLOADS_DIR, name) }))
+    .map(entry => ({ ...entry, at: fs.statSync(entry.file).mtimeMs }))
+    .filter(entry => entry.at >= since)
+    .sort((left, right) => right.at - left.at);
+  if (!newest) return null;
+
+  const buffer = fs.readFileSync(newest.file);
+  const head = buffer.subarray(0, 8).toString('latin1');
+  const tail = buffer.subarray(-64).toString('latin1');
+  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.js');
+  const getDocument = pdfjs.getDocument ?? pdfjs.default?.getDocument;
+  const document = await getDocument({ data: new Uint8Array(buffer), useSystemFonts: false }).promise;
+
+  const pages: string[] = [];
+  for (let number = 1; number <= document.numPages; number += 1) {
+    const page = await document.getPage(number);
+    pages.push((await page.getTextContent()).items.map((item: any) => item.str ?? '').join(' '));
+    if (pages.join(' ').length > PDF_TEXT_BUDGET) break;
+  }
+
+  return {
+    name: newest.name,
+    bytes: buffer.length,
+    isPdf: head.startsWith('%PDF-'),
+    hasEof: tail.trimEnd().endsWith('%%EOF'),
+    pages: document.numPages,
+    text: pages.join('\n').slice(0, PDF_TEXT_BUDGET),
+  };
 };
 
 export default defineConfig({
@@ -73,7 +117,7 @@ export default defineConfig({
   video: true,
 
   retries: {
-    runMode: 3,
+    runMode: 2,
     openMode: 0,
   },
 
@@ -96,6 +140,11 @@ export default defineConfig({
       taskCoverage(on, config);
       return config;
     },
+    // Everything a component spec talks to is stubbed, so nothing legitimately takes 30s: the long
+    // timeout only made a genuine failure cost half a minute before it was reported.
+    defaultCommandTimeout: 10000,
+    // The component run's videos are never read — ci.yml uploads screenshots, and only on failure.
+    video: false,
     specPattern: 'src/**/!(*.it).cy.{js,ts,jsx,tsx}',
     devServer: {
       framework: 'react',
@@ -110,13 +159,14 @@ export default defineConfig({
       writeTimings([]);
 
       on('task', {
+        inspectPdfDownload,
         recordTiming(entry: Omit<Timing, 'at'>) {
           const timings = readTimings();
           timings.push({ ...entry, at: new Date().toISOString() });
           writeTimings(timings);
           console.log(`⏱️ [${entry.step}] ${entry.ms}ms — ${entry.spec} :: ${entry.test}`);
           return null;
-        }
+        },
       });
 
       on('after:run', () => {
@@ -124,7 +174,8 @@ export default defineConfig({
         if (timings.length === 0) return;
         console.log('\n⏱️  Annotator timings summary (average per step):');
         console.table(buildSummary(timings));
-        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`)});
+        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`);
+      });
 
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.family === 'chromium') {
@@ -138,8 +189,9 @@ export default defineConfig({
       });
     },
 
-    excludeSpecPattern:
-      process.env.EXCLUDE_INSTATUS_IT_SPEC === 'true' ? ['src/__tests__/it/3D_generator.it.cy.ts', 'src/__tests__/it/detection.it.cy.ts'] : [],
+    // The annotator specs are the Instatus monitoring's own, launched one by one by their workflows:
+    // kept out of the plain IT run, which has no business re-walking a 3D generation.
+    excludeSpecPattern: process.env.EXCLUDE_INSTATUS_IT_SPEC === 'true' ? ['src/__tests__/it/annotator/*.it.cy.ts'] : [],
     specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
   },
 });
