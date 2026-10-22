@@ -19,6 +19,13 @@ export const ADDRESS_3: GeoPlace = { key: 'address-3', address: '2 Place Belleco
 
 const PROSPECT_NAME = 'Annotator It';
 
+/**
+ * The library's own onboarding guide, a modal over the very screens the walk works on — and its button
+ * is labelled "Suivant" too. Turned off the way the viewer turns it off, before any session is opened.
+ */
+const GUIDE_DISMISSED_KEY = 'roof-analyser:onboarding:dismissed';
+const dismissGuides = () => cy.window().then(window => window.localStorage.setItem(GUIDE_DISMISSED_KEY, JSON.stringify(['trace', 'texture'])));
+
 const SESSION_TIMEOUT = 300_000;
 const GENERATION_TIMEOUT = 300_000;
 
@@ -26,6 +33,7 @@ const GENERATION_TIMEOUT = 300_000;
 export const openGeoSession = ({ address }: GeoPlace) => {
   cy.e2eLogin();
   cy.get('[data-testid="address-auto-complete"] input', { timeout: 60_000 }).clear().type(`${address}{enter}`);
+  dismissGuides();
   cy.name('name').clear().type(PROSPECT_NAME);
   cy.measure('get-image', () => {
     cy.contains("Générer l'image").click();

@@ -134,7 +134,7 @@ const geoDrawPans = (key: string): Cypress.Chainable<GeoPansResult> => {
   return cy.readFile<GeoPanFixture>(path).then(fixture => {
     if (fixture.pans.length > 0) {
       drawGeoPans(fixture.pans);
-      cy.contains('button', 'Suivant').should('be.enabled').click();
+      cy.contains('.geo-action-bar-primary', 'Suivant').should('be.enabled').click();
       return cy.wrap({ pans: fixture.pans, replayed: true }, { log: false });
     }
     cy.log(`✋ À vous : tracez les pans de « ${fixture.address} » sur la photo, puis cliquez sur Suivant. Le test reprend tout seul.`);
