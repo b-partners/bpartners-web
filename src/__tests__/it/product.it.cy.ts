@@ -1,3 +1,7 @@
+interface FilterCall {
+  request: { query: Record<string, string | number> };
+}
+
 describe('Products', () => {
   it('are displayed', () => {
     cy.e2eLogin();
@@ -13,10 +17,10 @@ describe('Products', () => {
     cy.name('priceFilter').type('7.91');
 
     // Each keystroke can send its own debounced request, so the settled one is the last to arrive.
-    cy.get('@filter.all').should(calls => {
+    cy.get<FilterCall[]>('@filter.all').should(calls => {
       const { query } = calls[calls.length - 1].request;
       expect(query.descriptionFilter).to.eq('complexe');
-      expect(query.priceFilter).to.eq('791');
+      expect(Number(query.priceFilter)).to.eq(791);
     });
 
     cy.contains('Un produit avec un prix complexe').click();
