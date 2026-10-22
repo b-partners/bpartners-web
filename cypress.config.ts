@@ -117,7 +117,7 @@ export default defineConfig({
   video: true,
 
   retries: {
-    runMode: 3,
+    runMode: 2,
     openMode: 0,
   },
 
@@ -140,6 +140,11 @@ export default defineConfig({
       taskCoverage(on, config);
       return config;
     },
+    // Everything a component spec talks to is stubbed, so nothing legitimately takes 30s: the long
+    // timeout only made a genuine failure cost half a minute before it was reported.
+    defaultCommandTimeout: 10000,
+    // The component run's videos are never read — ci.yml uploads screenshots, and only on failure.
+    video: false,
     specPattern: 'src/**/!(*.it).cy.{js,ts,jsx,tsx}',
     devServer: {
       framework: 'react',

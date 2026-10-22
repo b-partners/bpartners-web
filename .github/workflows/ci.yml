@@ -13,11 +13,17 @@ env:
   PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
   REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net
   REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
+  SHARDS: 4
 
 jobs:
   tests:
-    timeout-minutes: 35
+    timeout-minutes: 20
     runs-on: ubuntu-latest
+    strategy:
+      # One shard's failure says nothing about the others, and Sonar wants every shard's report.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,6 +31,14 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        with:
+          cache: npm
+      - name: Cache the Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: cypress-${{ runner.os }}-
       - name: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1
         with:
@@ -46,7 +60,8 @@ jobs:
           sh ./initAWS.sh bpartners ${{ secrets.BPARTNERS_AWS_ACCESS_KEY_ID }} ${{ secrets.BPARTNERS_AWS_SECRET_ACCESS_KEY }} ${{ secrets.BPARTNERS_AWS_REGION }}
           sh ./initNpmrc.sh bpartners bpartners-store npm-bpartners-app 688605879718
       - run: npm install --legacy-peer-deps
-      - run: |
+      - name: Add env
+        run: |
           echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
           echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
           echo REACT_APP_BPARTNERS_API_URL=https://api.dashboard.birdia.fr >> .env
@@ -66,25 +81,82 @@ jobs:
             echo REACT_APP_WEBCLIENT_ID=${{ env.PROD_WEBCLIENT_ID }} >> .env
             echo REACT_APP_OAUTH_DOMAIN=${{ env.PROD_OAUTH_DOMAIN }} >> .env
             echo REACT_APP_REDIRECT_SUCCESS=${{ env.PROD_REDIRECT_SUCCESS }} >> .env
-            echo INSTATUS_API_KEY=${{ secrets.INSTATUS_API_KEY }} >> .env
-            echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
-            echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
           else
             echo REACT_APP_USERPOOL_ID=${{ env.PREPROD_USERPOOL_ID }} >> .env
             echo REACT_APP_WEBCLIENT_ID=${{ env.PREPROD_WEBCLIENT_ID }} >> .env
             echo REACT_APP_OAUTH_DOMAIN=${{ env.PREPROD_OAUTH_DOMAIN }} >> .env
             echo REACT_APP_REDIRECT_SUCCESS=${{ env.PREPROD_REDIRECT_SUCCESS }} >> .env
-            echo INSTATUS_API_KEY=${{ secrets.INSTATUS_API_KEY }} >> .env
-            echo INSTATUS_PAGE_ID=${{ secrets.INSTATUS_PAGE_ID }} >> .env
-            echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
           fi
 
-          npm test
-      - name: Merge and show test reports
-        if: always()
+      - name: Run the component specs of this shard
+        env:
+          # Instrumentation is gated in vite.config.ts; the coverage run is the one that asks for it.
+          CYPRESS_COVERAGE: 'true'
         run: |
-          npm run test-report-merge
-          cat ./dist/test-reports.xml
+          specs=$(find src -name "*.cy.*" ! -name "*.it.cy.*" | sort | awk -v shard=${{ matrix.shard }} -v shards=${{ env.SHARDS }} 'NR % shards == shard % shards' | paste -sd, -)
+          echo "shard ${{ matrix.shard }}/${{ env.SHARDS }}: $(echo "$specs" | tr ',' '\n' | wc -l) specs"
+          npm test -- --spec "$specs"
+
+      - name: Upload this shard's test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.shard }}
+          path: dist/
+          retention-days: 1
+      - name: Upload this shard's coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.shard }}
+          path: .nyc_output/out.json
+          retention-days: 1
+          if-no-files-found: warn
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-${{ matrix.shard }}
+          path: cypress/screenshots/
+
+  sonar:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [tests]
+    # The shards' reports are worth publishing even when one of them went red.
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+
+      - name: Collect the shards' test reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-reports-*
+          path: dist/
+          merge-multiple: true
+      - name: Collect the shards' coverage
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: nyc-shards/
+
+      # srm and nyc are the only two packages this job needs, so it skips the project's own install.
+      - name: Merge the test reports
+        run: npx -y @skodaflow/sonar-report-merger@1.0.2 ./dist/test-reports.xml "./dist/**/!(*test-reports).xml"
+      - name: Merge the coverage
+        run: |
+          mkdir -p nyc-merge-input .nyc_output coverage
+          find nyc-shards -name out.json | nl -w1 -s' ' | while read -r index file; do cp "$file" "nyc-merge-input/$index.json"; done
+          npx -y nyc@15.1.0 merge nyc-merge-input .nyc_output/out.json
+          npx -y nyc@15.1.0 report --reporter=lcov --report-dir coverage
+
       - name: Read version file
         id: read-version
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
@@ -105,12 +177,6 @@ jobs:
           sonar-scanner \
             -Dsonar.projectVersion=${{ steps.read-version.outputs.version }} \
             -Dsonar.branch.name=${GITHUB_REF##*/}
-      - name: Upload screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-screenshots
-          path: cypress/screenshots/
 
   style:
     runs-on: ubuntu-latest
@@ -140,6 +206,8 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        with:
+          cache: npm
 
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.3

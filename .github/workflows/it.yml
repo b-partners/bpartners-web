@@ -28,6 +28,14 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        with:
+          cache: npm
+      - name: Cache the Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: cypress-${{ runner.os }}-
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.3
         with:
@@ -76,19 +84,9 @@ jobs:
           echo EXCLUDE_INSTATUS_IT_SPEC=true >> .env
           echo INSTATUS_DETECTION_COMPONENT_ID=${{secrets.INSTATUS_DETECTION_COMPONENT_ID}} >> .env
 
-          max_retries=5
-          attempt=1
-
-          until npm run it
-          do
-            if [ $attempt -ge $max_retries ]; then
-              echo "Tests failed after $attempt attempts."
-              exit 1
-            fi
-            echo "Test failed. Retrying attempt $((attempt+1)) of $max_retries..."
-            attempt=$((attempt+1))
-            sleep 5
-          done
+          # Cypress already retries a failing spec twice; wrapping the whole run in another loop only
+          # multiplied a genuine failure into a job that times out.
+          npm run it
 
         id: it-test
       - name: Remove last user
