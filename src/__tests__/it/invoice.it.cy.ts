@@ -29,9 +29,7 @@ describe('Test invoice', () => {
     cy.get('[data-testid="autocomplete-backend-for-invoice-product"] input').type('Un');
     cy.contains('Un euro symbolique').click(); // 1 €
 
-    cy.intercept('GET', '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/invoices?page=1&pageSize=15&statusList=DRAFT&archiveStatus=ENABLED&filters=').as(
-      'getdrafts'
-    );
+    cy.intercept('GET', '**/invoices?*statusList=DRAFT*').as('getdrafts');
 
     // test payment regulation comment
     cy.get('[data-testid="payment-regulation-checkbox-id"] > .PrivateSwitchBase-input').click();
@@ -46,7 +44,7 @@ describe('Test invoice', () => {
     cy.contains('Factures').click();
     cy.contains('Brouillons').click();
 
-    cy.wait(10_000);
+    cy.wait('@getdrafts', { timeout });
 
     cy.get('input[type="text"]').type(ref);
     cy.contains(ref, { timeout }).click();

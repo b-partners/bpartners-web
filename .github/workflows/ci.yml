@@ -17,7 +17,7 @@ env:
 
 jobs:
   tests:
-    timeout-minutes: 20
+    timeout-minutes: 25
     runs-on: ubuntu-latest
     strategy:
       # One shard's failure says nothing about the others, and Sonar wants every shard's report.

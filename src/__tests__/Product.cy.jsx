@@ -4,18 +4,45 @@ import App from '@/App';
 
 import { accountHolders1, accounts1 } from './mocks/responses/account-api';
 import { customers1 } from './mocks/responses/customer-api';
-import { getProducts, setProduct } from './mocks/responses/product-api';
-import { user1, whoami1 } from './mocks/responses/security-api';
+import { getProducts, resetProducts, setProduct } from './mocks/responses/product-api';
+import { whoami1 } from './mocks/responses/security-api';
+
+const DESCRIPTION_FILTER = 'test description';
+const PRICE_FILTER = 100;
+
+/**
+ * The list's filters are debounced, so a keystroke can send a request carrying only part of what was
+ * typed. Asserting on the settled request — rather than inside a route handler, where a late failure
+ * lands outside whatever test is running — is what makes the filter assertions deterministic.
+ */
+const settledRequest = alias =>
+  cy.get(`${alias}.all`).should(calls => {
+    expect(calls, 'the list sent at least one request').to.have.length.greaterThan(0);
+    const { query } = calls[calls.length - 1].request;
+    expect(query.descriptionFilter).to.eq(DESCRIPTION_FILTER);
+    expect(+query.priceFilter).to.eq(PRICE_FILTER * 100);
+  });
+
+const openProducts = (accountHolderAlias = '@getAccountHolder1') => {
+  cy.mount(<App />);
+  cy.get('[name="products"]').click();
+  cy.wait('@whoami');
+  cy.wait('@getUser1');
+  cy.wait('@getAccounts1');
+  cy.wait(accountHolderAlias);
+  cy.wait('@getProducts');
+};
+
+const row = index => cy.get('.MuiTableBody-root > tr').eq(index);
 
 describe(specTitle('Products'), () => {
   beforeEach(() => {
-    cy.intercept('GET', `/users/${whoami1.user.id}`, user1).as('getAccount1');
+    resetProducts();
 
     cy.cognitoLogin();
 
-    cy.intercept('GET', `/users/${whoami1.user.id}/legalFiles`, []).as('legalFiles');
     cy.intercept('GET', '/accounts/mock-account-id1/customers', customers1).as('getCustomers');
-    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
+    cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccounts1');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder1');
     cy.intercept('GET', /^\/accounts\/mock-account-id1\/products(\?.*)?$/, req => {
       const { page, pageSize } = req.query;
@@ -31,46 +58,32 @@ describe(specTitle('Products'), () => {
   });
 
   it('are displayed', () => {
-    cy.mount(<App />);
-    cy.get('[name="products"]').click();
+    openProducts();
+
     cy.contains('description 1');
     cy.contains('description 2');
     cy.contains('description 3');
     cy.contains('12,00 €');
 
-    const descriptionFilterTest = 'test description';
-    const priceFilterTest = 100;
-
-    cy.get('[name="descriptionFilter"]').type(descriptionFilterTest);
-    cy.get('[name="priceFilter"]').type(priceFilterTest);
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
-      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
-      expect(descriptionFilter).to.be.eq(descriptionFilterTest);
-      expect(+priceFilter).to.be.eq(priceFilterTest * 100);
+    cy.intercept('GET', /^\/accounts\/mock-account-id1\/products\?.*descriptionFilter=/, req => {
+      const { page, pageSize } = req.query;
       req.reply(getProducts(page - 1, pageSize));
-    }).as('getCustomersFilterByUnitPrice');
-    cy.wait('@getCustomersFilterByUnitPrice');
+    }).as('filteredProducts');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
-      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
-      expect(descriptionFilter).to.be.eq(descriptionFilterTest);
-      expect(+priceFilter).to.be.eq(priceFilterTest * 100);
-      req.reply(getProducts(page - 1, pageSize));
-    }).as('getCustomersSortByDescription');
-    cy.get('.column-description > .MuiButtonBase-root > span').click();
+    cy.get('[name="descriptionFilter"]').type(DESCRIPTION_FILTER);
+    cy.get('[name="priceFilter"]').type(`${PRICE_FILTER}`);
+    settledRequest('@filteredProducts');
 
-    cy.intercept('GET', `/accounts/${accounts1[0].id}/products**`, req => {
-      const { page, pageSize, descriptionFilter, priceFilter } = req.query;
-      expect(descriptionFilter).to.be.eq(descriptionFilterTest);
-      expect(+priceFilter).to.be.eq(priceFilterTest * 100);
-      req.reply(getProducts(page - 1, pageSize));
-    }).as('getCustomersSortByUnitPrice');
-    cy.get('.MuiTableHead-root > .MuiTableRow-root > :nth-child(3)').click();
+    cy.get('.column-description').find('.MuiTableSortLabel-root').click();
+    settledRequest('@filteredProducts');
+
+    cy.get('.column-unitPrice').find('.MuiTableSortLabel-root').click();
+    settledRequest('@filteredProducts');
   });
 
   it('Should test pagination', () => {
-    cy.mount(<App />);
-    cy.get('[name="products"]').click();
+    openProducts();
+
     cy.contains('description 1');
     cy.contains('description 2');
     cy.contains('description 14');
@@ -80,17 +93,11 @@ describe(specTitle('Products'), () => {
 
     cy.contains('description 1');
     cy.contains('description 9');
-    cy.contains('description 14').not();
+    cy.contains('description 14').should('not.exist');
   });
 
   it('should validate empty input', () => {
-    cy.mount(<App />);
-    cy.get('[name="products"]').click();
-
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
+    openProducts();
 
     cy.contains('description 1');
 
@@ -103,14 +110,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('should create well-defined product', () => {
-    cy.mount(<App />);
-
-    cy.get('[name="products"]').click();
-
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
+    openProducts();
 
     cy.contains('description 1');
 
@@ -119,9 +119,17 @@ describe(specTitle('Products'), () => {
     cy.get('[name="description"]').type('new description');
     cy.get('[name="unitPrice"]').type(1.03);
     cy.get('[name="vatPercent"]').type(5);
+
     let newProduct;
     cy.intercept('POST', `/accounts/mock-account-id1/products`, req => {
-      expect(req.body).to.deep.eq([
+      newProduct = [{ ...req.body[0], id: 'new-product-id', status: 'ENABLED' }];
+      req.reply(newProduct);
+    }).as('postNewProduct');
+
+    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
+    cy.wait('@postNewProduct')
+      .its('request.body')
+      .should('deep.eq', [
         {
           unitPrice: 10300,
           vatPercent: 500,
@@ -132,66 +140,55 @@ describe(specTitle('Products'), () => {
           unitPriceWithVat: null,
         },
       ]);
-      newProduct = [{ ...req.body[0], id: 'new-product-id', status: 'ENABLED' }];
-      req.reply(newProduct);
-    }).as('postNewProduct');
 
-    cy.get('.RaToolbar-defaultToolbar > .MuiButtonBase-root').click();
-    cy.wait('@postNewProduct');
     cy.intercept('GET', `/accounts/${accounts1[0].id}/products?**`, req => {
       const { page, pageSize } = req.query;
       req.reply([...newProduct, ...getProducts(page - 1, pageSize)]);
-    });
+    }).as('getProductsWithNew');
     cy.get('[data-testid="pagination-left-id"]').click();
     cy.contains('new description');
     cy.contains('103,00 €');
   });
 
   it('Should edit a product', () => {
-    cy.mount(<App />);
+    const editionDescription = 'edit this product test';
+    const editedProduct = [
+      {
+        description: editionDescription,
+        unitPrice: 100,
+        vatPercent: 100,
+        id: 'product-0-id',
+        quantity: 1,
+        totalPriceWithVat: null,
+        totalVat: null,
+        unitPriceWithVat: null,
+      },
+    ];
 
-    cy.get('[name="products"]').click();
-
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
+    openProducts();
 
     cy.contains('description 1');
 
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
+    row(0).find('.column-description').click();
     cy.contains('Édition de produit');
-    cy.intercept('GET', '/accounts/mock-account-id1/products/product-0-id', { ...getProducts(1, 1)[0], id: 'product-0-id' });
+
+    cy.intercept('GET', '/accounts/mock-account-id1/products/product-0-id', { ...getProducts(1, 1)[0], id: 'product-0-id' }).as('getEditedProduct');
     cy.intercept('PUT', `/accounts/${accounts1[0].id}/products`, req => {
-      const editedProduct = [
-        {
-          description: editionDescription,
-          unitPrice: 100,
-          vatPercent: 100,
-          id: 'product-0-id',
-          quantity: 1,
-          totalPriceWithVat: null,
-          totalVat: null,
-          unitPriceWithVat: null,
-        },
-      ];
-      expect(req.body).to.deep.equals(editedProduct);
       setProduct(editedProduct[0], 0);
       req.reply(editedProduct);
-    });
+    }).as('putProduct');
 
-    const editionDescription = 'edit this product test';
     cy.get('[name="description"]').clear().type(editionDescription);
     cy.get('[name="unitPrice"]').clear().type(1);
     cy.get('[name="vatPercent"]').clear().type(1);
     cy.contains('Enregistrer').click();
 
-    cy.contains('edit this product test');
+    cy.wait('@putProduct').its('request.body').should('deep.eq', editedProduct);
+    cy.contains(editionDescription);
   });
 
   it('VAT references should not displayed', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, req => {
-      // make isSubjectToVat = false
       const accountHolder = { ...accountHolders1[0] };
       accountHolder.companyInfo.isSubjectToVat = false;
 
@@ -200,13 +197,7 @@ describe(specTitle('Products'), () => {
       });
     }).as('getAccountHolder2');
 
-    cy.mount(<App />);
-    cy.get('[name="products"]').click();
-
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder2');
-    cy.wait('@getProducts');
+    openProducts('@getAccountHolder2');
 
     cy.contains(/TVA/gi).should('not.exist');
     cy.contains(/TTC/gi).should('not.exist');
@@ -218,14 +209,7 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should exit of the edit or create node on click on the close button', () => {
-    cy.mount(<App />);
-
-    cy.get('[name="products"]').click();
-
-    cy.wait('@getAccount1');
-    cy.wait('@whoami');
-    cy.wait('@getAccountHolder1');
-    cy.wait('@getProducts');
+    openProducts();
 
     cy.contains('description 1');
 
@@ -238,33 +222,29 @@ describe(specTitle('Products'), () => {
   });
 
   it('Should archive product', () => {
-    cy.mount(<App />);
-
-    cy.get('[name="products"]').click();
+    openProducts();
 
     cy.get('[data-testid="archive-products-button"]').should('not.exist');
-    cy.get('.MuiTableBody-root > :nth-child(1) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    row(0).find('.MuiTableCell-paddingCheckbox input').click();
     cy.get('[data-testid="archive-products-button"]').should('exist');
-    cy.get(':nth-child(2) > .MuiTableCell-paddingCheckbox > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+    row(1).find('.MuiTableCell-paddingCheckbox input').click();
     cy.get('[data-testid="archive-products-button"]').click();
 
     cy.contains('Les produits suivants vont être archivés :');
-    cy.contains('edit this product test');
+    cy.contains('description 0');
     cy.contains('description 1');
 
     cy.get('[data-testid="submit-archive-products"]').click();
-    cy.wait('@archiveProduct').then(res => {
-      const expectedPayload = [
+    cy.wait('@archiveProduct')
+      .its('request.body')
+      .should('deep.eq', [
         { id: 'product-0-id', status: 'DISABLED' },
         { id: 'product-1-id', status: 'DISABLED' },
-      ];
-      const body = res.request.body;
-      expect(body).to.deep.eq(expectedPayload);
-    });
+      ]);
     cy.get('[data-testid="archive-products-button"]').should('not.exist');
     cy.contains('Produits archivés avec succès');
-    // Archiver le produit depuis la fenêtre d'edit du produit
-    cy.get('.MuiTableBody-root > :nth-child(1) > .column-description').click();
+
+    row(0).find('.column-description').click();
     cy.contains('Édition de produit');
     cy.get('[data-testid="submit-archive-products"]').click();
     cy.wait('@archiveProduct');
