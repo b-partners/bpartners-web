@@ -32,6 +32,9 @@ const CANVAS_SIZE = 1000;
 const MANUAL_TIMEOUT_MS = 1_800_000;
 const MANUAL_POLL_MS = 1_000;
 
+/** How long the roof lines may take to come back before the alignment is called broken. */
+const ALIGN_TIMEOUT_MS = 600_000;
+
 export const GEO_PAN_DELIMIT = '[data-testid="geo-pan-delimit"]';
 export const GEO_INTERSECTION_ALIGN = '[data-testid="geo-intersection-align"]';
 
@@ -150,10 +153,12 @@ const geoDrawPans = (key: string): Cypress.Chainable<GeoPansResult> => {
  * replay the lines are validated as detected; otherwise the screen is left to whoever is aligning them.
  */
 const geoAlignLines = (replayed: boolean) => {
-  cy.get(GEO_INTERSECTION_ALIGN, { timeout: 300_000 }).should('be.visible');
-  cy.contains('Lecture des lignes du toit…').should('not.exist');
+  cy.get(GEO_INTERSECTION_ALIGN, { timeout: ALIGN_TIMEOUT_MS }).should('be.visible');
+  // The lines are looked up off the lidar, which takes its time on a roof of many pans: the validate
+  // button turning live is that lookup's own signal, and nothing can be aligned before it.
+  cy.contains('button', 'Valider et modéliser', { timeout: ALIGN_TIMEOUT_MS }).should('be.enabled');
   if (replayed) {
-    cy.contains('button', 'Valider et modéliser').should('be.enabled').click();
+    cy.contains('button', 'Valider et modéliser').click();
     return;
   }
   cy.log('✋ À vous : alignez les lignes du toit, puis cliquez sur Valider et modéliser. Le test reprend tout seul.');
