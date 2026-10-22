@@ -53,6 +53,60 @@ const writeTimings = (timings: Timing[]) => {
   fs.writeFileSync(TIMINGS_FILE, JSON.stringify(report, null, 2));
 };
 
+const DOWNLOADS_DIR = path.resolve('cypress/downloads');
+
+/** How much of the report's own words are carried back, which is plenty to tell its sections apart. */
+const PDF_TEXT_BUDGET = 20_000;
+
+interface PdfSummary {
+  name: string;
+  bytes: number;
+  /** The two marks a whole PDF sits between: its header, and the trailer a finished write ends on. */
+  isPdf: boolean;
+  hasEof: boolean;
+  pages: number;
+  text: string;
+}
+
+/**
+ * The newest downloaded report whose name carries `match`, read the way a reader would read it: the
+ * file is parsed, so the page count is the document's own and the text is what is printed on it.
+ */
+const inspectPdfDownload = async ({ match, since = 0 }: { match: string; since?: number }): Promise<PdfSummary | null> => {
+  if (!fs.existsSync(DOWNLOADS_DIR)) return null;
+  const [newest] = fs
+    .readdirSync(DOWNLOADS_DIR)
+    .filter(name => name.endsWith('.pdf') && name.includes(match))
+    .map(name => ({ name, file: path.join(DOWNLOADS_DIR, name) }))
+    .map(entry => ({ ...entry, at: fs.statSync(entry.file).mtimeMs }))
+    .filter(entry => entry.at >= since)
+    .sort((left, right) => right.at - left.at);
+  if (!newest) return null;
+
+  const buffer = fs.readFileSync(newest.file);
+  const head = buffer.subarray(0, 8).toString('latin1');
+  const tail = buffer.subarray(-64).toString('latin1');
+  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.js');
+  const getDocument = pdfjs.getDocument ?? pdfjs.default?.getDocument;
+  const document = await getDocument({ data: new Uint8Array(buffer), useSystemFonts: false }).promise;
+
+  const pages: string[] = [];
+  for (let number = 1; number <= document.numPages; number += 1) {
+    const page = await document.getPage(number);
+    pages.push((await page.getTextContent()).items.map((item: any) => item.str ?? '').join(' '));
+    if (pages.join(' ').length > PDF_TEXT_BUDGET) break;
+  }
+
+  return {
+    name: newest.name,
+    bytes: buffer.length,
+    isPdf: head.startsWith('%PDF-'),
+    hasEof: tail.trimEnd().endsWith('%%EOF'),
+    pages: document.numPages,
+    text: pages.join('\n').slice(0, PDF_TEXT_BUDGET),
+  };
+};
+
 const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
 const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
 const BASE_URL = `https://api.instatus.com/v1/${INSTATUS_PAGE_ID}`;
@@ -110,6 +164,7 @@ export default defineConfig({
       writeTimings([]);
 
       on('task', {
+        inspectPdfDownload,
         recordTiming(entry: Omit<Timing, 'at'>) {
           const timings = readTimings();
           timings.push({ ...entry, at: new Date().toISOString() });

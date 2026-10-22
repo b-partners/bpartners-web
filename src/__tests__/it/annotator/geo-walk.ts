@@ -109,3 +109,95 @@ export const exportPdf = () => {
     return cy.contains(/Le rapport PDF a été généré/, { timeout: GENERATION_TIMEOUT }).should('be.visible');
   });
 };
+
+/** Every pan the model reports, read off its own row: `Pan n` and `<area> m² · <slope>°`. */
+export const readPanRows = () =>
+  cy.get('.geo-3d-list-item-meta').then($rows =>
+    [...$rows].map(row => {
+      const [area, slope] = (row.textContent ?? '').split('·').map(part => Number.parseFloat(part.replace(',', '.')));
+      return { area, slope };
+    })
+  );
+
+/**
+ * What the model says about itself has to hold together: a pan per traced pan, every area and slope a
+ * real number, the total the sum of the parts, and a measurable side on the pan that is open.
+ */
+export const expectConsistentMeasurements = (tracedPanCount: number) => {
+  cy.get('.geo-3d-list-count').should('have.text', String(tracedPanCount));
+  readPanRows().then(rows => {
+    expect(rows, 'a row per traced pan').to.have.length(tracedPanCount);
+    rows.forEach(({ area, slope }) => {
+      expect(area, 'pan area in m²').to.be.greaterThan(0);
+      expect(slope, 'pan slope in degrees').to.be.within(0, 90);
+    });
+    const total = rows.reduce((sum, { area }) => sum + area, 0);
+    cy.contains('.geo-3d-list-total', /Surface totale/).then($total => {
+      const shown = Number.parseFloat(($total.text().match(/([\d.]+) m²/) ?? [])[1]);
+      expect(shown, 'the total is the sum of the pans').to.be.closeTo(total, 0.05 * rows.length);
+    });
+  });
+  cy.get('.geo-3d-detail-stat-value')
+    .eq(2)
+    .then($sides => {
+      const sides = Number.parseInt($sides.text(), 10);
+      expect(sides, 'the open pan has sides').to.be.greaterThan(2);
+      cy.get('.geo-3d-edge-row').should('have.length', sides);
+    });
+  cy.get('.geo-3d-edge-value')
+    .not('.slope')
+    .each($edge => expect(Number.parseFloat($edge.text()), 'edge length in m').to.be.greaterThan(0));
+};
+
+/** Types the first side of the open pan, which is the other thing the sidebar writes into the session. */
+export const setFirstEdgeType = (label: string) => {
+  cy.get('.geo-3d-edge-type').first().click();
+  cy.get('.MuiMenuItem-root').contains(label).click();
+  cy.get('.geo-3d-edge-type').first().should('contain', label);
+};
+
+/**
+ * Drops everything the browser kept of this session and loads it again, so what comes back can only
+ * have come from the record the save wrote.
+ */
+export const reopenFromBackend = () => {
+  cy.window().then(window => {
+    Object.keys(window.localStorage)
+      .filter(key => key.startsWith('roof-analyser:geo:'))
+      .forEach(key => window.localStorage.removeItem(key));
+  });
+  cy.reload();
+  cy.contains('Pans de toit', { timeout: GENERATION_TIMEOUT });
+};
+
+export interface PdfSummary {
+  name: string;
+  bytes: number;
+  isPdf: boolean;
+  hasEof: boolean;
+  pages: number;
+  text: string;
+}
+
+/** The browser writes the file a moment after it says it has, so the look-up is given a few goes. */
+const findDownloadedPdf = (params: { match: string; since: number }, attempts = 30): Cypress.Chainable<PdfSummary | null> =>
+  cy.task<PdfSummary | null>('inspectPdfDownload', params, { timeout: 120_000 }).then(pdf => {
+    if (pdf || attempts <= 0) return cy.wrap(pdf, { log: false });
+    return cy.wait(1_000, { log: false }).then(() => findDownloadedPdf(params, attempts - 1));
+  });
+
+/**
+ * The report that has just been downloaded, read as the file on disk rather than as a notice on
+ * screen: whole between its two marks, and carrying the pages the session fed it.
+ */
+export const expectDownloadedPdf = ({ match, since, minPages }: { match: string; since: number; minPages: number }) =>
+  findDownloadedPdf({ match, since }).should(pdf => {
+    expect(pdf, `a report named after « ${match} » was downloaded`).not.to.equal(null);
+    expect(pdf!.isPdf, `${pdf!.name} starts as a PDF`).to.equal(true);
+    expect(pdf!.hasEof, `${pdf!.name} was written to its end`).to.equal(true);
+    expect(pdf!.pages, `${pdf!.name} page count`).to.be.at.least(minPages);
+    expect(pdf!.bytes, `${pdf!.name} size in bytes`).to.be.greaterThan(100_000);
+    expect(pdf!.text, 'the report names the address it was run on').to.include(match);
+    expect(pdf!.text, 'the report carries its wear score').to.match(/SCORE D.USURE/i);
+    expect(pdf!.text, 'the report has a page per pan').to.match(/Pan [A-Z]\b[\s\S]{0,120}Surface/);
+  });
