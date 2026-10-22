@@ -37,9 +37,8 @@ export const openGeoSession = ({ address }: GeoPlace) => {
 export const delimitPans = (place: GeoPlace) => {
   cy.get('[data-testid="geo-pan-delimit"]', { timeout: SESSION_TIMEOUT }).should('be.visible');
   cy.contains('Aucun pan tracé.');
-  return cy.geoDrawPans(place.key).then(pans => {
-    cy.contains('button', 'Suivant').should('be.enabled').click();
-    if (pans.length > 1) cy.geoAlignLines();
+  return cy.geoDrawPans(place.key).then(({ pans, replayed }) => {
+    if (pans.length > 1) cy.geoAlignLines(replayed);
     return cy.wrap(pans, { log: false });
   });
 };

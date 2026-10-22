@@ -1,5 +1,5 @@
 import { MockCognitoLoginOptions } from './commands';
-import { GeoUv } from './geo-annotator';
+import { GeoPansResult, GeoUv } from './geo-annotator';
 
 export declare global {
   namespace Cypress {
@@ -18,10 +18,9 @@ export declare global {
       waitAuthRequestNeeded(): void;
       assertWithinMs(limitMs: number, check: () => Cypress.Chainable): Chainable;
       measure(step: string, check: () => Cypress.Chainable, limitMs?: number): Chainable;
-      geoDrawPans(key: string): Chainable<GeoUv[][]>;
+      geoDrawPans(key: string): Chainable<GeoPansResult>;
       geoReadPans(): Chainable<GeoUv[][]>;
-      geoAlignLines(): void;
-      geoManualStep(message: string): void;
+      geoAlignLines(replayed: boolean): void;
     }
   }
 }

@@ -6,6 +6,11 @@
   library keeps it: a uv pair in [0, 1] over the whole aerial photo, v counted from the bottom, which
   survives a different viewport, a different zoom and a different run. Replaying it means reading the
   viewBox back off the element and turning that uv into a click offset.
+
+  Neither drawing can be invented by a test. So each one has two modes: a fixture with pans in it is
+  replayed, and an empty one hands the screen over — the test then waits, in silence, while the pans
+  are traced by hand, and picks up again the moment that step is left, by the screen's own button.
+  What was traced is written back into the fixture, so the next run replays it instead of asking again.
 */
 
 export type GeoUv = [number, number];
@@ -15,7 +20,17 @@ export interface GeoPanFixture {
   pans: GeoUv[][];
 }
 
+export interface GeoPansResult {
+  pans: GeoUv[][];
+  /** Whether they came off the fixture, which is also what says the test may click on for itself. */
+  replayed: boolean;
+}
+
 const CANVAS_SIZE = 1000;
+
+/** How long a step may be left in someone's hands before the test gives up on it. */
+const MANUAL_TIMEOUT_MS = 1_800_000;
+const MANUAL_POLL_MS = 1_000;
 
 export const GEO_PAN_DELIMIT = '[data-testid="geo-pan-delimit"]';
 export const GEO_INTERSECTION_ALIGN = '[data-testid="geo-intersection-align"]';
@@ -46,6 +61,9 @@ const ringOfPath = (d: string): GeoUv[] => {
   return ring;
 };
 
+const pansIn = (document: Document): GeoUv[][] =>
+  [...document.querySelectorAll(`${GEO_PAN_DELIMIT} .geo-pans-pan`)].map(path => ringOfPath(path.getAttribute('d') ?? ''));
+
 const clickUv = (uv: GeoUv) =>
   cy.get(GEO_PAN_DELIMIT).then($svg => {
     const { x, y } = offsetOf($svg[0] as unknown as SVGSVGElement, uv);
@@ -64,57 +82,84 @@ const drawGeoPans = (rings: GeoUv[][]) => {
 };
 
 /** The pans standing on the photo right now, read back off their own paths. */
-const readGeoPans = () =>
-  cy
-    .document({ log: false })
-    .then(document => [...document.querySelectorAll(`${GEO_PAN_DELIMIT} .geo-pans-pan`)].map(path => ringOfPath(path.getAttribute('d') ?? '')));
+const readGeoPans = () => cy.document({ log: false }).then(document => pansIn(document));
 
 /**
- * Hands the browser over, in `cypress open` only, for the one thing no fixture can stand in for. A
- * headless run walks straight past it, and fails right after on the button the missing drawing leaves
- * disabled — which is the honest outcome: that spec has nothing recorded yet.
+ * Stands back while the pans are traced by hand, and comes back with them the moment the tracing
+ * screen is left — whichever way it is left, so the **Suivant** on screen is the one that is clicked.
  */
-const geoManualStep = (message: string) => {
-  cy.log(`✋ ${message}`);
-  if (Cypress.config('isInteractive')) cy.pause();
+const waitForTracedPans = () => {
+  let seen: GeoUv[][] = [];
+  return cy.document({ log: false }).then(
+    { timeout: MANUAL_TIMEOUT_MS },
+    document =>
+      new Cypress.Promise<GeoUv[][]>(resolve => {
+        const poll = setInterval(() => {
+          if (document.querySelector(GEO_PAN_DELIMIT)) {
+            const pans = pansIn(document);
+            if (pans.length > 0) seen = pans;
+            return;
+          }
+          clearInterval(poll);
+          resolve(seen);
+        }, MANUAL_POLL_MS);
+      })
+  );
 };
 
+/** The same wait, for the alignment: it ends when that screen is left, by its own validate button. */
+const waitForAlignment = () =>
+  cy.document({ log: false }).then(
+    { timeout: MANUAL_TIMEOUT_MS },
+    document =>
+      new Cypress.Promise<void>(resolve => {
+        const poll = setInterval(() => {
+          if (document.querySelector(GEO_INTERSECTION_ALIGN)) return;
+          clearInterval(poll);
+          resolve();
+        }, MANUAL_POLL_MS);
+      })
+  );
+
 /**
- * The pans of `key`: replayed from `cypress/fixtures/annotator/<key>.json` when it has any, otherwise
- * drawn by hand in `cypress open` and written back into that same file, so the next run replays them.
+ * The pans of `key`: replayed from `cypress/fixtures/annotator/<key>.json` when it has any — and then
+ * the test clicks **Suivant** itself — otherwise traced by hand on the screen, and written into that
+ * same file so the next run replays them.
  */
-const geoDrawPans = (key: string) => {
+const geoDrawPans = (key: string): Cypress.Chainable<GeoPansResult> => {
   const path = fixturePathOf(key);
   return cy.readFile<GeoPanFixture>(path).then(fixture => {
     if (fixture.pans.length > 0) {
       drawGeoPans(fixture.pans);
-      return cy.wrap(fixture.pans, { log: false });
+      cy.contains('button', 'Suivant').should('be.enabled').click();
+      return cy.wrap({ pans: fixture.pans, replayed: true }, { log: false });
     }
-    geoManualStep(`Tracez les pans de « ${fixture.address} » sur la photo, puis reprenez le test. Ils seront enregistrés dans ${path}.`);
-    return readGeoPans().then(pans => {
-      if (pans.length === 0) {
-        throw new Error(
-          `Aucun pan tracé pour « ${fixture.address} ». Lancez ce test avec "npm run cy:open", tracez les pans à la main : ils seront écrits dans ${path}.`
-        );
-      }
+    cy.log(`✋ À vous : tracez les pans de « ${fixture.address} » sur la photo, puis cliquez sur Suivant. Le test reprend tout seul.`);
+    return waitForTracedPans().then(pans => {
+      if (pans.length === 0) throw new Error(`Aucun pan tracé pour « ${fixture.address} » : le test ne peut pas continuer sans tracé.`);
       cy.writeFile(path, { ...fixture, pans });
-      return cy.wrap(pans, { log: false });
+      cy.log(`✅ ${pans.length} pan(s) enregistré(s) dans ${path} — les prochains lancements les rejoueront.`);
+      return cy.wrap({ pans, replayed: false }, { log: false });
     });
   });
 };
 
 /**
  * The alignment step, which only stands between the tracing and the model when more than one pan was
- * traced — a single pan has nothing to be lined up against and goes straight to the generation.
+ * traced — a single pan has nothing to be lined up against and goes straight to the generation. On a
+ * replay the lines are validated as detected; otherwise the screen is left to whoever is aligning them.
  */
-const geoAlignLines = () => {
+const geoAlignLines = (replayed: boolean) => {
   cy.get(GEO_INTERSECTION_ALIGN, { timeout: 300_000 }).should('be.visible');
   cy.contains('Lecture des lignes du toit…').should('not.exist');
-  geoManualStep('Alignez les lignes du toit sur la photo, puis reprenez le test.');
-  cy.contains('button', 'Valider et modéliser').should('be.enabled').click();
+  if (replayed) {
+    cy.contains('button', 'Valider et modéliser').should('be.enabled').click();
+    return;
+  }
+  cy.log('✋ À vous : alignez les lignes du toit, puis cliquez sur Valider et modéliser. Le test reprend tout seul.');
+  waitForAlignment();
 };
 
 Cypress.Commands.add('geoReadPans', readGeoPans);
 Cypress.Commands.add('geoDrawPans', geoDrawPans);
 Cypress.Commands.add('geoAlignLines', geoAlignLines);
-Cypress.Commands.add('geoManualStep', geoManualStep);
