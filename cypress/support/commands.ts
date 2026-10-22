@@ -85,18 +85,16 @@ const measure = (step: string, check: () => Cypress.Chainable, limitMs?: number)
   return check().then(() => {
     const elapsed = Date.now() - start;
     cy.log(`⏱️ [${step}] ${elapsed}ms${limitMs ? ` (limit ${limitMs}ms)` : ''}`);
-    return cy
-      .task('recordTiming', { spec: Cypress.spec.name, test: Cypress.currentTest.title, step, ms: elapsed })
-      .then(() => {
-        if (limitMs && elapsed > limitMs) throw new Error(`[${step}] Took ${elapsed}ms, exceeded ${limitMs}ms`);
-      });
+    return cy.task('recordTiming', { spec: Cypress.spec.name, test: Cypress.currentTest.title, step, ms: elapsed }).then(() => {
+      if (limitMs && elapsed > limitMs) throw new Error(`[${step}] Took ${elapsed}ms, exceeded ${limitMs}ms`);
+    });
   });
 };
 
 const e2eLogin = () => {
   cy.clearAllLocalStorage();
-  cy.visit(process.env.REACT_APP_PROD_URL);
   cy.intercept('GET', `/captcha/token**`, { body: true }).as('validateCaptcha');
+  cy.visit(process.env.REACT_APP_PROD_URL);
   cy.name('username').type(process.env.REACT_APP_IT_USERNAME);
   cy.name('password').type(process.env.REACT_APP_IT_PASSWORD + '{enter}');
 };

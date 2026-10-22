@@ -1,3 +1,7 @@
+interface FilterCall {
+  request: { query: Record<string, string | number> };
+}
+
 describe('Products', () => {
   it('are displayed', () => {
     cy.e2eLogin();
@@ -7,14 +11,18 @@ describe('Products', () => {
     cy.contains('Un micro-conseil');
     cy.contains('1,00 €');
 
-    cy.name('descriptionFilter').type('complexe');
+    cy.intercept('GET', '**/products?*descriptionFilter=*').as('filter');
 
-    cy.intercept(
-      'GET',
-      '/accounts/76aa0457-a370-4df8-b8f9-105a8fe16375/products?unique=true&descriptionFilter=complexe&priceFilter=791&status=ENABLED&page=1&pageSize=15'
-    ).as('filter');
+    cy.name('descriptionFilter').type('complexe');
     cy.name('priceFilter').type('7.91');
-    cy.wait('@filter', { timeout: 10_000 });
+
+    // Each keystroke can send its own debounced request, so the settled one is the last to arrive.
+    cy.get<FilterCall[]>('@filter.all').should(calls => {
+      const { query } = calls[calls.length - 1].request;
+      expect(query.descriptionFilter).to.eq('complexe');
+      expect(Number(query.priceFilter)).to.eq(791);
+    });
+
     cy.contains('Un produit avec un prix complexe').click();
     cy.contains('Archiver');
   });
