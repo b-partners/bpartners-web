@@ -43,25 +43,29 @@ export const delimitPans = (place: GeoPlace) => {
   });
 };
 
-/** Waits on the model the traced pans are generated into, and reads the first pan's own card. */
+/**
+ * Waits on the model the traced pans are generated into, and opens the first pan's own card. The
+ * selection toggles, so the pan is left selected here rather than clicked again further down.
+ */
 export const expectModel = () => {
   cy.measure('3d-generation', () => {
     cy.contains('Pans de toit', { timeout: GENERATION_TIMEOUT });
-    return cy.contains('Pan 1', { timeout: GENERATION_TIMEOUT });
+    return cy.contains('.geo-3d-list-item-name', 'Pan 1', { timeout: GENERATION_TIMEOUT });
   });
   cy.contains('Surface totale :');
-  cy.contains('Pan 1').click();
-  cy.contains('Surface');
-  cy.contains('Pente');
-  cy.contains(/\d+\.\d{2} m²/);
+  cy.contains('.geo-3d-list-item-name', 'Pan 1').click();
+  cy.get('.geo-3d-detail-title').should('have.text', 'Pan 1');
+  cy.contains('.geo-3d-detail-stat-label', 'Surface');
+  cy.contains('.geo-3d-detail-stat-label', 'Pente');
+  cy.contains('.geo-3d-detail-stat-value', /\d+\.\d{2} m²/);
 };
 
-/** Renames the first pan, which is what proves the model's own records are writable. */
+/** Renames the first pan through its own pencil, which is what proves the model's records are writable. */
 export const renameFirstPan = (name: string) => {
-  cy.contains('Pan 1').click();
-  cy.get('.geo-3d-detail-title').should('contain', 'Pan 1');
-  cy.get('.geo-3d-list-item-name').first().dblclick();
-  cy.focused().clear().type(`${name}{enter}`);
+  cy.get('[aria-label="Renommer Pan 1"]').click();
+  cy.get('.geo-3d-list-item-input input').clear().type(`${name}{enter}`);
+  cy.contains('.geo-3d-list-item-name', name);
+  cy.get('.geo-3d-detail-title').should('have.text', name);
 };
 
 /** The analyse screen: the emprise deduced from the pans, then the detection run on it. */
