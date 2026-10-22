@@ -107,16 +107,6 @@ const inspectPdfDownload = async ({ match, since = 0 }: { match: string; since?:
   };
 };
 
-const INSTATUS_API_KEY = process.env.INSTATUS_API_KEY;
-const INSTATUS_PAGE_ID = process.env.INSTATUS_PAGE_ID;
-const BASE_URL = `https://api.instatus.com/v1/${INSTATUS_PAGE_ID}`;
-const IS_3D_MONITORING = process.env.IS_MONITORING_INSTATUS_3D;
-
-const instatusHeaders = {
-  Authorization: `Bearer ${INSTATUS_API_KEY}`,
-  'Content-Type': 'application/json',
-};
-
 export default defineConfig({
   env: {
     codeCoverage: {

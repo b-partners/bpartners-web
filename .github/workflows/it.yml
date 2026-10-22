@@ -75,8 +75,6 @@ jobs:
           echo INSTATUS_3D_COMPONENT_ID=${{secrets.INSTATUS_3D_COMPONENT_ID}} >> .env
           echo EXCLUDE_INSTATUS_IT_SPEC=true >> .env
           echo INSTATUS_DETECTION_COMPONENT_ID=${{secrets.INSTATUS_DETECTION_COMPONENT_ID}} >> .env
-          echo IS_MONITORING_INSTATUS_DETECTION=false >> .env
-          echo IS_MONITORING_INSTATUS_3D=false >> .env
 
           max_retries=5
           attempt=1

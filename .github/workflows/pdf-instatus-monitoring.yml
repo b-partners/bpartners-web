@@ -82,199 +82,34 @@ jobs:
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-1.it.cy.ts" --config videosFolder=cypress/videos/pdf-1
         continue-on-error: true
 
-      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-1-timing.json
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-1-timing.json || true
 
       - name: Launch PDF Generation 2 IT
         id: pdf-2
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-2.it.cy.ts" --config videosFolder=cypress/videos/pdf-2
         continue-on-error: true
 
-      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-2-timing.json
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-2-timing.json || true
 
       - name: Launch PDF Generation 3 IT
         id: pdf-3
         run: npx cypress run --browser chrome --headless --spec "src/__tests__/it/annotator/e2e-address-3.it.cy.ts" --config videosFolder=cypress/videos/pdf-3
         continue-on-error: true
 
-      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-3-timing.json
+      - run: mv cypress/results/annotator-timings.json cypress/results/e2e-address-3-timing.json || true
 
       - name: Monitor PDF Generation on Instatus
         env:
           INSTATUS_API_KEY: ${{ secrets.INSTATUS_API_KEY }}
           INSTATUS_PAGE_ID: ${{ secrets.INSTATUS_PAGE_ID }}
           INSTATUS_COMPONENT_ID: ${{ secrets.INSTATUS_PDF_COMPONENT_ID }}
-          INSTATUS_PDF_RESTORED_TMPL_ID: ${{ secrets.INSTATUS_PDF_RESTORED_TMPL_ID }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          REPORTS=$(find dist -type f -name "*.xml" | grep -E "e2e-address.*\.cy\.ts\.xml" || true)
-
-          if [ -z "$REPORTS" ]; then
-            echo "No pdf report files found"
-            exit 1
-          fi
-
-          ERROR_MESSAGE=$(python3 - "$REPORTS" <<'PY'
-          import sys
-          import xml.etree.ElementTree as ET
-
-          files = sys.argv[1].splitlines()
-
-          messages = []
-
-          for file in files:
-              try:
-                  tree = ET.parse(file)
-                  root = tree.getroot()
-
-                  nodes = root.findall(".//failure") + root.findall(".//error")
-
-                  for node in nodes:
-                      msg = node.attrib.get("message", "").strip()
-                      if not msg:
-                          msg = (node.text or "").strip()
-
-                      if msg:
-                          msg = msg.replace("\n", " ")
-                          messages.append(f"[{file}] {msg[:800]}")
-
-              except Exception as e:
-                  messages.append(f"[{file}] XML parse error: {str(e)}")
-
-          print("\n".join(messages)[:4000])
-          PY
-          )
-
-          SLOW_GENERATION_MESSAGE=$(python3 <<'PY'
-          import json
-          import glob
-
-          MAX_DURATION_MS = 120000
-
-          messages = []
-
-          for file in glob.glob("cypress/results/*-timing.json"):
-              try:
-                  with open(file) as f:
-                      report = json.load(f)
-
-                  for timing in report.get("timings", []):
-                      duration = timing.get("ms", 0)
-                      if duration > MAX_DURATION_MS:
-                          messages.append(
-                              f"[{file}] "
-                              f"{timing.get('spec')} - "
-                              f"{timing.get('step')} took "
-                              f"{duration}ms"
-                          )
-
-              except Exception as e:
-                  messages.append(
-                      f"[{file}] JSON parse error: {str(e)}"
-                  )
-          print("\n".join(messages)[:4000])
-          PY
-          )
-
-          if [ -n "$ERROR_MESSAGE" ]; then
-            HAS_ERROR=true
-          else
-            HAS_ERROR=false
-          fi
-
-          if [ -n "$SLOW_GENERATION_MESSAGE" ]; then
-            HAS_SLOW_GENERATION=true
-          else
-            HAS_SLOW_GENERATION=false
-          fi
-
-          ACTIVE_INCIDENT_ID=$(curl -fsSL \
-            -H "Authorization: Bearer ${INSTATUS_API_KEY}" \
-            "https://api.instatus.com/v1/${INSTATUS_PAGE_ID}/incidents" \
-            | jq -r \
-              --arg COMPONENT "$INSTATUS_COMPONENT_ID" '
-                map(
-                  select(
-                    (.status != "RESOLVED")
-                    and (
-                      (.components // [])
-                      | map(.id)
-                      | index($COMPONENT)
-                    )
-                  )
-                )
-                | first
-                | .id // empty
-              ')
-
-          if [ "$HAS_ERROR" = true ]; then
-            if [ -n "$ACTIVE_INCIDENT_ID" ]; then
-              echo "Incident already active: $ACTIVE_INCIDENT_ID"
-            else
-              echo "Creating MAJOR outage incident..."
-
-              PAYLOAD=$(jq -n \
-                --arg message "$ERROR_MESSAGE" \
-                --arg component "$INSTATUS_COMPONENT_ID" \
-                '{
-                  name: "[PDF] Failed to process generation",
-                  status: "INVESTIGATING",
-                  message: $message,
-                  components: [$component],
-                  statuses: [
-                    {
-                      id: $component,
-                      status: "MAJOROUTAGE"
-                    }
-                  ]
-                }')
-
-              curl -fsSL \
-                -X POST \
-                -H "Authorization: Bearer ${INSTATUS_API_KEY}" \
-                -H "Content-Type: application/json" \
-                "https://api.instatus.com/v1/${INSTATUS_PAGE_ID}/incidents" \
-                -d "$PAYLOAD"
-
-            fi
-
-          elif [ "$HAS_SLOW_GENERATION" = true ]; then
-            if [ -n "$ACTIVE_INCIDENT_ID" ]; then
-              echo "Incident already active: $ACTIVE_INCIDENT_ID"
-              echo "Error message : $SLOW_GENERATION_MESSAGE"
-            else
-              echo "Creating PARTIALOUTAGE incident..."
-              echo "Error message : $SLOW_GENERATION_MESSAGE"
-              PAYLOAD=$(jq -n \
-                --arg message "$SLOW_GENERATION_MESSAGE" \
-                --arg component "$INSTATUS_COMPONENT_ID" \
-                '{
-                  name: "[PDF] Took too much time to process",
-                  status: "INVESTIGATING",
-                  message: $message,
-                  components: [$component],
-                  statuses: [{id: $component, status: "PARTIALOUTAGE"}]
-                }')
-
-              curl -fsSL \
-                -X POST \
-                -H "Authorization: Bearer ${INSTATUS_API_KEY}" \
-                -H "Content-Type: application/json" \
-                "https://api.instatus.com/v1/${INSTATUS_PAGE_ID}/incidents" \
-                -d "$PAYLOAD"
-            fi
-          else
-            if [ -n "$ACTIVE_INCIDENT_ID" ]; then
-              echo "Resolving incident $ACTIVE_INCIDENT_ID..."
-              curl -s -o /dev/null \
-                -X POST \
-                "https://api.instatus.com/v2/${INSTATUS_PAGE_ID}/incidents/${ACTIVE_INCIDENT_ID}/incident-updates/${INSTATUS_PDF_RESTORED_TMPL_ID}" \
-                -H "Authorization: Bearer ${INSTATUS_API_KEY}"
-            else
-              echo "No active incident."
-            fi
-          fi
+          INSTATUS_RESTORED_TMPL_ID: ${{ secrets.INSTATUS_PDF_RESTORED_TMPL_ID }}
+          REPORT_PATTERN: 'e2e-address.*\.cy\.ts\.xml'
+          TIMING_STEP: 'export-pdf'
+          MAX_DURATION_MS: '120000'
+          OUTAGE_NAME: '[PDF] Failed to process generation'
+          SLOW_NAME: '[PDF] Took too much time to process'
+        run: bash ./conf/instatus-monitor.sh
 
       - name: Upload cypress video to S3
         if: ${{ always() && (steps.pdf-1.outcome == 'failure' || steps.pdf-2.outcome == 'failure' || steps.pdf-3.outcome == 'failure') }}
