@@ -97,8 +97,15 @@ export const saveSession = () => {
   cy.contains('button', 'Enregistrer').should('be.enabled');
 };
 
+/**
+ * The export: its button only opens the dialog of sections, and the report itself is built in the
+ * browser — nothing is posted any more — so the run is read off the notice it ends on.
+ */
 export const exportPdf = () => {
-  cy.intercept('POST', '**/annotations/exports').as('exportPdf');
   cy.contains('button', 'Exporter en PDF').should('be.enabled').click();
-  cy.measure('export-pdf', () => cy.wait('@exportPdf', { timeout: GENERATION_TIMEOUT }).then(({ response }) => expect(response?.statusCode).to.equal(200)));
+  cy.contains('Contenu du rapport PDF');
+  cy.measure('export-pdf', () => {
+    cy.get('[data-testid="export-pdf-conf-confirm"]').should('be.enabled').click();
+    return cy.contains(/Le rapport PDF a été généré/, { timeout: GENERATION_TIMEOUT }).should('be.visible');
+  });
 };
