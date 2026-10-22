@@ -30,7 +30,7 @@ const readTimings = (): Timing[] => {
   if (!fs.existsSync(TIMINGS_FILE)) return [];
   try {
     const parsed = JSON.parse(fs.readFileSync(TIMINGS_FILE, 'utf-8'));
-    return Array.isArray(parsed) ? parsed : (parsed.timings ?? []);
+    return Array.isArray(parsed) ? parsed : parsed.timings ?? [];
   } catch {
     return [];
   }
@@ -116,7 +116,7 @@ export default defineConfig({
           writeTimings(timings);
           console.log(`⏱️ [${entry.step}] ${entry.ms}ms — ${entry.spec} :: ${entry.test}`);
           return null;
-        }
+        },
       });
 
       on('after:run', () => {
@@ -124,7 +124,8 @@ export default defineConfig({
         if (timings.length === 0) return;
         console.log('\n⏱️  Annotator timings summary (average per step):');
         console.table(buildSummary(timings));
-        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`)});
+        console.log(`⏱️  Full report written to ${TIMINGS_FILE}\n`);
+      });
 
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.family === 'chromium') {
@@ -138,8 +139,9 @@ export default defineConfig({
       });
     },
 
-    excludeSpecPattern:
-      process.env.EXCLUDE_INSTATUS_IT_SPEC === 'true' ? ['src/__tests__/it/3D_generator.it.cy.ts', 'src/__tests__/it/detection.it.cy.ts'] : [],
+    // The annotator specs are the Instatus monitoring's own, launched one by one by their workflows:
+    // kept out of the plain IT run, which has no business re-walking a 3D generation.
+    excludeSpecPattern: process.env.EXCLUDE_INSTATUS_IT_SPEC === 'true' ? ['src/__tests__/it/annotator/*.it.cy.ts'] : [],
     specPattern: 'src/**/*.it.cy.{js,ts,jsx,tsx}',
   },
 });
