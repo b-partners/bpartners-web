@@ -1,13 +1,12 @@
 import { ShortWarning } from '@/common/components/BPBetaTestWarning';
-import BPDialog from '@/common/components/BPDialog';
 import { useCollapseSidebarOnTablet } from '@/common/hooks';
-import { printError, Redirect } from '@/common/utils';
-import { authProvider, getCached, initiateAccountValidation, whoami } from '@/providers';
+import { printError } from '@/common/utils';
+import { authProvider, getCached, whoami } from '@/providers';
 import { Menu } from '@mui/icons-material';
 import { Box, Tooltip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useEffect, useState } from 'react';
-import { useNotify, useSidebarState } from 'react-admin';
+import { useSidebarState } from 'react-admin';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
 
@@ -40,12 +39,10 @@ export const AppBar = () => {
   const classes = useStyle();
   const userId = authProvider.getCachedWhoami()?.user?.id;
   const [name, setName] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
   const isBeta = process.env.REACT_APP_BETA !== 'false';
   const cachedUser = getCached.user();
   const isVerifiedUser = cachedUser?.idVerified;
   const isSubscribed = authProvider.isSubscribed();
-  const notify = useNotify();
 
   useEffect(() => {
     const fetch = async () => {
@@ -56,19 +53,6 @@ export const AppBar = () => {
     };
     fetch().catch(printError);
   }, [userId]);
-
-  const accountValidation = async () => {
-    try {
-      const redirectionUrl = (await initiateAccountValidation()).redirectionUrl;
-      Redirect.toURL(redirectionUrl);
-    } catch {
-      notify('Une erreur est survenue au moment de la redirection.', { type: 'warning' });
-    }
-  };
-
-  const onClose = () => {
-    setOpenDialog(false);
-  };
 
   const [open, setOpen] = useSidebarState();
   useCollapseSidebarOnTablet();
@@ -90,17 +74,6 @@ export const AppBar = () => {
           </Tooltip>
         </Box>
       </Box>
-      <BPDialog
-        title='Mettez à jour votre banque'
-        content={[
-          'Pour continuer à voir vos transactions et encaisser en temps réel, veuillez reconnecter votre banque.',
-          'En cas de question, contactez le : 06 68 62 48 36',
-        ]}
-        btnLabel='Synchroniser ma banque'
-        open={openDialog}
-        handleClick={accountValidation}
-        onClose={onClose}
-      />
       {isSubscribed && <GeneralConditionOfUse />}
       <UnverifiedUser />
     </>
