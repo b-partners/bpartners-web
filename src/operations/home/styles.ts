@@ -1,4 +1,4 @@
-import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
+import { PALETTE_COLORS } from '@/bp-theme';
 import { SxProps } from '@mui/material';
 
 export const home_style: SxProps = {
@@ -106,55 +106,6 @@ export const prospect_section_style: SxProps = {
     '& .MuiListItemText-secondary': {
       color: '#ddd',
     },
-  },
-};
-
-export const buttons_section_style: SxProps = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-around',
-  height: 300,
-  '& > .MuiBox-root': {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    height: '32%',
-    '& > .MuiBox-root': {
-      height: '100%',
-      width: '49%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-      borderRadius: 2,
-      cursor: 'pointer',
-      outline: 'none',
-      transition: 'all 200ms',
-    },
-  },
-  '& > .MuiBox-root:nth-child(1) > .MuiBox-root': {
-    border: `1px solid ${PALETTE_COLORS['pine']}`,
-  },
-  '& > .MuiBox-root:nth-child(1) > .MuiBox-root:nth-child(2):hover': {
-    background: PALETTE_COLORS['pine'],
-    color: 'white',
-  },
-  '& > .MuiBox-root:nth-child(2) > .MuiBox-root': {
-    border: `1px solid ${BP_COLOR[5]}`,
-    color: BP_COLOR[5],
-  },
-  '& > .MuiBox-root:nth-child(2) > .MuiBox-root:nth-child(2):hover': {
-    background: PALETTE_COLORS['pine'],
-    color: 'white',
-  },
-  '& > .MuiBox-root:nth-child(3) > .MuiBox-root': {
-    background: PALETTE_COLORS['pine'],
-    color: '#f4f4f4',
-    border: `1px solid ${PALETTE_COLORS['pine']}`,
-  },
-  '& > .MuiBox-root:nth-child(3) > .MuiBox-root:nth-child(2):hover': {
-    background: '#f4f4f4',
-    color: BP_COLOR[5],
   },
 };
 
