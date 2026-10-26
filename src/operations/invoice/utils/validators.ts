@@ -1,8 +1,3 @@
-export enum EDelayPenaltyValidator {
-  DELAY_PENALTY_PERCENT,
-  DELAY_IN_PAYMENT_ALLOWED,
-}
-
 export const validateDPPercent = (value: string, invoice: any) => {
   const delayInPaymentAllowed = invoice.delayInPaymentAllowed || '';
 

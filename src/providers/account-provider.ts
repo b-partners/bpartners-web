@@ -1,8 +1,7 @@
 import { getCurrentAccount } from '@/common/utils';
-import loginRedirectionUrls from '@/security/login-redirection-urls';
 import { Account, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import axios from 'axios';
-import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
+import { BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
   async getOne(_userId?: string) {
@@ -30,12 +29,6 @@ export const accountProvider: BpDataProviderType = {
   },
 };
 
-export const initiateAccountValidation = async (): Promise<any> => {
-  const { userId, accountId } = getCached.userInfo();
-  const { data } = await (userAccountsApi() as any)?.initiateAccountValidation(userId, accountId, loginRedirectionUrls);
-  return data;
-};
-
 export const onboarding = async (resources: any[]) => await onboardingApi().onboardUsers(resources);
 
 export const isPromoCodeValid = async (code: string): Promise<boolean> => {
@@ -56,13 +49,4 @@ export const getAccountLogoUrl = () => {
   return logoFileId
     ? `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`
     : null;
-};
-
-export const setCurrentAccount = async (accountId: string) => {
-  const { id: userId } = getCached.user();
-  const { data: user } = await userAccountsApi().setActiveAccount(userId, accountId);
-  cache.user(user);
-  cache.account(user.activeAccount);
-  cache.whoami({ user });
-  await accountHolderProvider.getOne();
 };

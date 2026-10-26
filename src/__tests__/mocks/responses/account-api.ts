@@ -68,12 +68,6 @@ export const accountHolder1: AccountHolder = {
     secondary: 'activité secondaire',
   },
 };
-
-export const validationRedirectionUrl: any = {
-  redirectionStatusUrls: { successUrl: 'dummy', failureUrl: 'dummy' },
-  redirectionUrl: 'dummy',
-};
-
 export const legalFiles1: LegalFile[] = [
   {
     id: 'legal-file-1',
@@ -97,17 +91,4 @@ export const legalFiles1: LegalFile[] = [
 ];
 
 export const accountHolders1: AccountHolder[] = [accountHolder1];
-export const accountHolders2: AccountHolder[] = [
-  {
-    ...accountHolder1,
-    companyInfo: {
-      ...accountHolder1.companyInfo,
-      location: {
-        type: 'Point',
-        longitude: 2.347,
-        latitude: 48.8588,
-      },
-    },
-  },
-];
 export const accountHoldersFeedbackLink: AccountHolder[] = [{ ...accountHolder1, feedback: { feedbackLink: 'example.com' } }];

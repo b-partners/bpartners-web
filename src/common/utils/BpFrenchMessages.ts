@@ -113,9 +113,6 @@ export const BpFrenchMessages = {
     },
   },
   messages: {
-    disconnection: {
-      success: 'Déconnexion en cours.',
-    },
     global: {
       error: "Une erreur s'est produite.",
       changesSaved: 'Changement enregistré',

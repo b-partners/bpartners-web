@@ -16,15 +16,6 @@ export interface RaProspectContext {
   toggleJobDetailsPopup: (item: ProspectEvaluationJobInfo) => void;
 }
 
-interface BankDisconnectionState {
-  isInDisconnection: boolean;
-}
-interface BankDisconnectionAction {
-  setIsInDisconnection: (value: boolean) => void;
-}
-
-export type TBankDisconnectionStore = BankDisconnectionState & BankDisconnectionAction;
-
 export type DraftAnnotationFilterKey = 'prospectName' | 'address' | 'creationFrom' | 'creationTo';
 export type DraftAnnotationFilters = Partial<Record<DraftAnnotationFilterKey, string>>;
 

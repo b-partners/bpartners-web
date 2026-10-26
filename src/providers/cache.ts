@@ -10,7 +10,6 @@ const userItem = 'bp_user';
 const invoiceConfirmedListSwitchItem = 'bp_invoiceConfirmedListSwitch';
 const timeZoneItem = 'bp_time_zone';
 const calendarSyncItem = 'bp_calendar_sync_item';
-const bankReconnectionTime = 'bp_bank_reconnection_time_item';
 const apiKeyItem = 'bp_user_api_key';
 const loadingRedirectionItems = 'bp_loading_params_item';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
@@ -68,10 +67,6 @@ export const cache = {
   calendarSync: (value: boolean = false) => {
     return localStorage.setItem(calendarSyncItem, JSON.stringify(value));
   },
-  bankReconnectionTime: (date: string) => {
-    localStorage.setItem(bankReconnectionTime, date);
-    return date;
-  },
   apiKey(apiKey: string) {
     localStorage.setItem(apiKeyItem, apiKey);
     return apiKey;
@@ -120,9 +115,6 @@ export const getCached = {
   },
   calendarSync(): boolean {
     return JSON.parse(localStorage.getItem(calendarSyncItem)) || false;
-  },
-  bankReconnectionTime: () => {
-    return localStorage.getItem(bankReconnectionTime);
   },
   apiKey() {
     return localStorage.getItem(apiKeyItem);
