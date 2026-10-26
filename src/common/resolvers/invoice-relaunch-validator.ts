@@ -26,8 +26,3 @@ const invoiceRelaunchValidator = (validators: Record<any, any>) =>
   });
 
 export const invoiceRelaunchResolver = zodResolver(invoiceRelaunchValidator({}));
-export const exportLinkMailResolver = zodResolver(
-  invoiceRelaunchValidator({
-    recipient: z.string().min(1, FieldErrorMessage.required).email({ message: FieldErrorMessage.emailNotValid }),
-  })
-);

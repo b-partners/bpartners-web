@@ -27,4 +27,3 @@ export const ANNOTATION_WEAR_TRANSLATION: Record<Wearness, string> = {
   ADVANCED: 'Avancée',
   EXTREME: 'Extrême',
 } as const;
-export type AnnotationWearType = typeof ANNOTATION_WEAR_TRANSLATION;

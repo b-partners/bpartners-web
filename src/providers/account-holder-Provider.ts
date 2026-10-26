@@ -45,13 +45,6 @@ export const updateGlobalInformation = async (resources: UpdateAccountHolder): P
   const { data } = await userAccountsApi().updateAccountHolderInfo(userId, accountId, accountHolderId, resources);
   return cache.accountHolder(data);
 };
-
-export const updateCompanyInfo = async (resources: CompanyInfo[]) => {
-  const { accountHolderId, accountId, userId } = getCached.userInfo();
-  const { data } = await userAccountsApi().updateCompanyInfo(userId, accountId, accountHolderId, resources[0]);
-  return [cache.accountHolder(data)];
-};
-
 export const updateFeedbackLink = async (feedbackLink: string) => {
   const { accountHolderId, userId } = getCached.userInfo();
   const feedback: AccountHolderFeedback = { feedbackLink };

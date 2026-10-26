@@ -1,12 +1,10 @@
 import {
   AddressAutocompletionApi,
   AreaPictureApi,
-  CalendarApi,
   CaptchaApi,
   CreditsApi,
   CustomersApi,
   FilesApi,
-  MailingApi,
   OnboardingApi,
   PayingApi,
   ProspectingApi,
@@ -24,9 +22,7 @@ export const customerApi = () => new CustomersApi(authProvider.getCachedAuthConf
 export const FileApi = () => new FilesApi(authProvider.getCachedAuthConf());
 export const prospectingApi = () => new ProspectingApi(authProvider.getCachedAuthConf());
 export const onboardingApi = () => new OnboardingApi(authProvider.getCachedAuthConf());
-export const calendarApi = () => new CalendarApi(authProvider.getCachedAuthConf());
 export const sheetApi = () => new SheetApi(authProvider.getCachedAuthConf());
-export const mailingApi = () => new MailingApi(authProvider.getCachedAuthConf());
 export const areaPictureApi = () => new AreaPictureApi(authProvider.getCachedAuthConf());
 export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.getCachedAuthConf());
 export const addressAutocompletionApi = () => new AddressAutocompletionApi(authProvider.getCachedAuthConf());

@@ -13,7 +13,6 @@ export * from './data-provider';
 export * from './feedback-provider';
 export * from './file-provider';
 export * from './invoice-provider';
-export * from './mailing-provider';
 export * from './mappers';
 export * from './product-provider';
 export * from './profile-provider';

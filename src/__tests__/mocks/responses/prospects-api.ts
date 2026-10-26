@@ -109,30 +109,6 @@ export const prospects: Prospect[] = [
     },
   },
 ];
-
-export const updatedProspects: Prospect[] = [
-  {
-    id: 'prospect1_id',
-    name: 'Doe Jhonson',
-    phone: '+261340465399',
-    firstName: '',
-    email: 'doejhonson@gmail.com',
-    status: ProspectStatus.TO_CONTACT,
-    address: '30 Rue de la Montagne Sainte-Genevieve',
-    comment: 'Update comment',
-    location: {
-      type: 'Point',
-      longitude: 2.347,
-      latitude: 48.8588,
-    },
-    rating: {
-      lastEvaluation: new Date('2023-10-10'),
-      value: 9.99999999,
-    },
-  },
-  ...prospects,
-];
-
 export const createdProspect = {
   email: 'doejhonson@gmail.com',
   phone: '+261340465399',

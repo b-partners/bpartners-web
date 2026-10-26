@@ -1,14 +1,5 @@
 import { AreaPictureAnnotation } from '@bpartners/typescript-client';
 
-interface Label {
-  id: string;
-  name: string;
-}
-export interface VerifyAdress {
-  Longitude: number;
-  Latitude: number;
-}
-
 export const annotations: unknown[] = [];
 
 export const invoiceAnnotations: AreaPictureAnnotation[] = [
@@ -104,19 +95,3 @@ export const invoiceAnnotations: AreaPictureAnnotation[] = [
     ],
   },
 ];
-
-export const labels: Label[] = [
-  { id: 'roof', name: 'Toit' },
-  { id: 'velux', name: 'Velux' },
-];
-export const covering = [
-  { id: 'tuiles', name: 'Tuiles' },
-  { id: 'ardoise', name: 'Ardoise' },
-  { id: 'beton', name: 'Beton' },
-  { id: 'autre', name: 'Autre' },
-];
-
-export const verifyAdressResponse: VerifyAdress = {
-  Longitude: -73.985428,
-  Latitude: 40.748817,
-};

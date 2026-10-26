@@ -1,7 +1,7 @@
 import { getCurrentAccount } from '@/common/utils';
 import { Account, UpdateAccountIdentity } from '@bpartners/typescript-client';
 import axios from 'axios';
-import { accountHolderProvider, BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
+import { BpDataProviderType, cache, getCached, onboardingApi, userAccountsApi } from '.';
 
 export const accountProvider: BpDataProviderType = {
   async getOne(_userId?: string) {
@@ -49,13 +49,4 @@ export const getAccountLogoUrl = () => {
   return logoFileId
     ? `${process.env.REACT_APP_BPARTNERS_API_URL}/accounts/${accountId}/files/${logoFileId}/raw?accessToken=${accessToken}&fileType=LOGO`
     : null;
-};
-
-export const setCurrentAccount = async (accountId: string) => {
-  const { id: userId } = getCached.user();
-  const { data: user } = await userAccountsApi().setActiveAccount(userId, accountId);
-  cache.user(user);
-  cache.account(user.activeAccount);
-  cache.whoami({ user });
-  await accountHolderProvider.getOne();
 };
