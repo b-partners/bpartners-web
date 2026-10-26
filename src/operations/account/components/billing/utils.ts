@@ -38,9 +38,6 @@ export const formatCredits = (credits?: number) => creditsFormatter.format(credi
 export const formatDate = (date?: Date | string | null) => (date ? dayjs(date).format('DD/MM/YYYY') : '');
 
 export const isUsageBasedPlan = (plan?: AnyPlan) => plan?.billingType === SubscriptionBillingType.USAGE_BASED;
-
-export const getPlanAmount = (plan?: AnyPlan) => (isUsageBasedPlan(plan) ? 0 : plan?.priceInCentsWithoutVat ?? 0);
-
 const CARD_BRAND_LABELS: Partial<Record<SubscriptionCardDisplayBrand, string>> = {
   AMERICAN_EXPRESS: 'American Express',
   CARTES_BANCAIRES: 'Cartes Bancaires',
@@ -66,10 +63,6 @@ export const hasSpendableCredits = (balance?: CreditBalance) => (balance?.spenda
 
 export const isSubscriptionMandatory = (subscription?: UserSubscription) =>
   subscription?.status === UserSubscriptionStatus.EMPTY || isSubscriptionExpired(subscription);
-
-export const isHighestPlan = (currentPlan: AnyPlan | undefined, plans: SubscriptionPlan[]) =>
-  plans.length > 0 && getPlanAmount(currentPlan) >= Math.max(...plans.map(getPlanAmount));
-
 export const isMonthlyBilling = (subscription?: UserSubscription) => subscription?.billingInterval === BillingInterval.MONTHLY;
 
 export const isYearlyBilling = (subscription?: UserSubscription) => subscription?.billingInterval === BillingInterval.YEARLY;

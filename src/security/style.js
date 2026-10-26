@@ -1,9 +1,8 @@
 import { BP_COLOR, PALETTE_COLORS } from '@/bp-theme';
-import { grey, pink } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 
 export const lightGreyColor = grey[100];
 export const darkGreyColor = grey[800];
-export const pinkColor = pink[50];
 export const whiteColor = '#ffffff';
 
 export const FLEX_CENTER = {
@@ -43,8 +42,6 @@ export const TRANSPARENT_BUTTON_STYLE = {
     color: BP_COLOR[20],
   },
 };
-
-export const BP_B_LOGO = { width: 100, position: 'absolute', top: '3%', left: '3%' };
 export const REDIRECTION_MESSAGE = {
   position: 'absolute',
   bottom: '6.5rem',

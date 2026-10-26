@@ -14,12 +14,8 @@ export const DELAY_PENALTY_PERCENT = 'delayPenaltyPercent';
 export const DELAY_IN_PAYMENT_ALLOWED = 'delayInPaymentAllowed';
 export const PRODUCT_NAME = 'products';
 export const CUSTOMER_NAME = 'customer';
-export const TOTAL_PRICE_WITH_VAT = 'totalPriceWithVat';
-export const TOTAL_PRICE_WITHOUT_VAT = 'totalPriceWithoutVat';
-export const DEFAULT_GLOBAL_DISCOUNT = 0;
 export const GLOBAL_DISCOUNT = 'globalDiscount';
 export const PERCENT_VALUE = 'percentValue';
-export const GLOBAL_DISCOUNT_PERCENT_VALUE = `${GLOBAL_DISCOUNT}.${PERCENT_VALUE}`;
 export const SENDING_DATE = 'sendingDate';
 export const VALIDITY_DATE = 'validityDate';
 // invoice validator
@@ -234,12 +230,6 @@ export const retryOnError = async (f: any, isErrorRetriable: any, backoffMillis 
     }
   }
 };
-
-export enum EInvoiceModalType {
-  RELAUNCH = 'relaunch',
-  FEEDBACK = 'feedback',
-}
-
 export const getFeedbackDefaultMessage = (invoice: Invoice) => {
   const customer = invoice?.customer;
   const { feedback, name: companyName } = getCached.accountHolder() || { feedback: { feedbackLink: '' } };

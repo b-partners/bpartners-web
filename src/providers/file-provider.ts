@@ -1,4 +1,3 @@
-import { FileType } from '@bpartners/typescript-client';
 import axios from 'axios';
 import { FileApi, getCached } from '.';
 import { compressImage, getFileUrl, getMimeType, toArrayBuffer } from '../common/utils';
@@ -46,9 +45,4 @@ export const fileProvider: BpDataProviderType = {
       .uploadFile(accountId, fileId, compressedFile, fileType, { headers: { 'Content-Type': compressedFile.type } })
       .then(({ data }) => ({ data, id: fileId }));
   },
-};
-
-export const saveOrUpdateLanding = async (fileId: string, file: File, type: string) => {
-  const { accountId } = getCached.userInfo();
-  return FileApi().uploadFile(accountId, fileId, file, FileType.ATTACHMENT, { headers: { 'Content-Type': type } });
 };
