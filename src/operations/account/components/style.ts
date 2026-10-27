@@ -434,6 +434,11 @@ export const SubscriptionPlansStyle: SxProps = {
   '& .plan-card--trial': {
     borderColor: PLAN_FOREST,
   },
+  '& .plan-card--unavailable': {
+    opacity: 0.55,
+    boxShadow: 'none',
+    '&:hover': { transform: 'none', boxShadow: 'none' },
+  },
 
   '& .plan-badges': {
     position: 'absolute',
@@ -569,6 +574,11 @@ export const SubscriptionPlansStyle: SxProps = {
     bgcolor: PLAN_ORANGE,
     color: PLAN_WHITE,
     '&:hover': { bgcolor: PLAN_ORANGE_DARK, boxShadow: 'none' },
+  },
+  '& .plan-cta.Mui-disabled': {
+    bgcolor: PLAN_BORDER,
+    borderColor: PLAN_BORDER,
+    color: PLAN_TEXT_MUTED,
   },
   '& .plan-cta--outline': {
     bgcolor: 'transparent',

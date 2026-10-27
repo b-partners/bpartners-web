@@ -67,6 +67,36 @@ export const isMonthlyBilling = (subscription?: UserSubscription) => subscriptio
 
 export const isYearlyBilling = (subscription?: UserSubscription) => subscription?.billingInterval === BillingInterval.YEARLY;
 
+export type PlanUpgradeAvailability = 'CURRENT' | 'ALLOWED' | 'FORBIDDEN';
+
+export const isUpgradeMode = (subscription?: UserSubscription) =>
+  hasActivePlan(subscription) &&
+  subscription?.status !== UserSubscriptionStatus.FREE_TRIAL &&
+  !isUsageBasedPlan(subscription?.plan) &&
+  !!subscription?.billingInterval;
+
+export const getPlanUpgradeAvailability = (
+  subscription: UserSubscription | undefined,
+  plans: SubscriptionPlan[],
+  target: SubscriptionPlan,
+  targetInterval: BillingInterval
+): PlanUpgradeAvailability => {
+  const current = plans.find(({ id }) => id === subscription?.plan?.id);
+  if (!current || current.tierRank == null || target.tierRank == null) return 'FORBIDDEN';
+  if (current.id === target.id && subscription?.billingInterval === targetInterval) return 'CURRENT';
+  if (isYearlyBilling(subscription) && targetInterval === BillingInterval.MONTHLY) return 'FORBIDDEN';
+  if (target.tierRank > current.tierRank) return 'ALLOWED';
+  const isSameTierYearlySwitch = target.tierRank === current.tierRank && isMonthlyBilling(subscription) && targetInterval === BillingInterval.YEARLY;
+  return isSameTierYearlySwitch ? 'ALLOWED' : 'FORBIDDEN';
+};
+
+export const hasUpgradeTarget = (subscription: UserSubscription | undefined, plans: SubscriptionPlan[]) =>
+  plans.some(
+    plan =>
+      !isUsageBasedPlan(plan) &&
+      [BillingInterval.MONTHLY, BillingInterval.YEARLY].some(interval => getPlanUpgradeAvailability(subscription, plans, plan, interval) === 'ALLOWED')
+  );
+
 export const hasTwelveMonthCommitment = (subscription?: UserSubscription) => !isUsageBasedPlan(subscription?.plan) && isMonthlyBilling(subscription);
 
 const roundToEuros = (cents: number) => Math.round(cents / 100) * 100;
