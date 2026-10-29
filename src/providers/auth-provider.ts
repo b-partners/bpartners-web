@@ -71,6 +71,8 @@ export const whoami = async (): Promise<any> => {
   return data;
 };
 
+const BILLING_URL_PATTERN = /(subscription|paymentMethods|billingPortal|creditPurchases|creditAutoRechargeConf|secondaryUsers)/;
+
 type RaPermission = {
   action: string;
   resource: string;
@@ -137,6 +139,10 @@ export const authProvider = {
       return Promise.resolve();
     }
 
+    if (status === 403 && BILLING_URL_PATTERN.test(url || '')) {
+      return Promise.resolve();
+    }
+
     if ((status === 401 || status === 403) && (unapprovedFiles || 0) === 0) {
       return Promise.reject({ message: false });
     } else if (status === 200) {
@@ -174,7 +180,8 @@ export const authProvider = {
     cache.unapprovedFiles(1);
     window.location.replace('/');
   },
+  isSecondaryUser: (): boolean => getCached.whoami()?.primaryUserId != null,
   isSubscribed: () => {
-    return getCached.whoami()?.user?.subscription.status !== UserSubscriptionStatus.EMPTY;
+    return authProvider.isSecondaryUser() || getCached.whoami()?.user?.subscription.status !== UserSubscriptionStatus.EMPTY;
   },
 };

@@ -1,4 +1,6 @@
+import { useIsSecondaryUser } from '@/common/hooks';
 import { CompanyCard } from '@/operations/account/components/CompanyCard';
+import { SecondaryUserCard } from '@/operations/account/components/SecondaryUserCard';
 import { AccountStyle } from '@/operations/account/components/style';
 import { SubscriptionCard } from '@/operations/account/components/SubscriptionCard';
 import { TrialCard } from '@/operations/account/components/TrialCard';
@@ -7,6 +9,8 @@ import { Grid } from '@mui/material';
 import { ShowBase, SimpleShowLayout } from 'react-admin';
 
 export const AccountShow = () => {
+  const isSecondaryUser = useIsSecondaryUser();
+
   return (
     <ShowBase id='' resource='accountHolder'>
       <SimpleShowLayout>
@@ -15,14 +19,16 @@ export const AccountShow = () => {
             <UserCard />
           </Grid>
           <Grid item xs={12} md={6}>
-            <TrialCard />
+            {isSecondaryUser ? <SecondaryUserCard /> : <TrialCard />}
           </Grid>
           <Grid item xs={12}>
             <CompanyCard />
           </Grid>
-          <Grid item xs={12}>
-            <SubscriptionCard />
-          </Grid>
+          {!isSecondaryUser && (
+            <Grid item xs={12}>
+              <SubscriptionCard />
+            </Grid>
+          )}
         </Grid>
       </SimpleShowLayout>
     </ShowBase>

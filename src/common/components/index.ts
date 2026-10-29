@@ -15,6 +15,7 @@ export * from './loading-page';
 export * from './Pdf';
 export * from './ProgressBar';
 export * from './RichTextEditor';
+export * from './SecondaryUserInvitationBanner';
 export * from './SirenModal';
 export * from './SubscriptionConsentStep';
 export * from './SubscriptionModal';

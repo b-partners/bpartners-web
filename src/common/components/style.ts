@@ -492,3 +492,8 @@ export const SubscriptionUpgradeLoadingStyle: SxProps = {
   alignItems: 'center',
   justifyContent: 'center',
 };
+
+export const SecondaryUserInvitationBannerStyle: SxProps = {
+  width: '100%',
+  borderRadius: 0,
+};
