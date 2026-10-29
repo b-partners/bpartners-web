@@ -2,6 +2,7 @@ import App from '@/App';
 import { FreeTrialBannerWrapper, SecondaryUserInvitationBanner } from '@/common/components';
 import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { Redirect } from '@/common/utils';
+import { SecondaryUserBadge } from '@/layout/appbar/SecondaryUserBadge';
 import { CreditsRequiredModalContent } from '@/operations/account/components/billing';
 import { authProvider, getCached } from '@/providers';
 import { SecondaryUser, User, Whoami } from '@bpartners/typescript-client';
@@ -288,5 +289,21 @@ describe('Account page', () => {
     cy.contains('Mon abonnement').should('be.visible');
     cy.getByName('open-billing-modal').should('be.visible');
     cy.contains("Vous utilisez l'abonnement et les crédits de votre compte principal.").should('not.exist');
+  });
+});
+
+describe('SecondaryUserBadge', () => {
+  it('shows the secondary status for a secondary user', () => {
+    cy.cognitoLogin({ whoami: secondaryWhoami });
+    cy.mount(<SecondaryUserBadge />);
+
+    cy.dataCy('secondary-user-badge').should('be.visible').and('contain.text', 'Compte secondaire');
+  });
+
+  it('renders nothing for a primary user', () => {
+    cy.cognitoLogin();
+    cy.mount(<SecondaryUserBadge />);
+
+    cy.dataCy('secondary-user-badge').should('not.exist');
   });
 });
