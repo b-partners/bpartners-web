@@ -1,5 +1,6 @@
 import App from '@/App';
 import { FreeTrialBannerWrapper, SecondaryUserInvitationBanner } from '@/common/components';
+import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { Redirect } from '@/common/utils';
 import { CreditsRequiredModalContent } from '@/operations/account/components/billing';
 import { authProvider, getCached } from '@/providers';
@@ -184,10 +185,96 @@ describe('Account page', () => {
 
     cy.contains("Vous utilisez l'abonnement et les crédits de votre compte principal.").should('be.visible');
     cy.contains('Crédits disponibles').should('be.visible');
+    cy.dataCy('secondary-user-credits-chart').should('contain.text', '320').find('path').should('have.length.at.least', 1);
     cy.contains('Mon abonnement').should('not.exist');
     cy.getByName('open-billing-modal').should('not.exist');
     cy.getByName('open-subscription-modal').should('not.exist');
     cy.contains('Période de votre abonnement').should('not.exist');
+  });
+
+  it('asks a secondary user without credits to contact the primary user', () => {
+    cy.cognitoLogin({ whoami: secondaryWhoami });
+    stubAccountApis();
+    cy.intercept('GET', `/users/${user1.id}/creditBalance`, emptyCreditBalance).as('getEmptyCreditBalance');
+    cy.mount(<App />);
+    cy.wait('@getAccountHolder');
+
+    cy.get('[name="account"]').click();
+    cy.wait('@getEmptyCreditBalance');
+
+    cy.dataCy('secondary-user-no-credits').should('be.visible').and('contain.text', 'contactez le titulaire du compte principal pour recharger le compte');
+    cy.getByName('open-billing-modal').should('not.exist');
+    cy.dataCy('secondary-user-credits-chart')
+      .closest('.card')
+      .invoke('outerHeight')
+      .then(secondaryHeight => {
+        cy.get('.card-user').invoke('outerHeight').should('eq', secondaryHeight);
+      });
+  });
+
+  it('does not show the no-credit message while the secondary user has credits', () => {
+    cy.cognitoLogin({ whoami: secondaryWhoami });
+    stubAccountApis();
+    cy.mount(<App />);
+    cy.wait('@getAccountHolder');
+
+    cy.get('[name="account"]').click();
+    cy.wait('@getCreditBalance');
+
+    cy.dataCy('secondary-user-credits-chart').should('contain.text', '320');
+    cy.dataCy('secondary-user-no-credits').should('not.exist');
+  });
+
+  describe('optimistic balance reconciliation', () => {
+    const optimisticBalance = { ...creditBalance, spendableCredits: 310, grantedCredits: 190, purchasedCredits: 120 };
+
+    beforeEach(() => useOptimisticCreditBalanceStore.getState().clear());
+
+    afterEach(() => useOptimisticCreditBalanceStore.getState().clear());
+
+    const openAccountWith = (balance: typeof creditBalance) => {
+      cy.cognitoLogin({ whoami: secondaryWhoami });
+      stubAccountApis();
+      cy.intercept('GET', `/users/${user1.id}/creditBalance`, balance).as('getReconciledBalance');
+      cy.mount(<App />);
+      cy.wait('@getAccountHolder');
+      cy.get('[name="account"]').click();
+      cy.wait('@getReconciledBalance');
+      cy.then(() => useOptimisticCreditBalanceStore.getState().setBalance(optimisticBalance));
+    };
+
+    it('displays the optimistic balance and keeps it while the API stays stale', () => {
+      openAccountWith(creditBalance);
+
+      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
+      cy.wait('@getReconciledBalance');
+      cy.wrap(null).should(() => expect(useOptimisticCreditBalanceStore.getState().balance).to.not.be.undefined);
+      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
+    });
+
+    it('clears the optimistic balance once the API returns the matching balance', () => {
+      openAccountWith(optimisticBalance);
+
+      cy.wrap(null, { timeout: 8000 }).should(() => expect(useOptimisticCreditBalanceStore.getState().balance).to.be.undefined);
+      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
+    });
+  });
+
+  it('keeps the secondary card at the same height as the user card', () => {
+    cy.cognitoLogin({ whoami: secondaryWhoami });
+    stubAccountApis();
+    cy.mount(<App />);
+    cy.wait('@getAccountHolder');
+
+    cy.get('[name="account"]').click();
+    cy.wait('@getCreditBalance');
+
+    cy.dataCy('secondary-user-credits-chart')
+      .closest('.card')
+      .invoke('outerHeight')
+      .then(secondaryHeight => {
+        cy.get('.card-user').invoke('outerHeight').should('eq', secondaryHeight);
+      });
   });
 
   it('keeps the billing card for a primary user', () => {
