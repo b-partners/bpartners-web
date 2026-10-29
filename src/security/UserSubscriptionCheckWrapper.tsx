@@ -30,6 +30,10 @@ export const UserSubscriptionCheckWrapper: FC<PropsWithChildren> = ({ children }
     async function checkSubscription() {
       try {
         const currentWhoami = await getBackWhoami();
+        if (currentWhoami?.primaryUserId != null) {
+          await bootstrapAccountCache();
+          return;
+        }
         const subscription = currentWhoami?.user?.subscription;
         const subscriptionStatus = isSubscriptionExpired(subscription) ? UserSubscriptionStatus.EMPTY : subscription?.status;
         const isActive = subscriptionStatus === UserSubscriptionStatus.ACTIVE;

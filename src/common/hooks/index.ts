@@ -2,6 +2,7 @@ export * from './use-autocomplete';
 export * from './use-change-invoice-status';
 export * from './use-collapse-sidebar-on-tablet';
 export * from './use-heart-beat';
+export * from './use-is-secondary-user';
 export * from './use-is-tablet';
 export * from './use-loading-handler';
 export * from './use-siren-requirement';

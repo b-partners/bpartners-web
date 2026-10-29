@@ -728,3 +728,18 @@ export const SubscriptionComparisonStyle: SxProps = {
   '& .comparison-check': { color: PLAN_ORANGE, fontSize: '15px', verticalAlign: 'middle' },
   '& .comparison-dash': { color: PLAN_BORDER, fontWeight: 700 },
 };
+
+export const SecondaryUserCardStyle: SxProps = {
+  '& .secondary-user-status': {
+    mb: 2,
+    color: 'text.secondary',
+  },
+  '& .secondary-user-credits': {
+    fontSize: '2.5rem',
+    fontWeight: 700,
+    lineHeight: 1.1,
+  },
+  '& .secondary-user-credits-label': {
+    fontSize: '0.9rem',
+  },
+};

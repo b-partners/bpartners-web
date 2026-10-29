@@ -8,6 +8,7 @@ import {
   OnboardingApi,
   PayingApi,
   ProspectingApi,
+  SecondaryUserApi,
   SecurityApi,
   SheetApi,
   UserAccountsApi,
@@ -28,3 +29,4 @@ export const userSubscriptionApi = () => new UserSubscriptionApi(authProvider.ge
 export const addressAutocompletionApi = () => new AddressAutocompletionApi(authProvider.getCachedAuthConf());
 export const captchaApi = () => new CaptchaApi(authProvider.getCachedAuthConf());
 export const creditsApi = () => new CreditsApi(authProvider.getCachedAuthConf());
+export const secondaryUserApi = () => new SecondaryUserApi(authProvider.getCachedAuthConf());

@@ -1,4 +1,5 @@
 import { BPButton, FlexBox, SubscriptionModal } from '@/common/components';
+import { useIsSecondaryUser } from '@/common/hooks';
 import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { useGetCreditBalance } from '@/operations/account/queries';
 import { whoami } from '@/providers';
@@ -17,7 +18,8 @@ export const FreeTrialBannerWrapper: FC<PropsWithChildren> = ({ children }) => {
   });
 
   const today = dayjs();
-  const isFreeTrialSubscription = whoamiValue?.user?.subscription?.status === 'FREE_TRIAL';
+  const isSecondaryUser = useIsSecondaryUser();
+  const isFreeTrialSubscription = !isSecondaryUser && whoamiValue?.user?.subscription?.status === 'FREE_TRIAL';
   const remainingDays = dayjs(whoamiValue?.user?.subscription?.end).diff(today, 'day');
   const { balance } = useGetCreditBalance(isFreeTrialSubscription);
   const optimisticBalance = useOptimisticCreditBalanceStore(state => state.balance);
