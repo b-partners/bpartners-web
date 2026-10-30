@@ -1,6 +1,6 @@
 import { useToggle } from '@/common/hooks';
 import { useOptimisticCreditBalanceStore } from '@/common/store';
-import { CREDIT_BALANCE_QUERY_KEY, useGetCreditBalance, useGetCreditPacks } from '@/operations/account/queries';
+import { CREDIT_BALANCE_QUERY_KEY, useGetCreditBalance, useGetCreditPacks, useOptimisticBalanceReconciliation } from '@/operations/account/queries';
 import { CREDIT_PURCHASE_ID_PARAM, CREDIT_PURCHASE_STATUS_PARAM, getCreditPurchase, submitCreditPurchase } from '@/providers';
 import { CreditPack, CreditPurchase, CreditPurchaseStatus, CreditPurchaseType, UserSubscription } from '@bpartners/typescript-client';
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded';
@@ -20,10 +20,6 @@ import { formatCredits, formatDate, hasActivePlan } from './utils';
 const POLL_INTERVAL_MS = 3000;
 
 const MAX_POLL_COUNT = 60;
-
-const RECONCILE_INTERVAL_MS = 5000;
-
-const MAX_RECONCILE_ATTEMPTS = 36;
 
 const CREDITS_SECTION_ID = 'billing-credits-section';
 
@@ -119,29 +115,7 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
     return () => clearTimeout(timer);
   }, [focusPacks]);
 
-  useEffect(() => {
-    const expected = optimisticBalance;
-    if (!expected) return;
-    let cancelled = false;
-    let attempts = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const reconcile = async () => {
-      attempts += 1;
-      const { data } = await refetchBalance();
-      if (cancelled) return;
-      if (data?.spendableCredits === expected.spendableCredits) {
-        clearOptimisticBalance();
-        return;
-      }
-      if (attempts >= MAX_RECONCILE_ATTEMPTS) return;
-      timer = setTimeout(reconcile, RECONCILE_INTERVAL_MS);
-    };
-    reconcile();
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [optimisticBalance, refetchBalance, clearOptimisticBalance]);
+  useOptimisticBalanceReconciliation(refetchBalance);
 
   const onSelectPack = (pack: CreditPack, credits: number) => setCandidate({ purchaseId: uuid(), pack, credits });
 

@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSidebarState } from 'react-admin';
 import { GeneralConditionOfUse } from '../../operations/configurations';
 import UnverifiedUser from '../../operations/configurations/UnverifiedUser';
+import { SecondaryUserBadge } from './SecondaryUserBadge';
 
 const useStyle = makeStyles(() => ({
   LOGO: {
@@ -63,7 +64,8 @@ export const AppBar = () => {
         <img src={'/logo.png'} alt='bp logo' className={classes.LOGO} />
 
         <Box sx={{ paddingInline: '1rem' }}>
-          Bonjour <b>{name}</b> !{isVerifiedUser === null && <span style={{ color: 'rgb(168,141,104)' }}> (Chargement du statut du compte...)</span>}
+          Bonjour <b>{name}</b> !<SecondaryUserBadge />
+          {isVerifiedUser === null && <span style={{ color: 'rgb(168,141,104)' }}> (Chargement du statut du compte...)</span>}
           {isVerifiedUser === false && <span style={{ color: 'rgb(168,141,104)' }}> (Compte non vérifié)</span>}
         </Box>
 

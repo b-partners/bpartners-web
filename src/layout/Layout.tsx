@@ -1,4 +1,4 @@
-import { FreeTrialBannerWrapper, GlobaDialog } from '@/common/components';
+import { FreeTrialBannerWrapper, GlobaDialog, SecondaryUserInvitationBanner } from '@/common/components';
 import BPErrorPage from '@/common/components/BPErrorPage';
 import { useHeartBeat } from '@/common/hooks';
 import { AccountHolderHandlerWrapper } from '@/security/AccountHolderHandlerWrapper';
@@ -18,6 +18,7 @@ export const Layout: FC<LayoutProps> = ({ children, ...layoutProps }) => {
     <AppLocationContext>
       <AccountHolderHandlerWrapper>
         <RaLayout sx={{ bgcolor: '#F9FAFB0' }} {...layoutProps} appBar={AppBar} menu={Menu} sidebar={AppSidebar} error={BPErrorPage}>
+          <SecondaryUserInvitationBanner />
           <FreeTrialBannerWrapper>{children}</FreeTrialBannerWrapper>
         </RaLayout>
       </AccountHolderHandlerWrapper>

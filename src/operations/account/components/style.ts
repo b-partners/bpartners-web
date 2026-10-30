@@ -728,3 +728,51 @@ export const SubscriptionComparisonStyle: SxProps = {
   '& .comparison-check': { color: PLAN_ORANGE, fontSize: '15px', verticalAlign: 'middle' },
   '& .comparison-dash': { color: PLAN_BORDER, fontWeight: 700 },
 };
+
+export const SecondaryUserCardStyle: SxProps = {
+  '& .secondary-user-status': {
+    color: 'text.secondary',
+  },
+  '& .secondary-user-no-credits': {
+    color: 'error.main',
+    fontWeight: 600,
+  },
+  '& .secondary-user-credits-details': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0.5,
+  },
+  '& .secondary-user-credits-overview': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+  },
+  '& .secondary-user-credits-chart': {
+    position: 'relative',
+    width: '100px',
+    height: '100px',
+    flexShrink: 0,
+  },
+  '& .secondary-user-credits-chart-empty': {
+    width: '100%',
+    height: '100%',
+    borderRadius: '50%',
+    border: `10px solid ${PALETTE_COLORS.cream}`,
+  },
+  '& .secondary-user-credits': {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '1.4rem',
+    fontWeight: 800,
+    pointerEvents: 'none',
+  },
+  '& .secondary-user-credits-label': {
+    fontSize: '0.9rem',
+    fontWeight: 600,
+  },
+  '& .secondary-user-credits-slice--granted': { fill: PALETTE_COLORS.neon_orange },
+  '& .secondary-user-credits-slice--purchased': { fill: PALETTE_COLORS.pine },
+};

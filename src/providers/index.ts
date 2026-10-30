@@ -21,5 +21,6 @@ export * from './prospecting-provider';
 export * from './ra-data-provider-type';
 export * from './recaptcha-provider';
 export * from './relaunch-provider';
+export * from './secondary-user-provider';
 export * from './sheet-provider';
 export * from './user-subscription-provider';
