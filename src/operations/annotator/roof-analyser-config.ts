@@ -67,11 +67,6 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * signed-in account (`use-roof-analyser-credentials.ts`). An absent variable leaves the key `undefined` and
  * the library falls back on its own default deployment.
  *
- * `intersectionsApiUrl` is the lidar planes and lines behind the *Aligner* step (`PUT /intersections/{id}`).
- * `threedApiUrl` (the pan-by-pan model, `PUT /lrg/{id}`) defaults to it, `geojobsApiKey` is sent to that
- * service as `geojobs-apikey` and falls back to `apiKey`, and `threedFilesProxyUrl` reads the generated
- * CityJSON through a proxy rather than its S3 origin, which sends no CORS header.
- *
  * `coverageApiUrl` (0.16.7+) is where the imagery standing over a position is read before an analysis is
  * launched (`GET /coverage?longitude=..&latitude=..&types=IMAGERY`, on the account's own `x-api-key`): a
  * zone the answer says is not 5 cm goes straight to the revêtement/obstacle model instead of spending a
@@ -86,10 +81,6 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   geoPixelApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_PIXEL_API_URL),
   detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
   coverageApiUrl: readEnv(process.env.REACT_APP_ROOF_COVERAGE_API_URL),
-  intersectionsApiUrl: readEnv(process.env.REACT_APP_ROOF_INTERSECTIONS_API_URL),
-  threedApiUrl: readEnv(process.env.REACT_APP_ROOF_THREED_API_URL),
-  threedFilesProxyUrl: readEnv(process.env.REACT_APP_ROOF_THREED_FILES_PROXY_URL),
-  geojobsApiKey: readEnv(process.env.REACT_APP_ROOF_GEOJOBS_API_KEY),
   geocodeApiUrl: GEODATA_API_URL,
   geocodeApiKey: GEODATA_API_KEY,
   llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
