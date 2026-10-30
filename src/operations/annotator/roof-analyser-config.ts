@@ -72,6 +72,11 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * zone the answer says is not 5 cm goes straight to the revêtement/obstacle model instead of spending a
  * round-trip being refused by the roof one. The detection service owns that endpoint, so blank leaves it
  * on `detectionApiUrl` — and the read is best-effort, a failure analysing exactly as it did before.
+ *
+ * `wmsBaseUrl` is left to the library on purpose. This app tiles the map from its own layers
+ * (`wms-resolver.ts`), so since 0.16.9 that key only reaches the detection service, as the GeoServer it
+ * reads the analysed zone from. That service runs server-side and is refused on the public
+ * `https://geoserver.birdia.fr` the browser uses; the library's default is the address it accepts.
  */
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
@@ -86,5 +91,4 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
   llmApiKey: readEnv(process.env.LLM_API_KEY),
   geojsonBaseUrl: readEnv(process.env.REACT_APP_GEOJSON_BASEURL),
-  wmsBaseUrl: readEnv(process.env.REACT_APP_WMS_BASE_URL),
 };
