@@ -49,11 +49,17 @@ export const ROOF_MODEL_OPTIONS = definedOnly({
  * `autoDetectRoofFootprint` pre-fills a fresh visit's emprise from the backend's building footprint and
  * only ever applies in roofer mode (library default `true`), and `rooferButtonMode` is that guided walk
  * itself (default `false`; its **Terminer** button also needs an `onFinish`, which this screen does not pass).
+ * `show3DResultOnly` (0.16.5+, each pan's own surface kept since 0.16.6) leaves the 3D tab as the
+ * generation's read-out rather than something to measure on: the model still turns and a pan is still
+ * picked and renamed, but no measuring bar, no cotes, no pente and no saved measures — the sidebar and the
+ * exported PDF carry the roof's total surface and each pan's own, nothing more. Blank keeps `false`, the 3D
+ * screen as it has always been, and it says nothing in `rooferButtonMode`, which drops that tab entirely.
  */
 export const GEO_SESSION_OPTIONS = definedOnly({
   disableSwitchBack: readBooleanEnv(process.env.REACT_APP_ROOF_DISABLE_SWITCH_BACK),
   autoDetectRoofFootprint: readBooleanEnv(process.env.REACT_APP_ROOF_AUTO_DETECT_FOOTPRINT),
   rooferButtonMode: readBooleanEnv(process.env.REACT_APP_ROOF_ROOFER_BUTTON_MODE),
+  show3DResultOnly: readBooleanEnv(process.env.REACT_APP_ROOF_SHOW_3D_RESULT_ONLY),
 });
 
 /**
@@ -65,6 +71,12 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * `threedApiUrl` (the pan-by-pan model, `PUT /lrg/{id}`) defaults to it, `geojobsApiKey` is sent to that
  * service as `geojobs-apikey` and falls back to `apiKey`, and `threedFilesProxyUrl` reads the generated
  * CityJSON through a proxy rather than its S3 origin, which sends no CORS header.
+ *
+ * `coverageApiUrl` (0.16.7+) is where the imagery standing over a position is read before an analysis is
+ * launched (`GET /coverage?longitude=..&latitude=..&types=IMAGERY`, on the account's own `x-api-key`): a
+ * zone the answer says is not 5 cm goes straight to the revêtement/obstacle model instead of spending a
+ * round-trip being refused by the roof one. The detection service owns that endpoint, so blank leaves it
+ * on `detectionApiUrl` — and the read is best-effort, a failure analysing exactly as it did before.
  */
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
@@ -73,6 +85,7 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   geoMercatorApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL),
   geoPixelApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_PIXEL_API_URL),
   detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
+  coverageApiUrl: readEnv(process.env.REACT_APP_ROOF_COVERAGE_API_URL),
   intersectionsApiUrl: readEnv(process.env.REACT_APP_ROOF_INTERSECTIONS_API_URL),
   threedApiUrl: readEnv(process.env.REACT_APP_ROOF_THREED_API_URL),
   threedFilesProxyUrl: readEnv(process.env.REACT_APP_ROOF_THREED_FILES_PROXY_URL),

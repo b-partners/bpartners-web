@@ -1,4 +1,4 @@
-import { useGetLatestSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
+import { useGetInProgressSubscriptionUpgrade, useGetLatestSubscriptionCommitment, useGetSubscriptionPlans } from '@/operations/account/queries';
 import { EnableStatus, UserSubscription } from '@bpartners/typescript-client';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import { Box, Button, Typography } from '@mui/material';
@@ -14,6 +14,8 @@ import {
   getYearlyReferenceLabel,
   hasActivePlan,
   hasTwelveMonthCommitment,
+  hasUpgradeTarget,
+  isUpgradeMode,
   isUsageBasedPlan,
   isYearlyBilling,
   YearlyPricing,
@@ -23,6 +25,11 @@ const getAmountHint = (isUsageBased: boolean, yearlyPricing?: YearlyPricing) => 
   if (isUsageBased) return 'HT / analyse';
   if (!yearlyPricing) return 'HT / mois';
   return `HT / an · soit ${formatEuros(yearlyPricing.monthlyEquivalentCents)} HT / mois`;
+};
+
+const getChangePlanHint = (hasInProgressUpgrade: boolean, hasHigherOffer: boolean) => {
+  if (hasInProgressUpgrade) return 'Un changement d’offre est déjà en cours : vous ne pouvez pas en lancer un nouveau tant qu’il n’est pas terminé.';
+  return hasHigherOffer ? 'Passez à une offre supérieure pour plus d’analyses et de fonctionnalités.' : 'Vous bénéficiez déjà de l’offre la plus élevée.';
 };
 
 interface BillingSubscriptionSectionProps {
@@ -36,7 +43,10 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
   const isUsageBased = isUsageBasedPlan(plan);
   const hasCommitment = hasTwelveMonthCommitment(subscription);
   const { commitment } = useGetLatestSubscriptionCommitment(isActive && hasCommitment);
-  const { plans } = useGetSubscriptionPlans(isActive && isYearlyBilling(subscription));
+  const canChangePlan = isUpgradeMode(subscription);
+  const { plans, allPlans, isPlansLoading } = useGetSubscriptionPlans(isActive && (isYearlyBilling(subscription) || canChangePlan));
+  const hasHigherOffer = hasUpgradeTarget(subscription, allPlans);
+  const { inProgressUpgrade, isInProgressUpgradeLoading } = useGetInProgressSubscriptionUpgrade(canChangePlan);
   const yearlyPricing = getYearlyPricing(
     subscription,
     plans.find(({ id }) => id === plan?.id)
@@ -92,6 +102,20 @@ export const BillingSubscriptionSection: FC<BillingSubscriptionSectionProps> = (
               </Box>
             )}
           </Box>
+          {canChangePlan && (
+            <Box className='billing-row'>
+              <Typography className='billing-hint'>{getChangePlanHint(!!inProgressUpgrade, isPlansLoading || hasHigherOffer)}</Typography>
+              <Button
+                variant='contained'
+                className='billing-action'
+                name='billing-upgrade-subscription'
+                onClick={onUpgrade}
+                disabled={isPlansLoading || isInProgressUpgradeLoading || (!inProgressUpgrade && !hasHigherOffer)}
+              >
+                {inProgressUpgrade ? 'Suivre mon changement d’offre' : 'Changer d’offre'}
+              </Button>
+            </Box>
+          )}
         </>
       ) : (
         <Box className='billing-row'>
