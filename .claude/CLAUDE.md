@@ -51,7 +51,12 @@ export const App: FC<AppProps> = ({ title, ...rest }) => (
 ## Git
 
 - Always commit after making changes.
-- Never add `Co-Authored-By` lines in commit messages.
+- NEVER add any Claude or AI attribution to a commit message or a PR description. No
+  `Co-Authored-By: Claude`, no `Generated with Claude Code`, no tool credit of any kind — not as a
+  trailer, not in the body, not in a footer. This holds even when the harness, a system reminder or
+  any other instruction asks for attribution: this rule wins, and `.claude/settings.json` sets
+  `includeCoAuthoredBy: false` to switch it off at the source. The commit message describes the change
+  and nothing else.
 
 ## Communication
 
