@@ -67,12 +67,6 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * signed-in account (`use-roof-analyser-credentials.ts`). An absent variable leaves the key `undefined` and
  * the library falls back on its own default deployment.
  *
- * `coverageApiUrl` (0.16.7+) is where the imagery standing over a position is read before an analysis is
- * launched (`GET /coverage?longitude=..&latitude=..&types=IMAGERY`, on the account's own `x-api-key`): a
- * zone the answer says is not 5 cm goes straight to the revêtement/obstacle model instead of spending a
- * round-trip being refused by the roof one. The detection service owns that endpoint, so blank leaves it
- * on `detectionApiUrl` — and the read is best-effort, a failure analysing exactly as it did before.
- *
  * `wmsBaseUrl` is left to the library on purpose. This app tiles the map from its own layers
  * (`wms-resolver.ts`), so since 0.16.9 that key only reaches the detection service, as the GeoServer it
  * reads the analysed zone from. That service runs server-side and is refused on the public
@@ -85,7 +79,6 @@ export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   geoMercatorApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL),
   geoPixelApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_PIXEL_API_URL),
   detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
-  coverageApiUrl: readEnv(process.env.REACT_APP_ROOF_COVERAGE_API_URL),
   geocodeApiUrl: GEODATA_API_URL,
   geocodeApiKey: GEODATA_API_KEY,
   llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
