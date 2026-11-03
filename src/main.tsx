@@ -1,3 +1,4 @@
+import { registerSentryHttpLogger } from '@/common/utils';
 import * as Sentry from '@sentry/react';
 import ReactDOM from 'react-dom/client';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
@@ -11,6 +12,8 @@ Sentry.init({
   environment: process.env.REACT_APP_SENTRY_ENV,
   enableLogs: true,
 });
+
+registerSentryHttpLogger();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <GoogleReCaptchaProvider reCaptchaKey={process.env.RECAPTCHA_SITE_KEY}>

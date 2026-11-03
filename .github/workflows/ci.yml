@@ -11,8 +11,9 @@ env:
   PREPROD_WEBCLIENT_ID: 4v0n3pk2j0b12m3aascud4us6h
   PREPROD_OAUTH_DOMAIN: preprod-bpartners-api.auth.eu-west-3.amazoncognito.com
   PREPROD_REDIRECT_SUCCESS: https://dashboard.preprod.bpartners.app/login/success
-  REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://tile-referencer.azurewebsites.net
-  REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL: https://q1xs10we5d.execute-api.eu-west-3.amazonaws.com/Prod
+  # The point converter's base url: {base}/mercator and {base}/pixel, the one service every point in the
+  # annotator is converted through since roof-analyser 0.16.12.
+  REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL: https://1gup5vvyyg.execute-api.eu-west-3.amazonaws.com/Prod
   SHARDS: 4
 
 jobs:
@@ -63,7 +64,6 @@ jobs:
       - name: Add env
         run: |
           echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
-          echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
           echo REACT_APP_BPARTNERS_API_URL=https://api.dashboard.birdia.fr >> .env
           echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} >> .env
           echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
@@ -238,7 +238,6 @@ jobs:
       - name: Add env
         run: |
           echo REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL }} > .env
-          echo REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL=${{ env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL }} >> .env
           echo REACT_APP_AWS_REGION=${{ env.AWS_REGION }} >> .env
           echo REACT_APP_IT_ONBOARD_USERNAME=${{ secrets.REACT_APP_IT_ONBOARD_USERNAME }}  >> .env
           echo REACT_APP_IT_ONBOARD_PASSWORD_1=${{ secrets.REACT_APP_IT_ONBOARD_PASSWORD_1 }}  >> .env
