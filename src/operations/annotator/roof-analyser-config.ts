@@ -71,13 +71,16 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * (`wms-resolver.ts`), so since 0.16.9 that key only reaches the detection service, as the GeoServer it
  * reads the analysed zone from. That service runs server-side and is refused on the public
  * `https://geoserver.birdia.fr` the browser uses; the library's default is the address it accepts.
+ *
+ * `geoConverterApiUrl` is a base url, not an endpoint: since 0.16.12 every point in the library goes
+ * through that one deployment both ways — `{base}/mercator` reads a tile's pixels as lon/lat, `{base}/pixel`
+ * reads lon/lat back as that tile's pixels — so the former per-direction keys (`converterApiUrl`,
+ * `geoMercatorApiUrl`, `geoPixelApiUrl`, and the tile referencer the old `geoConverterApiUrl` named) are
+ * gone. Point the variable at the deployment's root, with no path of its own.
  */
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
-  converterApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_PIXEL_CONVERTER_API_URL),
   geoConverterApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL),
-  geoMercatorApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_MERCATOR_API_URL),
-  geoPixelApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_PIXEL_API_URL),
   detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
   geocodeApiUrl: GEODATA_API_URL,
   geocodeApiKey: GEODATA_API_KEY,
