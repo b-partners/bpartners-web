@@ -90,15 +90,14 @@ export const Annotator = () => {
             {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
             {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
             analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
-            resolveWmsLayers={resolveWmsLayers}
-            resolveActiveWmsLayer={resolveActiveWmsLayer}
-            {...ROOF_MODEL_OPTIONS}
-            {...GEO_SESSION_OPTIONS}
-          />
-        ) : (
-          <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />
-        )}
-      </Box>
+          resolveWmsLayers={resolveWmsLayers}
+          resolveActiveWmsLayer={resolveActiveWmsLayer}
+          {...ROOF_MODEL_OPTIONS}
+          {...GEO_SESSION_OPTIONS}
+        />
+      ) : (
+        <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />
+      )}</Box>
     </Box>
   );
 };
