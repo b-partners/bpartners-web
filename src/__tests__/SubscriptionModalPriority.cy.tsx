@@ -41,6 +41,7 @@ describe('Subscription modal priority over the business activity modal', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccounts');
     cy.intercept('GET', '/businessActivities?page=1&pageSize=100', businessActivities).as('getBusinessActivities');
     cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', []).as('getDrafts');
+    cy.intercept('GET', '/users/**/analysisProjects?page=*&pageSize=*', []).as('getAnalysisProjects');
     cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
     cy.intercept('GET', '**/subscriptionPlans*', subscriptionPlans).as('getSubscriptionPlans');
     cy.intercept('GET', '**/paymentMethods*', []).as('getPaymentMethods');

@@ -1,5 +1,6 @@
 import {
   AddressAutocompletionApi,
+  AnalysisProjectApi,
   AreaPictureApi,
   CaptchaApi,
   CreditsApi,
@@ -30,3 +31,4 @@ export const addressAutocompletionApi = () => new AddressAutocompletionApi(authP
 export const captchaApi = () => new CaptchaApi(authProvider.getCachedAuthConf());
 export const creditsApi = () => new CreditsApi(authProvider.getCachedAuthConf());
 export const secondaryUserApi = () => new SecondaryUserApi(authProvider.getCachedAuthConf());
+export const analysisProjectApi = () => new AnalysisProjectApi(authProvider.getCachedAuthConf());

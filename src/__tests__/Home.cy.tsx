@@ -15,12 +15,12 @@ describe('Home', () => {
       { id: 6, name: 'Couvreur du coin', address: '3 impasse du faîtage' },
     ];
 
-    const draftAnnotations = prospects.map(prospect => ({ id: v4(), areaPicture: { address: prospect.address, prospectId: prospect.id } }));
+    const analysisProjects = prospects.map(prospect => ({ projectKey: v4(), address: prospect.address, prospectId: prospect.id, status: 'DRAFT' }));
 
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount1');
     const carreleurs = [{ ...accountHolders1[0], businessActivities: { primary: 'Couvreur' } }];
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, carreleurs).as('getAccountHolder1');
-    cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', draftAnnotations);
+    cy.intercept('GET', '/users/**/analysisProjects?page=*&pageSize=*', analysisProjects);
     prospects.forEach(prospect => {
       cy.intercept('GET', '/accountHolders/**/prospects/' + prospect.id, prospect);
     });

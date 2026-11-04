@@ -1,21 +1,27 @@
 import { formatDateTimeWithoutSec, stringCutter } from '@/common/utils';
-import { DraftAreaPictureAnnotation, Prospect } from '@bpartners/typescript-client';
+import { AnalysisProject, Prospect } from '@bpartners/typescript-client';
 import { Public } from '@mui/icons-material';
 import { Avatar, ListItem, ListItemAvatar, ListItemButton, ListItemText, Skeleton, Typography } from '@mui/material';
 import { FC } from 'react';
 import { useGetOne } from 'react-admin';
 import { useNavigate } from 'react-router';
+import { AnalysisStatusChips } from '../analysis-projects';
 
 interface ProjectListItemProps {
-  draftAnnotation: DraftAreaPictureAnnotation;
+  project: AnalysisProject;
 }
 
-export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) => {
-  const prospectId = draftAnnotation.areaPicture?.prospectId;
+export const ProjectListItem: FC<ProjectListItemProps> = ({ project }) => {
+  const prospectId = project.prospectId;
   const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: prospectId }, { enabled: !!prospectId });
   const navigate = useNavigate();
 
-  const navigateToAnnotation = () => navigate(`/projects/${draftAnnotation.areaPicture?.id}`);
+  const navigateToAnnotation = () =>
+    navigate(
+      project.areaPictureId
+        ? `/projects/${project.areaPictureId}`
+        : `/projects/${project.projectKey}?flow=geo&address=${encodeURIComponent(project.address ?? '')}`
+    );
 
   return (
     <ListItem disablePadding>
@@ -30,16 +36,17 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ draftAnnotation }) =
             prospectId && isLoading ? (
               <Skeleton sx={{ width: '50%' }} />
             ) : (
-              stringCutter(prospect.name, 35) || stringCutter(draftAnnotation.areaPicture?.address, 35) || 'Nom non défini'
+              stringCutter(prospect.name, 35) || stringCutter(project.address, 35) || 'Nom non défini'
             )
           }
           secondary={
             <>
               <Typography component='span' variant='body2' sx={{ color: 'text.primary', display: 'inline' }}>
-                {stringCutter(draftAnnotation.areaPicture?.address || prospect.address, 35) || 'Adresse non renseignée'}
+                {stringCutter(project.address || prospect.address, 35) || 'Adresse non renseignée'}
               </Typography>
               <br />
-              {draftAnnotation?.areaPicture?.createdAt && formatDateTimeWithoutSec(draftAnnotation.areaPicture.createdAt as any)}
+              {project.creationDatetime && formatDateTimeWithoutSec(project.creationDatetime as any)}
+              <AnalysisStatusChips project={project} />
             </>
           }
         />

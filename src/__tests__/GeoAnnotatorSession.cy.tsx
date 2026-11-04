@@ -21,6 +21,9 @@ describe('Annotator — session lon/lat de la librairie', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder');
 
+    cy.intercept('GET', `/users/${whoami1.user.id}/analysisProjects/${SESSION_ID}`, { projectKey: SESSION_ID, creditsSufficient: true, creditCost: 1 }).as(
+      'getAnalysisProject'
+    );
     cy.intercept('GET', '/api/keys', [{ id: 'api-key', apiKey: 'dummy-api-key' }]).as('apiKey');
 
     cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 2.3595545, latitude: 48.8552353 }).as('geocode');

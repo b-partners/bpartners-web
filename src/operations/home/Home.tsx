@@ -1,6 +1,7 @@
 import { BpAutoCompleteBackend, BPButton } from '@/common/components';
 import { PALETTE_COLORS } from '@/common/config/theme';
 import { useSirenRequirement } from '@/common/hooks';
+import { AnalysisProject } from '@bpartners/typescript-client';
 import { Add, Inbox as InboxIcon } from '@mui/icons-material';
 import PublicIcon from '@mui/icons-material/Public';
 import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, IconButton, List, Paper, Typography } from '@mui/material';
@@ -57,9 +58,8 @@ const AddressInput = () => {
 };
 
 export const Home = () => {
-  const { data: draftAnnotations = [], isLoading } = useGetList('drafts-annotations', {
+  const { data: projects = [], isLoading } = useGetList<AnalysisProject & { id: string }>('analysis-projects', {
     pagination: { page: 1, perPage: 6 },
-    filter: { status: 'TO_CONTACT' },
   });
 
   return (
@@ -78,20 +78,20 @@ export const Home = () => {
                 <CardContent>
                   <Grid container spacing={1}>
                     <Grid item xs={12} md={6}>
-                      <List>{!isLoading && draftAnnotations.slice(0, 3).map(dA => <ProjectListItem draftAnnotation={dA} key={dA.id} />)}</List>
+                      <List>{!isLoading && projects.slice(0, 3).map(project => <ProjectListItem project={project} key={project.id} />)}</List>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <List>{!isLoading && draftAnnotations.slice(3).map(dA => <ProjectListItem draftAnnotation={dA} key={dA.id} />)}</List>
+                      <List>{!isLoading && projects.slice(3).map(project => <ProjectListItem project={project} key={project.id} />)}</List>
                     </Grid>
                   </Grid>
-                  {!isLoading && draftAnnotations.length === 0 && (
+                  {!isLoading && projects.length === 0 && (
                     <Grid container spacing={3} justifyContent='center' minHeight={200}>
                       <Box display='flex' color='#00000050' marginTop='2rem' width='100%' height={200} alignItems='center' flexDirection='column'>
                         <div>
                           <InboxIcon sx={{ fontSize: '6rem' }} />
                         </div>
                         <Typography width={200} textAlign='center'>
-                          Aucune annotation n'a encore été effectuée.
+                          Aucun projet n'a encore été créé.
                         </Typography>
                       </Box>
                     </Grid>
