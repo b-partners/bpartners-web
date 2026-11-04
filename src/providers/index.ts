@@ -1,5 +1,6 @@
 export * from './account-holder-Provider';
 export * from './account-provider';
+export * from './analysis-project-provider';
 export * from './annotator-provider';
 export * from './api';
 export * from './asyncGetUserInfo';

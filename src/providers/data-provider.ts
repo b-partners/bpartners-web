@@ -12,6 +12,7 @@ import {
   RaDataProviderType,
   relaunchProvider,
 } from '.';
+import { analysisProjectProvider } from './analysis-project-provider';
 import { areaPictureDetailsProvider } from './area-picture-provider';
 import { draftAreaPictureAnnotatorProvider } from './draft-area-annotations-provider';
 import { invoiceProvider } from './invoice-provider';
@@ -29,6 +30,7 @@ const getProvider = (resourceType: string): BpDataProviderType => {
   if (resourceType === 'invoiceRelaunch') return relaunchProvider as any;
   if (resourceType === 'drafts-annotations') return draftAreaPictureAnnotatorProvider;
   if (resourceType === 'area-picture-details') return areaPictureDetailsProvider;
+  if (resourceType === 'analysis-projects') return analysisProjectProvider;
   if (resourceType === 'files') return fileProvider;
   throw new Error('Unexpected resourceType: ' + resourceType);
 };

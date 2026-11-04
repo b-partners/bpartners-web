@@ -2,6 +2,7 @@ import { BPLoader } from '@/common/components';
 import { parseUrlParams } from '@/common/utils';
 import { RoofAnnotator } from '@bpartners/roof-analyser';
 import { Box, Typography } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { useGetOne } from 'react-admin';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hasSavedGeoSession, readGeoSessionId } from './geo-session';
@@ -19,13 +20,15 @@ const readParam = (value?: string) => {
 export const Annotator = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const { address: addressParam, flow } = parseUrlParams();
+  const queryClient = useQueryClient();
+  const { address: addressParam, flow, prospectId: prospectIdParam } = parseUrlParams();
   const { apiKey, accountId, accountHolderId, userId, error: credentialsError } = useRoofAnalyserCredentials();
 
   const address = readParam(addressParam);
   const isNewSession = flow === 'geo';
   const { data: draftAnnotation, isLoading: isDraftLoading } = useGetOne('drafts-annotations', { id: projectId }, { enabled: !isNewSession && !!projectId });
   const sessionId = isNewSession ? projectId : readGeoSessionId(draftAnnotation);
+  const prospectId = readParam(prospectIdParam) ?? draftAnnotation?.areaPicture?.prospectId;
   const sessionAddress = address ?? draftAnnotation?.areaPicture?.address;
   const needsPosition = isNewSession || (!!sessionId && !hasSavedGeoSession(draftAnnotation));
   const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, apiKey);
@@ -64,6 +67,7 @@ export const Annotator = () => {
           sessionId={sessionId}
           {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
           {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
+          analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
           resolveWmsLayers={resolveWmsLayers}
           resolveActiveWmsLayer={resolveActiveWmsLayer}
           {...ROOF_MODEL_OPTIONS}

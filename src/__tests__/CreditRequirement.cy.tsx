@@ -15,6 +15,7 @@ describe('Credit requirement', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder');
     cy.intercept('GET', '/businessActivities?page=1&pageSize=100', businessActivities).as('getBusinessActivities');
     cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', []).as('getDrafts');
+    cy.intercept('GET', '/users/**/analysisProjects?page=*&pageSize=*', []).as('getAnalysisProjects');
     cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, emptyCreditBalance).as('getCreditBalance');
     cy.intercept('GET', '**/creditPacks*', creditPacks).as('getCreditPacks');
   });
