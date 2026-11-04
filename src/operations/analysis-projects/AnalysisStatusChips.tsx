@@ -5,6 +5,7 @@ import { AnalysisStatusChipsStyle } from './style';
 
 interface AnalysisStatusChipsProps {
   project?: AnalysisProject;
+  className?: string;
 }
 
 const PHASE_LABELS: Record<AnalysisProjectPhase, string> = {

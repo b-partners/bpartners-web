@@ -1,8 +1,12 @@
 import { BPLoader } from '@/common/components';
 import { parseUrlParams } from '@/common/utils';
+import { useCreditRequirement } from '@/operations/account/components/billing/use-credit-requirement';
+import { AnalysisStatusChips, useAnalysisProject } from '@/operations/analysis-projects';
 import { RoofAnnotator } from '@bpartners/roof-analyser';
+import { AnalysisProject } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { useGetOne } from 'react-admin';
 import { useNavigate, useParams } from 'react-router-dom';
 import { hasSavedGeoSession, readGeoSessionId } from './geo-session';
@@ -11,6 +15,10 @@ import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
 import { resolveActiveWmsLayer, resolveWmsLayers } from './wms-resolver';
+
+const PROJECT_REFRESH_MS = 15000;
+
+const isCreditShort = (project?: AnalysisProject) => project?.creditsSufficient === false && (project.creditCost ?? 0) > 0;
 
 const readParam = (value?: string) => {
   const trimmed = (value ?? '').trim();
@@ -34,6 +42,18 @@ export const Annotator = () => {
   const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, apiKey);
   const isLocating = isGeocoding || (needsPosition && !!sessionAddress && !position);
 
+  const { data: analysisProject, isLoading: isProjectLoading } = useAnalysisProject(sessionId, { refetchInterval: PROJECT_REFRESH_MS });
+  const { openCreditsRequiredModal } = useCreditRequirement();
+  const openedProjectRef = useRef(analysisProject);
+  if (analysisProject && !openedProjectRef.current) openedProjectRef.current = analysisProject;
+  const isCreditBlocked = isCreditShort(openedProjectRef.current);
+
+  useEffect(() => {
+    if (!isCreditBlocked) return;
+    openCreditsRequiredModal();
+    navigate('/');
+  }, [isCreditBlocked, navigate, openCreditsRequiredModal]);
+
   const error = credentialsError
     ? `La clé API du compte n'a pas pu être récupérée : ${credentialsError.message}`
     : geocodeError && `L'adresse n'a pas pu être localisée : ${geocodeError.message}`;
@@ -46,7 +66,7 @@ export const Annotator = () => {
     );
   }
 
-  if (!apiKey || isLocating || (!isNewSession && isDraftLoading)) {
+  if (!apiKey || isLocating || isProjectLoading || isCreditBlocked || (!isNewSession && isDraftLoading)) {
     return <BPLoader message='Chargement des données...' />;
   }
 
@@ -61,21 +81,24 @@ export const Annotator = () => {
 
   return (
     <Box sx={AnnotatorStyle}>
-      {sessionId ? (
-        <RoofAnnotator
-          {...config}
-          sessionId={sessionId}
-          {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
-          {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
-          analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
-          resolveWmsLayers={resolveWmsLayers}
-          resolveActiveWmsLayer={resolveActiveWmsLayer}
-          {...ROOF_MODEL_OPTIONS}
-          {...GEO_SESSION_OPTIONS}
-        />
-      ) : (
-        <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />
-      )}
+      {analysisProject && <AnalysisStatusChips className='annotator-status' project={analysisProject} />}
+      <Box className='annotator-content'>
+        {sessionId ? (
+          <RoofAnnotator
+            {...config}
+            sessionId={sessionId}
+            {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
+            {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
+            analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
+            resolveWmsLayers={resolveWmsLayers}
+            resolveActiveWmsLayer={resolveActiveWmsLayer}
+            {...ROOF_MODEL_OPTIONS}
+            {...GEO_SESSION_OPTIONS}
+          />
+        ) : (
+          <RoofAnnotator {...config} areaPictureId={projectId} idAnnotations={draftAnnotation?.draftId} />
+        )}
+      </Box>
     </Box>
   );
 };
