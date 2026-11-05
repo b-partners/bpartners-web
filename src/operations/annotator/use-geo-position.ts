@@ -9,27 +9,26 @@ interface GeoPositionState {
 }
 
 /**
- * The library's own geocoder, called before the annotator is mounted — so it is handed the configuration
- * by hand. Since 0.17.0 it takes `RoofCredentials`, which is `apiUrl` and `accessToken` and nothing else:
- * the lookup is a Dashboard API bridge (`GET {apiUrl}/geodata/geocode`) on the Bearer token, not a call to
- * the GeoData lambda on an `x-api-key`. The token is waited for rather than read from the cache: it is
- * resolved asynchronously beside this.
+ * The library's own geocoder since 0.14.6, called before the annotator is mounted — so it is handed the
+ * configuration by hand, `geocodeApiUrl` / `geocodeApiKey` included. The api key is waited for rather than
+ * read from the cache: it is resolved asynchronously beside this, and a blank one is what the geocoder
+ * falls back on when no `geocodeApiKey` is configured.
  */
-export const useGeoPosition = (address?: string, accessToken?: string): GeoPositionState => {
+export const useGeoPosition = (address?: string, apiKey?: string): GeoPositionState => {
   const [state, setState] = useState<GeoPositionState>({ isLoading: !!address });
 
   useEffect(() => {
     if (!address) return setState({ isLoading: false });
-    if (!accessToken) return setState({ isLoading: true });
+    if (!apiKey) return setState({ isLoading: true });
     let isActive = true;
     setState({ isLoading: true });
-    geocodeAddress({ address, apiUrl: ROOF_ANALYSER_CONFIG.apiUrl, accessToken })
+    geocodeAddress({ address, ...ROOF_ANALYSER_CONFIG, apiKey })
       .then(position => isActive && setState({ position, isLoading: false }))
       .catch(error => isActive && setState({ error, isLoading: false }));
     return () => {
       isActive = false;
     };
-  }, [address, accessToken]);
+  }, [address, apiKey]);
 
   return state;
 };

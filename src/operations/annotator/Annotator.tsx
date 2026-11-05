@@ -5,6 +5,7 @@ import { AnalysisStatusChips, useAnalysisProject } from '@/operations/analysis-p
 import { RoofAnnotator } from '@bpartners/roof-analyser';
 import { AnalysisProject } from '@bpartners/typescript-client';
 import { Box, Typography } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { useGetOne } from 'react-admin';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { GEO_SESSION_OPTIONS, ROOF_ANALYSER_CONFIG, ROOF_MODEL_OPTIONS } from '.
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
+import { resolveActiveWmsLayer, resolveWmsLayers } from './wms-resolver';
 
 const PROJECT_REFRESH_MS = 15000;
 
@@ -26,16 +28,18 @@ const readParam = (value?: string) => {
 export const Annotator = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const { address: addressParam, flow } = parseUrlParams();
-  const { accessToken, accountId, accountHolderId, userId, error: credentialsError } = useRoofAnalyserCredentials();
+  const queryClient = useQueryClient();
+  const { address: addressParam, flow, prospectId: prospectIdParam } = parseUrlParams();
+  const { apiKey, accountId, accountHolderId, userId, error: credentialsError } = useRoofAnalyserCredentials();
 
   const address = readParam(addressParam);
   const isNewSession = flow === 'geo';
   const { data: draftAnnotation, isLoading: isDraftLoading } = useGetOne('drafts-annotations', { id: projectId }, { enabled: !isNewSession && !!projectId });
   const sessionId = isNewSession ? projectId : readGeoSessionId(draftAnnotation);
+  const prospectId = readParam(prospectIdParam) ?? draftAnnotation?.areaPicture?.prospectId;
   const sessionAddress = address ?? draftAnnotation?.areaPicture?.address;
   const needsPosition = isNewSession || (!!sessionId && !hasSavedGeoSession(draftAnnotation));
-  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, accessToken);
+  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, apiKey);
   const isLocating = isGeocoding || (needsPosition && !!sessionAddress && !position);
 
   const { data: analysisProject, isLoading: isProjectLoading } = useAnalysisProject(sessionId, { refetchInterval: PROJECT_REFRESH_MS });
@@ -51,7 +55,7 @@ export const Annotator = () => {
   }, [isCreditBlocked, navigate, openCreditsRequiredModal]);
 
   const error = credentialsError
-    ? `La session n'a pas pu être authentifiée : ${credentialsError.message}`
+    ? `La clé API du compte n'a pas pu être récupérée : ${credentialsError.message}`
     : geocodeError && `L'adresse n'a pas pu être localisée : ${geocodeError.message}`;
 
   if (error) {
@@ -62,21 +66,13 @@ export const Annotator = () => {
     );
   }
 
-  if (!accessToken || isLocating || isProjectLoading || isCreditBlocked || (!isNewSession && isDraftLoading)) {
+  if (!apiKey || isLocating || isProjectLoading || isCreditBlocked || (!isNewSession && isDraftLoading)) {
     return <BPLoader message='Chargement des données...' />;
   }
 
-  /**
-   * The signed-in Cognito token is the library's whole credential since 0.17.0: every call it makes — the
-   * records, the geocoder, the imagery tiles, the roof detection, the 3D generation and the report — goes
-   * to the Dashboard API (`apiUrl`) as `Authorization: Bearer`. Nothing else is resolved or handed over,
-   * and the imagery resolvers this screen used to own went with it: the library reads the same
-   * `/map/layers*` endpoints itself and fetches each cell with that header, so the same-origin WMS proxy
-   * the GeoServer's missing CORS headers forced is no longer needed anywhere.
-   */
   const config = {
     ...ROOF_ANALYSER_CONFIG,
-    accessToken,
+    apiKey,
     accountId: accountId ?? undefined,
     accountHolderId: accountHolderId ?? undefined,
     userId: userId ?? undefined,
@@ -93,6 +89,9 @@ export const Annotator = () => {
             sessionId={sessionId}
             {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
             {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
+            analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
+            resolveWmsLayers={resolveWmsLayers}
+            resolveActiveWmsLayer={resolveActiveWmsLayer}
             {...ROOF_MODEL_OPTIONS}
             {...GEO_SESSION_OPTIONS}
           />
