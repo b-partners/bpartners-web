@@ -19,16 +19,6 @@ const readBooleanEnv = (value?: string) => {
 const definedOnly = <T extends object>(values: T) => Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined)) as Partial<T>;
 
 /**
- * The GeoData lambda, which the library geocodes against itself since 0.14.6 (`geocodeApiUrl` /
- * `geocodeApiKey`) — the same service this app's own `geocodeAddress` calls, handed over so an address
- * the library resolves on its own resolves against our env rather than its hardcoded production default.
- * The former `REACT_APP_WMS_RESOLVER*` names are still read as a fallback. A blank key is the signed-in
- * account's own, the library falling back on `apiKey`.
- */
-const GEODATA_API_URL = readEnv(process.env.REACT_APP_GEODATA_API_URL) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER);
-const GEODATA_API_KEY = readEnv(process.env.REACT_APP_GEODATA_API_KEY) ?? readEnv(process.env.REACT_APP_WMS_RESOLVER_API_KEY);
-
-/**
  * Debug and tuning knobs on the generated roof, spread into `<RoofAnnotator>` only when set — blank keeps
  * the library's own defaults (`roofModelMarginM` 2 m, both tolerances 0.5 m, the near-vertex guard on).
  * `roofModelMarginM` is the margin added around the roof sent to the 3D generation (0 sends it as traced),
@@ -63,28 +53,18 @@ export const GEO_SESSION_OPTIONS = definedOnly({
 });
 
 /**
- * Every service key `RoofAnalyserConfig` declares, `apiKey` and the account ids aside — those come from the
- * signed-in account (`use-roof-analyser-credentials.ts`). An absent variable leaves the key `undefined` and
- * the library falls back on its own default deployment.
+ * `apiUrl` is the only service url left to configure. Since 0.17.1 every downstream service is a bridge on
+ * the Dashboard API itself — the records, the geocoder, the aerial imagery, the roof detection, the 3D
+ * generation and the report all answer under that one host — and points are converted in-process, so the
+ * former per-service keys (`geoConverterApiUrl`, `detectionApiUrl`, `geocodeApiUrl`, `geocodeApiKey`,
+ * `llmApiUrl`, `llmApiKey`, `wmsBaseUrl`) no longer exist on `RoofAnalyserConfig`. An absent variable
+ * leaves the key `undefined` and the library falls back on its own production deployment.
  *
- * `wmsBaseUrl` is left to the library on purpose. This app tiles the map from its own layers
- * (`wms-resolver.ts`), so since 0.16.9 that key only reaches the detection service, as the GeoServer it
- * reads the analysed zone from. That service runs server-side and is refused on the public
- * `https://geoserver.birdia.fr` the browser uses; the library's default is the address it accepts.
- *
- * `geoConverterApiUrl` is a base url, not an endpoint: since 0.16.12 every point in the library goes
- * through that one deployment both ways — `{base}/mercator` reads a tile's pixels as lon/lat, `{base}/pixel`
- * reads lon/lat back as that tile's pixels — so the former per-direction keys (`converterApiUrl`,
- * `geoMercatorApiUrl`, `geoPixelApiUrl`, and the tile referencer the old `geoConverterApiUrl` named) are
- * gone. Point the variable at the deployment's root, with no path of its own.
+ * The credentials and the account ids are not here: they come from the signed-in account
+ * (`use-roof-analyser-credentials.ts`). The library authenticates the records with that `apiKey` as
+ * `x-api-key` and exchanges it at `POST {apiUrl}/token` for the Bearer the bridges take.
  */
 export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
-  geoConverterApiUrl: readEnv(process.env.REACT_APP_ANNOTATOR_GEO_CONVERTER_API_URL),
-  detectionApiUrl: readEnv(process.env.REACT_APP_GEO_DETECTION_API),
-  geocodeApiUrl: GEODATA_API_URL,
-  geocodeApiKey: GEODATA_API_KEY,
-  llmApiUrl: readEnv(process.env.LLM_ANALYSE_RESULT),
-  llmApiKey: readEnv(process.env.LLM_API_KEY),
   geojsonBaseUrl: readEnv(process.env.REACT_APP_GEOJSON_BASEURL),
 };

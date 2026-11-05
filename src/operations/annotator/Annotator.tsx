@@ -14,7 +14,6 @@ import { GEO_SESSION_OPTIONS, ROOF_ANALYSER_CONFIG, ROOF_MODEL_OPTIONS } from '.
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
-import { resolveActiveWmsLayer, resolveWmsLayers } from './wms-resolver';
 
 const PROJECT_REFRESH_MS = 15000;
 
@@ -90,8 +89,6 @@ export const Annotator = () => {
             {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
             {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
             analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
-            resolveWmsLayers={resolveWmsLayers}
-            resolveActiveWmsLayer={resolveActiveWmsLayer}
             {...ROOF_MODEL_OPTIONS}
             {...GEO_SESSION_OPTIONS}
           />
