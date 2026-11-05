@@ -7,7 +7,6 @@ const PARIS_LAYER = { id: 'paris', name: 'PARIS', year: 2025, precisionLevelInCm
 const SECURE_LINK_TOKEN = { value: 'secure-link-value', expiresAtEpochSecond: 4102444800 };
 // every cell comes off the API's own imagery bridge, GET {apiUrl}/geoserver/wms — never the GeoServer
 const WMS_TILE = '**/geoserver/wms?*';
-
 const openSession = (search: string) => {
   cy.window().then(window => window.history.pushState({}, '', `/projects/${SESSION_ID}${search}`));
   cy.mount(<App />);
@@ -23,9 +22,8 @@ describe('Annotator — session lon/lat de la librairie', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/analysisProjects/${SESSION_ID}`, { projectKey: SESSION_ID, creditsSufficient: true, creditCost: 1 }).as(
       'getAnalysisProject'
     );
-    cy.intercept('GET', '/api/keys', [{ id: 'api-key', apiKey: 'dummy-api-key' }]).as('apiKey');
-    // 0.17.1 reaches every bridge on a Bearer, exchanging the account's api key for it once per key
-    cy.intercept('POST', '**/token', { token: 'bridge-token', expiresAt: '2100-01-01T00:00:00Z' }).as('bridgeToken');
+    // the session token signs everything now: nothing should ever go looking for an account api key
+    cy.intercept('GET', '/api/keys', { statusCode: 500, body: '' }).as('apiKeyAsked');
 
     cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 2.3595545, latitude: 48.8552353 }).as('geocode');
     cy.intercept('GET', '**/map/layers/actual?*', { layer: PARIS_LAYER, secureLinkToken: SECURE_LINK_TOKEN }).as('activeLayer');
@@ -48,7 +46,10 @@ describe('Annotator — session lon/lat de la librairie', () => {
   it('géocode l’adresse puis ouvre la carte sur la couche active', () => {
     openSession(`?flow=geo&address=${encodeURIComponent(ADDRESS)}`);
 
-    cy.wait('@geocode');
+    cy.wait('@geocode').then(({ request }) => {
+      expect(request.headers.authorization).to.match(/^Bearer .+/);
+      expect(request.headers).to.not.have.property('x-api-key');
+    });
     cy.wait('@activeLayer').then(({ request }) => {
       expect(request.url).to.include('lat=48.8552353').and.to.include('lon=2.3595545');
       expect(request.headers.authorization).to.match(/^Bearer .+/);
@@ -61,8 +62,10 @@ describe('Annotator — session lon/lat de la librairie', () => {
       expect(request.headers.authorization).to.match(/^Bearer .+/);
     });
     cy.wait('@allLayers');
+
     cy.get('@geoserverDirect.all').should('have.length', 0);
     cy.get('@wmsProxy.all').should('have.length', 0);
+    cy.get('@apiKeyAsked.all').should('have.length', 0);
   });
 
   // the library owns the imagery now, so a refused cell is reported by its own error panel

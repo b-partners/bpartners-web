@@ -60,11 +60,11 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * `llmApiUrl`, `llmApiKey`, `wmsBaseUrl`) no longer exist on `RoofAnalyserConfig`. An absent variable
  * leaves the key `undefined` and the library falls back on its own production deployment.
  *
- * The credentials and the account ids are not here: they come from the signed-in account
- * (`use-roof-analyser-credentials.ts`). The library authenticates the records with that `apiKey` as
- * `x-api-key` and exchanges it at `POST {apiUrl}/token` for the Bearer the bridges take.
+ * The session token and the account ids are not here: they come from the signed-in account
+ * (`use-roof-analyser-credentials.ts`). Every call the library makes — the records and the bridges
+ * alike — carries that token as `Authorization: Bearer`; no api key is involved any more.
  */
-export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'apiKey'> = {
+export const ROOF_ANALYSER_CONFIG: Omit<RoofAnalyserConfig, 'accessToken'> = {
   apiUrl: readEnv(process.env.REACT_APP_BPARTNERS_API_URL),
   geojsonBaseUrl: readEnv(process.env.REACT_APP_GEOJSON_BASEURL),
 };

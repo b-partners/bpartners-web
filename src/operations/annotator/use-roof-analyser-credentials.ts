@@ -1,17 +1,26 @@
-import { getApiKey, getCached } from '@/providers';
+import { awsAuth, getCached } from '@/providers';
 import { useEffect, useState } from 'react';
 
+// The Cognito id token this app caches under `bp_access_token` at login — what every call to the
+// BPartners API is signed with. A live session is read back only when the cache is empty.
+const sessionToken = async () => {
+  const cachedToken = getCached.token().accessToken;
+  if (cachedToken) return cachedToken;
+  const session = await awsAuth.fetchAuthSession();
+  return session?.tokens?.idToken?.toString() ?? '';
+};
+
 export const useRoofAnalyserCredentials = () => {
-  const [apiKey, setApiKey] = useState(getCached.apiKey() ?? '');
+  const [accessToken, setAccessToken] = useState(getCached.token().accessToken ?? '');
   const [error, setError] = useState<Error>();
   const { accountId, accountHolderId, userId } = getCached.userInfo();
 
   useEffect(() => {
-    if (apiKey) return;
-    getApiKey()
-      .then(key => setApiKey(key ?? ''))
+    if (accessToken) return;
+    sessionToken()
+      .then(token => setAccessToken(token ?? ''))
       .catch(setError);
-  }, [apiKey]);
+  }, [accessToken]);
 
-  return { apiKey, accountId, accountHolderId, userId, error };
+  return { accessToken, accountId, accountHolderId, userId, error };
 };

@@ -19,10 +19,10 @@ kept only as a fallback for legacy drafts — see below.
 | File | Role |
 |---|---|
 | `src/operations/annotator/Annotator.tsx` | The `/projects/:projectId` screen: picks the flow, resolves credentials, renders `<RoofAnnotator>` |
-| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress` — `setConfig` first, since 0.17.1 takes only `apiUrl`/`accessToken` as call overrides and nothing is mounted yet to have set the config, and waiting on the api key |
+| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress`, handed `apiUrl` and `accessToken` directly since nothing is mounted yet to have set the config, and waiting on the token |
 | `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
-| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.17.1 cut `RoofAnalyserConfig` down to `apiUrl`, `geojsonBaseUrl`, the credentials and the account ids — every per-service url key is gone, so only those two variables are mapped here |
-| `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves `apiKey` (`getApiKey`) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
+| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.17.x cut `RoofAnalyserConfig` down to `apiUrl`, `geojsonBaseUrl`, `accessToken` and the account ids — every per-service url key is gone, so only those two variables are mapped here |
+| `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves the Cognito id token cached at `bp_access_token` (falling back to a live Amplify session) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
 
 Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLayout`).
 
@@ -75,8 +75,10 @@ the Dashboard API, and `<RoofAnnotator>` is mounted without `resolveWmsLayers` /
 — passing either one takes `createImagerySource()` out of the loop entirely, which is what used to send
 every cell straight to the GeoServer.
 
-Everything answers under `REACT_APP_BPARTNERS_API_URL`, on the Bearer the library mints from the
-account's api key (`POST {apiUrl}/token`, cached per key, renewed on expiry):
+Everything answers under `REACT_APP_BPARTNERS_API_URL`, on the signed-in session token the app hands the
+library as `accessToken` — sent as `Authorization: Bearer` on every call it makes, records and bridges
+alike. **No api key is involved any more** (0.17.2 dropped the `POST /token` exchange, and 0.17.1's
+`x-api-key` mode with it), so nothing asks the API for one:
 
 - `GET {apiUrl}/map/layers/actual?lat=&lon=` → `{ layer, secureLinkToken }` — the single layer the map
   opens on, and the only call it waits for.
@@ -126,8 +128,8 @@ so a lookup is billed once rather than per keystroke) would fit the prospect for
 Edit the library, not this repo. Rebuild it there, publish (the
 **Publish Library to CodeArtifact** workflow), then bump `@bpartners/roof-analyser` here.
 The library's own `README.md` documents both flows and every prop.
-`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the token exchange, the layer
-endpoints and the cells at `**/geoserver/wms?*`, asserts the map stage (`.geo-pans-stage`) mounts on the
-geocoded position with a `Bearer` on both the layer call and the cells, and asserts that nothing is
-requested from `geoserver.birdia.fr` or `/wms-proxy`. The lon/lat flow no longer draws on Leaflet, and a
+`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the layer endpoints and the cells
+at `**/geoserver/wms?*`, asserts the map stage (`.geo-pans-stage`) mounts on the
+geocoded position with a `Bearer` on the geocode, the layer call and the cells, and asserts that nothing
+is requested from `geoserver.birdia.fr`, `/wms-proxy` or `/api/keys`. The lon/lat flow no longer draws on Leaflet, and a
 refused cell surfaces through the library's own error panel (`.geo-error-title`).
