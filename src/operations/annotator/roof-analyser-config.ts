@@ -60,9 +60,8 @@ export const GEO_SESSION_OPTIONS = definedOnly({
  * configuration that matters: the records and every bridge — the geocoder (`/geodata/geocode`), the
  * imagery tiles (`/geoserver/wms`), the roof detection, the 3D generation and the LLM report — are read
  * from it on the Bearer token alone. The per-service keys that used to be handed over went with it
- * (`detectionApiUrl`, `geocodeApiUrl` / `geocodeApiKey`, `llmApiUrl` / `llmApiKey`, `wmsBaseUrl`); the
- * variables behind some of them are still read elsewhere in this app (`REACT_APP_GEO_DETECTION_API` by
- * `use-heart-beat.ts`), which is why they stay in the `.env`.
+ * (`detectionApiUrl`, `geocodeApiUrl` / `geocodeApiKey`, `llmApiUrl` / `llmApiKey`, `wmsBaseUrl`), and so
+ * did the variables behind them — nothing in this app reads them any more.
  *
  * `geoConverterApiUrl` is the one call that does not go to the Dashboard API, which bridges no converter.
  * It is a base url, not an endpoint: every point in the library goes through that one deployment both ways
