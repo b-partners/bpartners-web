@@ -14,7 +14,6 @@ import { GEO_SESSION_OPTIONS, ROOF_ANALYSER_CONFIG, ROOF_MODEL_OPTIONS } from '.
 import { AnnotatorStyle } from './style';
 import { useGeoPosition } from './use-geo-position';
 import { useRoofAnalyserCredentials } from './use-roof-analyser-credentials';
-import { resolveActiveWmsLayer, resolveWmsLayers } from './wms-resolver';
 
 const PROJECT_REFRESH_MS = 15000;
 
@@ -30,7 +29,7 @@ export const Annotator = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { address: addressParam, flow, prospectId: prospectIdParam } = parseUrlParams();
-  const { apiKey, accountId, accountHolderId, userId, error: credentialsError } = useRoofAnalyserCredentials();
+  const { accessToken, accountId, accountHolderId, userId, error: credentialsError } = useRoofAnalyserCredentials();
 
   const address = readParam(addressParam);
   const isNewSession = flow === 'geo';
@@ -39,7 +38,7 @@ export const Annotator = () => {
   const prospectId = readParam(prospectIdParam) ?? draftAnnotation?.areaPicture?.prospectId;
   const sessionAddress = address ?? draftAnnotation?.areaPicture?.address;
   const needsPosition = isNewSession || (!!sessionId && !hasSavedGeoSession(draftAnnotation));
-  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, apiKey);
+  const { position, isLoading: isGeocoding, error: geocodeError } = useGeoPosition(needsPosition ? sessionAddress : undefined, accessToken);
   const isLocating = isGeocoding || (needsPosition && !!sessionAddress && !position);
 
   const { data: analysisProject, isLoading: isProjectLoading } = useAnalysisProject(sessionId, { refetchInterval: PROJECT_REFRESH_MS });
@@ -55,7 +54,7 @@ export const Annotator = () => {
   }, [isCreditBlocked, navigate, openCreditsRequiredModal]);
 
   const error = credentialsError
-    ? `La clé API du compte n'a pas pu être récupérée : ${credentialsError.message}`
+    ? `Le jeton de session n'a pas pu être récupéré : ${credentialsError.message}`
     : geocodeError && `L'adresse n'a pas pu être localisée : ${geocodeError.message}`;
 
   if (error) {
@@ -66,13 +65,13 @@ export const Annotator = () => {
     );
   }
 
-  if (!apiKey || isLocating || isProjectLoading || isCreditBlocked || (!isNewSession && isDraftLoading)) {
+  if (!accessToken || isLocating || isProjectLoading || isCreditBlocked || (!isNewSession && isDraftLoading)) {
     return <BPLoader message='Chargement des données...' />;
   }
 
   const config = {
     ...ROOF_ANALYSER_CONFIG,
-    apiKey,
+    accessToken,
     accountId: accountId ?? undefined,
     accountHolderId: accountHolderId ?? undefined,
     userId: userId ?? undefined,
@@ -90,8 +89,6 @@ export const Annotator = () => {
             {...(isNewSession ? {} : { areaPictureId: projectId, annotationId: draftAnnotation?.draftId })}
             {...(position ? { latitude: position.latitude, longitude: position.longitude, address: sessionAddress } : {})}
             analysisProject={{ prospectId, onChange: () => queryClient.invalidateQueries({ queryKey: ['analysis-projects'] }) }}
-            resolveWmsLayers={resolveWmsLayers}
-            resolveActiveWmsLayer={resolveActiveWmsLayer}
             {...ROOF_MODEL_OPTIONS}
             {...GEO_SESSION_OPTIONS}
           />
