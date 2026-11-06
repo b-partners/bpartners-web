@@ -26,6 +26,19 @@ const isObjectElementsBlank = (obj: object): boolean => {
   });
   return false;
 };
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const emailValidator = (email: string): any => {
+  if (!email || email.trim().length === 0) {
+    return 'Ce champ est requis';
+  } else if (/[A-Z]/.test(email)) {
+    return "L'adresse mail ne doit pas contenir de majuscules";
+  } else if (!EMAIL_REGEX.test(email.trim())) {
+    return 'Adresse mail invalide';
+  }
+  return true;
+};
+
 export const phoneValidator = (phoneNumber: string): any => {
   if (!phoneNumber || phoneNumber.length === 0) {
     return 'Ce champ est requis';

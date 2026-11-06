@@ -1,7 +1,7 @@
 import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import { IconButton, TextField } from '@mui/material';
 import { ChangeEvent, FC, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useFormState, useWatch } from 'react-hook-form';
 import { BpFormFieldProps } from './types';
 
 const textFieldStyle = {
@@ -21,7 +21,7 @@ const passwordStyle = {
 
 // work with context, remove form in props
 export const BpFormField: FC<BpFormFieldProps> = props => {
-  const { name, label, type, validate, style, shouldValidate, ...others } = props;
+  const { name, label, type, validate, style, shouldValidate, transform, ...others } = props;
   const { register, setError, getFieldState, getValues } = useFormContext();
   const record = useWatch();
   const [visibility, setVisibility] = useState(false);
@@ -31,6 +31,7 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
 
   const dateProps = (type || '').includes('date') ? { InputLabelProps: { shrink: true } } : {};
 
+  useFormState({ name });
   const { error, invalid } = getFieldState(name);
   const errorStyle = invalid ? { error: true, helperText: error.message as string } : { error: false };
 
@@ -38,6 +39,12 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
   // and if shouldValidate is false, no validation will used
   const validationType = validate ? { validate: (e: ChangeEvent<HTMLInputElement>) => validate(e, record, setError) } : { required: 'Ce champ est requis' };
   const customRegister = register(name, shouldValidate !== false && validationType);
+  const handleChange = transform
+    ? (event: ChangeEvent<HTMLInputElement>) => {
+        event.target.value = transform(event.target.value);
+        return customRegister.onChange(event);
+      }
+    : customRegister.onChange;
 
   return (
     <TextField
@@ -48,6 +55,7 @@ export const BpFormField: FC<BpFormFieldProps> = props => {
       {...others}
       variant={others.variant || 'filled'}
       {...customRegister}
+      onChange={handleChange}
       data-testid={`${name}-field-input`}
       type={type === 'password' ? passwordType : type}
       value={record[name] || getValues(name) || ''}
