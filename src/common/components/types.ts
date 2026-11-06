@@ -17,6 +17,7 @@ export interface BpFormFieldProps extends Omit<TextFieldProps, 'style'> {
   validate?: any;
   shouldValidate?: boolean;
   style?: SxProps;
+  transform?: (value: string) => string;
 }
 
 export interface IconTipButtonProps extends IconButtonProps {
