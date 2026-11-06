@@ -16,16 +16,11 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ project }) => {
   const { data: prospect = {} as Prospect, isLoading } = useGetOne<Required<Prospect>>('prospects', { id: prospectId }, { enabled: !!prospectId });
   const navigate = useNavigate();
 
-  const navigateToAnnotation = () =>
-    navigate(
-      project.areaPictureId
-        ? `/projects/${project.areaPictureId}`
-        : `/projects/${project.projectKey}?flow=geo&address=${encodeURIComponent(project.address ?? '')}`
-    );
+  const navigateToAnnotation = () => navigate(`/projects/${project.areaPictureId}`);
 
   return (
     <ListItem disablePadding>
-      <ListItemButton onClick={navigateToAnnotation}>
+      <ListItemButton disabled={!project.areaPictureId} onClick={navigateToAnnotation}>
         <ListItemAvatar>
           <Avatar>
             <Public />
@@ -46,6 +41,12 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ project }) => {
               </Typography>
               <br />
               {project.creationDatetime && formatDateTimeWithoutSec(project.creationDatetime as any)}
+              {!project.areaPictureId && (
+                <>
+                  <br />
+                  Aucune visite associée à ce projet
+                </>
+              )}
               <AnalysisStatusChips project={project} />
             </>
           }
