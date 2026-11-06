@@ -19,11 +19,10 @@ kept only as a fallback for legacy drafts — see below.
 | File | Role |
 |---|---|
 | `src/operations/annotator/Annotator.tsx` | The `/projects/:projectId` screen: picks the flow, resolves credentials, renders `<RoofAnnotator>` |
-| `src/operations/annotator/wms-resolver.ts` | `resolveActiveWmsLayer` + `resolveWmsLayers` off the BPartners API, signed with the secure link token |
-| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress` (0.14.6+) — handed the config by hand, since nothing is mounted yet, and waiting on the api key |
+| `src/operations/annotator/use-geo-position.ts` | Geocodes the address of a brand-new session into the position the map locks onto, through the library's own `geocodeAddress`, handed `apiUrl` and `accessToken` directly since nothing is mounted yet to have set the config, and waiting on the token |
 | `src/operations/annotator/geo-session.ts` | `readGeoSessionId` — pulls the session id back out of a saved record's `properties.geoSession` |
-| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.14.6+: `REACT_APP_GEODATA_API_URL` / `REACT_APP_GEODATA_API_KEY` → `geocodeApiUrl` / `geocodeApiKey`, which is what the library's geocoder reads; blank sends it to the production geodata lambda it defaults to, with `apiKey` as its key |
-| `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves `apiKey` (`getApiKey`) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
+| `src/operations/annotator/roof-analyser-config.ts` | Maps `process.env.REACT_APP_*` / `LLM_*` variables to the library's `RoofAnalyserConfig`, and `REACT_APP_ROOF_MODEL_MARGIN_M` to `ROOF_MODEL_MARGIN_M` (the `roofModelMarginM` prop, 0.7.0+: meters added around the roof sent to the 3D generation; the library dropped its in-app setting for it, blank keeps its 2 m default). 0.8.0+: `REACT_APP_ROOF_SNAP_TOLERANCE_M` / `REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M` / `REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED` → `roofSnapToleranceM` / `roofSimplifyToleranceM` / `roofNearVertexBlockEnabled` (debug knobs on the generated roof cleanup; blank keeps the library defaults). All of them are spread into `<RoofAnnotator>` via `ROOF_MODEL_OPTIONS`, only when set. 0.12.0+: `REACT_APP_ROOF_DISABLE_SWITCH_BACK` → `disableSwitchBack`, spread separately via `GEO_SESSION_OPTIONS` (lon/lat flow only: closes the 2D tab for good once the analysis or the 3D generation has run, and drops the 3D screen's way back to the map; blank keeps the library's `false`). 0.17.x cut `RoofAnalyserConfig` down to `apiUrl`, `geojsonBaseUrl`, `accessToken` and the account ids — every per-service url key is gone, so only those two variables are mapped here |
+| `src/operations/annotator/use-roof-analyser-credentials.ts` | Resolves the Cognito id token cached at `bp_access_token` (falling back to a live Amplify session) and `accountId` / `accountHolderId` / `userId` from the cached whoami |
 
 Route: `/projects/:projectId` in `src/security/BpAdmin.tsx` (`CustomRoutes noLayout`).
 
@@ -71,44 +70,32 @@ inside the library.
 
 ## Imagery
 
-Two resolvers, this app's own. **Optional since 0.14.6**: left out, the library resolves the imagery
-itself with `createImagerySource()` — the same `/map/layers*` endpoints, signed with `x-api-key` plus a
-Bearer read from the config's `accessToken` (no longer deprecated), and `tileBaseUrl` for the proxy. The
-app keeps its own pair for the one thing the library's has not got: the shared `checkImagery` probe and
-its French error when the WMS proxy is missing.
+**The app wires nothing.** Since 0.17.1 the library resolves and fetches its own aerial imagery through
+the Dashboard API, and `<RoofAnnotator>` is mounted without `resolveWmsLayers` / `resolveActiveWmsLayer`
+— passing either one takes `createImagerySource()` out of the loop entirely, which is what used to send
+every cell straight to the GeoServer.
 
-Both resolve off **the BPartners API itself** (`REACT_APP_BPARTNERS_API_URL`), on the signed-in Cognito
-token as `Authorization: Bearer` — `bp_access_token` (`getCached.token()`), falling back to a live Amplify
-session only when the cache is empty. This mirrors the library playground's own `dev/wms-resolver.ts`,
-which is the reference implementation.
+Everything answers under `REACT_APP_BPARTNERS_API_URL`, on the signed-in session token the app hands the
+library as `accessToken` — sent as `Authorization: Bearer` on every call it makes, records and bridges
+alike. **No api key is involved any more** (0.17.2 dropped the `POST /token` exchange, and 0.17.1's
+`x-api-key` mode with it), so nothing asks the API for one:
 
-- `resolveActiveWmsLayer` — `GET {apiUrl}/map/layers/actual?lat=&lon=` → `{ layer, secureLinkToken }`. The
-  fast half: the library waits on it before showing the map. A bare layer is accepted too.
-- `resolveWmsLayers` — `GET {apiUrl}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }], secureLinkToken }`.
-  The slow half: only feeds the layer switcher; unreachable candidates are shown disabled. One
-  `secureLinkToken` covers every candidate — they all answer off the same GeoServer.
+- `GET {apiUrl}/map/layers/actual?lat=&lon=` → `{ layer, secureLinkToken }` — the single layer the map
+  opens on, and the only call it waits for.
+- `GET {apiUrl}/map/layers?lat=&lon=` → `{ layers: [{ layer, reachable }], secureLinkToken }` — the
+  slower full list, which only fills the layer switcher; unreachable candidates are shown disabled.
+- `GET {apiUrl}/geoserver/wms?…&request=GetMap` — every cell, carrying the `secureLinkToken` as `token=`
+  and `expires=` on top of the Bearer.
+- `GET {apiUrl}/geodata/geocode?address=…` — an address, which `use-geo-position.ts` calls before the
+  annotator mounts.
 
-**No session token ever reaches the GeoServer.** Each answer carries a `secureLinkToken` (the nginx
-`secure_link`) and every cell is signed with it: `token=` its `value`, `expires=` its
-`expiresAtEpochSecond`. It replaced the Cognito token the cells used to carry.
+So no tile and no token ever reaches `geoserver.birdia.fr` directly, and there is no WMS proxy: the
+`/wms-proxy` dev-server entry, `REACT_APP_WMS_TILE_BASE_URL` and `GEOSERVER_ORIGIN` are all gone. The
+bridge must answer CORS for the app's origin — if cells come back as CORS failures that is a backend
+configuration matter, not a reason to reintroduce a proxy.
 
-**Tiles never go to a `wmsBaseUrl` the endpoints return.** The secure link answers for authentication, not
-for CORS: the library reads each cell with `fetch` + `createImageBitmap`, which needs a same-origin url,
-and the GeoServer sends no CORS headers. Tiles are built against `REACT_APP_WMS_TILE_BASE_URL`, default
-`/wms-proxy` — the Vite dev server's proxy (vite.config.ts) to `GEOSERVER_ORIGIN`, default
-`http://35.181.83.111`. **A deployed build has no `/wms-proxy`**: it needs a same-origin https proxy and
-`REACT_APP_WMS_TILE_BASE_URL` pointed at it.
-
-Addresses are still geocoded off the GeoData lambda, `GET {REACT_APP_GEODATA_API_URL}/geocode`, on an
-`x-api-key` (`REACT_APP_GEODATA_API_KEY`, falling back to the account's key). The former
-`REACT_APP_WMS_RESOLVER` / `REACT_APP_WMS_RESOLVER_API_KEY` are still read as a fallback for both.
-
-A refused cell is a blank square with nothing said, so both resolvers await **one shared probe per
-position** (`checkImagery`): it fetches one cell exactly as the library does and throws
-`L'imagerie n'a pas pu être chargée (HTTP …)` on a non-2xx or non-image answer — the latter catches a
-deployment serving its own `index.html` for a missing proxy. It has to fail both resolvers: the library
-opens the map on `/actual` **or**, failing that, on the `/layers` list, and reports an error only when
-neither yields a layer.
+A refused cell is reported by the library's own error panel (`.geo-error-title`), so the app needs no
+probe of its own; the former `checkImagery` went with the resolvers.
 
 ## What the app still owns
 
@@ -141,7 +128,8 @@ so a lookup is billed once rather than per keystroke) would fit the prospect for
 Edit the library, not this repo. Rebuild it there, publish (the
 **Publish Library to CodeArtifact** workflow), then bump `@bpartners/roof-analyser` here.
 The library's own `README.md` documents both flows and every prop.
-`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the resolver and asserts the map
-stage (`.geo-pans-stage`) mounts on the geocoded position, on the cells of `REACT_APP_WMS_TILE_BASE_URL`.
-The lon/lat flow no longer draws on Leaflet, and a refused cell is reported by the library's own error
-panel (`.geo-error-title`) — `checkImagery`'s French message never reaches the screen.
+`src/__tests__/GeoAnnotatorSession.cy.tsx` guards the wiring: it stubs the layer endpoints and the cells
+at `**/geoserver/wms?*`, asserts the map stage (`.geo-pans-stage`) mounts on the
+geocoded position with a `Bearer` on the geocode, the layer call and the cells, and asserts that nothing
+is requested from `geoserver.birdia.fr`, `/wms-proxy` or `/api/keys`. The lon/lat flow no longer draws on Leaflet, and a
+refused cell surfaces through the library's own error panel (`.geo-error-title`).

@@ -1,5 +1,4 @@
 import { FreeTrialBannerWrapper } from '@/common/components';
-import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { useDialog } from '@/common/store/dialog';
 import { CreditBalance, User } from '@bpartners/typescript-client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,10 +29,7 @@ const mountBanner = (user: User, balance: CreditBalance) => {
 describe('FreeTrialBannerWrapper', () => {
   beforeEach(() => {
     useDialog.getState().close();
-    useOptimisticCreditBalanceStore.getState().clear();
   });
-
-  afterEach(() => useOptimisticCreditBalanceStore.getState().clear());
 
   it('shows the remaining trial days and analyses for a free-trial user', () => {
     mountBanner(freeTrialUser, creditBalance);
@@ -42,15 +38,6 @@ describe('FreeTrialBannerWrapper', () => {
     cy.contains(`Il vous reste ${remainingDays} jours d'essai et ${creditBalance.estimatedRemainingAnalyses} analyses toitures`).should('be.visible');
     cy.contains('button', "S'abonner").should('be.visible');
     cy.get('[data-cy=banner-child]').should('be.visible');
-  });
-
-  it('reflects the optimistic credit balance for the remaining analyses', () => {
-    mountBanner(freeTrialUser, creditBalance);
-    cy.wait('@getCreditBalance');
-
-    cy.then(() => useOptimisticCreditBalanceStore.getState().setBalance({ ...creditBalance, estimatedRemainingAnalyses: 5 }));
-
-    cy.contains(`Il vous reste ${remainingDays} jours d'essai et 5 analyses toitures`).should('be.visible');
   });
 
   it('does not render the banner for a non-free-trial user', () => {

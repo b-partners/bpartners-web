@@ -150,8 +150,18 @@ describe(specTitle('SignUp promo code'), () => {
     cy.contains('Échec de la vérification anti-robot, veuillez réessayer');
   });
 
-  it('shows the API error message when the submit fails', () => {
-    cy.intercept('POST', '**/onboarding', { statusCode: 400, body: { message: 'Email already used' } }).as('onboard');
+  it('forces the email to lowercase as the user types', () => {
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    cy.get("[name='email']").type('John.DOE@GMAIL.com');
+    cy.get("[name='email']").should('have.value', 'john.doe@gmail.com');
+  });
+
+  it('shows a dedicated error and flags the email field when the address is already used', () => {
+    cy.intercept('POST', '**/onboarding', { statusCode: 409, body: { message: 'Email already used' } }).as('onboard');
     cy.mount(
       <MemoryRouter initialEntries={['/sign-up']}>
         <SignUpForm />
@@ -160,7 +170,21 @@ describe(specTitle('SignUp promo code'), () => {
     fillRequiredFields();
     cy.get("[type='submit']").click();
     cy.wait('@onboard');
-    cy.contains('Email already used');
+    cy.contains('Cette adresse mail est déjà utilisée');
+    cy.get("[name='email']").parents('.MuiFormControl-root').first().find('.MuiFormHelperText-root').should('contain', 'Cette adresse mail est déjà utilisée');
+  });
+
+  it('shows the API error message when credentials are invalid (400)', () => {
+    cy.intercept('POST', '**/onboarding', { statusCode: 400, body: { message: 'Invalid phone number' } }).as('onboard');
+    cy.mount(
+      <MemoryRouter initialEntries={['/sign-up']}>
+        <SignUpForm />
+      </MemoryRouter>
+    );
+    fillRequiredFields();
+    cy.get("[type='submit']").click();
+    cy.wait('@onboard');
+    cy.contains('Invalid phone number');
   });
 
   it('shows a toast when required fields are missing on submit', () => {
