@@ -1,6 +1,5 @@
 import { useToggle } from '@/common/hooks';
-import { useOptimisticCreditBalanceStore } from '@/common/store';
-import { CREDIT_BALANCE_QUERY_KEY, useGetCreditBalance, useGetCreditPacks, useOptimisticBalanceReconciliation } from '@/operations/account/queries';
+import { CREDIT_BALANCE_QUERY_KEY, useGetCreditBalance, useGetCreditPacks } from '@/operations/account/queries';
 import { CREDIT_PURCHASE_ID_PARAM, CREDIT_PURCHASE_STATUS_PARAM, getCreditPurchase, submitCreditPurchase } from '@/providers';
 import { CreditPack, CreditPurchase, CreditPurchaseStatus, CreditPurchaseType, UserSubscription } from '@bpartners/typescript-client';
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded';
@@ -41,11 +40,8 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
   const [candidate, setCandidate] = useState<CreditPurchaseCandidate>();
   const [searchParams, setSearchParams] = useSearchParams();
   const pollCount = useRef(0);
-  const { balance, isBalanceLoading, isBalanceError, refetchBalance } = useGetCreditBalance();
+  const { balance, isBalanceLoading, isBalanceError } = useGetCreditBalance();
   const { packs, isPacksLoading, isPacksError } = useGetCreditPacks(arePacksOpen);
-  const optimisticBalance = useOptimisticCreditBalanceStore(state => state.balance);
-  const clearOptimisticBalance = useOptimisticCreditBalanceStore(state => state.clear);
-  const displayedBalance = optimisticBalance ?? balance;
 
   const trackedPurchaseId = searchParams.get(CREDIT_PURCHASE_ID_PARAM);
   const trackedStatus = searchParams.get(CREDIT_PURCHASE_STATUS_PARAM);
@@ -62,7 +58,6 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
     notify(`Paiement effectué, ${formatCredits(purchase.credits)} crédits ont été ajoutés à votre solde. Votre facture vous sera envoyée par mail.`, {
       type: 'success',
     });
-    clearOptimisticBalance();
     queryClient.invalidateQueries({ queryKey: CREDIT_BALANCE_QUERY_KEY });
     onCompleted?.();
   };
@@ -115,8 +110,6 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
     return () => clearTimeout(timer);
   }, [focusPacks]);
 
-  useOptimisticBalanceReconciliation(refetchBalance);
-
   const onSelectPack = (pack: CreditPack, credits: number) => setCandidate({ purchaseId: uuid(), pack, credits });
 
   const onConfirmPurchase = () => {
@@ -128,11 +121,11 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
 
   const getGrantRenewalNote = () => {
     if (!hasActivePlan(subscription)) return 'Les crédits inclus nécessitent un abonnement actif.';
-    if (!displayedBalance?.nextGrantDatetime) return 'Vos crédits inclus sont renouvelés à chaque période de facturation.';
-    return `Vos crédits inclus sont renouvelés le ${formatDate(displayedBalance.nextGrantDatetime)} et ne sont jamais reportés.`;
+    if (!balance?.nextGrantDatetime) return 'Vos crédits inclus sont renouvelés à chaque période de facturation.';
+    return `Vos crédits inclus sont renouvelés le ${formatDate(balance.nextGrantDatetime)} et ne sont jamais reportés.`;
   };
 
-  const nextExpiration = displayedBalance?.expirations?.[0];
+  const nextExpiration = balance?.expirations?.[0];
 
   return (
     <BillingSection
@@ -141,16 +134,16 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
       title="Crédits d'analyses"
       subtitle='Votre solde de crédits et vos achats de crédits supplémentaires.'
     >
-      {!displayedBalance && isBalanceLoading ? (
+      {!balance && isBalanceLoading ? (
         <Box className='billing-state'>
           <CircularProgress size={18} />
           Chargement de votre solde de crédits…
         </Box>
-      ) : !displayedBalance && isBalanceError ? (
+      ) : !balance && isBalanceError ? (
         <Typography className='billing-state'>Impossible de charger votre solde de crédits pour le moment.</Typography>
       ) : (
         <Box className='billing-credits-overview'>
-          <CreditBalanceDonut balance={displayedBalance} />
+          <CreditBalanceDonut balance={balance} />
           <Box className='billing-credits-details'>
             <Box className='billing-credit-line'>
               <Box component='span' className='billing-credit-dot billing-credit-dot--granted' />
@@ -158,7 +151,7 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
                 Crédits inclus
               </Typography>
               <Typography component='span' className='billing-credit-line-value'>
-                {formatCredits(displayedBalance?.grantedCredits)}
+                {formatCredits(balance?.grantedCredits)}
               </Typography>
             </Box>
             <Box className='billing-credit-line'>
@@ -167,13 +160,13 @@ export const BillingCreditsSection: FC<BillingCreditsSectionProps> = ({ subscrip
                 Crédits achetés
               </Typography>
               <Typography component='span' className='billing-credit-line-value'>
-                {formatCredits(displayedBalance?.purchasedCredits)}
+                {formatCredits(balance?.purchasedCredits)}
               </Typography>
             </Box>
-            {!!displayedBalance?.creditCostPerAnalysis && (
+            {!!balance?.creditCostPerAnalysis && (
               <Typography className='billing-credit-note'>
-                <strong>{`≈ ${formatCredits(displayedBalance?.estimatedRemainingAnalyses)} analyses`}</strong>
-                {` restantes · ${formatCredits(displayedBalance.creditCostPerAnalysis)} crédits par analyse.`}
+                <strong>{`≈ ${formatCredits(balance?.estimatedRemainingAnalyses)} analyses`}</strong>
+                {` restantes · ${formatCredits(balance.creditCostPerAnalysis)} crédits par analyse.`}
               </Typography>
             )}
             <Typography className='billing-credit-note'>{getGrantRenewalNote()}</Typography>

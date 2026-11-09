@@ -41,6 +41,7 @@ describe('Siren', () => {
     cy.cognitoLogin();
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccounts');
     cy.intercept('GET', '/accounts/**/annotations/drafts?page=*&pageSize=*', []).as('getDrafts');
+    cy.intercept('GET', '/users/**/analysisProjects?page=*&pageSize=*', []).as('getAnalysisProjects');
     cy.intercept('GET', '/businessActivities?page=1&pageSize=100', businessActivities).as('getBusinessActivities');
     cy.intercept('GET', `/users/${whoami1.user.id}/creditBalance`, creditBalance).as('getCreditBalance');
     interceptAccountHolder();

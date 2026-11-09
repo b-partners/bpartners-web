@@ -61,7 +61,7 @@ export const useMutateProspect = () => {
     const onDraftAnnotationSuccess = () => {
       complete();
       wait(800).then(() => {
-        navigate(`/projects/${sessionId}?flow=geo&address=${encodeURIComponent(prospect.address || '')}`);
+        navigate(`/projects/${sessionId}?flow=geo&prospectId=${prospectId}&address=${encodeURIComponent(prospect.address || '')}`);
         useDialog.getState().close();
       });
     };

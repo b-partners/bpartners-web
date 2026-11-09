@@ -5,10 +5,8 @@ const SESSION_ID = '7c1b2f5e-9a3d-4c8e-9f21-6d4a8b0e5c33';
 const ADDRESS = '10 rue de Rivoli, Paris';
 const PARIS_LAYER = { id: 'paris', name: 'PARIS', year: 2025, precisionLevelInCm: 5 };
 const SECURE_LINK_TOKEN = { value: 'secure-link-value', expiresAtEpochSecond: 4102444800 };
-// the cells are read off REACT_APP_WMS_TILE_BASE_URL, the dev server's own /wms-proxy only when it is blank
-const WMS_TILE_BASE_URL = (process.env.REACT_APP_WMS_TILE_BASE_URL || '').trim() || '/wms-proxy';
-const WMS_TILE = new RegExp(`${WMS_TILE_BASE_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\?`);
-
+// every cell comes off the API's own imagery bridge, GET {apiUrl}/geoserver/wms — never the GeoServer
+const WMS_TILE = '**/geoserver/wms?*';
 const openSession = (search: string) => {
   cy.window().then(window => window.history.pushState({}, '', `/projects/${SESSION_ID}${search}`));
   cy.mount(<App />);
@@ -21,7 +19,11 @@ describe('Annotator — session lon/lat de la librairie', () => {
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts`, accounts1).as('getAccount');
     cy.intercept('GET', `/users/${whoami1.user.id}/accounts/${accounts1[0].id}/accountHolders`, accountHolders1).as('getAccountHolder');
 
-    cy.intercept('GET', '/api/keys', [{ id: 'api-key', apiKey: 'dummy-api-key' }]).as('apiKey');
+    cy.intercept('GET', `/users/${whoami1.user.id}/analysisProjects/${SESSION_ID}`, { projectKey: SESSION_ID, creditsSufficient: true, creditCost: 1 }).as(
+      'getAnalysisProject'
+    );
+    // the session token signs everything now: nothing should ever go looking for an account api key
+    cy.intercept('GET', '/api/keys', { statusCode: 500, body: '' }).as('apiKeyAsked');
 
     cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 2.3595545, latitude: 48.8552353 }).as('geocode');
     cy.intercept('GET', '**/map/layers/actual?*', { layer: PARIS_LAYER, secureLinkToken: SECURE_LINK_TOKEN }).as('activeLayer');
@@ -33,6 +35,9 @@ describe('Annotator — session lon/lat de la librairie', () => {
       ],
     }).as('allLayers');
     cy.intercept('GET', WMS_TILE, { fixture: 'test-annotator-image.jpeg', headers: { 'content-type': 'image/jpeg' } }).as('wmsTile');
+    // the GeoServer and the former dev proxy are both out of the picture: catch any cell that still goes there
+    cy.intercept({ hostname: 'geoserver.birdia.fr' }, { statusCode: 500, body: '' }).as('geoserverDirect');
+    cy.intercept('GET', '**/wms-proxy*', { statusCode: 500, body: '' }).as('wmsProxy');
 
     cy.intercept('PUT', '/accounts/**/areaPictures/**', {}).as('saveRecord');
     cy.intercept('GET', '/accounts/**/areaPictures/**', {}).as('readRecord');
@@ -41,22 +46,29 @@ describe('Annotator — session lon/lat de la librairie', () => {
   it('géocode l’adresse puis ouvre la carte sur la couche active', () => {
     openSession(`?flow=geo&address=${encodeURIComponent(ADDRESS)}`);
 
-    cy.wait('@geocode');
+    cy.wait('@geocode').then(({ request }) => {
+      expect(request.headers.authorization).to.match(/^Bearer .+/);
+      expect(request.headers).to.not.have.property('x-api-key');
+    });
     cy.wait('@activeLayer').then(({ request }) => {
       expect(request.url).to.include('lat=48.8552353').and.to.include('lon=2.3595545');
       expect(request.headers.authorization).to.match(/^Bearer .+/);
     });
     cy.get('.geo-pans-stage', { timeout: 30000 }).should('exist');
     cy.get('.geo-topbar-layer-name').should('contain.text', PARIS_LAYER.name);
-    cy.wait('@wmsTile')
-      .its('request.url')
-      .should('include', 'layers=PARIS')
-      .and('include', 'token=secure-link-value')
-      .and('include', `expires=${SECURE_LINK_TOKEN.expiresAtEpochSecond}`);
+    cy.wait('@wmsTile').then(({ request }) => {
+      expect(request.url).to.include('request=GetMap').and.to.include('layers=PARIS');
+      expect(request.url).to.include('token=secure-link-value').and.to.include(`expires=${SECURE_LINK_TOKEN.expiresAtEpochSecond}`);
+      expect(request.headers.authorization).to.match(/^Bearer .+/);
+    });
     cy.wait('@allLayers');
+
+    cy.get('@geoserverDirect.all').should('have.length', 0);
+    cy.get('@wmsProxy.all').should('have.length', 0);
+    cy.get('@apiKeyAsked.all').should('have.length', 0);
   });
 
-  // the library reports the refusal with its own wording, the resolver's own message never reaches the screen
+  // the library owns the imagery now, so a refused cell is reported by its own error panel
   it('signale une imagerie refusée au lieu d’afficher une carte vide', () => {
     cy.intercept('GET', '**/geocode?address=*', { score: 0, longitude: 5.3698, latitude: 43.2965 }).as('geocode');
     cy.intercept('GET', WMS_TILE, { statusCode: 401, body: '' }).as('refusedTile');

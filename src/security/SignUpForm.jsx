@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { BpFormField } from '@/common/components';
 import { useToggle } from '@/common/hooks';
 import { handleSubmit, useWrappedSearchParams } from '@/common/utils';
-import { phoneValidator } from '@/operations/account/utils';
+import { emailValidator, phoneValidator } from '@/operations/account/utils';
 import { recaptchaProvider } from '@/providers';
 import { isPromoCodeValid, onboarding } from '@/providers/account-provider';
 import { BP_COLOR } from '../bp-theme';
@@ -20,6 +20,20 @@ const RECAPTCHA_TIMEOUT_MS = 10000;
 // a timeout the submit button hangs forever with no feedback.
 const withTimeout = (promise, ms) =>
   Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+
+const describeSignUpError = error => {
+  const status = error?.response?.status;
+  const apiMessage = error?.response?.data?.message ?? error?.message ?? '';
+  const normalized = apiMessage.toLowerCase();
+  const isDuplicate = status === 409 || /already|exist|d[ée]j[àa]|duplicat|taken|utilis/.test(normalized);
+  if (isDuplicate) {
+    return { field: 'email', message: 'Cette adresse mail est déjà utilisée. Connectez-vous ou utilisez-en une autre.' };
+  }
+  if (status === 400) {
+    return { field: null, message: apiMessage || 'Certaines informations saisies sont invalides, veuillez les vérifier.' };
+  }
+  return { field: null, message: apiMessage || "Une erreur s'est produite." };
+};
 
 export const SignUpForm = () => {
   // react-admin's useNotify() is a no-op here: /sign-up renders outside <Admin>,
@@ -62,10 +76,15 @@ export const SignUpForm = () => {
           notify('Promo code invalide', { type: 'warning' });
         }
 
-        await onboarding([data]);
+        const payload = { ...data, email: (data.email || '').trim().toLowerCase() };
+        await onboarding([payload]);
         handleOpenModal();
       } catch (error) {
-        notify(error?.response?.data?.message ?? error?.message ?? "Une erreur s'est produite.", { type: 'error' });
+        const { field, message } = describeSignUpError(error);
+        if (field) {
+          form.setError(field, { type: 'server', message });
+        }
+        notify(message, { type: 'error' });
       } finally {
         stopLoading();
       }
@@ -94,7 +113,15 @@ export const SignUpForm = () => {
           <FormProvider {...form}>
             <BpFormField label='Nom' name='lastName' form={form} />
             <BpFormField label='Prénom' name='firstName' form={form} />
-            <BpFormField label='Adresse mail' name='email' form={form} />
+            <BpFormField
+              label='Adresse mail'
+              name='email'
+              type='email'
+              validate={emailValidator}
+              transform={value => value.toLowerCase()}
+              inputProps={{ autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false, autoComplete: 'email', inputMode: 'email' }}
+              form={form}
+            />
             <BpFormField label='Numéro de téléphone' validate={phoneValidator} name='phoneNumber' form={form} />
             <BpFormField label='Nom de la société' name='companyName' form={form} />
             <BpFormField label='Code promo' name='promoCode' shouldValidate={false} form={form} />

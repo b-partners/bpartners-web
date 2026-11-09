@@ -1,6 +1,5 @@
 import App from '@/App';
 import { FreeTrialBannerWrapper, SecondaryUserInvitationBanner } from '@/common/components';
-import { useOptimisticCreditBalanceStore } from '@/common/store';
 import { Redirect } from '@/common/utils';
 import { SecondaryUserBadge } from '@/layout/appbar/SecondaryUserBadge';
 import { CreditsRequiredModalContent } from '@/operations/account/components/billing';
@@ -224,41 +223,6 @@ describe('Account page', () => {
 
     cy.dataCy('secondary-user-credits-chart').should('contain.text', '320');
     cy.dataCy('secondary-user-no-credits').should('not.exist');
-  });
-
-  describe('optimistic balance reconciliation', () => {
-    const optimisticBalance = { ...creditBalance, spendableCredits: 310, grantedCredits: 190, purchasedCredits: 120 };
-
-    beforeEach(() => useOptimisticCreditBalanceStore.getState().clear());
-
-    afterEach(() => useOptimisticCreditBalanceStore.getState().clear());
-
-    const openAccountWith = (balance: typeof creditBalance) => {
-      cy.cognitoLogin({ whoami: secondaryWhoami });
-      stubAccountApis();
-      cy.intercept('GET', `/users/${user1.id}/creditBalance`, balance).as('getReconciledBalance');
-      cy.mount(<App />);
-      cy.wait('@getAccountHolder');
-      cy.get('[name="account"]').click();
-      cy.wait('@getReconciledBalance');
-      cy.then(() => useOptimisticCreditBalanceStore.getState().setBalance(optimisticBalance));
-    };
-
-    it('displays the optimistic balance and keeps it while the API stays stale', () => {
-      openAccountWith(creditBalance);
-
-      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
-      cy.wait('@getReconciledBalance');
-      cy.wrap(null).should(() => expect(useOptimisticCreditBalanceStore.getState().balance).to.not.be.undefined);
-      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
-    });
-
-    it('clears the optimistic balance once the API returns the matching balance', () => {
-      openAccountWith(optimisticBalance);
-
-      cy.wrap(null, { timeout: 8000 }).should(() => expect(useOptimisticCreditBalanceStore.getState().balance).to.be.undefined);
-      cy.dataCy('secondary-user-credits-chart').should('contain.text', '310');
-    });
   });
 
   it('keeps the secondary card at the same height as the user card', () => {
