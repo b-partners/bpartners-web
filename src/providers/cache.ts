@@ -13,7 +13,10 @@ const calendarSyncItem = 'bp_calendar_sync_item';
 const apiKeyItem = 'bp_user_api_key';
 const loadingRedirectionItems = 'bp_loading_params_item';
 const annotatorTutorialSeenItem = 'bp_annotator_tutorial_seen';
+const roofAnalyserTutorialSeenItem = 'roof-annotator-tutorial-seen';
 const pendingTrialPlanItem = 'bp_pending_trial_plan';
+
+const persistentItems = [annotatorTutorialSeenItem, roofAnalyserTutorialSeenItem];
 
 const cacheObject = <T>(key: string, value: T) => {
   const valueAsString = JSON.stringify({ ...value });
@@ -123,11 +126,15 @@ export const getCached = {
     return localStorage.getItem(loadingRedirectionItems);
   },
   annotatorTutorialSeen(): boolean {
-    return JSON.parse(localStorage.getItem(annotatorTutorialSeenItem) || 'false');
+    return localStorage.getItem(roofAnalyserTutorialSeenItem) === 'true' || JSON.parse(localStorage.getItem(annotatorTutorialSeenItem) || 'false');
   },
 };
 
 export const clearCache = () => {
+  const persistedEntries = persistentItems.map(key => [key, localStorage.getItem(key)] as const);
   localStorage.clear();
   sessionStorage.clear();
+  persistedEntries.forEach(([key, value]) => {
+    if (value !== null) localStorage.setItem(key, value);
+  });
 };
