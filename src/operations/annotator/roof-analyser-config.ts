@@ -20,16 +20,14 @@ const definedOnly = <T extends object>(values: T) => Object.fromEntries(Object.e
 
 /**
  * Debug and tuning knobs on the generated roof, spread into `<RoofAnnotator>` only when set — blank keeps
- * the library's own defaults (`roofModelMarginM` 2 m, both tolerances 0.5 m, the near-vertex guard on).
- * `roofModelMarginM` is the margin added around the roof sent to the 3D generation (0 sends it as traced),
- * the tolerances merge and drop generated corners, and `roofNearVertexBlockEnabled` refuses a corner drag
- * that lands on another corner of the same pan.
+ * the library's own defaults (`roofModelMarginM` 2 m, both tolerances 0.5 m). `roofModelMarginM` is the
+ * margin added around the roof sent to the 3D generation (0 sends it as traced), and the tolerances merge
+ * and drop generated corners.
  */
 export const ROOF_MODEL_OPTIONS = definedOnly({
   roofModelMarginM: readNumberEnv(process.env.REACT_APP_ROOF_MODEL_MARGIN_M),
   roofSnapToleranceM: readNumberEnv(process.env.REACT_APP_ROOF_SNAP_TOLERANCE_M),
   roofSimplifyToleranceM: readNumberEnv(process.env.REACT_APP_ROOF_SIMPLIFY_TOLERANCE_M),
-  roofNearVertexBlockEnabled: readBooleanEnv(process.env.REACT_APP_ROOF_NEAR_VERTEX_BLOCK_ENABLED),
 });
 
 /**
