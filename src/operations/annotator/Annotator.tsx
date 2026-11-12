@@ -1,4 +1,5 @@
 import { BPLoader } from '@/common/components';
+import { useHeartBeat } from '@/common/hooks';
 import { parseUrlParams } from '@/common/utils';
 import { useCreditRequirement } from '@/operations/account/components/billing/use-credit-requirement';
 import { AnalysisStatusChips, useAnalysisProject } from '@/operations/analysis-projects';
@@ -25,6 +26,7 @@ const readParam = (value?: string) => {
 };
 
 export const Annotator = () => {
+  useHeartBeat();
   const { projectId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
