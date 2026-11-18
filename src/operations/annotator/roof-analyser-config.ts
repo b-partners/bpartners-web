@@ -42,12 +42,17 @@ export const ROOF_MODEL_OPTIONS = definedOnly({
  * picked and renamed, but no measuring bar, no cotes, no pente and no saved measures — the sidebar and the
  * exported PDF carry the roof's total surface and each pan's own, nothing more. Blank keeps `false`, the 3D
  * screen as it has always been, and it says nothing in `rooferButtonMode`, which drops that tab entirely.
+ * `measurementsReplacementText` (0.17.10+) is what that read-out report prints where a figure would have
+ * stood — read only with `show3DResultOnly`, and blank leaves the figures out all the same with nothing in
+ * their place. The complete copy handed to `onFullPdfExport` keeps every figure, and this screen passes no
+ * such callback, so no second report is ever exported.
  */
 export const GEO_SESSION_OPTIONS = definedOnly({
   disableSwitchBack: readBooleanEnv(process.env.REACT_APP_ROOF_DISABLE_SWITCH_BACK),
   autoDetectRoofFootprint: readBooleanEnv(process.env.REACT_APP_ROOF_AUTO_DETECT_FOOTPRINT),
   rooferButtonMode: readBooleanEnv(process.env.REACT_APP_ROOF_ROOFER_BUTTON_MODE),
   show3DResultOnly: readBooleanEnv(process.env.REACT_APP_ROOF_SHOW_3D_RESULT_ONLY),
+  measurementsReplacementText: readEnv(process.env.REACT_APP_ROOF_MEASUREMENTS_REPLACEMENT_TEXT),
 });
 
 /**
