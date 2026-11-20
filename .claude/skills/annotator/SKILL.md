@@ -118,6 +118,15 @@ Added in 0.14.4–0.14.6 and self-contained — the app renders `<RoofAnnotator>
   `GeoRoof3DSnapshot.customEdgeTypes`.
 - A PDF-in-progress notice in the roofer footer, a texture-loading pill on the model, and the position
   pinned on the pan photo while nothing is drawn.
+- **Panning the photo** (0.17.11) — arrow buttons over the delimitation photo move the framed square a
+  quarter of its side at a time and refetch the imagery, so a building the geocoder dropped at the edge of
+  the photo (or the one next door) can be brought into the middle of the square every screen works in. The
+  offset lives in the library's own session state (`mapCenterOffset`, persisted with the rest of the
+  session), and the position handed down to the maps, the 3D drape, the PDF plan and the footprint
+  auto-detection is the panned one, while the imagery layers and the session record keep the position the
+  app passed. The buttons disappear once a 3D model exists or is generating. The map pin now marks that
+  original address rather than the photo's centre. Nothing new to pass: the app keeps handing `latitude` /
+  `longitude` / `address` as it always has, and a reopened draft comes back on the photo it was left on.
 
 Exported and unused: `searchAddresses` (BPartners `POST /address/autocomplete`, one `searchId` per field
 so a lookup is billed once rather than per keystroke) would fit the prospect form's address input, and
