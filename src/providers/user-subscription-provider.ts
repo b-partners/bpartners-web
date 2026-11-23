@@ -5,6 +5,7 @@ import {
   EnableStatus,
   PaymentStatus,
   SubscriptionInvoice,
+  SubscriptionInvoiceSummaries,
   SubscriptionPlan,
   SubscriptionTrial,
   SubscriptionTrialEligibility,
@@ -61,6 +62,12 @@ export const getUnpaidSubscriptionInvoices = async (): Promise<SubscriptionInvoi
   const { data } = await payingApi().getUserSubscriptionInvoices(id, undefined, [PaymentStatus.UNPAID]);
   const subscriptionInvoices: SubscriptionInvoice[] = data || [];
   return subscriptionInvoices.filter(({ paymentStatus, paymentUrl }) => paymentStatus === PaymentStatus.UNPAID && !!paymentUrl);
+};
+
+export const getSubscriptionInvoiceSummaries = async (year?: number): Promise<SubscriptionInvoiceSummaries> => {
+  const { id } = await asyncGetUser();
+  const { data } = await payingApi().getUserSubscriptionInvoiceSummaries(id, year);
+  return data || {};
 };
 
 export const downloadSubscriptionInvoices = async (yearMonth: string) => {
