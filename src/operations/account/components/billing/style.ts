@@ -537,6 +537,20 @@ export const BillingModalStyle: SxProps = {
     color: PALETTE_COLORS.forest,
   },
   '& .is-unavailable .billing-invoice-month-name': { color: MUTED, fontWeight: 500 },
+  '& .billing-invoice-month-info': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+  },
+  '& .billing-invoice-month-count': {
+    fontSize: '11px',
+    color: MUTED,
+  },
+  '& .billing-invoice-loading': {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '24px 0',
+  },
   '& .billing-invoice-action': {
     minWidth: '118px',
     borderRadius: '999px',
@@ -645,5 +659,71 @@ export const CreditsRequiredModalStyle: SxProps = {
     borderRadius: '12px',
     bgcolor: alpha(ORANGE, 0.08),
     border: `1px solid ${alpha(ORANGE, 0.24)}`,
+  },
+};
+
+export const SubscriptionInvoiceDownloadDialogStyle: SxProps = {
+  '& .MuiDialog-paper': {
+    borderRadius: '16px',
+  },
+  '& .invoice-download-title': {
+    fontSize: '1rem',
+    fontWeight: 700,
+    color: PALETTE_COLORS.forest,
+    pb: 1,
+  },
+  '& .invoice-download-list': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  '& .invoice-download-item': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '16px',
+    padding: '10px 12px',
+    borderRadius: '10px',
+    border: `1px solid ${BORDER}`,
+  },
+  '& .invoice-download-item-title': {
+    fontSize: '13px',
+    fontWeight: 600,
+    color: TEXT,
+  },
+  '& .invoice-download-item-meta': {
+    fontSize: '11px',
+    color: MUTED,
+  },
+  '& .invoice-download-item-amount': {
+    fontSize: '14px',
+    fontWeight: 700,
+    color: ORANGE,
+    whiteSpace: 'nowrap',
+  },
+  '& .invoice-download-note': {
+    fontSize: '11px',
+    lineHeight: 1.45,
+    color: MUTED,
+    marginTop: '12px',
+  },
+  '& .invoice-download-actions': {
+    px: 3,
+    pb: 2,
+  },
+  '& .invoice-download-cancel': {
+    textTransform: 'none',
+    fontWeight: 600,
+    borderRadius: '999px',
+    color: PALETTE_COLORS.forest,
+  },
+  '& .invoice-download-submit': {
+    textTransform: 'none',
+    fontWeight: 700,
+    borderRadius: '999px',
+    boxShadow: 'none',
+    bgcolor: ORANGE,
+    color: WHITE,
+    '&:hover': { bgcolor: ORANGE_DARK, boxShadow: 'none' },
   },
 };
