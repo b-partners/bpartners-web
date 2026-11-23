@@ -1,16 +1,14 @@
-import { downloadSubscriptionInvoices } from '@/providers';
+import { downloadSubscriptionInvoices, getSubscriptionInvoiceSummaries } from '@/providers';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
 import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
 import { Box, Button, CircularProgress, MenuItem, Select, Typography } from '@mui/material';
-import { useMutation } from '@tanstack/react-query';
-import dayjs from 'dayjs';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNotify } from 'react-admin';
 import { BillingSection } from './BillingSection';
-
-const FIRST_AVAILABLE_YEAR = 2023;
+import { SubscriptionInvoiceDownloadDialog } from './SubscriptionInvoiceDownloadDialog';
 
 const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
@@ -19,16 +17,24 @@ const toMonthLabel = (yearMonth: string) => {
   return `${MONTHS[Number(selectedMonth) - 1]} ${selectedYear}`;
 };
 
+const toInvoiceCountLabel = (count: number) => (count > 1 ? `${count} factures` : '1 facture');
+
 export const BillingInvoicesSection = () => {
-  const today = dayjs();
-  const currentYear = today.year();
-  const [year, setYear] = useState(currentYear);
+  const [selectedYear, setSelectedYear] = useState<number>();
+  const [selectedYearMonth, setSelectedYearMonth] = useState<string>();
   const notify = useNotify();
 
-  const { isPending, mutate, variables } = useMutation({
+  const { data: summaries, isLoading } = useQuery({
+    queryKey: ['subscription', 'invoice-summaries', selectedYear],
+    queryFn: () => getSubscriptionInvoiceSummaries(selectedYear),
+    placeholderData: previous => previous,
+  });
+
+  const { isPending, mutate } = useMutation({
     mutationKey: ['subscription', 'invoices'],
     mutationFn: downloadSubscriptionInvoices,
     onSuccess: (fileCount, yearMonth) => {
+      setSelectedYearMonth(undefined);
       if (fileCount === 0) {
         notify(`Aucune facture disponible pour ${toMonthLabel(yearMonth)}.`, { type: 'warning' });
         return;
@@ -38,60 +44,80 @@ export const BillingInvoicesSection = () => {
     onError: (error: Error) => notify(error.message || 'messages.global.error', { type: 'error' }),
   });
 
-  const years = Array.from({ length: currentYear - FIRST_AVAILABLE_YEAR + 1 }, (_, index) => currentYear - index);
-  const isMonthAvailable = (monthIndex: number) => year < currentYear || monthIndex <= today.month();
-  const toYearMonth = (monthIndex: number) => `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+  const year = selectedYear ?? summaries?.actualYear;
+  const years = [...new Set([...(summaries?.availableYears ?? []), ...(year ? [year] : [])])].sort((a, b) => b - a);
+  const months = summaries?.months ?? [];
+  const toYearMonth = (month: number) => `${year}-${String(month).padStart(2, '0')}`;
+  const selectedMonth = months.find(({ month }) => !!month && toYearMonth(month) === selectedYearMonth);
 
   return (
     <BillingSection icon={<ReceiptLongRoundedIcon />} title='Mes factures' subtitle='Téléchargez les factures de vos abonnements et de vos achats de crédits.'>
-      <Box className='billing-invoice-period'>
-        <CalendarMonthRoundedIcon fontSize='small' />
-        <Typography className='billing-invoice-period-label'>Période de :</Typography>
-        <Select
-          size='small'
-          value={year}
-          name='billing-invoice-year'
-          className='billing-invoice-year-select'
-          onChange={({ target: { value } }) => setYear(Number(value))}
-        >
-          {years.map(item => (
-            <MenuItem key={item} value={item}>
-              {item}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
-      <Box className='billing-invoice-months'>
-        {MONTHS.map((month, index) => (
-          <Box key={month} className={`billing-invoice-month ${isMonthAvailable(index) ? 'is-available' : 'is-unavailable'}`}>
-            <Typography className='billing-invoice-month-name'>{month}</Typography>
-            {isMonthAvailable(index) ? (
-              <Button
-                variant='outlined'
-                className='billing-invoice-action'
-                name={`download-subscription-invoice-${toYearMonth(index)}`}
-                disabled={isPending}
-                startIcon={
-                  isPending && variables === toYearMonth(index) ? <CircularProgress color='inherit' size={14} /> : <DownloadRoundedIcon fontSize='small' />
-                }
-                onClick={() => mutate(toYearMonth(index))}
-              >
-                Télécharger
-              </Button>
-            ) : (
-              <Button
-                disabled
-                variant='outlined'
-                className='billing-invoice-action'
-                name={`unavailable-subscription-invoice-${toYearMonth(index)}`}
-                startIcon={<ScheduleRoundedIcon fontSize='small' />}
-              >
-                Indisponible
-              </Button>
-            )}
+      {isLoading ? (
+        <Box className='billing-invoice-loading'>
+          <CircularProgress size={24} />
+        </Box>
+      ) : (
+        <>
+          <Box className='billing-invoice-period'>
+            <CalendarMonthRoundedIcon fontSize='small' />
+            <Typography className='billing-invoice-period-label'>Période de :</Typography>
+            <Select
+              size='small'
+              value={year ?? ''}
+              name='billing-invoice-year'
+              className='billing-invoice-year-select'
+              onChange={({ target: { value } }) => setSelectedYear(Number(value))}
+            >
+              {years.map(item => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </Select>
           </Box>
-        ))}
-      </Box>
+          <Box className='billing-invoice-months'>
+            {months.map(({ month = 0, invoiceCount = 0 }) => {
+              const isAvailable = invoiceCount > 0;
+              return (
+                <Box key={month} className={`billing-invoice-month ${isAvailable ? 'is-available' : 'is-unavailable'}`}>
+                  <Box className='billing-invoice-month-info'>
+                    <Typography className='billing-invoice-month-name'>{MONTHS[month - 1]}</Typography>
+                    {isAvailable && <Typography className='billing-invoice-month-count'>{toInvoiceCountLabel(invoiceCount)}</Typography>}
+                  </Box>
+                  {isAvailable ? (
+                    <Button
+                      variant='outlined'
+                      className='billing-invoice-action'
+                      name={`download-subscription-invoice-${toYearMonth(month)}`}
+                      startIcon={<DownloadRoundedIcon fontSize='small' />}
+                      onClick={() => setSelectedYearMonth(toYearMonth(month))}
+                    >
+                      Télécharger
+                    </Button>
+                  ) : (
+                    <Button
+                      disabled
+                      variant='outlined'
+                      className='billing-invoice-action'
+                      name={`unavailable-subscription-invoice-${toYearMonth(month)}`}
+                      startIcon={<ScheduleRoundedIcon fontSize='small' />}
+                    >
+                      Indisponible
+                    </Button>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        </>
+      )}
+      <SubscriptionInvoiceDownloadDialog
+        monthLabel={selectedYearMonth && selectedMonth ? toMonthLabel(selectedYearMonth) : undefined}
+        invoices={selectedMonth?.invoices ?? []}
+        isPending={isPending}
+        onCancel={() => setSelectedYearMonth(undefined)}
+        onConfirm={() => selectedYearMonth && mutate(selectedYearMonth)}
+      />
     </BillingSection>
   );
 };
