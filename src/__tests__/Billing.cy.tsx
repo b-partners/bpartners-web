@@ -11,6 +11,7 @@ import {
   expiredSubscriptionCommitments,
   ongoingSubscriptionCommitments,
 } from './mocks/responses/subscription-commitments-api';
+import { subscriptionInvoiceSummaries2026 } from './mocks/responses/subscription-invoice-api';
 import { subscriptionPlans } from './mocks/responses/subscription-plans-api';
 
 const STRIPE_REDIRECTION_URL = 'https://checkout.stripe.com/c/pay/cs_test_123';
@@ -76,6 +77,7 @@ const openBilling = ({
   cy.intercept('GET', '**/creditPacks*', packs).as('getCreditPacks');
   cy.intercept('GET', `/users/${user1.id}/paymentMethods*`, paymentMethods).as('getPaymentMethods');
   cy.intercept('GET', `/users/${user1.id}/subscriptionUpgrade*`, inProgressUpgrades).as('getSubscriptionUpgrades');
+  cy.intercept('GET', `/users/${user1.id}/subscriptionInvoiceSummaries*`, subscriptionInvoiceSummaries2026).as('getSubscriptionInvoiceSummaries');
 
   cy.mount(<App />);
   cy.get('[name="account"]').click();
